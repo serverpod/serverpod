@@ -25,13 +25,13 @@ abstract class ServerHealthResult extends _i1.SerializableEntity {
 
   factory ServerHealthResult.fromJson(Map<String, dynamic> jsonSerialization) {
     return ServerHealthResult(
-      metrics: (jsonSerialization['metrics'] as List<dynamic>)
-          .map(
-              (e) => _i2.ServerHealthMetric.fromJson(e as Map<String, dynamic>))
+      metrics: (jsonSerialization['metrics'] as List)
+          .map((e) =>
+              _i2.ServerHealthMetric.fromJson((e as Map<String, dynamic>)))
           .toList(),
-      connectionInfos: (jsonSerialization['connectionInfos'] as List<dynamic>)
+      connectionInfos: (jsonSerialization['connectionInfos'] as List)
           .map((e) => _i2.ServerHealthConnectionInfo.fromJson(
-              e as Map<String, dynamic>))
+              (e as Map<String, dynamic>)))
           .toList(),
     );
   }

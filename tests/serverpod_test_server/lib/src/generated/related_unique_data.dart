@@ -30,12 +30,10 @@ abstract class RelatedUniqueData extends _i1.TableRow {
     return RelatedUniqueData(
       id: jsonSerialization['id'] as int?,
       uniqueDataId: jsonSerialization['uniqueDataId'] as int,
-      uniqueData: jsonSerialization.containsKey('uniqueData')
-          ? jsonSerialization['uniqueData'] != null
-              ? _i2.UniqueData.fromJson(
-                  jsonSerialization['uniqueData'] as Map<String, dynamic>)
-              : null
-          : null,
+      uniqueData: jsonSerialization['uniqueData'] == null
+          ? null
+          : _i2.UniqueData.fromJson(
+              (jsonSerialization['uniqueData'] as Map<String, dynamic>)),
       number: jsonSerialization['number'] as int,
     );
   }

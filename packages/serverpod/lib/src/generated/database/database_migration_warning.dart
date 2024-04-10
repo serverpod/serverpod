@@ -36,7 +36,7 @@ abstract class DatabaseMigrationWarning extends _i1.SerializableEntity {
           (jsonSerialization['type'] as String)),
       message: jsonSerialization['message'] as String,
       table: jsonSerialization['table'] as String,
-      columns: (jsonSerialization['columns'] as List<dynamic>)
+      columns: (jsonSerialization['columns'] as List)
           .map((e) => e as String)
           .toList(),
       destrucive: jsonSerialization['destrucive'] as bool,

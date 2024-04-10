@@ -28,8 +28,8 @@ abstract class Student extends _i1.SerializableEntity {
     return Student(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      enrollments: (jsonSerialization['enrollments'] as List<dynamic>?)
-          ?.map((e) => _i2.Enrollment.fromJson(e as Map<String, dynamic>))
+      enrollments: (jsonSerialization['enrollments'] as List?)
+          ?.map((e) => _i2.Enrollment.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }

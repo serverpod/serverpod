@@ -3,11 +3,10 @@ import 'dart:typed_data';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Expose toJson on DateTime
-/// Expose static getDateTime builder
+/// Expose static fromJson builder
 extension DateTimeExt on DateTime {
   /// Returns a deserialized version of the [DateTime].
-  static DateTime? getDateTime<T>(dynamic value) {
-    if (value == null && null is T) return null;
+  static DateTime fromJson(dynamic value) {
     if (value is DateTime) return value;
     return DateTime.parse(value as String);
   }
@@ -17,13 +16,11 @@ extension DateTimeExt on DateTime {
 }
 
 /// Expose toJson on Duration
-/// Expose static getDuration builder
+/// Expose static fromJson builder
 extension DurationExt on Duration {
   /// Returns a deserialized version of the [Duration].
-  static Duration? getDuration<T>(dynamic value) {
-    if (value == null && null is T) return null;
+  static Duration fromJson<T>(dynamic value) {
     if (value is Duration) return value;
-
     return Duration(milliseconds: value as int);
   }
 
@@ -32,13 +29,11 @@ extension DurationExt on Duration {
 }
 
 /// Expose toJson on UuidValue
-/// Expose static getUuIdValue builder
+/// Expose static fromJson builder
 extension UuidValueExt on UuidValue {
   /// Returns a deserialized version of the [UuidValue].
-  static UuidValue? getUuIdValue<T>(dynamic value) {
-    if (value == null && null is T) return null;
+  static UuidValue fromJson(dynamic value) {
     if (value is UuidValue) return value;
-
     return UuidValue.fromString(value as String);
   }
 
@@ -47,12 +42,10 @@ extension UuidValueExt on UuidValue {
 }
 
 /// Expose toJson on ByteData
-/// Expose static getByteData builder
+/// Expose static fromJson builder
 extension ByteDataExt on ByteData {
   /// Returns a deserialized version of the [ByteData]
-  static ByteData? getByteData<T>(dynamic value) {
-    if (value == null && null is T) return null;
-
+  static ByteData fromJson(dynamic value) {
     if (value is ByteData) return value;
     if (value is Uint8List) {
       return ByteData.view(
@@ -62,7 +55,7 @@ extension ByteDataExt on ByteData {
       );
     }
 
-    return (value as String).base64DecodedByteData();
+    return (value as String).base64DecodedNullSafeByteData();
   }
 
   /// Returns a serialized version of the [ByteData] as a base64 encoded

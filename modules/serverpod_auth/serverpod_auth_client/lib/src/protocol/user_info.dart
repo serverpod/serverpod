@@ -47,10 +47,9 @@ abstract class UserInfo extends _i1.SerializableEntity {
       userName: jsonSerialization['userName'] as String,
       fullName: jsonSerialization['fullName'] as String?,
       email: jsonSerialization['email'] as String?,
-      created:
-          _i1.DateTimeExt.getDateTime<DateTime>(jsonSerialization['created'])!,
+      created: _i1.DateTimeExt.fromJson(jsonSerialization['created']),
       imageUrl: jsonSerialization['imageUrl'] as String?,
-      scopeNames: (jsonSerialization['scopeNames'] as List<dynamic>)
+      scopeNames: (jsonSerialization['scopeNames'] as List)
           .map((e) => e as String)
           .toList(),
       blocked: jsonSerialization['blocked'] as bool,

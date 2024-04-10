@@ -31,22 +31,21 @@ abstract class DatabaseDefinitions extends _i1.SerializableEntity {
 
   factory DatabaseDefinitions.fromJson(Map<String, dynamic> jsonSerialization) {
     return DatabaseDefinitions(
-      target: (jsonSerialization['target'] as List<dynamic>)
-          .map((e) => _i2.TableDefinition.fromJson(e as Map<String, dynamic>))
+      target: (jsonSerialization['target'] as List)
+          .map((e) => _i2.TableDefinition.fromJson((e as Map<String, dynamic>)))
           .toList(),
-      live: (jsonSerialization['live'] as List<dynamic>)
-          .map((e) => _i2.TableDefinition.fromJson(e as Map<String, dynamic>))
+      live: (jsonSerialization['live'] as List)
+          .map((e) => _i2.TableDefinition.fromJson((e as Map<String, dynamic>)))
           .toList(),
-      installedMigrations: (jsonSerialization['installedMigrations']
-              as List<dynamic>)
-          .map((e) =>
-              _i2.DatabaseMigrationVersion.fromJson(e as Map<String, dynamic>))
+      installedMigrations: (jsonSerialization['installedMigrations'] as List)
+          .map((e) => _i2.DatabaseMigrationVersion.fromJson(
+              (e as Map<String, dynamic>)))
           .toList(),
-      latestAvailableMigrations: (jsonSerialization['latestAvailableMigrations']
-              as List<dynamic>)
-          .map((e) =>
-              _i2.DatabaseMigrationVersion.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      latestAvailableMigrations:
+          (jsonSerialization['latestAvailableMigrations'] as List)
+              .map((e) => _i2.DatabaseMigrationVersion.fromJson(
+                  (e as Map<String, dynamic>)))
+              .toList(),
     );
   }
 

@@ -35,8 +35,7 @@ abstract class CloudStorageDirectUploadEntry extends _i1.TableRow {
       id: jsonSerialization['id'] as int?,
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
-      expiration: _i1.DateTimeExt.getDateTime<DateTime>(
-          jsonSerialization['expiration'])!,
+      expiration: _i1.DateTimeExt.fromJson(jsonSerialization['expiration']),
       authKey: jsonSerialization['authKey'] as String,
     );
   }

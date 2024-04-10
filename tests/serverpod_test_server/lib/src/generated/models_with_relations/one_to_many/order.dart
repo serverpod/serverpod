@@ -34,14 +34,12 @@ abstract class Order extends _i1.TableRow {
       id: jsonSerialization['id'] as int?,
       description: jsonSerialization['description'] as String,
       customerId: jsonSerialization['customerId'] as int,
-      customer: jsonSerialization.containsKey('customer')
-          ? jsonSerialization['customer'] != null
-              ? _i2.Customer.fromJson(
-                  jsonSerialization['customer'] as Map<String, dynamic>)
-              : null
-          : null,
-      comments: (jsonSerialization['comments'] as List<dynamic>?)
-          ?.map((e) => _i2.Comment.fromJson(e as Map<String, dynamic>))
+      customer: jsonSerialization['customer'] == null
+          ? null
+          : _i2.Customer.fromJson(
+              (jsonSerialization['customer'] as Map<String, dynamic>)),
+      comments: (jsonSerialization['comments'] as List?)
+          ?.map((e) => _i2.Comment.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }

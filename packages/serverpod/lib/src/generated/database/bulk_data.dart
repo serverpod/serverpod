@@ -25,7 +25,7 @@ abstract class BulkData extends _i1.SerializableEntity {
   factory BulkData.fromJson(Map<String, dynamic> jsonSerialization) {
     return BulkData(
       tableDefinition: _i2.TableDefinition.fromJson(
-          jsonSerialization['tableDefinition'] as Map<String, dynamic>),
+          (jsonSerialization['tableDefinition'] as Map<String, dynamic>)),
       data: jsonSerialization['data'] as String,
     );
   }

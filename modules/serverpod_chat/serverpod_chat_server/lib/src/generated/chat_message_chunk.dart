@@ -29,8 +29,8 @@ abstract class ChatMessageChunk extends _i1.SerializableEntity {
   factory ChatMessageChunk.fromJson(Map<String, dynamic> jsonSerialization) {
     return ChatMessageChunk(
       channel: jsonSerialization['channel'] as String,
-      messages: (jsonSerialization['messages'] as List<dynamic>)
-          .map((e) => _i2.ChatMessage.fromJson(e as Map<String, dynamic>))
+      messages: (jsonSerialization['messages'] as List)
+          .map((e) => _i2.ChatMessage.fromJson((e as Map<String, dynamic>)))
           .toList(),
       hasOlderMessages: jsonSerialization['hasOlderMessages'] as bool,
     );

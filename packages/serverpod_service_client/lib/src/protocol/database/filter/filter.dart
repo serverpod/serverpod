@@ -28,8 +28,9 @@ abstract class Filter extends _i1.SerializableEntity {
     return Filter(
       name: jsonSerialization['name'] as String,
       table: jsonSerialization['table'] as String,
-      constraints: (jsonSerialization['constraints'] as List<dynamic>)
-          .map((e) => _i2.FilterConstraint.fromJson(e as Map<String, dynamic>))
+      constraints: (jsonSerialization['constraints'] as List)
+          .map(
+              (e) => _i2.FilterConstraint.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }

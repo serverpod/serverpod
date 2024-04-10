@@ -33,9 +33,9 @@ abstract class LongImplicitIdFieldCollection extends _i1.SerializableEntity {
       thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa:
           (jsonSerialization[
                       'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa']
-                  as List<dynamic>?)
+                  as List?)
               ?.map((e) =>
-                  _i2.LongImplicitIdField.fromJson(e as Map<String, dynamic>))
+                  _i2.LongImplicitIdField.fromJson((e as Map<String, dynamic>)))
               .toList(),
     );
   }

@@ -37,31 +37,27 @@ abstract class ObjectWithObject extends _i1.TableRow {
     return ObjectWithObject(
       id: jsonSerialization['id'] as int?,
       data: _i2.SimpleData.fromJson(
-          jsonSerialization['data'] as Map<String, dynamic>),
-      nullableData: jsonSerialization.containsKey('nullableData')
-          ? jsonSerialization['nullableData'] != null
-              ? _i2.SimpleData.fromJson(
-                  jsonSerialization['nullableData'] as Map<String, dynamic>)
-              : null
-          : null,
-      dataList: (jsonSerialization['dataList'] as List<dynamic>)
-          .map((e) => _i2.SimpleData.fromJson(e as Map<String, dynamic>))
+          (jsonSerialization['data'] as Map<String, dynamic>)),
+      nullableData: jsonSerialization['nullableData'] == null
+          ? null
+          : _i2.SimpleData.fromJson(
+              (jsonSerialization['nullableData'] as Map<String, dynamic>)),
+      dataList: (jsonSerialization['dataList'] as List)
+          .map((e) => _i2.SimpleData.fromJson((e as Map<String, dynamic>)))
           .toList(),
-      nullableDataList:
-          (jsonSerialization['nullableDataList'] as List<dynamic>?)
-              ?.map((e) => _i2.SimpleData.fromJson(e as Map<String, dynamic>))
-              .toList(),
-      listWithNullableData:
-          (jsonSerialization['listWithNullableData'] as List<dynamic>)
-              .map((e) => e != null
-                  ? _i2.SimpleData.fromJson(e as Map<String, dynamic>)
-                  : null)
-              .toList(),
+      nullableDataList: (jsonSerialization['nullableDataList'] as List?)
+          ?.map((e) => _i2.SimpleData.fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      listWithNullableData: (jsonSerialization['listWithNullableData'] as List)
+          .map((e) => e == null
+              ? null
+              : _i2.SimpleData.fromJson((e as Map<String, dynamic>)))
+          .toList(),
       nullableListWithNullableData:
-          (jsonSerialization['nullableListWithNullableData'] as List<dynamic>?)
-              ?.map((e) => e != null
-                  ? _i2.SimpleData.fromJson(e as Map<String, dynamic>)
-                  : null)
+          (jsonSerialization['nullableListWithNullableData'] as List?)
+              ?.map((e) => e == null
+                  ? null
+                  : _i2.SimpleData.fromJson((e as Map<String, dynamic>)))
               .toList(),
     );
   }

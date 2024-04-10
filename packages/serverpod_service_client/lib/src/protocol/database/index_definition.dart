@@ -37,9 +37,9 @@ abstract class IndexDefinition extends _i1.SerializableEntity {
     return IndexDefinition(
       indexName: jsonSerialization['indexName'] as String,
       tableSpace: jsonSerialization['tableSpace'] as String?,
-      elements: (jsonSerialization['elements'] as List<dynamic>)
+      elements: (jsonSerialization['elements'] as List)
           .map((e) =>
-              _i2.IndexElementDefinition.fromJson(e as Map<String, dynamic>))
+              _i2.IndexElementDefinition.fromJson((e as Map<String, dynamic>)))
           .toList(),
       type: jsonSerialization['type'] as String,
       isUnique: jsonSerialization['isUnique'] as bool,

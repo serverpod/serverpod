@@ -32,9 +32,9 @@ abstract class ChatMessagePost extends _i1.SerializableEntity {
       channel: jsonSerialization['channel'] as String,
       message: jsonSerialization['message'] as String,
       clientMessageId: jsonSerialization['clientMessageId'] as int,
-      attachments: (jsonSerialization['attachments'] as List<dynamic>?)
+      attachments: (jsonSerialization['attachments'] as List?)
           ?.map((e) =>
-              _i2.ChatMessageAttachment.fromJson(e as Map<String, dynamic>))
+              _i2.ChatMessageAttachment.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }

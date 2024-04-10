@@ -32,12 +32,10 @@ abstract class PersonWithLongTableName extends _i1.TableRow {
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       organizationId: jsonSerialization['organizationId'] as int?,
-      organization: jsonSerialization.containsKey('organization')
-          ? jsonSerialization['organization'] != null
-              ? _i2.OrganizationWithLongTableName.fromJson(
-                  jsonSerialization['organization'] as Map<String, dynamic>)
-              : null
-          : null,
+      organization: jsonSerialization['organization'] == null
+          ? null
+          : _i2.OrganizationWithLongTableName.fromJson(
+              (jsonSerialization['organization'] as Map<String, dynamic>)),
     );
   }
 

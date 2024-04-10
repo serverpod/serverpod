@@ -11,7 +11,6 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
-import 'package:uuid/uuid_value.dart' as _i4;
 
 abstract class Types extends _i1.SerializableEntity {
   Types._({
@@ -48,26 +47,26 @@ abstract class Types extends _i1.SerializableEntity {
       anInt: jsonSerialization['anInt'] as int?,
       aBool: jsonSerialization['aBool'] as bool?,
       aDouble: jsonSerialization['aDouble'] as double?,
-      aDateTime: _i1.DateTimeExt.getDateTime<DateTime?>(
-          jsonSerialization['aDateTime']),
+      aDateTime: jsonSerialization['aDateTime'] == null
+          ? null
+          : _i1.DateTimeExt.fromJson(jsonSerialization['aDateTime']),
       aString: jsonSerialization['aString'] as String?,
-      aByteData: _i1.ByteDataExt.getByteData<_i2.ByteData?>(
-          jsonSerialization['aByteData']),
-      aDuration: _i1.DurationExt.getDuration<Duration?>(
-          jsonSerialization['aDuration']),
-      aUuid: _i1.UuidValueExt.getUuIdValue<_i4.UuidValue?>(
-          jsonSerialization['aUuid']),
-      anEnum: jsonSerialization.containsKey('anEnum')
-          ? jsonSerialization['anEnum'] != null
-              ? _i3.TestEnum.fromJson((jsonSerialization['anEnum'] as int))
-              : null
-          : null,
-      aStringifiedEnum: jsonSerialization.containsKey('aStringifiedEnum')
-          ? jsonSerialization['aStringifiedEnum'] != null
-              ? _i3.TestEnumStringified.fromJson(
-                  (jsonSerialization['aStringifiedEnum'] as String))
-              : null
-          : null,
+      aByteData: jsonSerialization['aByteData'] == null
+          ? null
+          : _i1.ByteDataExt.fromJson(jsonSerialization['aByteData']),
+      aDuration: jsonSerialization['aDuration'] == null
+          ? null
+          : _i1.DurationExt.fromJson(jsonSerialization['aDuration']),
+      aUuid: jsonSerialization['aUuid'] == null
+          ? null
+          : _i1.UuidValueExt.fromJson(jsonSerialization['aUuid']),
+      anEnum: jsonSerialization['anEnum'] == null
+          ? null
+          : _i3.TestEnum.fromJson((jsonSerialization['anEnum'] as int)),
+      aStringifiedEnum: jsonSerialization['aStringifiedEnum'] == null
+          ? null
+          : _i3.TestEnumStringified.fromJson(
+              (jsonSerialization['aStringifiedEnum'] as String)),
     );
   }
 

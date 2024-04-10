@@ -9,7 +9,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:uuid/uuid_value.dart' as _i2;
 
 abstract class ObjectWithUuid extends _i1.SerializableEntity {
   ObjectWithUuid._({
@@ -27,10 +26,10 @@ abstract class ObjectWithUuid extends _i1.SerializableEntity {
   factory ObjectWithUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithUuid(
       id: jsonSerialization['id'] as int?,
-      uuid: _i1.UuidValueExt.getUuIdValue<_i2.UuidValue>(
-          jsonSerialization['uuid'])!,
-      uuidNullable: _i1.UuidValueExt.getUuIdValue<_i2.UuidValue?>(
-          jsonSerialization['uuidNullable']),
+      uuid: _i1.UuidValueExt.fromJson(jsonSerialization['uuid']),
+      uuidNullable: jsonSerialization['uuidNullable'] == null
+          ? null
+          : _i1.UuidValueExt.fromJson(jsonSerialization['uuidNullable']),
     );
   }
 

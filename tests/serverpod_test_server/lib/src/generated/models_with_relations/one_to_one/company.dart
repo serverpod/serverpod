@@ -31,12 +31,10 @@ abstract class Company extends _i1.TableRow {
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       townId: jsonSerialization['townId'] as int,
-      town: jsonSerialization.containsKey('town')
-          ? jsonSerialization['town'] != null
-              ? _i2.Town.fromJson(
-                  jsonSerialization['town'] as Map<String, dynamic>)
-              : null
-          : null,
+      town: jsonSerialization['town'] == null
+          ? null
+          : _i2.Town.fromJson(
+              (jsonSerialization['town'] as Map<String, dynamic>)),
     );
   }
 

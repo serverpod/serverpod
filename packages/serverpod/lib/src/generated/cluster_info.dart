@@ -21,9 +21,9 @@ abstract class ClusterInfo extends _i1.SerializableEntity {
 
   factory ClusterInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return ClusterInfo(
-        servers: (jsonSerialization['servers'] as List<dynamic>)
+        servers: (jsonSerialization['servers'] as List)
             .map((e) =>
-                _i2.ClusterServerInfo.fromJson(e as Map<String, dynamic>))
+                _i2.ClusterServerInfo.fromJson((e as Map<String, dynamic>)))
             .toList());
   }
 

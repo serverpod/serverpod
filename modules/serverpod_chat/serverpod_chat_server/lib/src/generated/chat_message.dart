@@ -46,20 +46,18 @@ abstract class ChatMessage extends _i1.TableRow {
       id: jsonSerialization['id'] as int?,
       channel: jsonSerialization['channel'] as String,
       message: jsonSerialization['message'] as String,
-      time: _i1.DateTimeExt.getDateTime<DateTime>(jsonSerialization['time'])!,
+      time: _i1.DateTimeExt.fromJson(jsonSerialization['time']),
       sender: jsonSerialization['sender'] as int,
-      senderInfo: jsonSerialization.containsKey('senderInfo')
-          ? jsonSerialization['senderInfo'] != null
-              ? _i2.UserInfoPublic.fromJson(
-                  jsonSerialization['senderInfo'] as Map<String, dynamic>)
-              : null
-          : null,
+      senderInfo: jsonSerialization['senderInfo'] == null
+          ? null
+          : _i2.UserInfoPublic.fromJson(
+              (jsonSerialization['senderInfo'] as Map<String, dynamic>)),
       removed: jsonSerialization['removed'] as bool,
       clientMessageId: jsonSerialization['clientMessageId'] as int?,
       sent: jsonSerialization['sent'] as bool?,
-      attachments: (jsonSerialization['attachments'] as List<dynamic>?)
+      attachments: (jsonSerialization['attachments'] as List?)
           ?.map((e) =>
-              _i3.ChatMessageAttachment.fromJson(e as Map<String, dynamic>))
+              _i3.ChatMessageAttachment.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }

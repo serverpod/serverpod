@@ -72,13 +72,17 @@ abstract class SerializationManager {
     } else if (_isNullableType<bool>(t)) {
       return data;
     } else if (_isNullableType<DateTime>(t)) {
-      return DateTimeExt.getDateTime<T>(data) as T;
+      if (data == null) return null as T;
+      return DateTimeExt.fromJson(data) as T;
     } else if (_isNullableType<ByteData>(t)) {
-      return ByteDataExt.getByteData<T>(data) as T;
+      if (data == null) return null as T;
+      return ByteDataExt.fromJson(data) as T;
     } else if (_isNullableType<Duration>(t)) {
-      return DurationExt.getDuration<T>(data) as T;
+      if (data == null) return null as T;
+      return DurationExt.fromJson(data) as T;
     } else if (_isNullableType<UuidValue>(t)) {
-      return UuidValueExt.getUuIdValue<T>(data) as T;
+      if (data == null) return null as T;
+      return UuidValueExt.fromJson(data) as T;
     }
     throw FormatException('No deserialization found for type $t');
   }

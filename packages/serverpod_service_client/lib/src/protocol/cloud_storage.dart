@@ -38,12 +38,11 @@ abstract class CloudStorageEntry extends _i1.SerializableEntity {
       id: jsonSerialization['id'] as int?,
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
-      addedTime: _i1.DateTimeExt.getDateTime<DateTime>(
-          jsonSerialization['addedTime'])!,
-      expiration: _i1.DateTimeExt.getDateTime<DateTime?>(
-          jsonSerialization['expiration']),
-      byteData: _i1.ByteDataExt.getByteData<_i2.ByteData>(
-          jsonSerialization['byteData'])!,
+      addedTime: _i1.DateTimeExt.fromJson(jsonSerialization['addedTime']),
+      expiration: jsonSerialization['expiration'] == null
+          ? null
+          : _i1.DateTimeExt.fromJson(jsonSerialization['expiration']),
+      byteData: _i1.ByteDataExt.fromJson(jsonSerialization['byteData']),
       verified: jsonSerialization['verified'] as bool,
     );
   }

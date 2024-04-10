@@ -48,32 +48,32 @@ abstract class TableMigration extends _i1.SerializableEntity {
       dartName: jsonSerialization['dartName'] as String?,
       module: jsonSerialization['module'] as String?,
       schema: jsonSerialization['schema'] as String,
-      addColumns: (jsonSerialization['addColumns'] as List<dynamic>)
-          .map((e) => _i2.ColumnDefinition.fromJson(e as Map<String, dynamic>))
+      addColumns: (jsonSerialization['addColumns'] as List)
+          .map(
+              (e) => _i2.ColumnDefinition.fromJson((e as Map<String, dynamic>)))
           .toList(),
-      deleteColumns: (jsonSerialization['deleteColumns'] as List<dynamic>)
+      deleteColumns: (jsonSerialization['deleteColumns'] as List)
           .map((e) => e as String)
           .toList(),
-      modifyColumns: (jsonSerialization['modifyColumns'] as List<dynamic>)
-          .map((e) => _i2.ColumnMigration.fromJson(e as Map<String, dynamic>))
+      modifyColumns: (jsonSerialization['modifyColumns'] as List)
+          .map((e) => _i2.ColumnMigration.fromJson((e as Map<String, dynamic>)))
           .toList(),
-      addIndexes: (jsonSerialization['addIndexes'] as List<dynamic>)
-          .map((e) => _i2.IndexDefinition.fromJson(e as Map<String, dynamic>))
+      addIndexes: (jsonSerialization['addIndexes'] as List)
+          .map((e) => _i2.IndexDefinition.fromJson((e as Map<String, dynamic>)))
           .toList(),
-      deleteIndexes: (jsonSerialization['deleteIndexes'] as List<dynamic>)
+      deleteIndexes: (jsonSerialization['deleteIndexes'] as List)
           .map((e) => e as String)
           .toList(),
-      addForeignKeys: (jsonSerialization['addForeignKeys'] as List<dynamic>)
+      addForeignKeys: (jsonSerialization['addForeignKeys'] as List)
           .map((e) =>
-              _i2.ForeignKeyDefinition.fromJson(e as Map<String, dynamic>))
+              _i2.ForeignKeyDefinition.fromJson((e as Map<String, dynamic>)))
           .toList(),
-      deleteForeignKeys:
-          (jsonSerialization['deleteForeignKeys'] as List<dynamic>)
-              .map((e) => e as String)
-              .toList(),
-      warnings: (jsonSerialization['warnings'] as List<dynamic>)
-          .map((e) =>
-              _i2.DatabaseMigrationWarning.fromJson(e as Map<String, dynamic>))
+      deleteForeignKeys: (jsonSerialization['deleteForeignKeys'] as List)
+          .map((e) => e as String)
+          .toList(),
+      warnings: (jsonSerialization['warnings'] as List)
+          .map((e) => _i2.DatabaseMigrationWarning.fromJson(
+              (e as Map<String, dynamic>)))
           .toList(),
     );
   }

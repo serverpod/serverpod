@@ -36,26 +36,20 @@ abstract class Citizen extends _i1.TableRow {
     return Citizen(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      address: jsonSerialization.containsKey('address')
-          ? jsonSerialization['address'] != null
-              ? _i2.Address.fromJson(
-                  jsonSerialization['address'] as Map<String, dynamic>)
-              : null
-          : null,
+      address: jsonSerialization['address'] == null
+          ? null
+          : _i2.Address.fromJson(
+              (jsonSerialization['address'] as Map<String, dynamic>)),
       companyId: jsonSerialization['companyId'] as int,
-      company: jsonSerialization.containsKey('company')
-          ? jsonSerialization['company'] != null
-              ? _i2.Company.fromJson(
-                  jsonSerialization['company'] as Map<String, dynamic>)
-              : null
-          : null,
+      company: jsonSerialization['company'] == null
+          ? null
+          : _i2.Company.fromJson(
+              (jsonSerialization['company'] as Map<String, dynamic>)),
       oldCompanyId: jsonSerialization['oldCompanyId'] as int?,
-      oldCompany: jsonSerialization.containsKey('oldCompany')
-          ? jsonSerialization['oldCompany'] != null
-              ? _i2.Company.fromJson(
-                  jsonSerialization['oldCompany'] as Map<String, dynamic>)
-              : null
-          : null,
+      oldCompany: jsonSerialization['oldCompany'] == null
+          ? null
+          : _i2.Company.fromJson(
+              (jsonSerialization['oldCompany'] as Map<String, dynamic>)),
     );
   }
 

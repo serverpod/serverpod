@@ -40,32 +40,26 @@ abstract class ForeignKeyDefinition extends _i1.SerializableEntity {
       Map<String, dynamic> jsonSerialization) {
     return ForeignKeyDefinition(
       constraintName: jsonSerialization['constraintName'] as String,
-      columns: (jsonSerialization['columns'] as List<dynamic>)
+      columns: (jsonSerialization['columns'] as List)
           .map((e) => e as String)
           .toList(),
       referenceTable: jsonSerialization['referenceTable'] as String,
       referenceTableSchema: jsonSerialization['referenceTableSchema'] as String,
-      referenceColumns: (jsonSerialization['referenceColumns'] as List<dynamic>)
+      referenceColumns: (jsonSerialization['referenceColumns'] as List)
           .map((e) => e as String)
           .toList(),
-      onUpdate: jsonSerialization.containsKey('onUpdate')
-          ? jsonSerialization['onUpdate'] != null
-              ? _i2.ForeignKeyAction.fromJson(
-                  (jsonSerialization['onUpdate'] as int))
-              : null
-          : null,
-      onDelete: jsonSerialization.containsKey('onDelete')
-          ? jsonSerialization['onDelete'] != null
-              ? _i2.ForeignKeyAction.fromJson(
-                  (jsonSerialization['onDelete'] as int))
-              : null
-          : null,
-      matchType: jsonSerialization.containsKey('matchType')
-          ? jsonSerialization['matchType'] != null
-              ? _i2.ForeignKeyMatchType.fromJson(
-                  (jsonSerialization['matchType'] as int))
-              : null
-          : null,
+      onUpdate: jsonSerialization['onUpdate'] == null
+          ? null
+          : _i2.ForeignKeyAction.fromJson(
+              (jsonSerialization['onUpdate'] as int)),
+      onDelete: jsonSerialization['onDelete'] == null
+          ? null
+          : _i2.ForeignKeyAction.fromJson(
+              (jsonSerialization['onDelete'] as int)),
+      matchType: jsonSerialization['matchType'] == null
+          ? null
+          : _i2.ForeignKeyMatchType.fromJson(
+              (jsonSerialization['matchType'] as int)),
     );
   }
 

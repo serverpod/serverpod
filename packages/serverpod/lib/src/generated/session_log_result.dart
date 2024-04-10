@@ -21,8 +21,9 @@ abstract class SessionLogResult extends _i1.SerializableEntity {
 
   factory SessionLogResult.fromJson(Map<String, dynamic> jsonSerialization) {
     return SessionLogResult(
-        sessionLog: (jsonSerialization['sessionLog'] as List<dynamic>)
-            .map((e) => _i2.SessionLogInfo.fromJson(e as Map<String, dynamic>))
+        sessionLog: (jsonSerialization['sessionLog'] as List)
+            .map(
+                (e) => _i2.SessionLogInfo.fromJson((e as Map<String, dynamic>)))
             .toList());
   }
 

@@ -31,13 +31,13 @@ abstract class CityWithLongTableName extends _i1.SerializableEntity {
     return CityWithLongTableName(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      citizens: (jsonSerialization['citizens'] as List<dynamic>?)
+      citizens: (jsonSerialization['citizens'] as List?)
           ?.map((e) =>
-              _i2.PersonWithLongTableName.fromJson(e as Map<String, dynamic>))
+              _i2.PersonWithLongTableName.fromJson((e as Map<String, dynamic>)))
           .toList(),
-      organizations: (jsonSerialization['organizations'] as List<dynamic>?)
+      organizations: (jsonSerialization['organizations'] as List?)
           ?.map((e) => _i2.OrganizationWithLongTableName.fromJson(
-              e as Map<String, dynamic>))
+              (e as Map<String, dynamic>)))
           .toList(),
     );
   }

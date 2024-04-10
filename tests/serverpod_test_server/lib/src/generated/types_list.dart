@@ -11,7 +11,6 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
-import 'package:uuid/uuid_value.dart' as _i4;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class TypesList extends _i1.SerializableEntity {
@@ -49,49 +48,46 @@ abstract class TypesList extends _i1.SerializableEntity {
 
   factory TypesList.fromJson(Map<String, dynamic> jsonSerialization) {
     return TypesList(
-      anInt: (jsonSerialization['anInt'] as List<dynamic>?)
-          ?.map((e) => e as int)
-          .toList(),
-      aBool: (jsonSerialization['aBool'] as List<dynamic>?)
-          ?.map((e) => e as bool)
-          .toList(),
-      aDouble: (jsonSerialization['aDouble'] as List<dynamic>?)
+      anInt:
+          (jsonSerialization['anInt'] as List?)?.map((e) => e as int).toList(),
+      aBool:
+          (jsonSerialization['aBool'] as List?)?.map((e) => e as bool).toList(),
+      aDouble: (jsonSerialization['aDouble'] as List?)
           ?.map((e) => e as double)
           .toList(),
-      aDateTime: (jsonSerialization['aDateTime'] as List<dynamic>?)
-          ?.map((e) => _i1.DateTimeExt.getDateTime<DateTime>(e)!)
+      aDateTime: (jsonSerialization['aDateTime'] as List?)
+          ?.map((e) => _i1.DateTimeExt.fromJson(e))
           .toList(),
-      aString: (jsonSerialization['aString'] as List<dynamic>?)
+      aString: (jsonSerialization['aString'] as List?)
           ?.map((e) => e as String)
           .toList(),
-      aByteData: (jsonSerialization['aByteData'] as List<dynamic>?)
-          ?.map((e) => _i1.ByteDataExt.getByteData<_i2.ByteData>(e)!)
+      aByteData: (jsonSerialization['aByteData'] as List?)
+          ?.map((e) => _i1.ByteDataExt.fromJson(e))
           .toList(),
-      aDuration: (jsonSerialization['aDuration'] as List<dynamic>?)
-          ?.map((e) => _i1.DurationExt.getDuration<Duration>(e)!)
+      aDuration: (jsonSerialization['aDuration'] as List?)
+          ?.map((e) => _i1.DurationExt.fromJson(e))
           .toList(),
-      aUuid: (jsonSerialization['aUuid'] as List<dynamic>?)
-          ?.map((e) => _i1.UuidValueExt.getUuIdValue<_i4.UuidValue>(e)!)
+      aUuid: (jsonSerialization['aUuid'] as List?)
+          ?.map((e) => _i1.UuidValueExt.fromJson(e))
           .toList(),
-      anEnum: (jsonSerialization['anEnum'] as List<dynamic>?)
+      anEnum: (jsonSerialization['anEnum'] as List?)
           ?.map((e) => _i3.TestEnum.fromJson((e as int)))
           .toList(),
-      aStringifiedEnum:
-          (jsonSerialization['aStringifiedEnum'] as List<dynamic>?)
-              ?.map((e) => _i3.TestEnumStringified.fromJson((e as String)))
-              .toList(),
-      anObject: (jsonSerialization['anObject'] as List<dynamic>?)
-          ?.map((e) => _i3.Types.fromJson(e as Map<String, dynamic>))
+      aStringifiedEnum: (jsonSerialization['aStringifiedEnum'] as List?)
+          ?.map((e) => _i3.TestEnumStringified.fromJson((e as String)))
           .toList(),
-      aMap: (jsonSerialization['aMap'] as List<dynamic>?)
+      anObject: (jsonSerialization['anObject'] as List?)
+          ?.map((e) => _i3.Types.fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      aMap: (jsonSerialization['aMap'] as List?)
           ?.map((e) => (e as Map<dynamic, dynamic>).map((k, v) => MapEntry(
                 k as String,
-                _i3.Types.fromJson(v as Map<String, dynamic>),
+                _i3.Types.fromJson((v as Map<String, dynamic>)),
               )))
           .toList(),
-      aList: (jsonSerialization['aList'] as List<dynamic>?)
-          ?.map((e) => (e as List<dynamic>)
-              .map((e) => _i3.Types.fromJson(e as Map<String, dynamic>))
+      aList: (jsonSerialization['aList'] as List?)
+          ?.map((e) => (e as List)
+              .map((e) => _i3.Types.fromJson((e as Map<String, dynamic>)))
               .toList())
           .toList(),
     );

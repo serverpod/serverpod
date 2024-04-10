@@ -31,11 +31,11 @@ abstract class Member extends _i1.TableRow {
     return Member(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      blocking: (jsonSerialization['blocking'] as List<dynamic>?)
-          ?.map((e) => _i2.Blocking.fromJson(e as Map<String, dynamic>))
+      blocking: (jsonSerialization['blocking'] as List?)
+          ?.map((e) => _i2.Blocking.fromJson((e as Map<String, dynamic>)))
           .toList(),
-      blockedBy: (jsonSerialization['blockedBy'] as List<dynamic>?)
-          ?.map((e) => _i2.Blocking.fromJson(e as Map<String, dynamic>))
+      blockedBy: (jsonSerialization['blockedBy'] as List?)
+          ?.map((e) => _i2.Blocking.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }

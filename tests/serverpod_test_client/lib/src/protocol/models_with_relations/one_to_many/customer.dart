@@ -28,8 +28,8 @@ abstract class Customer extends _i1.SerializableEntity {
     return Customer(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      orders: (jsonSerialization['orders'] as List<dynamic>?)
-          ?.map((e) => _i2.Order.fromJson(e as Map<String, dynamic>))
+      orders: (jsonSerialization['orders'] as List?)
+          ?.map((e) => _i2.Order.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }

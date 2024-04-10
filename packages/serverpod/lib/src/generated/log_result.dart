@@ -20,8 +20,8 @@ abstract class LogResult extends _i1.SerializableEntity {
 
   factory LogResult.fromJson(Map<String, dynamic> jsonSerialization) {
     return LogResult(
-        entries: (jsonSerialization['entries'] as List<dynamic>)
-            .map((e) => _i2.LogEntry.fromJson(e as Map<String, dynamic>))
+        entries: (jsonSerialization['entries'] as List)
+            .map((e) => _i2.LogEntry.fromJson((e as Map<String, dynamic>)))
             .toList());
   }
 

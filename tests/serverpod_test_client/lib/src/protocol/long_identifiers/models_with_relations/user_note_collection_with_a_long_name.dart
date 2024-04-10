@@ -29,9 +29,9 @@ abstract class UserNoteCollectionWithALongName extends _i1.SerializableEntity {
     return UserNoteCollectionWithALongName(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      notes: (jsonSerialization['notes'] as List<dynamic>?)
+      notes: (jsonSerialization['notes'] as List?)
           ?.map((e) =>
-              _i2.UserNoteWithALongName.fromJson(e as Map<String, dynamic>))
+              _i2.UserNoteWithALongName.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }

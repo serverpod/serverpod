@@ -29,11 +29,11 @@ abstract class RelationToMultipleMaxFieldName extends _i1.SerializableEntity {
     return RelationToMultipleMaxFieldName(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      multipleMaxFieldNames:
-          (jsonSerialization['multipleMaxFieldNames'] as List<dynamic>?)
-              ?.map((e) =>
-                  _i2.MultipleMaxFieldName.fromJson(e as Map<String, dynamic>))
-              .toList(),
+      multipleMaxFieldNames: (jsonSerialization['multipleMaxFieldNames']
+              as List?)
+          ?.map((e) =>
+              _i2.MultipleMaxFieldName.fromJson((e as Map<String, dynamic>)))
+          .toList(),
     );
   }
 

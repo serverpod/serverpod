@@ -25,8 +25,7 @@ abstract class ObjectWithDuration extends _i1.TableRow {
   factory ObjectWithDuration.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithDuration(
       id: jsonSerialization['id'] as int?,
-      duration:
-          _i1.DurationExt.getDuration<Duration>(jsonSerialization['duration'])!,
+      duration: _i1.DurationExt.fromJson(jsonSerialization['duration']),
     );
   }
 

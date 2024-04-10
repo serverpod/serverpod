@@ -48,7 +48,7 @@ abstract class LogEntry extends _i1.SerializableEntity {
       messageId: jsonSerialization['messageId'] as int?,
       reference: jsonSerialization['reference'] as String?,
       serverId: jsonSerialization['serverId'] as String,
-      time: _i1.DateTimeExt.getDateTime<DateTime>(jsonSerialization['time'])!,
+      time: _i1.DateTimeExt.fromJson(jsonSerialization['time']),
       logLevel: _i2.LogLevel.fromJson((jsonSerialization['logLevel'] as int)),
       message: jsonSerialization['message'] as String,
       error: jsonSerialization['error'] as String?,

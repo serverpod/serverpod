@@ -34,20 +34,17 @@ abstract class ObjectWithEnum extends _i1.SerializableEntity {
     return ObjectWithEnum(
       id: jsonSerialization['id'] as int?,
       testEnum: _i2.TestEnum.fromJson((jsonSerialization['testEnum'] as int)),
-      nullableEnum: jsonSerialization.containsKey('nullableEnum')
-          ? jsonSerialization['nullableEnum'] != null
-              ? _i2.TestEnum.fromJson(
-                  (jsonSerialization['nullableEnum'] as int))
-              : null
-          : null,
-      enumList: (jsonSerialization['enumList'] as List<dynamic>)
+      nullableEnum: jsonSerialization['nullableEnum'] == null
+          ? null
+          : _i2.TestEnum.fromJson((jsonSerialization['nullableEnum'] as int)),
+      enumList: (jsonSerialization['enumList'] as List)
           .map((e) => _i2.TestEnum.fromJson((e as int)))
           .toList(),
-      nullableEnumList: (jsonSerialization['nullableEnumList'] as List<dynamic>)
-          .map((e) => e != null ? _i2.TestEnum.fromJson((e as int)) : null)
+      nullableEnumList: (jsonSerialization['nullableEnumList'] as List)
+          .map((e) => e == null ? null : _i2.TestEnum.fromJson((e as int)))
           .toList(),
-      enumListList: (jsonSerialization['enumListList'] as List<dynamic>)
-          .map((e) => (e as List<dynamic>)
+      enumListList: (jsonSerialization['enumListList'] as List)
+          .map((e) => (e as List)
               .map((e) => _i2.TestEnum.fromJson((e as int)))
               .toList())
           .toList(),

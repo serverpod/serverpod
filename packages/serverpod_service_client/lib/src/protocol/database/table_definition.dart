@@ -44,15 +44,16 @@ abstract class TableDefinition extends _i1.SerializableEntity {
       module: jsonSerialization['module'] as String?,
       schema: jsonSerialization['schema'] as String,
       tableSpace: jsonSerialization['tableSpace'] as String?,
-      columns: (jsonSerialization['columns'] as List<dynamic>)
-          .map((e) => _i2.ColumnDefinition.fromJson(e as Map<String, dynamic>))
+      columns: (jsonSerialization['columns'] as List)
+          .map(
+              (e) => _i2.ColumnDefinition.fromJson((e as Map<String, dynamic>)))
           .toList(),
-      foreignKeys: (jsonSerialization['foreignKeys'] as List<dynamic>)
+      foreignKeys: (jsonSerialization['foreignKeys'] as List)
           .map((e) =>
-              _i2.ForeignKeyDefinition.fromJson(e as Map<String, dynamic>))
+              _i2.ForeignKeyDefinition.fromJson((e as Map<String, dynamic>)))
           .toList(),
-      indexes: (jsonSerialization['indexes'] as List<dynamic>)
-          .map((e) => _i2.IndexDefinition.fromJson(e as Map<String, dynamic>))
+      indexes: (jsonSerialization['indexes'] as List)
+          .map((e) => _i2.IndexDefinition.fromJson((e as Map<String, dynamic>)))
           .toList(),
       managed: jsonSerialization['managed'] as bool?,
     );

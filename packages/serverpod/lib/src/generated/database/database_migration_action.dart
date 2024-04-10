@@ -32,18 +32,14 @@ abstract class DatabaseMigrationAction extends _i1.SerializableEntity {
       type: _i2.DatabaseMigrationActionType.fromJson(
           (jsonSerialization['type'] as String)),
       deleteTable: jsonSerialization['deleteTable'] as String?,
-      alterTable: jsonSerialization.containsKey('alterTable')
-          ? jsonSerialization['alterTable'] != null
-              ? _i2.TableMigration.fromJson(
-                  jsonSerialization['alterTable'] as Map<String, dynamic>)
-              : null
-          : null,
-      createTable: jsonSerialization.containsKey('createTable')
-          ? jsonSerialization['createTable'] != null
-              ? _i2.TableDefinition.fromJson(
-                  jsonSerialization['createTable'] as Map<String, dynamic>)
-              : null
-          : null,
+      alterTable: jsonSerialization['alterTable'] == null
+          ? null
+          : _i2.TableMigration.fromJson(
+              (jsonSerialization['alterTable'] as Map<String, dynamic>)),
+      createTable: jsonSerialization['createTable'] == null
+          ? null
+          : _i2.TableDefinition.fromJson(
+              (jsonSerialization['createTable'] as Map<String, dynamic>)),
     );
   }
 

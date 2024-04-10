@@ -32,19 +32,15 @@ abstract class Blocking extends _i1.TableRow {
     return Blocking(
       id: jsonSerialization['id'] as int?,
       blockedId: jsonSerialization['blockedId'] as int,
-      blocked: jsonSerialization.containsKey('blocked')
-          ? jsonSerialization['blocked'] != null
-              ? _i2.Member.fromJson(
-                  jsonSerialization['blocked'] as Map<String, dynamic>)
-              : null
-          : null,
+      blocked: jsonSerialization['blocked'] == null
+          ? null
+          : _i2.Member.fromJson(
+              (jsonSerialization['blocked'] as Map<String, dynamic>)),
       blockedById: jsonSerialization['blockedById'] as int,
-      blockedBy: jsonSerialization.containsKey('blockedBy')
-          ? jsonSerialization['blockedBy'] != null
-              ? _i2.Member.fromJson(
-                  jsonSerialization['blockedBy'] as Map<String, dynamic>)
-              : null
-          : null,
+      blockedBy: jsonSerialization['blockedBy'] == null
+          ? null
+          : _i2.Member.fromJson(
+              (jsonSerialization['blockedBy'] as Map<String, dynamic>)),
     );
   }
 

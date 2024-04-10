@@ -22,7 +22,7 @@ abstract class SimpleDataMap extends _i1.SerializableEntity {
         data: (jsonSerialization['data'] as Map<dynamic, dynamic>)
             .map((k, v) => MapEntry(
                   k as String,
-                  _i2.SimpleData.fromJson(v as Map<String, dynamic>),
+                  _i2.SimpleData.fromJson((v as Map<String, dynamic>)),
                 )));
   }
 

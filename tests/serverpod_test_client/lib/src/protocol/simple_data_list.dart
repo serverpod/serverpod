@@ -19,8 +19,8 @@ abstract class SimpleDataList extends _i1.SerializableEntity {
 
   factory SimpleDataList.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDataList(
-        rows: (jsonSerialization['rows'] as List<dynamic>)
-            .map((e) => _i2.SimpleData.fromJson(e as Map<String, dynamic>))
+        rows: (jsonSerialization['rows'] as List)
+            .map((e) => _i2.SimpleData.fromJson((e as Map<String, dynamic>)))
             .toList());
   }
 

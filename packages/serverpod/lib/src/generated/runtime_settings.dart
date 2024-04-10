@@ -34,12 +34,11 @@ abstract class RuntimeSettings extends _i1.TableRow {
     return RuntimeSettings(
       id: jsonSerialization['id'] as int?,
       logSettings: _i2.LogSettings.fromJson(
-          jsonSerialization['logSettings'] as Map<String, dynamic>),
-      logSettingsOverrides:
-          (jsonSerialization['logSettingsOverrides'] as List<dynamic>)
-              .map((e) =>
-                  _i2.LogSettingsOverride.fromJson(e as Map<String, dynamic>))
-              .toList(),
+          (jsonSerialization['logSettings'] as Map<String, dynamic>)),
+      logSettingsOverrides: (jsonSerialization['logSettingsOverrides'] as List)
+          .map((e) =>
+              _i2.LogSettingsOverride.fromJson((e as Map<String, dynamic>)))
+          .toList(),
       logServiceCalls: jsonSerialization['logServiceCalls'] as bool,
       logMalformedCalls: jsonSerialization['logMalformedCalls'] as bool,
     );

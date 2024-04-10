@@ -31,12 +31,10 @@ abstract class Comment extends _i1.SerializableEntity {
       id: jsonSerialization['id'] as int?,
       description: jsonSerialization['description'] as String,
       orderId: jsonSerialization['orderId'] as int,
-      order: jsonSerialization.containsKey('order')
-          ? jsonSerialization['order'] != null
-              ? _i2.Order.fromJson(
-                  jsonSerialization['order'] as Map<String, dynamic>)
-              : null
-          : null,
+      order: jsonSerialization['order'] == null
+          ? null
+          : _i2.Order.fromJson(
+              (jsonSerialization['order'] as Map<String, dynamic>)),
     );
   }
 

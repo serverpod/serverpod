@@ -31,11 +31,11 @@ abstract class City extends _i1.TableRow {
     return City(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      citizens: (jsonSerialization['citizens'] as List<dynamic>?)
-          ?.map((e) => _i2.Person.fromJson(e as Map<String, dynamic>))
+      citizens: (jsonSerialization['citizens'] as List?)
+          ?.map((e) => _i2.Person.fromJson((e as Map<String, dynamic>)))
           .toList(),
-      organizations: (jsonSerialization['organizations'] as List<dynamic>?)
-          ?.map((e) => _i2.Organization.fromJson(e as Map<String, dynamic>))
+      organizations: (jsonSerialization['organizations'] as List?)
+          ?.map((e) => _i2.Organization.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }

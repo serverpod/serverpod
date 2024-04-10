@@ -32,19 +32,15 @@ abstract class Enrollment extends _i1.SerializableEntity {
     return Enrollment(
       id: jsonSerialization['id'] as int?,
       studentId: jsonSerialization['studentId'] as int,
-      student: jsonSerialization.containsKey('student')
-          ? jsonSerialization['student'] != null
-              ? _i2.Student.fromJson(
-                  jsonSerialization['student'] as Map<String, dynamic>)
-              : null
-          : null,
+      student: jsonSerialization['student'] == null
+          ? null
+          : _i2.Student.fromJson(
+              (jsonSerialization['student'] as Map<String, dynamic>)),
       courseId: jsonSerialization['courseId'] as int,
-      course: jsonSerialization.containsKey('course')
-          ? jsonSerialization['course'] != null
-              ? _i2.Course.fromJson(
-                  jsonSerialization['course'] as Map<String, dynamic>)
-              : null
-          : null,
+      course: jsonSerialization['course'] == null
+          ? null
+          : _i2.Course.fromJson(
+              (jsonSerialization['course'] as Map<String, dynamic>)),
     );
   }
 

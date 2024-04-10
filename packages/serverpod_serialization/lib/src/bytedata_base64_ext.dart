@@ -21,4 +21,9 @@ extension Base64Dec on String {
       return null;
     }
   }
+
+  /// Returns null safe [ByteData] from an encoded String.
+  ByteData base64DecodedNullSafeByteData() {
+    return ByteData.view(base64Decode(substring(8, length - 12)).buffer);
+  }
 }

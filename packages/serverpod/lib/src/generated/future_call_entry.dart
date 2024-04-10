@@ -35,7 +35,7 @@ abstract class FutureCallEntry extends _i1.TableRow {
     return FutureCallEntry(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      time: _i1.DateTimeExt.getDateTime<DateTime>(jsonSerialization['time'])!,
+      time: _i1.DateTimeExt.fromJson(jsonSerialization['time']),
       serializedObject: jsonSerialization['serializedObject'] as String?,
       serverId: jsonSerialization['serverId'] as String,
       identifier: jsonSerialization['identifier'] as String?,

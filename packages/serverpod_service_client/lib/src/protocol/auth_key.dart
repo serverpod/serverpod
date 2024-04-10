@@ -36,7 +36,7 @@ abstract class AuthKey extends _i1.SerializableEntity {
       userId: jsonSerialization['userId'] as int,
       hash: jsonSerialization['hash'] as String,
       key: jsonSerialization['key'] as String?,
-      scopeNames: (jsonSerialization['scopeNames'] as List<dynamic>)
+      scopeNames: (jsonSerialization['scopeNames'] as List)
           .map((e) => e as String)
           .toList(),
       method: jsonSerialization['method'] as String,

@@ -32,19 +32,15 @@ abstract class Post extends _i1.TableRow {
     return Post(
       id: jsonSerialization['id'] as int?,
       content: jsonSerialization['content'] as String,
-      previous: jsonSerialization.containsKey('previous')
-          ? jsonSerialization['previous'] != null
-              ? _i2.Post.fromJson(
-                  jsonSerialization['previous'] as Map<String, dynamic>)
-              : null
-          : null,
+      previous: jsonSerialization['previous'] == null
+          ? null
+          : _i2.Post.fromJson(
+              (jsonSerialization['previous'] as Map<String, dynamic>)),
       nextId: jsonSerialization['nextId'] as int?,
-      next: jsonSerialization.containsKey('next')
-          ? jsonSerialization['next'] != null
-              ? _i2.Post.fromJson(
-                  jsonSerialization['next'] as Map<String, dynamic>)
-              : null
-          : null,
+      next: jsonSerialization['next'] == null
+          ? null
+          : _i2.Post.fromJson(
+              (jsonSerialization['next'] as Map<String, dynamic>)),
     );
   }
 

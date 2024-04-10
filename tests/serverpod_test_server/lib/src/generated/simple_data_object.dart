@@ -20,7 +20,7 @@ abstract class SimpleDataObject extends _i1.SerializableEntity {
   factory SimpleDataObject.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDataObject(
         object: _i2.SimpleData.fromJson(
-            jsonSerialization['object'] as Map<String, dynamic>));
+            (jsonSerialization['object'] as Map<String, dynamic>)));
   }
 
   _i2.SimpleData object;

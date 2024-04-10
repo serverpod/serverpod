@@ -28,7 +28,7 @@ abstract class CacheInfo extends _i1.SerializableEntity {
     return CacheInfo(
       numEntries: jsonSerialization['numEntries'] as int,
       maxEntries: jsonSerialization['maxEntries'] as int,
-      keys: (jsonSerialization['keys'] as List<dynamic>?)
+      keys: (jsonSerialization['keys'] as List?)
           ?.map((e) => e as String)
           .toList(),
     );

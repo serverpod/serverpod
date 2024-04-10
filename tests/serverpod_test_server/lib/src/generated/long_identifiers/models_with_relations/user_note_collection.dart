@@ -30,8 +30,8 @@ abstract class UserNoteCollection extends _i1.TableRow {
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       userNotesPropertyName:
-          (jsonSerialization['userNotesPropertyName'] as List<dynamic>?)
-              ?.map((e) => _i2.UserNote.fromJson(e as Map<String, dynamic>))
+          (jsonSerialization['userNotesPropertyName'] as List?)
+              ?.map((e) => _i2.UserNote.fromJson((e as Map<String, dynamic>)))
               .toList(),
     );
   }

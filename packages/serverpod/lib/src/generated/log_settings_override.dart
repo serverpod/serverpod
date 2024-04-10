@@ -34,7 +34,7 @@ abstract class LogSettingsOverride extends _i1.SerializableEntity {
       endpoint: jsonSerialization['endpoint'] as String?,
       method: jsonSerialization['method'] as String?,
       logSettings: _i2.LogSettings.fromJson(
-          jsonSerialization['logSettings'] as Map<String, dynamic>),
+          (jsonSerialization['logSettings'] as Map<String, dynamic>)),
     );
   }
 
