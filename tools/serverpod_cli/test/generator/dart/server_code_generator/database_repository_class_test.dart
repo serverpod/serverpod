@@ -486,7 +486,7 @@ void main() {
         test('that returns a future with the base class', () {
           expect(
             deleteMethod?.returnType?.toSource(),
-            contains('Future<List<int>>'),
+            contains('Future<List<$testClassName>>'),
           );
         });
 
@@ -535,7 +535,7 @@ void main() {
 
           expect(
             deleteRowMethod?.returnType?.toSource(),
-            contains('int'),
+            contains(testClassName),
           );
         });
 
@@ -584,7 +584,7 @@ void main() {
 
           expect(
             deleteWhereMethod?.returnType?.toSource(),
-            contains('List<int>'),
+            contains('List<$testClassName>'),
           );
         });
 
