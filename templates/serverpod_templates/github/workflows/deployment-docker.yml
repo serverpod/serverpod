@@ -1,0 +1,121 @@
+# This is a workflow to deploy your Serverpod to a single machine using docker-compose. This is useful for testing and small deployments. For larger deployments, you should use the deployment-aws.yml or deployment-gcp.yml workflows.
+# To reduce the workload on the machine we do not use redis in this deployment. If you want to use redis, you need to add it to the docker-compose file and the serverpod configuration.
+# You need to setup the correct hostnames in the docker-compose-production file AND the serverpod configuration file.
+# Before deploying this workflow, you need to set up the following secrets in your repository settings:
+# GITHUB_TOKEN: A GitHub token with the repo scope
+# SERVERPOD_PASSWORDS: The passwords file for the serverpod (simple copy & paste)
+#
+# ## Server setup ##
+# on your vps / server you need to generate a keypair and add the public key to the authorized_keys file
+## ssh-keygen -t rsa -b 4096
+## cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+# now copy the private key and add it to the secrets in the github repository
+## cat ~/.ssh/id_rsa
+# SSH_PRIVATE_KEY: The private key for the SSH connection which you just 'cat'ed
+# SSH_HOST: The host for the SSH connection -> IP or domain
+# SSH_USER: The user for the SSH connection -> often root
+# DATABASE_PASSWORD_PRODUCTION: The password for the production database
+
+name: Deploy to docker
+on:
+  push:
+    branches: [ deployment-docker-production ]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Target'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - 'production'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  # TODO Update with your GitHub username or organization
+  GHCR_ORG: "<ORGANIZATION>"
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    defaults:
+      run:
+        working-directory: ./projectname_server
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create passwords file
+        working-directory: projectname_server
+        shell: bash
+        env:
+          SERVERPOD_PASSWORDS: ${{ secrets.SERVERPOD_PASSWORDS }}
+        run: |
+          pwd
+          echo "$SERVERPOD_PASSWORDS" > config/passwords.yaml
+          ls config/
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./projectname_server
+          file: ./projectname_server/Dockerfile
+          push: true
+          tags: ghcr.io/${{ env.GHCR_ORG }}/projectname_server:latest
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/arm/v7, linux/arm64/v8
+
+  deploy:
+    needs: build-and-push-image
+    name: deploy to production
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install ssh keys
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+
+      - name: List files in the directory
+        run: ls -la ./projectname_server/
+
+      - name: Run docker-compose
+        run: |
+          docker-compose -f ./projectname_server/docker-compose-production.yaml pull
+          docker-compose -f ./projectname_server/docker-compose-production.yaml up -d
+        env:
+          DOCKER_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
+          DATABASE_PASSWORD_PRODUCTION: ${{ secrets.DATABASE_PASSWORD_PRODUCTION }}
+      - name: cleanup
+        run: rm -rf ~/.ssh
