@@ -1,0 +1,66 @@
+version: "3.7"
+
+services:
+  traefik:
+    restart: on-failure
+    image: traefik:v2.3
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.serverpod-insights.address=:8081" # Serverpod Insights
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=damian@examplepod.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./letsencrypt:/letsencrypt"
+    depends_on:
+      - postgres
+      - serverpod
+
+  postgres:
+    restart: on-failure
+    image: postgres:14.1
+    labels:
+      - "traefik.enable=false" # We typically don't expose databases externally via HTTP
+    ports:
+      - "5432:5432" # You should have a firewall in place that DOES NOT allow acces from the internet on this port. However on the host machine, we need access to it.
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: projectname
+      POSTGRES_PASSWORD: $DATABASE_PASSWORD_PRODUCTION
+    volumes:
+      - projectname_data:/var/lib/postgresql/data
+
+  serverpod:
+    restart: on-failure
+    image: ghcr.io/${GHCR_ORG}/projectname_server:latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`api.examplepod.com`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.service=api-service"
+      - "traefik.http.routers.api.tls.certresolver=myresolver"
+      - "traefik.http.services.api-service.loadbalancer.server.port=8080"
+
+      - "traefik.http.routers.insights.rule=Host(`insights.examplepod.com`)"
+      - "traefik.http.routers.insights.entrypoints=websecure"
+      - "traefik.http.routers.insights.service=insights-service"
+      - "traefik.http.routers.insights.tls.certresolver=myresolver"
+      - "traefik.http.services.insights-service.loadbalancer.server.port=8081"
+
+      - "traefik.http.routers.web.rule=Host(`web.examplepod.com`)"
+      - "traefik.http.routers.web.entrypoints=websecure"
+      - "traefik.http.routers.web.service=web-service"
+      - "traefik.http.routers.web.tls.certresolver=myresolver"
+      - "traefik.http.services.web-service.loadbalancer.server.port=8082"
+    depends_on:
+      - postgres
+
+volumes:
+  projectname_data:
