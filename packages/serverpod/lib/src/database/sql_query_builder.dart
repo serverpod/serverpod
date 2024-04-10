@@ -399,7 +399,8 @@ class DeleteQueryBuilder {
   DeleteQueryBuilder withReturn(Returning returning) {
     switch (returning) {
       case Returning.all:
-        _returningStatement = ' RETURNING *';
+        _returningStatement =
+            ' RETURNING ${_buildColumnAliases(_table.columns)}';
         break;
       case Returning.id:
         _returningStatement = ' RETURNING "${_table.tableName}".id';
@@ -443,12 +444,7 @@ String _buildSelectStatement(
   List<Column> selectColumns, {
   TableRelation? countTableRelation,
 }) {
-  var selectStatements = selectColumns
-      .map((column) => '$column AS "${truncateIdentifier(
-            column.queryAlias,
-            DatabaseConstants.pgsqlMaxNameLimitation,
-          )}"')
-      .join(', ');
+  var selectStatements = _buildColumnAliases(selectColumns);
 
   if (countTableRelation != null) {
     selectStatements +=
@@ -456,6 +452,15 @@ String _buildSelectStatement(
   }
 
   return selectStatements;
+}
+
+String _buildColumnAliases(List<Column> columns) {
+  return columns
+      .map((column) => '$column AS "${truncateIdentifier(
+            column.queryAlias,
+            DatabaseConstants.pgsqlMaxNameLimitation,
+          )}"')
+      .join(', ');
 }
 
 List<Column> _gatherIncludeColumns(Include? include) {
