@@ -281,7 +281,7 @@ class ObjectWithUuidRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<ObjectWithUuid>> delete(
     _i1.Session session,
     List<ObjectWithUuid> rows, {
     _i1.Transaction? transaction,
@@ -292,7 +292,7 @@ class ObjectWithUuidRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<ObjectWithUuid> deleteRow(
     _i1.Session session,
     ObjectWithUuid row, {
     _i1.Transaction? transaction,
@@ -303,7 +303,7 @@ class ObjectWithUuidRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<ObjectWithUuid>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ObjectWithUuidTable> where,
     _i1.Transaction? transaction,

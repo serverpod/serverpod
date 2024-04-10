@@ -360,7 +360,7 @@ class MultipleMaxFieldNameRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<MultipleMaxFieldName>> delete(
     _i1.Session session,
     List<MultipleMaxFieldName> rows, {
     _i1.Transaction? transaction,
@@ -371,7 +371,7 @@ class MultipleMaxFieldNameRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<MultipleMaxFieldName> deleteRow(
     _i1.Session session,
     MultipleMaxFieldName row, {
     _i1.Transaction? transaction,
@@ -382,7 +382,7 @@ class MultipleMaxFieldNameRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<MultipleMaxFieldName>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<MultipleMaxFieldNameTable> where,
     _i1.Transaction? transaction,

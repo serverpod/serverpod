@@ -380,7 +380,7 @@ class LongImplicitIdFieldCollectionRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<LongImplicitIdFieldCollection>> delete(
     _i1.Session session,
     List<LongImplicitIdFieldCollection> rows, {
     _i1.Transaction? transaction,
@@ -391,7 +391,7 @@ class LongImplicitIdFieldCollectionRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<LongImplicitIdFieldCollection> deleteRow(
     _i1.Session session,
     LongImplicitIdFieldCollection row, {
     _i1.Transaction? transaction,
@@ -402,7 +402,7 @@ class LongImplicitIdFieldCollectionRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<LongImplicitIdFieldCollection>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>
         where,

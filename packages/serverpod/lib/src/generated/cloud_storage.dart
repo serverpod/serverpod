@@ -373,7 +373,7 @@ class CloudStorageEntryRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<CloudStorageEntry>> delete(
     _i1.Session session,
     List<CloudStorageEntry> rows, {
     _i1.Transaction? transaction,
@@ -384,7 +384,7 @@ class CloudStorageEntryRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<CloudStorageEntry> deleteRow(
     _i1.Session session,
     CloudStorageEntry row, {
     _i1.Transaction? transaction,
@@ -395,7 +395,7 @@ class CloudStorageEntryRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<CloudStorageEntry>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
     _i1.Transaction? transaction,

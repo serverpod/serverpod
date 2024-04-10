@@ -376,7 +376,7 @@ class ServerHealthMetricRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<ServerHealthMetric>> delete(
     _i1.Session session,
     List<ServerHealthMetric> rows, {
     _i1.Transaction? transaction,
@@ -387,7 +387,7 @@ class ServerHealthMetricRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<ServerHealthMetric> deleteRow(
     _i1.Session session,
     ServerHealthMetric row, {
     _i1.Transaction? transaction,
@@ -398,7 +398,7 @@ class ServerHealthMetricRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<ServerHealthMetric>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ServerHealthMetricTable> where,
     _i1.Transaction? transaction,

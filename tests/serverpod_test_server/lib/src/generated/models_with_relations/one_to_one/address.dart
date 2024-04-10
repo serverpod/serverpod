@@ -330,7 +330,7 @@ class AddressRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<Address>> delete(
     _i1.Session session,
     List<Address> rows, {
     _i1.Transaction? transaction,
@@ -341,7 +341,7 @@ class AddressRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<Address> deleteRow(
     _i1.Session session,
     Address row, {
     _i1.Transaction? transaction,
@@ -352,7 +352,7 @@ class AddressRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<Address>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<AddressTable> where,
     _i1.Transaction? transaction,

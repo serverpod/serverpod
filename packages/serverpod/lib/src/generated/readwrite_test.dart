@@ -263,7 +263,7 @@ class ReadWriteTestEntryRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<ReadWriteTestEntry>> delete(
     _i1.Session session,
     List<ReadWriteTestEntry> rows, {
     _i1.Transaction? transaction,
@@ -274,7 +274,7 @@ class ReadWriteTestEntryRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<ReadWriteTestEntry> deleteRow(
     _i1.Session session,
     ReadWriteTestEntry row, {
     _i1.Transaction? transaction,
@@ -285,7 +285,7 @@ class ReadWriteTestEntryRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<ReadWriteTestEntry>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> where,
     _i1.Transaction? transaction,

@@ -307,7 +307,7 @@ class EmailResetRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<EmailReset>> delete(
     _i1.Session session,
     List<EmailReset> rows, {
     _i1.Transaction? transaction,
@@ -318,7 +318,7 @@ class EmailResetRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<EmailReset> deleteRow(
     _i1.Session session,
     EmailReset row, {
     _i1.Transaction? transaction,
@@ -329,7 +329,7 @@ class EmailResetRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<EmailReset>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<EmailResetTable> where,
     _i1.Transaction? transaction,
