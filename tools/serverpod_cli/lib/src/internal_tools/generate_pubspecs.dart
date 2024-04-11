@@ -23,7 +23,7 @@ void performGeneratePubspecs(String version, String mode) {
 
   var sharedReplacements = [
     Replacement(
-      slotName: 'VERSION',
+      slotName: 'SERVERPOD_VERSION',
       replacement: version,
     ),
     Replacement(

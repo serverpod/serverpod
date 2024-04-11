@@ -11,7 +11,7 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  serverpod_client: VERSION
+  serverpod_client: SERVERPOD_VERSION
 
 dev_dependencies:
   lints: ^3.0.0

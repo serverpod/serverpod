@@ -7,9 +7,9 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  serverpod: VERSION
-  serverpod_auth_server: VERSION
-  serverpod_chat_server: VERSION
+  serverpod: SERVERPOD_VERSION
+  serverpod_auth_server: SERVERPOD_VERSION
+  serverpod_chat_server: SERVERPOD_VERSION
 
 dev_dependencies:
   lints: ^3.0.0

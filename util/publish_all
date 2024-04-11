@@ -23,7 +23,7 @@ echo "### START PUBLISHING"
 echo "Base directory $BASE"
 echo "Start at package $PCOUNT_START"
 
-VERSION=`cat VERSION`
+VERSION=`cat SERVERPOD_VERSION`
 VERSION=$VERSION | xargs
 
 if test -z "$VERSION"

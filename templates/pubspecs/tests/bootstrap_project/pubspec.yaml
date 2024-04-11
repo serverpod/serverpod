@@ -9,14 +9,14 @@ environment:
   sdk: ">=3.0.0 <4.0.0"
 dependencies:
   http: ">=0.13.0 <2.0.0"
-  serverpod: VERSION
+  serverpod: SERVERPOD_VERSION
   uuid: ^4.0.0
 
 dev_dependencies:
   lints: ^3.0.0
   test: ^1.24.2
   path: ^1.8.2
-  serverpod_cli: VERSION
+  serverpod_cli: SERVERPOD_VERSION
 
 dependency_overrides:
   serverpod:

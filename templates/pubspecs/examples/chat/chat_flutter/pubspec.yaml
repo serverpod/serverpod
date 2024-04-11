@@ -27,11 +27,11 @@ dependencies:
   flutter:
     sdk: flutter
   made_with_serverpod: ^1.0.0
-  serverpod_auth_email_flutter: VERSION
-  serverpod_auth_shared_flutter: VERSION
-  serverpod_chat_flutter: VERSION
-  serverpod_client: VERSION
-  serverpod_flutter: VERSION
+  serverpod_auth_email_flutter: SERVERPOD_VERSION
+  serverpod_auth_shared_flutter: SERVERPOD_VERSION
+  serverpod_chat_flutter: SERVERPOD_VERSION
+  serverpod_client: SERVERPOD_VERSION
+  serverpod_flutter: SERVERPOD_VERSION
   chat_client:
     path: ../chat_client
 

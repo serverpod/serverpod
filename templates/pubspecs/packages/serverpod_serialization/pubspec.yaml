@@ -1,7 +1,7 @@
 # TEMPLATE
 
 name: serverpod_serialization
-version: VERSION
+version: SERVERPOD_VERSION
 description: Serialization package for Serverpod.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
@@ -15,7 +15,7 @@ dependencies:
   uuid: ^4.0.0
 
 dev_dependencies:
-  serverpod_lints: VERSION
+  serverpod_lints: SERVERPOD_VERSION
   test: ^1.24.2
 
 dependency_overrides:

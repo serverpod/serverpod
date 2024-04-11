@@ -1,7 +1,7 @@
 # TEMPLATE
 
 name: serverpod_client
-version: VERSION
+version: SERVERPOD_VERSION
 description: Base classes for communication with the server.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
@@ -11,13 +11,13 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  serverpod_serialization: VERSION
+  serverpod_serialization: SERVERPOD_VERSION
   http: ">=0.13.0 <2.0.0"
   meta: ^1.8.0
   web_socket_channel: ^2.4.0
 
 dev_dependencies:
-  serverpod_lints: VERSION
+  serverpod_lints: SERVERPOD_VERSION
   test: ^1.24.2
 
 dependency_overrides:

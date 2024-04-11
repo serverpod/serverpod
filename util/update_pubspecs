@@ -6,7 +6,7 @@ if [ ! -f tests/docker/tests_single_server/docker-compose.yml ]; then
     exit 1
 fi
 
-VERSION=`cat VERSION`
+VERSION=`cat SERVERPOD_VERSION`
 VERSION=$VERSION | xargs
 
 BASE=`pwd`
