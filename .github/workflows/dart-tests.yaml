@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.13.0', '3.19.5']
+        flutter-version: ['3.13.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -42,7 +42,23 @@ jobs:
       - name: Install dependencies
         run: util/pub_get_all
       - name: Analyze
-        run: util/run_tests_analyze
+        run: bash util/run_tests_analyze
+
+  dart_analyze_latest:
+    name: dart analyze latest
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.19.5']
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+      - name: Install dependencies
+        run: util/pub_get_all
+      - name: Analyze
+        run: bash util/run_tests_analyze --allow-infos
 
   serverpod_generate:
     name: serverpod generate

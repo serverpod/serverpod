@@ -61,7 +61,7 @@ declare -a projectPaths=(
 
 exit_code=0
 
-echo "### Running dart analyze with log level '$LOG_LEVEL' ###"
+echo "### Running dart analyze with log level '$LOG_LEVEL'"
 for i in "${projectPaths[@]}"
 do
    dart analyze $LOG_LEVEL $i
