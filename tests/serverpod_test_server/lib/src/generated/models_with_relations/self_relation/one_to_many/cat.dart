@@ -401,7 +401,7 @@ class CatRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<Cat>> delete(
     _i1.Session session,
     List<Cat> rows, {
     _i1.Transaction? transaction,
@@ -412,7 +412,7 @@ class CatRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<Cat> deleteRow(
     _i1.Session session,
     Cat row, {
     _i1.Transaction? transaction,
@@ -423,7 +423,7 @@ class CatRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<Cat>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<CatTable> where,
     _i1.Transaction? transaction,

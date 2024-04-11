@@ -264,7 +264,7 @@ class SimpleDataRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<SimpleData>> delete(
     _i1.Session session,
     List<SimpleData> rows, {
     _i1.Transaction? transaction,
@@ -275,7 +275,7 @@ class SimpleDataRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<SimpleData> deleteRow(
     _i1.Session session,
     SimpleData row, {
     _i1.Transaction? transaction,
@@ -286,7 +286,7 @@ class SimpleDataRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<SimpleData>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<SimpleDataTable> where,
     _i1.Transaction? transaction,

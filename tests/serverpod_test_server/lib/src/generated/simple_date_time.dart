@@ -263,7 +263,7 @@ class SimpleDateTimeRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<SimpleDateTime>> delete(
     _i1.Session session,
     List<SimpleDateTime> rows, {
     _i1.Transaction? transaction,
@@ -274,7 +274,7 @@ class SimpleDateTimeRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<SimpleDateTime> deleteRow(
     _i1.Session session,
     SimpleDateTime row, {
     _i1.Transaction? transaction,
@@ -285,7 +285,7 @@ class SimpleDateTimeRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<SimpleDateTime>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<SimpleDateTimeTable> where,
     _i1.Transaction? transaction,

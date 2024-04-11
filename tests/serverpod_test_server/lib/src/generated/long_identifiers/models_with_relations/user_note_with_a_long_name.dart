@@ -308,7 +308,7 @@ class UserNoteWithALongNameRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<UserNoteWithALongName>> delete(
     _i1.Session session,
     List<UserNoteWithALongName> rows, {
     _i1.Transaction? transaction,
@@ -319,7 +319,7 @@ class UserNoteWithALongNameRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<UserNoteWithALongName> deleteRow(
     _i1.Session session,
     UserNoteWithALongName row, {
     _i1.Transaction? transaction,
@@ -330,7 +330,7 @@ class UserNoteWithALongNameRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<UserNoteWithALongName>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<UserNoteWithALongNameTable> where,
     _i1.Transaction? transaction,

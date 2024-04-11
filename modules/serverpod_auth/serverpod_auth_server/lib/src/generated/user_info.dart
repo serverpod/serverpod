@@ -423,7 +423,7 @@ class UserInfoRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<UserInfo>> delete(
     _i1.Session session,
     List<UserInfo> rows, {
     _i1.Transaction? transaction,
@@ -434,7 +434,7 @@ class UserInfoRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<UserInfo> deleteRow(
     _i1.Session session,
     UserInfo row, {
     _i1.Transaction? transaction,
@@ -445,7 +445,7 @@ class UserInfoRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<UserInfo>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<UserInfoTable> where,
     _i1.Transaction? transaction,

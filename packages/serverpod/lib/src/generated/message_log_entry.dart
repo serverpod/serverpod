@@ -462,7 +462,7 @@ class MessageLogEntryRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<MessageLogEntry>> delete(
     _i1.Session session,
     List<MessageLogEntry> rows, {
     _i1.Transaction? transaction,
@@ -473,7 +473,7 @@ class MessageLogEntryRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<MessageLogEntry> deleteRow(
     _i1.Session session,
     MessageLogEntry row, {
     _i1.Transaction? transaction,
@@ -484,7 +484,7 @@ class MessageLogEntryRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<MessageLogEntry>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
     _i1.Transaction? transaction,

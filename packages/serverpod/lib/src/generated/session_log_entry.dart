@@ -538,7 +538,7 @@ class SessionLogEntryRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<SessionLogEntry>> delete(
     _i1.Session session,
     List<SessionLogEntry> rows, {
     _i1.Transaction? transaction,
@@ -549,7 +549,7 @@ class SessionLogEntryRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<SessionLogEntry> deleteRow(
     _i1.Session session,
     SessionLogEntry row, {
     _i1.Transaction? transaction,
@@ -560,7 +560,7 @@ class SessionLogEntryRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<SessionLogEntry>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<SessionLogEntryTable> where,
     _i1.Transaction? transaction,

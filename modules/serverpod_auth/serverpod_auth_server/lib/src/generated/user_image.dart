@@ -305,7 +305,7 @@ class UserImageRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<UserImage>> delete(
     _i1.Session session,
     List<UserImage> rows, {
     _i1.Transaction? transaction,
@@ -316,7 +316,7 @@ class UserImageRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<UserImage> deleteRow(
     _i1.Session session,
     UserImage row, {
     _i1.Transaction? transaction,
@@ -327,7 +327,7 @@ class UserImageRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<UserImage>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<UserImageTable> where,
     _i1.Transaction? transaction,

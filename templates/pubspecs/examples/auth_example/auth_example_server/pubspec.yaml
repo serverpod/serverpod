@@ -6,12 +6,12 @@ description: Starting point for a Serverpod server.
 # homepage: https://www.example.com
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: DART_VERSION
 
 dependencies:
   mailer: ^6.0.1
-  serverpod: VERSION
-  serverpod_auth_server: VERSION
+  serverpod: SERVERPOD_VERSION
+  serverpod_auth_server: SERVERPOD_VERSION
 
 dev_dependencies:
   lints: ^3.0.0

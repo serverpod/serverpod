@@ -284,7 +284,7 @@ class MethodInfoRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<MethodInfo>> delete(
     _i1.Session session,
     List<MethodInfo> rows, {
     _i1.Transaction? transaction,
@@ -295,7 +295,7 @@ class MethodInfoRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<MethodInfo> deleteRow(
     _i1.Session session,
     MethodInfo row, {
     _i1.Transaction? transaction,
@@ -306,7 +306,7 @@ class MethodInfoRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<MethodInfo>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<MethodInfoTable> where,
     _i1.Transaction? transaction,

@@ -400,7 +400,7 @@ class OrderRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<Order>> delete(
     _i1.Session session,
     List<Order> rows, {
     _i1.Transaction? transaction,
@@ -411,7 +411,7 @@ class OrderRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<Order> deleteRow(
     _i1.Session session,
     Order row, {
     _i1.Transaction? transaction,
@@ -422,7 +422,7 @@ class OrderRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<Order>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<OrderTable> where,
     _i1.Transaction? transaction,

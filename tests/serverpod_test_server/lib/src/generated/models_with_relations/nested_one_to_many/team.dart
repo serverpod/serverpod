@@ -401,7 +401,7 @@ class TeamRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<Team>> delete(
     _i1.Session session,
     List<Team> rows, {
     _i1.Transaction? transaction,
@@ -412,7 +412,7 @@ class TeamRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<Team> deleteRow(
     _i1.Session session,
     Team row, {
     _i1.Transaction? transaction,
@@ -423,7 +423,7 @@ class TeamRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<Team>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<TeamTable> where,
     _i1.Transaction? transaction,

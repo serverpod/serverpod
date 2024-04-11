@@ -637,7 +637,8 @@ void main() {
           .withReturn(Returning.all)
           .build();
 
-      expect(query, 'DELETE FROM "citizen" RETURNING *');
+      expect(query,
+          'DELETE FROM "citizen" RETURNING "citizen"."id" AS "citizen.id"');
     });
 
     test('when query return id is build then the output is a return id query.',
@@ -718,7 +719,7 @@ void main() {
           .build();
 
       expect(query,
-          'DELETE FROM "citizen" USING "company" AS "citizen_company_company" WHERE "citizen_company_company"."name" = \'Serverpod\' AND "citizen"."companyId" = "citizen_company_company"."id" RETURNING *');
+          'DELETE FROM "citizen" USING "company" AS "citizen_company_company" WHERE "citizen_company_company"."name" = \'Serverpod\' AND "citizen"."companyId" = "citizen_company_company"."id" RETURNING "citizen"."id" AS "citizen.id"');
     });
 
     test(
