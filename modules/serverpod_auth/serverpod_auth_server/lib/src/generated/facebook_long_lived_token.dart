@@ -329,7 +329,7 @@ class FacebookLongLivedTokenRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<FacebookLongLivedToken>> delete(
     _i1.Session session,
     List<FacebookLongLivedToken> rows, {
     _i1.Transaction? transaction,
@@ -340,7 +340,7 @@ class FacebookLongLivedTokenRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<FacebookLongLivedToken> deleteRow(
     _i1.Session session,
     FacebookLongLivedToken row, {
     _i1.Transaction? transaction,
@@ -351,7 +351,7 @@ class FacebookLongLivedTokenRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<FacebookLongLivedToken>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<FacebookLongLivedTokenTable> where,
     _i1.Transaction? transaction,
