@@ -6,7 +6,12 @@ import '../create/copier.dart';
 
 /// The internal tool for generating the pubspec.yaml files in the Serverpod
 /// repo.
-void performGeneratePubspecs(String version, String mode) {
+void performGeneratePubspecs({
+  required String version,
+  required String dartVersion,
+  required String flutterVersion,
+  required String mode,
+}) {
   // Verify that we are in the serverpod directory
   var dirPackages = Directory('packages');
   var dirTemplates = Directory('templates/pubspecs');
@@ -25,6 +30,14 @@ void performGeneratePubspecs(String version, String mode) {
     Replacement(
       slotName: 'SERVERPOD_VERSION',
       replacement: version,
+    ),
+    Replacement(
+      slotName: 'DART_VERSION',
+      replacement: dartVersion,
+    ),
+    Replacement(
+      slotName: 'FLUTTER_VERSION',
+      replacement: flutterVersion,
     ),
     Replacement(
       slotName: '# TEMPLATE',
