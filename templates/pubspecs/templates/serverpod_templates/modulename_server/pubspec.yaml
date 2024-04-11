@@ -2,7 +2,7 @@ name: modulename_server
 description: Starting point for a Serverpod module.
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: DART_VERSION
 
 dependencies:
   serverpod: SERVERPOD_VERSION

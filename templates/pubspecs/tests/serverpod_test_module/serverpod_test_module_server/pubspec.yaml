@@ -8,7 +8,7 @@ description: A simple Serverpod module.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: DART_VERSION
 
 dependencies:
   serverpod: SERVERPOD_VERSION
