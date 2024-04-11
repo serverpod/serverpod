@@ -21,22 +21,26 @@ void performGeneratePubspecs(String version, String mode) {
 
   log.info('Doing some fancy generation');
 
+  var sharedReplacements = [
+    Replacement(
+      slotName: 'VERSION',
+      replacement: version,
+    ),
+    Replacement(
+      slotName: '# TEMPLATE',
+      replacement:
+          '# This file is generated. Do not modify, instead edit the files '
+          'in the templates/pubspecs directory.\n# Mode: $mode',
+    ),
+  ];
+
   if (mode == 'development') {
     // Development mode
     var copier = Copier(
       srcDir: dirTemplates,
       dstDir: dirRoot,
       replacements: [
-        Replacement(
-          slotName: 'VERSION',
-          replacement: version,
-        ),
-        Replacement(
-          slotName: '# TEMPLATE',
-          replacement:
-              '# This file is generated. Do not modify, instead edit the files '
-              'in the templates/pubspecs directory.\n# Mode: $mode',
-        ),
+        ...sharedReplacements,
         Replacement(
           slotName: 'PRODUCTION_MODE',
           replacement: 'false',
@@ -55,15 +59,7 @@ void performGeneratePubspecs(String version, String mode) {
       srcDir: dirTemplates,
       dstDir: dirRoot,
       replacements: [
-        Replacement(
-          slotName: 'VERSION',
-          replacement: version,
-        ),
-        Replacement(
-          slotName: '# TEMPLATE',
-          replacement:
-              '# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.\n# Mode: $mode',
-        ),
+        ...sharedReplacements,
         Replacement(
           slotName: 'PRODUCTION_MODE',
           replacement: 'true',
