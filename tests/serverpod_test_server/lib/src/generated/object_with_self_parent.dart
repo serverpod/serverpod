@@ -258,7 +258,7 @@ class ObjectWithSelfParentRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<ObjectWithSelfParent>> delete(
     _i1.Session session,
     List<ObjectWithSelfParent> rows, {
     _i1.Transaction? transaction,
@@ -269,7 +269,7 @@ class ObjectWithSelfParentRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<ObjectWithSelfParent> deleteRow(
     _i1.Session session,
     ObjectWithSelfParent row, {
     _i1.Transaction? transaction,
@@ -280,7 +280,7 @@ class ObjectWithSelfParentRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<ObjectWithSelfParent>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ObjectWithSelfParentTable> where,
     _i1.Transaction? transaction,

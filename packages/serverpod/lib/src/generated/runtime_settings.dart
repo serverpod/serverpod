@@ -334,7 +334,7 @@ class RuntimeSettingsRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<RuntimeSettings>> delete(
     _i1.Session session,
     List<RuntimeSettings> rows, {
     _i1.Transaction? transaction,
@@ -345,7 +345,7 @@ class RuntimeSettingsRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<RuntimeSettings> deleteRow(
     _i1.Session session,
     RuntimeSettings row, {
     _i1.Transaction? transaction,
@@ -356,7 +356,7 @@ class RuntimeSettingsRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<RuntimeSettings>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
     _i1.Transaction? transaction,

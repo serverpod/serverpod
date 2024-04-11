@@ -39,13 +39,14 @@ void main() async {
         Enrollment(studentId: students[2].id!, courseId: courses[1].id!),
       ]);
 
-      var deletedStudentIds = await Student.db.deleteWhere(
+      var deletedStudents = await Student.db.deleteWhere(
         session,
         // All students enrolled to more than one course.
         where: (s) => s.enrollments.count() > 1,
       );
 
-      expect(deletedStudentIds, hasLength(2));
+      expect(deletedStudents, hasLength(2));
+      var deletedStudentIds = deletedStudents.map((c) => c.id).toList();
       expect(
           deletedStudentIds,
           containsAll([
@@ -86,16 +87,18 @@ void main() async {
         Enrollment(studentId: students[3].id!, courseId: courses[5].id!),
       ]);
 
-      var deletedStudentIds = await Student.db.deleteWhere(
+      var deletedStudents = await Student.db.deleteWhere(
         session,
         // Fetch all students enrolled to more than one level 2 course.
         where: (s) =>
             s.enrollments.count((e) => e.course.name.ilike('level 2:%')) > 1,
       );
 
-      expect(deletedStudentIds, [
+      expect(deletedStudents, hasLength(1));
+      expect(
+        deletedStudents.firstOrNull?.id,
         students[3].id, // Lisa
-      ]);
+      );
     });
 
     test(
@@ -130,13 +133,14 @@ void main() async {
         Enrollment(studentId: students[3].id!, courseId: courses[5].id!),
       ]);
 
-      var deletedStudentIds = await Student.db.deleteWhere(
+      var deletedStudents = await Student.db.deleteWhere(
         session,
         // All students enrolled to more than two courses or is named Alex.
         where: (s) => (s.enrollments.count() > 2) | s.name.equals('Alex'),
       );
 
-      expect(deletedStudentIds, hasLength(2));
+      expect(deletedStudents, hasLength(2));
+      var deletedStudentIds = deletedStudents.map((c) => c.id).toList();
       expect(
           deletedStudentIds,
           containsAll([
@@ -174,13 +178,14 @@ void main() async {
         Enrollment(studentId: students[3].id!, courseId: courses[2].id!),
       ]);
 
-      var deletedStudentIds = await Student.db.deleteWhere(
+      var deletedStudents = await Student.db.deleteWhere(
         session,
         // All students enrolled to more than one course but less than three courses.
         where: (s) => (s.enrollments.count() > 1) & (s.enrollments.count() < 3),
       );
 
-      expect(deletedStudentIds, hasLength(2));
+      expect(deletedStudents, hasLength(2));
+      var deletedStudentIds = deletedStudents.map((c) => c.id).toList();
       expect(
           deletedStudentIds,
           containsAll([
@@ -225,7 +230,7 @@ void main() async {
         Enrollment(studentId: students[4].id!, courseId: courses[3].id!),
       ]);
 
-      var deletedStudentIds = await Student.db.deleteWhere(
+      var deletedStudents = await Student.db.deleteWhere(
         session,
         // All students enrolled to more than one level 2 course or more than two level 1 courses.
         where: (s) =>
@@ -233,7 +238,8 @@ void main() async {
             (s.enrollments.count((e) => e.course.name.ilike('level 1:%')) > 2),
       );
 
-      expect(deletedStudentIds, hasLength(2));
+      expect(deletedStudents, hasLength(2));
+      var deletedStudentIds = deletedStudents.map((c) => c.id).toList();
       expect(
           deletedStudentIds,
           containsAll([

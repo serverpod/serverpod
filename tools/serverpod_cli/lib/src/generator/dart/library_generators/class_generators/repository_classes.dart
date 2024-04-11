@@ -639,7 +639,15 @@ class BuildRepositoryClass {
         ..returns = TypeReference(
           (r) => r
             ..symbol = 'Future'
-            ..types.add((refer('List<int>'))),
+            ..types.add(TypeReference(
+              (r) => r
+                ..symbol = 'List'
+                ..types.add(
+                  TypeReference(
+                    (r) => r..symbol = className,
+                  ),
+                ),
+            )),
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
@@ -681,7 +689,9 @@ class BuildRepositoryClass {
         ..returns = TypeReference(
           (r) => r
             ..symbol = 'Future'
-            ..types.add((refer('int'))),
+            ..types.add(TypeReference(
+              (r) => r..symbol = className,
+            )),
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
@@ -723,7 +733,15 @@ class BuildRepositoryClass {
         ..returns = TypeReference(
           (r) => r
             ..symbol = 'Future'
-            ..types.add((refer('List<int>'))),
+            ..types.add(TypeReference(
+              (r) => r
+                ..symbol = 'List'
+                ..types.add(
+                  TypeReference(
+                    (r) => r..symbol = className,
+                  ),
+                ),
+            )),
         )
         ..requiredParameters.addAll([
           Parameter((p) => p

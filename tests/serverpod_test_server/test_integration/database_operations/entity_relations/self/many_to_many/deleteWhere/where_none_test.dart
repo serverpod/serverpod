@@ -36,12 +36,13 @@ void main() async {
           Blocking(blockedById: member[2].id!, blockedId: member[0].id!),
         ]);
 
-        var deletedIds = await Member.db.deleteWhere(
+        var deleted = await Member.db.deleteWhere(
           session,
           where: (t) => t.blocking.none(),
         );
 
-        expect(deletedIds, containsAll([member[3].id!]));
+        expect(deleted, hasLength(1));
+        expect(deleted.firstOrNull?.id, member[3].id!);
       },
     );
 
@@ -69,14 +70,15 @@ void main() async {
           Blocking(blockedById: member[2].id!, blockedId: member[0].id!),
         ]);
 
-        var deletedIds = await Member.db.deleteWhere(
+        var deleted = await Member.db.deleteWhere(
           session,
           where: (t) => t.blocking.none(
             (c) => c.blockedId.equals(member[0].id!),
           ),
         );
 
-        expect(deletedIds, hasLength(2));
+        expect(deleted, hasLength(2));
+        var deletedIds = deleted.map((c) => c.id).toList();
         expect(deletedIds, [member[0].id!, member[3].id!]);
       },
     );
@@ -102,12 +104,13 @@ void main() async {
           Blocking(blockedById: member[1].id!, blockedId: member[2].id!),
         ]);
 
-        var deletedIds = await Member.db.deleteWhere(
+        var deleted = await Member.db.deleteWhere(
           session,
           where: (t) => t.blocking.none() | t.name.equals('Member3'),
         );
 
-        expect(deletedIds, hasLength(2));
+        expect(deleted, hasLength(2));
+        var deletedIds = deleted.map((c) => c.id).toList();
         expect(deletedIds, containsAll([member[2].id!, member[3].id!]));
       },
     );
@@ -136,14 +139,15 @@ void main() async {
           Blocking(blockedById: member[2].id!, blockedId: member[0].id!),
         ]);
 
-        var deletedIds = await Member.db.deleteWhere(
+        var deleted = await Member.db.deleteWhere(
           session,
           where: (t) =>
               t.blocking.none((o) => o.blocked.name.ilike('%3')) |
               t.blockedBy.none((o) => o.blockedBy.name.ilike('%1')),
         );
 
-        expect(deletedIds, hasLength(3));
+        expect(deleted, hasLength(3));
+        var deletedIds = deleted.map((c) => c.id).toList();
         expect(deletedIds, [member[0].id!, member[2].id!, member[3].id!]);
       },
     );

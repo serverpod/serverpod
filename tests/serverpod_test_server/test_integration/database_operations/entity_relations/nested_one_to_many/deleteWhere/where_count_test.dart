@@ -42,15 +42,17 @@ void main() async {
       // Attach Isak to Bulls
       await Team.db.attachRow.players(session, teams[1], players[2]);
 
-      var deletedArenaIds = await Arena.db.deleteWhere(
+      var deletedArenas = await Arena.db.deleteWhere(
         session,
         // Delete all arenas with teams that have more than one player.
         where: (a) => a.team.players.count() > 1,
       );
 
-      expect(deletedArenaIds, [
+      expect(deletedArenas, hasLength(1));
+      expect(
+        deletedArenas.firstOrNull?.id,
         arenas[0].id, // Eagle Stadium
-      ]);
+      );
     });
 
     test(
@@ -81,15 +83,17 @@ void main() async {
       // Attach Isak And Alice to Bulls
       await Team.db.attach.players(session, teams[1], players.sublist(3, 5));
 
-      var deletedArenaIds = await Arena.db.deleteWhere(
+      var deletedArenas = await Arena.db.deleteWhere(
         session,
         // Delete all arenas with teams that have more than one player with a name starting with a.
         where: (a) => a.team.players.count((p) => p.name.ilike('a%')) > 1,
       );
 
-      expect(deletedArenaIds, [
+      expect(deletedArenas, hasLength(1));
+      expect(
+        deletedArenas.firstOrNull?.id,
         arenas[0].id, // Eagle Stadium
-      ]);
+      );
     });
   });
 }
