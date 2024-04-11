@@ -208,9 +208,15 @@ class ChatInputState extends State<ChatInput> {
         });
       }
 
-      var bytes = result.files.first.bytes;
+      var stream = result.files.first.readStream;
+      // var stream = result.openRead();
+      Uint8List? bytes;
+      if (stream == null) {
+        bytes = result.files.first.bytes;
+        // bytes = await result.readAsBytes();
+      }
 
-      if (bytes == null) {
+      if (stream == null && bytes == null) {
         _uploadCancelled();
         return;
       }
@@ -223,7 +229,14 @@ class ChatInputState extends State<ChatInput> {
       }
 
       var uploader = FileUploader(uploadDescription.uploadDescription);
-      await uploader.uploadUint8List(bytes);
+      if (stream != null) {
+        await uploader.upload(stream, result.files.first.size);
+      } else if (bytes != null) {
+        await uploader.uploadByteData(ByteData.view(bytes.buffer));
+      } else {
+        _uploadCancelled();
+        return;
+      }
 
       var attachment = await widget.controller.module.chat
           .verifyAttachmentUpload(fileName, uploadDescription.filePath);
