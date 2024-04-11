@@ -7,7 +7,8 @@ if [ ! -f tests/docker/tests_single_server/docker-compose.yml ]; then
 fi
 
 VERSION=`cat SERVERPOD_VERSION`
-VERSION=$VERSION | xargs
+DART_VERSION=`cat DART_VERSION`
+FLUTTER_VERSION=`cat FLUTTER_VERSION`
 
 BASE=`pwd`
 CLI_DIR=$BASE/tools/serverpod_cli
@@ -18,9 +19,9 @@ cd $CLI_DIR
 dart pub get
 cd $BASE
 
-echo "Update all pubspecs. Version is $VERSION."
+echo "Update all pubspecs. Version is $VERSION (Dart version: $DART_VERSION, Flutter version: $FLUTTER_VERSION)."
 
-dart $CLI generate-pubspecs --version $VERSION --mode development
+dart $CLI generate-pubspecs --version "$VERSION" --dart-version "$DART_VERSION" --flutter-version "$FLUTTER_VERSION" --mode development
 
 echo "Copying CHANGELOG.md"
 cp CHANGELOG.md packages/serverpod/CHANGELOG.md
