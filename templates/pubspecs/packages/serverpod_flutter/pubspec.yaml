@@ -2,25 +2,25 @@
 
 name: serverpod_flutter
 description: Flutter specific utilities for Serverpod.
-version: VERSION
+version: SERVERPOD_VERSION
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
-  flutter: ">=3.10.0"
+  sdk: DART_VERSION
+  flutter: FLUTTER_VERSION
 
 dependencies:
   connectivity_plus: ^5.0.0
-  serverpod_client: VERSION
+  serverpod_client: SERVERPOD_VERSION
   flutter:
     sdk: flutter
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_lints: VERSION
+  serverpod_lints: SERVERPOD_VERSION
 
 dependency_overrides:
   serverpod_client:

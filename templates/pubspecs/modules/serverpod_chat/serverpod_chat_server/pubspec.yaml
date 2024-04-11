@@ -2,22 +2,22 @@
 
 name: serverpod_chat_server
 description: Serverpod chat server module.
-version: VERSION
+version: SERVERPOD_VERSION
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: DART_VERSION
 
 dependencies:
-  serverpod: VERSION
-  serverpod_auth_server: VERSION
-  serverpod_serialization: VERSION
+  serverpod: SERVERPOD_VERSION
+  serverpod_auth_server: SERVERPOD_VERSION
+  serverpod_serialization: SERVERPOD_VERSION
   http: ">=0.13.0 <2.0.0"
   image: ^4.0.15
   path: ^1.8.2
 
 dev_dependencies:
-  serverpod_lints: VERSION
+  serverpod_lints: SERVERPOD_VERSION
 
 dependency_overrides:
   serverpod:
