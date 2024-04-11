@@ -4,7 +4,7 @@ name: auth_example_client
 description: Starting point for a Serverpod client.
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: DART_VERSION
 
 dependencies:
   serverpod_client: SERVERPOD_VERSION 
