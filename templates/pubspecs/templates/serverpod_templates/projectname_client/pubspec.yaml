@@ -2,10 +2,10 @@ name: projectname_client
 description: Starting point for a Serverpod client.
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: DART_VERSION
 
 dependencies:
-  serverpod_client: VERSION
+  serverpod_client: SERVERPOD_VERSION
 
 dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
   serverpod_client: #--CONDITIONALLY_REMOVE_LINE--#

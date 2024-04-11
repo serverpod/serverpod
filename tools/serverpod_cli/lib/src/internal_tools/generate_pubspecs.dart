@@ -6,7 +6,12 @@ import '../create/copier.dart';
 
 /// The internal tool for generating the pubspec.yaml files in the Serverpod
 /// repo.
-void performGeneratePubspecs(String version, String mode) {
+void performGeneratePubspecs({
+  required String version,
+  required String dartVersion,
+  required String flutterVersion,
+  required String mode,
+}) {
   // Verify that we are in the serverpod directory
   var dirPackages = Directory('packages');
   var dirTemplates = Directory('templates/pubspecs');
@@ -21,22 +26,34 @@ void performGeneratePubspecs(String version, String mode) {
 
   log.info('Doing some fancy generation');
 
+  var sharedReplacements = [
+    Replacement(
+      slotName: 'SERVERPOD_VERSION',
+      replacement: version,
+    ),
+    Replacement(
+      slotName: 'DART_VERSION',
+      replacement: dartVersion,
+    ),
+    Replacement(
+      slotName: 'FLUTTER_VERSION',
+      replacement: flutterVersion,
+    ),
+    Replacement(
+      slotName: '# TEMPLATE',
+      replacement:
+          '# This file is generated. Do not modify, instead edit the files '
+          'in the templates/pubspecs directory.\n# Mode: $mode',
+    ),
+  ];
+
   if (mode == 'development') {
     // Development mode
     var copier = Copier(
       srcDir: dirTemplates,
       dstDir: dirRoot,
       replacements: [
-        Replacement(
-          slotName: 'VERSION',
-          replacement: version,
-        ),
-        Replacement(
-          slotName: '# TEMPLATE',
-          replacement:
-              '# This file is generated. Do not modify, instead edit the files '
-              'in the templates/pubspecs directory.\n# Mode: $mode',
-        ),
+        ...sharedReplacements,
         Replacement(
           slotName: 'PRODUCTION_MODE',
           replacement: 'false',
@@ -55,15 +72,7 @@ void performGeneratePubspecs(String version, String mode) {
       srcDir: dirTemplates,
       dstDir: dirRoot,
       replacements: [
-        Replacement(
-          slotName: 'VERSION',
-          replacement: version,
-        ),
-        Replacement(
-          slotName: '# TEMPLATE',
-          replacement:
-              '# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.\n# Mode: $mode',
-        ),
+        ...sharedReplacements,
         Replacement(
           slotName: 'PRODUCTION_MODE',
           replacement: 'true',

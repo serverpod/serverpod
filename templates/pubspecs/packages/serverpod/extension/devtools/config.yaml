@@ -2,5 +2,5 @@
 
 name: serverpod
 issueTracker: https://github.com/serverpod/serverpod/issues
-version: VERSION
+version: SERVERPOD_VERSION
 materialIconCodePoint: '0xf0372'

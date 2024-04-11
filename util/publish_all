@@ -23,8 +23,9 @@ echo "### START PUBLISHING"
 echo "Base directory $BASE"
 echo "Start at package $PCOUNT_START"
 
-VERSION=`cat VERSION`
-VERSION=$VERSION | xargs
+VERSION=`cat SERVERPOD_VERSION`
+DART_VERSION=`cat DART_VERSION`
+FLUTTER_VERSION=`cat FLUTTER_VERSION`
 
 if test -z "$VERSION"
 then
@@ -39,11 +40,11 @@ else
   echo 'Git is clean'
 fi
 
-echo "Publish Serverpod version $VERSION"
+echo "Publish Serverpod version $VERSION (Dart version: $DART_VERSION, Flutter version: $FLUTTER_VERSION)"
 
 echo "Updating pubspecs"
 cd $BASE
-dart $CLI generate-pubspecs --version $VERSION --mode production
+dart $CLI generate-pubspecs --version "$VERSION" --dart-version "$DART_VERSION" --flutter-version "$FLUTTER_VERSION" --mode production
 
 echo "Publish packages"
 
