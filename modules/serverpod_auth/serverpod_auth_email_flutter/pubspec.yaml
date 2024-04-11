@@ -7,8 +7,8 @@ version: 1.2.6
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.10.0"
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.10.0'
 
 dependencies:
   flutter:
