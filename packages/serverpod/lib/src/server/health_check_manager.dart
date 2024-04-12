@@ -5,7 +5,6 @@ import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/health_check.dart';
-import 'package:serverpod_client/serverpod_client.dart';
 import 'package:system_resources/system_resources.dart';
 import 'package:serverpod/src/util/date_time_extension.dart';
 
@@ -18,7 +17,7 @@ class HealthCheckManager {
 
   /// Called when health checks have been completed, if the server is
   /// running in [ServerpodRole.maintenance] mode.
-  final VoidCallback onCompleted;
+  final void Function() onCompleted;
 
   bool _running = false;
   Timer? _timer;
