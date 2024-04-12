@@ -108,22 +108,10 @@ class FutureCallManager {
         enableLogging: false,
       );
 
-      var rows = await tempSession.db
-          .transaction<List<FutureCallEntry>>((transaction) async {
-        var activeFutureCalls = await FutureCallEntry.db.find(
-          tempSession,
-          where: (t) => t.time <= now,
-          transaction: transaction,
-        );
-
-        await FutureCallEntry.db.deleteWhere(
-          tempSession,
-          where: (t) => t.time <= now,
-          transaction: transaction,
-        );
-
-        return activeFutureCalls;
-      });
+      var rows = await FutureCallEntry.db.deleteWhere(
+        tempSession,
+        where: (t) => t.time <= now,
+      );
 
       await tempSession.close();
 
