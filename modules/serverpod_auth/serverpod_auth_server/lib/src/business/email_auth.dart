@@ -216,6 +216,10 @@ class Emails {
       where: (t) => t.userId.equals(userId),
     );
     if (auth == null) {
+      session.log(
+        'userId: \'$userId\' is invalid!',
+        level: LogLevel.debug,
+      );
       return false;
     }
 
@@ -231,6 +235,10 @@ class Emails {
         );
       },
     )) {
+      session.log(
+        'Invalid password!',
+        level: LogLevel.debug,
+      );
       return false;
     }
 
@@ -255,7 +263,13 @@ class Emails {
     email = email.trim().toLowerCase();
 
     var userInfo = await Users.findUserByEmail(session, email);
-    if (userInfo == null) return false;
+    if (userInfo == null) {
+      session.log(
+        'User with email: \'$email\' is not found!',
+        level: LogLevel.debug,
+      );
+      return false;
+    }
 
     var verificationCode = _generateVerificationCode();
     var emailReset = EmailReset(
@@ -287,12 +301,30 @@ class Emails {
           (t.expiration > DateTime.now().toUtc());
     });
 
-    if (passwordReset == null) return null;
+    if (passwordReset == null) {
+      session.log(
+        'Verification code is invalid or has expired!',
+        level: LogLevel.debug,
+      );
+      return null;
+    }
 
     var userInfo = await Users.findUserByUserId(session, passwordReset.userId);
-    if (userInfo == null) return null;
+    if (userInfo == null) {
+      session.log(
+        'User with id: \'${passwordReset.userId}\' is not found!',
+        level: LogLevel.debug,
+      );
+      return null;
+    }
 
-    if (userInfo.email == null) return null;
+    if (userInfo.email == null) {
+      session.log(
+        'User with id: \'${passwordReset.userId}\' has no email address!',
+        level: LogLevel.debug,
+      );
+      return null;
+    }
 
     return EmailPasswordReset(
       userName: userInfo.userName,
@@ -311,13 +343,25 @@ class Emails {
           (t.expiration > DateTime.now().toUtc());
     });
 
-    if (passwordReset == null) return false;
+    if (passwordReset == null) {
+      session.log(
+        'Verification code is invalid or has expired!',
+        level: LogLevel.debug,
+      );
+      return false;
+    }
 
     var emailAuth = await EmailAuth.db.findFirstRow(session, where: (t) {
       return t.userId.equals(passwordReset.userId);
     });
 
-    if (emailAuth == null) return false;
+    if (emailAuth == null) {
+      session.log(
+        'User with id: \'${passwordReset.userId}\' has no email authentication!',
+        level: LogLevel.debug,
+      );
+      return false;
+    }
 
     emailAuth.hash = await generatePasswordHash(password);
     await EmailAuth.db.updateRow(session, emailAuth);
@@ -342,21 +386,41 @@ class Emails {
       // Check if user already has an account
       var userInfo = await Users.findUserByEmail(session, email);
       if (userInfo != null) {
+        session.log(
+          'Email: \'$email\' already taken!',
+          level: LogLevel.debug,
+        );
         return false;
       }
 
       email = email.trim().toLowerCase();
       if (!EmailValidator.validate(email)) {
+        session.log(
+          'Email: \'$email\' is not valid!',
+          level: LogLevel.debug,
+        );
         return false;
       }
 
       userName = userName.trim();
       if (userName.isEmpty) {
+        session.log(
+          'Invalid userName!'
+          '\'userName\' must not be empty.',
+          level: LogLevel.debug,
+        );
         return false;
       }
 
       if (password.length < AuthConfig.current.minPasswordLength ||
           password.length > AuthConfig.current.maxPasswordLength) {
+        session.log(
+          'Invalid password!\n'
+          'Password length must be >= ${AuthConfig.current.minPasswordLength}'
+          ' and '
+          '<= ${AuthConfig.current.maxPasswordLength}',
+          level: LogLevel.debug,
+        );
         return false;
       }
 
@@ -381,6 +445,10 @@ class Emails {
         accountRequest.verificationCode,
       );
     } catch (e) {
+      session.log(
+        '$e',
+        level: LogLevel.debug,
+      );
       return false;
     }
   }
