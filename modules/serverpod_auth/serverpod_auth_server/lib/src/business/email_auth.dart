@@ -217,7 +217,7 @@ class Emails {
     );
     if (auth == null) {
       session.log(
-        'userId: \'$userId\' is invalid!',
+        "userId: '$userId' is invalid!",
         level: LogLevel.debug,
       );
       return false;
@@ -265,7 +265,7 @@ class Emails {
     var userInfo = await Users.findUserByEmail(session, email);
     if (userInfo == null) {
       session.log(
-        'User with email: \'$email\' is not found!',
+        "User with email: '$email' is not found!",
         level: LogLevel.debug,
       );
       return false;
@@ -312,7 +312,7 @@ class Emails {
     var userInfo = await Users.findUserByUserId(session, passwordReset.userId);
     if (userInfo == null) {
       session.log(
-        'User with id: \'${passwordReset.userId}\' is not found!',
+        "User with id: '${passwordReset.userId}' is not found!",
         level: LogLevel.debug,
       );
       return null;
@@ -320,7 +320,7 @@ class Emails {
 
     if (userInfo.email == null) {
       session.log(
-        'User with id: \'${passwordReset.userId}\' has no email address!',
+        "User with id: '${passwordReset.userId}' has no email address!",
         level: LogLevel.debug,
       );
       return null;
@@ -357,7 +357,7 @@ class Emails {
 
     if (emailAuth == null) {
       session.log(
-        'User with id: \'${passwordReset.userId}\' has no email authentication!',
+        "ser with id: '${passwordReset.userId}' has no email authentication!",
         level: LogLevel.debug,
       );
       return false;
@@ -387,7 +387,7 @@ class Emails {
       var userInfo = await Users.findUserByEmail(session, email);
       if (userInfo != null) {
         session.log(
-          'Email: \'$email\' already taken!',
+          "Email: '$email' already taken!",
           level: LogLevel.debug,
         );
         return false;
@@ -396,7 +396,7 @@ class Emails {
       email = email.trim().toLowerCase();
       if (!EmailValidator.validate(email)) {
         session.log(
-          'Email: \'$email\' is not valid!',
+          "Email: '$email' is not valid!",
           level: LogLevel.debug,
         );
         return false;
@@ -406,7 +406,7 @@ class Emails {
       if (userName.isEmpty) {
         session.log(
           'Invalid userName!'
-          '\'userName\' must not be empty.',
+          "'userName' must not be empty.",
           level: LogLevel.debug,
         );
         return false;
