@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:path/path.dart' as path;
 
 /// The Serverpod webserver.
 class WebServer {
@@ -49,7 +50,12 @@ class WebServer {
   /// Starts the webserver.
   /// Returns true if the webserver was started successfully.
   Future<bool> start() async {
-    await templates.loadAll();
+    var templatesDirectory = Directory(path.joinAll(['web', 'templates']));
+    await templates.loadAll(templatesDirectory);
+    if (templates.isEmpty) {
+      logDebug(
+          'No webserver relic templates found, template directory path: "${templatesDirectory.path}".');
+    }
 
     try {
       _httpServer = await HttpServer.bind(InternetAddress.anyIPv6, _port);
