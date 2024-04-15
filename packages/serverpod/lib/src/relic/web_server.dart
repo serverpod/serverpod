@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:path/path.dart' as path;
 
 /// The Serverpod webserver.
 class WebServer {
@@ -49,7 +50,7 @@ class WebServer {
   /// Starts the webserver.
   /// Returns true if the webserver was started successfully.
   Future<bool> start() async {
-    await templates.loadAll();
+    await templates.loadAll(Directory(path.joinAll(['web', 'templates'])));
 
     try {
       _httpServer = await HttpServer.bind(InternetAddress.anyIPv6, _port);
