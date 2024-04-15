@@ -12,6 +12,8 @@ class Templates {
 
   /// Loads all templates from web/templates
   Future<void> loadAll(Directory templateDirectory) async {
+    if (!await templateDirectory.exists()) return;
+
     for (var entity in await templateDirectory.list().toList()) {
       if (entity is File && extension(entity.path).toLowerCase() == '.html') {
         var file = entity;
