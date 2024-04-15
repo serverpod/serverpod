@@ -31,4 +31,7 @@ class Templates {
   Template? operator [](String name) {
     return _templates[name];
   }
+
+  /// Returns true if no templates are loaded.
+  bool get isEmpty => _templates.isEmpty;
 }
