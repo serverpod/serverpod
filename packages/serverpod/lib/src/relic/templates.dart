@@ -11,9 +11,8 @@ class Templates {
   final Map<String, Template> _templates = {};
 
   /// Loads all templates from web/templates
-  Future<void> loadAll() async {
-    var dir = Directory('web/templates');
-    for (var entity in await dir.list().toList()) {
+  Future<void> loadAll(Directory templateDirectory) async {
+    for (var entity in await templateDirectory.list().toList()) {
       if (entity is File && extension(entity.path).toLowerCase() == '.html') {
         var file = entity;
         var name = basenameWithoutExtension(file.path);
