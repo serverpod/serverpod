@@ -976,19 +976,6 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List).map((e) => deserialize<_i68.SimpleData?>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i68.ServerOnlyClass>?>()) {
-      return (data != null
-          ? (data as List)
-              .map((e) => deserialize<_i68.ServerOnlyClass>(e))
-              .toList()
-          : null) as dynamic;
-    }
-    if (t == _i1.getType<Map<String, _i68.ServerOnlyClass>?>()) {
-      return (data != null
-          ? (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<_i68.ServerOnlyClass>(v)))
-          : null) as dynamic;
-    }
     if (t == _i1.getType<List<int>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<int>(e)).toList()
