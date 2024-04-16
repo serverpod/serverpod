@@ -2,6 +2,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
@@ -700,6 +701,24 @@ class Restrictions {
     // Abort further validation if the field data type has errors.
     if (errors.isNotEmpty) return errors;
 
+    var fieldClassDefinitions = _extractAllClassDefinitionsFromType(field.type);
+    for (var classDefinition in fieldClassDefinitions) {
+      if (classDefinition.serverOnly &&
+          !ScopeValueRestriction.serverOnlyClassAllowedScopes
+              .contains(field.scope)) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The type "${classDefinition.className}" is a server only class and can only be used fields with scope ${ScopeValueRestriction.serverOnlyClassAllowedScopes.map((e) => e.name)} (e.g $parentNodeName: ${classDefinition.className}, scope=${ScopeValueRestriction.serverOnlyClassAllowedScopes.first.name}).',
+            span?.subspan(
+              span.text.indexOf(classDefinition.className),
+              span.text.indexOf(classDefinition.className) +
+                  classDefinition.className.length,
+            ),
+          ),
+        );
+      }
+    }
+
     if (field.isSymbolicRelation) {
       errors.addAll(_validateFieldRelationType(
         parentNodeName: parentNodeName,
@@ -1166,5 +1185,24 @@ class Restrictions {
     if (classDefinition is! ClassDefinition) return false;
 
     return classDefinition.tableName != null;
+  }
+
+  List<ClassDefinition> _extractAllClassDefinitionsFromType(
+    TypeDefinition fieldType,
+  ) {
+    var classDefinitions = <ClassDefinition>[];
+
+    if (fieldType.generics.isNotEmpty) {
+      for (var generic in fieldType.generics) {
+        classDefinitions.addAll(_extractAllClassDefinitionsFromType(generic));
+      }
+    }
+
+    var className = fieldType.className;
+    var definition = parsedModels.findByClassName(className);
+
+    if (definition is ClassDefinition) classDefinitions.add(definition);
+
+    return classDefinitions;
   }
 }
