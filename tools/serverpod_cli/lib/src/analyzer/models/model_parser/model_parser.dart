@@ -384,7 +384,6 @@ class ModelParser {
     if (serverOnlyClass) return ModelFieldScopeDefinition.serverOnly;
 
     return ModelFieldScopeDefinition.all;
-    ;
   }
 
   static String? _parseParentTable(YamlMap documentContents) {
