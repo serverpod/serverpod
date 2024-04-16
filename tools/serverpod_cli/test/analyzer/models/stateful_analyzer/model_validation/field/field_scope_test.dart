@@ -355,6 +355,32 @@ void main() {
     },
   );
 
+  test(
+      'Given server only class with a field with no scope set, then the generated model has the server only scope.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        serverOnly: true
+        fields:
+          name: String
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
+    var definition = definitions.first as ClassDefinition;
+
+    expect(definition.fields.last.scope, ModelFieldScopeDefinition.serverOnly);
+  });
+
   group(
     'Given a class with a field with the scope set',
     () {
