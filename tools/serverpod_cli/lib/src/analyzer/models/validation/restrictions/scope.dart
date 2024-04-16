@@ -25,13 +25,18 @@ class ScopeValueRestriction
     var field = document.findField(parentNodeName);
     if (field == null) return [];
 
-    if (value != ModelFieldScopeDefinition.all && !field.type.nullable) {
-      return [
-        SourceSpanSeverityException(
-          'The field "$parentNodeName" must be nullable when the "${Keyword.scope}" property is set to "${value.name}".',
-          span,
-        )
-      ];
+    var nullableErrorMessage = SourceSpanSeverityException(
+      'The field "$parentNodeName" must be nullable when the "${Keyword.scope}" property is set to "${value.name}".',
+      span,
+    );
+    if (document.serverOnly) {
+      if (value == ModelFieldScopeDefinition.none && !field.type.nullable) {
+        return [nullableErrorMessage];
+      }
+    } else {
+      if (value != ModelFieldScopeDefinition.all && !field.type.nullable) {
+        return [nullableErrorMessage];
+      }
     }
 
     return [];
