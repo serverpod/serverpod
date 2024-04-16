@@ -145,7 +145,7 @@ class SerializableModelAnalyzer {
       documentDefinition: model,
       // TODO: move instance creation of EntityRelations to StatefulAnalyzer
       // to resolve n-squared time complexity.
-      modelRelations: ModelRelations(models),
+      parsedModels: ParsedModelsCollection(models),
     );
 
     Set<ValidateNode> documentStructure;

@@ -120,14 +120,14 @@ class Restrictions {
   String documentType;
   YamlMap documentContents;
   SerializableModelDefinition? documentDefinition;
-  ModelRelations modelRelations;
+  ParsedModelsCollection parsedModels;
 
   Restrictions({
     required this.config,
     required this.documentType,
     required this.documentContents,
     this.documentDefinition,
-    required this.modelRelations,
+    required this.parsedModels,
   });
 
   List<SourceSpanSeverityException> validateClassName(
@@ -163,7 +163,7 @@ class Restrictions {
       ];
     }
 
-    var classesByName = modelRelations.classNames[className]?.where(
+    var classesByName = parsedModels.classNames[className]?.where(
         (model) => model.moduleAlias == documentDefinition?.moduleAlias);
 
     if (classesByName != null && classesByName.length > 1) {
@@ -199,8 +199,8 @@ class Restrictions {
       ];
     }
 
-    if (!modelRelations.isTableNameUnique(documentDefinition, tableName)) {
-      var otherClass = modelRelations.findByTableName(
+    if (!parsedModels.isTableNameUnique(documentDefinition, tableName)) {
+      var otherClass = parsedModels.findByTableName(
         tableName,
         ignore: documentDefinition,
       );
@@ -306,8 +306,8 @@ class Restrictions {
         )
       ];
     }
-    if (!modelRelations.isIndexNameUnique(documentDefinition, indexName)) {
-      var collision = modelRelations.findByIndexName(
+    if (!parsedModels.isIndexNameUnique(documentDefinition, indexName)) {
+      var collision = parsedModels.findByIndexName(
         indexName,
         ignore: documentDefinition,
       );
@@ -428,7 +428,7 @@ class Restrictions {
       ];
     }
 
-    var foreignFields = modelRelations.findNamedForeignRelationFields(
+    var foreignFields = parsedModels.findNamedForeignRelationFields(
       classDefinition,
       field,
     );
@@ -536,8 +536,7 @@ class Restrictions {
       ];
     }
 
-    var parentClasses =
-        modelRelations.tableNames[foreignKeyRelation.parentTable];
+    var parentClasses = parsedModels.tableNames[foreignKeyRelation.parentTable];
 
     if (parentClasses == null || parentClasses.isEmpty) return [];
 
@@ -581,7 +580,7 @@ class Restrictions {
 
     if (field.type.isListType) return false;
 
-    var foreignFields = modelRelations.findNamedForeignRelationFields(
+    var foreignFields = parsedModels.findNamedForeignRelationFields(
       classDefinition,
       field,
     );
@@ -662,7 +661,7 @@ class Restrictions {
       ];
     }
 
-    if (!modelRelations.tableNames.containsKey(content)) {
+    if (!parsedModels.tableNames.containsKey(content)) {
       return [
         SourceSpanSeverityException(
           'The parent table "$content" was not found in any model.',
@@ -711,9 +710,9 @@ class Restrictions {
 
     if (errors.isNotEmpty) return errors;
 
-    String? parsedType = modelRelations.extractReferenceClassName(field);
+    String? parsedType = parsedModels.extractReferenceClassName(field);
 
-    var referenceClass = modelRelations.findByClassName(parsedType);
+    var referenceClass = parsedModels.findByClassName(parsedType);
 
     if (referenceClass is! ClassDefinition) {
       errors.add(SourceSpanSeverityException(
@@ -893,7 +892,7 @@ class Restrictions {
     if (field == null) return [];
 
     if (field.type.isListType) {
-      var referenceClass = modelRelations
+      var referenceClass = parsedModels
           .findAllByClassName(field.type.generics.first.className)
           .firstOrNull;
 
@@ -961,12 +960,12 @@ class Restrictions {
     var field = classDefinition.findField(parentNodeName);
     if (field == null) return [];
 
-    var foreignFields = modelRelations.findNamedForeignRelationFields(
+    var foreignFields = parsedModels.findNamedForeignRelationFields(
       classDefinition,
       field,
     );
 
-    var foreignClassName = modelRelations.extractReferenceClassName(
+    var foreignClassName = parsedModels.extractReferenceClassName(
       field,
     );
     if (foreignFields.isEmpty) {
@@ -1119,13 +1118,13 @@ class Restrictions {
     var moduleAlias = type.moduleAlias;
     if (moduleAlias == null) return false;
 
-    return !modelRelations.moduleNames.contains(moduleAlias);
+    return !parsedModels.moduleNames.contains(moduleAlias);
   }
 
   bool _isModelType(TypeDefinition type) {
     var className = type.className;
 
-    var definitions = modelRelations.classNames[className];
+    var definitions = parsedModels.classNames[className];
 
     if (definitions == null) return false;
     if (definitions.isEmpty) return false;
