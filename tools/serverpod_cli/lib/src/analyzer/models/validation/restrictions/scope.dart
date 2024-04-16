@@ -9,6 +9,11 @@ class ScopeValueRestriction
     extends CustomEnumValueRestriction<ModelFieldScopeDefinition> {
   final Restrictions restrictions;
 
+  static const serverOnlyClassAllowedScopes = {
+    ModelFieldScopeDefinition.serverOnly,
+    ModelFieldScopeDefinition.none,
+  };
+
   ScopeValueRestriction({
     required this.restrictions,
   });
@@ -30,11 +35,6 @@ class ScopeValueRestriction
       span,
     );
     if (document.serverOnly) {
-      const serverOnlyClassAllowedScopes = {
-        ModelFieldScopeDefinition.serverOnly,
-        ModelFieldScopeDefinition.none,
-      };
-
       if (!serverOnlyClassAllowedScopes.contains(value)) {
         var allowedProperties = serverOnlyClassAllowedScopes.map((e) => e.name);
         return [
