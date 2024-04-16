@@ -719,4 +719,36 @@ void main() {
     },
   );
 
+  group('Given class with server only property and field with scope all', () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        serverOnly: true
+        fields:
+          name: String, scope=all
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+
+    test('then error is collected.', () {
+      expect(collector.errors, isNotEmpty);
+    });
+
+    test('then error message informs about the allowed scopes.', () {
+      var error = collector.errors.first as SourceSpanSeverityException;
+      expect(
+        error.message,
+        'The field "name" cannot have the "scope" property set to "all" when the class is marked as server only. Allowed properties are (serverOnly, none).',
+      );
+    });
+  });
 }
