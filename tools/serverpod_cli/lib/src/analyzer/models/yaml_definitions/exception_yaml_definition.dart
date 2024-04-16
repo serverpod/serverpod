@@ -39,7 +39,7 @@ class ExceptionYamlDefinition {
               ValidateNode(
                 Keyword.type,
                 isRequired: true,
-                valueRestriction: restrictions.validateFieldDataType,
+                valueRestriction: restrictions.validateFieldType,
               ),
             },
           ),

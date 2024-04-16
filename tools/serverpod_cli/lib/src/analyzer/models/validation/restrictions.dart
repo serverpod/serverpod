@@ -673,7 +673,7 @@ class Restrictions {
     return [];
   }
 
-  List<SourceSpanSeverityException> validateFieldDataType(
+  List<SourceSpanSeverityException> validateFieldType(
     String parentNodeName,
     dynamic type,
     SourceSpan? span,
@@ -696,7 +696,7 @@ class Restrictions {
 
     if (fieldType == null) return errors;
 
-    errors.addAll(validateFieldType(fieldType, span));
+    errors.addAll(_validateFieldDataType(fieldType, span));
 
     var field = classDefinition.findField(parentNodeName);
     if (field == null || !field.isSymbolicRelation) return errors;
@@ -732,7 +732,7 @@ class Restrictions {
     return errors;
   }
 
-  List<SourceSpanSeverityException> validateFieldType(
+  List<SourceSpanSeverityException> _validateFieldDataType(
     TypeDefinition fieldType,
     SourceSpan? span,
   ) {
@@ -774,8 +774,8 @@ class Restrictions {
 
     if (fieldType.isMapType) {
       if (fieldType.generics.length == 2) {
-        errors.addAll(validateFieldType(fieldType.generics.first, span));
-        errors.addAll(validateFieldType(fieldType.generics.last, span));
+        errors.addAll(_validateFieldDataType(fieldType.generics.first, span));
+        errors.addAll(_validateFieldDataType(fieldType.generics.last, span));
       } else {
         errors.add(
           SourceSpanSeverityException(
@@ -786,7 +786,7 @@ class Restrictions {
       }
     } else if (fieldType.isListType) {
       if (fieldType.generics.length == 1) {
-        errors.addAll(validateFieldType(fieldType.generics.first, span));
+        errors.addAll(_validateFieldDataType(fieldType.generics.first, span));
       } else {
         errors.add(
           SourceSpanSeverityException(
