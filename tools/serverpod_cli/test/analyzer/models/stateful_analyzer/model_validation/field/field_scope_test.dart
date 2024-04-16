@@ -591,6 +591,38 @@ void main() {
   );
 
   test(
+    'Given a server only class with a none nullable field with the scope serverOnly then field has scope server only.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          serverOnly: true
+          fields:
+            name: String, scope=serverOnly
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+
+      expect(collector.errors, isEmpty);
+
+      var definition = definitions.first as ClassDefinition;
+      expect(
+        definition.fields.first.scope,
+        ModelFieldScopeDefinition.serverOnly,
+      );
+    },
+  );
+
+  test(
     'Given a class with a none nullable field with the scope none then an error is collected notifying that only nullable fields are allowed.',
     () {
       var models = [
@@ -621,4 +653,70 @@ void main() {
       );
     },
   );
+
+  test(
+    'Given a server only class with a none nullable field with the scope none then an error is collected notifying that only nullable fields are allowed.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          serverOnly: true
+          fields:
+            name: String, scope=none
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(collector.errors, isNotEmpty);
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The field "name" must be nullable when the "scope" property is set to "none".',
+      );
+    },
+  );
+
+  test(
+    'Given a server only class with a nullable field with the scope none then field has scope none.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          serverOnly: true
+          fields:
+            name: String?, scope=none
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+
+      expect(collector.errors, isEmpty);
+
+      var definition = definitions.first as ClassDefinition;
+      expect(
+        definition.fields.first.scope,
+        ModelFieldScopeDefinition.none,
+      );
+    },
+  );
+
 }
