@@ -692,40 +692,20 @@ class Restrictions {
     var classDefinition = documentDefinition;
     if (classDefinition is! ClassDefinition) return errors;
 
-    var fieldType = classDefinition.findField(parentNodeName)?.type;
-
-    if (fieldType == null) return errors;
-
-    errors.addAll(_validateFieldDataType(fieldType, span));
-
     var field = classDefinition.findField(parentNodeName);
-    if (field == null || !field.isSymbolicRelation) return errors;
+    if (field == null) return errors;
 
-    if (!type.endsWith('?')) {
-      errors.add(SourceSpanSeverityException(
-        'Fields with a model relations must be nullable (e.g. $parentNodeName: $type?).',
-        span,
-      ));
-    }
+    errors.addAll(_validateFieldDataType(field.type, span));
 
+    // Abort further validation if the field data type has errors.
     if (errors.isNotEmpty) return errors;
 
-    String? parsedType = parsedModels.extractReferenceClassName(field);
-
-    var referenceClass = parsedModels.findByClassName(parsedType);
-
-    if (referenceClass is! ClassDefinition) {
-      errors.add(SourceSpanSeverityException(
-        'Only classes can be used in relations, "$parsedType" is not a class.',
-        span,
-      ));
-      return errors;
-    }
-
-    if (!_hasTableDefined(referenceClass)) {
-      errors.add(SourceSpanSeverityException(
-        'The class "$parsedType" must have a "table" property defined to be used in a relation.',
-        span,
+    if (field.isSymbolicRelation) {
+      errors.addAll(_validateFieldRelationType(
+        parentNodeName: parentNodeName,
+        type: type,
+        field: field,
+        span: span,
       ));
     }
 
@@ -805,6 +785,45 @@ class Restrictions {
     }
 
     return errors;
+  }
+
+  List<SourceSpanSeverityException> _validateFieldRelationType({
+    required String parentNodeName,
+    required String type,
+    required SerializableModelFieldDefinition field,
+    required SourceSpan? span,
+  }) {
+    String? parsedType = parsedModels.extractReferenceClassName(field);
+    var referenceClass = parsedModels.findByClassName(parsedType);
+
+    if (!type.endsWith('?')) {
+      return [
+        SourceSpanSeverityException(
+          'Fields with a model relations must be nullable (e.g. $parentNodeName: $type?).',
+          span,
+        )
+      ];
+    }
+
+    if (referenceClass is! ClassDefinition) {
+      return [
+        SourceSpanSeverityException(
+          'Only classes can be used in relations, "$parsedType" is not a class.',
+          span,
+        )
+      ];
+    }
+
+    if (!_hasTableDefined(referenceClass)) {
+      return [
+        SourceSpanSeverityException(
+          'The class "$parsedType" must have a "table" property defined to be used in a relation.',
+          span,
+        )
+      ];
+    }
+
+    return [];
   }
 
   List<SourceSpanSeverityException> validateIndexFieldsValue(
