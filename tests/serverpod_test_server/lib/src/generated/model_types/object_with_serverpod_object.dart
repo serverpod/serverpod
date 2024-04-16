@@ -43,10 +43,7 @@ abstract class ObjectWithServerpodObject extends _i1.SerializableEntity {
   });
   @override
   Map<String, dynamic> toJson() {
-    return {
-      'logLevel1': logLevel1.toJson(),
-      'logLevel2': logLevel2.toJson(),
-    };
+    return {};
   }
 
   @override
