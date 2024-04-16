@@ -30,6 +30,21 @@ class ScopeValueRestriction
       span,
     );
     if (document.serverOnly) {
+      const serverOnlyClassAllowedScopes = {
+        ModelFieldScopeDefinition.serverOnly,
+        ModelFieldScopeDefinition.none,
+      };
+
+      if (!serverOnlyClassAllowedScopes.contains(value)) {
+        var allowedProperties = serverOnlyClassAllowedScopes.map((e) => e.name);
+        return [
+          SourceSpanSeverityException(
+            'The field "$parentNodeName" cannot have the "${Keyword.scope}" property set to "${value.name}" when the class is marked as server only. Allowed properties are $allowedProperties.',
+            span,
+          )
+        ];
+      }
+
       if (value == ModelFieldScopeDefinition.none && !field.type.nullable) {
         return [nullableErrorMessage];
       }
