@@ -121,14 +121,14 @@ class Restrictions {
   String documentType;
   YamlMap documentContents;
   SerializableModelDefinition? documentDefinition;
-  ModelRelations? modelRelations;
+  ModelRelations modelRelations;
 
   Restrictions({
     required this.config,
     required this.documentType,
     required this.documentContents,
     this.documentDefinition,
-    this.modelRelations,
+    required this.modelRelations,
   });
 
   List<SourceSpanSeverityException> validateClassName(
@@ -164,7 +164,7 @@ class Restrictions {
       ];
     }
 
-    var classesByName = modelRelations?.classNames[className]?.where(
+    var classesByName = modelRelations.classNames[className]?.where(
         (model) => model.moduleAlias == documentDefinition?.moduleAlias);
 
     if (classesByName != null && classesByName.length > 1) {
@@ -217,11 +217,8 @@ class Restrictions {
       ];
     }
 
-    var relationships = modelRelations;
-    if (relationships == null) return [];
-
-    if (!relationships.isTableNameUnique(documentDefinition, tableName)) {
-      var otherClass = relationships.findByTableName(
+    if (!modelRelations.isTableNameUnique(documentDefinition, tableName)) {
+      var otherClass = modelRelations.findByTableName(
         tableName,
         ignore: documentDefinition,
       );
@@ -327,10 +324,8 @@ class Restrictions {
         )
       ];
     }
-    var relationships = modelRelations;
-    if (relationships == null) return [];
-    if (!relationships.isIndexNameUnique(documentDefinition, indexName)) {
-      var collision = relationships.findByIndexName(
+    if (!modelRelations.isIndexNameUnique(documentDefinition, indexName)) {
+      var collision = modelRelations.findByIndexName(
         indexName,
         ignore: documentDefinition,
       );
@@ -451,11 +446,10 @@ class Restrictions {
       ];
     }
 
-    var foreignFields = modelRelations?.findNamedForeignRelationFields(
+    var foreignFields = modelRelations.findNamedForeignRelationFields(
       classDefinition,
       field,
     );
-    if (foreignFields == null) return [];
 
     if (_isForeignKeyDefinedOnBothSides(field, foreignFields)) {
       return [
@@ -561,7 +555,7 @@ class Restrictions {
     }
 
     var parentClasses =
-        modelRelations?.tableNames[foreignKeyRelation.parentTable];
+        modelRelations.tableNames[foreignKeyRelation.parentTable];
 
     if (parentClasses == null || parentClasses.isEmpty) return [];
 
@@ -605,12 +599,12 @@ class Restrictions {
 
     if (field.type.isListType) return false;
 
-    var foreignFields = modelRelations?.findNamedForeignRelationFields(
+    var foreignFields = modelRelations.findNamedForeignRelationFields(
       classDefinition,
       field,
     );
 
-    if (foreignFields == null || foreignFields.isEmpty) return false;
+    if (foreignFields.isEmpty) return false;
     if (foreignFields.any((element) => element.type.isListType)) return false;
 
     return true;
@@ -686,8 +680,7 @@ class Restrictions {
       ];
     }
 
-    var relations = modelRelations;
-    if (relations != null && !relations.tableNames.containsKey(content)) {
+    if (!modelRelations.tableNames.containsKey(content)) {
       return [
         SourceSpanSeverityException(
           'The parent table "$content" was not found in any model.',
@@ -734,13 +727,11 @@ class Restrictions {
       ));
     }
 
-    var localModelRelations = modelRelations;
-    if (localModelRelations == null) return errors;
     if (errors.isNotEmpty) return errors;
 
-    String? parsedType = localModelRelations.extractReferenceClassName(field);
+    String? parsedType = modelRelations.extractReferenceClassName(field);
 
-    var referenceClass = localModelRelations.findByClassName(parsedType);
+    var referenceClass = modelRelations.findByClassName(parsedType);
 
     if (referenceClass is! ClassDefinition) {
       errors.add(SourceSpanSeverityException(
@@ -921,7 +912,7 @@ class Restrictions {
 
     if (field.type.isListType) {
       var referenceClass = modelRelations
-          ?.findAllByClassName(field.type.generics.first.className)
+          .findAllByClassName(field.type.generics.first.className)
           .firstOrNull;
 
       if (referenceClass != null &&
@@ -985,18 +976,15 @@ class Restrictions {
       ];
     }
 
-    var localModelRelations = modelRelations;
-    if (localModelRelations == null) return [];
-
     var field = classDefinition.findField(parentNodeName);
     if (field == null) return [];
 
-    var foreignFields = localModelRelations.findNamedForeignRelationFields(
+    var foreignFields = modelRelations.findNamedForeignRelationFields(
       classDefinition,
       field,
     );
 
-    var foreignClassName = localModelRelations.extractReferenceClassName(
+    var foreignClassName = modelRelations.extractReferenceClassName(
       field,
     );
     if (foreignFields.isEmpty) {
@@ -1149,16 +1137,13 @@ class Restrictions {
     var moduleAlias = type.moduleAlias;
     if (moduleAlias == null) return false;
 
-    var relationalData = modelRelations;
-    if (relationalData == null) return true;
-
-    return !relationalData.moduleNames.contains(moduleAlias);
+    return !modelRelations.moduleNames.contains(moduleAlias);
   }
 
   bool _isModelType(TypeDefinition type) {
     var className = type.className;
 
-    var definitions = modelRelations?.classNames[className];
+    var definitions = modelRelations.classNames[className];
 
     if (definitions == null) return false;
     if (definitions.isEmpty) return false;
