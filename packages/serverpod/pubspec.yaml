@@ -36,8 +36,6 @@ dependencies:
   yaml: ^3.1.1
   serverpod_shared: 2.0.0-alpha.2
   serverpod_serialization: 2.0.0-alpha.2
-  serverpod_service_client: 2.0.0-alpha.2
-  serverpod_client: 2.0.0-alpha.2
 
 dev_dependencies:
   test: ^1.24.2
@@ -48,9 +46,5 @@ dependency_overrides:
     path: ../serverpod_shared
   serverpod_serialization:
     path: ../serverpod_serialization
-  serverpod_service_client:
-    path: ../serverpod_service_client
-  serverpod_client:
-    path: ../serverpod_client
   serverpod_lints:
     path: ../serverpod_lints
