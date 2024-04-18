@@ -330,6 +330,7 @@ class DatabaseConnection {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
+    Object? parameters,
   }) async {
     var result = await _query(
       session,
@@ -337,6 +338,7 @@ class DatabaseConnection {
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
       simpleQueryMode: true,
+      parameters: parameters,
     );
 
     return PostgresDatabaseResult(result);
@@ -348,12 +350,14 @@ class DatabaseConnection {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
+    Object? parameters,
   }) async {
     var result = await _query(
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
+      parameters: parameters,
     );
 
     return PostgresDatabaseResult(result);
@@ -366,6 +370,7 @@ class DatabaseConnection {
     Transaction? transaction,
     bool ignoreRows = false,
     bool simpleQueryMode = false,
+    Object? parameters,
   }) async {
     var postgresTransaction = _castToPostgresTransaction(transaction);
     var timeout =
@@ -381,6 +386,7 @@ class DatabaseConnection {
         timeout: timeout,
         ignoreRows: ignoreRows,
         queryMode: simpleQueryMode ? pg.QueryMode.simple : null,
+        parameters: parameters,
       );
 
       _logQuery(
@@ -416,6 +422,7 @@ class DatabaseConnection {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
+    Object? parameters,
   }) async {
     var result = await _query(
       session,
@@ -423,6 +430,7 @@ class DatabaseConnection {
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
       ignoreRows: true,
+      parameters: parameters,
     );
 
     return result.affectedRows;
@@ -434,6 +442,7 @@ class DatabaseConnection {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
+    Object? parameters,
   }) async {
     var result = await _query(
       session,
@@ -442,6 +451,7 @@ class DatabaseConnection {
       transaction: transaction,
       ignoreRows: true,
       simpleQueryMode: true,
+      parameters: parameters,
     );
 
     return result.affectedRows;
