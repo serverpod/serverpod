@@ -1201,10 +1201,10 @@ class Restrictions {
     return classDefinition.tableName != null;
   }
 
-  List<ClassDefinition> _extractAllClassDefinitionsFromType(
+  Set<ClassDefinition> _extractAllClassDefinitionsFromType(
     TypeDefinition fieldType,
   ) {
-    var classDefinitions = <ClassDefinition>[];
+    var classDefinitions = <ClassDefinition>{};
 
     if (fieldType.generics.isNotEmpty) {
       for (var generic in fieldType.generics) {
