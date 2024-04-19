@@ -34,24 +34,23 @@ class ScopeValueRestriction
       'The field "$parentNodeName" must be nullable when the "${Keyword.scope}" property is set to "${value.name}".',
       span,
     );
-    if (document.serverOnly) {
-      if (!serverOnlyClassAllowedScopes.contains(value)) {
-        var allowedProperties = serverOnlyClassAllowedScopes.map((e) => e.name);
-        return [
-          SourceSpanSeverityException(
-            'The field "$parentNodeName" cannot have the "${Keyword.scope}" property set to "${value.name}" when the class is marked as server only. Allowed properties are $allowedProperties.',
-            span,
-          )
-        ];
-      }
 
-      if (value == ModelFieldScopeDefinition.none && !field.type.nullable) {
-        return [nullableErrorMessage];
-      }
-    } else {
-      if (value != ModelFieldScopeDefinition.all && !field.type.nullable) {
-        return [nullableErrorMessage];
-      }
+    if (document.serverOnly && !serverOnlyClassAllowedScopes.contains(value)) {
+      var allowedProperties = serverOnlyClassAllowedScopes.map((e) => e.name);
+      return [
+        SourceSpanSeverityException(
+          'The field "$parentNodeName" cannot have the "${Keyword.scope}" property set to "${value.name}" when the class is marked as server only. Allowed properties are $allowedProperties.',
+          span,
+        )
+      ];
+    } else if (document.serverOnly &&
+        value == ModelFieldScopeDefinition.none &&
+        !field.type.nullable) {
+      return [nullableErrorMessage];
+    } else if (!document.serverOnly &&
+        value != ModelFieldScopeDefinition.all &&
+        !field.type.nullable) {
+      return [nullableErrorMessage];
     }
 
     return [];
