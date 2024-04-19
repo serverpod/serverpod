@@ -106,7 +106,7 @@ class SerializableModelAnalyzer {
     Uri sourceUri,
     CodeAnalysisCollector collector,
     SerializableModelDefinition? model,
-    List<SerializableModelDefinition>? models,
+    List<SerializableModelDefinition> models,
   ) {
     var yamlErrors = ErrorCollector();
     YamlMap? document = _loadYamlMap(yaml, sourceUri, yamlErrors);
@@ -145,7 +145,7 @@ class SerializableModelAnalyzer {
       documentDefinition: model,
       // TODO: move instance creation of EntityRelations to StatefulAnalyzer
       // to resolve n-squared time complexity.
-      modelRelations: models != null ? ModelRelations(models) : null,
+      parsedModels: ParsedModelsCollection(models),
     );
 
     Set<ValidateNode> documentStructure;

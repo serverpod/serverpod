@@ -41,6 +41,7 @@ class ModelParser {
       docsExtractor,
       tableName != null,
       extraClasses,
+      serverOnly,
     );
     var indexes = _parseIndexes(documentContents, fields);
 
@@ -123,6 +124,7 @@ class ModelParser {
     YamlDocumentationExtractor docsExtractor,
     bool hasTable,
     List<TypeDefinition> extraClasses,
+    bool serverOnlyClass,
   ) {
     var fieldsNode = documentContents.nodes[Keyword.fields];
     if (fieldsNode is! YamlMap) return [];
@@ -132,6 +134,7 @@ class ModelParser {
         fieldNode,
         docsExtractor,
         extraClasses,
+        serverOnlyClass,
       );
     }).toList();
 
@@ -159,6 +162,7 @@ class ModelParser {
     MapEntry<dynamic, YamlNode> fieldNode,
     YamlDocumentationExtractor docsExtractor,
     List<TypeDefinition> extraClasses,
+    bool serverOnlyClass,
   ) {
     var key = fieldNode.key;
     if (key is! YamlScalar) return [];
@@ -188,7 +192,7 @@ class ModelParser {
       extraClasses: extraClasses,
     );
 
-    var scope = _parseClassFieldScope(node);
+    var scope = _parseClassFieldScope(node, serverOnlyClass);
     var shouldPersist = _parseShouldPersist(node);
 
     RelationDefinition? relation = _parseRelation(
@@ -362,19 +366,24 @@ class ModelParser {
 
   static ModelFieldScopeDefinition _parseClassFieldScope(
     YamlMap documentContents,
+    bool serverOnlyClass,
   ) {
     var database = _parseBooleanKey(documentContents, Keyword.database);
     if (database) return ModelFieldScopeDefinition.serverOnly;
 
     var scope = documentContents.nodes[Keyword.scope]?.value;
 
-    if (scope is! String) return ModelFieldScopeDefinition.all;
+    if (scope is String) {
+      return convertToEnum(
+        value: scope,
+        enumDefault: ModelFieldScopeDefinition.all,
+        enumValues: ModelFieldScopeDefinition.values,
+      );
+    }
 
-    return convertToEnum(
-      value: scope,
-      enumDefault: ModelFieldScopeDefinition.all,
-      enumValues: ModelFieldScopeDefinition.values,
-    );
+    if (serverOnlyClass) return ModelFieldScopeDefinition.serverOnly;
+
+    return ModelFieldScopeDefinition.all;
   }
 
   static String? _parseParentTable(YamlMap documentContents) {
