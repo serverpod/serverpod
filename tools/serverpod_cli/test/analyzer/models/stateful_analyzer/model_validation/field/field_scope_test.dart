@@ -590,8 +590,8 @@ void main() {
     },
   );
 
-  test(
-    'Given a server only class with a none nullable field with the scope serverOnly then field has scope server only.',
+  group(
+    'Given a server only class with a none nullable field with the scope serverOnly',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -612,13 +612,25 @@ void main() {
       );
       var definitions = analyzer.validateAll();
 
-      expect(collector.errors, isEmpty);
+      test(
+          'then an info message is collected informing the user that the field scope declaration is unnecessary',
+          () {
+        expect(collector.errors, isNotEmpty);
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(error.severity, SourceSpanSeverity.info);
+        expect(
+          error.message,
+          'The field "name" belongs to a server only class which makes setting the "scope" to "serverOnly" redundant.',
+        );
+      });
 
       var definition = definitions.first as ClassDefinition;
-      expect(
-        definition.fields.first.scope,
-        ModelFieldScopeDefinition.serverOnly,
-      );
+      test('then the field is declared with the server only scope.', () {
+        expect(
+          definition.fields.first.scope,
+          ModelFieldScopeDefinition.serverOnly,
+        );
+      });
     },
   );
 

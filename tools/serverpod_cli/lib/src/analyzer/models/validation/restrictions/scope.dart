@@ -44,6 +44,15 @@ class ScopeValueRestriction
         )
       ];
     } else if (document.serverOnly &&
+        value == ModelFieldScopeDefinition.serverOnly) {
+      return [
+        SourceSpanSeverityException(
+          'The field "$parentNodeName" belongs to a server only class which makes setting the "${Keyword.scope}" to "${value.name}" redundant.',
+          span,
+          severity: SourceSpanSeverity.info,
+        )
+      ];
+    } else if (document.serverOnly &&
         value == ModelFieldScopeDefinition.none &&
         !field.type.nullable) {
       return [nullableErrorMessage];
