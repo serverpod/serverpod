@@ -14,7 +14,6 @@ dependencies:
   yaml: ^3.1.1
   path: ^1.8.2
   super_string: ^1.0.3
-  serverpod_client: SERVERPOD_VERSION
   crypto: ^3.0.2
 
 dev_dependencies:
@@ -22,8 +21,6 @@ dev_dependencies:
   test: ^1.24.2
 
 dependency_overrides:
-  serverpod_client:
-    path: ../serverpod_client
   serverpod_lints:
     path: ../serverpod_lints
   serverpod_serialization:
