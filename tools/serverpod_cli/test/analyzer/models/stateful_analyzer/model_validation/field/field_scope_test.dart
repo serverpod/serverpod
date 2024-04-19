@@ -612,20 +612,31 @@ void main() {
       );
       var definitions = analyzer.validateAll();
 
-      test(
-          'then an info message is collected informing the user that the field scope declaration is unnecessary',
-          () {
+      test('then an error is collected.', () {
         expect(collector.errors, isNotEmpty);
+      });
+
+      test('then error collected is tagged "unnecessary.', () {
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(error.tags, contains(SourceSpanTag.unnecessary));
+      });
+
+      test('then error collected has info severity.', () {
         var error = collector.errors.first as SourceSpanSeverityException;
         expect(error.severity, SourceSpanSeverity.info);
+      });
+
+      test(
+          'then error message informs user that scope declaration is redundant.',
+          () {
+        var error = collector.errors.first as SourceSpanSeverityException;
         expect(
           error.message,
           'The field "name" belongs to a server only class which makes setting the "scope" to "serverOnly" redundant.',
         );
       });
-
-      var definition = definitions.first as ClassDefinition;
       test('then the field is declared with the server only scope.', () {
+        var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.first.scope,
           ModelFieldScopeDefinition.serverOnly,

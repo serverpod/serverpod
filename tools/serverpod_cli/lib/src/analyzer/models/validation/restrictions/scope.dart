@@ -50,6 +50,7 @@ class ScopeValueRestriction
           'The field "$parentNodeName" belongs to a server only class which makes setting the "${Keyword.scope}" to "${value.name}" redundant.',
           span,
           severity: SourceSpanSeverity.info,
+          tags: [SourceSpanTag.unnecessary],
         )
       ];
     } else if (document.serverOnly &&
