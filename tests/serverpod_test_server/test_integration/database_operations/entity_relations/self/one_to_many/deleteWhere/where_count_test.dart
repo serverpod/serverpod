@@ -23,12 +23,13 @@ void main() async {
           Cat(name: 'Kitten4', motherId: smulan.id),
         ]);
 
-        var deletedCatIds = await Cat.db.deleteWhere(
+        var deletedCats = await Cat.db.deleteWhere(
           session,
           where: (t) => t.kittens.count() > 1,
         );
 
-        expect(deletedCatIds, [zelda.id]);
+        expect(deletedCats, hasLength(1));
+        expect(deletedCats.firstOrNull?.id, zelda.id);
       },
     );
 
@@ -45,12 +46,13 @@ void main() async {
           Cat(name: 'Smulan II', motherId: smulan.id),
         ]);
 
-        var deletedCatIds = await Cat.db.deleteWhere(
+        var deletedCats = await Cat.db.deleteWhere(
           session,
           where: (t) => t.kittens.count((t) => t.name.ilike('kitt%')) > 1,
         );
 
-        expect(deletedCatIds, [zelda.id]);
+        expect(deletedCats, hasLength(1));
+        expect(deletedCats.firstOrNull?.id, zelda.id);
       },
     );
 
@@ -67,12 +69,13 @@ void main() async {
           Cat(name: 'Smulan II', motherId: smulan.id),
         ]);
 
-        var deletedCatIds = await Cat.db.deleteWhere(
+        var deletedCats = await Cat.db.deleteWhere(
           session,
           where: (t) => (t.kittens.count() > 2) | t.name.equals('Smulan'),
         );
 
-        expect(deletedCatIds, hasLength(2));
+        expect(deletedCats, hasLength(2));
+        var deletedCatIds = deletedCats.map((c) => c.id).toList();
         expect(deletedCatIds, containsAll([zelda.id, smulan.id]));
       },
     );
@@ -91,12 +94,13 @@ void main() async {
           Cat(name: 'Kitten4', motherId: smulan.id),
         ]);
 
-        var deletedCatIds = await Cat.db.deleteWhere(
+        var deletedCats = await Cat.db.deleteWhere(
           session,
           where: (t) => (t.kittens.count() > 1) & (t.kittens.count() < 3),
         );
 
-        expect(deletedCatIds, [smulan.id]);
+        expect(deletedCats, hasLength(1));
+        expect(deletedCats.firstOrNull?.id, smulan.id);
       },
     );
 
@@ -114,14 +118,15 @@ void main() async {
           Cat(name: 'Smulan II', motherId: smulan.id),
         ]);
 
-        var deletedCatIds = await Cat.db.deleteWhere(
+        var deletedCats = await Cat.db.deleteWhere(
           session,
           where: (t) =>
               (t.kittens.count((t) => t.name.ilike('kitt%')) > 1) &
               (t.kittens.count((t) => t.name.ilike('Zelda%')) > 1),
         );
 
-        expect(deletedCatIds, [zelda.id]);
+        expect(deletedCats, hasLength(1));
+        expect(deletedCats.firstOrNull?.id, zelda.id);
       },
     );
   });
@@ -159,12 +164,13 @@ void main() async {
           Cat(name: 'Nested Kitten9', motherId: kittens[1].id),
         ]);
 
-        var deletedCatIds = await Cat.db.deleteWhere(
+        var deletedCats = await Cat.db.deleteWhere(
           session,
           where: (t) => t.kittens.count((o) => o.kittens.count() > 2) > 1,
         );
 
-        expect(deletedCatIds, [zelda.id]);
+        expect(deletedCats, hasLength(1));
+        expect(deletedCats.firstOrNull?.id, zelda.id);
       },
     );
 
@@ -196,14 +202,15 @@ void main() async {
           Cat(name: 'Nested Kitten9', motherId: kittens[1].id),
         ]);
 
-        var deletedCatIds = await Cat.db.deleteWhere(
+        var deletedCats = await Cat.db.deleteWhere(
           session,
           where: (t) => t.kittens.count(
               // All cats with more than 1 kitten with more than 1 kittens named Zelda
               (o) => o.kittens.count((c) => c.name.ilike('zelda%')) > 1) > 1,
         );
 
-        expect(deletedCatIds, [zelda.id]);
+        expect(deletedCats, hasLength(1));
+        expect(deletedCats.firstOrNull?.id, zelda.id);
       },
     );
   });

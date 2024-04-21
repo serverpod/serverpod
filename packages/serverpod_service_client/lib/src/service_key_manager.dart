@@ -1,6 +1,5 @@
 import 'package:serverpod_client/serverpod_client.dart';
-
-import 'config.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// The key manager used for the service protocol.
 class ServiceKeyManager extends AuthenticationKeyManager {

@@ -36,14 +36,15 @@ void main() async {
           Blocking(blockedById: member[2].id!, blockedId: member[0].id!),
         ]);
 
-        var deletedIds = await Member.db.deleteWhere(
+        var deleted = await Member.db.deleteWhere(
           session,
           where: (t) => t.blocking.every(
             (c) => c.blockedId.equals(member[0].id!),
           ),
         );
 
-        expect(deletedIds, [member[2].id!]);
+        expect(deleted, hasLength(1));
+        expect(deleted.firstOrNull?.id, member[2].id!);
       },
     );
 
@@ -68,14 +69,15 @@ void main() async {
           Blocking(blockedById: member[1].id!, blockedId: member[2].id!),
         ]);
 
-        var deletedIds = await Member.db.deleteWhere(
+        var deleted = await Member.db.deleteWhere(
           session,
           where: (t) =>
               t.blocking.every((o) => o.blockedBy.name.equals('Member1')) |
               t.name.equals('Member3'),
         );
 
-        expect(deletedIds, hasLength(2));
+        expect(deleted, hasLength(2));
+        var deletedIds = deleted.map((c) => c.id).toList();
         expect(deletedIds, containsAll([member[0].id!, member[2].id!]));
       },
     );
@@ -104,14 +106,15 @@ void main() async {
           Blocking(blockedById: member[2].id!, blockedId: member[0].id!),
         ]);
 
-        var deletedIds = await Member.db.deleteWhere(
+        var deleted = await Member.db.deleteWhere(
           session,
           where: (t) =>
               t.blocking.every((o) => o.blockedBy.name.equals('Member1')) |
               t.blocking.every((o) => o.blockedBy.name.equals('Member2')),
         );
 
-        expect(deletedIds, hasLength(2));
+        expect(deleted, hasLength(2));
+        var deletedIds = deleted.map((c) => c.id).toList();
         expect(deletedIds, [member[0].id!, member[1].id!]);
       },
     );

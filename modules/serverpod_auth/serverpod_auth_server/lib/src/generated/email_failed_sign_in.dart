@@ -308,7 +308,7 @@ class EmailFailedSignInRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<EmailFailedSignIn>> delete(
     _i1.Session session,
     List<EmailFailedSignIn> rows, {
     _i1.Transaction? transaction,
@@ -319,7 +319,7 @@ class EmailFailedSignInRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<EmailFailedSignIn> deleteRow(
     _i1.Session session,
     EmailFailedSignIn row, {
     _i1.Transaction? transaction,
@@ -330,7 +330,7 @@ class EmailFailedSignInRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<EmailFailedSignIn>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<EmailFailedSignInTable> where,
     _i1.Transaction? transaction,

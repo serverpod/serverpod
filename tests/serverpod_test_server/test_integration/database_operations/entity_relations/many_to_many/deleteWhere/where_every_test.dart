@@ -44,16 +44,18 @@ void main() async {
         Enrollment(studentId: students[3].id!, courseId: courses[5].id!),
       ]);
 
-      var deletedStudentIds = await Student.db.deleteWhere(
+      var deletedStudents = await Student.db.deleteWhere(
         session,
         // All students enrolled to only level 2 courses.
         where: (s) =>
             s.enrollments.every((e) => e.course.name.ilike('level 2:%')),
       );
 
-      expect(deletedStudentIds, [
+      expect(deletedStudents, hasLength(1));
+      expect(
+        deletedStudents.firstOrNull?.id,
         students[3].id, // Lisa
-      ]);
+      );
     });
 
     test(
@@ -84,7 +86,7 @@ void main() async {
         Enrollment(studentId: students[3].id!, courseId: courses[3].id!),
       ]);
 
-      var deletedStudentIds = await Student.db.deleteWhere(
+      var deletedStudents = await Student.db.deleteWhere(
         session,
         // All students enrolled to only math courses or is named Alex.
         where: (s) =>
@@ -92,7 +94,8 @@ void main() async {
             s.name.equals('Alex'),
       );
 
-      expect(deletedStudentIds, hasLength(2));
+      expect(deletedStudents, hasLength(2));
+      var deletedStudentIds = deletedStudents.map((c) => c.id).toList();
       expect(
           deletedStudentIds,
           containsAll([
@@ -131,7 +134,7 @@ void main() async {
         Enrollment(studentId: students[3].id!, courseId: courses[5].id!),
       ]);
 
-      var deletedStudentIds = await Student.db.deleteWhere(
+      var deletedStudents = await Student.db.deleteWhere(
         session,
         // All students enrolled to only level 2 courses or only math courses.
         where: (s) =>
@@ -139,7 +142,8 @@ void main() async {
             (s.enrollments.every((e) => e.course.name.ilike('%math%'))),
       );
 
-      expect(deletedStudentIds, hasLength(2));
+      expect(deletedStudents, hasLength(2));
+      var deletedStudentIds = deletedStudents.map((c) => c.id).toList();
       expect(
           deletedStudentIds,
           containsAll([

@@ -328,7 +328,7 @@ class EmailCreateAccountRequestRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<EmailCreateAccountRequest>> delete(
     _i1.Session session,
     List<EmailCreateAccountRequest> rows, {
     _i1.Transaction? transaction,
@@ -339,7 +339,7 @@ class EmailCreateAccountRequestRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<EmailCreateAccountRequest> deleteRow(
     _i1.Session session,
     EmailCreateAccountRequest row, {
     _i1.Transaction? transaction,
@@ -350,7 +350,7 @@ class EmailCreateAccountRequestRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<EmailCreateAccountRequest>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
     _i1.Transaction? transaction,

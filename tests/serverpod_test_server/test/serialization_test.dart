@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart' as server;
 import 'package:test/test.dart';
@@ -51,22 +50,6 @@ void main() {
     var unpacked = protocol.decode<Types>(encoded);
 
     expect(unpacked.aStringifiedEnum, TestEnumStringified.one);
-  });
-
-  test(
-      'Given a class with a nested serverpod object when serializing and unpacking then the origin value remains unchanged.',
-      () {
-    var type = server.ObjectWithServerpodObject(
-      logLevel1: LogLevel.debug,
-      logLevel2: LogLevel.error,
-    );
-
-    var encoded = SerializationManager.encode(type);
-    var unpacked =
-        serverProtocol.decode<server.ObjectWithServerpodObject>(encoded);
-
-    expect(unpacked.logLevel1, LogLevel.debug);
-    expect(unpacked.logLevel2, LogLevel.error);
   });
 
   test(

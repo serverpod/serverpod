@@ -150,10 +150,10 @@ class Database {
     );
   }
 
-  /// Deletes all [TableRow]s in the list and returns the deleted ids.
+  /// Deletes all [TableRow]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
-  Future<List<int>> delete<T extends TableRow>(
+  Future<List<T>> delete<T extends TableRow>(
     List<T> rows, {
     Transaction? transaction,
   }) async {
@@ -165,7 +165,7 @@ class Database {
   }
 
   /// Deletes a single [TableRow].
-  Future<int> deleteRow<T extends TableRow>(
+  Future<T> deleteRow<T extends TableRow>(
     T row, {
     Transaction? transaction,
   }) async {
@@ -177,7 +177,7 @@ class Database {
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<List<int>> deleteWhere<T extends TableRow>({
+  Future<List<T>> deleteWhere<T extends TableRow>({
     required Expression where,
     Transaction? transaction,
   }) async {

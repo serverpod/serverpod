@@ -260,7 +260,7 @@ class ObjectWithDurationRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<ObjectWithDuration>> delete(
     _i1.Session session,
     List<ObjectWithDuration> rows, {
     _i1.Transaction? transaction,
@@ -271,7 +271,7 @@ class ObjectWithDurationRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<ObjectWithDuration> deleteRow(
     _i1.Session session,
     ObjectWithDuration row, {
     _i1.Transaction? transaction,
@@ -282,7 +282,7 @@ class ObjectWithDurationRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<ObjectWithDuration>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ObjectWithDurationTable> where,
     _i1.Transaction? transaction,

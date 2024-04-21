@@ -1,12 +1,12 @@
 # TEMPLATE
 
 name: serverpod_cli
-version: VERSION
+version: SERVERPOD_VERSION
 description: Command line tools for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: DART_VERSION
 
 dependencies:
   archive: ^3.3.7
@@ -28,9 +28,9 @@ dependencies:
   pub_api_client: ^2.4.0
   uuid: ^4.0.0
   yaml: ^3.1.1
-  serverpod_shared: VERSION
-  serverpod_serialization: VERSION
-  serverpod_service_client: VERSION
+  serverpod_shared: SERVERPOD_VERSION
+  serverpod_serialization: SERVERPOD_VERSION
+  serverpod_service_client: SERVERPOD_VERSION
   async: ^2.11.0
   meta: ^1.8.0
   json_rpc_2: ^3.0.2
@@ -40,7 +40,7 @@ dependencies:
 
 
 dev_dependencies:
-  serverpod_lints: VERSION
+  serverpod_lints: SERVERPOD_VERSION
   test: ^1.24.2
 
 dependency_overrides:

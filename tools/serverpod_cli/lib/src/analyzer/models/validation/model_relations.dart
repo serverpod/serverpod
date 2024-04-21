@@ -2,14 +2,14 @@ import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 
 /// A collection of all parsed models, and their potential collisions.
-class ModelRelations {
+class ParsedModelsCollection {
   final List<SerializableModelDefinition> models;
   late final Set<String> modules;
   late final Map<String, List<SerializableModelDefinition>> classNames;
   late final Map<String, List<SerializableModelDefinition>> tableNames;
   late final Map<String, List<SerializableModelDefinition>> indexNames;
 
-  ModelRelations(this.models) {
+  ParsedModelsCollection(this.models) {
     modules = models.map((e) => e.moduleAlias).toSet();
     classNames = _createClassNameMap(models);
     tableNames = _createTableNameMap(models);

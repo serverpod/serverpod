@@ -374,7 +374,7 @@ class BlockingRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<Blocking>> delete(
     _i1.Session session,
     List<Blocking> rows, {
     _i1.Transaction? transaction,
@@ -385,7 +385,7 @@ class BlockingRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<Blocking> deleteRow(
     _i1.Session session,
     Blocking row, {
     _i1.Transaction? transaction,
@@ -396,7 +396,7 @@ class BlockingRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<Blocking>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<BlockingTable> where,
     _i1.Transaction? transaction,

@@ -308,7 +308,7 @@ class ArenaRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<Arena>> delete(
     _i1.Session session,
     List<Arena> rows, {
     _i1.Transaction? transaction,
@@ -319,7 +319,7 @@ class ArenaRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<Arena> deleteRow(
     _i1.Session session,
     Arena row, {
     _i1.Transaction? transaction,
@@ -330,7 +330,7 @@ class ArenaRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<Arena>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ArenaTable> where,
     _i1.Transaction? transaction,
