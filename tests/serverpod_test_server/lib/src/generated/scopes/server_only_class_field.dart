@@ -24,16 +24,18 @@ abstract class ServerOnlyClassField extends _i1.SerializableEntity {
   }) = _ServerOnlyClassFieldImpl;
 
   factory ServerOnlyClassField.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return ServerOnlyClassField(
-      serverOnlyClassList:
-          serializationManager.deserialize<List<_i2.ServerOnlyClass>?>(
-              jsonSerialization['serverOnlyClassList']),
+      serverOnlyClassList: (jsonSerialization['serverOnlyClassList'] as List?)
+          ?.map(
+              (e) => _i2.ServerOnlyClass.fromJson((e as Map<String, dynamic>)))
+          .toList(),
       serverOnlyClassMap:
-          serializationManager.deserialize<Map<String, _i2.ServerOnlyClass>?>(
-              jsonSerialization['serverOnlyClassMap']),
+          (jsonSerialization['serverOnlyClassMap'] as Map<dynamic, dynamic>?)
+              ?.map((k, v) => MapEntry(
+                    k as String,
+                    _i2.ServerOnlyClass.fromJson((v as Map<String, dynamic>)),
+                  )),
     );
   }
 

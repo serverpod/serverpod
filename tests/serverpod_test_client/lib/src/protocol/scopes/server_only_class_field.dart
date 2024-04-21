@@ -16,9 +16,7 @@ abstract class ServerOnlyClassField extends _i1.SerializableEntity {
   factory ServerOnlyClassField() = _ServerOnlyClassFieldImpl;
 
   factory ServerOnlyClassField.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return ServerOnlyClassField();
   }
 
