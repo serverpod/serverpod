@@ -254,7 +254,7 @@ class ScopeNoneFieldsRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<ScopeNoneFields>> delete(
     _i1.Session session,
     List<ScopeNoneFields> rows, {
     _i1.Transaction? transaction,
@@ -265,7 +265,7 @@ class ScopeNoneFieldsRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<ScopeNoneFields> deleteRow(
     _i1.Session session,
     ScopeNoneFields row, {
     _i1.Transaction? transaction,
@@ -276,7 +276,7 @@ class ScopeNoneFieldsRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<ScopeNoneFields>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
     _i1.Transaction? transaction,

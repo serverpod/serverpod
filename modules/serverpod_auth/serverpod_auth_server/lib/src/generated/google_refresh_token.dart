@@ -279,7 +279,7 @@ class GoogleRefreshTokenRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<GoogleRefreshToken>> delete(
     _i1.Session session,
     List<GoogleRefreshToken> rows, {
     _i1.Transaction? transaction,
@@ -290,7 +290,7 @@ class GoogleRefreshTokenRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<GoogleRefreshToken> deleteRow(
     _i1.Session session,
     GoogleRefreshToken row, {
     _i1.Transaction? transaction,
@@ -301,7 +301,7 @@ class GoogleRefreshTokenRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<GoogleRefreshToken>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<GoogleRefreshTokenTable> where,
     _i1.Transaction? transaction,

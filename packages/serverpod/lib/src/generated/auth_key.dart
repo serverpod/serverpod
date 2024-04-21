@@ -338,7 +338,7 @@ class AuthKeyRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<AuthKey>> delete(
     _i1.Session session,
     List<AuthKey> rows, {
     _i1.Transaction? transaction,
@@ -349,7 +349,7 @@ class AuthKeyRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<AuthKey> deleteRow(
     _i1.Session session,
     AuthKey row, {
     _i1.Transaction? transaction,
@@ -360,7 +360,7 @@ class AuthKeyRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<AuthKey>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<AuthKeyTable> where,
     _i1.Transaction? transaction,

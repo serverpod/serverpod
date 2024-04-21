@@ -257,7 +257,7 @@ class ObjectWithByteDataRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<ObjectWithByteData>> delete(
     _i1.Session session,
     List<ObjectWithByteData> rows, {
     _i1.Transaction? transaction,
@@ -268,7 +268,7 @@ class ObjectWithByteDataRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<ObjectWithByteData> deleteRow(
     _i1.Session session,
     ObjectWithByteData row, {
     _i1.Transaction? transaction,
@@ -279,7 +279,7 @@ class ObjectWithByteDataRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<ObjectWithByteData>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ObjectWithByteDataTable> where,
     _i1.Transaction? transaction,

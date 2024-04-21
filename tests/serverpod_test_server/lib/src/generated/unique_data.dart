@@ -273,7 +273,7 @@ class UniqueDataRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<UniqueData>> delete(
     _i1.Session session,
     List<UniqueData> rows, {
     _i1.Transaction? transaction,
@@ -284,7 +284,7 @@ class UniqueDataRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<UniqueData> deleteRow(
     _i1.Session session,
     UniqueData row, {
     _i1.Transaction? transaction,
@@ -295,7 +295,7 @@ class UniqueDataRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<UniqueData>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<UniqueDataTable> where,
     _i1.Transaction? transaction,

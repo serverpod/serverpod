@@ -300,7 +300,7 @@ class EmailAuthRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<EmailAuth>> delete(
     _i1.Session session,
     List<EmailAuth> rows, {
     _i1.Transaction? transaction,
@@ -311,7 +311,7 @@ class EmailAuthRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<EmailAuth> deleteRow(
     _i1.Session session,
     EmailAuth row, {
     _i1.Transaction? transaction,
@@ -322,7 +322,7 @@ class EmailAuthRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<EmailAuth>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<EmailAuthTable> where,
     _i1.Transaction? transaction,

@@ -434,7 +434,7 @@ class CitizenRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<Citizen>> delete(
     _i1.Session session,
     List<Citizen> rows, {
     _i1.Transaction? transaction,
@@ -445,7 +445,7 @@ class CitizenRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<Citizen> deleteRow(
     _i1.Session session,
     Citizen row, {
     _i1.Transaction? transaction,
@@ -456,7 +456,7 @@ class CitizenRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<Citizen>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<CitizenTable> where,
     _i1.Transaction? transaction,

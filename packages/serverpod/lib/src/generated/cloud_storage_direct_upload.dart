@@ -323,7 +323,7 @@ class CloudStorageDirectUploadEntryRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<CloudStorageDirectUploadEntry>> delete(
     _i1.Session session,
     List<CloudStorageDirectUploadEntry> rows, {
     _i1.Transaction? transaction,
@@ -334,7 +334,7 @@ class CloudStorageDirectUploadEntryRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<CloudStorageDirectUploadEntry> deleteRow(
     _i1.Session session,
     CloudStorageDirectUploadEntry row, {
     _i1.Transaction? transaction,
@@ -345,7 +345,7 @@ class CloudStorageDirectUploadEntryRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<CloudStorageDirectUploadEntry>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>
         where,

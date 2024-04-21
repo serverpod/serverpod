@@ -304,7 +304,7 @@ class DatabaseMigrationVersionRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<DatabaseMigrationVersion>> delete(
     _i1.Session session,
     List<DatabaseMigrationVersion> rows, {
     _i1.Transaction? transaction,
@@ -315,7 +315,7 @@ class DatabaseMigrationVersionRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<DatabaseMigrationVersion> deleteRow(
     _i1.Session session,
     DatabaseMigrationVersion row, {
     _i1.Transaction? transaction,
@@ -326,7 +326,7 @@ class DatabaseMigrationVersionRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<DatabaseMigrationVersion>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
     _i1.Transaction? transaction,

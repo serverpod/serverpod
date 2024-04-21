@@ -285,7 +285,7 @@ class ObjectFieldScopesRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<ObjectFieldScopes>> delete(
     _i1.Session session,
     List<ObjectFieldScopes> rows, {
     _i1.Transaction? transaction,
@@ -296,7 +296,7 @@ class ObjectFieldScopesRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<ObjectFieldScopes> deleteRow(
     _i1.Session session,
     ObjectFieldScopes row, {
     _i1.Transaction? transaction,
@@ -307,7 +307,7 @@ class ObjectFieldScopesRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<ObjectFieldScopes>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ObjectFieldScopesTable> where,
     _i1.Transaction? transaction,

@@ -267,7 +267,7 @@ class MaxFieldNameRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<MaxFieldName>> delete(
     _i1.Session session,
     List<MaxFieldName> rows, {
     _i1.Transaction? transaction,
@@ -278,7 +278,7 @@ class MaxFieldNameRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<MaxFieldName> deleteRow(
     _i1.Session session,
     MaxFieldName row, {
     _i1.Transaction? transaction,
@@ -289,7 +289,7 @@ class MaxFieldNameRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<MaxFieldName>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<MaxFieldNameTable> where,
     _i1.Transaction? transaction,

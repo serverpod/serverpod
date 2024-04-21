@@ -137,7 +137,8 @@ class LibraryGenerator {
           }..addEntries([
                   for (var classInfo in models)
                     if (classInfo is ClassDefinition)
-                      for (var field in classInfo.fields)
+                      for (var field in classInfo.fields.where(
+                          (field) => field.shouldIncludeField(serverCode)))
                         ...field.type.generateDeserialization(serverCode,
                             config: config),
                   for (var endPoint in protocolDefinition.endpoints)

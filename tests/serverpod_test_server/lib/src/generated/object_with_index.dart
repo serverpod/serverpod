@@ -274,7 +274,7 @@ class ObjectWithIndexRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<ObjectWithIndex>> delete(
     _i1.Session session,
     List<ObjectWithIndex> rows, {
     _i1.Transaction? transaction,
@@ -285,7 +285,7 @@ class ObjectWithIndexRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<ObjectWithIndex> deleteRow(
     _i1.Session session,
     ObjectWithIndex row, {
     _i1.Transaction? transaction,
@@ -296,7 +296,7 @@ class ObjectWithIndexRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<ObjectWithIndex>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ObjectWithIndexTable> where,
     _i1.Transaction? transaction,

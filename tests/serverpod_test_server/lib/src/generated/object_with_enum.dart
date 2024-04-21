@@ -350,7 +350,7 @@ class ObjectWithEnumRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<ObjectWithEnum>> delete(
     _i1.Session session,
     List<ObjectWithEnum> rows, {
     _i1.Transaction? transaction,
@@ -361,7 +361,7 @@ class ObjectWithEnumRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<ObjectWithEnum> deleteRow(
     _i1.Session session,
     ObjectWithEnum row, {
     _i1.Transaction? transaction,
@@ -372,7 +372,7 @@ class ObjectWithEnumRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<ObjectWithEnum>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ObjectWithEnumTable> where,
     _i1.Transaction? transaction,

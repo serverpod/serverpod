@@ -324,7 +324,7 @@ class CommentRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<Comment>> delete(
     _i1.Session session,
     List<Comment> rows, {
     _i1.Transaction? transaction,
@@ -335,7 +335,7 @@ class CommentRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<Comment> deleteRow(
     _i1.Session session,
     Comment row, {
     _i1.Transaction? transaction,
@@ -346,7 +346,7 @@ class CommentRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<Comment>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<CommentTable> where,
     _i1.Transaction? transaction,

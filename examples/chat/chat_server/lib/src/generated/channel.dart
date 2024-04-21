@@ -278,7 +278,7 @@ class ChannelRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<Channel>> delete(
     _i1.Session session,
     List<Channel> rows, {
     _i1.Transaction? transaction,
@@ -289,7 +289,7 @@ class ChannelRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<Channel> deleteRow(
     _i1.Session session,
     Channel row, {
     _i1.Transaction? transaction,
@@ -300,7 +300,7 @@ class ChannelRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<Channel>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ChannelTable> where,
     _i1.Transaction? transaction,

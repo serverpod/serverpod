@@ -349,7 +349,7 @@ class RelationToMultipleMaxFieldNameRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<RelationToMultipleMaxFieldName>> delete(
     _i1.Session session,
     List<RelationToMultipleMaxFieldName> rows, {
     _i1.Transaction? transaction,
@@ -360,7 +360,7 @@ class RelationToMultipleMaxFieldNameRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<RelationToMultipleMaxFieldName> deleteRow(
     _i1.Session session,
     RelationToMultipleMaxFieldName row, {
     _i1.Transaction? transaction,
@@ -371,7 +371,7 @@ class RelationToMultipleMaxFieldNameRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<RelationToMultipleMaxFieldName>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>
         where,

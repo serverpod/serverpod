@@ -345,7 +345,7 @@ class FutureCallEntryRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<FutureCallEntry>> delete(
     _i1.Session session,
     List<FutureCallEntry> rows, {
     _i1.Transaction? transaction,
@@ -356,7 +356,7 @@ class FutureCallEntryRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<FutureCallEntry> deleteRow(
     _i1.Session session,
     FutureCallEntry row, {
     _i1.Transaction? transaction,
@@ -367,7 +367,7 @@ class FutureCallEntryRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<FutureCallEntry>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<FutureCallEntryTable> where,
     _i1.Transaction? transaction,

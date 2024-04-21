@@ -300,7 +300,7 @@ class ChatReadMessageRepository {
     );
   }
 
-  Future<List<int>> delete(
+  Future<List<ChatReadMessage>> delete(
     _i1.Session session,
     List<ChatReadMessage> rows, {
     _i1.Transaction? transaction,
@@ -311,7 +311,7 @@ class ChatReadMessageRepository {
     );
   }
 
-  Future<int> deleteRow(
+  Future<ChatReadMessage> deleteRow(
     _i1.Session session,
     ChatReadMessage row, {
     _i1.Transaction? transaction,
@@ -322,7 +322,7 @@ class ChatReadMessageRepository {
     );
   }
 
-  Future<List<int>> deleteWhere(
+  Future<List<ChatReadMessage>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ChatReadMessageTable> where,
     _i1.Transaction? transaction,
