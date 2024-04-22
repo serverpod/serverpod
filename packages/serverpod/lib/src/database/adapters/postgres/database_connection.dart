@@ -370,8 +370,9 @@ class DatabaseConnection {
     bool simpleQueryMode = false,
     Object? parameters,
   }) async {
-
-    assert(parameters == null || parameters is List<Object?> || parameters is Map<String, Object?>);
+    assert(parameters == null ||
+        parameters is List<Object?> ||
+        parameters is Map<String, Object?>);
 
     var postgresTransaction = _castToPostgresTransaction(transaction);
     var timeout =
