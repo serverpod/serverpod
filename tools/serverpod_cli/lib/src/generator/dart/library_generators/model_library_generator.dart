@@ -767,7 +767,7 @@ class SerializableModelLibraryGenerator {
           .call([], {
             for (var field in fields)
               if (field.shouldIncludeField(serverCode))
-                field.name: expressionFromJsonBuilder(
+                field.name: buildFromJsonForField(
                     field, serverCode, config, classDefinition)
           })
           .returned

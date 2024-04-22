@@ -5,29 +5,15 @@ import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
-enum ValueType {
-  int,
-  double,
-  string,
-  bool,
-  dateTime,
-  duration,
-  byteData,
-  uuidValue,
-  list,
-  set,
-  map,
-  isEnum,
-  classType,
-}
-
-Expression expressionFromJsonBuilder(
+Expression buildFromJsonForField(
   SerializableModelFieldDefinition field,
   bool serverCode,
   GeneratorConfig config,
   ClassDefinition classDefinition,
 ) {
-  return _expressionTypeBuilder(
+  Reference jsonReference = refer('jsonSerialization');
+  return _buildFromJson(
+    jsonReference,
     field.type,
     serverCode,
     config,
@@ -36,23 +22,8 @@ Expression expressionFromJsonBuilder(
   );
 }
 
-ValueType _getValueType(TypeDefinition type) {
-  if (type.className == 'int') return ValueType.int;
-  if (type.className == 'double') return ValueType.double;
-  if (type.className == 'String') return ValueType.string;
-  if (type.className == 'bool') return ValueType.bool;
-  if (type.className == 'DateTime') return ValueType.dateTime;
-  if (type.className == 'Duration') return ValueType.duration;
-  if (type.className == 'ByteData') return ValueType.byteData;
-  if (type.className == 'UuidValue') return ValueType.uuidValue;
-  if (type.className == 'List') return ValueType.list;
-  if (type.className == 'Set') return ValueType.set;
-  if (type.className == 'Map') return ValueType.map;
-  if (type.isEnumType) return ValueType.isEnum;
-  return ValueType.classType;
-}
-
-Expression _expressionTypeBuilder(
+Expression _buildFromJson(
+  Reference jsonReference,
   TypeDefinition type,
   bool serverCode,
   GeneratorConfig config,
@@ -60,17 +31,16 @@ Expression _expressionTypeBuilder(
   String? fieldName,
   Expression? mapExpression,
 }) {
-  Reference jsonReference = refer('jsonSerialization');
   Expression valueExpression =
       mapExpression ?? jsonReference.index(literalString(fieldName!));
 
-  ValueType valueType = _getValueType(type);
+  ValueType valueType = type.valueType;
   switch (valueType) {
     case ValueType.int:
     case ValueType.double:
     case ValueType.string:
     case ValueType.bool:
-      return _expressionPrimitiveTypeBuilder(
+      return _buildPrimitiveTypeFromJson(
         type,
         valueExpression,
       );
@@ -78,13 +48,13 @@ Expression _expressionTypeBuilder(
     case ValueType.duration:
     case ValueType.byteData:
     case ValueType.uuidValue:
-      return _expressionOtherTypeBuilder(
+      return _buildComplexTypeFromJson(
         type,
         valueExpression,
         serverCode,
       );
     case ValueType.isEnum:
-      return _expressionEnumTypeBuilder(
+      return _buildEnumTypeFromJson(
         type,
         valueExpression,
         serverCode,
@@ -93,7 +63,8 @@ Expression _expressionTypeBuilder(
       );
     case ValueType.list:
     case ValueType.set:
-      return _expressionListOrSetTypeBuilder(
+      return _buildListOrSetTypeFromJson(
+        jsonReference,
         type,
         valueExpression,
         serverCode,
@@ -102,15 +73,16 @@ Expression _expressionTypeBuilder(
         valueType == ValueType.list,
       );
     case ValueType.map:
-      return _expressionMapTypeBuilder(
+      return _buildMapTypeFromJson(
+        jsonReference,
         type,
         valueExpression,
         serverCode,
         config,
         classDefinition,
       );
-    default:
-      return _expressionClassTypeBuilder(
+    case ValueType.classType:
+      return _buildClassTypeFromJson(
         type,
         valueExpression,
         serverCode,
@@ -120,7 +92,7 @@ Expression _expressionTypeBuilder(
   }
 }
 
-Expression _expressionPrimitiveTypeBuilder(
+Expression _buildPrimitiveTypeFromJson(
   TypeDefinition type,
   Expression valueExpression,
 ) {
@@ -133,13 +105,13 @@ Expression _expressionPrimitiveTypeBuilder(
   );
 }
 
-Expression _expressionOtherTypeBuilder(
+Expression _buildComplexTypeFromJson(
   TypeDefinition type,
   Expression valueExpression,
   bool serverCode,
 ) {
   return CodeExpression(
-    refer('${type.className}JsonExtension', serializationUrl(serverCode))
+    refer('${type.className}JsonExtension', serverpodUrl(serverCode))
         .property('fromJson')
         .call([valueExpression])
         .checkIfNull(type, valueExpression: valueExpression)
@@ -147,15 +119,18 @@ Expression _expressionOtherTypeBuilder(
   );
 }
 
-Expression _expressionEnumTypeBuilder(
+Expression _buildEnumTypeFromJson(
   TypeDefinition type,
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
   ClassDefinition classDefinition,
 ) {
-  Reference typRef = type.asNonNullable.reference(serverCode,
-      subDirParts: classDefinition.subDirParts, config: config);
+  Reference typeRef = type.asNonNullable.reference(
+    serverCode,
+    subDirParts: classDefinition.subDirParts,
+    config: config,
+  );
 
   EnumSerialization? enumSerialization = type.serializeEnum;
   if (enumSerialization == null) {
@@ -173,7 +148,7 @@ Expression _expressionEnumTypeBuilder(
   }
 
   return CodeExpression(
-    typRef
+    typeRef
         .property('fromJson')
         .call([valueExpression.asA(asReference)])
         .checkIfNull(type, valueExpression: valueExpression)
@@ -181,7 +156,8 @@ Expression _expressionEnumTypeBuilder(
   );
 }
 
-Expression _expressionListOrSetTypeBuilder(
+Expression _buildListOrSetTypeFromJson(
+  Reference jsonReference,
   TypeDefinition type,
   Expression valueExpression,
   bool serverCode,
@@ -197,7 +173,8 @@ Expression _expressionListOrSetTypeBuilder(
           ))
           .code,
       Code('${type.nullable ? '?' : ''}.map((e) => '),
-      _expressionTypeBuilder(
+      _buildFromJson(
+        jsonReference,
         type.generics.first,
         serverCode,
         config,
@@ -209,14 +186,15 @@ Expression _expressionListOrSetTypeBuilder(
   );
 }
 
-Expression _expressionMapTypeBuilder(
+Expression _buildMapTypeFromJson(
+  Reference jsonReference,
   TypeDefinition type,
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
   ClassDefinition classDefinition,
 ) {
-  if (_getValueType(type.generics.first) == ValueType.string) {
+  if (type.generics.first.valueType == ValueType.string) {
     return CodeExpression(
       Block.of([
         const Code('('),
@@ -225,14 +203,16 @@ Expression _expressionMapTypeBuilder(
           'as Map${type.nullable ? '?)?' : ')'}.map((k, v) =>',
         ),
         refer('MapEntry').call([
-          _expressionTypeBuilder(
+          _buildFromJson(
+            jsonReference,
             type.generics.first,
             serverCode,
             config,
             classDefinition,
             mapExpression: refer('k'),
           ),
-          _expressionTypeBuilder(
+          _buildFromJson(
+            jsonReference,
             type.generics.last,
             serverCode,
             config,
@@ -267,7 +247,8 @@ Expression _expressionMapTypeBuilder(
           )
           .code,
       const Code('>>({}, (t, e) => {...t, '),
-      _expressionTypeBuilder(
+      _buildFromJson(
+        jsonReference,
         type.generics.first,
         serverCode,
         config,
@@ -275,7 +256,8 @@ Expression _expressionMapTypeBuilder(
         mapExpression: refer('e').index(literalString('k')),
       ).code,
       const Code(':'),
-      _expressionTypeBuilder(
+      _buildFromJson(
+        jsonReference,
         type.generics.last,
         serverCode,
         config,
@@ -287,7 +269,7 @@ Expression _expressionMapTypeBuilder(
   );
 }
 
-Expression _expressionClassTypeBuilder(
+Expression _buildClassTypeFromJson(
   TypeDefinition type,
   Expression valueExpression,
   bool serverCode,
