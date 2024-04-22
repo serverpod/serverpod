@@ -39,11 +39,13 @@ abstract class CloudStorageEntry extends _i1.TableRow {
       id: jsonSerialization['id'] as int?,
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
-      addedTime: _i1.DateTimeExt.fromJson(jsonSerialization['addedTime']),
+      addedTime:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['addedTime']),
       expiration: jsonSerialization['expiration'] == null
           ? null
-          : _i1.DateTimeExt.fromJson(jsonSerialization['expiration']),
-      byteData: _i1.ByteDataExt.fromJson(jsonSerialization['byteData']),
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
+      byteData:
+          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['byteData']),
       verified: jsonSerialization['verified'] as bool,
     );
   }

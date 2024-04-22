@@ -39,7 +39,8 @@ abstract class ServerHealthConnectionInfo extends _i1.SerializableEntity {
     return ServerHealthConnectionInfo(
       id: jsonSerialization['id'] as int?,
       serverId: jsonSerialization['serverId'] as String,
-      timestamp: _i1.DateTimeExt.fromJson(jsonSerialization['timestamp']),
+      timestamp:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
       active: jsonSerialization['active'] as int,
       closing: jsonSerialization['closing'] as int,
       idle: jsonSerialization['idle'] as int,

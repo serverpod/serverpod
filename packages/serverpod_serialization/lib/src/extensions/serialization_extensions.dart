@@ -4,7 +4,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Expose toJson on DateTime
 /// Expose static fromJson builder
-extension DateTimeExt on DateTime {
+extension DateTimeJsonExtension on DateTime {
   /// Returns a deserialized version of the [DateTime].
   static DateTime fromJson(dynamic value) {
     if (value is DateTime) return value;
@@ -17,7 +17,7 @@ extension DateTimeExt on DateTime {
 
 /// Expose toJson on Duration
 /// Expose static fromJson builder
-extension DurationExt on Duration {
+extension DurationJsonExtension on Duration {
   /// Returns a deserialized version of the [Duration].
   static Duration fromJson<T>(dynamic value) {
     if (value is Duration) return value;
@@ -30,7 +30,7 @@ extension DurationExt on Duration {
 
 /// Expose toJson on UuidValue
 /// Expose static fromJson builder
-extension UuidValueExt on UuidValue {
+extension UuidValueJsonExtension on UuidValue {
   /// Returns a deserialized version of the [UuidValue].
   static UuidValue fromJson(dynamic value) {
     if (value is UuidValue) return value;
@@ -43,7 +43,7 @@ extension UuidValueExt on UuidValue {
 
 /// Expose toJson on ByteData
 /// Expose static fromJson builder
-extension ByteDataExt on ByteData {
+extension ByteDataJsonExtension on ByteData {
   /// Returns a deserialized version of the [ByteData]
   static ByteData fromJson(dynamic value) {
     if (value is ByteData) return value;
@@ -64,7 +64,7 @@ extension ByteDataExt on ByteData {
 }
 
 /// Expose toJson on Map
-extension MapExt<K, V> on Map<K, V> {
+extension MapJsonExtension<K, V> on Map<K, V> {
   Type get _keyType => K;
 
   /// Returns a serialized version of the [Map] with keys and values serialized.
@@ -98,7 +98,7 @@ extension MapExt<K, V> on Map<K, V> {
 }
 
 /// Expose toJson on List
-extension ListExt<T> on List<T> {
+extension ListJsonExtension<T> on List<T> {
   /// Returns a serialized version of the [List] with values serialized.
   List<dynamic> toJson({dynamic Function(T)? valueToJson}) {
     if (valueToJson == null) return this;

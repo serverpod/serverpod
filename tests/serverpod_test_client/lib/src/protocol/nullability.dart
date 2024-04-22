@@ -121,22 +121,29 @@ abstract class Nullability extends _i1.SerializableEntity {
       aNullableBool: jsonSerialization['aNullableBool'] as bool?,
       aString: jsonSerialization['aString'] as String,
       aNullableString: jsonSerialization['aNullableString'] as String?,
-      aDateTime: _i1.DateTimeExt.fromJson(jsonSerialization['aDateTime']),
+      aDateTime:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['aDateTime']),
       aNullableDateTime: jsonSerialization['aNullableDateTime'] == null
           ? null
-          : _i1.DateTimeExt.fromJson(jsonSerialization['aNullableDateTime']),
-      aByteData: _i1.ByteDataExt.fromJson(jsonSerialization['aByteData']),
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['aNullableDateTime']),
+      aByteData:
+          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['aByteData']),
       aNullableByteData: jsonSerialization['aNullableByteData'] == null
           ? null
-          : _i1.ByteDataExt.fromJson(jsonSerialization['aNullableByteData']),
-      aDuration: _i1.DurationExt.fromJson(jsonSerialization['aDuration']),
+          : _i1.ByteDataJsonExtension.fromJson(
+              jsonSerialization['aNullableByteData']),
+      aDuration:
+          _i1.DurationJsonExtension.fromJson(jsonSerialization['aDuration']),
       aNullableDuration: jsonSerialization['aNullableDuration'] == null
           ? null
-          : _i1.DurationExt.fromJson(jsonSerialization['aNullableDuration']),
-      aUuid: _i1.UuidValueExt.fromJson(jsonSerialization['aUuid']),
+          : _i1.DurationJsonExtension.fromJson(
+              jsonSerialization['aNullableDuration']),
+      aUuid: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['aUuid']),
       aNullableUuid: jsonSerialization['aNullableUuid'] == null
           ? null
-          : _i1.UuidValueExt.fromJson(jsonSerialization['aNullableUuid']),
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['aNullableUuid']),
       anObject: _i3.SimpleData.fromJson(
           (jsonSerialization['anObject'] as Map<String, dynamic>)),
       aNullableObject: jsonSerialization['aNullableObject'] == null
@@ -176,84 +183,81 @@ abstract class Nullability extends _i1.SerializableEntity {
                   : _i3.SimpleData.fromJson((e as Map<String, dynamic>)))
               .toList(),
       aDateTimeList: (jsonSerialization['aDateTimeList'] as List)
-          .map((e) => _i1.DateTimeExt.fromJson(e))
+          .map((e) => _i1.DateTimeJsonExtension.fromJson(e))
           .toList(),
       aNullableDateTimeList:
           (jsonSerialization['aNullableDateTimeList'] as List?)
-              ?.map((e) => _i1.DateTimeExt.fromJson(e))
+              ?.map((e) => _i1.DateTimeJsonExtension.fromJson(e))
               .toList(),
-      aListWithNullableDateTimes:
-          (jsonSerialization['aListWithNullableDateTimes'] as List)
-              .map((e) => e == null ? null : _i1.DateTimeExt.fromJson(e))
-              .toList(),
-      aNullableListWithNullableDateTimes:
-          (jsonSerialization['aNullableListWithNullableDateTimes'] as List?)
-              ?.map((e) => e == null ? null : _i1.DateTimeExt.fromJson(e))
-              .toList(),
+      aListWithNullableDateTimes: (jsonSerialization[
+              'aListWithNullableDateTimes'] as List)
+          .map((e) => e == null ? null : _i1.DateTimeJsonExtension.fromJson(e))
+          .toList(),
+      aNullableListWithNullableDateTimes: (jsonSerialization[
+              'aNullableListWithNullableDateTimes'] as List?)
+          ?.map((e) => e == null ? null : _i1.DateTimeJsonExtension.fromJson(e))
+          .toList(),
       aByteDataList: (jsonSerialization['aByteDataList'] as List)
-          .map((e) => _i1.ByteDataExt.fromJson(e))
+          .map((e) => _i1.ByteDataJsonExtension.fromJson(e))
           .toList(),
       aNullableByteDataList:
           (jsonSerialization['aNullableByteDataList'] as List?)
-              ?.map((e) => _i1.ByteDataExt.fromJson(e))
+              ?.map((e) => _i1.ByteDataJsonExtension.fromJson(e))
               .toList(),
-      aListWithNullableByteDatas:
-          (jsonSerialization['aListWithNullableByteDatas'] as List)
-              .map((e) => e == null ? null : _i1.ByteDataExt.fromJson(e))
-              .toList(),
-      aNullableListWithNullableByteDatas:
-          (jsonSerialization['aNullableListWithNullableByteDatas'] as List?)
-              ?.map((e) => e == null ? null : _i1.ByteDataExt.fromJson(e))
-              .toList(),
+      aListWithNullableByteDatas: (jsonSerialization[
+              'aListWithNullableByteDatas'] as List)
+          .map((e) => e == null ? null : _i1.ByteDataJsonExtension.fromJson(e))
+          .toList(),
+      aNullableListWithNullableByteDatas: (jsonSerialization[
+              'aNullableListWithNullableByteDatas'] as List?)
+          ?.map((e) => e == null ? null : _i1.ByteDataJsonExtension.fromJson(e))
+          .toList(),
       aDurationList: (jsonSerialization['aDurationList'] as List)
-          .map((e) => _i1.DurationExt.fromJson(e))
+          .map((e) => _i1.DurationJsonExtension.fromJson(e))
           .toList(),
       aNullableDurationList:
           (jsonSerialization['aNullableDurationList'] as List?)
-              ?.map((e) => _i1.DurationExt.fromJson(e))
+              ?.map((e) => _i1.DurationJsonExtension.fromJson(e))
               .toList(),
-      aListWithNullableDurations:
-          (jsonSerialization['aListWithNullableDurations'] as List)
-              .map((e) => e == null ? null : _i1.DurationExt.fromJson(e))
-              .toList(),
-      aNullableListWithNullableDurations:
-          (jsonSerialization['aNullableListWithNullableDurations'] as List?)
-              ?.map((e) => e == null ? null : _i1.DurationExt.fromJson(e))
-              .toList(),
+      aListWithNullableDurations: (jsonSerialization[
+              'aListWithNullableDurations'] as List)
+          .map((e) => e == null ? null : _i1.DurationJsonExtension.fromJson(e))
+          .toList(),
+      aNullableListWithNullableDurations: (jsonSerialization[
+              'aNullableListWithNullableDurations'] as List?)
+          ?.map((e) => e == null ? null : _i1.DurationJsonExtension.fromJson(e))
+          .toList(),
       aUuidList: (jsonSerialization['aUuidList'] as List)
-          .map((e) => _i1.UuidValueExt.fromJson(e))
+          .map((e) => _i1.UuidValueJsonExtension.fromJson(e))
           .toList(),
       aNullableUuidList: (jsonSerialization['aNullableUuidList'] as List?)
-          ?.map((e) => _i1.UuidValueExt.fromJson(e))
+          ?.map((e) => _i1.UuidValueJsonExtension.fromJson(e))
           .toList(),
-      aListWithNullableUuids:
-          (jsonSerialization['aListWithNullableUuids'] as List)
-              .map((e) => e == null ? null : _i1.UuidValueExt.fromJson(e))
-              .toList(),
+      aListWithNullableUuids: (jsonSerialization['aListWithNullableUuids']
+              as List)
+          .map((e) => e == null ? null : _i1.UuidValueJsonExtension.fromJson(e))
+          .toList(),
       aNullableListWithNullableUuids:
           (jsonSerialization['aNullableListWithNullableUuids'] as List?)
-              ?.map((e) => e == null ? null : _i1.UuidValueExt.fromJson(e))
+              ?.map((e) =>
+                  e == null ? null : _i1.UuidValueJsonExtension.fromJson(e))
               .toList(),
-      anIntMap: (jsonSerialization['anIntMap'] as Map<dynamic, dynamic>)
-          .map((k, v) => MapEntry(
+      anIntMap: (jsonSerialization['anIntMap'] as Map).map((k, v) => MapEntry(
+            k as String,
+            v as int,
+          )),
+      aNullableIntMap: (jsonSerialization['aNullableIntMap'] as Map?)
+          ?.map((k, v) => MapEntry(
                 k as String,
                 v as int,
               )),
-      aNullableIntMap:
-          (jsonSerialization['aNullableIntMap'] as Map<dynamic, dynamic>?)
-              ?.map((k, v) => MapEntry(
-                    k as String,
-                    v as int,
-                  )),
-      aMapWithNullableInts:
-          (jsonSerialization['aMapWithNullableInts'] as Map<dynamic, dynamic>)
-              .map((k, v) => MapEntry(
-                    k as String,
-                    v as int?,
-                  )),
+      aMapWithNullableInts: (jsonSerialization['aMapWithNullableInts'] as Map)
+          .map((k, v) => MapEntry(
+                k as String,
+                v as int?,
+              )),
       aNullableMapWithNullableInts:
-          (jsonSerialization['aNullableMapWithNullableInts']
-                  as Map<dynamic, dynamic>?)
+          (jsonSerialization['aNullableMapWithNullableInts'] as Map?)
               ?.map((k, v) => MapEntry(
                     k as String,
                     v as int?,

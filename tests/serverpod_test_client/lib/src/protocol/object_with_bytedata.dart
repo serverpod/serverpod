@@ -25,7 +25,8 @@ abstract class ObjectWithByteData extends _i1.SerializableEntity {
   factory ObjectWithByteData.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithByteData(
       id: jsonSerialization['id'] as int?,
-      byteData: _i1.ByteDataExt.fromJson(jsonSerialization['byteData']),
+      byteData:
+          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['byteData']),
     );
   }
 

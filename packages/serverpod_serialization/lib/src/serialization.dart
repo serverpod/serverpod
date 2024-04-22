@@ -54,14 +54,6 @@ abstract class SerializationManager {
   T deserialize<T>(dynamic data, [Type? t]) {
     t ??= T;
 
-    if (data == null) {
-      if (null is! T) {
-        throw FormatException(
-          'Failed to deserialize data. The provided data is null, and the target type $T cannot be instantiated.',
-        );
-      }
-    }
-
     //TODO: all the "dart native" types should be listed here
     if (_isNullableType<int>(t)) {
       return data;
@@ -73,16 +65,16 @@ abstract class SerializationManager {
       return data;
     } else if (_isNullableType<DateTime>(t)) {
       if (data == null) return null as T;
-      return DateTimeExt.fromJson(data) as T;
+      return DateTimeJsonExtension.fromJson(data) as T;
     } else if (_isNullableType<ByteData>(t)) {
       if (data == null) return null as T;
-      return ByteDataExt.fromJson(data) as T;
+      return ByteDataJsonExtension.fromJson(data) as T;
     } else if (_isNullableType<Duration>(t)) {
       if (data == null) return null as T;
-      return DurationExt.fromJson(data) as T;
+      return DurationJsonExtension.fromJson(data) as T;
     } else if (_isNullableType<UuidValue>(t)) {
       if (data == null) return null as T;
-      return UuidValueExt.fromJson(data) as T;
+      return UuidValueJsonExtension.fromJson(data) as T;
     }
     throw FormatException('No deserialization found for type $t');
   }
@@ -165,8 +157,7 @@ abstract class SerializationManager {
           return nonEncodable.inMilliseconds;
         } else if (nonEncodable is UuidValue) {
           return nonEncodable.uuid;
-        } else if (nonEncodable is Map<dynamic, dynamic> &&
-            nonEncodable.keyType != String) {
+        } else if (nonEncodable is Map && nonEncodable.keyType != String) {
           return nonEncodable.entries
               .map((e) => {'k': e.key, 'v': e.value})
               .toList();

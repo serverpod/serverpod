@@ -1,5 +1,5 @@
 /// Convenience methods for DateTime. Use only with UTC times.
-extension DateTimeExt on DateTime {
+extension DateTimeJsonExtension on DateTime {
   /// Returns true if [other] is the same hour.
   bool isSameHour(DateTime other) =>
       year == other.year &&

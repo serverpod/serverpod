@@ -139,7 +139,7 @@ Expression _expressionOtherTypeBuilder(
   bool serverCode,
 ) {
   return CodeExpression(
-    refer('${type.className}Ext', serializationUrl(serverCode))
+    refer('${type.className}JsonExtension', serializationUrl(serverCode))
         .property('fromJson')
         .call([valueExpression])
         .checkIfNull(type, valueExpression: valueExpression)
@@ -222,7 +222,7 @@ Expression _expressionMapTypeBuilder(
         const Code('('),
         valueExpression.code,
         Code(
-          'as Map<dynamic, dynamic> ${type.nullable ? '?)?' : ')'}.map((k, v) =>',
+          'as Map${type.nullable ? '?)?' : ')'}.map((k, v) =>',
         ),
         refer('MapEntry').call([
           _expressionTypeBuilder(

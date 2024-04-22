@@ -46,7 +46,7 @@ abstract class ChatMessage extends _i1.TableRow {
       id: jsonSerialization['id'] as int?,
       channel: jsonSerialization['channel'] as String,
       message: jsonSerialization['message'] as String,
-      time: _i1.DateTimeExt.fromJson(jsonSerialization['time']),
+      time: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
       sender: jsonSerialization['sender'] as int,
       senderInfo: jsonSerialization['senderInfo'] == null
           ? null

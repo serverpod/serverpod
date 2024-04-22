@@ -50,17 +50,17 @@ abstract class Types extends _i1.TableRow {
       aDouble: jsonSerialization['aDouble'] as double?,
       aDateTime: jsonSerialization['aDateTime'] == null
           ? null
-          : _i1.DateTimeExt.fromJson(jsonSerialization['aDateTime']),
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['aDateTime']),
       aString: jsonSerialization['aString'] as String?,
       aByteData: jsonSerialization['aByteData'] == null
           ? null
-          : _i1.ByteDataExt.fromJson(jsonSerialization['aByteData']),
+          : _i1.ByteDataJsonExtension.fromJson(jsonSerialization['aByteData']),
       aDuration: jsonSerialization['aDuration'] == null
           ? null
-          : _i1.DurationExt.fromJson(jsonSerialization['aDuration']),
+          : _i1.DurationJsonExtension.fromJson(jsonSerialization['aDuration']),
       aUuid: jsonSerialization['aUuid'] == null
           ? null
-          : _i1.UuidValueExt.fromJson(jsonSerialization['aUuid']),
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['aUuid']),
       anEnum: jsonSerialization['anEnum'] == null
           ? null
           : _i3.TestEnum.fromJson((jsonSerialization['anEnum'] as int)),

@@ -34,7 +34,8 @@ abstract class BulkQueryResult extends _i1.SerializableEntity {
           .toList(),
       data: jsonSerialization['data'] as String,
       numAffectedRows: jsonSerialization['numAffectedRows'] as int,
-      duration: _i1.DurationExt.fromJson(jsonSerialization['duration']),
+      duration:
+          _i1.DurationJsonExtension.fromJson(jsonSerialization['duration']),
     );
   }
 

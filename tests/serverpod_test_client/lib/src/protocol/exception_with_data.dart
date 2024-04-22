@@ -29,7 +29,8 @@ abstract class ExceptionWithData extends _i1.SerializableEntity
   factory ExceptionWithData.fromJson(Map<String, dynamic> jsonSerialization) {
     return ExceptionWithData(
       message: jsonSerialization['message'] as String,
-      creationDate: _i1.DateTimeExt.fromJson(jsonSerialization['creationDate']),
+      creationDate:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['creationDate']),
       errorFields: (jsonSerialization['errorFields'] as List)
           .map((e) => e as String)
           .toList(),

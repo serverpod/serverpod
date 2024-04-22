@@ -56,19 +56,19 @@ abstract class TypesList extends _i1.SerializableEntity {
           ?.map((e) => e as double)
           .toList(),
       aDateTime: (jsonSerialization['aDateTime'] as List?)
-          ?.map((e) => _i1.DateTimeExt.fromJson(e))
+          ?.map((e) => _i1.DateTimeJsonExtension.fromJson(e))
           .toList(),
       aString: (jsonSerialization['aString'] as List?)
           ?.map((e) => e as String)
           .toList(),
       aByteData: (jsonSerialization['aByteData'] as List?)
-          ?.map((e) => _i1.ByteDataExt.fromJson(e))
+          ?.map((e) => _i1.ByteDataJsonExtension.fromJson(e))
           .toList(),
       aDuration: (jsonSerialization['aDuration'] as List?)
-          ?.map((e) => _i1.DurationExt.fromJson(e))
+          ?.map((e) => _i1.DurationJsonExtension.fromJson(e))
           .toList(),
       aUuid: (jsonSerialization['aUuid'] as List?)
-          ?.map((e) => _i1.UuidValueExt.fromJson(e))
+          ?.map((e) => _i1.UuidValueJsonExtension.fromJson(e))
           .toList(),
       anEnum: (jsonSerialization['anEnum'] as List?)
           ?.map((e) => _i3.TestEnum.fromJson((e as int)))
@@ -80,7 +80,7 @@ abstract class TypesList extends _i1.SerializableEntity {
           ?.map((e) => _i3.Types.fromJson((e as Map<String, dynamic>)))
           .toList(),
       aMap: (jsonSerialization['aMap'] as List?)
-          ?.map((e) => (e as Map<dynamic, dynamic>).map((k, v) => MapEntry(
+          ?.map((e) => (e as Map).map((k, v) => MapEntry(
                 k as String,
                 _i3.Types.fromJson((v as Map<String, dynamic>)),
               )))

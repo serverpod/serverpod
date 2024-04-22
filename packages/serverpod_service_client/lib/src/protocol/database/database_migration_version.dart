@@ -34,7 +34,7 @@ abstract class DatabaseMigrationVersion extends _i1.SerializableEntity {
       version: jsonSerialization['version'] as String,
       timestamp: jsonSerialization['timestamp'] == null
           ? null
-          : _i1.DateTimeExt.fromJson(jsonSerialization['timestamp']),
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
     );
   }
 

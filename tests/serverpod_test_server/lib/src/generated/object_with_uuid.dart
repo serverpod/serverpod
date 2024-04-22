@@ -27,10 +27,11 @@ abstract class ObjectWithUuid extends _i1.TableRow {
   factory ObjectWithUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithUuid(
       id: jsonSerialization['id'] as int?,
-      uuid: _i1.UuidValueExt.fromJson(jsonSerialization['uuid']),
+      uuid: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['uuid']),
       uuidNullable: jsonSerialization['uuidNullable'] == null
           ? null
-          : _i1.UuidValueExt.fromJson(jsonSerialization['uuidNullable']),
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uuidNullable']),
     );
   }
 
