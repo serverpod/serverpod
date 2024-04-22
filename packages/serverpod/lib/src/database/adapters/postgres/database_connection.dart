@@ -330,7 +330,6 @@ class DatabaseConnection {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
-    Object? parameters,
   }) async {
     var result = await _query(
       session,
@@ -338,7 +337,6 @@ class DatabaseConnection {
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
       simpleQueryMode: true,
-      parameters: parameters,
     );
 
     return PostgresDatabaseResult(result);
@@ -372,6 +370,9 @@ class DatabaseConnection {
     bool simpleQueryMode = false,
     Object? parameters,
   }) async {
+
+    assert(parameters == null || parameters is List<Object?> || parameters is Map<String, Object?>);
+
     var postgresTransaction = _castToPostgresTransaction(transaction);
     var timeout =
         timeoutInSeconds != null ? Duration(seconds: timeoutInSeconds) : null;
@@ -382,7 +383,10 @@ class DatabaseConnection {
           postgresTransaction?.executionContext ?? _postgresConnection;
 
       var result = await context.execute(
-        query,
+        switch (parameters) {
+          (Map<String, Object?> _) => pg.Sql.named(query),
+          _ => query,
+        },
         timeout: timeout,
         ignoreRows: ignoreRows,
         queryMode: simpleQueryMode ? pg.QueryMode.simple : null,
@@ -442,7 +446,6 @@ class DatabaseConnection {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
-    Object? parameters,
   }) async {
     var result = await _query(
       session,
@@ -451,7 +454,6 @@ class DatabaseConnection {
       transaction: transaction,
       ignoreRows: true,
       simpleQueryMode: true,
-      parameters: parameters,
     );
 
     return result.affectedRows;

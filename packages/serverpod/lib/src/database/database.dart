@@ -254,10 +254,7 @@ class Database {
   /// A [List] of rows represented of another [List] with columns will be
   /// returned.
   ///
-  /// Parameters can be passed via the parameter argument, which must be one of
-  /// * ```List<Object?|TypedValue>```
-  /// * ```Map<String, Object?|TypedValue>```
-  ///
+  /// The simple query protocol does not support parameter binding.
   /// You are responsible to sanitize the query to avoid SQL injection.
   ///
   /// Simple query mode is useful for queries that contain multiple statements.
@@ -265,24 +262,19 @@ class Database {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
-    Object? parameters,
   }) async {
     return _databaseConnection.simpleQuery(
       _session,
       query,
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
-      parameters: parameters,
     );
   }
 
   /// Executes a single SQL query in simple query mode.
   /// Returns the number of rows that were affected by the query.
   ///
-  /// Parameters can be passed via the parameter argument, which must be one of
-  /// * ```List<Object?|TypedValue>```
-  /// * ```Map<String, Object?|TypedValue>```
-  ///
+  /// The simple query protocol does not support parameter binding.
   /// You are responsible to sanitize the query to avoid SQL injection.
   ///
   /// Simple query mode is useful for queries that contain multiple statements.
@@ -290,14 +282,12 @@ class Database {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
-    Object? parameters,
   }) async {
     return _databaseConnection.simpleExecute(
       _session,
       query,
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
-      parameters: parameters,
     );
   }
 
