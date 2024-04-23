@@ -135,7 +135,7 @@ Expression _buildFromJson(
     case ValueType.isEnum:
       EnumSerialization? enumSerialization = type.serializeEnum;
       if (enumSerialization == null) {
-        throw ArgumentError("Expected 'enumSerialization' not to be null!");
+        throw StateError("Expected 'enumSerialization' not to be null!");
       }
       return _buildEnumTypeFromJson(
         enumSerialization,

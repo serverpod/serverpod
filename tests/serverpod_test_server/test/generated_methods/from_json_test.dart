@@ -1,9 +1,10 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 void main() {
   test(
-      'When deserializing a class and providing null value for a non-nullable value in JSON, it should throw a TypeError.',
+      'Given a non-nullable field, when deserializing from JSON with null value, then a TypeError is thrown',
       () {
     expect(
       () => SimpleData.fromJson({"num": null}),
@@ -12,7 +13,7 @@ void main() {
   });
 
   test(
-      'When deserializing a class which has non-nullable types and providing a empty JSON, it should throw a TypeError.',
+      'Given a class with non-nullable fields, when deserializing from an empty JSON, then a TypeError is thrown',
       () {
     expect(
       () => SimpleData.fromJson({}),
@@ -21,61 +22,116 @@ void main() {
   });
 
   test(
-      'When deserializing a class with non-nullable values and providing correct values in JSON, it should not throw a TypeError.',
+      'Given a class with a nullable integer field, when deserializing from JSON with correct, incorrect, and null values, then proper behavior is observed',
       () {
     expect(
-      SimpleData.fromJson({
-        "id": 1,
-        "num": 1,
-      }),
-      isA<SimpleData>(),
+      Types.fromJson({'anInt': 1}).anInt,
+      1,
     );
-  });
 
-  test(
-      'When deserializing a class with non-nullable types but providing different value types in JSON, it should throw a TypeError.',
-      () {
     expect(
-      () => SimpleData.fromJson({
-        "id": "test",
-        "num": "test",
-      }),
+      () => Types.fromJson({'anInt': '1'}).anInt,
       throwsA(isA<TypeError>()),
     );
+
+    expect(
+      Types.fromJson({'anInt': null}).anInt,
+      null,
+    );
   });
 
   test(
-      'When deserializing a class with non-nullable DateTime and correct value provided in JSON, expecting values to be deserialized correctly.',
+      'Given a class with a nullable double field, when deserializing from JSON with correct, incorrect, and null values, then it behaves as expected',
       () {
-    var types = Types.fromJson({
-      'aDateTime': '2024-01-01T00:00:00.000Z',
-    });
     expect(
-      types.aDateTime,
+      Types.fromJson({'aDouble': 20.20}).aDouble,
+      20.20,
+    );
+
+    expect(
+      () => Types.fromJson({'aDouble': '20.20'}).aDouble,
+      throwsA(isA<TypeError>()),
+    );
+
+    expect(
+      Types.fromJson({'aDouble': null}).aDouble,
+      null,
+    );
+  });
+
+  test(
+      'Given a class with a nullable boolean field, when deserializing from JSON with correct, incorrect, and null values, then it behaves as expected',
+      () {
+    expect(
+      Types.fromJson({'aBool': true}).aBool,
+      true,
+    );
+
+    expect(
+      () => Types.fromJson({'aBool': 'true'}).aBool,
+      throwsA(isA<TypeError>()),
+    );
+
+    expect(
+      Types.fromJson({'aBool': null}).aBool,
+      null,
+    );
+  });
+
+  test(
+      'Given non-nullable DateTime, when deserializing with correct value in JSON, then the value is deserialized correctly',
+      () {
+    expect(
+      Types.fromJson({'aDateTime': '2024-01-01T00:00:00.000Z'}).aDateTime,
+      DateTime.tryParse('2024-01-01T00:00:00.000Z'),
+    );
+
+    expect(
+      Types.fromJson(
+        {'aDateTime': DateTime.tryParse('2024-01-01T00:00:00.000Z')},
+      ).aDateTime,
       DateTime.tryParse('2024-01-01T00:00:00.000Z'),
     );
   });
 
   test(
-      'When deserializing a class with non-nullable Duration and correct value provided in JSON, expecting values to be deserialized correctly.',
+      'Given non-nullable Duration, when deserializing with correct value in JSON, then the value is deserialized correctly',
       () {
-    var types = Types.fromJson({
-      'aDuration': 1000,
-    });
+    expect(
+      Types.fromJson({'aDuration': 1000}).aDuration?.inMilliseconds,
+      1000,
+    );
 
     expect(
-      types.aDuration?.inMilliseconds,
+      Types.fromJson({'aDuration': Duration(milliseconds: 1000)})
+          .aDuration
+          ?.inMilliseconds,
       1000,
     );
   });
 
   test(
-      'When deserializing a class with non-nullable Enum and correct value provided in JSON, expecting values to be deserialized correctly.',
+      'Given non-nullable UUID fields, when deserialized from JSON, then the UUID values are deserialized correctly',
       () {
-    var types = Types.fromJson({
-      'anEnum': 0,
-    });
+    expect(
+      Types.fromJson({'aUuid': '00000000-0000-0000-0000-000000000000'})
+          .aUuid
+          ?.uuid,
+      '00000000-0000-0000-0000-000000000000',
+    );
 
+    expect(
+      Types.fromJson({
+        'aUuid': UuidValue.fromString('00000000-0000-0000-0000-000000000000')
+      }).aUuid?.uuid,
+      '00000000-0000-0000-0000-000000000000',
+    );
+  });
+
+  test(
+      'Given non-nullable Enum, when deserializing with correct value in JSON, then the value is deserialized correctly',
+      () {
+    var types = Types.fromJson({'anEnum': 0});
     expect(
       types.anEnum,
       TestEnum.one,
@@ -83,75 +139,59 @@ void main() {
   });
 
   test(
-      'When deserializing a class with non-nullable Enum and wrong value type provided in JSON, it should throw a TypeError.',
+      'Given a class with non-nullable Enum, when deserializing with wrong value type in JSON, then a TypeError is thrown',
       () {
     expect(
-      () => Types.fromJson({
-        'anEnum': 'one',
+      () => Types.fromJson({'anEnum': 'one'}),
+      throwsA(isA<TypeError>()),
+    );
+  });
+
+  test(
+      'Given non-nullable Enum, when deserializing with invalid value in JSON, then an ArgumentError is thrown',
+      () {
+    expect(
+      () => Types.fromJson({'anEnum': -1}),
+      throwsA(isA<ArgumentError>()),
+    );
+    expect(
+      () => Types.fromJson({'anEnum': TestEnum.values.length}),
+      throwsA(isA<ArgumentError>()),
+    );
+  });
+
+  test(
+      'Given non-nullable List, when deserializing with wrong value type in JSON, then a TypeError is thrown',
+      () {
+    expect(
+      () => TypesList.fromJson({
+        'anInt': ['test']
       }),
       throwsA(isA<TypeError>()),
     );
   });
 
   test(
-      'When deserializing a class with non-nullable Enum and invalid value provided in JSON, it should throw an ArgumentError.',
+      'Given non-nullable List, when deserializing with correct value types in JSON, then values are deserialized correctly',
       () {
-    expect(
-      () => Types.fromJson({
-        'anEnum': -1,
-      }),
-      throwsA(isA<ArgumentError>()),
-    );
-
-    expect(
-      () => Types.fromJson({
-        'anEnum': TestEnum.values.length,
-      }),
-      throwsA(isA<ArgumentError>()),
-    );
+    var typeList = TypesList.fromJson({
+      'anInt': [1, 2]
+    });
+    expect(typeList.anInt?.length, 2);
+    expect(typeList.anInt?.first, 1);
   });
 
   test(
-      'When deserializing a class with a nullable List for and null value provided in JSON, no error should be thrown.',
+      'Given a class with a nullable List field, when deserializing with null value provided in JSON, then no error is thrown',
       () {
     expect(
-      TypesList.fromJson({
-        'anInt': null,
-      }),
+      TypesList.fromJson({'anInt': null}),
       isA<TypesList>(),
     );
   });
 
   test(
-      'When deserializing a class with non-nullable List and wrong value type provided in JSON, it should throw a TypeError.',
-      () {
-    expect(
-      () => TypesList.fromJson({
-        'anInt': ['test'],
-      }),
-      throwsA(isA<TypeError>()),
-    );
-  });
-
-  test(
-      'When deserializing a class with non-nullable List and correct value type provided in JSON, expecting values to be deserialized correctly.',
-      () {
-    var typeList = TypesList.fromJson({
-      'anInt': [1, 2],
-    });
-    expect(
-      typeList.anInt?.length,
-      2,
-    );
-
-    expect(
-      typeList.anInt?.first,
-      1,
-    );
-  });
-
-  test(
-      'When deserializing a class with a List containing nested objects and correct value type provided in JSON, expecting values to be deserialized correctly.',
+      'Given a List with nested objects, when deserializing with correct value type in JSON, then values are deserialized correctly',
       () {
     var typeList = TypesList.fromJson({
       'anObject': [
@@ -165,7 +205,7 @@ void main() {
   });
 
   test(
-      'When deserializing a class with a List containing nested objects and wrong value type provided in JSON, it should throw a TypeError.',
+      'Given a List with nested objects, when deserializing with wrong value type in JSON, then a TypeError is thrown',
       () {
     expect(
       () => TypesList.fromJson({
@@ -178,13 +218,11 @@ void main() {
   });
 
   test(
-      'When deserializing a class with a List containing nested objects and correct value type in JSON, expecting values to be deserialized correctly.',
+      'Given a List containing nested ByteData, when deserializing with valid data types in JSON, then values are deserialized correctly',
       () {
     expect(
       TypesList.fromJson({
-        'anObject': [
-          {'aDateTime': '2024-01-01T00:00:00.000Z'}
-        ],
+        'aByteData': ['decode(\'AAECAwQFBgc=\', \'base64\')'],
       }),
       isA<TypesList>(),
     );
@@ -202,7 +240,7 @@ void main() {
   });
 
   test(
-      'When deserializing a class with a null List and null value provided in JSON, it should throw a TypeError.',
+      'Given a nullable List, when deserializing with null value provided in JSON, then a TypeError is thrown',
       () {
     expect(
       () => SimpleDataList.fromJson({
@@ -213,7 +251,7 @@ void main() {
   });
 
   test(
-      'When deserializing a class with a Map and correct values provided in JSON, expecting values to be deserialized correctly.',
+      'Given a Map, when deserializing with correct values provided in JSON, then values are deserialized correctly',
       () {
     expect(
       TypesMap.fromJson({
@@ -226,38 +264,14 @@ void main() {
   });
 
   test(
-      'When deserializing a class with a Map and invalid data type provided in JSON, it should throw a TypeError.',
+      'Given a Map, when deserializing with invalid data type provided in JSON, then a TypeError is thrown',
       () {
     expect(
       () => TypesMap.fromJson({
         'anIntKey': [
-          {'k': " test", 'v': 1}
-        ],
-      }),
-      throwsA(isA<TypeError>()),
-    );
-
-    expect(
-      () => TypesMap.fromJson({
-        'anIntKey': [
-          {'k': 'test', 'v': null}
-        ],
-      }),
-      throwsA(isA<TypeError>()),
-    );
-
-    expect(
-      () => TypesMap.fromJson({
-        'anIntKey': [
-          {'k': null, 'v': 1}
-        ],
-      }),
-      throwsA(isA<TypeError>()),
-    );
-
-    expect(
-      () => TypesMap.fromJson({
-        'anIntKey': [
+          {'k': " test", 'v': 1},
+          {'k': 'test', 'v': null},
+          {'k': null, 'v': 1},
           {'k': null, 'v': null}
         ],
       }),
@@ -266,7 +280,7 @@ void main() {
   });
 
   test(
-      'When deserializing a class with a non-nullable Map and null value provided in JSON, it should throw a TypeError.',
+      'Given a non-nullable Map, when deserializing with null value provided in JSON, then a TypeError is thrown',
       () {
     expect(
       () => SimpleDataMap.fromJson({
@@ -277,7 +291,7 @@ void main() {
   });
 
   test(
-      'When deserializing a class with a missing Map key and value in JSON, it should throw a TypeError.',
+      'Given a Map, when deserializing with a missing key and value in JSON, then a TypeError is thrown',
       () {
     expect(
       () => SimpleDataMap.fromJson({
