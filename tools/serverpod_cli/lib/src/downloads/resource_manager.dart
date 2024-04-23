@@ -113,6 +113,69 @@ class ResourceManager {
     return null;
   }
 
+  Future<void> storeServerpodCloudData(
+    ServerpodCloudData cloudData, {
+    String? localStoragePath,
+  }) async {
+    localStoragePath ??= localStorageDirectory.path;
+    var serverpodCloudDataFile = File(p.join(
+      localStoragePath,
+      ResourceManagerConstants.serverpodCloudDataFilePath,
+    ));
+
+    try {
+      if (!serverpodCloudDataFile.existsSync()) {
+        serverpodCloudDataFile.createSync(recursive: true);
+      }
+
+      var json = jsonEncode(cloudData);
+
+      serverpodCloudDataFile.writeAsStringSync(json);
+    } catch (e) {
+      throw Exception('Failed to store serverpod cloud data. error: $e');
+    }
+  }
+
+  /// Removes the serverpod cloud data file from the local storage.
+  ///
+  /// Throws an exception if the file could not be removed.
+  Future<void> removeServerpodCloudData({String? localStoragePath}) async {
+    localStoragePath ??= localStorageDirectory.path;
+    var serverpodCloudDataFile = File(p.join(
+      localStoragePath,
+      ResourceManagerConstants.serverpodCloudDataFilePath,
+    ));
+
+    if (serverpodCloudDataFile.existsSync()) {
+      serverpodCloudDataFile.deleteSync();
+    }
+  }
+
+  Future<ServerpodCloudData?> tryFetchServerpodCloudData({
+    String? localStoragePath,
+  }) async {
+    localStoragePath ??= localStorageDirectory.path;
+    var serverpodCloudDataFile = File(p.join(
+      localStoragePath,
+      ResourceManagerConstants.serverpodCloudDataFilePath,
+    ));
+
+    if (!serverpodCloudDataFile.existsSync()) return null;
+
+    try {
+      var json = jsonDecode(serverpodCloudDataFile.readAsStringSync());
+      return ServerpodCloudData.fromJson(json);
+    } catch (e) {
+      try {
+        serverpodCloudDataFile.deleteSync();
+      } catch (_) {
+        // Failed to delete file
+      }
+    }
+
+    return null;
+  }
+
   String get packageDownloadUrl =>
       'https://pub.dev/packages/serverpod_templates/versions/$templateVersion.tar.gz';
 
@@ -147,6 +210,20 @@ class ResourceManager {
     }
     log.info('Download complete.');
   }
+}
+
+class ServerpodCloudData {
+  late final String token;
+
+  ServerpodCloudData(this.token);
+
+  factory ServerpodCloudData.fromJson(Map<String, dynamic> json) {
+    return ServerpodCloudData(json['token'] as String);
+  }
+
+  Map<String, dynamic> toJson() => {
+        'token': token,
+      };
 }
 
 class CliVersionData {
