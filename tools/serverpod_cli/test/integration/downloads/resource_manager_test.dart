@@ -8,7 +8,8 @@ import 'package:test/test.dart';
 
 void main() {
   group('Latest Cli Version: ', () {
-    var testCacheFolderPath = p.join('test', 'downloads', 'localCache');
+    var testCacheFolderPath =
+        p.join('test', 'integration', 'downloads', 'localCache');
 
     tearDown(() {
       var directory = Directory(testCacheFolderPath);
