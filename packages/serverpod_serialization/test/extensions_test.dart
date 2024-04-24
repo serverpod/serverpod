@@ -7,7 +7,7 @@ import 'package:test/scaffolding.dart';
 
 void main() {
   test(
-    'Given a JSON-formatted date string, when deserialized and then serialized back to JSON, then it matches the original string',
+    'Given a JSON-formatted UTC date string, when deserialized and then serialized back to JSON, then it matches the original string',
     () {
       String time = '2024-01-01T00:00:00.000Z';
       DateTime dateTime = DateTimeJsonExtension.fromJson(time);
@@ -33,7 +33,7 @@ void main() {
   );
 
   test(
-    'Given a JSON-formatted date string, when deserialized and then serialized back to JSON, then it does not match the original string due to precision differences',
+    'Given a JSON-formatted non-UTC date string, when deserialized and then serialized back to JSON, then it does not match the original string due to precision differences',
     () {
       String time = '2024-01-01T00:00:00.000';
       DateTime dateTime = DateTimeJsonExtension.fromJson(time);

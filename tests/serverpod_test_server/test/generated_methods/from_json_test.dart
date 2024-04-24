@@ -21,111 +21,186 @@ void main() {
     );
   });
 
-  test(
-      'Given a class with a nullable integer field, when deserializing from JSON with correct, incorrect, and null values, then proper behavior is observed',
-      () {
-    expect(
-      Types.fromJson({'anInt': 1}).anInt,
-      1,
-    );
+  group('Given a class with a nullable integer field, ', () {
+    test(
+        'when deserializing from JSON with a correct integer value, then the integer is deserialized correctly',
+        () {
+      expect(
+        Types.fromJson({'anInt': 1}).anInt,
+        1,
+      );
+    });
 
-    expect(
-      () => Types.fromJson({'anInt': '1'}).anInt,
-      throwsA(isA<TypeError>()),
-    );
+    test(
+        'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+        () {
+      expect(
+        () => Types.fromJson({'anInt': '1'}).anInt,
+        throwsA(isA<TypeError>()),
+      );
+    });
 
-    expect(
-      Types.fromJson({'anInt': null}).anInt,
-      null,
-    );
+    test(
+        'when deserializing from JSON with a null value, then the integer field is set to null as expected',
+        () {
+      expect(
+        Types.fromJson({'anInt': null}).anInt,
+        null,
+      );
+    });
+  });
+
+  group('Given a class with a nullable double field, ', () {
+    test(
+        'when deserializing from JSON with a correct double value, then the double is deserialized correctly',
+        () {
+      expect(
+        Types.fromJson({'aDouble': 20.20}).aDouble,
+        20.20,
+      );
+    });
+
+    test(
+        'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+        () {
+      expect(
+        () => Types.fromJson({'aDouble': '20.20'}).aDouble,
+        throwsA(isA<TypeError>()),
+      );
+    });
+
+    test(
+        'when deserializing from JSON with a null value, then the double field is set to null as expected',
+        () {
+      expect(
+        Types.fromJson({'aDouble': null}).aDouble,
+        null,
+      );
+    });
+  });
+
+  group('Given a class with a nullable boolean field, ', () {
+    test(
+        'when deserializing from JSON with a correct boolean value, then the boolean is deserialized correctly',
+        () {
+      expect(
+        Types.fromJson({'aBool': true}).aBool,
+        true,
+      );
+    });
+
+    test(
+        'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+        () {
+      expect(
+        () => Types.fromJson({'aBool': 'true'}).aBool,
+        throwsA(isA<TypeError>()),
+      );
+    });
+
+    test(
+        'when deserializing from JSON with a null value, then the boolean field is set to null as expected',
+        () {
+      expect(
+        Types.fromJson({'aBool': null}).aBool,
+        null,
+      );
+    });
+  });
+
+  group('Given a class with a nullable string field, ', () {
+    test(
+        'when deserializing from JSON with a correct string value, then the string is deserialized correctly',
+        () {
+      expect(
+        Types.fromJson({'aString': 'test'}).aString,
+        'test',
+      );
+    });
+
+    test(
+        'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+        () {
+      expect(
+        () => Types.fromJson({'aString': 111}).aString,
+        throwsA(isA<TypeError>()),
+      );
+    });
+
+    test(
+        'when deserializing from JSON with a null value, then the string field is set to null as expected',
+        () {
+      expect(
+        Types.fromJson({'aString': null}).aString,
+        null,
+      );
+    });
   });
 
   test(
-      'Given a class with a nullable double field, when deserializing from JSON with correct, incorrect, and null values, then it behaves as expected',
-      () {
-    expect(
-      Types.fromJson({'aDouble': 20.20}).aDouble,
-      20.20,
-    );
-
-    expect(
-      () => Types.fromJson({'aDouble': '20.20'}).aDouble,
-      throwsA(isA<TypeError>()),
-    );
-
-    expect(
-      Types.fromJson({'aDouble': null}).aDouble,
-      null,
-    );
-  });
-
-  test(
-      'Given a class with a nullable boolean field, when deserializing from JSON with correct, incorrect, and null values, then it behaves as expected',
-      () {
-    expect(
-      Types.fromJson({'aBool': true}).aBool,
-      true,
-    );
-
-    expect(
-      () => Types.fromJson({'aBool': 'true'}).aBool,
-      throwsA(isA<TypeError>()),
-    );
-
-    expect(
-      Types.fromJson({'aBool': null}).aBool,
-      null,
-    );
-  });
-
-  test(
-      'Given non-nullable DateTime, when deserializing with correct value in JSON, then the value is deserialized correctly',
+      'Given a JSON string representing a DateTime, when deserialized, then the resulting DateTime matches the expected value',
       () {
     expect(
       Types.fromJson({'aDateTime': '2024-01-01T00:00:00.000Z'}).aDateTime,
       DateTime.tryParse('2024-01-01T00:00:00.000Z'),
     );
+  });
 
+  test(
+      'Given a DateTime object embedded directly in JSON data, when processed, then the resulting DateTime matches the expected value',
+      () {
     expect(
       Types.fromJson(
-        {'aDateTime': DateTime.tryParse('2024-01-01T00:00:00.000Z')},
-      ).aDateTime,
+              {'aDateTime': DateTime.tryParse('2024-01-01T00:00:00.000Z')})
+          .aDateTime,
       DateTime.tryParse('2024-01-01T00:00:00.000Z'),
     );
   });
 
-  test(
-      'Given non-nullable Duration, when deserializing with correct value in JSON, then the value is deserialized correctly',
-      () {
-    expect(
-      Types.fromJson({'aDuration': 1000}).aDuration?.inMilliseconds,
-      1000,
-    );
+  group('Given a class with a non-nullable Duration field, ', () {
+    test(
+        'when deserializing from JSON with an integer representing milliseconds, then the Duration is deserialized correctly',
+        () {
+      expect(
+        Types.fromJson({'aDuration': 1000}).aDuration?.inMilliseconds,
+        1000,
+      );
+    });
 
-    expect(
-      Types.fromJson({'aDuration': Duration(milliseconds: 1000)})
-          .aDuration
-          ?.inMilliseconds,
-      1000,
-    );
+    test(
+        'when deserializing from JSON with a Duration object, then the Duration is deserialized correctly',
+        () {
+      expect(
+        Types.fromJson({'aDuration': Duration(milliseconds: 1000)})
+            .aDuration
+            ?.inMilliseconds,
+        1000,
+      );
+    });
   });
 
-  test(
-      'Given non-nullable UUID fields, when deserialized from JSON, then the UUID values are deserialized correctly',
-      () {
-    expect(
-      Types.fromJson({'aUuid': '00000000-0000-0000-0000-000000000000'})
-          .aUuid
-          ?.uuid,
-      '00000000-0000-0000-0000-000000000000',
-    );
+  group('Given a class with non-nullable UUID fields, ', () {
+    test(
+        'when deserializing from JSON with a UUID string, then the UUID is deserialized correctly',
+        () {
+      expect(
+        Types.fromJson({'aUuid': '00000000-0000-0000-0000-000000000000'})
+            .aUuid
+            ?.uuid,
+        '00000000-0000-0000-0000-000000000000',
+      );
+    });
 
-    expect(
-      Types.fromJson({
-        'aUuid': UuidValue.fromString('00000000-0000-0000-0000-000000000000')
-      }).aUuid?.uuid,
-      '00000000-0000-0000-0000-000000000000',
-    );
+    test(
+        'when deserializing from JSON with a UuidValue object, then the UUID is deserialized correctly',
+        () {
+      expect(
+        Types.fromJson({
+          'aUuid': UuidValue.fromString('00000000-0000-0000-0000-000000000000')
+        }).aUuid?.uuid,
+        '00000000-0000-0000-0000-000000000000',
+      );
+    });
   });
 
   test(
