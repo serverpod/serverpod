@@ -319,8 +319,11 @@ class LibraryGenerator {
                   ..name = 'server'
                   ..type = refer('Server', serverpodUrl(true)))))
                 ..body = Block.of([
-                  _buildEndpointLookupMap(protocolDefinition.endpoints),
-                  _buildEndpointConnectors(protocolDefinition.endpoints),
+                  if (protocolDefinition.endpoints.isNotEmpty) ...[
+                    _buildEndpointLookupMap(protocolDefinition.endpoints),
+                    _buildEndpointConnectors(protocolDefinition.endpoints),
+                  ],
+
                   // Connectors
                   // Hook up modules
                   for (var module in config.modules)
