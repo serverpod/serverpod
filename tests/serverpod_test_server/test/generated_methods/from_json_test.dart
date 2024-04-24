@@ -240,7 +240,7 @@ void main() {
     });
   });
 
-  group('Given non-nullable List', () {
+  group('Given non-nullable List ', () {
     test(
         ', when deserializing with wrong value type in JSON, then a TypeError is thrown',
         () {
@@ -263,7 +263,7 @@ void main() {
     });
 
     test(
-        ' field, when deserializing with null value provided in JSON, then no error is thrown',
+        'field, when deserializing with null value provided in JSON, then no error is thrown',
         () {
       expect(
         TypesList.fromJson({'anInt': null}),
@@ -272,7 +272,7 @@ void main() {
     });
 
     test(
-        'Given a nullable List, when deserializing with null value provided in JSON, then a TypeError is thrown',
+        ', when deserializing with null value provided in JSON, then a TypeError is thrown',
         () {
       expect(
         () => SimpleDataList.fromJson({
