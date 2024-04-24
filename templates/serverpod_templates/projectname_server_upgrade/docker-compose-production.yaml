@@ -9,7 +9,6 @@ services:
       - "--providers.docker=true"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.serverpod-insights.address=:8081" # Serverpod Insights
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.myresolver.acme.email=damian@examplepod.com"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
@@ -40,6 +39,18 @@ services:
   serverpod:
     restart: on-failure
     image: ghcr.io/${GHCR_ORG}/projectname_server:latest
+    command:
+      [
+        "--mode",
+        "production",
+        "--server-id",
+        "default",
+        "--logging",
+        "normal",
+        "--role",
+        "monolith",
+        "--apply-migrations",
+      ]
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.api.rule=Host(`api.examplepod.com`)"
