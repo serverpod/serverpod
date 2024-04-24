@@ -1,5 +1,14 @@
 version: "3.7"
 
+networks:
+  # explicitly setting up a docker virutal network for the serverpod services
+  # by default, a network is implicitly created for each compose file
+  # this makes it easier to connect to any other docker containers,
+  # i.e. when using a separate docker compose to setup grafana, prometheus, etc.
+  serverpod-network:
+    name: serverpod-network
+    driver: bridge
+
 services:
   traefik:
     restart: on-failure
@@ -10,7 +19,7 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.email=damian@examplepod.com"
+      - "--certificatesresolvers.myresolver.acme.email=damian_and_paul@examplepod.com"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
@@ -21,6 +30,8 @@ services:
     depends_on:
       - postgres
       - serverpod
+    networks:
+      - serverpod-network
 
   postgres:
     restart: on-failure
@@ -35,6 +46,8 @@ services:
       POSTGRES_PASSWORD: $DATABASE_PASSWORD_PRODUCTION
     volumes:
       - projectname_data:/var/lib/postgresql/data
+    networks:
+      - serverpod-network
 
   serverpod:
     restart: on-failure
@@ -72,6 +85,8 @@ services:
       - "traefik.http.services.web-service.loadbalancer.server.port=8082"
     depends_on:
       - postgres
+    networks:
+      - serverpod-network
 
 volumes:
   projectname_data:
