@@ -2,7 +2,8 @@
 # To reduce the workload on the machine we do not use redis in this deployment. If you want to use redis, you need to add it to the docker-compose file and the serverpod configuration.
 # You need to setup the correct hostnames in the docker-compose-production file AND the serverpod configuration file.
 # Before deploying this workflow, you need to set up the following secrets in your repository settings:
-# GITHUB_TOKEN: A GitHub token with the repo scope
+# PAT_GITHUB: A GitHub token with the repo scope
+# PAT_USER_GITHUB: GitHub username for the PAT
 # SERVERPOD_PASSWORDS: The passwords file for the serverpod (simple copy & paste)
 #
 # ## Server setup ##
@@ -19,16 +20,16 @@
 name: Deploy to docker
 on:
   push:
-    branches: [ deployment-docker-production ]
+    branches: [deployment-docker-production]
   workflow_dispatch:
     inputs:
       target:
-        description: 'Target'
+        description: "Target"
         required: true
-        default: 'production'
+        default: "production"
         type: choice
         options:
-          - 'production'
+          - "production"
 
 env:
   REGISTRY: ghcr.io
@@ -78,6 +79,9 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
+          build-args: |
+            GITHUB_PAT=${{ secrets.PAT_GITHUB }}
+            GITHUB_USER=${{ secrets.PAT_USER_GITHUB }}
           context: ./projectname_server
           file: ./projectname_server/Dockerfile
           push: true
@@ -106,7 +110,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-
       - name: List files in the directory
         run: ls -la ./projectname_server/
 
@@ -117,5 +120,6 @@ jobs:
         env:
           DOCKER_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
           DATABASE_PASSWORD_PRODUCTION: ${{ secrets.DATABASE_PASSWORD_PRODUCTION }}
+
       - name: cleanup
         run: rm -rf ~/.ssh
