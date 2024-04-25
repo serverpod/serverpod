@@ -2,16 +2,36 @@
 # compatible with the busybox image.
 FROM dart:3.2.5 AS build
 
+# Accept the GITHUB_PAT and GITHUB_USER as an argument
+ARG GITHUB_PAT
+ARG GITHUB_USER
+
 WORKDIR /app
 COPY . .
 
+# Conditionally configure Git to use the provided GitHub token
+RUN if [ -n "$GITHUB_PAT" ] && [ -n "$GITHUB_USER" ]; then \
+        echo "Configuring Git to use provided GitHub token..."; \
+        # Add GitHub's public SSH key to known_hosts for security
+        mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts; \
+        git config --global credential.helper 'store'; \
+        echo "url=https://github.com/.insteadOf git://github.com/" >> ~/.gitconfig; \
+        echo "https://$GITHUB_USER:$GITHUB_PAT@github.com" > ~/.git-credentials; \
+    else \
+        echo "No GitHub token provided. Skipping Git configuration..."; \
+    fi
+
 RUN dart pub get
 RUN dart compile exe bin/main.dart -o bin/main
+
+# Create a directory for runtime dependencies
+RUN mkdir /app/runtime
 
 # If you update the busybox version, make sure the image is
 # compatible with the dart image.
 FROM busybox:1.36.1-glibc
 
+# Correcting the source directory for runtime dependencies
 COPY --from=build /runtime/ /
 COPY --from=build /app/bin/main /app/bin/main
 COPY --from=build /app/config/ config/
