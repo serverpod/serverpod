@@ -23,14 +23,10 @@ abstract class ChatJoinChannelFailed extends _i1.SerializableEntity {
   }) = _ChatJoinChannelFailedImpl;
 
   factory ChatJoinChannelFailed.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return ChatJoinChannelFailed(
-      channel: serializationManager
-          .deserialize<String>(jsonSerialization['channel']),
-      reason:
-          serializationManager.deserialize<String>(jsonSerialization['reason']),
+      channel: jsonSerialization['channel'] as String,
+      reason: jsonSerialization['reason'] as String,
     );
   }
 

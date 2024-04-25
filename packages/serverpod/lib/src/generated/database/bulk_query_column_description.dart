@@ -17,12 +17,9 @@ abstract class BulkQueryColumnDescription extends _i1.SerializableEntity {
       _BulkQueryColumnDescriptionImpl;
 
   factory BulkQueryColumnDescription.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return BulkQueryColumnDescription(
-        name: serializationManager
-            .deserialize<String>(jsonSerialization['name']));
+        name: jsonSerialization['name'] as String);
   }
 
   String name;

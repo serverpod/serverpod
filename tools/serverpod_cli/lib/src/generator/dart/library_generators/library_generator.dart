@@ -122,8 +122,7 @@ class LibraryGenerator {
             for (var classInfo in models)
               refer(classInfo.className, classInfo.fileRef()): Code.scope(
                   (a) => '${a(refer(classInfo.className, classInfo.fileRef()))}'
-                      '.fromJson(data'
-                      '${classInfo is ClassDefinition ? ',this' : ''}) as T'),
+                      '.fromJson(data) as T'),
             for (var classInfo in models)
               refer('getType', serverpodUrl(serverCode)).call([], {}, [
                 TypeReference(
@@ -134,9 +133,7 @@ class LibraryGenerator {
                 )
               ]): Code.scope((a) => '(data!=null?'
                   '${a(refer(classInfo.className, classInfo.fileRef()))}'
-                  '.fromJson(data'
-                  '${classInfo is ClassDefinition ? ',this' : ''})'
-                  ':null)as T'),
+                  '.fromJson(data) :null) as T'),
           }..addEntries([
                   for (var classInfo in models)
                     if (classInfo is ClassDefinition)
@@ -303,16 +300,6 @@ class LibraryGenerator {
   Library generateServerEndpointDispatch() {
     var library = LibraryBuilder();
 
-    /// Get the path to a endpoint.
-    String endpointPath(EndpointDefinition endpoint) {
-      return p.posix.joinAll([
-        '..',
-        'endpoints',
-        ...endpoint.subDirParts,
-        p.basename(endpoint.filePath),
-      ]);
-    }
-
     // Endpoint class
     library.body.add(
       Class(
@@ -329,103 +316,12 @@ class LibraryGenerator {
                   ..name = 'server'
                   ..type = refer('Server', serverpodUrl(true)))))
                 ..body = Block.of([
-                  // Endpoints lookup map
-                  refer('var endpoints')
-                      .assign(literalMap({
-                        for (var endpoint in protocolDefinition.endpoints)
-                          endpoint.name:
-                              refer(endpoint.className, endpointPath(endpoint))
-                                  .call([])
-                                  .cascade('initialize')
-                                  .call([
-                                    refer('server'),
-                                    literalString(endpoint.name),
-                                    config.type != PackageType.module
-                                        ? refer('null')
-                                        : literalString(config.name)
-                                  ])
-                      }, refer('String'),
-                          refer('Endpoint', serverpodUrl(true))))
-                      .statement,
+                  if (protocolDefinition.endpoints.isNotEmpty) ...[
+                    _buildEndpointLookupMap(protocolDefinition.endpoints),
+                    _buildEndpointConnectors(protocolDefinition.endpoints),
+                  ],
+
                   // Connectors
-                  for (var endpoint in protocolDefinition.endpoints)
-                    refer('connectors')
-                        .index(literalString(endpoint.name))
-                        .assign(refer('EndpointConnector', serverpodUrl(true))
-                            .call([], {
-                          'name': literalString(endpoint.name),
-                          'endpoint': refer('endpoints')
-                              .index(literalString(endpoint.name))
-                              .nullChecked,
-                          'methodConnectors': literalMap({
-                            for (var method in endpoint.methods)
-                              literalString(method.name):
-                                  refer('MethodConnector', serverpodUrl(true))
-                                      .call([], {
-                                'name': literalString(method.name),
-                                'params': literalMap({
-                                  for (var param in [
-                                    ...method.parameters,
-                                    ...method.parametersPositional,
-                                    ...method.parametersNamed,
-                                  ])
-                                    literalString(param.name): refer(
-                                            'ParameterDescription',
-                                            serverpodUrl(true))
-                                        .call([], {
-                                      'name': literalString(param.name),
-                                      'type':
-                                          refer('getType', serverpodUrl(true))
-                                              .call([], {}, [
-                                        param.type
-                                            .reference(true, config: config)
-                                      ]),
-                                      'nullable':
-                                          literalBool(param.type.nullable),
-                                    })
-                                }),
-                                'call': Method(
-                                  (m) => m
-                                    ..requiredParameters.addAll([
-                                      Parameter((p) => p
-                                        ..name = 'session'
-                                        ..type = refer(
-                                            'Session', serverpodUrl(true))),
-                                      Parameter((p) => p
-                                        ..name = 'params'
-                                        ..type = TypeReference((t) => t
-                                          ..symbol = 'Map'
-                                          ..types.addAll([
-                                            refer('String'),
-                                            refer('dynamic'),
-                                          ])))
-                                    ])
-                                    ..modifier = MethodModifier.async
-                                    ..body = refer('endpoints')
-                                        .index(literalString(endpoint.name))
-                                        .asA(refer(endpoint.className,
-                                            endpointPath(endpoint)))
-                                        .property(method.name)
-                                        .call([
-                                      refer('session'),
-                                      for (var param in [
-                                        ...method.parameters,
-                                        ...method.parametersPositional
-                                      ])
-                                        refer('params')
-                                            .index(literalString(param.name)),
-                                    ], {
-                                      for (var param in [
-                                        ...method.parametersNamed
-                                      ])
-                                        param.name: refer('params')
-                                            .index(literalString(param.name)),
-                                    }).code,
-                                ).closure,
-                              }),
-                          })
-                        }))
-                        .statement,
                   // Hook up modules
                   for (var module in config.modules)
                     refer('modules')
@@ -735,6 +631,104 @@ class LibraryGenerator {
     );
 
     return library.build();
+  }
+
+  String _endpointPath(EndpointDefinition endpoint) {
+    return p.posix.joinAll([
+      '..',
+      'endpoints',
+      ...endpoint.subDirParts,
+      p.basename(endpoint.filePath),
+    ]);
+  }
+
+  Code _buildEndpointLookupMap(List<EndpointDefinition> endpoints) {
+    return refer('var endpoints')
+        .assign(literalMap({
+          for (var endpoint in endpoints)
+            endpoint.name: refer(endpoint.className, _endpointPath(endpoint))
+                .call([])
+                .cascade('initialize')
+                .call([
+                  refer('server'),
+                  literalString(endpoint.name),
+                  config.type != PackageType.module
+                      ? refer('null')
+                      : literalString(config.name)
+                ])
+        }, refer('String'), refer('Endpoint', serverpodUrl(true))))
+        .statement;
+  }
+
+  Code _buildEndpointConnectors(List<EndpointDefinition> endpoints) {
+    return Block.of([
+      for (var endpoint in endpoints)
+        refer('connectors')
+            .index(literalString(endpoint.name))
+            .assign(refer('EndpointConnector', serverpodUrl(true)).call([], {
+              'name': literalString(endpoint.name),
+              'endpoint': refer('endpoints')
+                  .index(literalString(endpoint.name))
+                  .nullChecked,
+              'methodConnectors': literalMap({
+                for (var method in endpoint.methods)
+                  literalString(method.name):
+                      refer('MethodConnector', serverpodUrl(true)).call([], {
+                    'name': literalString(method.name),
+                    'params': literalMap({
+                      for (var param in [
+                        ...method.parameters,
+                        ...method.parametersPositional,
+                        ...method.parametersNamed,
+                      ])
+                        literalString(param.name):
+                            refer('ParameterDescription', serverpodUrl(true))
+                                .call([], {
+                          'name': literalString(param.name),
+                          'type': refer('getType', serverpodUrl(true)).call([],
+                              {}, [param.type.reference(true, config: config)]),
+                          'nullable': literalBool(param.type.nullable),
+                        })
+                    }),
+                    'call': Method(
+                      (m) => m
+                        ..requiredParameters.addAll([
+                          Parameter((p) => p
+                            ..name = 'session'
+                            ..type = refer('Session', serverpodUrl(true))),
+                          Parameter((p) => p
+                            ..name = 'params'
+                            ..type = TypeReference((t) => t
+                              ..symbol = 'Map'
+                              ..types.addAll([
+                                refer('String'),
+                                refer('dynamic'),
+                              ])))
+                        ])
+                        ..modifier = MethodModifier.async
+                        ..body = refer('endpoints')
+                            .index(literalString(endpoint.name))
+                            .asA(refer(
+                                endpoint.className, _endpointPath(endpoint)))
+                            .property(method.name)
+                            .call([
+                          refer('session'),
+                          for (var param in [
+                            ...method.parameters,
+                            ...method.parametersPositional
+                          ])
+                            refer('params').index(literalString(param.name)),
+                        ], {
+                          for (var param in [...method.parametersNamed])
+                            param.name: refer('params')
+                                .index(literalString(param.name)),
+                        }).code,
+                    ).closure,
+                  }),
+              })
+            }))
+            .statement
+    ]);
   }
 }
 

@@ -24,16 +24,14 @@ abstract class ObjectWithUuid extends _i1.TableRow {
     _i1.UuidValue? uuidNullable,
   }) = _ObjectWithUuidImpl;
 
-  factory ObjectWithUuid.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ObjectWithUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithUuid(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      uuid: serializationManager
-          .deserialize<_i1.UuidValue>(jsonSerialization['uuid']),
-      uuidNullable: serializationManager
-          .deserialize<_i1.UuidValue?>(jsonSerialization['uuidNullable']),
+      id: jsonSerialization['id'] as int?,
+      uuid: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['uuid']),
+      uuidNullable: jsonSerialization['uuidNullable'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uuidNullable']),
     );
   }
 

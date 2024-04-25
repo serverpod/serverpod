@@ -25,17 +25,12 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
     String? database,
   }) = _ObjectFieldScopesImpl;
 
-  factory ObjectFieldScopes.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ObjectFieldScopes.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectFieldScopes(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      normal:
-          serializationManager.deserialize<String>(jsonSerialization['normal']),
-      api: serializationManager.deserialize<String?>(jsonSerialization['api']),
-      database: serializationManager
-          .deserialize<String?>(jsonSerialization['database']),
+      id: jsonSerialization['id'] as int?,
+      normal: jsonSerialization['normal'] as String,
+      api: jsonSerialization['api'] as String?,
+      database: jsonSerialization['database'] as String?,
     );
   }
 

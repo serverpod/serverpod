@@ -30,23 +30,14 @@ abstract class AppleAuthInfo extends _i1.SerializableEntity {
     required String authorizationCode,
   }) = _AppleAuthInfoImpl;
 
-  factory AppleAuthInfo.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory AppleAuthInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return AppleAuthInfo(
-      userIdentifier: serializationManager
-          .deserialize<String>(jsonSerialization['userIdentifier']),
-      email:
-          serializationManager.deserialize<String?>(jsonSerialization['email']),
-      fullName: serializationManager
-          .deserialize<String>(jsonSerialization['fullName']),
-      nickname: serializationManager
-          .deserialize<String>(jsonSerialization['nickname']),
-      identityToken: serializationManager
-          .deserialize<String>(jsonSerialization['identityToken']),
-      authorizationCode: serializationManager
-          .deserialize<String>(jsonSerialization['authorizationCode']),
+      userIdentifier: jsonSerialization['userIdentifier'] as String,
+      email: jsonSerialization['email'] as String?,
+      fullName: jsonSerialization['fullName'] as String,
+      nickname: jsonSerialization['nickname'] as String,
+      identityToken: jsonSerialization['identityToken'] as String,
+      authorizationCode: jsonSerialization['authorizationCode'] as String,
     );
   }
 

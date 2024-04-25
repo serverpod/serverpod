@@ -29,20 +29,14 @@ abstract class ColumnDefinition extends _i1.SerializableEntity {
     String? dartType,
   }) = _ColumnDefinitionImpl;
 
-  factory ColumnDefinition.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ColumnDefinition.fromJson(Map<String, dynamic> jsonSerialization) {
     return ColumnDefinition(
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      columnType: serializationManager
-          .deserialize<_i2.ColumnType>(jsonSerialization['columnType']),
-      isNullable: serializationManager
-          .deserialize<bool>(jsonSerialization['isNullable']),
-      columnDefault: serializationManager
-          .deserialize<String?>(jsonSerialization['columnDefault']),
-      dartType: serializationManager
-          .deserialize<String?>(jsonSerialization['dartType']),
+      name: jsonSerialization['name'] as String,
+      columnType:
+          _i2.ColumnType.fromJson((jsonSerialization['columnType'] as int)),
+      isNullable: jsonSerialization['isNullable'] as bool,
+      columnDefault: jsonSerialization['columnDefault'] as String?,
+      dartType: jsonSerialization['dartType'] as String?,
     );
   }
 

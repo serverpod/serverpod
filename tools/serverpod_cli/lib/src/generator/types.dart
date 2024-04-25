@@ -132,6 +132,17 @@ class TypeDefinition {
         serializeEnum: serializeEnum,
       );
 
+  /// Get this [TypeDefinition], but non nullable.
+  TypeDefinition get asNonNullable => TypeDefinition(
+        className: className,
+        url: url,
+        nullable: false,
+        customClass: customClass,
+        dartType: dartType,
+        generics: generics,
+        serializeEnum: serializeEnum,
+      );
+
   /// Generate a [TypeReference] from this definition.
   TypeReference reference(
     bool serverCode, {
@@ -407,6 +418,23 @@ class TypeDefinition {
                 : url);
   }
 
+  /// converts '[className]' string value to [ValueType]
+  ValueType get valueType {
+    if (className == 'int') return ValueType.int;
+    if (className == 'double') return ValueType.double;
+    if (className == 'String') return ValueType.string;
+    if (className == 'bool') return ValueType.bool;
+    if (className == 'DateTime') return ValueType.dateTime;
+    if (className == 'Duration') return ValueType.duration;
+    if (className == 'ByteData') return ValueType.byteData;
+    if (className == 'UuidValue') return ValueType.uuidValue;
+    if (className == 'List') return ValueType.list;
+    if (className == 'Set') return ValueType.set;
+    if (className == 'Map') return ValueType.map;
+    if (isEnumType) return ValueType.isEnum;
+    return ValueType.classType;
+  }
+
   @override
   String toString() {
     var genericsString = generics.isNotEmpty ? '<${generics.join(',')}>' : '';
@@ -476,4 +504,20 @@ class FromDartTypeClassNameException implements Exception {
   String toString() {
     return 'Failed to determine class name from type $type';
   }
+}
+
+enum ValueType {
+  int,
+  double,
+  string,
+  bool,
+  dateTime,
+  duration,
+  byteData,
+  uuidValue,
+  list,
+  set,
+  map,
+  isEnum,
+  classType,
 }

@@ -21,14 +21,15 @@ enum IndexElementDefinitionType with _i1.SerializableEntity {
   /// is a (complex) expression.
   expression;
 
-  static IndexElementDefinitionType? fromJson(int index) {
+  static IndexElementDefinitionType fromJson(int index) {
     switch (index) {
       case 0:
         return column;
       case 1:
         return expression;
       default:
-        return null;
+        throw ArgumentError(
+            'Value "$index" cannot be converted to "IndexElementDefinitionType"');
     }
   }
 
