@@ -165,11 +165,13 @@ class ResourceManager {
     try {
       var json = jsonDecode(serverpodCloudDataFile.readAsStringSync());
       return ServerpodCloudData.fromJson(json);
-    } catch (e) {
+    } catch (_) {
       try {
         serverpodCloudDataFile.deleteSync();
-      } catch (_) {
-        // Failed to delete file
+      } catch (deleteError) {
+        log.warning(
+          'Failed to delete stored serverpod cloud data file. Error: $deleteError',
+        );
       }
     }
 
