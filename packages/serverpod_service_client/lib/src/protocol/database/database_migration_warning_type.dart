@@ -16,7 +16,7 @@ enum DatabaseMigrationWarningType with _i1.SerializableEntity {
   notNullAdded,
   uniqueIndexCreated;
 
-  static DatabaseMigrationWarningType? fromJson(String name) {
+  static DatabaseMigrationWarningType fromJson(String name) {
     switch (name) {
       case 'tableDropped':
         return tableDropped;
@@ -27,7 +27,8 @@ enum DatabaseMigrationWarningType with _i1.SerializableEntity {
       case 'uniqueIndexCreated':
         return uniqueIndexCreated;
       default:
-        return null;
+        throw ArgumentError(
+            'Value "$name" cannot be converted to "DatabaseMigrationWarningType"');
     }
   }
 

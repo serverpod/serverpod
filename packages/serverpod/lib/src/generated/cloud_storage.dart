@@ -34,23 +34,19 @@ abstract class CloudStorageEntry extends _i1.TableRow {
     required bool verified,
   }) = _CloudStorageEntryImpl;
 
-  factory CloudStorageEntry.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory CloudStorageEntry.fromJson(Map<String, dynamic> jsonSerialization) {
     return CloudStorageEntry(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      storageId: serializationManager
-          .deserialize<String>(jsonSerialization['storageId']),
-      path: serializationManager.deserialize<String>(jsonSerialization['path']),
-      addedTime: serializationManager
-          .deserialize<DateTime>(jsonSerialization['addedTime']),
-      expiration: serializationManager
-          .deserialize<DateTime?>(jsonSerialization['expiration']),
-      byteData: serializationManager
-          .deserialize<_i2.ByteData>(jsonSerialization['byteData']),
-      verified:
-          serializationManager.deserialize<bool>(jsonSerialization['verified']),
+      id: jsonSerialization['id'] as int?,
+      storageId: jsonSerialization['storageId'] as String,
+      path: jsonSerialization['path'] as String,
+      addedTime:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['addedTime']),
+      expiration: jsonSerialization['expiration'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
+      byteData:
+          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['byteData']),
+      verified: jsonSerialization['verified'] as bool,
     );
   }
 

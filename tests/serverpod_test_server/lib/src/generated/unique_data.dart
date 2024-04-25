@@ -23,16 +23,11 @@ abstract class UniqueData extends _i1.TableRow {
     required String email,
   }) = _UniqueDataImpl;
 
-  factory UniqueData.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory UniqueData.fromJson(Map<String, dynamic> jsonSerialization) {
     return UniqueData(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      number:
-          serializationManager.deserialize<int>(jsonSerialization['number']),
-      email:
-          serializationManager.deserialize<String>(jsonSerialization['email']),
+      id: jsonSerialization['id'] as int?,
+      number: jsonSerialization['number'] as int,
+      email: jsonSerialization['email'] as String,
     );
   }
 

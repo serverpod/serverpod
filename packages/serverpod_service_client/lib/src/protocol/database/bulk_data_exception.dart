@@ -22,15 +22,10 @@ abstract class BulkDataException extends _i1.SerializableEntity
     String? query,
   }) = _BulkDataExceptionImpl;
 
-  factory BulkDataException.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory BulkDataException.fromJson(Map<String, dynamic> jsonSerialization) {
     return BulkDataException(
-      message: serializationManager
-          .deserialize<String>(jsonSerialization['message']),
-      query:
-          serializationManager.deserialize<String?>(jsonSerialization['query']),
+      message: jsonSerialization['message'] as String,
+      query: jsonSerialization['query'] as String?,
     );
   }
 

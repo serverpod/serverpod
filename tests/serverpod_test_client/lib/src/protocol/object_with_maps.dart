@@ -49,46 +49,78 @@ abstract class ObjectWithMaps extends _i1.SerializableEntity {
     required Map<int, int> intIntMap,
   }) = _ObjectWithMapsImpl;
 
-  factory ObjectWithMaps.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ObjectWithMaps.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithMaps(
-      dataMap: serializationManager.deserialize<Map<String, _i2.SimpleData>>(
-          jsonSerialization['dataMap']),
-      intMap: serializationManager
-          .deserialize<Map<String, int>>(jsonSerialization['intMap']),
-      stringMap: serializationManager
-          .deserialize<Map<String, String>>(jsonSerialization['stringMap']),
-      dateTimeMap: serializationManager
-          .deserialize<Map<String, DateTime>>(jsonSerialization['dateTimeMap']),
-      byteDataMap: serializationManager.deserialize<Map<String, _i3.ByteData>>(
-          jsonSerialization['byteDataMap']),
-      durationMap: serializationManager
-          .deserialize<Map<String, Duration>>(jsonSerialization['durationMap']),
-      uuidMap: serializationManager.deserialize<Map<String, _i1.UuidValue>>(
-          jsonSerialization['uuidMap']),
+      dataMap: (jsonSerialization['dataMap'] as Map).map((k, v) => MapEntry(
+            k as String,
+            _i2.SimpleData.fromJson((v as Map<String, dynamic>)),
+          )),
+      intMap: (jsonSerialization['intMap'] as Map).map((k, v) => MapEntry(
+            k as String,
+            v as int,
+          )),
+      stringMap: (jsonSerialization['stringMap'] as Map).map((k, v) => MapEntry(
+            k as String,
+            v as String,
+          )),
+      dateTimeMap:
+          (jsonSerialization['dateTimeMap'] as Map).map((k, v) => MapEntry(
+                k as String,
+                _i1.DateTimeJsonExtension.fromJson(v),
+              )),
+      byteDataMap:
+          (jsonSerialization['byteDataMap'] as Map).map((k, v) => MapEntry(
+                k as String,
+                _i1.ByteDataJsonExtension.fromJson(v),
+              )),
+      durationMap:
+          (jsonSerialization['durationMap'] as Map).map((k, v) => MapEntry(
+                k as String,
+                _i1.DurationJsonExtension.fromJson(v),
+              )),
+      uuidMap: (jsonSerialization['uuidMap'] as Map).map((k, v) => MapEntry(
+            k as String,
+            _i1.UuidValueJsonExtension.fromJson(v),
+          )),
       nullableDataMap:
-          serializationManager.deserialize<Map<String, _i2.SimpleData?>>(
-              jsonSerialization['nullableDataMap']),
-      nullableIntMap: serializationManager
-          .deserialize<Map<String, int?>>(jsonSerialization['nullableIntMap']),
-      nullableStringMap: serializationManager.deserialize<Map<String, String?>>(
-          jsonSerialization['nullableStringMap']),
-      nullableDateTimeMap:
-          serializationManager.deserialize<Map<String, DateTime?>>(
-              jsonSerialization['nullableDateTimeMap']),
-      nullableByteDataMap:
-          serializationManager.deserialize<Map<String, _i3.ByteData?>>(
-              jsonSerialization['nullableByteDataMap']),
-      nullableDurationMap:
-          serializationManager.deserialize<Map<String, Duration?>>(
-              jsonSerialization['nullableDurationMap']),
+          (jsonSerialization['nullableDataMap'] as Map).map((k, v) => MapEntry(
+                k as String,
+                v == null
+                    ? null
+                    : _i2.SimpleData.fromJson((v as Map<String, dynamic>)),
+              )),
+      nullableIntMap:
+          (jsonSerialization['nullableIntMap'] as Map).map((k, v) => MapEntry(
+                k as String,
+                v as int?,
+              )),
+      nullableStringMap: (jsonSerialization['nullableStringMap'] as Map)
+          .map((k, v) => MapEntry(
+                k as String,
+                v as String?,
+              )),
+      nullableDateTimeMap: (jsonSerialization['nullableDateTimeMap'] as Map)
+          .map((k, v) => MapEntry(
+                k as String,
+                v == null ? null : _i1.DateTimeJsonExtension.fromJson(v),
+              )),
+      nullableByteDataMap: (jsonSerialization['nullableByteDataMap'] as Map)
+          .map((k, v) => MapEntry(
+                k as String,
+                v == null ? null : _i1.ByteDataJsonExtension.fromJson(v),
+              )),
+      nullableDurationMap: (jsonSerialization['nullableDurationMap'] as Map)
+          .map((k, v) => MapEntry(
+                k as String,
+                v == null ? null : _i1.DurationJsonExtension.fromJson(v),
+              )),
       nullableUuidMap:
-          serializationManager.deserialize<Map<String, _i1.UuidValue?>>(
-              jsonSerialization['nullableUuidMap']),
-      intIntMap: serializationManager
-          .deserialize<Map<int, int>>(jsonSerialization['intIntMap']),
+          (jsonSerialization['nullableUuidMap'] as Map).map((k, v) => MapEntry(
+                k as String,
+                v == null ? null : _i1.UuidValueJsonExtension.fromJson(v),
+              )),
+      intIntMap: (jsonSerialization['intIntMap'] as List).fold<Map<int, int>>(
+          {}, (t, e) => {...t, e['k'] as int: e['v'] as int}),
     );
   }
 

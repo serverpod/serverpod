@@ -24,16 +24,11 @@ abstract class MethodInfo extends _i1.TableRow {
     required String method,
   }) = _MethodInfoImpl;
 
-  factory MethodInfo.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory MethodInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return MethodInfo(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      endpoint: serializationManager
-          .deserialize<String>(jsonSerialization['endpoint']),
-      method:
-          serializationManager.deserialize<String>(jsonSerialization['method']),
+      id: jsonSerialization['id'] as int?,
+      endpoint: jsonSerialization['endpoint'] as String,
+      method: jsonSerialization['method'] as String,
     );
   }
 

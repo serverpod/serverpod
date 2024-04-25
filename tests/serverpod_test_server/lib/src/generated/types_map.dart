@@ -72,68 +72,167 @@ abstract class TypesMap extends _i1.SerializableEntity {
     Map<String, List<_i3.Types>>? aListValue,
   }) = _TypesMapImpl;
 
-  factory TypesMap.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory TypesMap.fromJson(Map<String, dynamic> jsonSerialization) {
     return TypesMap(
-      anIntKey: serializationManager
-          .deserialize<Map<int, String>?>(jsonSerialization['anIntKey']),
-      aBoolKey: serializationManager
-          .deserialize<Map<bool, String>?>(jsonSerialization['aBoolKey']),
-      aDoubleKey: serializationManager
-          .deserialize<Map<double, String>?>(jsonSerialization['aDoubleKey']),
-      aDateTimeKey: serializationManager.deserialize<Map<DateTime, String>?>(
-          jsonSerialization['aDateTimeKey']),
-      aStringKey: serializationManager
-          .deserialize<Map<String, String>?>(jsonSerialization['aStringKey']),
-      aByteDataKey:
-          serializationManager.deserialize<Map<_i2.ByteData, String>?>(
-              jsonSerialization['aByteDataKey']),
-      aDurationKey: serializationManager.deserialize<Map<Duration, String>?>(
-          jsonSerialization['aDurationKey']),
-      aUuidKey: serializationManager.deserialize<Map<_i1.UuidValue, String>?>(
-          jsonSerialization['aUuidKey']),
-      anEnumKey: serializationManager.deserialize<Map<_i3.TestEnum, String>?>(
-          jsonSerialization['anEnumKey']),
-      aStringifiedEnumKey: serializationManager
-          .deserialize<Map<_i3.TestEnumStringified, String>?>(
-              jsonSerialization['aStringifiedEnumKey']),
-      anObjectKey: serializationManager.deserialize<Map<_i3.Types, String>?>(
-          jsonSerialization['anObjectKey']),
-      aMapKey: serializationManager.deserialize<
-          Map<Map<_i3.Types, String>, String>?>(jsonSerialization['aMapKey']),
-      aListKey: serializationManager.deserialize<Map<List<_i3.Types>, String>?>(
-          jsonSerialization['aListKey']),
-      anIntValue: serializationManager
-          .deserialize<Map<String, int>?>(jsonSerialization['anIntValue']),
-      aBoolValue: serializationManager
-          .deserialize<Map<String, bool>?>(jsonSerialization['aBoolValue']),
-      aDoubleValue: serializationManager
-          .deserialize<Map<String, double>?>(jsonSerialization['aDoubleValue']),
-      aDateTimeValue: serializationManager.deserialize<Map<String, DateTime>?>(
-          jsonSerialization['aDateTimeValue']),
-      aStringValue: serializationManager
-          .deserialize<Map<String, String>?>(jsonSerialization['aStringValue']),
+      anIntKey: (jsonSerialization['anIntKey'] as List?)
+          ?.fold<Map<int, String>>(
+              {}, (t, e) => {...t, e['k'] as int: e['v'] as String}),
+      aBoolKey: (jsonSerialization['aBoolKey'] as List?)
+          ?.fold<Map<bool, String>>(
+              {}, (t, e) => {...t, e['k'] as bool: e['v'] as String}),
+      aDoubleKey: (jsonSerialization['aDoubleKey'] as List?)
+          ?.fold<Map<double, String>>(
+              {}, (t, e) => {...t, e['k'] as double: e['v'] as String}),
+      aDateTimeKey: (jsonSerialization['aDateTimeKey'] as List?)
+          ?.fold<Map<DateTime, String>>(
+              {},
+              (t, e) => {
+                    ...t,
+                    _i1.DateTimeJsonExtension.fromJson(e['k']): e['v'] as String
+                  }),
+      aStringKey:
+          (jsonSerialization['aStringKey'] as Map?)?.map((k, v) => MapEntry(
+                k as String,
+                v as String,
+              )),
+      aByteDataKey: (jsonSerialization['aByteDataKey'] as List?)
+          ?.fold<Map<_i2.ByteData, String>>(
+              {},
+              (t, e) => {
+                    ...t,
+                    _i1.ByteDataJsonExtension.fromJson(e['k']): e['v'] as String
+                  }),
+      aDurationKey: (jsonSerialization['aDurationKey'] as List?)
+          ?.fold<Map<Duration, String>>(
+              {},
+              (t, e) => {
+                    ...t,
+                    _i1.DurationJsonExtension.fromJson(e['k']): e['v'] as String
+                  }),
+      aUuidKey: (jsonSerialization['aUuidKey'] as List?)
+          ?.fold<Map<_i1.UuidValue, String>>(
+              {},
+              (t, e) => {
+                    ...t,
+                    _i1.UuidValueJsonExtension.fromJson(e['k']):
+                        e['v'] as String
+                  }),
+      anEnumKey: (jsonSerialization['anEnumKey'] as List?)
+          ?.fold<Map<_i3.TestEnum, String>>(
+              {},
+              (t, e) => {
+                    ...t,
+                    _i3.TestEnum.fromJson((e['k'] as int)): e['v'] as String
+                  }),
+      aStringifiedEnumKey: (jsonSerialization['aStringifiedEnumKey'] as List?)
+          ?.fold<Map<_i3.TestEnumStringified, String>>(
+              {},
+              (t, e) => {
+                    ...t,
+                    _i3.TestEnumStringified.fromJson((e['k'] as String)):
+                        e['v'] as String
+                  }),
+      anObjectKey: (jsonSerialization['anObjectKey'] as List?)
+          ?.fold<Map<_i3.Types, String>>(
+              {},
+              (t, e) => {
+                    ...t,
+                    _i3.Types.fromJson((e['k'] as Map<String, dynamic>)):
+                        e['v'] as String
+                  }),
+      aMapKey: (jsonSerialization['aMapKey'] as List?)?.fold<
+              Map<Map<_i3.Types, String>, String>>(
+          {},
+          (t, e) => {
+                ...t,
+                (e['k'] as List).fold<Map<_i3.Types, String>>(
+                    {},
+                    (t, e) => {
+                          ...t,
+                          _i3.Types.fromJson((e['k'] as Map<String, dynamic>)):
+                              e['v'] as String
+                        }): e['v'] as String
+              }),
+      aListKey: (jsonSerialization['aListKey'] as List?)?.fold<
+              Map<List<_i3.Types>, String>>(
+          {},
+          (t, e) => {
+                ...t,
+                (e['k'] as List)
+                    .map((e) => _i3.Types.fromJson((e as Map<String, dynamic>)))
+                    .toList(): e['v'] as String
+              }),
+      anIntValue:
+          (jsonSerialization['anIntValue'] as Map?)?.map((k, v) => MapEntry(
+                k as String,
+                v as int,
+              )),
+      aBoolValue:
+          (jsonSerialization['aBoolValue'] as Map?)?.map((k, v) => MapEntry(
+                k as String,
+                v as bool,
+              )),
+      aDoubleValue:
+          (jsonSerialization['aDoubleValue'] as Map?)?.map((k, v) => MapEntry(
+                k as String,
+                v as double,
+              )),
+      aDateTimeValue:
+          (jsonSerialization['aDateTimeValue'] as Map?)?.map((k, v) => MapEntry(
+                k as String,
+                _i1.DateTimeJsonExtension.fromJson(v),
+              )),
+      aStringValue:
+          (jsonSerialization['aStringValue'] as Map?)?.map((k, v) => MapEntry(
+                k as String,
+                v as String,
+              )),
       aByteDataValue:
-          serializationManager.deserialize<Map<String, _i2.ByteData>?>(
-              jsonSerialization['aByteDataValue']),
-      aDurationValue: serializationManager.deserialize<Map<String, Duration>?>(
-          jsonSerialization['aDurationValue']),
-      aUuidValue: serializationManager.deserialize<Map<String, _i1.UuidValue>?>(
-          jsonSerialization['aUuidValue']),
-      anEnumValue: serializationManager.deserialize<Map<String, _i3.TestEnum>?>(
-          jsonSerialization['anEnumValue']),
-      aStringifiedEnumValue: serializationManager
-          .deserialize<Map<String, _i3.TestEnumStringified>?>(
-              jsonSerialization['aStringifiedEnumValue']),
-      anObjectValue: serializationManager.deserialize<Map<String, _i3.Types>?>(
-          jsonSerialization['anObjectValue']),
-      aMapValue: serializationManager.deserialize<
-          Map<String, Map<String, _i3.Types>>?>(jsonSerialization['aMapValue']),
+          (jsonSerialization['aByteDataValue'] as Map?)?.map((k, v) => MapEntry(
+                k as String,
+                _i1.ByteDataJsonExtension.fromJson(v),
+              )),
+      aDurationValue:
+          (jsonSerialization['aDurationValue'] as Map?)?.map((k, v) => MapEntry(
+                k as String,
+                _i1.DurationJsonExtension.fromJson(v),
+              )),
+      aUuidValue:
+          (jsonSerialization['aUuidValue'] as Map?)?.map((k, v) => MapEntry(
+                k as String,
+                _i1.UuidValueJsonExtension.fromJson(v),
+              )),
+      anEnumValue:
+          (jsonSerialization['anEnumValue'] as Map?)?.map((k, v) => MapEntry(
+                k as String,
+                _i3.TestEnum.fromJson((v as int)),
+              )),
+      aStringifiedEnumValue:
+          (jsonSerialization['aStringifiedEnumValue'] as Map?)
+              ?.map((k, v) => MapEntry(
+                    k as String,
+                    _i3.TestEnumStringified.fromJson((v as String)),
+                  )),
+      anObjectValue:
+          (jsonSerialization['anObjectValue'] as Map?)?.map((k, v) => MapEntry(
+                k as String,
+                _i3.Types.fromJson((v as Map<String, dynamic>)),
+              )),
+      aMapValue:
+          (jsonSerialization['aMapValue'] as Map?)?.map((k, v) => MapEntry(
+                k as String,
+                (v as Map).map((k, v) => MapEntry(
+                      k as String,
+                      _i3.Types.fromJson((v as Map<String, dynamic>)),
+                    )),
+              )),
       aListValue:
-          serializationManager.deserialize<Map<String, List<_i3.Types>>?>(
-              jsonSerialization['aListValue']),
+          (jsonSerialization['aListValue'] as Map?)?.map((k, v) => MapEntry(
+                k as String,
+                (v as List)
+                    .map((e) => _i3.Types.fromJson((e as Map<String, dynamic>)))
+                    .toList(),
+              )),
     );
   }
 

@@ -40,30 +40,19 @@ abstract class QueryLogEntry extends _i1.SerializableEntity {
     required int order,
   }) = _QueryLogEntryImpl;
 
-  factory QueryLogEntry.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory QueryLogEntry.fromJson(Map<String, dynamic> jsonSerialization) {
     return QueryLogEntry(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      serverId: serializationManager
-          .deserialize<String>(jsonSerialization['serverId']),
-      sessionLogId: serializationManager
-          .deserialize<int>(jsonSerialization['sessionLogId']),
-      messageId: serializationManager
-          .deserialize<int?>(jsonSerialization['messageId']),
-      query:
-          serializationManager.deserialize<String>(jsonSerialization['query']),
-      duration: serializationManager
-          .deserialize<double>(jsonSerialization['duration']),
-      numRows:
-          serializationManager.deserialize<int?>(jsonSerialization['numRows']),
-      error:
-          serializationManager.deserialize<String?>(jsonSerialization['error']),
-      stackTrace: serializationManager
-          .deserialize<String?>(jsonSerialization['stackTrace']),
-      slow: serializationManager.deserialize<bool>(jsonSerialization['slow']),
-      order: serializationManager.deserialize<int>(jsonSerialization['order']),
+      id: jsonSerialization['id'] as int?,
+      serverId: jsonSerialization['serverId'] as String,
+      sessionLogId: jsonSerialization['sessionLogId'] as int,
+      messageId: jsonSerialization['messageId'] as int?,
+      query: jsonSerialization['query'] as String,
+      duration: jsonSerialization['duration'] as double,
+      numRows: jsonSerialization['numRows'] as int?,
+      error: jsonSerialization['error'] as String?,
+      stackTrace: jsonSerialization['stackTrace'] as String?,
+      slow: jsonSerialization['slow'] as bool,
+      order: jsonSerialization['order'] as int,
     );
   }
 

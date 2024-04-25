@@ -36,10 +36,10 @@ class Protocol extends _i1.SerializationManager {
       return customConstructors[t]!(data, this) as T;
     }
     if (t == _i2.Channel) {
-      return _i2.Channel.fromJson(data, this) as T;
+      return _i2.Channel.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.Channel?>()) {
-      return (data != null ? _i2.Channel.fromJson(data, this) : null) as T;
+      return (data != null ? _i2.Channel.fromJson(data) : null) as T;
     }
     if (t == List<_i3.Channel>) {
       return (data as List).map((e) => deserialize<_i3.Channel>(e)).toList()

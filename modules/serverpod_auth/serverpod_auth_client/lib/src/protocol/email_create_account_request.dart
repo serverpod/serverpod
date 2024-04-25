@@ -30,18 +30,13 @@ abstract class EmailCreateAccountRequest extends _i1.SerializableEntity {
   }) = _EmailCreateAccountRequestImpl;
 
   factory EmailCreateAccountRequest.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return EmailCreateAccountRequest(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      userName: serializationManager
-          .deserialize<String>(jsonSerialization['userName']),
-      email:
-          serializationManager.deserialize<String>(jsonSerialization['email']),
-      hash: serializationManager.deserialize<String>(jsonSerialization['hash']),
-      verificationCode: serializationManager
-          .deserialize<String>(jsonSerialization['verificationCode']),
+      id: jsonSerialization['id'] as int?,
+      userName: jsonSerialization['userName'] as String,
+      email: jsonSerialization['email'] as String,
+      hash: jsonSerialization['hash'] as String,
+      verificationCode: jsonSerialization['verificationCode'] as String,
     );
   }
 

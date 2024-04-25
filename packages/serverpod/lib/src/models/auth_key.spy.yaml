@@ -6,7 +6,6 @@ fields:
   userId: int
 
   ### The hashed version of the key.
-
   hash: String
 
   ### The key sent to the server to authenticate.

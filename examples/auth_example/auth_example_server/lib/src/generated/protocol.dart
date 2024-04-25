@@ -39,10 +39,10 @@ class Protocol extends _i1.SerializationManagerServer {
       return customConstructors[t]!(data, this) as T;
     }
     if (t == _i4.Example) {
-      return _i4.Example.fromJson(data, this) as T;
+      return _i4.Example.fromJson(data) as T;
     }
     if (t == _i1.getType<_i4.Example?>()) {
-      return (data != null ? _i4.Example.fromJson(data, this) : null) as T;
+      return (data != null ? _i4.Example.fromJson(data) : null) as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);

@@ -26,7 +26,7 @@ enum FilterConstraintType with _i1.SerializableEntity {
   isNull,
   isNotNull;
 
-  static FilterConstraintType? fromJson(int index) {
+  static FilterConstraintType fromJson(int index) {
     switch (index) {
       case 0:
         return equals;
@@ -57,7 +57,8 @@ enum FilterConstraintType with _i1.SerializableEntity {
       case 13:
         return isNotNull;
       default:
-        return null;
+        throw ArgumentError(
+            'Value "$index" cannot be converted to "FilterConstraintType"');
     }
   }
 

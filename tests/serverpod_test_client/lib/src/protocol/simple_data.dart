@@ -22,13 +22,10 @@ abstract class SimpleData extends _i1.SerializableEntity {
     required int num,
   }) = _SimpleDataImpl;
 
-  factory SimpleData.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory SimpleData.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleData(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      num: serializationManager.deserialize<int>(jsonSerialization['num']),
+      id: jsonSerialization['id'] as int?,
+      num: jsonSerialization['num'] as int,
     );
   }
 
