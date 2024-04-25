@@ -115,8 +115,8 @@ jobs:
 
       - name: Run docker-compose
         run: |
-          docker-compose -f ./projectname_server/docker-compose-production.yaml pull
-          docker-compose -f ./projectname_server/docker-compose-production.yaml up -d
+          docker compose -f ./projectname_server/docker-compose-production.yaml pull
+          docker compose -f ./projectname_server/docker-compose-production.yaml up -d
         env:
           DOCKER_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
           DATABASE_PASSWORD_PRODUCTION: ${{ secrets.DATABASE_PASSWORD_PRODUCTION }}
