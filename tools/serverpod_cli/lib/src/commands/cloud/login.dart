@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
-import 'package:serverpod_cli/src/serverpod_cloud/local_cloud_server.dart';
+import 'package:serverpod_cli/src/serverpod_cloud/token_listener_server.dart';
 import 'package:serverpod_cli/src/util/browser_launcher.dart';
 import 'package:serverpod_cli/src/util/exit_exception.dart';
 
@@ -51,7 +51,7 @@ class CloudLoginCommand extends ServerpodCommand {
     var persistent = argResults!['persistent'] as bool;
 
     var callbackUrlFuture = Completer<Uri>();
-    var tokenFuture = LocalCloudServer.listenForAuthenticationToken(
+    var tokenFuture = TokenListenerServer.listenForAuthenticationToken(
       onConnected: (Uri callbackUrl) => callbackUrlFuture.complete(callbackUrl),
       timeLimit: timeLimit,
     );

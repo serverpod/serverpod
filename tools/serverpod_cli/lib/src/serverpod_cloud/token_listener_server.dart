@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:serverpod_cli/src/logger/logger.dart';
 
-abstract final class LocalCloudServer {
+abstract final class TokenListenerServer {
   static Future<String?> listenForAuthenticationToken({
     void Function(Uri callbackUrl)? onConnected,
     Duration timeLimit = const Duration(minutes: 2),
@@ -20,10 +20,10 @@ abstract final class LocalCloudServer {
       onConnected?.call(localServerAddress);
       token = await _processRequests(server).timeout(timeLimit);
     } on TimeoutException {
-      log.debug('Local cloud server timed out.');
+      log.debug('Token listener server timed out.');
     } catch (error, stackTrace) {
       log.error(
-        'Local cloud server error: $error',
+        'Token listener server error: $error',
         stackTrace: stackTrace,
       );
     } finally {
@@ -49,7 +49,7 @@ abstract final class LocalCloudServer {
         }
       } catch (error, stackTrace) {
         log.error(
-          'Local cloud server failed to handle request: $error',
+          'Token listener server failed to handle request: $error',
           stackTrace: stackTrace,
         );
       } finally {

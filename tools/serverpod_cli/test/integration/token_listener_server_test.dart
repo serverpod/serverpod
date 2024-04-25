@@ -1,18 +1,18 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:serverpod_cli/src/serverpod_cloud/local_cloud_server.dart';
+import 'package:serverpod_cli/src/serverpod_cloud/token_listener_server.dart';
 import 'package:test/test.dart';
 import 'package:http/http.dart' as http;
 
 void main() async {
-  group('Given listening local cloud server', () {
+  group('Given listening token listener server', () {
     late Completer<Uri> callbackUrlFuture;
     late Future<String?> tokenFuture;
 
     setUp(() async {
       callbackUrlFuture = Completer<Uri>();
-      tokenFuture = LocalCloudServer.listenForAuthenticationToken(
+      tokenFuture = TokenListenerServer.listenForAuthenticationToken(
         onConnected: (Uri callbackUrl) {
           callbackUrlFuture.complete(callbackUrl);
         },
@@ -103,7 +103,7 @@ void main() async {
 
     setUp(() async {
       callbackUrlFuture = Completer<Uri>();
-      tokenFuture = LocalCloudServer.listenForAuthenticationToken(
+      tokenFuture = TokenListenerServer.listenForAuthenticationToken(
         onConnected: (Uri callbackUrl) {
           callbackUrlFuture.complete(callbackUrl);
         },
