@@ -160,6 +160,12 @@ class ServerpodCommandRunner extends CommandRunner {
   ArgParser get argParser => _argParser;
   final ArgParser _argParser = ArgParser(usageLineLength: log.wrapTextColumn);
 
+  void addCommands(List<Command> commands) {
+    for (var command in commands) {
+      addCommand(command);
+    }
+  }
+
   void _setLogLevel(ArgResults topLevelResults) {
     var logLevel = LogLevel.info;
 

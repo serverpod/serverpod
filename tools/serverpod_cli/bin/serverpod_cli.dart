@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/analytics/analytics.dart';
 import 'package:serverpod_cli/src/commands/analyze_pubspecs.dart';
+import 'package:serverpod_cli/src/commands/cloud.dart';
 import 'package:serverpod_cli/src/commands/create.dart';
 import 'package:serverpod_cli/src/commands/create_repair_migration.dart';
 import 'package:serverpod_cli/src/commands/generate_pubspecs.dart';
@@ -58,16 +59,18 @@ ServerpodCommandRunner buildCommandRunner() {
     _analytics,
     productionMode,
     Version.parse(templateVersion),
-  )
-    ..addCommand(AnalyzePubspecsCommand())
-    ..addCommand(CreateCommand())
-    ..addCommand(GenerateCommand())
-    ..addCommand(GeneratePubspecsCommand())
-    ..addCommand(LanguageServerCommand())
-    ..addCommand(CreateMigrationCommand())
-    ..addCommand(CreateRepairMigrationCommand())
-    ..addCommand(UpgradeCommand())
-    ..addCommand(VersionCommand());
+  )..addCommands([
+      AnalyzePubspecsCommand(),
+      CreateCommand(),
+      GenerateCommand(),
+      GeneratePubspecsCommand(),
+      LanguageServerCommand(),
+      CreateMigrationCommand(),
+      CreateRepairMigrationCommand(),
+      UpgradeCommand(),
+      VersionCommand(),
+      if (productionMode == false) CloudCommand(),
+    ]);
 }
 
 Future<void> _preExit() async {
