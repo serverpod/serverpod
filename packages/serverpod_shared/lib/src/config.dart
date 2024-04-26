@@ -74,14 +74,30 @@ class ServerpodConfig {
 
     var doc = loadYaml(data);
 
+    /// Get api server setup. This field cannot be null, so if the
+    /// configuration is missing, create a default configuration.
     assert(doc['apiServer'] is Map, 'apiServer is missing in confing');
-    var apiServer = ServerConfig._fromJson(doc['apiServer']);
+    Map apiSetup = doc['apiServer'] ?? {};
+    var apiServer = apiSetup.isNotEmpty
+        ? ServerConfig._fromJson(apiSetup)
+        : ServerConfig(
+            port: 8080,
+            publicHost: 'localhost',
+            publicPort: 8080,
+            publicScheme: 'http',
+          );
 
+    /// Get insights server setup
     assert(doc['insightsServer'] is Map, 'insightsServer is missing in config');
-    var insightsServer = ServerConfig._fromJson(doc['insightsServer']);
+    Map insightsSetup = doc['insightsServer'] ?? {};
+    var insightsServer =
+        insightsSetup.isNotEmpty ? ServerConfig._fromJson(insightsSetup) : null;
 
+    /// Get web server setup
     assert(doc['webServer'] is Map, 'webServer is missing in config');
-    var webServer = ServerConfig._fromJson(doc['webServer']);
+    Map webSetup = doc['webServer'] ?? {};
+    var webServer =
+        webSetup.isNotEmpty ? ServerConfig._fromJson(webSetup) : null;
 
     // Get max request size (default to 512kb)
     var maxRequestSize = doc['maxRequestSize'] ?? 524288;
@@ -90,13 +106,17 @@ class ServerpodConfig {
 
     // Get database setup
     assert(doc['database'] is Map, 'Database setup is missing in config');
-    Map dbSetup = doc['database'];
-    var database = DatabaseConfig._fromJson(dbSetup, passwords);
+    Map dbSetup = doc['database'] ?? {};
+    var database = dbSetup.isNotEmpty
+        ? DatabaseConfig._fromJson(dbSetup, passwords)
+        : null;
 
     // Get Redis setup
     assert(doc['redis'] is Map, 'Redis setup is missing in config');
-    Map redisSetup = doc['redis'];
-    var redis = RedisConfig._fromJson(redisSetup, passwords);
+    Map redisSetup = doc['redis'] ?? {};
+    var redis = redisSetup.isNotEmpty
+        ? RedisConfig._fromJson(redisSetup, passwords)
+        : null;
 
     return ServerpodConfig(
       runMode: runMode,
