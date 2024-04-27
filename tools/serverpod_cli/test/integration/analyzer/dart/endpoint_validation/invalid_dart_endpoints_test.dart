@@ -196,4 +196,47 @@ class ExampleEndpointValid extends Endpoint {
       expect(endpointDefinitions, hasLength(1));
     });
   });
+
+  group('Having multiple files with same endpoint name when analyzed', () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      endpointFile = File(path.join(testDirectory.path, 'endpoint2.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      await analyzer.analyze(collector: collector);
+    });
+
+    test('then validation error for invalid Dart syntax is reported.', () {
+      expect(collector.errors, hasLength(1));
+      expect(
+        collector.errors.firstOrNull?.message,
+        contains('Endpoint analysis skipped due to duplicate class names. '
+            'Please rename your classes to make them unique. '),
+      );
+    });
+  });
 }
