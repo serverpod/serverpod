@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
@@ -65,8 +66,34 @@ class EndpointsAnalyzer {
         ),
       );
     }
+    String? duplicateClassName = checkForDuplicateClassNames(endpointDefs);
+    if (duplicateClassName != null) {
+      collector.addError(
+        SourceSpanSeverityException(
+          'Endpoint analysis skipped due to duplicate class names. '
+          'Please rename your classes to make them unique. '
+          'className: $duplicateClassName',
+          null,
+          severity: SourceSpanSeverity.error,
+        ),
+      );
+    }
 
     return endpointDefs;
+  }
+
+  String? checkForDuplicateClassNames(List<EndpointDefinition> endpointDefs) {
+    Set<String> classNames = {};
+
+    for (var element in endpointDefs) {
+      // Assuming 'className' is a property of elements in endpointDefs
+      if (classNames.contains(element.className)) {
+        return element.className;
+      }
+      classNames.add(element.className);
+    }
+
+    return null;
   }
 
   Future<List<String>> _getErrorsForFile(
