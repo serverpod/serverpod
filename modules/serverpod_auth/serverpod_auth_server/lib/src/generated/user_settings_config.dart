@@ -28,21 +28,13 @@ abstract class UserSettingsConfig extends _i1.SerializableEntity {
     required bool canEditUserImage,
   }) = _UserSettingsConfigImpl;
 
-  factory UserSettingsConfig.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory UserSettingsConfig.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserSettingsConfig(
-      canSeeUserName: serializationManager
-          .deserialize<bool>(jsonSerialization['canSeeUserName']),
-      canSeeFullName: serializationManager
-          .deserialize<bool>(jsonSerialization['canSeeFullName']),
-      canEditUserName: serializationManager
-          .deserialize<bool>(jsonSerialization['canEditUserName']),
-      canEditFullName: serializationManager
-          .deserialize<bool>(jsonSerialization['canEditFullName']),
-      canEditUserImage: serializationManager
-          .deserialize<bool>(jsonSerialization['canEditUserImage']),
+      canSeeUserName: jsonSerialization['canSeeUserName'] as bool,
+      canSeeFullName: jsonSerialization['canSeeFullName'] as bool,
+      canEditUserName: jsonSerialization['canEditUserName'] as bool,
+      canEditFullName: jsonSerialization['canEditFullName'] as bool,
+      canEditUserImage: jsonSerialization['canEditUserImage'] as bool,
     );
   }
 

@@ -1,13 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:serverpod/protocol.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
-import 'package:serverpod_client/serverpod_client.dart';
-
-import '../generated/protocol.dart';
-import 'future_call.dart';
-import 'server.dart';
-import 'session.dart';
 
 /// Manages [FutureCall]s in the [Server]. A [FutureCall] is a method that will
 /// be called at a certain time in the future. The call request and its
@@ -18,7 +14,7 @@ class FutureCallManager {
 
   /// Called when pending future calls have been completed, if the server is
   /// running in [ServerpodRole.maintenance] mode.
-  final VoidCallback onCompleted;
+  final void Function() onCompleted;
 
   final SerializationManager _serializationManager;
   final _futureCalls = <String, FutureCall>{};

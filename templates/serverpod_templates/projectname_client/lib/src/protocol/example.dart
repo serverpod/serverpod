@@ -21,13 +21,10 @@ abstract class Example extends _i1.SerializableEntity {
     required int data,
   }) = _ExampleImpl;
 
-  factory Example.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Example.fromJson(Map<String, dynamic> jsonSerialization) {
     return Example(
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      data: serializationManager.deserialize<int>(jsonSerialization['data']),
+      name: jsonSerialization['name'] as String,
+      data: jsonSerialization['data'] as int,
     );
   }
 

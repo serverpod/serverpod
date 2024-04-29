@@ -41,32 +41,32 @@ abstract class Types extends _i1.SerializableEntity {
     _i3.TestEnumStringified? aStringifiedEnum,
   }) = _TypesImpl;
 
-  factory Types.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Types.fromJson(Map<String, dynamic> jsonSerialization) {
     return Types(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      anInt: serializationManager.deserialize<int?>(jsonSerialization['anInt']),
-      aBool:
-          serializationManager.deserialize<bool?>(jsonSerialization['aBool']),
-      aDouble: serializationManager
-          .deserialize<double?>(jsonSerialization['aDouble']),
-      aDateTime: serializationManager
-          .deserialize<DateTime?>(jsonSerialization['aDateTime']),
-      aString: serializationManager
-          .deserialize<String?>(jsonSerialization['aString']),
-      aByteData: serializationManager
-          .deserialize<_i2.ByteData?>(jsonSerialization['aByteData']),
-      aDuration: serializationManager
-          .deserialize<Duration?>(jsonSerialization['aDuration']),
-      aUuid: serializationManager
-          .deserialize<_i1.UuidValue?>(jsonSerialization['aUuid']),
-      anEnum: serializationManager
-          .deserialize<_i3.TestEnum?>(jsonSerialization['anEnum']),
-      aStringifiedEnum:
-          serializationManager.deserialize<_i3.TestEnumStringified?>(
-              jsonSerialization['aStringifiedEnum']),
+      id: jsonSerialization['id'] as int?,
+      anInt: jsonSerialization['anInt'] as int?,
+      aBool: jsonSerialization['aBool'] as bool?,
+      aDouble: jsonSerialization['aDouble'] as double?,
+      aDateTime: jsonSerialization['aDateTime'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['aDateTime']),
+      aString: jsonSerialization['aString'] as String?,
+      aByteData: jsonSerialization['aByteData'] == null
+          ? null
+          : _i1.ByteDataJsonExtension.fromJson(jsonSerialization['aByteData']),
+      aDuration: jsonSerialization['aDuration'] == null
+          ? null
+          : _i1.DurationJsonExtension.fromJson(jsonSerialization['aDuration']),
+      aUuid: jsonSerialization['aUuid'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['aUuid']),
+      anEnum: jsonSerialization['anEnum'] == null
+          ? null
+          : _i3.TestEnum.fromJson((jsonSerialization['anEnum'] as int)),
+      aStringifiedEnum: jsonSerialization['aStringifiedEnum'] == null
+          ? null
+          : _i3.TestEnumStringified.fromJson(
+              (jsonSerialization['aStringifiedEnum'] as String)),
     );
   }
 

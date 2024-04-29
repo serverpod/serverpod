@@ -22,14 +22,11 @@ abstract class ObjectWithDuration extends _i1.TableRow {
     required Duration duration,
   }) = _ObjectWithDurationImpl;
 
-  factory ObjectWithDuration.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ObjectWithDuration.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithDuration(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      duration: serializationManager
-          .deserialize<Duration>(jsonSerialization['duration']),
+      id: jsonSerialization['id'] as int?,
+      duration:
+          _i1.DurationJsonExtension.fromJson(jsonSerialization['duration']),
     );
   }
 

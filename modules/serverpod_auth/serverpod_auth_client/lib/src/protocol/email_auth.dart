@@ -26,17 +26,12 @@ abstract class EmailAuth extends _i1.SerializableEntity {
     required String hash,
   }) = _EmailAuthImpl;
 
-  factory EmailAuth.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory EmailAuth.fromJson(Map<String, dynamic> jsonSerialization) {
     return EmailAuth(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      userId:
-          serializationManager.deserialize<int>(jsonSerialization['userId']),
-      email:
-          serializationManager.deserialize<String>(jsonSerialization['email']),
-      hash: serializationManager.deserialize<String>(jsonSerialization['hash']),
+      id: jsonSerialization['id'] as int?,
+      userId: jsonSerialization['userId'] as int,
+      email: jsonSerialization['email'] as String,
+      hash: jsonSerialization['hash'] as String,
     );
   }
 

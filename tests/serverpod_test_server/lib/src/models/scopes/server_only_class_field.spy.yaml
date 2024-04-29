@@ -1,0 +1,4 @@
+class: ServerOnlyClassField
+fields:
+    serverOnlyClassList: List<ServerOnlyClass>?, scope=serverOnly
+    serverOnlyClassMap: Map<String, ServerOnlyClass>?, scope=serverOnly
