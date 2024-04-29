@@ -21,13 +21,10 @@ abstract class ObjectWithParent extends _i1.SerializableEntity {
     required int other,
   }) = _ObjectWithParentImpl;
 
-  factory ObjectWithParent.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ObjectWithParent.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithParent(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      other: serializationManager.deserialize<int>(jsonSerialization['other']),
+      id: jsonSerialization['id'] as int?,
+      other: jsonSerialization['other'] as int,
     );
   }
 

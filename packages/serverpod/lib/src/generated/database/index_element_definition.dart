@@ -24,14 +24,11 @@ abstract class IndexElementDefinition extends _i1.SerializableEntity {
   }) = _IndexElementDefinitionImpl;
 
   factory IndexElementDefinition.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return IndexElementDefinition(
-      type: serializationManager.deserialize<_i2.IndexElementDefinitionType>(
-          jsonSerialization['type']),
-      definition: serializationManager
-          .deserialize<String>(jsonSerialization['definition']),
+      type: _i2.IndexElementDefinitionType.fromJson(
+          (jsonSerialization['type'] as int)),
+      definition: jsonSerialization['definition'] as String,
     );
   }
 

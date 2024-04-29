@@ -44,7 +44,7 @@ enum ColumnType with _i1.SerializableEntity {
   /// used by Serverpod.
   unknown;
 
-  static ColumnType? fromJson(int index) {
+  static ColumnType fromJson(int index) {
     switch (index) {
       case 0:
         return text;
@@ -67,7 +67,8 @@ enum ColumnType with _i1.SerializableEntity {
       case 9:
         return unknown;
       default:
-        return null;
+        throw ArgumentError(
+            'Value "$index" cannot be converted to "ColumnType"');
     }
   }
 

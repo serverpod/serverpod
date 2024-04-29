@@ -14,14 +14,15 @@ enum EnumSerialization with _i1.SerializableEntity {
   byName,
   byIndex;
 
-  static EnumSerialization? fromJson(int index) {
+  static EnumSerialization fromJson(int index) {
     switch (index) {
       case 0:
         return byName;
       case 1:
         return byIndex;
       default:
-        return null;
+        throw ArgumentError(
+            'Value "$index" cannot be converted to "EnumSerialization"');
     }
   }
 

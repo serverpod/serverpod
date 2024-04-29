@@ -761,22 +761,13 @@ class SerializableModelLibraryGenerator {
           p.name = 'jsonSerialization';
           p.type = refer('Map<String,dynamic>');
         }),
-        Parameter((p) {
-          p.name = 'serializationManager';
-          p.type = refer('SerializationManager', serverpodUrl(serverCode));
-        }),
       ]);
       c.body = refer(className)
           .call([], {
             for (var field in fields)
               if (field.shouldIncludeField(serverCode))
-                field.name:
-                    refer('serializationManager').property('deserialize').call([
-                  refer('jsonSerialization').index(literalString(field.name))
-                ], {}, [
-                  field.type.reference(serverCode,
-                      subDirParts: classDefinition.subDirParts, config: config)
-                ])
+                field.name: buildFromJsonForField(
+                    field, serverCode, config, classDefinition)
           })
           .returned
           .statement;
@@ -1652,7 +1643,7 @@ class SerializableModelLibraryGenerator {
     return [
       Method((m) => m
         ..static = true
-        ..returns = refer('${enumDefinition.className}?')
+        ..returns = refer(enumDefinition.className)
         ..name = 'fromJson'
         ..requiredParameters.add(Parameter((p) => p
           ..name = 'index'
@@ -1662,7 +1653,9 @@ class SerializableModelLibraryGenerator {
                 const Code('switch(index){'),
                 for (int i = 0; i < enumDefinition.values.length; i++)
                   Code('case $i: return ${enumDefinition.values[i].name};'),
-                const Code('default: return null;'),
+                Code(
+                  'default: throw ArgumentError(\'Value "\$index" cannot be converted to "${enumDefinition.className}"\');',
+                ),
                 const Code('}'),
               ]))
             .build()),
@@ -1681,7 +1674,7 @@ class SerializableModelLibraryGenerator {
     return [
       Method((m) => m
         ..static = true
-        ..returns = refer('${enumDefinition.className}?')
+        ..returns = refer(enumDefinition.className)
         ..name = 'fromJson'
         ..requiredParameters.add(Parameter((p) => p
           ..name = 'name'
@@ -1691,7 +1684,9 @@ class SerializableModelLibraryGenerator {
                 const Code('switch(name){'),
                 for (var value in enumDefinition.values)
                   Code("case '${value.name}': return ${value.name};"),
-                const Code('default: return null;'),
+                Code(
+                  'default: throw ArgumentError(\'Value "\$name" cannot be converted to "${enumDefinition.className}"\');',
+                ),
                 const Code('}'),
               ]))
             .build()),

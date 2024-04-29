@@ -2,6 +2,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -121,14 +122,14 @@ class Restrictions {
   String documentType;
   YamlMap documentContents;
   SerializableModelDefinition? documentDefinition;
-  ModelRelations? modelRelations;
+  ParsedModelsCollection parsedModels;
 
   Restrictions({
     required this.config,
     required this.documentType,
     required this.documentContents,
     this.documentDefinition,
-    this.modelRelations,
+    required this.parsedModels,
   });
 
   List<SourceSpanSeverityException> validateClassName(
@@ -164,7 +165,7 @@ class Restrictions {
       ];
     }
 
-    var classesByName = modelRelations?.classNames[className]?.where(
+    var classesByName = parsedModels.classNames[className]?.where(
         (model) => model.moduleAlias == documentDefinition?.moduleAlias);
 
     if (classesByName != null && classesByName.length > 1) {
@@ -217,11 +218,8 @@ class Restrictions {
       ];
     }
 
-    var relationships = modelRelations;
-    if (relationships == null) return [];
-
-    if (!relationships.isTableNameUnique(documentDefinition, tableName)) {
-      var otherClass = relationships.findByTableName(
+    if (!parsedModels.isTableNameUnique(documentDefinition, tableName)) {
+      var otherClass = parsedModels.findByTableName(
         tableName,
         ignore: documentDefinition,
       );
@@ -327,10 +325,8 @@ class Restrictions {
         )
       ];
     }
-    var relationships = modelRelations;
-    if (relationships == null) return [];
-    if (!relationships.isIndexNameUnique(documentDefinition, indexName)) {
-      var collision = relationships.findByIndexName(
+    if (!parsedModels.isIndexNameUnique(documentDefinition, indexName)) {
+      var collision = parsedModels.findByIndexName(
         indexName,
         ignore: documentDefinition,
       );
@@ -451,11 +447,10 @@ class Restrictions {
       ];
     }
 
-    var foreignFields = modelRelations?.findNamedForeignRelationFields(
+    var foreignFields = parsedModels.findNamedForeignRelationFields(
       classDefinition,
       field,
     );
-    if (foreignFields == null) return [];
 
     if (_isForeignKeyDefinedOnBothSides(field, foreignFields)) {
       return [
@@ -560,8 +555,7 @@ class Restrictions {
       ];
     }
 
-    var parentClasses =
-        modelRelations?.tableNames[foreignKeyRelation.parentTable];
+    var parentClasses = parsedModels.tableNames[foreignKeyRelation.parentTable];
 
     if (parentClasses == null || parentClasses.isEmpty) return [];
 
@@ -605,12 +599,12 @@ class Restrictions {
 
     if (field.type.isListType) return false;
 
-    var foreignFields = modelRelations?.findNamedForeignRelationFields(
+    var foreignFields = parsedModels.findNamedForeignRelationFields(
       classDefinition,
       field,
     );
 
-    if (foreignFields == null || foreignFields.isEmpty) return false;
+    if (foreignFields.isEmpty) return false;
     if (foreignFields.any((element) => element.type.isListType)) return false;
 
     return true;
@@ -686,8 +680,7 @@ class Restrictions {
       ];
     }
 
-    var relations = modelRelations;
-    if (relations != null && !relations.tableNames.containsKey(content)) {
+    if (!parsedModels.tableNames.containsKey(content)) {
       return [
         SourceSpanSeverityException(
           'The parent table "$content" was not found in any model.',
@@ -699,7 +692,7 @@ class Restrictions {
     return [];
   }
 
-  List<SourceSpanSeverityException> validateFieldDataType(
+  List<SourceSpanSeverityException> validateFieldType(
     String parentNodeName,
     dynamic type,
     SourceSpan? span,
@@ -718,49 +711,45 @@ class Restrictions {
     var classDefinition = documentDefinition;
     if (classDefinition is! ClassDefinition) return errors;
 
-    var fieldType = classDefinition.findField(parentNodeName)?.type;
-
-    if (fieldType == null) return errors;
-
-    errors.addAll(validateFieldType(fieldType, span));
-
     var field = classDefinition.findField(parentNodeName);
-    if (field == null || !field.isSymbolicRelation) return errors;
+    if (field == null) return errors;
 
-    if (!type.endsWith('?')) {
-      errors.add(SourceSpanSeverityException(
-        'Fields with a model relations must be nullable (e.g. $parentNodeName: $type?).',
-        span,
-      ));
-    }
+    errors.addAll(_validateFieldDataType(field.type, span));
 
-    var localModelRelations = modelRelations;
-    if (localModelRelations == null) return errors;
+    // Abort further validation if the field data type has errors.
     if (errors.isNotEmpty) return errors;
 
-    String? parsedType = localModelRelations.extractReferenceClassName(field);
-
-    var referenceClass = localModelRelations.findByClassName(parsedType);
-
-    if (referenceClass is! ClassDefinition) {
-      errors.add(SourceSpanSeverityException(
-        'Only classes can be used in relations, "$parsedType" is not a class.',
-        span,
-      ));
-      return errors;
+    var fieldClassDefinitions = _extractAllClassDefinitionsFromType(field.type);
+    for (var classDefinition in fieldClassDefinitions) {
+      if (classDefinition.serverOnly &&
+          !ScopeValueRestriction.serverOnlyClassAllowedScopes
+              .contains(field.scope)) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The type "${classDefinition.className}" is a server only class and can only be used fields with scope ${ScopeValueRestriction.serverOnlyClassAllowedScopes.map((e) => e.name)} (e.g $parentNodeName: ${classDefinition.className}, scope=${ScopeValueRestriction.serverOnlyClassAllowedScopes.first.name}).',
+            span?.subspan(
+              span.text.indexOf(classDefinition.className),
+              span.text.indexOf(classDefinition.className) +
+                  classDefinition.className.length,
+            ),
+          ),
+        );
+      }
     }
 
-    if (!_hasTableDefined(referenceClass)) {
-      errors.add(SourceSpanSeverityException(
-        'The class "$parsedType" must have a "table" property defined to be used in a relation.',
-        span,
+    if (field.isSymbolicRelation) {
+      errors.addAll(_validateFieldRelationType(
+        parentNodeName: parentNodeName,
+        type: type,
+        field: field,
+        span: span,
       ));
     }
 
     return errors;
   }
 
-  List<SourceSpanSeverityException> validateFieldType(
+  List<SourceSpanSeverityException> _validateFieldDataType(
     TypeDefinition fieldType,
     SourceSpan? span,
   ) {
@@ -802,8 +791,8 @@ class Restrictions {
 
     if (fieldType.isMapType) {
       if (fieldType.generics.length == 2) {
-        errors.addAll(validateFieldType(fieldType.generics.first, span));
-        errors.addAll(validateFieldType(fieldType.generics.last, span));
+        errors.addAll(_validateFieldDataType(fieldType.generics.first, span));
+        errors.addAll(_validateFieldDataType(fieldType.generics.last, span));
       } else {
         errors.add(
           SourceSpanSeverityException(
@@ -814,7 +803,7 @@ class Restrictions {
       }
     } else if (fieldType.isListType) {
       if (fieldType.generics.length == 1) {
-        errors.addAll(validateFieldType(fieldType.generics.first, span));
+        errors.addAll(_validateFieldDataType(fieldType.generics.first, span));
       } else {
         errors.add(
           SourceSpanSeverityException(
@@ -830,6 +819,41 @@ class Restrictions {
           span,
         ),
       );
+    }
+
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> _validateFieldRelationType({
+    required String parentNodeName,
+    required String type,
+    required SerializableModelFieldDefinition field,
+    required SourceSpan? span,
+  }) {
+    String? parsedType = parsedModels.extractReferenceClassName(field);
+    var referenceClass = parsedModels.findByClassName(parsedType);
+
+    var errors = <SourceSpanSeverityException>[];
+    if (!type.endsWith('?')) {
+      errors.add(SourceSpanSeverityException(
+        'Fields with a model relations must be nullable (e.g. $parentNodeName: $type?).',
+        span,
+      ));
+    }
+
+    if (referenceClass is! ClassDefinition) {
+      errors.add(SourceSpanSeverityException(
+        'Only classes can be used in relations, "$parsedType" is not a class.',
+        span,
+      ));
+    }
+
+    if (referenceClass is ClassDefinition &&
+        !_hasTableDefined(referenceClass)) {
+      errors.add(SourceSpanSeverityException(
+        'The class "$parsedType" must have a "table" property defined to be used in a relation.',
+        span,
+      ));
     }
 
     return errors;
@@ -920,8 +944,8 @@ class Restrictions {
     if (field == null) return [];
 
     if (field.type.isListType) {
-      var referenceClass = modelRelations
-          ?.findAllByClassName(field.type.generics.first.className)
+      var referenceClass = parsedModels
+          .findAllByClassName(field.type.generics.first.className)
           .firstOrNull;
 
       if (referenceClass != null &&
@@ -985,18 +1009,15 @@ class Restrictions {
       ];
     }
 
-    var localModelRelations = modelRelations;
-    if (localModelRelations == null) return [];
-
     var field = classDefinition.findField(parentNodeName);
     if (field == null) return [];
 
-    var foreignFields = localModelRelations.findNamedForeignRelationFields(
+    var foreignFields = parsedModels.findNamedForeignRelationFields(
       classDefinition,
       field,
     );
 
-    var foreignClassName = localModelRelations.extractReferenceClassName(
+    var foreignClassName = parsedModels.extractReferenceClassName(
       field,
     );
     if (foreignFields.isEmpty) {
@@ -1149,16 +1170,13 @@ class Restrictions {
     var moduleAlias = type.moduleAlias;
     if (moduleAlias == null) return false;
 
-    var relationalData = modelRelations;
-    if (relationalData == null) return true;
-
-    return !relationalData.moduleNames.contains(moduleAlias);
+    return !parsedModels.moduleNames.contains(moduleAlias);
   }
 
   bool _isModelType(TypeDefinition type) {
     var className = type.className;
 
-    var definitions = modelRelations?.classNames[className];
+    var definitions = parsedModels.classNames[className];
 
     if (definitions == null) return false;
     if (definitions.isEmpty) return false;
@@ -1181,5 +1199,24 @@ class Restrictions {
     if (classDefinition is! ClassDefinition) return false;
 
     return classDefinition.tableName != null;
+  }
+
+  Set<ClassDefinition> _extractAllClassDefinitionsFromType(
+    TypeDefinition fieldType,
+  ) {
+    var classDefinitions = <ClassDefinition>{};
+
+    if (fieldType.generics.isNotEmpty) {
+      for (var generic in fieldType.generics) {
+        classDefinitions.addAll(_extractAllClassDefinitionsFromType(generic));
+      }
+    }
+
+    var className = fieldType.className;
+    var definition = parsedModels.findByClassName(className);
+
+    if (definition is ClassDefinition) classDefinitions.add(definition);
+
+    return classDefinitions;
   }
 }

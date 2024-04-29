@@ -23,14 +23,10 @@ abstract class ChatRequestMessageChunk extends _i1.SerializableEntity {
   }) = _ChatRequestMessageChunkImpl;
 
   factory ChatRequestMessageChunk.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return ChatRequestMessageChunk(
-      channel: serializationManager
-          .deserialize<String>(jsonSerialization['channel']),
-      lastMessageId: serializationManager
-          .deserialize<int>(jsonSerialization['lastMessageId']),
+      channel: jsonSerialization['channel'] as String,
+      lastMessageId: jsonSerialization['lastMessageId'] as int,
     );
   }
 

@@ -2,14 +2,17 @@ import 'package:serverpod_service_client/serverpod_service_client.dart'
     as service;
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
-import 'package:serverpod_test_server/test_util/service_key_manager.dart';
+import 'package:serverpod_test_server/test_util/test_service_key_manager.dart';
 import 'package:test/test.dart';
 
 void main() {
   var client = Client(serverUrl);
   var serviceClient = service.Client(
     serviceServerUrl,
-    authenticationKeyManager: ServiceKeyManager('0', 'super_SECRET_password'),
+    authenticationKeyManager: TestServiceKeyManager(
+      '0',
+      'super_SECRET_password',
+    ),
   );
 
   group('Health metrics', () {

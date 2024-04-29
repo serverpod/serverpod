@@ -23,13 +23,10 @@ abstract class ServerpodSqlException extends _i1.SerializableEntity
   }) = _ServerpodSqlExceptionImpl;
 
   factory ServerpodSqlException.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return ServerpodSqlException(
-      message: serializationManager
-          .deserialize<String>(jsonSerialization['message']),
-      sql: serializationManager.deserialize<String>(jsonSerialization['sql']),
+      message: jsonSerialization['message'] as String,
+      sql: jsonSerialization['sql'] as String,
     );
   }
 

@@ -33,10 +33,10 @@ class Protocol extends _i1.SerializationManager {
       return customConstructors[t]!(data, this) as T;
     }
     if (t == _i2.ModuleClass) {
-      return _i2.ModuleClass.fromJson(data, this) as T;
+      return _i2.ModuleClass.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.ModuleClass?>()) {
-      return (data != null ? _i2.ModuleClass.fromJson(data, this) : null) as T;
+      return (data != null ? _i2.ModuleClass.fromJson(data) : null) as T;
     }
     return super.deserialize<T>(data, t);
   }

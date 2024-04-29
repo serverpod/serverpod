@@ -18,7 +18,7 @@ enum LogLevel with _i1.SerializableEntity {
   error,
   fatal;
 
-  static LogLevel? fromJson(int index) {
+  static LogLevel fromJson(int index) {
     switch (index) {
       case 0:
         return debug;
@@ -31,7 +31,7 @@ enum LogLevel with _i1.SerializableEntity {
       case 4:
         return fatal;
       default:
-        return null;
+        throw ArgumentError('Value "$index" cannot be converted to "LogLevel"');
     }
   }
 

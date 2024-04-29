@@ -18,12 +18,8 @@ abstract class DistributedCacheEntry extends _i1.SerializableEntity {
       _DistributedCacheEntryImpl;
 
   factory DistributedCacheEntry.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return DistributedCacheEntry(
-        data: serializationManager
-            .deserialize<String>(jsonSerialization['data']));
+      Map<String, dynamic> jsonSerialization) {
+    return DistributedCacheEntry(data: jsonSerialization['data'] as String);
   }
 
   /// The cached data.

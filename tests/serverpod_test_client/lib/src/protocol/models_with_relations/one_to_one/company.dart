@@ -26,17 +26,15 @@ abstract class Company extends _i1.SerializableEntity {
     _i2.Town? town,
   }) = _CompanyImpl;
 
-  factory Company.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Company.fromJson(Map<String, dynamic> jsonSerialization) {
     return Company(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      townId:
-          serializationManager.deserialize<int>(jsonSerialization['townId']),
-      town: serializationManager
-          .deserialize<_i2.Town?>(jsonSerialization['town']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      townId: jsonSerialization['townId'] as int,
+      town: jsonSerialization['town'] == null
+          ? null
+          : _i2.Town.fromJson(
+              (jsonSerialization['town'] as Map<String, dynamic>)),
     );
   }
 

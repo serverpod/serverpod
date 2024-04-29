@@ -17,12 +17,8 @@ abstract class DefaultServerOnlyClass extends _i1.SerializableEntity {
       _DefaultServerOnlyClassImpl;
 
   factory DefaultServerOnlyClass.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return DefaultServerOnlyClass(
-        foo:
-            serializationManager.deserialize<String>(jsonSerialization['foo']));
+      Map<String, dynamic> jsonSerialization) {
+    return DefaultServerOnlyClass(foo: jsonSerialization['foo'] as String);
   }
 
   String foo;

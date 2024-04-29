@@ -22,15 +22,10 @@ abstract class ChatJoinChannel extends _i1.SerializableEntity {
     String? userName,
   }) = _ChatJoinChannelImpl;
 
-  factory ChatJoinChannel.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ChatJoinChannel.fromJson(Map<String, dynamic> jsonSerialization) {
     return ChatJoinChannel(
-      channel: serializationManager
-          .deserialize<String>(jsonSerialization['channel']),
-      userName: serializationManager
-          .deserialize<String?>(jsonSerialization['userName']),
+      channel: jsonSerialization['channel'] as String,
+      userName: jsonSerialization['userName'] as String?,
     );
   }
 
