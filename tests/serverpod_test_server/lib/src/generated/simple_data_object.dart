@@ -32,8 +32,8 @@ abstract class SimpleDataObject extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {'object': object.allToJson()};
+  Map<String, dynamic> toJsonForClient() {
+    return {'object': object.toJsonForClient()};
   }
 }
 

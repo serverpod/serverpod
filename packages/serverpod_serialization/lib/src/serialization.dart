@@ -16,11 +16,11 @@ abstract mixin class SerializableEntity {
   /// Returns a serialized JSON structure of the model, ready to be sent
   /// through the API. This does not include fields that are marked as
   /// database only.
-  dynamic toJson();
+  dynamic toJsonForClient() {}
 
   /// Returns a serialized JSON structure of the model which also includes
   /// fields used by the database.
-  dynamic allToJson() => toJson();
+  dynamic toJson() => toJsonForClient();
 
   @override
   String toString() {

@@ -139,7 +139,7 @@ class DatabaseConnection {
     var columnNames =
         selectedColumns.map((e) => '"${e.columnName}"').join(', ');
 
-    var values = rows.map((row) => row.allToJson()).map((row) {
+    var values = rows.map((row) => row. toJson()).map((row) {
       var values = selectedColumns.map((column) {
         var unformattedValue = row[column.columnName];
         return DatabasePoolManager.encoder.convert(unformattedValue);
@@ -665,7 +665,7 @@ class DatabaseConnection {
     Iterable<Column> column,
   ) {
     return rows
-        .map((row) => row.allToJson() as Map<String, dynamic>)
+        .map((row) => row. toJson() as Map<String, dynamic>)
         .map((row) {
       var values = column.map((column) {
         var unformattedValue = row[column.columnName];

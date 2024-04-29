@@ -68,12 +68,12 @@ abstract class Address extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       if (id != null) 'id': id,
       'street': street,
       if (inhabitantId != null) 'inhabitantId': inhabitantId,
-      if (inhabitant != null) 'inhabitant': inhabitant?.allToJson(),
+      if (inhabitant != null) 'inhabitant': inhabitant?.toJsonForClient(),
     };
   }
 

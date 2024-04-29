@@ -37,8 +37,10 @@ abstract class SessionLogResult extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {'sessionLog': sessionLog.toJson(valueToJson: (v) => v.allToJson())};
+  Map<String, dynamic> toJsonForClient() {
+    return {
+      'sessionLog': sessionLog.toJson(valueToJson: (v) => v.toJsonForClient())
+    };
   }
 }
 

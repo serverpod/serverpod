@@ -32,7 +32,7 @@ abstract class DistributedCacheEntry extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {'data': data};
   }
 }

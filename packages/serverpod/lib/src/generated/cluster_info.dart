@@ -37,8 +37,8 @@ abstract class ClusterInfo extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {'servers': servers.toJson(valueToJson: (v) => v.allToJson())};
+  Map<String, dynamic> toJsonForClient() {
+    return {'servers': servers.toJson(valueToJson: (v) => v.toJsonForClient())};
   }
 }
 

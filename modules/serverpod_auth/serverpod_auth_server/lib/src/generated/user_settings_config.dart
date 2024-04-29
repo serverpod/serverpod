@@ -72,7 +72,7 @@ abstract class UserSettingsConfig extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       'canSeeUserName': canSeeUserName,
       'canSeeFullName': canSeeFullName,

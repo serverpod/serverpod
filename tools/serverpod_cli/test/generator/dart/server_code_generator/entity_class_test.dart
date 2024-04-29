@@ -88,14 +88,14 @@ void main() {
             reason: 'Missing declaration for toJson method');
       });
 
-      test('has a allToJson method.', () {
+      test('has a toJson method.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
               maybeClassNamedExample!,
-              name: 'allToJson',
+              name: 'toJson',
             ),
             isTrue,
-            reason: 'Missing declaration for allToJson method.');
+            reason: 'Missing declaration for toJson method.');
       });
     }, skip: maybeClassNamedExample == null);
   });
@@ -524,14 +524,14 @@ void main() {
               reason: 'Field declaration missing for $fieldName.');
         });
 
-        test('has a allToJson that uses hidden class variable.', () {
+        test('has a toJson that uses hidden class variable.', () {
           var maybeAllToJson = CompilationUnitHelpers.tryFindMethodDeclaration(
             maybeClassNamedExample!,
-            name: 'allToJson',
+            name: 'toJson',
           );
 
           expect(maybeAllToJson, isNotNull,
-              reason: 'Missing declaration for allToJson method.');
+              reason: 'Missing declaration for toJson method.');
           expect(maybeAllToJson!.toSource(),
               contains('\'$fieldName\' : _$fieldName'),
               reason:

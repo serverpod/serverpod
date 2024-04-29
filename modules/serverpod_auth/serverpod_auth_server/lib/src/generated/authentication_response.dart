@@ -82,12 +82,12 @@ abstract class AuthenticationResponse extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       'success': success,
       if (key != null) 'key': key,
       if (keyId != null) 'keyId': keyId,
-      if (userInfo != null) 'userInfo': userInfo?.allToJson(),
+      if (userInfo != null) 'userInfo': userInfo?.toJsonForClient(),
       if (failReason != null) 'failReason': failReason?.toJson(),
     };
   }

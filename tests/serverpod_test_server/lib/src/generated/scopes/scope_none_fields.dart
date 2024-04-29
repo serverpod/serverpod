@@ -31,15 +31,15 @@ abstract class ScopeNoneFields extends _i1.TableRow {
   ScopeNoneFields copyWith({int? id});
   @override
   Map<String, dynamic> toJson() {
-    return {if (id != null) 'id': id};
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
       if (_name != null) 'name': _name,
     };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForClient() {
+    return {if (id != null) 'id': id};
   }
 
   static ScopeNoneFieldsInclude include() {
@@ -97,8 +97,8 @@ class ScopeNoneFieldsImplicit extends _ScopeNoneFieldsImpl {
   String? $name;
 
   @override
-  Map<String, dynamic> allToJson() {
-    var jsonMap = super.allToJson();
+  Map<String, dynamic> toJson() {
+    var jsonMap = super.toJson();
     jsonMap.addAll({'name': $name});
     return jsonMap;
   }

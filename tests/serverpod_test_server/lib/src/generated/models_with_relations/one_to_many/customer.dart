@@ -62,12 +62,12 @@ abstract class Customer extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (orders != null)
-        'orders': orders?.toJson(valueToJson: (v) => v.allToJson()),
+        'orders': orders?.toJson(valueToJson: (v) => v.toJsonForClient()),
     };
   }
 

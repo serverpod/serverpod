@@ -78,13 +78,13 @@ abstract class Enrollment extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       if (id != null) 'id': id,
       'studentId': studentId,
-      if (student != null) 'student': student?.allToJson(),
+      if (student != null) 'student': student?.toJsonForClient(),
       'courseId': courseId,
-      if (course != null) 'course': course?.allToJson(),
+      if (course != null) 'course': course?.toJsonForClient(),
     };
   }
 

@@ -66,21 +66,21 @@ abstract class MultipleMaxFieldName extends _i1.TableRow {
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
       'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2':
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
+      if (_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId !=
+          null)
+        '_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId':
+            _relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId,
     };
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       if (id != null) 'id': id,
       'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1':
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
       'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2':
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
-      if (_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId !=
-          null)
-        '_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId':
-            _relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId,
     };
   }
 
@@ -180,8 +180,8 @@ class MultipleMaxFieldNameImplicit extends _MultipleMaxFieldNameImpl {
   int? $_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId;
 
   @override
-  Map<String, dynamic> allToJson() {
-    var jsonMap = super.allToJson();
+  Map<String, dynamic> toJson() {
+    var jsonMap = super.toJson();
     jsonMap.addAll({
       '_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId':
           $_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId

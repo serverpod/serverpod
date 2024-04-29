@@ -60,11 +60,11 @@ abstract class CachesInfo extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
-      'local': local.allToJson(),
-      'localPrio': localPrio.allToJson(),
-      'global': global.allToJson(),
+      'local': local.toJsonForClient(),
+      'localPrio': localPrio.toJsonForClient(),
+      'global': global.toJsonForClient(),
     };
   }
 }

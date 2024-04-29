@@ -188,7 +188,7 @@ class SerializableModelLibraryGenerator {
 
       // Serialization for database and everything
       if (serverCode) {
-        classBuilder.methods.add(_buildModelClassAllToJsonMethod(fields));
+        classBuilder.methods.add(_buildModelClassToJsonForClientMethod(fields));
 
         if (tableName != null) {
           classBuilder.methods.addAll([
@@ -322,13 +322,13 @@ class SerializableModelLibraryGenerator {
         }))
         ..methods.add(Method((methodBuilder) {
           methodBuilder
-            ..name = 'allToJson'
+            ..name = 'toJson'
             ..annotations.add(refer('override'))
             ..returns = refer('Map<String, dynamic>')
             ..body = Block((blockBuilder) {
               blockBuilder.statements.add(
                 refer('var jsonMap')
-                    .assign(refer('super').property('allToJson').call([]))
+                    .assign(refer('super').property('toJson').call([]))
                     .statement,
               );
 
@@ -617,31 +617,31 @@ class SerializableModelLibraryGenerator {
     );
   }
 
-  Method _buildModelClassAllToJsonMethod(
-      List<SerializableModelFieldDefinition> fields) {
-    return Method(
-      (m) {
-        m.returns = refer('Map<String,dynamic>');
-        m.name = 'allToJson';
-        m.annotations.add(refer('override'));
-
-        m.body = _createToJsonBodyFromFields(fields, 'allToJson');
-      },
-    );
-  }
-
   Method _buildModelClassToJsonMethod(
-    List<SerializableModelFieldDefinition> fields,
-  ) {
+      List<SerializableModelFieldDefinition> fields) {
     return Method(
       (m) {
         m.returns = refer('Map<String,dynamic>');
         m.name = 'toJson';
         m.annotations.add(refer('override'));
 
+        m.body = _createToJsonBodyFromFields(fields, 'toJson');
+      },
+    );
+  }
+
+  Method _buildModelClassToJsonForClientMethod(
+    List<SerializableModelFieldDefinition> fields,
+  ) {
+    return Method(
+      (m) {
+        m.returns = refer('Map<String,dynamic>');
+        m.name = 'toJsonForClient';
+        m.annotations.add(refer('override'));
+
         var filteredFields =
             fields.where((field) => field.shouldSerializeField(serverCode));
-        m.body = _createToJsonBodyFromFields(filteredFields, 'toJson');
+        m.body = _createToJsonBodyFromFields(filteredFields, 'toJsonForClient');
       },
     );
   }
@@ -678,7 +678,7 @@ class SerializableModelLibraryGenerator {
             ..body = _toJsonCallConversionMethod(
               refer('v'),
               fieldType.generics.first,
-              toJsonMethodName,
+             toJsonMethodName,
             ).code,
         ).closure
       };
@@ -695,7 +695,7 @@ class SerializableModelLibraryGenerator {
               ..body = _toJsonCallConversionMethod(
                 refer('k'),
                 fieldType.generics.first,
-                toJsonMethodName,
+               toJsonMethodName,
               ).code,
           ).closure
         };
@@ -712,7 +712,7 @@ class SerializableModelLibraryGenerator {
               ..body = _toJsonCallConversionMethod(
                 refer('v'),
                 fieldType.generics.last,
-                toJsonMethodName,
+               toJsonMethodName,
               ).code,
           ).closure
         };
@@ -735,7 +735,7 @@ class SerializableModelLibraryGenerator {
       Expression fieldRef = _toJsonCallConversionMethod(
         fieldName,
         field.type,
-        toJsonMethodName,
+       toJsonMethodName,
       );
 
       return {

@@ -80,14 +80,14 @@ abstract class DatabaseDefinitions extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
-      'target': target.toJson(valueToJson: (v) => v.allToJson()),
-      'live': live.toJson(valueToJson: (v) => v.allToJson()),
+      'target': target.toJson(valueToJson: (v) => v.toJsonForClient()),
+      'live': live.toJson(valueToJson: (v) => v.toJsonForClient()),
       'installedMigrations':
-          installedMigrations.toJson(valueToJson: (v) => v.allToJson()),
-      'latestAvailableMigrations':
-          latestAvailableMigrations.toJson(valueToJson: (v) => v.allToJson()),
+          installedMigrations.toJson(valueToJson: (v) => v.toJsonForClient()),
+      'latestAvailableMigrations': latestAvailableMigrations.toJson(
+          valueToJson: (v) => v.toJsonForClient()),
     };
   }
 }

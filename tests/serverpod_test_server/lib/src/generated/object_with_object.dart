@@ -109,20 +109,20 @@ abstract class ObjectWithObject extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       if (id != null) 'id': id,
-      'data': data.allToJson(),
-      if (nullableData != null) 'nullableData': nullableData?.allToJson(),
-      'dataList': dataList.toJson(valueToJson: (v) => v.allToJson()),
+      'data': data.toJsonForClient(),
+      if (nullableData != null) 'nullableData': nullableData?.toJsonForClient(),
+      'dataList': dataList.toJson(valueToJson: (v) => v.toJsonForClient()),
       if (nullableDataList != null)
         'nullableDataList':
-            nullableDataList?.toJson(valueToJson: (v) => v.allToJson()),
+            nullableDataList?.toJson(valueToJson: (v) => v.toJsonForClient()),
       'listWithNullableData':
-          listWithNullableData.toJson(valueToJson: (v) => v?.allToJson()),
+          listWithNullableData.toJson(valueToJson: (v) => v?.toJsonForClient()),
       if (nullableListWithNullableData != null)
         'nullableListWithNullableData': nullableListWithNullableData?.toJson(
-            valueToJson: (v) => v?.allToJson()),
+            valueToJson: (v) => v?.toJsonForClient()),
     };
   }
 

@@ -376,7 +376,7 @@ abstract class TypesMap extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       if (anIntKey != null) 'anIntKey': anIntKey?.toJson(),
       if (aBoolKey != null) 'aBoolKey': aBoolKey?.toJson(),
@@ -396,13 +396,15 @@ abstract class TypesMap extends _i1.SerializableEntity {
         'aStringifiedEnumKey':
             aStringifiedEnumKey?.toJson(keyToJson: (k) => k.toJson()),
       if (anObjectKey != null)
-        'anObjectKey': anObjectKey?.toJson(keyToJson: (k) => k.allToJson()),
+        'anObjectKey':
+            anObjectKey?.toJson(keyToJson: (k) => k.toJsonForClient()),
       if (aMapKey != null)
         'aMapKey': aMapKey?.toJson(
-            keyToJson: (k) => k.toJson(keyToJson: (k) => k.allToJson())),
+            keyToJson: (k) => k.toJson(keyToJson: (k) => k.toJsonForClient())),
       if (aListKey != null)
         'aListKey': aListKey?.toJson(
-            keyToJson: (k) => k.toJson(valueToJson: (v) => v.allToJson())),
+            keyToJson: (k) =>
+                k.toJson(valueToJson: (v) => v.toJsonForClient())),
       if (anIntValue != null) 'anIntValue': anIntValue?.toJson(),
       if (aBoolValue != null) 'aBoolValue': aBoolValue?.toJson(),
       if (aDoubleValue != null) 'aDoubleValue': aDoubleValue?.toJson(),
@@ -425,13 +427,15 @@ abstract class TypesMap extends _i1.SerializableEntity {
             aStringifiedEnumValue?.toJson(valueToJson: (v) => v.toJson()),
       if (anObjectValue != null)
         'anObjectValue':
-            anObjectValue?.toJson(valueToJson: (v) => v.allToJson()),
+            anObjectValue?.toJson(valueToJson: (v) => v.toJsonForClient()),
       if (aMapValue != null)
         'aMapValue': aMapValue?.toJson(
-            valueToJson: (v) => v.toJson(valueToJson: (v) => v.allToJson())),
+            valueToJson: (v) =>
+                v.toJson(valueToJson: (v) => v.toJsonForClient())),
       if (aListValue != null)
         'aListValue': aListValue?.toJson(
-            valueToJson: (v) => v.toJson(valueToJson: (v) => v.allToJson())),
+            valueToJson: (v) =>
+                v.toJson(valueToJson: (v) => v.toJsonForClient())),
     };
   }
 }

@@ -49,18 +49,18 @@ abstract class UserNoteWithALongName extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'name': name,
-    };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      if (id != null) 'id': id,
-      'name': name,
       if (_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId !=
           null)
         '_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId':
             _userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForClient() {
+    return {
+      if (id != null) 'id': id,
+      'name': name,
     };
   }
 
@@ -137,8 +137,8 @@ class UserNoteWithALongNameImplicit extends _UserNoteWithALongNameImpl {
   int? $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId;
 
   @override
-  Map<String, dynamic> allToJson() {
-    var jsonMap = super.allToJson();
+  Map<String, dynamic> toJson() {
+    var jsonMap = super.toJson();
     jsonMap.addAll({
       '_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId':
           $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId

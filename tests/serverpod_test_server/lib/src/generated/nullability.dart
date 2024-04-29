@@ -491,7 +491,7 @@ abstract class Nullability extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       'anInt': anInt,
       if (aNullableInt != null) 'aNullableInt': aNullableInt,
@@ -512,9 +512,9 @@ abstract class Nullability extends _i1.SerializableEntity {
         'aNullableDuration': aNullableDuration?.toJson(),
       'aUuid': aUuid.toJson(),
       if (aNullableUuid != null) 'aNullableUuid': aNullableUuid?.toJson(),
-      'anObject': anObject.allToJson(),
+      'anObject': anObject.toJsonForClient(),
       if (aNullableObject != null)
-        'aNullableObject': aNullableObject?.allToJson(),
+        'aNullableObject': aNullableObject?.toJsonForClient(),
       'anIntList': anIntList.toJson(),
       if (aNullableIntList != null)
         'aNullableIntList': aNullableIntList?.toJson(),
@@ -522,15 +522,16 @@ abstract class Nullability extends _i1.SerializableEntity {
       if (aNullableListWithNullableInts != null)
         'aNullableListWithNullableInts':
             aNullableListWithNullableInts?.toJson(),
-      'anObjectList': anObjectList.toJson(valueToJson: (v) => v.allToJson()),
+      'anObjectList':
+          anObjectList.toJson(valueToJson: (v) => v.toJsonForClient()),
       if (aNullableObjectList != null)
-        'aNullableObjectList':
-            aNullableObjectList?.toJson(valueToJson: (v) => v.allToJson()),
-      'aListWithNullableObjects':
-          aListWithNullableObjects.toJson(valueToJson: (v) => v?.allToJson()),
+        'aNullableObjectList': aNullableObjectList?.toJson(
+            valueToJson: (v) => v.toJsonForClient()),
+      'aListWithNullableObjects': aListWithNullableObjects.toJson(
+          valueToJson: (v) => v?.toJsonForClient()),
       if (aNullableListWithNullableObjects != null)
         'aNullableListWithNullableObjects': aNullableListWithNullableObjects
-            ?.toJson(valueToJson: (v) => v?.allToJson()),
+            ?.toJson(valueToJson: (v) => v?.toJsonForClient()),
       'aDateTimeList': aDateTimeList.toJson(valueToJson: (v) => v.toJson()),
       if (aNullableDateTimeList != null)
         'aNullableDateTimeList':

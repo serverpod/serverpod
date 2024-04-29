@@ -78,13 +78,13 @@ abstract class Post extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       if (id != null) 'id': id,
       'content': content,
-      if (previous != null) 'previous': previous?.allToJson(),
+      if (previous != null) 'previous': previous?.toJsonForClient(),
       if (nextId != null) 'nextId': nextId,
-      if (next != null) 'next': next?.allToJson(),
+      if (next != null) 'next': next?.toJsonForClient(),
     };
   }
 

@@ -48,18 +48,18 @@ abstract class LongImplicitIdField extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'name': name,
-    };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      if (id != null) 'id': id,
-      'name': name,
       if (_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id !=
           null)
         '_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id':
             _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForClient() {
+    return {
+      if (id != null) 'id': id,
+      'name': name,
     };
   }
 
@@ -136,8 +136,8 @@ class LongImplicitIdFieldImplicit extends _LongImplicitIdFieldImpl {
   int? $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id;
 
   @override
-  Map<String, dynamic> allToJson() {
-    var jsonMap = super.allToJson();
+  Map<String, dynamic> toJson() {
+    var jsonMap = super.toJson();
     jsonMap.addAll({
       '_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id':
           $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id

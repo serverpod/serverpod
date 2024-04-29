@@ -37,7 +37,7 @@ abstract class Example extends _i1.SerializableEntity {
     int? data,
   });
   @override
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       'name': name,
       'data': data,

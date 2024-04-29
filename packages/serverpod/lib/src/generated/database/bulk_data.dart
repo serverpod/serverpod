@@ -47,9 +47,9 @@ abstract class BulkData extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
-      'tableDefinition': tableDefinition.allToJson(),
+      'tableDefinition': tableDefinition.toJsonForClient(),
       'data': data,
     };
   }

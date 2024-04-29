@@ -82,13 +82,13 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       if (name != null) 'name': name,
       'moduleName': moduleName,
-      'tables': tables.toJson(valueToJson: (v) => v.allToJson()),
+      'tables': tables.toJson(valueToJson: (v) => v.toJsonForClient()),
       'installedModules':
-          installedModules.toJson(valueToJson: (v) => v.allToJson()),
+          installedModules.toJson(valueToJson: (v) => v.toJsonForClient()),
       'migrationApiVersion': migrationApiVersion,
     };
   }

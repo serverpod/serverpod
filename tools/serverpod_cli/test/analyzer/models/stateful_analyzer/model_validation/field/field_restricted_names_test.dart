@@ -94,7 +94,7 @@ void main() {
     'findSingleRow',
     'find',
     'setColumn',
-    'allToJson',
+    'toJson',
     'toJsonForDatabase',
     'tableName',
     'include',

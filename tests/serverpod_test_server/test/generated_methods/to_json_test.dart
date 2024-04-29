@@ -10,7 +10,7 @@ void main() {
       () {
     var types = Types();
 
-    var jsonMap = types.toJson();
+    var jsonMap = types. toJson();
 
     expect(jsonMap, {});
   });
@@ -20,7 +20,7 @@ void main() {
       () {
     var types = Types(anInt: 1);
 
-    var jsonMap = types.toJson();
+    var jsonMap = types. toJson();
 
     expect(jsonMap, {'anInt': 1});
   });
@@ -30,7 +30,7 @@ void main() {
       () {
     var types = Types(aDouble: 1.0);
 
-    var jsonMap = types.toJson();
+    var jsonMap = types. toJson();
 
     expect(jsonMap, {'aDouble': 1.0});
   });
@@ -40,7 +40,7 @@ void main() {
       () {
     var types = Types(aBool: true);
 
-    var jsonMap = types.toJson();
+    var jsonMap = types. toJson();
 
     expect(jsonMap, {'aBool': true});
   });
@@ -50,7 +50,7 @@ void main() {
       () {
     var types = Types(aString: 'Hello world!');
 
-    var jsonMap = types.toJson();
+    var jsonMap = types. toJson();
 
     expect(jsonMap, {'aString': 'Hello world!'});
   });
@@ -60,7 +60,7 @@ void main() {
       () {
     var types = Types(anEnum: TestEnum.one);
 
-    var jsonMap = types.toJson();
+    var jsonMap = types. toJson();
 
     expect(jsonMap, {'anEnum': 0});
   });
@@ -70,7 +70,7 @@ void main() {
       () {
     var types = Types(aStringifiedEnum: TestEnumStringified.one);
 
-    var jsonMap = types.toJson();
+    var jsonMap = types. toJson();
 
     expect(jsonMap, {'aStringifiedEnum': 'one'});
   });
@@ -80,7 +80,7 @@ void main() {
       () {
     var types = Types(aUuid: UuidValue.nil);
 
-    var jsonMap = types.toJson();
+    var jsonMap = types. toJson();
 
     expect(jsonMap, {'aUuid': '00000000-0000-0000-0000-000000000000'});
   });
@@ -90,7 +90,7 @@ void main() {
       () {
     var types = Types(aDuration: Duration(seconds: 1));
 
-    var jsonMap = types.toJson();
+    var jsonMap = types. toJson();
 
     expect(jsonMap, {'aDuration': 1000});
   });
@@ -100,7 +100,7 @@ void main() {
       () {
     var types = Types(aDateTime: DateTime.parse('2024-01-01T00:00:00.000Z'));
 
-    var jsonMap = types.toJson();
+    var jsonMap = types. toJson();
 
     expect(jsonMap, {'aDateTime': '2024-01-01T00:00:00.000Z'});
   });
@@ -115,7 +115,7 @@ void main() {
 
     var types = Types(aByteData: ByteData.view(intList.buffer));
 
-    var jsonMap = types.toJson();
+    var jsonMap = types. toJson();
 
     expect(jsonMap, {'aByteData': 'decode(\'AAECAwQFBgc=\', \'base64\')'});
   });
@@ -126,7 +126,7 @@ void main() {
     var next = Post(content: 'next');
     var post = Post(content: 'post', next: next);
 
-    var jsonMap = post.toJson();
+    var jsonMap = post. toJson();
 
     expect(jsonMap, {
       'content': 'post',
@@ -135,12 +135,12 @@ void main() {
   });
 
   test(
-      'Given a class with a nested object when calling toJson the entire nested structure is converted.',
+      'Given a class with a nested object when calling toJsonForClient the entire nested structure is converted.',
       () {
     var simpleData = SimpleData(num: 123);
     var object = SimpleDataObject(object: simpleData);
 
-    var jsonMap = object.toJson();
+    var jsonMap = object.toJsonForClient();
 
     expect(jsonMap, {
       'object': {'num': 123}
@@ -155,7 +155,7 @@ void main() {
     var type = Types(anInt: 123);
     var object = TypesList(anObject: [type]);
 
-    var jsonMap = object.toJson();
+    var jsonMap = object. toJson();
 
     expect(jsonMap, {
       'anObject': [
@@ -171,7 +171,7 @@ void main() {
       aDateTime: [DateTime.parse('2024-01-01T00:00:00.000Z')],
     );
 
-    var jsonMap = object.toJson();
+    var jsonMap = object. toJson();
 
     expect(jsonMap, {
       'aDateTime': ['2024-01-01T00:00:00.000Z']
@@ -190,7 +190,7 @@ void main() {
       aByteData: [ByteData.view(intList.buffer)],
     );
 
-    var jsonMap = object.toJson();
+    var jsonMap = object. toJson();
 
     expect(jsonMap, {
       'aByteData': ['decode(\'AAECAwQFBgc=\', \'base64\')']
@@ -204,7 +204,7 @@ void main() {
       aDuration: [Duration(seconds: 1)],
     );
 
-    var jsonMap = object.toJson();
+    var jsonMap = object. toJson();
 
     expect(jsonMap, {
       'aDuration': [1000]
@@ -218,7 +218,7 @@ void main() {
       aUuid: [UuidValue.nil],
     );
 
-    var jsonMap = object.toJson();
+    var jsonMap = object. toJson();
 
     expect(jsonMap, {
       'aUuid': ['00000000-0000-0000-0000-000000000000']
@@ -232,7 +232,7 @@ void main() {
       anEnum: [TestEnum.one],
     );
 
-    var jsonMap = object.toJson();
+    var jsonMap = object. toJson();
 
     expect(jsonMap, {
       'anEnum': [0]
@@ -246,7 +246,7 @@ void main() {
       aStringifiedEnum: [TestEnumStringified.one],
     );
 
-    var jsonMap = object.toJson();
+    var jsonMap = object. toJson();
 
     expect(jsonMap, {
       'aStringifiedEnum': ['one']
@@ -261,7 +261,7 @@ void main() {
       {'key': type}
     ]);
 
-    var jsonMap = object.toJson();
+    var jsonMap = object. toJson();
 
     expect(jsonMap, {
       'aMap': [
@@ -280,7 +280,7 @@ void main() {
       [type]
     ]);
 
-    var jsonMap = object.toJson();
+    var jsonMap = object. toJson();
 
     expect(jsonMap, {
       'aList': [
@@ -298,7 +298,7 @@ void main() {
       var type = Types(anInt: 123);
       var object = TypesMap(anObjectValue: {'key': type});
 
-      var jsonMap = object.toJson();
+      var jsonMap = object. toJson();
 
       expect(jsonMap, {
         'anObjectValue': {
@@ -314,7 +314,7 @@ void main() {
         aDateTimeValue: {'key': DateTime.parse('2024-01-01T00:00:00.000Z')},
       );
 
-      var jsonMap = object.toJson();
+      var jsonMap = object. toJson();
 
       expect(jsonMap, {
         'aDateTimeValue': {'key': '2024-01-01T00:00:00.000Z'}
@@ -347,7 +347,7 @@ void main() {
         aDurationValue: {'key': Duration(seconds: 1)},
       );
 
-      var jsonMap = object.toJson();
+      var jsonMap = object. toJson();
 
       expect(jsonMap, {
         'aDurationValue': {'key': 1000}
@@ -361,7 +361,7 @@ void main() {
         aUuidValue: {'key': UuidValue.nil},
       );
 
-      var jsonMap = object.toJson();
+      var jsonMap = object. toJson();
 
       expect(jsonMap, {
         'aUuidValue': {'key': '00000000-0000-0000-0000-000000000000'}
@@ -375,7 +375,7 @@ void main() {
         anEnumValue: {'key': TestEnum.one},
       );
 
-      var jsonMap = object.toJson();
+      var jsonMap = object. toJson();
 
       expect(jsonMap, {
         'anEnumValue': {'key': 0}
@@ -389,7 +389,7 @@ void main() {
         aStringifiedEnumValue: {'key': TestEnumStringified.one},
       );
 
-      var jsonMap = object.toJson();
+      var jsonMap = object. toJson();
 
       expect(jsonMap, {
         'aStringifiedEnumValue': {'key': 'one'}
@@ -406,7 +406,7 @@ void main() {
         },
       );
 
-      var jsonMap = object.toJson();
+      var jsonMap = object. toJson();
 
       expect(jsonMap, {
         'aMapValue': {
@@ -427,7 +427,7 @@ void main() {
         },
       );
 
-      var jsonMap = object.toJson();
+      var jsonMap = object. toJson();
 
       expect(jsonMap, {
         'aListValue': {
@@ -446,7 +446,7 @@ void main() {
       var type = Types(anInt: 123);
       var object = TypesMap(anObjectKey: {type: 'value'});
 
-      var jsonMap = object.toJson();
+      var jsonMap = object. toJson();
 
       expect(jsonMap, {
         'anObjectKey': [
@@ -465,7 +465,7 @@ void main() {
         aDateTimeKey: {DateTime.parse('2024-01-01T00:00:00.000Z'): 'value'},
       );
 
-      var jsonMap = object.toJson();
+      var jsonMap = object. toJson();
 
       expect(jsonMap, {
         'aDateTimeKey': [
@@ -486,7 +486,7 @@ void main() {
         aByteDataKey: {ByteData.view(intList.buffer): 'value'},
       );
 
-      var jsonMap = object.toJson();
+      var jsonMap = object. toJson();
 
       expect(jsonMap, {
         'aByteDataKey': [
@@ -502,7 +502,7 @@ void main() {
         aDurationKey: {Duration(seconds: 1): 'value'},
       );
 
-      var jsonMap = object.toJson();
+      var jsonMap = object. toJson();
 
       expect(jsonMap, {
         'aDurationKey': [
@@ -518,7 +518,7 @@ void main() {
         aUuidKey: {UuidValue.nil: 'value'},
       );
 
-      var jsonMap = object.toJson();
+      var jsonMap = object. toJson();
 
       expect(jsonMap, {
         'aUuidKey': [
@@ -534,7 +534,7 @@ void main() {
         anEnumKey: {TestEnum.one: 'value'},
       );
 
-      var jsonMap = object.toJson();
+      var jsonMap = object. toJson();
 
       expect(jsonMap, {
         'anEnumKey': [
@@ -550,7 +550,7 @@ void main() {
         aStringifiedEnumKey: {TestEnumStringified.one: 'value'},
       );
 
-      var jsonMap = object.toJson();
+      var jsonMap = object. toJson();
 
       expect(jsonMap, {
         'aStringifiedEnumKey': [
@@ -569,7 +569,7 @@ void main() {
         },
       );
 
-      var jsonMap = object.toJson();
+      var jsonMap = object. toJson();
 
       expect(jsonMap, {
         'aMapKey': [
@@ -596,7 +596,7 @@ void main() {
         },
       );
 
-      var jsonMap = object.toJson();
+      var jsonMap = object. toJson();
 
       expect(jsonMap, {
         'aListKey': [
@@ -621,7 +621,7 @@ void main() {
       ),
     );
 
-    var jsonMap = object.toJson();
+    var jsonMap = object.toJsonForClient();
 
     expect(jsonMap, {
       'nested': {

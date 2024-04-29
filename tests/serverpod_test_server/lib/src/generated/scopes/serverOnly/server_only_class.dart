@@ -24,12 +24,12 @@ abstract class ServerOnlyClass extends _i1.SerializableEntity {
   ServerOnlyClass copyWith({String? foo});
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {'foo': foo};
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {'foo': foo};
+  Map<String, dynamic> toJsonForClient() {
+    return {};
   }
 }
 

@@ -72,15 +72,15 @@ abstract class City extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (citizens != null)
-        'citizens': citizens?.toJson(valueToJson: (v) => v.allToJson()),
+        'citizens': citizens?.toJson(valueToJson: (v) => v.toJsonForClient()),
       if (organizations != null)
         'organizations':
-            organizations?.toJson(valueToJson: (v) => v.allToJson()),
+            organizations?.toJson(valueToJson: (v) => v.toJsonForClient()),
     };
   }
 

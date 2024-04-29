@@ -68,12 +68,12 @@ abstract class DatabaseMigrationAction extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       'type': type.toJson(),
       if (deleteTable != null) 'deleteTable': deleteTable,
-      if (alterTable != null) 'alterTable': alterTable?.allToJson(),
-      if (createTable != null) 'createTable': createTable?.allToJson(),
+      if (alterTable != null) 'alterTable': alterTable?.toJsonForClient(),
+      if (createTable != null) 'createTable': createTable?.toJsonForClient(),
     };
   }
 }

@@ -51,7 +51,7 @@ abstract class ChatMessageAttachmentUploadDescription
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       'filePath': filePath,
       'uploadDescription': uploadDescription,

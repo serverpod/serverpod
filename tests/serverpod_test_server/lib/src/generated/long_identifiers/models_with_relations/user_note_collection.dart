@@ -64,13 +64,13 @@ abstract class UserNoteCollection extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (userNotesPropertyName != null)
-        'userNotesPropertyName':
-            userNotesPropertyName?.toJson(valueToJson: (v) => v.allToJson()),
+        'userNotesPropertyName': userNotesPropertyName?.toJson(
+            valueToJson: (v) => v.toJsonForClient()),
     };
   }
 

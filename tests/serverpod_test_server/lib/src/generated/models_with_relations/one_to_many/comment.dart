@@ -68,12 +68,12 @@ abstract class Comment extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       if (id != null) 'id': id,
       'description': description,
       'orderId': orderId,
-      if (order != null) 'order': order?.allToJson(),
+      if (order != null) 'order': order?.toJsonForClient(),
     };
   }
 

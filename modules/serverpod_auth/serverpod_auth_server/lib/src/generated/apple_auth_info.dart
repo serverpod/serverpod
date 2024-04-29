@@ -80,7 +80,7 @@ abstract class AppleAuthInfo extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       'userIdentifier': userIdentifier,
       if (email != null) 'email': email,

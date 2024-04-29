@@ -66,18 +66,18 @@ abstract class Person extends _i1.TableRow {
       'name': name,
       if (organizationId != null) 'organizationId': organizationId,
       if (organization != null) 'organization': organization?.toJson(),
+      if (_cityCitizensCityId != null)
+        '_cityCitizensCityId': _cityCitizensCityId,
     };
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (organizationId != null) 'organizationId': organizationId,
-      if (organization != null) 'organization': organization?.allToJson(),
-      if (_cityCitizensCityId != null)
-        '_cityCitizensCityId': _cityCitizensCityId,
+      if (organization != null) 'organization': organization?.toJsonForClient(),
     };
   }
 
@@ -170,8 +170,8 @@ class PersonImplicit extends _PersonImpl {
   int? $_cityCitizensCityId;
 
   @override
-  Map<String, dynamic> allToJson() {
-    var jsonMap = super.allToJson();
+  Map<String, dynamic> toJson() {
+    var jsonMap = super.toJson();
     jsonMap.addAll({'_cityCitizensCityId': $_cityCitizensCityId});
     return jsonMap;
   }

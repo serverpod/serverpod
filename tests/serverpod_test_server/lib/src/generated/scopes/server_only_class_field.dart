@@ -48,19 +48,19 @@ abstract class ServerOnlyClassField extends _i1.SerializableEntity {
   });
   @override
   Map<String, dynamic> toJson() {
-    return {};
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
     return {
       if (serverOnlyClassList != null)
         'serverOnlyClassList':
-            serverOnlyClassList?.toJson(valueToJson: (v) => v.allToJson()),
+            serverOnlyClassList?.toJson(valueToJson: (v) => v.toJson()),
       if (serverOnlyClassMap != null)
         'serverOnlyClassMap':
-            serverOnlyClassMap?.toJson(valueToJson: (v) => v.allToJson()),
+            serverOnlyClassMap?.toJson(valueToJson: (v) => v.toJson()),
     };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForClient() {
+    return {};
   }
 }
 

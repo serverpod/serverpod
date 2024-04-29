@@ -48,18 +48,18 @@ abstract class UserNote extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'name': name,
-    };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      if (id != null) 'id': id,
-      'name': name,
       if (_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId !=
           null)
         '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId':
             _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForClient() {
+    return {
+      if (id != null) 'id': id,
+      'name': name,
     };
   }
 
@@ -136,8 +136,8 @@ class UserNoteImplicit extends _UserNoteImpl {
   int? $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
 
   @override
-  Map<String, dynamic> allToJson() {
-    var jsonMap = super.allToJson();
+  Map<String, dynamic> toJson() {
+    var jsonMap = super.toJson();
     jsonMap.addAll({
       '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId':
           $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId

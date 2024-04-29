@@ -57,11 +57,12 @@ abstract class Filter extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       'name': name,
       'table': table,
-      'constraints': constraints.toJson(valueToJson: (v) => v.allToJson()),
+      'constraints':
+          constraints.toJson(valueToJson: (v) => v.toJsonForClient()),
     };
   }
 }

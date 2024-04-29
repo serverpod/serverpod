@@ -68,12 +68,12 @@ abstract class Player extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (teamId != null) 'teamId': teamId,
-      if (team != null) 'team': team?.allToJson(),
+      if (team != null) 'team': team?.toJsonForClient(),
     };
   }
 

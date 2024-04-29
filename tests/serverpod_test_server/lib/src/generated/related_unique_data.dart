@@ -68,11 +68,11 @@ abstract class RelatedUniqueData extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       if (id != null) 'id': id,
       'uniqueDataId': uniqueDataId,
-      if (uniqueData != null) 'uniqueData': uniqueData?.allToJson(),
+      if (uniqueData != null) 'uniqueData': uniqueData?.toJsonForClient(),
       'number': number,
     };
   }

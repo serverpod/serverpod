@@ -51,7 +51,7 @@ abstract class IndexElementDefinition extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       'type': type.toJson(),
       'definition': definition,

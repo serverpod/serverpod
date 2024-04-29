@@ -67,20 +67,20 @@ abstract class PersonWithLongTableName extends _i1.TableRow {
       'name': name,
       if (organizationId != null) 'organizationId': organizationId,
       if (organization != null) 'organization': organization?.toJson(),
-    };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      if (id != null) 'id': id,
-      'name': name,
-      if (organizationId != null) 'organizationId': organizationId,
-      if (organization != null) 'organization': organization?.allToJson(),
       if (_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id !=
           null)
         '_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id':
             _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForClient() {
+    return {
+      if (id != null) 'id': id,
+      'name': name,
+      if (organizationId != null) 'organizationId': organizationId,
+      if (organization != null) 'organization': organization?.toJsonForClient(),
     };
   }
 
@@ -175,8 +175,8 @@ class PersonWithLongTableNameImplicit extends _PersonWithLongTableNameImpl {
   int? $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
 
   @override
-  Map<String, dynamic> allToJson() {
-    var jsonMap = super.allToJson();
+  Map<String, dynamic> toJson() {
+    var jsonMap = super.toJson();
     jsonMap.addAll({
       '_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id':
           $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id

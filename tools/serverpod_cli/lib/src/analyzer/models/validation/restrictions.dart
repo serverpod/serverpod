@@ -93,7 +93,7 @@ const _databaseModelReservedFieldNames = [
   'findSingleRow',
   'find',
   'setColumn',
-  'allToJson',
+  'toJson',
   'toJsonForDatabase',
   'tableName',
   'include',

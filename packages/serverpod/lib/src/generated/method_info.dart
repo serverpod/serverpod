@@ -60,7 +60,7 @@ abstract class MethodInfo extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       if (id != null) 'id': id,
       'endpoint': endpoint,

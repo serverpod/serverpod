@@ -79,14 +79,14 @@ abstract class Cat extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (motherId != null) 'motherId': motherId,
-      if (mother != null) 'mother': mother?.allToJson(),
+      if (mother != null) 'mother': mother?.toJsonForClient(),
       if (kittens != null)
-        'kittens': kittens?.toJson(valueToJson: (v) => v.allToJson()),
+        'kittens': kittens?.toJson(valueToJson: (v) => v.toJsonForClient()),
     };
   }
 

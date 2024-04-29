@@ -136,21 +136,22 @@ abstract class TableMigration extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       'name': name,
       if (dartName != null) 'dartName': dartName,
       if (module != null) 'module': module,
       'schema': schema,
-      'addColumns': addColumns.toJson(valueToJson: (v) => v.allToJson()),
+      'addColumns': addColumns.toJson(valueToJson: (v) => v.toJsonForClient()),
       'deleteColumns': deleteColumns.toJson(),
-      'modifyColumns': modifyColumns.toJson(valueToJson: (v) => v.allToJson()),
-      'addIndexes': addIndexes.toJson(valueToJson: (v) => v.allToJson()),
+      'modifyColumns':
+          modifyColumns.toJson(valueToJson: (v) => v.toJsonForClient()),
+      'addIndexes': addIndexes.toJson(valueToJson: (v) => v.toJsonForClient()),
       'deleteIndexes': deleteIndexes.toJson(),
       'addForeignKeys':
-          addForeignKeys.toJson(valueToJson: (v) => v.allToJson()),
+          addForeignKeys.toJson(valueToJson: (v) => v.toJsonForClient()),
       'deleteForeignKeys': deleteForeignKeys.toJson(),
-      'warnings': warnings.toJson(valueToJson: (v) => v.allToJson()),
+      'warnings': warnings.toJson(valueToJson: (v) => v.toJsonForClient()),
     };
   }
 }

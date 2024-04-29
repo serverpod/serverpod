@@ -66,7 +66,7 @@ abstract class ColumnMigration extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       'columnName': columnName,
       'addNullable': addNullable,

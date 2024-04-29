@@ -70,13 +70,14 @@ abstract class ChatMessagePost extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       'channel': channel,
       'message': message,
       'clientMessageId': clientMessageId,
       if (attachments != null)
-        'attachments': attachments?.toJson(valueToJson: (v) => v.allToJson()),
+        'attachments':
+            attachments?.toJson(valueToJson: (v) => v.toJsonForClient()),
     };
   }
 }

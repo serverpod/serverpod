@@ -59,16 +59,16 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
       if (id != null) 'id': id,
       'normal': normal,
       if (api != null) 'api': api,
+      if (database != null) 'database': database,
     };
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       if (id != null) 'id': id,
       'normal': normal,
       if (api != null) 'api': api,
-      if (database != null) 'database': database,
     };
   }
 

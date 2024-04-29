@@ -48,7 +48,7 @@ abstract class EmailPasswordReset extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForClient() {
     return {
       'userName': userName,
       'email': email,
