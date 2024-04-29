@@ -22,14 +22,11 @@ abstract class ObjectWithByteData extends _i1.SerializableEntity {
     required _i2.ByteData byteData,
   }) = _ObjectWithByteDataImpl;
 
-  factory ObjectWithByteData.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ObjectWithByteData.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithByteData(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      byteData: serializationManager
-          .deserialize<_i2.ByteData>(jsonSerialization['byteData']),
+      id: jsonSerialization['id'] as int?,
+      byteData:
+          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['byteData']),
     );
   }
 

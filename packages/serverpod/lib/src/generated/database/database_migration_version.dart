@@ -28,17 +28,14 @@ abstract class DatabaseMigrationVersion extends _i1.TableRow {
   }) = _DatabaseMigrationVersionImpl;
 
   factory DatabaseMigrationVersion.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return DatabaseMigrationVersion(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      module:
-          serializationManager.deserialize<String>(jsonSerialization['module']),
-      version: serializationManager
-          .deserialize<String>(jsonSerialization['version']),
-      timestamp: serializationManager
-          .deserialize<DateTime?>(jsonSerialization['timestamp']),
+      id: jsonSerialization['id'] as int?,
+      module: jsonSerialization['module'] as String,
+      version: jsonSerialization['version'] as String,
+      timestamp: jsonSerialization['timestamp'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
     );
   }
 

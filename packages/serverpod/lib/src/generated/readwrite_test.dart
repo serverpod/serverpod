@@ -23,14 +23,10 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
     required int number,
   }) = _ReadWriteTestEntryImpl;
 
-  factory ReadWriteTestEntry.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ReadWriteTestEntry.fromJson(Map<String, dynamic> jsonSerialization) {
     return ReadWriteTestEntry(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      number:
-          serializationManager.deserialize<int>(jsonSerialization['number']),
+      id: jsonSerialization['id'] as int?,
+      number: jsonSerialization['number'] as int,
     );
   }
 

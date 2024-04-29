@@ -19,7 +19,7 @@ void main() {
     test('Simple data', () {
       var data = SimpleData(num: 42);
       var s = SerializationManager.encode(data);
-      var unpacked = SimpleData.fromJson(jsonDecode(s), protocol);
+      var unpacked = SimpleData.fromJson(jsonDecode(s));
       expect(unpacked.num, equals(42));
     });
 
@@ -82,6 +82,7 @@ void main() {
             [TestEnum.one, TestEnum.two],
             [TestEnum.two, TestEnum.one]
           ]);
+
       var s = SerializationManager.encode(object);
       var unpacked = protocol.deserialize<ObjectWithEnum>(jsonDecode(s));
       expect(unpacked.testEnum, equals(TestEnum.one));

@@ -8,20 +8,21 @@
 // ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 enum DefaultServerOnlyEnum with _i1.SerializableEntity {
   foo,
   bar;
 
-  static DefaultServerOnlyEnum? fromJson(int index) {
+  static DefaultServerOnlyEnum fromJson(int index) {
     switch (index) {
       case 0:
         return foo;
       case 1:
         return bar;
       default:
-        return null;
+        throw ArgumentError(
+            'Value "$index" cannot be converted to "DefaultServerOnlyEnum"');
     }
   }
 

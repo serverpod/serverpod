@@ -118,6 +118,56 @@ class ClassDefinitionBuilder {
     return this;
   }
 
+  ClassDefinitionBuilder withListField(
+    String fieldName,
+    String className, {
+    bool nullable = false,
+    ModelFieldScopeDefinition scope = ModelFieldScopeDefinition.all,
+  }) {
+    _fields.add(
+      () => FieldDefinitionBuilder()
+          .withName(fieldName)
+          .withShouldPersist(false)
+          .withScope(scope)
+          .withType(
+            TypeDefinitionBuilder()
+                .withNullable(nullable)
+                .withClassName('List')
+                .withGenerics([
+              TypeDefinitionBuilder().withClassName(className).build()
+            ]).build(),
+          )
+          .build(),
+    );
+    return this;
+  }
+
+  ClassDefinitionBuilder withMapField(
+    String fieldName, {
+    required String keyType,
+    required String valueType,
+    bool nullable = false,
+    ModelFieldScopeDefinition scope = ModelFieldScopeDefinition.all,
+  }) {
+    _fields.add(
+      () => FieldDefinitionBuilder()
+          .withName(fieldName)
+          .withShouldPersist(false)
+          .withScope(scope)
+          .withType(
+            TypeDefinitionBuilder()
+                .withNullable(nullable)
+                .withClassName('Map')
+                .withGenerics([
+              TypeDefinitionBuilder().withClassName(keyType).build(),
+              TypeDefinitionBuilder().withClassName(valueType).build(),
+            ]).build(),
+          )
+          .build(),
+    );
+    return this;
+  }
+
   ClassDefinitionBuilder withField(SerializableModelFieldDefinition field) {
     _fields.add(() => field);
     return this;

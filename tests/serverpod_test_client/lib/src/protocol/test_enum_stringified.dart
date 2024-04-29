@@ -16,7 +16,7 @@ enum TestEnumStringified with _i1.SerializableEntity {
   two,
   three;
 
-  static TestEnumStringified? fromJson(String name) {
+  static TestEnumStringified fromJson(String name) {
     switch (name) {
       case 'one':
         return one;
@@ -25,7 +25,8 @@ enum TestEnumStringified with _i1.SerializableEntity {
       case 'three':
         return three;
       default:
-        return null;
+        throw ArgumentError(
+            'Value "$name" cannot be converted to "TestEnumStringified"');
     }
   }
 

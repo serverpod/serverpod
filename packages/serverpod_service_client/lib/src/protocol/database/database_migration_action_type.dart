@@ -16,7 +16,7 @@ enum DatabaseMigrationActionType with _i1.SerializableEntity {
   deleteTable,
   alterTable;
 
-  static DatabaseMigrationActionType? fromJson(String name) {
+  static DatabaseMigrationActionType fromJson(String name) {
     switch (name) {
       case 'createTable':
         return createTable;
@@ -27,7 +27,8 @@ enum DatabaseMigrationActionType with _i1.SerializableEntity {
       case 'alterTable':
         return alterTable;
       default:
-        return null;
+        throw ArgumentError(
+            'Value "$name" cannot be converted to "DatabaseMigrationActionType"');
     }
   }
 

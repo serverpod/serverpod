@@ -30,19 +30,14 @@ abstract class FacebookLongLivedToken extends _i1.TableRow {
   }) = _FacebookLongLivedTokenImpl;
 
   factory FacebookLongLivedToken.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return FacebookLongLivedToken(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      userId:
-          serializationManager.deserialize<int>(jsonSerialization['userId']),
-      fbProfileId: serializationManager
-          .deserialize<String>(jsonSerialization['fbProfileId']),
-      token:
-          serializationManager.deserialize<String>(jsonSerialization['token']),
-      expiresAt: serializationManager
-          .deserialize<DateTime>(jsonSerialization['expiresAt']),
+      id: jsonSerialization['id'] as int?,
+      userId: jsonSerialization['userId'] as int,
+      fbProfileId: jsonSerialization['fbProfileId'] as String,
+      token: jsonSerialization['token'] as String,
+      expiresAt:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiresAt']),
     );
   }
 

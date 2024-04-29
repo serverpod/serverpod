@@ -16,13 +16,8 @@ abstract class ChatLeaveChannel extends _i1.SerializableEntity {
 
   factory ChatLeaveChannel({required String channel}) = _ChatLeaveChannelImpl;
 
-  factory ChatLeaveChannel.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return ChatLeaveChannel(
-        channel: serializationManager
-            .deserialize<String>(jsonSerialization['channel']));
+  factory ChatLeaveChannel.fromJson(Map<String, dynamic> jsonSerialization) {
+    return ChatLeaveChannel(channel: jsonSerialization['channel'] as String);
   }
 
   /// The name of the channel to leave.

@@ -35,7 +35,7 @@ enum ForeignKeyAction with _i1.SerializableEntity {
   /// referred row, should be propagated down.
   cascade;
 
-  static ForeignKeyAction? fromJson(int index) {
+  static ForeignKeyAction fromJson(int index) {
     switch (index) {
       case 0:
         return setNull;
@@ -48,7 +48,8 @@ enum ForeignKeyAction with _i1.SerializableEntity {
       case 4:
         return cascade;
       default:
-        return null;
+        throw ArgumentError(
+            'Value "$index" cannot be converted to "ForeignKeyAction"');
     }
   }
 
