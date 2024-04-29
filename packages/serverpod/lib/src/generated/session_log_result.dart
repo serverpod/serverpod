@@ -13,7 +13,8 @@ import 'protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A list of SessionLogInfo.
-abstract class SessionLogResult extends _i1.SerializableEntity {
+abstract class SessionLogResult extends _i1.SerializableEntity
+    implements _i1.ConstraintSerialization {
   SessionLogResult._({required this.sessionLog});
 
   factory SessionLogResult({required List<_i2.SessionLogInfo> sessionLog}) =

@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
-abstract class SimpleDataObject extends _i1.SerializableEntity {
+abstract class SimpleDataObject extends _i1.SerializableEntity
+    implements _i1.ConstraintSerialization {
   SimpleDataObject._({required this.object});
 
   factory SimpleDataObject({required _i2.SimpleData object}) =

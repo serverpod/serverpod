@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Information about an email password reset.
-abstract class EmailPasswordReset extends _i1.SerializableEntity {
+abstract class EmailPasswordReset extends _i1.SerializableEntity
+    implements _i1.ConstraintSerialization {
   EmailPasswordReset._({
     required this.userName,
     required this.email,

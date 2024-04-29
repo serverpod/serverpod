@@ -11,7 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class AccessDeniedException extends _i1.SerializableEntity
-    implements _i1.SerializableException {
+    implements _i1.SerializableException, _i1.ConstraintSerialization {
   AccessDeniedException._({required this.message});
 
   factory AccessDeniedException({required String message}) =

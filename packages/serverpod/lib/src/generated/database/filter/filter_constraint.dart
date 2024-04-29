@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class FilterConstraint extends _i1.SerializableEntity {
+abstract class FilterConstraint extends _i1.SerializableEntity
+    implements _i1.ConstraintSerialization {
   FilterConstraint._({
     required this.type,
     required this.column,

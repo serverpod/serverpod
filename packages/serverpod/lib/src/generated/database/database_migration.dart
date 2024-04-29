@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class DatabaseMigration extends _i1.SerializableEntity {
+abstract class DatabaseMigration extends _i1.SerializableEntity
+    implements _i1.ConstraintSerialization {
   DatabaseMigration._({
     required this.actions,
     required this.warnings,

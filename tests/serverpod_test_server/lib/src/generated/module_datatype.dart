@@ -13,7 +13,8 @@ import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
     as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class ModuleDatatype extends _i1.SerializableEntity {
+abstract class ModuleDatatype extends _i1.SerializableEntity
+    implements _i1.ConstraintSerialization {
   ModuleDatatype._({
     required this.model,
     required this.list,

@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// High level information about the caches.
-abstract class CachesInfo extends _i1.SerializableEntity {
+abstract class CachesInfo extends _i1.SerializableEntity
+    implements _i1.ConstraintSerialization {
   CachesInfo._({
     required this.local,
     required this.localPrio,

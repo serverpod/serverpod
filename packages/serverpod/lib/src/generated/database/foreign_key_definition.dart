@@ -13,7 +13,8 @@ import '../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Represents a foreign key.
-abstract class ForeignKeyDefinition extends _i1.SerializableEntity {
+abstract class ForeignKeyDefinition extends _i1.SerializableEntity
+    implements _i1.ConstraintSerialization {
   ForeignKeyDefinition._({
     required this.constraintName,
     required this.columns,

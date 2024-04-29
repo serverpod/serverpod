@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class ServerOnlyClassField extends _i1.SerializableEntity {
+abstract class ServerOnlyClassField extends _i1.SerializableEntity
+    implements _i1.ConstraintSerialization {
   ServerOnlyClassField._({
     this.serverOnlyClassList,
     this.serverOnlyClassMap,

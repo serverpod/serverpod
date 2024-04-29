@@ -13,19 +13,23 @@ typedef constructor<T> = T Function(
 /// The [SerializableEntity] is the base class for all serializable objects in
 /// Serverpod, except primitives.
 abstract mixin class SerializableEntity {
-  /// Returns a serialized JSON structure of the model, ready to be sent
-  /// through the API. This does not include fields that are marked as
-  /// database only.
-  dynamic toJsonForClient() {}
-
   /// Returns a serialized JSON structure of the model which also includes
   /// fields used by the database.
-  dynamic toJson() => toJsonForClient();
+  dynamic toJson();
 
   @override
   String toString() {
     return SerializationManager.encode(this);
   }
+}
+
+/// The [ConstraintSerialization] defines a toJson method which makes it
+/// possible to limit what fields are serialized
+abstract interface class ConstraintSerialization {
+  /// Returns a serialized JSON structure of the model, ready to be sent
+  /// through the API. This does not include fields that are marked as
+  /// database only.
+  dynamic toJsonForClient();
 }
 
 /// Get the type provided as an generic. Useful for getting a nullable type.

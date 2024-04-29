@@ -32,7 +32,7 @@ class ValueEncoder extends PostgresTextEncoder {
       // are trying to store a ByteData.
       return input;
     } else if (input is SerializableEntity && input is Enum) {
-      return super.convert(input.toJsonForClient(), escapeStrings: escapeStrings);
+      return super.convert(input.toJson(), escapeStrings: escapeStrings);
     } else if (input is List || input is Map || input is Set) {
       return super.convert(SerializationManager.encode(input),
           escapeStrings: escapeStrings);

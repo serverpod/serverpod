@@ -13,7 +13,8 @@ import '../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// The definition of a (desired) index in the database.
-abstract class IndexDefinition extends _i1.SerializableEntity {
+abstract class IndexDefinition extends _i1.SerializableEntity
+    implements _i1.ConstraintSerialization {
   IndexDefinition._({
     required this.indexName,
     this.tableSpace,

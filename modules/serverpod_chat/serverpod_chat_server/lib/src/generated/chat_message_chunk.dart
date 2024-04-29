@@ -13,7 +13,8 @@ import 'protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A chunk of chat messages.
-abstract class ChatMessageChunk extends _i1.SerializableEntity {
+abstract class ChatMessageChunk extends _i1.SerializableEntity
+    implements _i1.ConstraintSerialization {
   ChatMessageChunk._({
     required this.channel,
     required this.messages,

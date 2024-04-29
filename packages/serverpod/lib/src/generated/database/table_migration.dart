@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class TableMigration extends _i1.SerializableEntity {
+abstract class TableMigration extends _i1.SerializableEntity
+    implements _i1.ConstraintSerialization {
   TableMigration._({
     required this.name,
     this.dartName,

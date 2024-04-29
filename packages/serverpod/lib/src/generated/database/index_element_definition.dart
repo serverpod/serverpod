@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
 /// Defines an element of an index.
-abstract class IndexElementDefinition extends _i1.SerializableEntity {
+abstract class IndexElementDefinition extends _i1.SerializableEntity
+    implements _i1.ConstraintSerialization {
   IndexElementDefinition._({
     required this.type,
     required this.definition,

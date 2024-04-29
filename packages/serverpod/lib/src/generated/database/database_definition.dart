@@ -13,7 +13,8 @@ import '../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Defines the structure of the database used by Serverpod.
-abstract class DatabaseDefinition extends _i1.SerializableEntity {
+abstract class DatabaseDefinition extends _i1.SerializableEntity
+    implements _i1.ConstraintSerialization {
   DatabaseDefinition._({
     this.name,
     required this.moduleName,

@@ -11,7 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ServerpodSqlException extends _i1.SerializableEntity
-    implements _i1.SerializableException {
+    implements _i1.SerializableException, _i1.ConstraintSerialization {
   ServerpodSqlException._({
     required this.message,
     required this.sql,
