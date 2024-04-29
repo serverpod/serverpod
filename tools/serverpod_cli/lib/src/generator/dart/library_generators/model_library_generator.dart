@@ -40,7 +40,7 @@ class SerializableModelLibraryGenerator {
     );
 
     return Library(
-      (libraryBuilder) {
+          (libraryBuilder) {
         var hasFieldSerializedByExtension = classDefinition.fields
             .where((field) => field.shouldIncludeField(serverCode))
             .any((field) => field.type.isSerializedByExtension);
@@ -125,13 +125,13 @@ class SerializableModelLibraryGenerator {
   }
 
   Class _buildModelClass(
-    String className,
-    ClassDefinition classDefinition,
-    String? tableName,
-    List<SerializableModelFieldDefinition> fields,
-  ) {
+      String className,
+      ClassDefinition classDefinition,
+      String? tableName,
+      List<SerializableModelFieldDefinition> fields,
+      ) {
     var relationFields = fields.where((field) =>
-        field.relation is ObjectRelationDefinition ||
+    field.relation is ObjectRelationDefinition ||
         field.relation is ListRelationDefinition);
     return Class((classBuilder) {
       classBuilder
@@ -218,11 +218,11 @@ class SerializableModelLibraryGenerator {
   }
 
   Class _buildModelImplClass(
-    String className,
-    ClassDefinition classDefinition,
-    String? tableName,
-    List<SerializableModelFieldDefinition> fields,
-  ) {
+      String className,
+      ClassDefinition classDefinition,
+      String? tableName,
+      List<SerializableModelFieldDefinition> fields,
+      ) {
     return Class((classBuilder) {
       classBuilder
         ..name = '_${className}Impl'
@@ -235,9 +235,9 @@ class SerializableModelLibraryGenerator {
   }
 
   Class _buildModelImplicitClass(
-    String className,
-    ClassDefinition classDefinition,
-  ) {
+      String className,
+      ClassDefinition classDefinition,
+      ) {
     var hiddenFields = classDefinition.fields
         .where((field) => field.hiddenSerializableField(serverCode));
     var visibleFields = classDefinition.fields
@@ -258,7 +258,7 @@ class SerializableModelLibraryGenerator {
         }))
         ..constructors.add(Constructor((constructorBuilder) {
           Map<String, Expression> namedParams =
-              visibleFields.fold({}, (map, field) {
+          visibleFields.fold({}, (map, field) {
             return {
               ...map,
               field.name: refer(field.name),
@@ -277,7 +277,7 @@ class SerializableModelLibraryGenerator {
             )
             ..optionalParameters.addAll(hiddenFields.map((field) {
               return Parameter(
-                (p) => p
+                    (p) => p
                   ..name = createFieldName(serverCode, field)
                   ..named = true
                   ..toThis = true,
@@ -301,21 +301,21 @@ class SerializableModelLibraryGenerator {
               blockBuilder.statements.add(refer('${className}Implicit')
                   .property('_')
                   .call([], {
-                    ...visibleFields.fold({}, (map, field) {
-                      return {
-                        ...map,
-                        field.name:
-                            refer(className.camelCase).property(field.name),
-                      };
-                    }),
-                    ...hiddenFields.fold({}, (map, field) {
-                      return {
-                        ...map,
-                        createFieldName(serverCode, field):
-                            refer(createFieldName(serverCode, field)),
-                      };
-                    })
-                  })
+                ...visibleFields.fold({}, (map, field) {
+                  return {
+                    ...map,
+                    field.name:
+                    refer(className.camelCase).property(field.name),
+                  };
+                }),
+                ...hiddenFields.fold({}, (map, field) {
+                  return {
+                    ...map,
+                    createFieldName(serverCode, field):
+                    refer(createFieldName(serverCode, field)),
+                  };
+                })
+              })
                   .returned
                   .statement);
             });
@@ -351,10 +351,10 @@ class SerializableModelLibraryGenerator {
   }
 
   Method _buildAbstractCopyWithMethod(
-    String className,
-    ClassDefinition classDefinition,
-    List<SerializableModelFieldDefinition> fields,
-  ) {
+      String className,
+      ClassDefinition classDefinition,
+      List<SerializableModelFieldDefinition> fields,
+      ) {
     return Method((methodBuilder) {
       methodBuilder
         ..name = 'copyWith'
@@ -366,17 +366,17 @@ class SerializableModelLibraryGenerator {
   }
 
   Method _buildCopyWithMethod(
-    ClassDefinition classDefinition,
-    List<SerializableModelFieldDefinition> fields,
-  ) {
+      ClassDefinition classDefinition,
+      List<SerializableModelFieldDefinition> fields,
+      ) {
     return Method(
-      (m) {
+          (m) {
         m
           ..name = 'copyWith'
           ..annotations.add(refer('override'))
           ..optionalParameters.addAll(
             fields.where((field) => field.shouldIncludeField(serverCode)).map(
-              (field) {
+                  (field) {
                 var fieldType = field.type.reference(
                   serverCode,
                   nullable: true,
@@ -386,7 +386,7 @@ class SerializableModelLibraryGenerator {
 
                 var type = field.type.nullable ? refer('Object?') : fieldType;
                 var defaultValue =
-                    field.type.nullable ? const Code('_Undefined') : null;
+                field.type.nullable ? const Code('_Undefined') : null;
 
                 return Parameter((p) {
                   p
@@ -401,9 +401,9 @@ class SerializableModelLibraryGenerator {
           ..returns = refer(classDefinition.className)
           ..body = refer(classDefinition.className)
               .call(
-                [],
-                _buildCopyWithAssignment(classDefinition, fields),
-              )
+            [],
+            _buildCopyWithAssignment(classDefinition, fields),
+          )
               .returned
               .statement;
       },
@@ -411,9 +411,9 @@ class SerializableModelLibraryGenerator {
   }
 
   Map<String, Expression> _buildCopyWithAssignment(
-    ClassDefinition classDefinition,
-    List<SerializableModelFieldDefinition> fields,
-  ) {
+      ClassDefinition classDefinition,
+      List<SerializableModelFieldDefinition> fields,
+      ) {
     return fields
         .where((field) => field.shouldIncludeField(serverCode))
         .fold({}, (map, field) {
@@ -433,15 +433,15 @@ class SerializableModelLibraryGenerator {
       if (field.type.nullable) {
         valueDefinition = refer(field.name)
             .isA(field.type.reference(
-              serverCode,
-              nullable: field.type.nullable,
-              subDirParts: classDefinition.subDirParts,
-              config: config,
-            ))
+          serverCode,
+          nullable: field.type.nullable,
+          subDirParts: classDefinition.subDirParts,
+          config: config,
+        ))
             .conditional(
-              refer(field.name),
-              assignment,
-            );
+          refer(field.name),
+          assignment,
+        );
       } else {
         valueDefinition = refer(field.name).ifNullThen(
           assignment,
@@ -456,9 +456,9 @@ class SerializableModelLibraryGenerator {
   }
 
   Expression _buildMaybeNullMethodCall(
-    SerializableModelFieldDefinition field,
-    String methodName,
-  ) {
+      SerializableModelFieldDefinition field,
+      String methodName,
+      ) {
     if (field.type.nullable) {
       return refer('this')
           .property(field.name)
@@ -471,7 +471,7 @@ class SerializableModelLibraryGenerator {
 
   Method _buildModelClassTableGetter() {
     return Method(
-      (m) => m
+          (m) => m
         ..name = 'table'
         ..annotations.add(refer('override'))
         ..type = MethodType.getter
@@ -503,7 +503,7 @@ class SerializableModelLibraryGenerator {
       Iterable<SerializableModelFieldDefinition> relationFields,
       List<String> subDirParts) {
     return Method(
-      (m) => m
+          (m) => m
         ..static = true
         ..name = 'include'
         ..returns = TypeReference((r) => r..symbol = '${className}Include')
@@ -528,7 +528,7 @@ class SerializableModelLibraryGenerator {
             }
 
             return Parameter(
-              (p) => p
+                  (p) => p
                 ..type = type
                 ..name = field.name
                 ..named = true,
@@ -538,8 +538,8 @@ class SerializableModelLibraryGenerator {
         ..body = refer('${className}Include')
             .property('_')
             .call([], {
-              for (var field in relationFields) field.name: refer(field.name),
-            })
+          for (var field in relationFields) field.name: refer(field.name),
+        })
             .returned
             .statement,
     );
@@ -547,13 +547,13 @@ class SerializableModelLibraryGenerator {
 
   Method _buildModelClassIncludeListMethod(String className) {
     return Method(
-      (m) => m
+          (m) => m
         ..static = true
         ..name = 'includeList'
         ..returns = TypeReference((r) => r..symbol = '${className}IncludeList')
         ..optionalParameters.addAll([
           Parameter(
-            (p) => p
+                (p) => p
               ..name = 'where'
               ..type = typeWhereExpressionBuilder(
                 className,
@@ -562,32 +562,32 @@ class SerializableModelLibraryGenerator {
               ..named = true,
           ),
           Parameter(
-            (p) => p
+                (p) => p
               ..name = 'limit'
               ..named = true
               ..type = refer('int?'),
           ),
           Parameter(
-            (p) => p
+                (p) => p
               ..name = 'offset'
               ..named = true
               ..type = refer('int?'),
           ),
           Parameter(
-            (p) => p
+                (p) => p
               ..name = 'orderBy'
               ..named = true
               ..type = typeOrderByBuilder(className, serverCode),
           ),
           Parameter(
-            (p) => p
+                (p) => p
               ..name = 'orderDescending'
               ..named = true
               ..defaultTo = const Code('false')
               ..type = refer('bool'),
           ),
           Parameter(
-            (p) => p
+                (p) => p
               ..name = 'orderByList'
               ..named = true
               ..type = typeOrderByListBuilder(className, serverCode),
@@ -600,57 +600,65 @@ class SerializableModelLibraryGenerator {
         ..body = refer('${className}IncludeList')
             .property('_')
             .call([], {
-              'where': refer('where'),
-              'limit': refer('limit'),
-              'offset': refer('offset'),
-              'orderBy': refer('orderBy').nullSafeProperty('call').call(
-                [refer(className).property('t')],
-              ),
-              'orderDescending': refer('orderDescending'),
-              'orderByList': refer('orderByList').nullSafeProperty('call').call(
-                [refer(className).property('t')],
-              ),
-              'include': refer('include'),
-            })
+          'where': refer('where'),
+          'limit': refer('limit'),
+          'offset': refer('offset'),
+          'orderBy': refer('orderBy').nullSafeProperty('call').call(
+            [refer(className).property('t')],
+          ),
+          'orderDescending': refer('orderDescending'),
+          'orderByList': refer('orderByList').nullSafeProperty('call').call(
+            [refer(className).property('t')],
+          ),
+          'include': refer('include'),
+        })
             .returned
             .statement,
     );
   }
 
   Method _buildModelClassToJsonMethod(
-      List<SerializableModelFieldDefinition> fields) {
+      Iterable<SerializableModelFieldDefinition> fields) {
     return Method(
-      (m) {
+          (m) {
         m.returns = refer('Map<String,dynamic>');
         m.name = 'toJson';
         m.annotations.add(refer('override'));
 
-        m.body = _createToJsonBodyFromFields(fields, 'toJson');
+        var filteredFields = fields;
+
+        if (!serverCode) {
+          filteredFields =
+              fields.where((field) => field.shouldSerializeField(serverCode));
+        }
+
+        m.body = _createToJsonBodyFromFields(filteredFields, 'toJson');
       },
     );
   }
 
   Method _buildModelClassToJsonForClientMethod(
-    List<SerializableModelFieldDefinition> fields,
-  ) {
+      Iterable<SerializableModelFieldDefinition> fields,
+      ) {
     return Method(
-      (m) {
+          (m) {
         m.returns = refer('Map<String,dynamic>');
         m.name = 'toJsonForClient';
         m.annotations.add(refer('override'));
 
         var filteredFields =
-            fields.where((field) => field.shouldSerializeField(serverCode));
+        fields.where((field) => field.shouldSerializeField(serverCode));
+
         m.body = _createToJsonBodyFromFields(filteredFields, 'toJsonForClient');
       },
     );
   }
 
   Expression _toJsonCallConversionMethod(
-    Reference fieldRef,
-    TypeDefinition fieldType,
-    String toJsonMethodName,
-  ) {
+      Reference fieldRef,
+      TypeDefinition fieldType,
+      String toJsonMethodName,
+      ) {
     if (fieldType.isSerializedValue) return fieldRef;
 
     Expression fieldExpression = fieldRef;
@@ -670,7 +678,7 @@ class SerializableModelLibraryGenerator {
     if (fieldType.isListType && !fieldType.generics.first.isSerializedValue) {
       namedParams = {
         'valueToJson': Method(
-          (p) => p
+              (p) => p
             ..lambda = true
             ..requiredParameters.add(
               Parameter((p) => p..name = 'v'),
@@ -678,7 +686,7 @@ class SerializableModelLibraryGenerator {
             ..body = _toJsonCallConversionMethod(
               refer('v'),
               fieldType.generics.first,
-             toJsonMethodName,
+              toJsonMethodName,
             ).code,
         ).closure
       };
@@ -687,7 +695,7 @@ class SerializableModelLibraryGenerator {
         namedParams = {
           ...namedParams,
           'keyToJson': Method(
-            (p) => p
+                (p) => p
               ..lambda = true
               ..requiredParameters.add(
                 Parameter((p) => p..name = 'k'),
@@ -695,7 +703,7 @@ class SerializableModelLibraryGenerator {
               ..body = _toJsonCallConversionMethod(
                 refer('k'),
                 fieldType.generics.first,
-               toJsonMethodName,
+                toJsonMethodName,
               ).code,
           ).closure
         };
@@ -704,7 +712,7 @@ class SerializableModelLibraryGenerator {
         namedParams = {
           ...namedParams,
           'valueToJson': Method(
-            (p) => p
+                (p) => p
               ..lambda = true
               ..requiredParameters.add(
                 Parameter((p) => p..name = 'v'),
@@ -712,7 +720,7 @@ class SerializableModelLibraryGenerator {
               ..body = _toJsonCallConversionMethod(
                 refer('v'),
                 fieldType.generics.last,
-               toJsonMethodName,
+                toJsonMethodName,
               ).code,
           ).closure
         };
@@ -723,9 +731,9 @@ class SerializableModelLibraryGenerator {
   }
 
   Code _createToJsonBodyFromFields(
-    Iterable<SerializableModelFieldDefinition> fields,
-    String toJsonMethodName,
-  ) {
+      Iterable<SerializableModelFieldDefinition> fields,
+      String toJsonMethodName,
+      ) {
     var map = fields.fold<Map<Code, Expression>>({}, (map, field) {
       var fieldName = _createSerializableFieldNameReference(
         serverCode,
@@ -735,7 +743,7 @@ class SerializableModelLibraryGenerator {
       Expression fieldRef = _toJsonCallConversionMethod(
         fieldName,
         field.type,
-       toJsonMethodName,
+        toJsonMethodName,
       );
 
       return {
@@ -764,21 +772,21 @@ class SerializableModelLibraryGenerator {
       ]);
       c.body = refer(className)
           .call([], {
-            for (var field in fields)
-              if (field.shouldIncludeField(serverCode))
-                field.name: buildFromJsonForField(
-                    field, serverCode, config, classDefinition)
-          })
+        for (var field in fields)
+          if (field.shouldIncludeField(serverCode))
+            field.name: buildFromJsonForField(
+                field, serverCode, config, classDefinition)
+      })
           .returned
           .statement;
     });
   }
 
   Constructor _buildModelClassConstructor(
-    ClassDefinition classDefinition,
-    List<SerializableModelFieldDefinition> fields,
-    String? tableName,
-  ) {
+      ClassDefinition classDefinition,
+      List<SerializableModelFieldDefinition> fields,
+      String? tableName,
+      ) {
     return Constructor((c) {
       c.name = '_';
       c.optionalParameters.addAll(_buildModelClassConstructorParameters(
@@ -795,11 +803,11 @@ class SerializableModelLibraryGenerator {
   }
 
   Constructor _buildModelClassFactoryConstructor(
-    String className,
-    ClassDefinition classDefinition,
-    List<SerializableModelFieldDefinition> fields,
-    String? tableName,
-  ) {
+      String className,
+      ClassDefinition classDefinition,
+      List<SerializableModelFieldDefinition> fields,
+      String? tableName,
+      ) {
     return Constructor((c) {
       c.factory = true;
       c.optionalParameters.addAll(_buildModelClassConstructorParameters(
@@ -814,10 +822,10 @@ class SerializableModelLibraryGenerator {
   }
 
   Constructor _buildModelImplClassConstructor(
-    ClassDefinition classDefinition,
-    List<SerializableModelFieldDefinition> fields,
-    String? tableName,
-  ) {
+      ClassDefinition classDefinition,
+      List<SerializableModelFieldDefinition> fields,
+      String? tableName,
+      ) {
     return Constructor((c) {
       c.optionalParameters.addAll(_buildModelClassConstructorParameters(
         classDefinition,
@@ -840,11 +848,11 @@ class SerializableModelLibraryGenerator {
   }
 
   List<Parameter> _buildModelClassConstructorParameters(
-    ClassDefinition classDefinition,
-    List<SerializableModelFieldDefinition> fields,
-    String? tableName, {
-    required bool setAsToThis,
-  }) {
+      ClassDefinition classDefinition,
+      List<SerializableModelFieldDefinition> fields,
+      String? tableName, {
+        required bool setAsToThis,
+      }) {
     return fields
         .where((field) => field.shouldIncludeField(serverCode))
         .map((field) {
@@ -860,7 +868,7 @@ class SerializableModelLibraryGenerator {
       );
 
       return Parameter(
-        (p) => p
+            (p) => p
           ..named = true
           ..required = !field.type.nullable
           ..type = shouldIncludeType ? type : null
@@ -871,9 +879,9 @@ class SerializableModelLibraryGenerator {
   }
 
   List<Parameter> _buildAbstractCopyWithParameters(
-    ClassDefinition classDefinition,
-    List<SerializableModelFieldDefinition> fields,
-  ) {
+      ClassDefinition classDefinition,
+      List<SerializableModelFieldDefinition> fields,
+      ) {
     return fields
         .where((field) => field.shouldIncludeField(serverCode))
         .map((field) {
@@ -885,7 +893,7 @@ class SerializableModelLibraryGenerator {
       );
 
       return Parameter(
-        (p) => p
+            (p) => p
           ..named = true
           ..type = type
           ..name = field.name,
@@ -900,8 +908,8 @@ class SerializableModelLibraryGenerator {
     List<Field> modelClassFields = [];
     var classFields = fields
         .where((f) =>
-            f.shouldIncludeField(serverCode) ||
-            (tableName != null && f.hiddenSerializableField(serverCode)))
+    f.shouldIncludeField(serverCode) ||
+        (tableName != null && f.hiddenSerializableField(serverCode)))
         .where((f) => !(f.name == 'id' && serverCode && tableName != null));
 
     for (var field in classFields) {
@@ -945,7 +953,7 @@ class SerializableModelLibraryGenerator {
       ]);
 
       var relationFields = fields.where((f) =>
-          f.relation is ObjectRelationDefinition ||
+      f.relation is ObjectRelationDefinition ||
           f.relation is ListRelationDefinition);
       if (relationFields.isNotEmpty) {
         c.methods.add(_buildModelTableClassGetRelationTable(relationFields));
@@ -956,7 +964,7 @@ class SerializableModelLibraryGenerator {
   Method _buildModelTableClassGetRelationTable(
       Iterable<SerializableModelFieldDefinition> relationFields) {
     return Method(
-      (m) => m
+          (m) => m
         ..annotations.add(refer('override'))
         ..returns = TypeReference((t) => t
           ..symbol = 'Table'
@@ -965,28 +973,28 @@ class SerializableModelLibraryGenerator {
         ..name = 'getRelationTable'
         ..requiredParameters.add(
           Parameter(
-            (p) => p
+                (p) => p
               ..type = refer('String')
               ..name = 'relationField',
           ),
         )
         ..body = (BlockBuilder()
-              ..statements.addAll([
-                for (var relationField in relationFields)
-                  Block.of([
-                    Code(
-                        'if (relationField == ${literalString(relationField.name)}) {'),
-                    lazyCode(() {
-                      var fieldName = relationField.name;
-                      if (relationField.relation is ListRelationDefinition) {
-                        fieldName = '__$fieldName';
-                      }
-                      return refer(fieldName).returned.statement;
-                    }),
-                    const Code('}'),
-                  ]),
-                const Code('return null;'),
-              ]))
+          ..statements.addAll([
+            for (var relationField in relationFields)
+              Block.of([
+                Code(
+                    'if (relationField == ${literalString(relationField.name)}) {'),
+                lazyCode(() {
+                  var fieldName = relationField.name;
+                  if (relationField.relation is ListRelationDefinition) {
+                    fieldName = '__$fieldName';
+                  }
+                  return refer(fieldName).returned.statement;
+                }),
+                const Code('}'),
+              ]),
+            const Code('return null;'),
+          ]))
             .build(),
     );
   }
@@ -994,7 +1002,7 @@ class SerializableModelLibraryGenerator {
   Method _buildModelTableClassColumnGetter(
       List<SerializableModelFieldDefinition> fields) {
     return Method(
-      (m) => m
+          (m) => m
         ..annotations.add(refer('override'))
         ..returns = TypeReference((t) => t
           ..symbol = 'List'
@@ -1011,9 +1019,9 @@ class SerializableModelLibraryGenerator {
   }
 
   List<Field> _buildModelTableClassFields(
-    List<SerializableModelFieldDefinition> fields,
-    List<String> subDirParts,
-  ) {
+      List<SerializableModelFieldDefinition> fields,
+      List<String> subDirParts,
+      ) {
     List<Field> tableFields = [];
 
     for (var field in fields) {
@@ -1030,13 +1038,13 @@ class SerializableModelLibraryGenerator {
             ..url = 'package:serverpod/serverpod.dart'
             ..types.addAll(field.type.isEnumType
                 ? [
-                    field.type.reference(
-                      serverCode,
-                      nullable: false,
-                      subDirParts: subDirParts,
-                      config: config,
-                    )
-                  ]
+              field.type.reference(
+                serverCode,
+                nullable: false,
+                subDirParts: subDirParts,
+                config: config,
+              )
+            ]
                 : []))));
       } else if (field.relation is ObjectRelationDefinition) {
         // Add internal nullable table field
@@ -1083,15 +1091,15 @@ class SerializableModelLibraryGenerator {
   }
 
   List<Method> _buildModelTableClassRelationGetters(
-    List<SerializableModelFieldDefinition> fields,
-    ClassDefinition classDefinition,
-    List<String> subDirParts,
-  ) {
+      List<SerializableModelFieldDefinition> fields,
+      ClassDefinition classDefinition,
+      List<String> subDirParts,
+      ) {
     List<Method> getters = [];
 
     var fieldsWithObjectRelation = fields.where(
-      (f) =>
-          f.relation is ObjectRelationDefinition ||
+          (f) =>
+      f.relation is ObjectRelationDefinition ||
           f.relation is ListRelationDefinition,
     );
 
@@ -1144,33 +1152,33 @@ class SerializableModelLibraryGenerator {
           Code('if (_$fieldName != null) return _$fieldName!;'),
           refer('_$fieldName')
               .assign(
-                refer(
-                  'createRelationTable',
-                  'package:serverpod/serverpod.dart',
-                ).call(
-                  [],
-                  {
-                    'relationFieldName': literalString(fieldName),
-                    'field': refer(classDefinition.className)
-                        .property('t')
-                        .property(relationFieldName),
-                    'foreignField': fieldType
-                        .property('t')
-                        .property(relationForeignFieldName),
-                    'tableRelation': refer('tableRelation'),
-                    'createTable': Method(
+            refer(
+              'createRelationTable',
+              'package:serverpod/serverpod.dart',
+            ).call(
+              [],
+              {
+                'relationFieldName': literalString(fieldName),
+                'field': refer(classDefinition.className)
+                    .property('t')
+                    .property(relationFieldName),
+                'foreignField': fieldType
+                    .property('t')
+                    .property(relationForeignFieldName),
+                'tableRelation': refer('tableRelation'),
+                'createTable': Method(
                       (m) => m
-                        ..requiredParameters.addAll([
-                          Parameter((p) => p..name = 'foreignTableRelation'),
-                        ])
-                        ..lambda = true
-                        ..body = tableType.call([], {
-                          'tableRelation': refer('foreignTableRelation')
-                        }).code,
-                    ).closure
-                  },
-                ),
-              )
+                    ..requiredParameters.addAll([
+                      Parameter((p) => p..name = 'foreignTableRelation'),
+                    ])
+                    ..lambda = true
+                    ..body = tableType.call([], {
+                      'tableRelation': refer('foreignTableRelation')
+                    }).code,
+                ).closure
+              },
+            ),
+          )
               .statement,
           Code('return _$fieldName!;'),
         ])));
@@ -1180,13 +1188,13 @@ class SerializableModelLibraryGenerator {
   }
 
   List<Method> _buildModelTableClassManyRelationGetters(
-    List<SerializableModelFieldDefinition> fields,
-    ClassDefinition classDefinition,
-  ) {
+      List<SerializableModelFieldDefinition> fields,
+      ClassDefinition classDefinition,
+      ) {
     List<Method> getters = [];
 
     var manyRelationFields =
-        fields.where((f) => f.relation is ListRelationDefinition);
+    fields.where((f) => f.relation is ListRelationDefinition);
 
     for (var field in manyRelationFields) {
       var listRelation = field.relation as ListRelationDefinition;
@@ -1208,83 +1216,83 @@ class SerializableModelLibraryGenerator {
           Code('if (_${field.name} != null) return _${field.name}!;'),
           declareVar('relationTable')
               .assign(
-                refer(
-                  'createRelationTable',
-                  'package:serverpod/serverpod.dart',
-                ).call(
-                  [],
-                  {
-                    'relationFieldName': literalString(field.name),
-                    'field': refer(classDefinition.className)
-                        .property('t')
-                        .property(listRelation.fieldName),
-                    'foreignField': field.type.generics.first
-                        .reference(
-                          serverCode,
-                          subDirParts: classDefinition.subDirParts,
-                          config: config,
-                          nullable: false,
-                        )
-                        .property('t')
-                        .property(
-                          listRelation.implicitForeignField
-                              ? createImplicitFieldName(
-                                  listRelation.foreignFieldName)
-                              : listRelation.foreignFieldName,
-                        ),
-                    'tableRelation': refer('tableRelation'),
-                    'createTable': Method(
-                      (m) => m
-                        ..requiredParameters.addAll([
-                          Parameter((p) => p..name = 'foreignTableRelation'),
-                        ])
-                        ..lambda = true
-                        ..body = field.type.generics.first
-                            .reference(
-                          serverCode,
-                          subDirParts: classDefinition.subDirParts,
-                          config: config,
-                          nullable: false,
-                          typeSuffix: 'Table',
-                        )
-                            .call([], {
-                          'tableRelation': refer('foreignTableRelation')
-                        }).code,
-                    ).closure
-                  },
+            refer(
+              'createRelationTable',
+              'package:serverpod/serverpod.dart',
+            ).call(
+              [],
+              {
+                'relationFieldName': literalString(field.name),
+                'field': refer(classDefinition.className)
+                    .property('t')
+                    .property(listRelation.fieldName),
+                'foreignField': field.type.generics.first
+                    .reference(
+                  serverCode,
+                  subDirParts: classDefinition.subDirParts,
+                  config: config,
+                  nullable: false,
+                )
+                    .property('t')
+                    .property(
+                  listRelation.implicitForeignField
+                      ? createImplicitFieldName(
+                      listRelation.foreignFieldName)
+                      : listRelation.foreignFieldName,
                 ),
-              )
+                'tableRelation': refer('tableRelation'),
+                'createTable': Method(
+                      (m) => m
+                    ..requiredParameters.addAll([
+                      Parameter((p) => p..name = 'foreignTableRelation'),
+                    ])
+                    ..lambda = true
+                    ..body = field.type.generics.first
+                        .reference(
+                      serverCode,
+                      subDirParts: classDefinition.subDirParts,
+                      config: config,
+                      nullable: false,
+                      typeSuffix: 'Table',
+                    )
+                        .call([], {
+                      'tableRelation': refer('foreignTableRelation')
+                    }).code,
+                ).closure
+              },
+            ),
+          )
               .statement,
           refer('_${field.name}')
               .assign(
-                TypeReference((t) => t
-                  ..symbol = 'ManyRelation'
-                  ..url = serverpodUrl(serverCode)
-                  ..types.add(field.type.generics.first.reference(
-                    serverCode,
+            TypeReference((t) => t
+              ..symbol = 'ManyRelation'
+              ..url = serverpodUrl(serverCode)
+              ..types.add(field.type.generics.first.reference(
+                serverCode,
+                subDirParts: classDefinition.subDirParts,
+                config: config,
+                nullable: false,
+                typeSuffix: 'Table',
+              ))).call(
+              [],
+              {
+                'tableWithRelations': refer('relationTable'),
+                'table': field.type.generics.first
+                    .reference(serverCode,
                     subDirParts: classDefinition.subDirParts,
                     config: config,
                     nullable: false,
-                    typeSuffix: 'Table',
-                  ))).call(
-                  [],
-                  {
-                    'tableWithRelations': refer('relationTable'),
-                    'table': field.type.generics.first
-                        .reference(serverCode,
-                            subDirParts: classDefinition.subDirParts,
-                            config: config,
-                            nullable: false,
-                            typeSuffix: 'Table')
-                        .call([], {
-                      'tableRelation': refer('relationTable')
-                          .property('tableRelation')
-                          .nullChecked
-                          .property('lastRelation')
-                    })
-                  },
-                ),
-              )
+                    typeSuffix: 'Table')
+                    .call([], {
+                  'tableRelation': refer('relationTable')
+                      .property('tableRelation')
+                      .nullChecked
+                      .property('lastRelation')
+                })
+              },
+            ),
+          )
               .statement,
           Code('return _${field.name}!;'),
         ])));
@@ -1300,7 +1308,7 @@ class SerializableModelLibraryGenerator {
     return Constructor((constructorBuilder) {
       constructorBuilder.optionalParameters.add(
         Parameter(
-          (p) => p
+              (p) => p
             ..name = 'tableRelation'
             ..toSuper = true
             ..named = true,
@@ -1311,20 +1319,20 @@ class SerializableModelLibraryGenerator {
 
       constructorBuilder.body = Block.of([
         for (var field in fields.where(
-            (field) => field.shouldSerializeFieldForDatabase(serverCode)))
+                (field) => field.shouldSerializeFieldForDatabase(serverCode)))
           if (!(field.name == 'id' && serverCode))
             refer(createFieldName(serverCode, field))
                 .assign(field.type.isEnumType
-                    ? _buildModelTableEnumFieldTypeReference(field)
-                    : _buildModelTableGeneralFieldExpression(field))
+                ? _buildModelTableEnumFieldTypeReference(field)
+                : _buildModelTableGeneralFieldExpression(field))
                 .statement,
       ]);
     });
   }
 
   Expression _buildModelTableGeneralFieldExpression(
-    SerializableModelFieldDefinition field,
-  ) {
+      SerializableModelFieldDefinition field,
+      ) {
     assert(!field.type.isEnumType);
     return TypeReference((t) => t
       ..symbol = field.type.columnType
@@ -1336,8 +1344,8 @@ class SerializableModelLibraryGenerator {
   }
 
   Expression _buildModelTableEnumFieldTypeReference(
-    SerializableModelFieldDefinition field,
-  ) {
+      SerializableModelFieldDefinition field,
+      ) {
     assert(field.type.isEnumType);
     var enumType = refer('EnumSerialization', serverpodUrl(serverCode));
     Expression serializedAs;
@@ -1363,17 +1371,17 @@ class SerializableModelLibraryGenerator {
   }
 
   Class _buildModelIncludeClass(
-    String className,
-    List<SerializableModelFieldDefinition> fields,
-    ClassDefinition classDefinition,
-  ) {
+      String className,
+      List<SerializableModelFieldDefinition> fields,
+      ClassDefinition classDefinition,
+      ) {
     return Class(((c) {
       c.extend = refer('IncludeObject', 'package:serverpod/serverpod.dart');
       c.name = '${className}Include';
       var relationFields = fields
           .where((f) =>
-              f.relation is ObjectRelationDefinition ||
-              f.relation is ListRelationDefinition)
+      f.relation is ObjectRelationDefinition ||
+          f.relation is ListRelationDefinition)
           .toList();
 
       c.constructors.add(_buildModelIncludeClassConstructor(
@@ -1394,10 +1402,10 @@ class SerializableModelLibraryGenerator {
   }
 
   Class _buildModelIncludeListClass(
-    String className,
-    List<SerializableModelFieldDefinition> fields,
-    ClassDefinition classDefinition,
-  ) {
+      String className,
+      List<SerializableModelFieldDefinition> fields,
+      ClassDefinition classDefinition,
+      ) {
     return Class(((c) {
       c.extend = refer('IncludeList', 'package:serverpod/serverpod.dart');
       c.name = '${className}IncludeList';
@@ -1412,14 +1420,14 @@ class SerializableModelLibraryGenerator {
   }
 
   Constructor _buildModelIncludeListClassConstructor(
-    String className,
-  ) {
+      String className,
+      ) {
     return Constructor((constructorBuilder) {
       constructorBuilder.name = '_';
 
       constructorBuilder.optionalParameters.addAll([
         Parameter(
-          (p) => p
+              (p) => p
             ..name = 'where'
             ..type = typeWhereExpressionBuilder(
               className,
@@ -1428,37 +1436,37 @@ class SerializableModelLibraryGenerator {
             ..named = true,
         ),
         Parameter(
-          (p) => p
+              (p) => p
             ..name = 'limit'
             ..toSuper = true
             ..named = true,
         ),
         Parameter(
-          (p) => p
+              (p) => p
             ..name = 'offset'
             ..toSuper = true
             ..named = true,
         ),
         Parameter(
-          (p) => p
+              (p) => p
             ..name = 'orderBy'
             ..toSuper = true
             ..named = true,
         ),
         Parameter(
-          (p) => p
+              (p) => p
             ..name = 'orderDescending'
             ..toSuper = true
             ..named = true,
         ),
         Parameter(
-          (p) => p
+              (p) => p
             ..name = 'orderByList'
             ..toSuper = true
             ..named = true,
         ),
         Parameter(
-          (p) => p
+              (p) => p
             ..name = 'include'
             ..toSuper = true
             ..named = true,
@@ -1469,8 +1477,8 @@ class SerializableModelLibraryGenerator {
         refer('super')
             .property('where')
             .assign(refer('where').nullSafeProperty('call').call(
-              [refer(className).property('t')],
-            ))
+          [refer(className).property('t')],
+        ))
             .statement
       ]);
     });
@@ -1478,7 +1486,7 @@ class SerializableModelLibraryGenerator {
 
   Method _buildModelIncludeListClassIncludesGetter() {
     return Method(
-      (m) => m
+          (m) => m
         ..annotations.add(refer('override'))
         ..returns = TypeReference((t) => t
           ..symbol = 'Map'
@@ -1498,7 +1506,7 @@ class SerializableModelLibraryGenerator {
 
   Method _buildModelIncludeClassTableGetter(String className) {
     return Method(
-      (m) => m
+          (m) => m
         ..annotations.add(refer('override'))
         ..returns = TypeReference((t) => t
           ..symbol = 'Table'
@@ -1513,7 +1521,7 @@ class SerializableModelLibraryGenerator {
   Method _buildModelIncludeClassIncludesGetter(
       List<SerializableModelFieldDefinition> objectRelationFields) {
     return Method(
-      (m) => m
+          (m) => m
         ..annotations.add(refer('override'))
         ..returns = TypeReference((t) => t
           ..symbol = 'Map'
@@ -1562,9 +1570,9 @@ class SerializableModelLibraryGenerator {
   }
 
   Constructor _buildModelIncludeClassConstructor(
-    List<SerializableModelFieldDefinition> relationFields,
-    ClassDefinition classDefinition,
-  ) {
+      List<SerializableModelFieldDefinition> relationFields,
+      ClassDefinition classDefinition,
+      ) {
     return Constructor((constructorBuilder) {
       constructorBuilder.name = '_';
       if (relationFields.isEmpty) {
@@ -1574,7 +1582,7 @@ class SerializableModelLibraryGenerator {
       for (var field in relationFields) {
         if (field.relation is ObjectRelationDefinition) {
           constructorBuilder.optionalParameters.add(Parameter(
-            (p) => p
+                (p) => p
               ..name = field.name
               ..type = field.type.reference(
                 serverCode,
@@ -1587,7 +1595,7 @@ class SerializableModelLibraryGenerator {
           ));
         } else if (field.relation is ListRelationDefinition) {
           constructorBuilder.optionalParameters.add(Parameter(
-            (p) => p
+                (p) => p
               ..name = field.name
               ..type = field.type.generics.first.reference(
                 serverCode,
@@ -1649,18 +1657,18 @@ class SerializableModelLibraryGenerator {
           ..name = 'index'
           ..type = refer('int')))
         ..body = (BlockBuilder()
-              ..statements.addAll([
-                const Code('switch(index){'),
-                for (int i = 0; i < enumDefinition.values.length; i++)
-                  Code('case $i: return ${enumDefinition.values[i].name};'),
-                Code(
-                  'default: throw ArgumentError(\'Value "\$index" cannot be converted to "${enumDefinition.className}"\');',
-                ),
-                const Code('}'),
-              ]))
+          ..statements.addAll([
+            const Code('switch(index){'),
+            for (int i = 0; i < enumDefinition.values.length; i++)
+              Code('case $i: return ${enumDefinition.values[i].name};'),
+            Code(
+              'default: throw ArgumentError(\'Value "\$index" cannot be converted to "${enumDefinition.className}"\');',
+            ),
+            const Code('}'),
+          ]))
             .build()),
       Method(
-        (m) => m
+            (m) => m
           ..annotations.add(refer('override'))
           ..returns = refer('int')
           ..name = 'toJson'
@@ -1680,18 +1688,18 @@ class SerializableModelLibraryGenerator {
           ..name = 'name'
           ..type = refer('String')))
         ..body = (BlockBuilder()
-              ..statements.addAll([
-                const Code('switch(name){'),
-                for (var value in enumDefinition.values)
-                  Code("case '${value.name}': return ${value.name};"),
-                Code(
-                  'default: throw ArgumentError(\'Value "\$name" cannot be converted to "${enumDefinition.className}"\');',
-                ),
-                const Code('}'),
-              ]))
+          ..statements.addAll([
+            const Code('switch(name){'),
+            for (var value in enumDefinition.values)
+              Code("case '${value.name}': return ${value.name};"),
+            Code(
+              'default: throw ArgumentError(\'Value "\$name" cannot be converted to "${enumDefinition.className}"\');',
+            ),
+            const Code('}'),
+          ]))
             .build()),
       Method(
-        (m) => m
+            (m) => m
           ..annotations.add(refer('override'))
           ..returns = refer('String')
           ..name = 'toJson'
@@ -1699,7 +1707,7 @@ class SerializableModelLibraryGenerator {
           ..body = refer('name').code,
       ),
       Method(
-        (m) => m
+            (m) => m
           ..annotations.add(refer('override'))
           ..returns = refer('String')
           ..name = 'toString'
@@ -1729,9 +1737,9 @@ class SerializableModelLibraryGenerator {
   }
 
   Reference _createSerializableFieldNameReference(
-    bool serverCode,
-    SerializableModelFieldDefinition field,
-  ) {
+      bool serverCode,
+      SerializableModelFieldDefinition field,
+      ) {
     if (field.hiddenSerializableField(serverCode) &&
         !field.name.startsWith('_')) {
       return refer('_${field.name}');

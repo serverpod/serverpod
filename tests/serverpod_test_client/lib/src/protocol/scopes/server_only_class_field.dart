@@ -22,7 +22,7 @@ abstract class ServerOnlyClassField extends _i1.SerializableEntity {
 
   ServerOnlyClassField copyWith();
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toJson() {
     return {};
   }
 }

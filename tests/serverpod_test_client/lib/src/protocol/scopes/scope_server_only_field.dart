@@ -45,10 +45,10 @@ abstract class ScopeServerOnlyField extends _i1.SerializableEntity {
     _i2.ScopeServerOnlyField? nested,
   });
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toJson() {
     return {
-      if (allScope != null) 'allScope': allScope?.toJsonForClient(),
-      if (nested != null) 'nested': nested?.toJsonForClient(),
+      if (allScope != null) 'allScope': allScope?.toJson(),
+      if (nested != null) 'nested': nested?.toJson(),
     };
   }
 }

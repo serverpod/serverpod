@@ -57,12 +57,12 @@ abstract class PersonWithLongTableName extends _i1.SerializableEntity {
     _i2.OrganizationWithLongTableName? organization,
   });
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (organizationId != null) 'organizationId': organizationId,
-      if (organization != null) 'organization': organization?.toJsonForClient(),
+      if (organization != null) 'organization': organization?.toJson(),
     };
   }
 }

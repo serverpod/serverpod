@@ -46,7 +46,7 @@ abstract class ObjectFieldScopes extends _i1.SerializableEntity {
     String? api,
   });
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
       'normal': normal,
