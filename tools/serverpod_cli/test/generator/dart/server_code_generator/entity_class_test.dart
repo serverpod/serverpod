@@ -525,14 +525,14 @@ void main() {
         });
 
         test('has a toJson that uses hidden class variable.', () {
-          var maybeAllToJson = CompilationUnitHelpers.tryFindMethodDeclaration(
+          var maybeToJson = CompilationUnitHelpers.tryFindMethodDeclaration(
             maybeClassNamedExample!,
             name: 'toJson',
           );
 
-          expect(maybeAllToJson, isNotNull,
+          expect(maybeToJson, isNotNull,
               reason: 'Missing declaration for toJson method.');
-          expect(maybeAllToJson!.toSource(),
+          expect(maybeToJson!.toSource(),
               contains('\'$fieldName\' : _$fieldName'),
               reason:
                   'Missing use of hidden class variable in setColumn method.');
