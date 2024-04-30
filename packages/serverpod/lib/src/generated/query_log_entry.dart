@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A log entry for a database query.
-abstract class QueryLogEntry extends _i1.TableRow {
+abstract class QueryLogEntry extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   QueryLogEntry._({
     int? id,
     required this.serverId,

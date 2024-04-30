@@ -14,7 +14,8 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 /// Represents a snapshot of a specific health metric. An entry is written every
 /// minute for each server. All health data can be accessed through Serverpod
 /// Insights.
-abstract class ServerHealthMetric extends _i1.TableRow {
+abstract class ServerHealthMetric extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   ServerHealthMetric._({
     int? id,
     required this.name,

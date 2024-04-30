@@ -155,6 +155,9 @@ class SerializableModelLibraryGenerator {
         classBuilder.fields.add(_buildModelClassDBField(className));
 
         classBuilder.methods.add(_buildModelClassTableGetter());
+
+        classBuilder.implements
+            .add(refer('ConstraintSerialization', serverpodUrl(serverCode)));
       } else {
         classBuilder.extend =
             refer('SerializableEntity', serverpodUrl(serverCode));

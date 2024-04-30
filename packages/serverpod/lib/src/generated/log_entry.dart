@@ -13,7 +13,8 @@ import 'protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Bindings to a log entry in the database.
-abstract class LogEntry extends _i1.TableRow {
+abstract class LogEntry extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   LogEntry._({
     int? id,
     required this.sessionLogId,

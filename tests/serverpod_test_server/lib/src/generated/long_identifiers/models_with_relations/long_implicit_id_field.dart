@@ -10,7 +10,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class LongImplicitIdField extends _i1.TableRow {
+abstract class LongImplicitIdField extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   LongImplicitIdField._({
     int? id,
     required this.name,

@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Message to notifiy the server that messages have been read.
-abstract class ChatReadMessage extends _i1.TableRow {
+abstract class ChatReadMessage extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   ChatReadMessage._({
     int? id,
     required this.channel,

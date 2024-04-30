@@ -13,7 +13,8 @@ import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class Types extends _i1.TableRow {
+abstract class Types extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   Types._({
     int? id,
     this.anInt,

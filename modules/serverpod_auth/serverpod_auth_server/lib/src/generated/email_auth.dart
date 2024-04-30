@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for a sign in with email.
-abstract class EmailAuth extends _i1.TableRow {
+abstract class EmailAuth extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   EmailAuth._({
     int? id,
     required this.userId,

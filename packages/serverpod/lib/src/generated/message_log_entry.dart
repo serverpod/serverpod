@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A log entry for a message sent in a streaming session.
-abstract class MessageLogEntry extends _i1.TableRow {
+abstract class MessageLogEntry extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   MessageLogEntry._({
     int? id,
     required this.sessionLogId,

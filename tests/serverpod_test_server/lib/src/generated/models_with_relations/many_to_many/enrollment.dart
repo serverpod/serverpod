@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class Enrollment extends _i1.TableRow {
+abstract class Enrollment extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   Enrollment._({
     int? id,
     required this.studentId,

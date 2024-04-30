@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database mapping for a read/write test that is performed by the default
 /// health checks.
-abstract class ReadWriteTestEntry extends _i1.TableRow {
+abstract class ReadWriteTestEntry extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   ReadWriteTestEntry._({
     int? id,
     required this.number,

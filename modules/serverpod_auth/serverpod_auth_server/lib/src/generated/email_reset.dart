@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Database bindings for an email reset.
-abstract class EmailReset extends _i1.TableRow {
+abstract class EmailReset extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   EmailReset._({
     int? id,
     required this.userId,

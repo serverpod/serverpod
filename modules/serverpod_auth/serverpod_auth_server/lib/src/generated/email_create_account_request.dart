@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A request for creating an email signin. Created during the sign up process
 /// to keep track of the user's details and verification code.
-abstract class EmailCreateAccountRequest extends _i1.TableRow {
+abstract class EmailCreateAccountRequest extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   EmailCreateAccountRequest._({
     int? id,
     required this.userName,

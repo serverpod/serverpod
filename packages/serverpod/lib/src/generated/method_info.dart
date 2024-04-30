@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Information about a server method.
-abstract class MethodInfo extends _i1.TableRow {
+abstract class MethodInfo extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   MethodInfo._({
     int? id,
     required this.endpoint,

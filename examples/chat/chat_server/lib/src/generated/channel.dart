@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Represents a chat channel.
-abstract class Channel extends _i1.TableRow {
+abstract class Channel extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   Channel._({
     int? id,
     required this.name,

@@ -14,7 +14,8 @@ import 'protocol.dart' as _i3;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A chat message.
-abstract class ChatMessage extends _i1.TableRow {
+abstract class ChatMessage extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   ChatMessage._({
     int? id,
     required this.channel,

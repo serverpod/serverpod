@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i2;
 
-abstract class ObjectUser extends _i1.TableRow {
+abstract class ObjectUser extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   ObjectUser._({
     int? id,
     this.name,

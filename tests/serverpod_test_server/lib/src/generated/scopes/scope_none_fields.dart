@@ -10,7 +10,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class ScopeNoneFields extends _i1.TableRow {
+abstract class ScopeNoneFields extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   ScopeNoneFields._({int? id}) : super(id);
 
   factory ScopeNoneFields({int? id}) = _ScopeNoneFieldsImpl;

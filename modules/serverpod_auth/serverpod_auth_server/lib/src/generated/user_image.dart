@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for a user image.
-abstract class UserImage extends _i1.TableRow {
+abstract class UserImage extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   UserImage._({
     int? id,
     required this.userId,

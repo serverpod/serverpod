@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Just some simple data.
-abstract class SimpleData extends _i1.TableRow {
+abstract class SimpleData extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   SimpleData._({
     int? id,
     required this.num,

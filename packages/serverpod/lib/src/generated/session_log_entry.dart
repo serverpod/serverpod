@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Log entry for a session.
-abstract class SessionLogEntry extends _i1.TableRow {
+abstract class SessionLogEntry extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   SessionLogEntry._({
     int? id,
     required this.serverId,

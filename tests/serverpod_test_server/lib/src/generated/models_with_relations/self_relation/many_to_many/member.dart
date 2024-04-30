@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class Member extends _i1.TableRow {
+abstract class Member extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   Member._({
     int? id,
     required this.name,

@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Represents a version of a database migration.
-abstract class DatabaseMigrationVersion extends _i1.TableRow {
+abstract class DatabaseMigrationVersion extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   DatabaseMigrationVersion._({
     int? id,
     required this.module,

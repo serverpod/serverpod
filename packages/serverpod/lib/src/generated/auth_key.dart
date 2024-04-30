@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Provides a method of access for a user to authenticate with the server.
-abstract class AuthKey extends _i1.TableRow {
+abstract class AuthKey extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   AuthKey._({
     int? id,
     required this.userId,

@@ -13,7 +13,8 @@ import 'protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Runtime settings of the server.
-abstract class RuntimeSettings extends _i1.TableRow {
+abstract class RuntimeSettings extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   RuntimeSettings._({
     int? id,
     required this.logSettings,

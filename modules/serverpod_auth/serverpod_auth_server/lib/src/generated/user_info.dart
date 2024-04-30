@@ -16,7 +16,8 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 /// If you need to share a user's info with other users, use the
 /// [UserInfoPublic] instead. You can retrieve a [UserInfoPublic] through the
 /// toPublic() method.
-abstract class UserInfo extends _i1.TableRow {
+abstract class UserInfo extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   UserInfo._({
     int? id,
     required this.userIdentifier,

@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A serialized future call with bindings to the database.
-abstract class FutureCallEntry extends _i1.TableRow {
+abstract class FutureCallEntry extends _i1.TableRow
+    implements _i1.ConstraintSerialization {
   FutureCallEntry._({
     int? id,
     required this.name,
