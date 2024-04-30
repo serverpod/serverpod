@@ -54,45 +54,33 @@ class EndpointsAnalyzer {
 
       var validationErrors = _validateLibrary(library, filePath);
       collector.addErrors(validationErrors.values.expand((e) => e).toList());
+      List<EndpointDefinition> endpointsToBeAdded = _parseLibrary(
+        library,
+        collector,
+        filePath,
+        rootPath,
+        validationErrors,
+      );
+      String? duplicateClassName =
+          EndpointClassAnalyzer.checkForDuplicateClassNames(
+              endpointDefs + endpointsToBeAdded);
+      if (duplicateClassName != null) {
+        collector.addError(
+          SourceSpanSeverityException(
+            'Endpoint analysis skipped due to duplicate class names. '
+            'Please rename your classes to make them unique. '
+            'className: $duplicateClassName',
+            null,
+            severity: SourceSpanSeverity.error,
+          ),
+        );
 
-      endpointDefs.addAll(
-        _parseLibrary(
-          library,
-          collector,
-          filePath,
-          rootPath,
-          validationErrors,
-        ),
-      );
-    }
-    String? duplicateClassName = checkForDuplicateClassNames(endpointDefs);
-    if (duplicateClassName != null) {
-      collector.addError(
-        SourceSpanSeverityException(
-          'Endpoint analysis skipped due to duplicate class names. '
-          'Please rename your classes to make them unique. '
-          'className: $duplicateClassName',
-          null,
-          severity: SourceSpanSeverity.error,
-        ),
-      );
+        continue;
+      }
+      endpointDefs.addAll(endpointsToBeAdded);
     }
 
     return endpointDefs;
-  }
-
-  String? checkForDuplicateClassNames(List<EndpointDefinition> endpointDefs) {
-    Set<String> classNames = {};
-
-    for (var element in endpointDefs) {
-      // Assuming 'className' is a property of elements in endpointDefs
-      if (classNames.contains(element.className)) {
-        return element.className;
-      }
-      classNames.add(element.className);
-    }
-
-    return null;
   }
 
   Future<List<String>> _getErrorsForFile(

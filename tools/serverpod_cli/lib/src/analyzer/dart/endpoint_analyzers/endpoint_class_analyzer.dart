@@ -75,4 +75,21 @@ abstract class EndpointClassAnalyzer {
 
     return fileDirPathParts;
   }
+
+  /// Checks for duplicate class names in a list of [EndpointDefinition] objects.
+  /// Returns the first duplicate class name found, or `null` if no duplicates are found.
+  static String? checkForDuplicateClassNames(
+      List<EndpointDefinition> endpointDefs) {
+    Set<String> classNames = {};
+
+    for (var element in endpointDefs) {
+      // Assuming 'className' is a property of elements in endpointDefs
+      if (classNames.contains(element.className)) {
+        return element.className;
+      }
+      classNames.add(element.className);
+    }
+
+    return null;
+  }
 }
