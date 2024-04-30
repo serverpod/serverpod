@@ -69,12 +69,12 @@ abstract class ChatJoinedChannel extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       'channel': channel,
-      'initialMessageChunk': initialMessageChunk.toJsonForClient(),
+      'initialMessageChunk': initialMessageChunk.toConstraintJson(),
       'lastReadMessageId': lastReadMessageId,
-      'userInfo': userInfo.toJsonForClient(),
+      'userInfo': userInfo.toConstraintJson(),
     };
   }
 }

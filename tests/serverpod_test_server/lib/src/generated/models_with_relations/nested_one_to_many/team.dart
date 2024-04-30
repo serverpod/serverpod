@@ -80,14 +80,14 @@ abstract class Team extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (arenaId != null) 'arenaId': arenaId,
-      if (arena != null) 'arena': arena?.toJsonForClient(),
+      if (arena != null) 'arena': arena?.toConstraintJson(),
       if (players != null)
-        'players': players?.toJson(valueToJson: (v) => v.toJsonForClient()),
+        'players': players?.toJson(valueToJson: (v) => v.toConstraintJson()),
     };
   }
 

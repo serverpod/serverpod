@@ -621,7 +621,7 @@ void main() {
       ),
     );
 
-    var jsonMap = object.toJsonForClient();
+    var jsonMap = object.toConstraintJson();
 
     expect(jsonMap, {
       'nested': {

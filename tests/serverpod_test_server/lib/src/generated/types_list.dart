@@ -166,7 +166,7 @@ abstract class TypesList extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (anInt != null) 'anInt': anInt?.toJson(),
       if (aBool != null) 'aBool': aBool?.toJson(),
@@ -185,15 +185,15 @@ abstract class TypesList extends _i1.SerializableEntity
         'aStringifiedEnum':
             aStringifiedEnum?.toJson(valueToJson: (v) => v.toJson()),
       if (anObject != null)
-        'anObject': anObject?.toJson(valueToJson: (v) => v.toJsonForClient()),
+        'anObject': anObject?.toJson(valueToJson: (v) => v.toConstraintJson()),
       if (aMap != null)
         'aMap': aMap?.toJson(
             valueToJson: (v) =>
-                v.toJson(valueToJson: (v) => v.toJsonForClient())),
+                v.toJson(valueToJson: (v) => v.toConstraintJson())),
       if (aList != null)
         'aList': aList?.toJson(
             valueToJson: (v) =>
-                v.toJson(valueToJson: (v) => v.toJsonForClient())),
+                v.toJson(valueToJson: (v) => v.toConstraintJson())),
     };
   }
 }

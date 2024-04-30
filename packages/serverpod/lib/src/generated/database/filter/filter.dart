@@ -58,12 +58,12 @@ abstract class Filter extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       'name': name,
       'table': table,
       'constraints':
-          constraints.toJson(valueToJson: (v) => v.toJsonForClient()),
+          constraints.toJson(valueToJson: (v) => v.toConstraintJson()),
     };
   }
 }

@@ -137,22 +137,22 @@ abstract class TableMigration extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       'name': name,
       if (dartName != null) 'dartName': dartName,
       if (module != null) 'module': module,
       'schema': schema,
-      'addColumns': addColumns.toJson(valueToJson: (v) => v.toJsonForClient()),
+      'addColumns': addColumns.toJson(valueToJson: (v) => v.toConstraintJson()),
       'deleteColumns': deleteColumns.toJson(),
       'modifyColumns':
-          modifyColumns.toJson(valueToJson: (v) => v.toJsonForClient()),
-      'addIndexes': addIndexes.toJson(valueToJson: (v) => v.toJsonForClient()),
+          modifyColumns.toJson(valueToJson: (v) => v.toConstraintJson()),
+      'addIndexes': addIndexes.toJson(valueToJson: (v) => v.toConstraintJson()),
       'deleteIndexes': deleteIndexes.toJson(),
       'addForeignKeys':
-          addForeignKeys.toJson(valueToJson: (v) => v.toJsonForClient()),
+          addForeignKeys.toJson(valueToJson: (v) => v.toConstraintJson()),
       'deleteForeignKeys': deleteForeignKeys.toJson(),
-      'warnings': warnings.toJson(valueToJson: (v) => v.toJsonForClient()),
+      'warnings': warnings.toJson(valueToJson: (v) => v.toConstraintJson()),
     };
   }
 }

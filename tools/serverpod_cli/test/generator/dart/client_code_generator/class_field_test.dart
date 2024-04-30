@@ -72,6 +72,16 @@ void main() {
             reason: 'Missing extends clause for SerializableModel.');
       });
 
+      test('does not implement ConstraintSerialization.', () {
+        expect(
+            CompilationUnitHelpers.hasImplementsClause(
+              maybeClassNamedExample!,
+              name: 'ConstraintSerialization',
+            ),
+            isFalse,
+            reason: 'Should not implement ConstraintSerialization');
+      });
+
       test('has a fromJson factory.', () {
         expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
@@ -90,6 +100,16 @@ void main() {
             ),
             isTrue,
             reason: 'Missing declaration for toJson method.');
+      });
+
+      test('does not have a toConstraintJson method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExample!,
+              name: 'toConstraintJson',
+            ),
+            isFalse,
+            reason: 'Class should not have a toConstraintJson method.');
       });
     }, skip: maybeClassNamedExample == null);
   });

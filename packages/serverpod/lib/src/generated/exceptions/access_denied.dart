@@ -32,7 +32,7 @@ abstract class AccessDeniedException extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {'message': message};
   }
 }

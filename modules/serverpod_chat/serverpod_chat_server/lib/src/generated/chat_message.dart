@@ -127,20 +127,20 @@ abstract class ChatMessage extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (id != null) 'id': id,
       'channel': channel,
       'message': message,
       'time': time.toJson(),
       'sender': sender,
-      if (senderInfo != null) 'senderInfo': senderInfo?.toJsonForClient(),
+      if (senderInfo != null) 'senderInfo': senderInfo?.toConstraintJson(),
       'removed': removed,
       if (clientMessageId != null) 'clientMessageId': clientMessageId,
       if (sent != null) 'sent': sent,
       if (attachments != null)
         'attachments':
-            attachments?.toJson(valueToJson: (v) => v.toJsonForClient()),
+            attachments?.toJson(valueToJson: (v) => v.toConstraintJson()),
     };
   }
 

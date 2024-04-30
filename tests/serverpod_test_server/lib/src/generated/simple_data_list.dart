@@ -35,8 +35,8 @@ abstract class SimpleDataList extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
-    return {'rows': rows.toJson(valueToJson: (v) => v.toJsonForClient())};
+  Map<String, dynamic> toConstraintJson() {
+    return {'rows': rows.toJson(valueToJson: (v) => v.toConstraintJson())};
   }
 }
 

@@ -67,13 +67,13 @@ abstract class RelationToMultipleMaxFieldName extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (multipleMaxFieldNames != null)
         'multipleMaxFieldNames': multipleMaxFieldNames?.toJson(
-            valueToJson: (v) => v.toJsonForClient()),
+            valueToJson: (v) => v.toConstraintJson()),
     };
   }
 

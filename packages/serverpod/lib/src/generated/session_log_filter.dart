@@ -89,7 +89,7 @@ abstract class SessionLogFilter extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (endpoint != null) 'endpoint': endpoint,
       if (method != null) 'method': method,

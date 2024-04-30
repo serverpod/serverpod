@@ -84,12 +84,12 @@ abstract class RuntimeSettings extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (id != null) 'id': id,
-      'logSettings': logSettings.toJsonForClient(),
+      'logSettings': logSettings.toConstraintJson(),
       'logSettingsOverrides':
-          logSettingsOverrides.toJson(valueToJson: (v) => v.toJsonForClient()),
+          logSettingsOverrides.toJson(valueToJson: (v) => v.toConstraintJson()),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     };

@@ -62,11 +62,11 @@ abstract class ModuleDatatype extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
-      'model': model.toJsonForClient(),
-      'list': list.toJson(valueToJson: (v) => v.toJsonForClient()),
-      'map': map.toJson(valueToJson: (v) => v.toJsonForClient()),
+      'model': model.toConstraintJson(),
+      'list': list.toJson(valueToJson: (v) => v.toConstraintJson()),
+      'map': map.toJson(valueToJson: (v) => v.toConstraintJson()),
     };
   }
 }

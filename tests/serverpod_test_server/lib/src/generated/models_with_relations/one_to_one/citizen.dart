@@ -96,15 +96,15 @@ abstract class Citizen extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (address != null) 'address': address?.toJsonForClient(),
+      if (address != null) 'address': address?.toConstraintJson(),
       'companyId': companyId,
-      if (company != null) 'company': company?.toJsonForClient(),
+      if (company != null) 'company': company?.toConstraintJson(),
       if (oldCompanyId != null) 'oldCompanyId': oldCompanyId,
-      if (oldCompany != null) 'oldCompany': oldCompany?.toJsonForClient(),
+      if (oldCompany != null) 'oldCompany': oldCompany?.toConstraintJson(),
     };
   }
 

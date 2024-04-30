@@ -64,12 +64,12 @@ abstract class UserNoteCollectionWithALongName extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (notes != null)
-        'notes': notes?.toJson(valueToJson: (v) => v.toJsonForClient()),
+        'notes': notes?.toJson(valueToJson: (v) => v.toConstraintJson()),
     };
   }
 

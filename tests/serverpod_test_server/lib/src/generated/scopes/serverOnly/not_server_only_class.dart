@@ -29,7 +29,7 @@ abstract class NotServerOnlyClass extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {'foo': foo};
   }
 }

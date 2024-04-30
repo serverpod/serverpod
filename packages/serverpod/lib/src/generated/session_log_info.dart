@@ -74,12 +74,12 @@ abstract class SessionLogInfo extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
-      'sessionLogEntry': sessionLogEntry.toJsonForClient(),
-      'queries': queries.toJson(valueToJson: (v) => v.toJsonForClient()),
-      'logs': logs.toJson(valueToJson: (v) => v.toJsonForClient()),
-      'messages': messages.toJson(valueToJson: (v) => v.toJsonForClient()),
+      'sessionLogEntry': sessionLogEntry.toConstraintJson(),
+      'queries': queries.toJson(valueToJson: (v) => v.toConstraintJson()),
+      'logs': logs.toJson(valueToJson: (v) => v.toConstraintJson()),
+      'messages': messages.toJson(valueToJson: (v) => v.toConstraintJson()),
     };
   }
 }

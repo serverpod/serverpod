@@ -73,14 +73,15 @@ abstract class Member extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (blocking != null)
-        'blocking': blocking?.toJson(valueToJson: (v) => v.toJsonForClient()),
+        'blocking': blocking?.toJson(valueToJson: (v) => v.toConstraintJson()),
       if (blockedBy != null)
-        'blockedBy': blockedBy?.toJson(valueToJson: (v) => v.toJsonForClient()),
+        'blockedBy':
+            blockedBy?.toJson(valueToJson: (v) => v.toConstraintJson()),
     };
   }
 

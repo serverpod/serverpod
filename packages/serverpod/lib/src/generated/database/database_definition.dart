@@ -83,13 +83,13 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (name != null) 'name': name,
       'moduleName': moduleName,
-      'tables': tables.toJson(valueToJson: (v) => v.toJsonForClient()),
+      'tables': tables.toJson(valueToJson: (v) => v.toConstraintJson()),
       'installedModules':
-          installedModules.toJson(valueToJson: (v) => v.toJsonForClient()),
+          installedModules.toJson(valueToJson: (v) => v.toConstraintJson()),
       'migrationApiVersion': migrationApiVersion,
     };
   }

@@ -63,13 +63,13 @@ abstract class Course extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (enrollments != null)
         'enrollments':
-            enrollments?.toJson(valueToJson: (v) => v.toJsonForClient()),
+            enrollments?.toJson(valueToJson: (v) => v.toConstraintJson()),
     };
   }
 

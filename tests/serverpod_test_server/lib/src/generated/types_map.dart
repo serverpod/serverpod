@@ -377,7 +377,7 @@ abstract class TypesMap extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (anIntKey != null) 'anIntKey': anIntKey?.toJson(),
       if (aBoolKey != null) 'aBoolKey': aBoolKey?.toJson(),
@@ -398,14 +398,14 @@ abstract class TypesMap extends _i1.SerializableEntity
             aStringifiedEnumKey?.toJson(keyToJson: (k) => k.toJson()),
       if (anObjectKey != null)
         'anObjectKey':
-            anObjectKey?.toJson(keyToJson: (k) => k.toJsonForClient()),
+            anObjectKey?.toJson(keyToJson: (k) => k.toConstraintJson()),
       if (aMapKey != null)
         'aMapKey': aMapKey?.toJson(
-            keyToJson: (k) => k.toJson(keyToJson: (k) => k.toJsonForClient())),
+            keyToJson: (k) => k.toJson(keyToJson: (k) => k.toConstraintJson())),
       if (aListKey != null)
         'aListKey': aListKey?.toJson(
             keyToJson: (k) =>
-                k.toJson(valueToJson: (v) => v.toJsonForClient())),
+                k.toJson(valueToJson: (v) => v.toConstraintJson())),
       if (anIntValue != null) 'anIntValue': anIntValue?.toJson(),
       if (aBoolValue != null) 'aBoolValue': aBoolValue?.toJson(),
       if (aDoubleValue != null) 'aDoubleValue': aDoubleValue?.toJson(),
@@ -428,15 +428,15 @@ abstract class TypesMap extends _i1.SerializableEntity
             aStringifiedEnumValue?.toJson(valueToJson: (v) => v.toJson()),
       if (anObjectValue != null)
         'anObjectValue':
-            anObjectValue?.toJson(valueToJson: (v) => v.toJsonForClient()),
+            anObjectValue?.toJson(valueToJson: (v) => v.toConstraintJson()),
       if (aMapValue != null)
         'aMapValue': aMapValue?.toJson(
             valueToJson: (v) =>
-                v.toJson(valueToJson: (v) => v.toJsonForClient())),
+                v.toJson(valueToJson: (v) => v.toConstraintJson())),
       if (aListValue != null)
         'aListValue': aListValue?.toJson(
             valueToJson: (v) =>
-                v.toJson(valueToJson: (v) => v.toJsonForClient())),
+                v.toJson(valueToJson: (v) => v.toConstraintJson())),
     };
   }
 }

@@ -80,14 +80,14 @@ abstract class Order extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (id != null) 'id': id,
       'description': description,
       'customerId': customerId,
-      if (customer != null) 'customer': customer?.toJsonForClient(),
+      if (customer != null) 'customer': customer?.toConstraintJson(),
       if (comments != null)
-        'comments': comments?.toJson(valueToJson: (v) => v.toJsonForClient()),
+        'comments': comments?.toJson(valueToJson: (v) => v.toConstraintJson()),
     };
   }
 

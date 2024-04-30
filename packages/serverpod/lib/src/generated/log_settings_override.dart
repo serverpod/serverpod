@@ -68,12 +68,12 @@ abstract class LogSettingsOverride extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (module != null) 'module': module,
       if (endpoint != null) 'endpoint': endpoint,
       if (method != null) 'method': method,
-      'logSettings': logSettings.toJsonForClient(),
+      'logSettings': logSettings.toConstraintJson(),
     };
   }
 }

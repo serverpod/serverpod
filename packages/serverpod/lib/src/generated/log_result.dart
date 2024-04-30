@@ -36,8 +36,10 @@ abstract class LogResult extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
-    return {'entries': entries.toJson(valueToJson: (v) => v.toJsonForClient())};
+  Map<String, dynamic> toConstraintJson() {
+    return {
+      'entries': entries.toJson(valueToJson: (v) => v.toConstraintJson())
+    };
   }
 }
 

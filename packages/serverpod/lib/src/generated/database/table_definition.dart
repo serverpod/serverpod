@@ -117,17 +117,17 @@ abstract class TableDefinition extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       'name': name,
       if (dartName != null) 'dartName': dartName,
       if (module != null) 'module': module,
       'schema': schema,
       if (tableSpace != null) 'tableSpace': tableSpace,
-      'columns': columns.toJson(valueToJson: (v) => v.toJsonForClient()),
+      'columns': columns.toJson(valueToJson: (v) => v.toConstraintJson()),
       'foreignKeys':
-          foreignKeys.toJson(valueToJson: (v) => v.toJsonForClient()),
-      'indexes': indexes.toJson(valueToJson: (v) => v.toJsonForClient()),
+          foreignKeys.toJson(valueToJson: (v) => v.toConstraintJson()),
+      'indexes': indexes.toJson(valueToJson: (v) => v.toConstraintJson()),
       if (managed != null) 'managed': managed,
     };
   }

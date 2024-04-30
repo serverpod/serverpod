@@ -116,7 +116,7 @@ abstract class LogSettings extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       'logLevel': logLevel.toJson(),
       'logAllSessions': logAllSessions,

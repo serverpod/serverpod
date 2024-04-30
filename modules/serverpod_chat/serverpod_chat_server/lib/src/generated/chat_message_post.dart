@@ -71,14 +71,14 @@ abstract class ChatMessagePost extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       'channel': channel,
       'message': message,
       'clientMessageId': clientMessageId,
       if (attachments != null)
         'attachments':
-            attachments?.toJson(valueToJson: (v) => v.toJsonForClient()),
+            attachments?.toJson(valueToJson: (v) => v.toConstraintJson()),
     };
   }
 }

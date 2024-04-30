@@ -195,7 +195,7 @@ class SerializableModelLibraryGenerator {
 
       // Serialization for database and everything
       if (serverCode) {
-        classBuilder.methods.add(_buildModelClassToJsonForClientMethod(fields));
+        classBuilder.methods.add(_buildModelClassToConstraintJsonMethod(fields));
 
         if (tableName != null) {
           classBuilder.methods.addAll([
@@ -644,19 +644,19 @@ class SerializableModelLibraryGenerator {
     );
   }
 
-  Method _buildModelClassToJsonForClientMethod(
+  Method _buildModelClassToConstraintJsonMethod(
     Iterable<SerializableModelFieldDefinition> fields,
   ) {
     return Method(
       (m) {
         m.returns = refer('Map<String,dynamic>');
-        m.name = 'toJsonForClient';
+        m.name = 'toConstraintJson';
         m.annotations.add(refer('override'));
 
         var filteredFields =
             fields.where((field) => field.shouldSerializeField(serverCode));
 
-        m.body = _createToJsonBodyFromFields(filteredFields, 'toJsonForClient');
+        m.body = _createToJsonBodyFromFields(filteredFields, 'toConstraintJson');
       },
     );
   }

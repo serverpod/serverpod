@@ -29,7 +29,7 @@ abstract interface class ConstraintSerialization {
   /// Returns a serialized JSON structure of the model, ready to be sent
   /// through the API. This does not include fields that are marked as
   /// database only.
-  dynamic toJsonForClient();
+  dynamic toConstraintJson();
 }
 
 /// Get the type provided as an generic. Useful for getting a nullable type.

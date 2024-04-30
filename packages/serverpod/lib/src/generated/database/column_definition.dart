@@ -77,7 +77,7 @@ abstract class ColumnDefinition extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       'name': name,
       'columnType': columnType.toJson(),

@@ -73,14 +73,14 @@ abstract class LongImplicitIdFieldCollection extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa != null)
         'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa':
             thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
-                ?.toJson(valueToJson: (v) => v.toJsonForClient()),
+                ?.toJson(valueToJson: (v) => v.toConstraintJson()),
     };
   }
 

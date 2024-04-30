@@ -52,7 +52,7 @@ abstract class ObjectWithSelfParent extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (id != null) 'id': id,
       if (other != null) 'other': other,

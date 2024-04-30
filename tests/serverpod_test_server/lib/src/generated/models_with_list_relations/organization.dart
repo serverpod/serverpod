@@ -80,14 +80,14 @@ abstract class Organization extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (people != null)
-        'people': people?.toJson(valueToJson: (v) => v.toJsonForClient()),
+        'people': people?.toJson(valueToJson: (v) => v.toConstraintJson()),
       if (cityId != null) 'cityId': cityId,
-      if (city != null) 'city': city?.toJsonForClient(),
+      if (city != null) 'city': city?.toConstraintJson(),
     };
   }
 

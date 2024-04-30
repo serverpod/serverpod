@@ -61,10 +61,10 @@ abstract class ChatMessageChunk extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       'channel': channel,
-      'messages': messages.toJson(valueToJson: (v) => v.toJsonForClient()),
+      'messages': messages.toJson(valueToJson: (v) => v.toConstraintJson()),
       'hasOlderMessages': hasOlderMessages,
     };
   }

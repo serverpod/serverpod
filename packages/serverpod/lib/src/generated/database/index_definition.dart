@@ -95,11 +95,11 @@ abstract class IndexDefinition extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       'indexName': indexName,
       if (tableSpace != null) 'tableSpace': tableSpace,
-      'elements': elements.toJson(valueToJson: (v) => v.toJsonForClient()),
+      'elements': elements.toJson(valueToJson: (v) => v.toConstraintJson()),
       'type': type,
       'isUnique': isUnique,
       'isPrimary': isPrimary,

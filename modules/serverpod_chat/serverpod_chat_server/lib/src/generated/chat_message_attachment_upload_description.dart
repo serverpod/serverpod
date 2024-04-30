@@ -51,7 +51,7 @@ abstract class ChatMessageAttachmentUploadDescription
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       'filePath': filePath,
       'uploadDescription': uploadDescription,

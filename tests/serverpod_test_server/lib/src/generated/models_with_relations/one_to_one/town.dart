@@ -69,12 +69,12 @@ abstract class Town extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (mayorId != null) 'mayorId': mayorId,
-      if (mayor != null) 'mayor': mayor?.toJsonForClient(),
+      if (mayor != null) 'mayor': mayor?.toConstraintJson(),
     };
   }
 

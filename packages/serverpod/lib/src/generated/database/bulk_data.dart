@@ -48,9 +48,9 @@ abstract class BulkData extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
-      'tableDefinition': tableDefinition.toJsonForClient(),
+      'tableDefinition': tableDefinition.toConstraintJson(),
       'data': data,
     };
   }

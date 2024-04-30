@@ -79,13 +79,13 @@ abstract class Blocking extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (id != null) 'id': id,
       'blockedId': blockedId,
-      if (blocked != null) 'blocked': blocked?.toJsonForClient(),
+      if (blocked != null) 'blocked': blocked?.toConstraintJson(),
       'blockedById': blockedById,
-      if (blockedBy != null) 'blockedBy': blockedBy?.toJsonForClient(),
+      if (blockedBy != null) 'blockedBy': blockedBy?.toConstraintJson(),
     };
   }
 

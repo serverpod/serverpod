@@ -73,12 +73,13 @@ abstract class Person extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (organizationId != null) 'organizationId': organizationId,
-      if (organization != null) 'organization': organization?.toJsonForClient(),
+      if (organization != null)
+        'organization': organization?.toConstraintJson(),
     };
   }
 

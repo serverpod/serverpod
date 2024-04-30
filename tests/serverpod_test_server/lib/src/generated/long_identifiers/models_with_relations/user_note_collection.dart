@@ -65,13 +65,13 @@ abstract class UserNoteCollection extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (userNotesPropertyName != null)
         'userNotesPropertyName': userNotesPropertyName?.toJson(
-            valueToJson: (v) => v.toJsonForClient()),
+            valueToJson: (v) => v.toConstraintJson()),
     };
   }
 

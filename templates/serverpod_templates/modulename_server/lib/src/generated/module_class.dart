@@ -46,7 +46,7 @@ abstract class ModuleClass extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       'name': name,
       'data': data,

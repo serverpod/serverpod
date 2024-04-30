@@ -61,10 +61,10 @@ abstract class DatabaseMigration extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
-      'actions': actions.toJson(valueToJson: (v) => v.toJsonForClient()),
-      'warnings': warnings.toJson(valueToJson: (v) => v.toJsonForClient()),
+      'actions': actions.toJson(valueToJson: (v) => v.toConstraintJson()),
+      'warnings': warnings.toJson(valueToJson: (v) => v.toConstraintJson()),
       'migrationApiVersion': migrationApiVersion,
     };
   }

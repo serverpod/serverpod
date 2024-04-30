@@ -66,9 +66,9 @@ abstract class BulkQueryResult extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
-      'headers': headers.toJson(valueToJson: (v) => v.toJsonForClient()),
+      'headers': headers.toJson(valueToJson: (v) => v.toConstraintJson()),
       'data': data,
       'numAffectedRows': numAffectedRows,
       'duration': duration.toJson(),

@@ -492,7 +492,7 @@ abstract class Nullability extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toJsonForClient() {
+  Map<String, dynamic> toConstraintJson() {
     return {
       'anInt': anInt,
       if (aNullableInt != null) 'aNullableInt': aNullableInt,
@@ -513,9 +513,9 @@ abstract class Nullability extends _i1.SerializableEntity
         'aNullableDuration': aNullableDuration?.toJson(),
       'aUuid': aUuid.toJson(),
       if (aNullableUuid != null) 'aNullableUuid': aNullableUuid?.toJson(),
-      'anObject': anObject.toJsonForClient(),
+      'anObject': anObject.toConstraintJson(),
       if (aNullableObject != null)
-        'aNullableObject': aNullableObject?.toJsonForClient(),
+        'aNullableObject': aNullableObject?.toConstraintJson(),
       'anIntList': anIntList.toJson(),
       if (aNullableIntList != null)
         'aNullableIntList': aNullableIntList?.toJson(),
@@ -524,15 +524,15 @@ abstract class Nullability extends _i1.SerializableEntity
         'aNullableListWithNullableInts':
             aNullableListWithNullableInts?.toJson(),
       'anObjectList':
-          anObjectList.toJson(valueToJson: (v) => v.toJsonForClient()),
+          anObjectList.toJson(valueToJson: (v) => v.toConstraintJson()),
       if (aNullableObjectList != null)
         'aNullableObjectList': aNullableObjectList?.toJson(
-            valueToJson: (v) => v.toJsonForClient()),
+            valueToJson: (v) => v.toConstraintJson()),
       'aListWithNullableObjects': aListWithNullableObjects.toJson(
-          valueToJson: (v) => v?.toJsonForClient()),
+          valueToJson: (v) => v?.toConstraintJson()),
       if (aNullableListWithNullableObjects != null)
         'aNullableListWithNullableObjects': aNullableListWithNullableObjects
-            ?.toJson(valueToJson: (v) => v?.toJsonForClient()),
+            ?.toJson(valueToJson: (v) => v?.toConstraintJson()),
       'aDateTimeList': aDateTimeList.toJson(valueToJson: (v) => v.toJson()),
       if (aNullableDateTimeList != null)
         'aNullableDateTimeList':
