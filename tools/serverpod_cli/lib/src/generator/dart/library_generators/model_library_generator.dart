@@ -195,7 +195,8 @@ class SerializableModelLibraryGenerator {
 
       // Serialization for database and everything
       if (serverCode) {
-        classBuilder.methods.add(_buildModelClassToConstraintJsonMethod(fields));
+        classBuilder.methods
+            .add(_buildModelClassToConstraintJsonMethod(fields));
 
         if (tableName != null) {
           classBuilder.methods.addAll([
@@ -656,7 +657,8 @@ class SerializableModelLibraryGenerator {
         var filteredFields =
             fields.where((field) => field.shouldSerializeField(serverCode));
 
-        m.body = _createToJsonBodyFromFields(filteredFields, 'toConstraintJson');
+        m.body =
+            _createToJsonBodyFromFields(filteredFields, 'toConstraintJson');
       },
     );
   }

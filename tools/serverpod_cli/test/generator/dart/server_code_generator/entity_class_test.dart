@@ -552,8 +552,8 @@ void main() {
 
           expect(maybeToJson, isNotNull,
               reason: 'Missing declaration for toJson method.');
-          expect(maybeToJson!.toSource(),
-              contains('\'$fieldName\' : _$fieldName'),
+          expect(
+              maybeToJson!.toSource(), contains('\'$fieldName\' : _$fieldName'),
               reason:
                   'Missing use of hidden class variable in setColumn method.');
         });
