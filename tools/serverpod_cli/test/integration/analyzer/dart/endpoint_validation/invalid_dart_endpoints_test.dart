@@ -197,10 +197,11 @@ class ExampleEndpointValid extends Endpoint {
     });
   });
 
-  group('Having multiple files with same endpoint name when analyzed', () {
+  group('Given multiple files with same endpoint name when analyzed', () {
     var collector = CodeGenerationCollector();
     var testDirectory =
         Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+    late List<EndpointDefinition> endpointDefinitions;
 
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
@@ -227,7 +228,7 @@ class ExampleEndpoint extends Endpoint {
 }
 ''');
       analyzer = EndpointsAnalyzer(testDirectory);
-      await analyzer.analyze(collector: collector);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
     test('then validation error for invalid Dart syntax is reported.', () {
@@ -237,6 +238,9 @@ class ExampleEndpoint extends Endpoint {
         contains('Endpoint analysis skipped due to duplicate class names. '
             'Please rename your classes to make them unique. '),
       );
+    });
+    test('then one endpoint definitions is created.', () {
+      expect(endpointDefinitions, hasLength(1));
     });
   });
 }
