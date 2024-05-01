@@ -17,6 +17,7 @@ import '../../../server/session.dart';
 import '../../database_pool_manager.dart';
 import '../../concepts/expressions.dart';
 import '../../concepts/table.dart';
+import '../../query_parameters.dart';
 
 /// A connection to the database. In most cases the [Database] db object in
 /// the [Session] object should be used when connecting with the database.
@@ -348,7 +349,7 @@ class DatabaseConnection {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
-    Object? parameters,
+    QueryParameters? parameters,
   }) async {
     var result = await _query(
       session,
@@ -370,9 +371,19 @@ class DatabaseConnection {
     bool simpleQueryMode = false,
     Object? parameters,
   }) async {
-    assert(parameters == null ||
-        parameters is List<Object?> ||
-        parameters is Map<String, Object?>);
+    assert(
+      parameters == null ||
+          parameters is List<Object?> ||
+          parameters is Map<String, Object?> ||
+          parameters is QueryParameters,
+      'Parameter type should be one of: QueryParameters || List<Object?> || Map<String, Object?>',
+    );
+
+    assert(
+      simpleQueryMode == false ||
+          (simpleQueryMode == true && parameters == null),
+      'simpleQueryMode does not support parameters',
+    );
 
     var postgresTransaction = _castToPostgresTransaction(transaction);
     var timeout =
@@ -386,12 +397,16 @@ class DatabaseConnection {
       var result = await context.execute(
         switch (parameters) {
           (Map<String, Object?> _) => pg.Sql.named(query),
+          (QueryParametersNamed _) => pg.Sql.named(query),
           _ => query,
         },
         timeout: timeout,
         ignoreRows: ignoreRows,
         queryMode: simpleQueryMode ? pg.QueryMode.simple : null,
-        parameters: parameters,
+        parameters: switch (parameters) {
+          (QueryParameters _) => parameters.parameters,
+          _ => parameters,
+        },
       );
 
       _logQuery(

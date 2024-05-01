@@ -6,6 +6,7 @@ import 'package:serverpod/src/database/concepts/order.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/concepts/database_result.dart';
+import 'package:serverpod/src/database/query_parameters.dart';
 
 import '../server/session.dart';
 import 'adapters/postgres/database_connection.dart';
@@ -207,16 +208,28 @@ class Database {
   /// Executes a single SQL query. A [List] of rows represented of another
   /// [List] with columns will be returned.
   ///
-  /// Parameters can be passed via the parameter argument, which must be one of
-  /// * ```List<Object?|TypedValue>```
-  /// * ```Map<String, Object?|TypedValue>```
-  ///
   /// You are responsible to sanitize the query to avoid SQL injection.
+  @Deprecated('use [query] instead.')
   Future<DatabaseResult> unsafeQuery(
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
-    Object? parameters,
+  }) async {
+    return _databaseConnection.query(
+      _session,
+      query,
+      timeoutInSeconds: timeoutInSeconds,
+      transaction: transaction,
+    );
+  }
+
+  /// Executes a single SQL query. A [List] of rows represented of another
+  /// [List] with columns will be returned.
+  Future<DatabaseResult> query(
+    String query, {
+    int? timeoutInSeconds,
+    Transaction? transaction,
+    QueryParameters? parameters,
   }) async {
     return _databaseConnection.query(
       _session,
@@ -230,16 +243,28 @@ class Database {
   /// Executes a single SQL query. Returns the number of rows that were affected
   /// by the query.
   ///
-  /// Parameters can be passed via the parameter argument, which must be one of
-  /// * ```List<Object?|TypedValue>```
-  /// * ```Map<String, Object?|TypedValue>```
-  ///
   /// You are responsible to sanitize the query to avoid SQL injection.
+  @Deprecated('use [execute] instead.')
   Future<int> unsafeExecute(
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
-    Object? parameters,
+  }) async {
+    return _databaseConnection.execute(
+      _session,
+      query,
+      timeoutInSeconds: timeoutInSeconds,
+      transaction: transaction,
+    );
+  }
+
+  /// Executes a single SQL query. Returns the number of rows that were affected
+  /// by the query.
+  Future<int> execute(
+    String query, {
+    int? timeoutInSeconds,
+    Transaction? transaction,
+    QueryParameters? parameters,
   }) async {
     return _databaseConnection.execute(
       _session,
