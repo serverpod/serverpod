@@ -442,7 +442,7 @@ class DatabaseConnection {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
-    Object? parameters,
+    QueryParameters? parameters,
   }) async {
     var result = await _query(
       session,
