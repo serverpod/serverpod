@@ -611,8 +611,7 @@ void main() {
     });
   });
 
-  test(
-      'Given an object with a server only field then that field is not serialized.',
+  test('Given an object with a server only field then field is serialized.',
       () {
     var object = ScopeServerOnlyField(
       nested: ScopeServerOnlyField(
@@ -621,11 +620,12 @@ void main() {
       ),
     );
 
-    var jsonMap = object.toJsonForProtocol();
+    var jsonMap = object.toJson();
 
     expect(jsonMap, {
       'nested': {
         'allScope': {'anInt': 1},
+        'serverOnlyScope': {'anInt': 2},
       },
     });
   });

@@ -178,6 +178,7 @@ class Server {
     stdout.writeln('$name stopped');
   }
 
+  //TODO: encode analyze
   void _handleRequest(HttpRequest request) async {
     serverpod
         .logVerbose('handleRequest: ${request.method} ${request.uri.path}');

@@ -22,13 +22,14 @@ abstract mixin class SerializableEntity {
     return SerializationManager.encode(this);
   }
 }
+
 /// The [ProtocolSerialization] defines a toJsonForProtocol method which makes it
 /// possible to limit what fields are serialized
 abstract interface class ProtocolSerialization {
   /// Returns a serialized JSON structure of the model, ready to be sent
   /// through the API. This does not include fields that are marked as
   /// database only.
-  Map<String, dynamic> toJsonForProtocol();
+  dynamic toJsonForProtocol();
 }
 
 /// Get the type provided as an generic. Useful for getting a nullable type.
@@ -172,6 +173,19 @@ abstract class SerializationManager {
       object,
     );
   }
+
+  /// Encode the provided [object] to a Json-formatted [String].
+  /// If [formatted] is true, the output will be formatted with two spaces
+  /// indentation.
+  /*static String encodeForProtocol(
+    Object? object, {
+    bool formatted = false,
+  }) {
+    if (object is ProtocolSerialization) {
+      return (object as ProtocolSerialization?)?.toJsonForProtocol();
+    }
+    return encode(object, formatted: formatted);
+  }*/
 
   /// Encode the provided [object] to a json-formatted [String], include class
   /// name so that it can be decoded even if th class is unknown.
