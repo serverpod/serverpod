@@ -244,7 +244,9 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-    group('Given multiple files with same endpoint name when analyzed one is valid and is not', () {
+  group(
+      'Given multiple files with same endpoint name when analyzed one is valid and is not',
+      () {
     var collector = CodeGenerationCollector();
     var testDirectory =
         Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
