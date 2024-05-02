@@ -79,7 +79,8 @@ abstract class EndpointClassAnalyzer {
   /// Checks for duplicate class names in a list of [EndpointDefinition] objects.
   /// Returns the first duplicate class name found, or `null` if no duplicates are found.
   static String? checkForDuplicateClassNames(
-      List<EndpointDefinition> endpointDefs) {
+    List<EndpointDefinition> endpointDefs,
+  ) {
     Set<String> classNames = {};
 
     for (var element in endpointDefs) {
