@@ -556,7 +556,7 @@ class MessageCentralAccess {
   /// message will be posted to all servers in the cluster, otherwise it will
   /// only be posted locally on the current server. Returns true if the message
   /// was successfully posted.
-  Future<bool> postMessage(
+  Future<int> postMessage(
     String channelName,
     SerializableEntity message, {
     bool global = false,
