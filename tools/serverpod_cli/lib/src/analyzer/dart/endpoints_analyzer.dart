@@ -61,20 +61,10 @@ class EndpointsAnalyzer {
         rootPath,
         validationErrors,
       );
-      String? duplicateClassName =
-          EndpointClassAnalyzer.checkForDuplicateClassNames(
-              endpointDefs + endpointsToBeAdded);
-      if (duplicateClassName != null) {
-        collector.addError(
-          SourceSpanSeverityException(
-            'Endpoint analysis skipped due to duplicate class names. '
-            'Please rename your classes to make them unique. '
-            'className: $duplicateClassName',
-            null,
-            severity: SourceSpanSeverity.error,
-          ),
-        );
-
+      var errors = EndpointClassAnalyzer.validate(
+          null, endpointDefs + endpointsToBeAdded);
+      if (errors.isNotEmpty) {
+        collector.addErrors(errors);
         continue;
       }
       endpointDefs.addAll(endpointsToBeAdded);
@@ -171,7 +161,7 @@ class EndpointsAnalyzer {
 
     var validationErrors = <String, List<SourceSpanSeverityException>>{};
     for (var classElement in endpointClasses) {
-      var errors = EndpointClassAnalyzer.validate(classElement);
+      var errors = EndpointClassAnalyzer.validate(classElement, []);
       if (errors.isNotEmpty) {
         validationErrors[EndpointClassAnalyzer.elementNamespace(
           classElement,

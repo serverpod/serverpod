@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
@@ -40,11 +41,25 @@ abstract class EndpointClassAnalyzer {
     return true;
   }
 
-  /// Validates the [ClassElement] and returns a list of errors.
+  /// Validates the [ClassElement] and [endpointDefs] and returns a list of errors.
   static List<SourceSpanSeverityException> validate(
-    ClassElement classElement,
-  ) {
-    return [];
+      ClassElement? classElement, List<EndpointDefinition> endpointDefs) {
+    List<SourceSpanSeverityException> errors = [];
+
+    String? duplicateClassName = _checkForDuplicateClassNames(endpointDefs);
+    if (duplicateClassName != null) {
+      errors.add(
+        SourceSpanSeverityException(
+          'Endpoint analysis skipped due to duplicate class names. '
+          'Please rename your classes to make them unique. '
+          'className: $duplicateClassName',
+          null,
+          severity: SourceSpanSeverity.error,
+        ),
+      );
+    }
+
+    return errors;
   }
 
   static String _formatEndpointName(String className) {
@@ -78,7 +93,7 @@ abstract class EndpointClassAnalyzer {
 
   /// Checks for duplicate class names in a list of [EndpointDefinition] objects.
   /// Returns the first duplicate class name found, or `null` if no duplicates are found.
-  static String? checkForDuplicateClassNames(
+  static String? _checkForDuplicateClassNames(
     List<EndpointDefinition> endpointDefs,
   ) {
     Set<String> classNames = {};
