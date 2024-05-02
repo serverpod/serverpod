@@ -52,8 +52,9 @@ class EndpointsAnalyzer {
         continue;
       }
 
-      var validationErrors = _validateLibrary(library, filePath);
+      var validationErrors = _validateLibrary(library, filePath, endpointDefs);
       collector.addErrors(validationErrors.values.expand((e) => e).toList());
+
       List<EndpointDefinition> endpointsToBeAdded = _parseLibrary(
         library,
         collector,
@@ -61,12 +62,7 @@ class EndpointsAnalyzer {
         rootPath,
         validationErrors,
       );
-      var errors = EndpointClassAnalyzer.validate(
-          null, endpointDefs + endpointsToBeAdded);
-      if (errors.isNotEmpty) {
-        collector.addErrors(errors);
-        continue;
-      }
+
       endpointDefs.addAll(endpointsToBeAdded);
     }
 
@@ -153,6 +149,7 @@ class EndpointsAnalyzer {
   Map<String, List<SourceSpanSeverityException>> _validateLibrary(
     ResolvedLibraryResult library,
     String filePath,
+    List<EndpointDefinition> endpointDefs,
   ) {
     var topElements = library.element.topLevelElements;
     var classElements = topElements.whereType<ClassElement>();
@@ -161,7 +158,7 @@ class EndpointsAnalyzer {
 
     var validationErrors = <String, List<SourceSpanSeverityException>>{};
     for (var classElement in endpointClasses) {
-      var errors = EndpointClassAnalyzer.validate(classElement, []);
+      var errors = EndpointClassAnalyzer.validate(classElement, endpointDefs);
       if (errors.isNotEmpty) {
         validationErrors[EndpointClassAnalyzer.elementNamespace(
           classElement,

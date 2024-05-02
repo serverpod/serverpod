@@ -41,12 +41,15 @@ abstract class EndpointClassAnalyzer {
     return true;
   }
 
-  /// Validates the [ClassElement] and [endpointDefs] and returns a list of errors.
+  /// Validates the [ClassElement] and returns a list of errors.
   static List<SourceSpanSeverityException> validate(
-      ClassElement? classElement, List<EndpointDefinition> endpointDefs) {
+    ClassElement? classElement,
+    List<EndpointDefinition> endpointDefs,
+  ) {
     List<SourceSpanSeverityException> errors = [];
 
-    String? duplicateClassName = _checkForDuplicateClassNames(endpointDefs);
+    String? duplicateClassName =
+        _checkForDuplicateClassNames(classElement, endpointDefs);
     if (duplicateClassName != null) {
       errors.add(
         SourceSpanSeverityException(
@@ -94,10 +97,14 @@ abstract class EndpointClassAnalyzer {
   /// Checks for duplicate class names in a list of [EndpointDefinition] objects.
   /// Returns the first duplicate class name found, or `null` if no duplicates are found.
   static String? _checkForDuplicateClassNames(
+    ClassElement? classElement,
     List<EndpointDefinition> endpointDefs,
   ) {
     Set<String> classNames = {};
-
+    //Adding the current class to be checked
+    if (classElement != null) {
+      classNames.add(classElement.name);
+    }
     for (var element in endpointDefs) {
       // Assuming 'className' is a property of elements in endpointDefs
       if (classNames.contains(element.className)) {
