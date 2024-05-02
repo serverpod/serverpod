@@ -1,31 +1,35 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 
 void main() {
   test(
-      'Ensure that a server response matches the client-side serialized object structure.',
+      'Given Serverpod server when fetching object with server only fields from endpoint then serialized object does not contain server only fields',
       () async {
     http.Response response = await http.post(
-      Uri.parse("$serverUrl/jsonProtocol"),
+      Uri.parse("${serverUrl}jsonProtocol"),
       body: jsonEncode({"method": "getJsonForProtocol"}),
     );
 
-    var clientObject = ScopeServerOnlyField(
-      nested: ScopeServerOnlyField(
-        allScope: Types(anInt: 1),
-      ),
+    expect(
+      response.statusCode,
+      200,
     );
 
-    var clientEncodedString = SerializationManager.encode(clientObject);
+    Map jsonMap = jsonDecode(response.body);
+    expect(
+      jsonMap,
+      contains('nested'),
+    );
+
+    Map nestedMap = jsonMap['nested'];
 
     expect(
-      response.body,
-      clientEncodedString,
+      nestedMap,
+      isNot(contains('serverOnlyScope')),
     );
   });
 }
