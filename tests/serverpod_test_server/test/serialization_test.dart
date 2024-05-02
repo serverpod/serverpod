@@ -221,4 +221,28 @@ void main() {
 
     expect(typesMap.anObjectKey, {});
   });
+
+  /*test(
+      'Given an object with a server-only field, when serializing, that field should not be included in the serialization for client-side.',
+      () {
+    var serverObject = server.ScopeServerOnlyField(
+      nested: server.ScopeServerOnlyField(
+        allScope: server.Types(anInt: 1),
+        serverOnlyScope: server.Types(anInt: 2),
+      ),
+    );
+    var serverEncodedString = SerializationManager.encode(serverObject);
+
+    var clientObject = ScopeServerOnlyField(
+      nested: ScopeServerOnlyField(
+        allScope: Types(anInt: 1),
+      ),
+    );
+    var clientEncodedString = SerializationManager.encode(clientObject);
+
+    expect(
+      serverEncodedString,
+      clientEncodedString,
+    );
+  });*/
 }

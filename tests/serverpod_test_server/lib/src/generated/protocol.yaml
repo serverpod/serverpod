@@ -157,6 +157,8 @@ fieldScopes:
   - retrieveObject:
 futureCalls:
   - makeFutureCall:
+jsonProtocol:
+  - getJsonForProtocol:
 listParameters:
   - returnIntList:
   - returnIntListList:
