@@ -11,7 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class MaxFieldName extends _i1.TableRow
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   MaxFieldName._({
     int? id,
     required this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
@@ -56,7 +56,7 @@ abstract class MaxFieldName extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo':

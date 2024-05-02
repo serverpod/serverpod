@@ -13,7 +13,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Log entry for a session.
 abstract class SessionLogEntry extends _i1.TableRow
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   SessionLogEntry._({
     int? id,
     required this.serverId,
@@ -155,7 +155,7 @@ abstract class SessionLogEntry extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'serverId': serverId,

@@ -13,7 +13,7 @@ import 'protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class SimpleDataList extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   SimpleDataList._({required this.rows});
 
   factory SimpleDataList({required List<_i2.SimpleData> rows}) =
@@ -35,8 +35,8 @@ abstract class SimpleDataList extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
-    return {'rows': rows.toJson(valueToJson: (v) => v.toConstraintJson())};
+  Map<String, dynamic> toJsonForProtocol() {
+    return {'rows': rows.toJson(valueToJson: (v) => v.toJsonForProtocol())};
   }
 }
 

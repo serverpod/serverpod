@@ -11,7 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class NotServerOnlyClass extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   NotServerOnlyClass._({required this.foo});
 
   factory NotServerOnlyClass({required String foo}) = _NotServerOnlyClassImpl;
@@ -29,7 +29,7 @@ abstract class NotServerOnlyClass extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {'foo': foo};
   }
 }

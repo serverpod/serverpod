@@ -11,8 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class Arena extends _i1.TableRow
-    implements _i1.ConstraintSerialization {
+abstract class Arena extends _i1.TableRow implements _i1.ProtocolSerialization {
   Arena._({
     int? id,
     required this.name,
@@ -62,11 +61,11 @@ abstract class Arena extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (team != null) 'team': team?.toConstraintJson(),
+      if (team != null) 'team': team?.toJsonForProtocol(),
     };
   }
 

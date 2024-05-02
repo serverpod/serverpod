@@ -14,7 +14,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// The definition of a (desired) table in the database.
 abstract class TableDefinition extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   TableDefinition._({
     required this.name,
     this.dartName,
@@ -117,17 +117,17 @@ abstract class TableDefinition extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'name': name,
       if (dartName != null) 'dartName': dartName,
       if (module != null) 'module': module,
       'schema': schema,
       if (tableSpace != null) 'tableSpace': tableSpace,
-      'columns': columns.toJson(valueToJson: (v) => v.toConstraintJson()),
+      'columns': columns.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'foreignKeys':
-          foreignKeys.toJson(valueToJson: (v) => v.toConstraintJson()),
-      'indexes': indexes.toJson(valueToJson: (v) => v.toConstraintJson()),
+          foreignKeys.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'indexes': indexes.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       if (managed != null) 'managed': managed,
     };
   }

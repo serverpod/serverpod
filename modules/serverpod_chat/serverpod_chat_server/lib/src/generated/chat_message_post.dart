@@ -14,7 +14,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A chat message post request.
 abstract class ChatMessagePost extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   ChatMessagePost._({
     required this.channel,
     required this.message,
@@ -71,14 +71,14 @@ abstract class ChatMessagePost extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'channel': channel,
       'message': message,
       'clientMessageId': clientMessageId,
       if (attachments != null)
         'attachments':
-            attachments?.toJson(valueToJson: (v) => v.toConstraintJson()),
+            attachments?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 }

@@ -12,7 +12,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Message to request a new chunk of messages from the server.
 abstract class ChatRequestMessageChunk extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   ChatRequestMessageChunk._({
     required this.channel,
     required this.lastMessageId,
@@ -50,7 +50,7 @@ abstract class ChatRequestMessageChunk extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'channel': channel,
       'lastMessageId': lastMessageId,

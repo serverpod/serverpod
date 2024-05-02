@@ -13,7 +13,7 @@ import 'protocol.dart' as _i2;
 
 /// Log settings for the server.
 abstract class LogSettings extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   LogSettings._({
     required this.logLevel,
     required this.logAllSessions,
@@ -116,7 +116,7 @@ abstract class LogSettings extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'logLevel': logLevel.toJson(),
       'logAllSessions': logAllSessions,

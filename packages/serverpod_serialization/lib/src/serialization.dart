@@ -22,14 +22,13 @@ abstract mixin class SerializableEntity {
     return SerializationManager.encode(this);
   }
 }
-
-/// The [ConstraintSerialization] defines a toJson method which makes it
+/// The [ProtocolSerialization] defines a toJsonForProtocol method which makes it
 /// possible to limit what fields are serialized
-abstract interface class ConstraintSerialization {
+abstract interface class ProtocolSerialization {
   /// Returns a serialized JSON structure of the model, ready to be sent
   /// through the API. This does not include fields that are marked as
   /// database only.
-  dynamic toConstraintJson();
+  Map<String, dynamic> toJsonForProtocol();
 }
 
 /// Get the type provided as an generic. Useful for getting a nullable type.

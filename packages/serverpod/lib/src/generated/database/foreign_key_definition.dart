@@ -14,7 +14,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Represents a foreign key.
 abstract class ForeignKeyDefinition extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   ForeignKeyDefinition._({
     required this.constraintName,
     required this.columns,
@@ -113,7 +113,7 @@ abstract class ForeignKeyDefinition extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'constraintName': constraintName,
       'columns': columns.toJson(),

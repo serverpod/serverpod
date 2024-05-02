@@ -12,7 +12,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 abstract class RelatedUniqueData extends _i1.TableRow
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   RelatedUniqueData._({
     int? id,
     required this.uniqueDataId,
@@ -69,11 +69,11 @@ abstract class RelatedUniqueData extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'uniqueDataId': uniqueDataId,
-      if (uniqueData != null) 'uniqueData': uniqueData?.toConstraintJson(),
+      if (uniqueData != null) 'uniqueData': uniqueData?.toJsonForProtocol(),
       'number': number,
     };
   }

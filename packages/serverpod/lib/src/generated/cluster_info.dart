@@ -14,7 +14,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Information about a cluster of servers.
 abstract class ClusterInfo extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   ClusterInfo._({required this.servers});
 
   factory ClusterInfo({required List<_i2.ClusterServerInfo> servers}) =
@@ -38,9 +38,9 @@ abstract class ClusterInfo extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'servers': servers.toJson(valueToJson: (v) => v.toConstraintJson())
+      'servers': servers.toJson(valueToJson: (v) => v.toJsonForProtocol())
     };
   }
 }

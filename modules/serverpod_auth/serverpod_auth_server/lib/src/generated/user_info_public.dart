@@ -13,7 +13,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Information about a user that can safely be publically accessible.
 abstract class UserInfoPublic extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   UserInfoPublic._({
     this.id,
     required this.userName,
@@ -74,7 +74,7 @@ abstract class UserInfoPublic extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'userName': userName,

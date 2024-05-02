@@ -12,7 +12,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Information about a server method.
 abstract class MethodInfo extends _i1.TableRow
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   MethodInfo._({
     int? id,
     required this.endpoint,
@@ -61,7 +61,7 @@ abstract class MethodInfo extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'endpoint': endpoint,

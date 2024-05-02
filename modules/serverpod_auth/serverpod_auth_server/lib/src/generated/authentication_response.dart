@@ -13,7 +13,7 @@ import 'protocol.dart' as _i2;
 
 /// Provides a response to an authentication attempt.
 abstract class AuthenticationResponse extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   AuthenticationResponse._({
     required this.success,
     this.key,
@@ -83,12 +83,12 @@ abstract class AuthenticationResponse extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'success': success,
       if (key != null) 'key': key,
       if (keyId != null) 'keyId': keyId,
-      if (userInfo != null) 'userInfo': userInfo?.toConstraintJson(),
+      if (userInfo != null) 'userInfo': userInfo?.toJsonForProtocol(),
       if (failReason != null) 'failReason': failReason?.toJson(),
     };
   }

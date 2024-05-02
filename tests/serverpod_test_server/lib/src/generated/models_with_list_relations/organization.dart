@@ -13,7 +13,7 @@ import '../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class Organization extends _i1.TableRow
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   Organization._({
     int? id,
     required this.name,
@@ -80,14 +80,14 @@ abstract class Organization extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (people != null)
-        'people': people?.toJson(valueToJson: (v) => v.toConstraintJson()),
+        'people': people?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       if (cityId != null) 'cityId': cityId,
-      if (city != null) 'city': city?.toConstraintJson(),
+      if (city != null) 'city': city?.toJsonForProtocol(),
     };
   }
 

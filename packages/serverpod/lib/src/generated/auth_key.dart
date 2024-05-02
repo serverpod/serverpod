@@ -13,7 +13,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Provides a method of access for a user to authenticate with the server.
 abstract class AuthKey extends _i1.TableRow
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   AuthKey._({
     int? id,
     required this.userId,
@@ -89,7 +89,7 @@ abstract class AuthKey extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'userId': userId,

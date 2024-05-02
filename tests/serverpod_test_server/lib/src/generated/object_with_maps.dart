@@ -14,7 +14,7 @@ import 'dart:typed_data' as _i3;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class ObjectWithMaps extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   ObjectWithMaps._({
     required this.dataMap,
     required this.intMap,
@@ -200,9 +200,9 @@ abstract class ObjectWithMaps extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'dataMap': dataMap.toJson(valueToJson: (v) => v.toConstraintJson()),
+      'dataMap': dataMap.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'intMap': intMap.toJson(),
       'stringMap': stringMap.toJson(),
       'dateTimeMap': dateTimeMap.toJson(valueToJson: (v) => v.toJson()),
@@ -210,7 +210,7 @@ abstract class ObjectWithMaps extends _i1.SerializableEntity
       'durationMap': durationMap.toJson(valueToJson: (v) => v.toJson()),
       'uuidMap': uuidMap.toJson(valueToJson: (v) => v.toJson()),
       'nullableDataMap':
-          nullableDataMap.toJson(valueToJson: (v) => v?.toConstraintJson()),
+          nullableDataMap.toJson(valueToJson: (v) => v?.toJsonForProtocol()),
       'nullableIntMap': nullableIntMap.toJson(),
       'nullableStringMap': nullableStringMap.toJson(),
       'nullableDateTimeMap':

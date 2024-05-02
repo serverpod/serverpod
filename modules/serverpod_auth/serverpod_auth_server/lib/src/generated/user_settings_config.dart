@@ -12,7 +12,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// User settings.
 abstract class UserSettingsConfig extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   UserSettingsConfig._({
     required this.canSeeUserName,
     required this.canSeeFullName,
@@ -73,7 +73,7 @@ abstract class UserSettingsConfig extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'canSeeUserName': canSeeUserName,
       'canSeeFullName': canSeeFullName,

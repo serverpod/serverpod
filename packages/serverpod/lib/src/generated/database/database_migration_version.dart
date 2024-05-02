@@ -13,7 +13,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Represents a version of a database migration.
 abstract class DatabaseMigrationVersion extends _i1.TableRow
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   DatabaseMigrationVersion._({
     int? id,
     required this.module,
@@ -73,7 +73,7 @@ abstract class DatabaseMigrationVersion extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'module': module,

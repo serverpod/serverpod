@@ -14,7 +14,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A list of log entries, used to return logging data.
 abstract class LogResult extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   LogResult._({required this.entries});
 
   factory LogResult({required List<_i2.LogEntry> entries}) = _LogResultImpl;
@@ -36,9 +36,9 @@ abstract class LogResult extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'entries': entries.toJson(valueToJson: (v) => v.toConstraintJson())
+      'entries': entries.toJson(valueToJson: (v) => v.toJsonForProtocol())
     };
   }
 }

@@ -15,7 +15,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 /// Defines the current state of the database, including information about
 /// installed modules and migrations.
 abstract class DatabaseDefinitions extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   DatabaseDefinitions._({
     required this.target,
     required this.live,
@@ -81,14 +81,14 @@ abstract class DatabaseDefinitions extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'target': target.toJson(valueToJson: (v) => v.toConstraintJson()),
-      'live': live.toJson(valueToJson: (v) => v.toConstraintJson()),
+      'target': target.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'live': live.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'installedMigrations':
-          installedMigrations.toJson(valueToJson: (v) => v.toConstraintJson()),
+          installedMigrations.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'latestAvailableMigrations': latestAvailableMigrations.toJson(
-          valueToJson: (v) => v.toConstraintJson()),
+          valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 }

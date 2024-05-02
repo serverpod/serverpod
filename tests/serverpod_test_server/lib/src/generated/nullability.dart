@@ -14,7 +14,7 @@ import 'protocol.dart' as _i3;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class Nullability extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   Nullability._({
     required this.anInt,
     this.aNullableInt,
@@ -492,7 +492,7 @@ abstract class Nullability extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'anInt': anInt,
       if (aNullableInt != null) 'aNullableInt': aNullableInt,
@@ -513,9 +513,9 @@ abstract class Nullability extends _i1.SerializableEntity
         'aNullableDuration': aNullableDuration?.toJson(),
       'aUuid': aUuid.toJson(),
       if (aNullableUuid != null) 'aNullableUuid': aNullableUuid?.toJson(),
-      'anObject': anObject.toConstraintJson(),
+      'anObject': anObject.toJsonForProtocol(),
       if (aNullableObject != null)
-        'aNullableObject': aNullableObject?.toConstraintJson(),
+        'aNullableObject': aNullableObject?.toJsonForProtocol(),
       'anIntList': anIntList.toJson(),
       if (aNullableIntList != null)
         'aNullableIntList': aNullableIntList?.toJson(),
@@ -524,15 +524,15 @@ abstract class Nullability extends _i1.SerializableEntity
         'aNullableListWithNullableInts':
             aNullableListWithNullableInts?.toJson(),
       'anObjectList':
-          anObjectList.toJson(valueToJson: (v) => v.toConstraintJson()),
+          anObjectList.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       if (aNullableObjectList != null)
         'aNullableObjectList': aNullableObjectList?.toJson(
-            valueToJson: (v) => v.toConstraintJson()),
+            valueToJson: (v) => v.toJsonForProtocol()),
       'aListWithNullableObjects': aListWithNullableObjects.toJson(
-          valueToJson: (v) => v?.toConstraintJson()),
+          valueToJson: (v) => v?.toJsonForProtocol()),
       if (aNullableListWithNullableObjects != null)
         'aNullableListWithNullableObjects': aNullableListWithNullableObjects
-            ?.toJson(valueToJson: (v) => v?.toConstraintJson()),
+            ?.toJson(valueToJson: (v) => v?.toJsonForProtocol()),
       'aDateTimeList': aDateTimeList.toJson(valueToJson: (v) => v.toJson()),
       if (aNullableDateTimeList != null)
         'aNullableDateTimeList':

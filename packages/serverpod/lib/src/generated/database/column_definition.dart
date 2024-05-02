@@ -13,7 +13,7 @@ import '../protocol.dart' as _i2;
 
 /// The definition of a (desired) column in the database.
 abstract class ColumnDefinition extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   ColumnDefinition._({
     required this.name,
     required this.columnType,
@@ -77,7 +77,7 @@ abstract class ColumnDefinition extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'name': name,
       'columnType': columnType.toJson(),

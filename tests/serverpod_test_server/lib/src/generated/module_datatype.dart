@@ -14,7 +14,7 @@ import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class ModuleDatatype extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   ModuleDatatype._({
     required this.model,
     required this.list,
@@ -62,11 +62,11 @@ abstract class ModuleDatatype extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'model': model.toConstraintJson(),
-      'list': list.toJson(valueToJson: (v) => v.toConstraintJson()),
-      'map': map.toJson(valueToJson: (v) => v.toConstraintJson()),
+      'model': model.toJsonForProtocol(),
+      'list': list.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'map': map.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 }

@@ -12,7 +12,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for a Google refresh token.
 abstract class GoogleRefreshToken extends _i1.TableRow
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   GoogleRefreshToken._({
     int? id,
     required this.userId,
@@ -61,7 +61,7 @@ abstract class GoogleRefreshToken extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'userId': userId,

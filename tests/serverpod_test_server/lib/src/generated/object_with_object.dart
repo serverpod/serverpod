@@ -13,7 +13,7 @@ import 'protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class ObjectWithObject extends _i1.TableRow
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   ObjectWithObject._({
     int? id,
     required this.data,
@@ -110,21 +110,21 @@ abstract class ObjectWithObject extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
-      'data': data.toConstraintJson(),
+      'data': data.toJsonForProtocol(),
       if (nullableData != null)
-        'nullableData': nullableData?.toConstraintJson(),
-      'dataList': dataList.toJson(valueToJson: (v) => v.toConstraintJson()),
+        'nullableData': nullableData?.toJsonForProtocol(),
+      'dataList': dataList.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       if (nullableDataList != null)
         'nullableDataList':
-            nullableDataList?.toJson(valueToJson: (v) => v.toConstraintJson()),
+            nullableDataList?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'listWithNullableData': listWithNullableData.toJson(
-          valueToJson: (v) => v?.toConstraintJson()),
+          valueToJson: (v) => v?.toJsonForProtocol()),
       if (nullableListWithNullableData != null)
         'nullableListWithNullableData': nullableListWithNullableData?.toJson(
-            valueToJson: (v) => v?.toConstraintJson()),
+            valueToJson: (v) => v?.toJsonForProtocol()),
     };
   }
 

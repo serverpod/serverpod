@@ -11,8 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../protocol.dart' as _i2;
 
-abstract class Post extends _i1.TableRow
-    implements _i1.ConstraintSerialization {
+abstract class Post extends _i1.TableRow implements _i1.ProtocolSerialization {
   Post._({
     int? id,
     required this.content,
@@ -79,13 +78,13 @@ abstract class Post extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'content': content,
-      if (previous != null) 'previous': previous?.toConstraintJson(),
+      if (previous != null) 'previous': previous?.toJsonForProtocol(),
       if (nextId != null) 'nextId': nextId,
-      if (next != null) 'next': next?.toConstraintJson(),
+      if (next != null) 'next': next?.toJsonForProtocol(),
     };
   }
 

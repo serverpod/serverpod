@@ -14,7 +14,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Compounded information about a session log.
 abstract class SessionLogInfo extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   SessionLogInfo._({
     required this.sessionLogEntry,
     required this.queries,
@@ -74,12 +74,12 @@ abstract class SessionLogInfo extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'sessionLogEntry': sessionLogEntry.toConstraintJson(),
-      'queries': queries.toJson(valueToJson: (v) => v.toConstraintJson()),
-      'logs': logs.toJson(valueToJson: (v) => v.toConstraintJson()),
-      'messages': messages.toJson(valueToJson: (v) => v.toConstraintJson()),
+      'sessionLogEntry': sessionLogEntry.toJsonForProtocol(),
+      'queries': queries.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'logs': logs.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'messages': messages.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 }

@@ -12,7 +12,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A log entry for a database query.
 abstract class QueryLogEntry extends _i1.TableRow
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   QueryLogEntry._({
     int? id,
     required this.serverId,
@@ -127,7 +127,7 @@ abstract class QueryLogEntry extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'serverId': serverId,

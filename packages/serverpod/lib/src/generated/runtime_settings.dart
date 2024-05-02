@@ -14,7 +14,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Runtime settings of the server.
 abstract class RuntimeSettings extends _i1.TableRow
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   RuntimeSettings._({
     int? id,
     required this.logSettings,
@@ -84,12 +84,12 @@ abstract class RuntimeSettings extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
-      'logSettings': logSettings.toConstraintJson(),
-      'logSettingsOverrides':
-          logSettingsOverrides.toJson(valueToJson: (v) => v.toConstraintJson()),
+      'logSettings': logSettings.toJsonForProtocol(),
+      'logSettingsOverrides': logSettingsOverrides.toJson(
+          valueToJson: (v) => v.toJsonForProtocol()),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     };

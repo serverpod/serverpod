@@ -13,7 +13,7 @@ import 'protocol.dart' as _i2;
 
 /// High level information about the caches.
 abstract class CachesInfo extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   CachesInfo._({
     required this.local,
     required this.localPrio,
@@ -61,11 +61,11 @@ abstract class CachesInfo extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'local': local.toConstraintJson(),
-      'localPrio': localPrio.toConstraintJson(),
-      'global': global.toConstraintJson(),
+      'local': local.toJsonForProtocol(),
+      'localPrio': localPrio.toJsonForProtocol(),
+      'global': global.toJsonForProtocol(),
     };
   }
 }

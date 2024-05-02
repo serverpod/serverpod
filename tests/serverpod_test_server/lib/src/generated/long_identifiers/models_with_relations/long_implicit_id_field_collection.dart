@@ -13,7 +13,7 @@ import '../../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class LongImplicitIdFieldCollection extends _i1.TableRow
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   LongImplicitIdFieldCollection._({
     int? id,
     required this.name,
@@ -73,14 +73,14 @@ abstract class LongImplicitIdFieldCollection extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa != null)
         'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa':
             thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
-                ?.toJson(valueToJson: (v) => v.toConstraintJson()),
+                ?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 

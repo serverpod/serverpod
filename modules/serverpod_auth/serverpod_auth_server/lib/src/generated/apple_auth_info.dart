@@ -12,7 +12,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Authentication info for Sign in with Apple.
 abstract class AppleAuthInfo extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   AppleAuthInfo._({
     required this.userIdentifier,
     this.email,
@@ -81,7 +81,7 @@ abstract class AppleAuthInfo extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'userIdentifier': userIdentifier,
       if (email != null) 'email': email,

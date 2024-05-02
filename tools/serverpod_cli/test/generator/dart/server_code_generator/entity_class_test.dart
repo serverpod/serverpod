@@ -68,14 +68,14 @@ void main() {
             reason: 'Missing extends clause for SerializableEntity.');
       });
 
-      test('implements ConstraintSerialization.', () {
+      test('implements ProtocolSerialization.', () {
         expect(
             CompilationUnitHelpers.hasImplementsClause(
               maybeClassNamedExample!,
-              name: 'ConstraintSerialization',
+              name: 'ProtocolSerialization',
             ),
             isTrue,
-            reason: 'Missing implements clause for ConstraintSerialization');
+            reason: 'Missing implements clause for ProtocolSerialization');
       });
 
       test('has a fromJson factory.', () {
@@ -98,14 +98,14 @@ void main() {
             reason: 'Missing declaration for toJson method');
       });
 
-      test('has a toConstraintJson method.', () {
+      test('has a toJsonForProtocol method.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
               maybeClassNamedExample!,
-              name: 'toConstraintJson',
+              name: 'toJsonForProtocol',
             ),
             isTrue,
-            reason: 'Missing declaration for toConstraintJson method.');
+            reason: 'Missing declaration for toJsonForProtocol method.');
       });
     }, skip: maybeClassNamedExample == null);
   });
@@ -148,14 +148,14 @@ void main() {
             reason: 'Missing extends clause for TableRow.');
       });
 
-      test('implements ConstraintSerialization', () {
+      test('implements ProtocolSerialization', () {
         expect(
             CompilationUnitHelpers.hasImplementsClause(
               maybeClassNamedExample!,
-              name: 'ConstraintSerialization',
+              name: 'ProtocolSerialization',
             ),
             isTrue,
-            reason: 'Missing implements clause for ConstraintSerialization.');
+            reason: 'Missing implements clause for ProtocolSerialization.');
       });
 
       group('has a constructor', () {

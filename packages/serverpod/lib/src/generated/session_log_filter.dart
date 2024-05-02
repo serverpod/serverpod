@@ -12,7 +12,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// The log filter is used when searching for specific log entries.
 abstract class SessionLogFilter extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   SessionLogFilter._({
     this.endpoint,
     this.method,
@@ -89,7 +89,7 @@ abstract class SessionLogFilter extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (endpoint != null) 'endpoint': endpoint,
       if (method != null) 'method': method,

@@ -12,7 +12,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
 abstract class DatabaseMigrationAction extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   DatabaseMigrationAction._({
     required this.type,
     this.deleteTable,
@@ -69,12 +69,12 @@ abstract class DatabaseMigrationAction extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'type': type.toJson(),
       if (deleteTable != null) 'deleteTable': deleteTable,
-      if (alterTable != null) 'alterTable': alterTable?.toConstraintJson(),
-      if (createTable != null) 'createTable': createTable?.toConstraintJson(),
+      if (alterTable != null) 'alterTable': alterTable?.toJsonForProtocol(),
+      if (createTable != null) 'createTable': createTable?.toJsonForProtocol(),
     };
   }
 }

@@ -13,7 +13,7 @@ import '../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class DatabaseMigration extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   DatabaseMigration._({
     required this.actions,
     required this.warnings,
@@ -61,10 +61,10 @@ abstract class DatabaseMigration extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'actions': actions.toJson(valueToJson: (v) => v.toConstraintJson()),
-      'warnings': warnings.toJson(valueToJson: (v) => v.toConstraintJson()),
+      'actions': actions.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'warnings': warnings.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'migrationApiVersion': migrationApiVersion,
     };
   }

@@ -157,13 +157,13 @@ class SerializableModelLibraryGenerator {
         classBuilder.methods.add(_buildModelClassTableGetter());
 
         classBuilder.implements
-            .add(refer('ConstraintSerialization', serverpodUrl(serverCode)));
+            .add(refer('ProtocolSerialization', serverpodUrl(serverCode)));
       } else {
         classBuilder.extend =
             refer('SerializableEntity', serverpodUrl(serverCode));
         if (serverCode) {
           classBuilder.implements
-              .add(refer('ConstraintSerialization', serverpodUrl(serverCode)));
+              .add(refer('ProtocolSerialization', serverpodUrl(serverCode)));
         }
       }
 
@@ -196,7 +196,7 @@ class SerializableModelLibraryGenerator {
       // Serialization for database and everything
       if (serverCode) {
         classBuilder.methods
-            .add(_buildModelClassToConstraintJsonMethod(fields));
+            .add(_buildModelClassToJsonForProtocolMethod(fields));
 
         if (tableName != null) {
           classBuilder.methods.addAll([
@@ -645,20 +645,20 @@ class SerializableModelLibraryGenerator {
     );
   }
 
-  Method _buildModelClassToConstraintJsonMethod(
+  Method _buildModelClassToJsonForProtocolMethod(
     Iterable<SerializableModelFieldDefinition> fields,
   ) {
     return Method(
       (m) {
         m.returns = refer('Map<String,dynamic>');
-        m.name = 'toConstraintJson';
+        m.name = 'toJsonForProtocol';
         m.annotations.add(refer('override'));
 
         var filteredFields =
             fields.where((field) => field.shouldSerializeField(serverCode));
 
         m.body =
-            _createToJsonBodyFromFields(filteredFields, 'toConstraintJson');
+            _createToJsonBodyFromFields(filteredFields, 'toJsonForProtocol');
       },
     );
   }

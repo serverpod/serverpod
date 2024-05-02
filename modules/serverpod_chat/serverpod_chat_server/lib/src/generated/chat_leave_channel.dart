@@ -12,7 +12,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Indicates that a user wants to leave a channel.
 abstract class ChatLeaveChannel extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   ChatLeaveChannel._({required this.channel});
 
   factory ChatLeaveChannel({required String channel}) = _ChatLeaveChannelImpl;
@@ -31,7 +31,7 @@ abstract class ChatLeaveChannel extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {'channel': channel};
   }
 }

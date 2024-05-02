@@ -12,7 +12,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
 abstract class BulkData extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   BulkData._({
     required this.tableDefinition,
     required this.data,
@@ -48,9 +48,9 @@ abstract class BulkData extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'tableDefinition': tableDefinition.toConstraintJson(),
+      'tableDefinition': tableDefinition.toJsonForProtocol(),
       'data': data,
     };
   }

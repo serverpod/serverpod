@@ -11,8 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class Town extends _i1.TableRow
-    implements _i1.ConstraintSerialization {
+abstract class Town extends _i1.TableRow implements _i1.ProtocolSerialization {
   Town._({
     int? id,
     required this.name,
@@ -69,12 +68,12 @@ abstract class Town extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (mayorId != null) 'mayorId': mayorId,
-      if (mayor != null) 'mayor': mayor?.toConstraintJson(),
+      if (mayor != null) 'mayor': mayor?.toJsonForProtocol(),
     };
   }
 

@@ -13,7 +13,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A serialized future call with bindings to the database.
 abstract class FutureCallEntry extends _i1.TableRow
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   FutureCallEntry._({
     int? id,
     required this.name,
@@ -86,7 +86,7 @@ abstract class FutureCallEntry extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'name': name,

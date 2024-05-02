@@ -13,7 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// Database mapping for a read/write test that is performed by the default
 /// health checks.
 abstract class ReadWriteTestEntry extends _i1.TableRow
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   ReadWriteTestEntry._({
     int? id,
     required this.number,
@@ -54,7 +54,7 @@ abstract class ReadWriteTestEntry extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'number': number,

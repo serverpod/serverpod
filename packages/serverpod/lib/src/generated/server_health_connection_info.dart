@@ -15,7 +15,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 /// is handling. An entry is written every minute for each server. All health
 /// data can be accessed through Serverpod Insights.
 abstract class ServerHealthConnectionInfo extends _i1.TableRow
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   ServerHealthConnectionInfo._({
     int? id,
     required this.serverId,
@@ -99,7 +99,7 @@ abstract class ServerHealthConnectionInfo extends _i1.TableRow
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'serverId': serverId,

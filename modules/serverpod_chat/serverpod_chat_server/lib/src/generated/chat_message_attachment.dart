@@ -12,7 +12,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// An attachement to a chat message. Typically an image or a file.
 abstract class ChatMessageAttachment extends _i1.SerializableEntity
-    implements _i1.ConstraintSerialization {
+    implements _i1.ProtocolSerialization {
   ChatMessageAttachment._({
     required this.fileName,
     required this.url,
@@ -82,7 +82,7 @@ abstract class ChatMessageAttachment extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> toConstraintJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'fileName': fileName,
       'url': url,
