@@ -20,11 +20,11 @@ class MessageCentral {
   /// can be provided, in which case the message is sent only to that specific
   /// server within the cluster. If no [destinationServerId] is provided, the
   /// message is passed on to all servers in the cluster.
-  void postMessage(
+  Future<bool> postMessage(
     String channelName,
     SerializableEntity message, {
     bool global = false,
-  }) {
+  }) async {
     if (global) {
       // Send to Redis
       assert(
@@ -33,15 +33,16 @@ class MessageCentral {
       );
       var data =
           Serverpod.instance.serializationManager.encodeWithType(message);
-      Serverpod.instance.redisController!.publish(channelName, data);
+      return Serverpod.instance.redisController!.publish(channelName, data);
     } else {
       // Handle internally in this server instance
       var channel = _channels[channelName];
-      if (channel == null) return;
+      if (channel == null) return false;
 
       for (var callback in channel) {
         callback(message);
       }
+      return true;
     }
   }
 
