@@ -140,7 +140,7 @@ abstract class SerializationManager {
 
     return {
       'className': className,
-      'data': data,
+      'data': encodeForProtocol(data),
     };
   }
 
@@ -169,30 +169,29 @@ abstract class SerializationManager {
           return (nonEncodable as dynamic)?.toJson();
         }
       },
-    ).convert(
-      object,
-    );
+    ).convert(object);
   }
 
   /// Encode the provided [object] to a Json-formatted [String].
   /// If [formatted] is true, the output will be formatted with two spaces
   /// indentation.
-  /*static String encodeForProtocol(
+  static String encodeForProtocol(
     Object? object, {
     bool formatted = false,
   }) {
     if (object is ProtocolSerialization) {
-      return (object as ProtocolSerialization?)?.toJsonForProtocol();
+      return encode(object.toJsonForProtocol(), formatted: formatted);
     }
+
     return encode(object, formatted: formatted);
-  }*/
+  }
 
   /// Encode the provided [object] to a json-formatted [String], include class
   /// name so that it can be decoded even if th class is unknown.
   /// If [formatted] is true, the output will be formatted with two spaces
   /// indentation.
   String encodeWithType(Object object, {bool formatted = false}) {
-    return encode(wrapWithClassName(object), formatted: formatted);
+    return encodeForProtocol(wrapWithClassName(object), formatted: formatted);
   }
 }
 
