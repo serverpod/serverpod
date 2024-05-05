@@ -123,6 +123,10 @@ Future<bool> performCreate(
         await log.progress('Getting Flutter app package dependencies.', () {
       return CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
     });
+    // success &=
+    //     await log.progress('Updating entitlements.', () {
+    //   return CommandLineTools.addNetworkToEntitlements(serverpodDirs.flutterDir);
+    // });
   } else if (template == ServerpodTemplateType.module) {
     success &= await log.progress(
         'Writing project files.',
