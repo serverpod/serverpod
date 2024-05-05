@@ -68,7 +68,7 @@ class CommandLineTools {
       var document = XmlDocument.parse(file.readAsStringSync());
 
       var exists = document.findAllElements('key').any(
-            (node) => node.value == 'com.apple.security.network.client',
+            (node) => node.innerText == 'com.apple.security.network.client',
           );
 
       if (!exists) {

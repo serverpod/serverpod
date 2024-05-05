@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
+import 'package:xml/xml.dart';
 
 const tempDirName = 'temp';
 
@@ -350,7 +351,72 @@ void main() async {
             reason: 'Flutter pubspec file does not exist.',
           );
         });
+        test('macOS DebugProfile entitlements has network client tag and true',
+            () {
+          var entitlementsPath = path.join(tempPath, flutterDir, 'macos',
+              'Runner', 'DebugProfile.entitlements');
+          var file = File(entitlementsPath);
+          var exists = file.existsSync();
+          expect(exists, isTrue,
+              reason: "DebugProfile entitlements does not exist.");
+          var document = XmlDocument.parse(file.readAsStringSync());
+          var networkClientKeyExists = document.findAllElements('key').any(
+                (node) => node.innerText == 'com.apple.security.network.client',
+              );
 
+          var networkClientValueIsTrue = false;
+          if (networkClientKeyExists) {
+            var nextElement = document
+                .findAllElements('key')
+                .firstWhere(
+                  (node) =>
+                      node.innerText == 'com.apple.security.network.client',
+                )
+                .nextElementSibling;
+            networkClientValueIsTrue =
+                nextElement != null && nextElement.name.local == 'true';
+          }
+
+          expect(networkClientKeyExists, isTrue,
+              reason:
+                  'Network client key does not exist in DebugProfile entitlements.');
+          expect(networkClientValueIsTrue, isTrue,
+              reason:
+                  'Network client key is not set to true in DebugProfile entitlements.');
+        });
+
+        test('macOS Release entitlements has network client tag and true', () {
+          var entitlementsPath = path.join(
+              tempPath, flutterDir, 'macos', 'Runner', 'Release.entitlements');
+          var file = File(entitlementsPath);
+          var exists = file.existsSync();
+          expect(exists, isTrue,
+              reason: "Release entitlements does not exist.");
+          var document = XmlDocument.parse(file.readAsStringSync());
+          var networkClientKeyExists = document.findAllElements('key').any(
+                (node) => node.innerText == 'com.apple.security.network.client',
+              );
+
+          var networkClientValueIsTrue = false;
+          if (networkClientKeyExists) {
+            var nextElement = document
+                .findAllElements('key')
+                .firstWhere(
+                  (node) =>
+                      node.innerText == 'com.apple.security.network.client',
+                )
+                .nextElementSibling;
+            networkClientValueIsTrue =
+                nextElement != null && nextElement.name.local == 'true';
+          }
+
+          expect(networkClientKeyExists, isTrue,
+              reason:
+                  'Network client key does not exist in Release entitlements.');
+          expect(networkClientValueIsTrue, isTrue,
+              reason:
+                  'Network client key is not set to true in Release entitlements.');
+        });
         test('has a main file', () {
           expect(
             File(path.join(tempPath, flutterDir, 'lib', 'main.dart'))
