@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'package:pub_api_client/pub_api_client.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 class PubApiClient {
   final PubClient _pubClient;

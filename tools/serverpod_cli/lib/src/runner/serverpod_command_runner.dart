@@ -9,6 +9,7 @@ import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/exit_exception.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 abstract class GlobalFlags {
   static const quiet = 'quiet';

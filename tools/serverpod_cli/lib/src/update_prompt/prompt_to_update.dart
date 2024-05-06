@@ -1,6 +1,7 @@
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/latest_cli_version.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 /// Check current Serverpod CLI version and prompt user to update if needed
 Future<void> promptToUpdateIfNeeded(Version currentVersion) async {
