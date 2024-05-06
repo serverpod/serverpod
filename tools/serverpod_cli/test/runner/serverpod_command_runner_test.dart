@@ -9,7 +9,7 @@ import 'package:serverpod_cli/src/util/exit_exception.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 
-class MockAnalytics extends Analytics {
+class MockAnalytics implements Analytics {
   List<String> trackedEvents = [];
 
   int numberOfCleanups = 0;

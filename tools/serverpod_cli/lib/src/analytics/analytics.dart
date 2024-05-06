@@ -7,10 +7,25 @@ import 'package:http/http.dart' as http;
 import '../downloads/resource_manager.dart';
 import '../generated/version.dart';
 
-const _projectToken = '05e8ab306c393c7482e0f41851a176d8';
 const _endpoint = 'https://api.mixpanel.com/track';
+const _projectToken = '05e8ab306c393c7482e0f41851a176d8';
 
-class Analytics {
+/// Interface for analytics services.
+abstract interface class Analytics {
+  /// Clean up resources.
+  void cleanUp();
+
+  /// Track an event.
+  void track({
+    required String event,
+  });
+}
+
+class MixPanelAnalytics implements Analytics {
+  @override
+  void cleanUp() {}
+
+  @override
   void track({
     required String event,
   }) {
@@ -29,6 +44,18 @@ class Analytics {
     _quietPost(payload);
   }
 
+  String _getPlatform() {
+    if (Platform.isMacOS) {
+      return 'MacOS';
+    } else if (Platform.isWindows) {
+      return 'Windows';
+    } else if (Platform.isLinux) {
+      return 'Linux';
+    } else {
+      return 'Unknown';
+    }
+  }
+
   Future<void> _quietPost(String payload) async {
     try {
       await http.post(
@@ -43,18 +70,4 @@ class Analytics {
       return;
     }
   }
-
-  String _getPlatform() {
-    if (Platform.isMacOS) {
-      return 'MacOS';
-    } else if (Platform.isWindows) {
-      return 'Windows';
-    } else if (Platform.isLinux) {
-      return 'Linux';
-    } else {
-      return 'Unknown';
-    }
-  }
-
-  void cleanUp() {}
 }

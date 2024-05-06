@@ -19,7 +19,7 @@ import 'package:serverpod_cli/src/util/exit_exception.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
-final Analytics _analytics = Analytics();
+final Analytics _analytics = MixPanelAnalytics();
 
 void main(List<String> args) async {
   await runZonedGuarded(
