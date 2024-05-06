@@ -1,5 +1,4 @@
 import 'package:serverpod_cli/src/logger/logger.dart';
-import 'package:source_span/source_span.dart';
 
 /// Logger that logs no output.
 ///
@@ -38,10 +37,6 @@ class VoidLogger extends Logger {
     StackTrace? stackTrace,
     LogType type = const RawLogType(),
   }) {}
-
-  @override
-  void sourceSpanException(SourceSpanException sourceSpan,
-      {bool newParagraph = false}) {}
 
   @override
   Future<void> flush() {

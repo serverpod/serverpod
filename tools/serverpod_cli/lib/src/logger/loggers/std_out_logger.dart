@@ -1,11 +1,9 @@
 import 'dart:io';
 import 'dart:math' as math;
 
-import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/ansi_style.dart';
 import 'package:serverpod_cli/src/logger/helpers/progress.dart';
-import 'package:source_span/source_span.dart';
 import 'package:super_string/super_string.dart';
 
 /// Logger that logs using the [Stdout] library.
@@ -141,29 +139,6 @@ class StdOutLogger extends Logger {
     trackedAnimationInProgress = null;
     success ? progress.complete() : progress.fail();
     return success;
-  }
-
-  @override
-  void sourceSpanException(
-    SourceSpanException sourceSpan, {
-    bool newParagraph = false,
-  }) {
-    var logLevel = LogLevel.error;
-    bool isHint = false;
-
-    if (sourceSpan is SourceSpanSeverityException) {
-      var severity = sourceSpan.severity;
-      isHint = severity == SourceSpanSeverity.hint;
-      logLevel = _SeveritySpanHelpers.severityToLogLevel(severity);
-    }
-
-    if (!shouldLog(logLevel)) return;
-
-    var highlightAnsiCode =
-        _SeveritySpanHelpers.highlightAnsiCode(logLevel, isHint);
-    var message = sourceSpan.toString(color: highlightAnsiCode);
-
-    write(message, logLevel, newParagraph: newParagraph);
   }
 
   @override
@@ -374,39 +349,4 @@ String _formatAsBox({
   buffer.write('┘');
 
   return buffer.toString();
-}
-
-abstract class _SeveritySpanHelpers {
-  static LogLevel severityToLogLevel(SourceSpanSeverity severity) {
-    switch (severity) {
-      case SourceSpanSeverity.error:
-        return LogLevel.error;
-      case SourceSpanSeverity.warning:
-        return LogLevel.warning;
-      case SourceSpanSeverity.info:
-      case SourceSpanSeverity.hint:
-        return LogLevel.info;
-    }
-  }
-
-  static String highlightAnsiCode(LogLevel severity, bool isHint) {
-    if (severity == LogLevel.info && isHint) {
-      return AnsiStyle.cyan.ansiCode;
-    }
-
-    switch (severity) {
-      case LogLevel.nothing:
-        assert(severity != LogLevel.nothing,
-            'Log level nothing should never be used for a log message');
-        return AnsiStyle.terminalDefault.ansiCode;
-      case LogLevel.error:
-        return AnsiStyle.red.ansiCode;
-      case LogLevel.warning:
-        return AnsiStyle.yellow.ansiCode;
-      case LogLevel.info:
-        return AnsiStyle.blue.ansiCode;
-      case LogLevel.debug:
-        return AnsiStyle.cyan.ansiCode;
-    }
-  }
 }
