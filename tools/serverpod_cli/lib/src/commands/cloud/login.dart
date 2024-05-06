@@ -1,10 +1,10 @@
 import 'dart:async';
 
+import 'package:cli_tools/cli_tools.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/serverpod_cloud/token_listener_server.dart';
 import 'package:serverpod_cli/src/util/browser_launcher.dart';
-import 'package:serverpod_cli/src/util/exit_exception.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 class CloudLoginCommand extends ServerpodCommand {

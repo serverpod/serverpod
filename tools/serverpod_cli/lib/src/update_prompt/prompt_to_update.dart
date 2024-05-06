@@ -1,8 +1,6 @@
+import 'package:cli_tools/cli_tools.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
-import 'package:serverpod_cli/src/util/package_version.dart';
-import 'package:serverpod_cli/src/util/pub_api_client.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 /// Check current Serverpod CLI version and prompt user to update if needed
