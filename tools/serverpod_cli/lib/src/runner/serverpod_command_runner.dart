@@ -58,13 +58,13 @@ Future<void> _preCommandEnvironmentChecks() async {
 }
 
 class ServerpodCommandRunner extends CommandRunner {
-  final Analytics _analytics;
+  Analytics? _analytics;
   final bool _productionMode;
   final Version _cliVersion;
   final PreCommandEnvironmentCheck _onPreCommandEnvironmentCheck;
 
   ServerpodCommandRunner({
-    required Analytics analytics,
+    required Analytics? analytics,
     required bool productionMode,
     required Version cliVersion,
     required PreCommandEnvironmentCheck onPreCommandEnvironmentCheck,
@@ -93,13 +93,15 @@ class ServerpodCommandRunner extends CommandRunner {
           'Overrides --q, --quiet.',
     );
 
-    argParser.addFlag(
-      GlobalFlags.analytics,
-      abbr: GlobalFlags.analyticsAbbr,
-      defaultsTo: true,
-      negatable: true,
-      help: 'Toggles if analytics data is sent to Serverpod. ',
-    );
+    if (_analytics != null) {
+      argParser.addFlag(
+        GlobalFlags.analytics,
+        abbr: GlobalFlags.analyticsAbbr,
+        defaultsTo: true,
+        negatable: true,
+        help: 'Toggles if analytics data is sent. ',
+      );
+    }
   }
 
   static ServerpodCommandRunner createCommandRunner(
@@ -124,7 +126,7 @@ class ServerpodCommandRunner extends CommandRunner {
     try {
       return super.parse(args);
     } on UsageException catch (e) {
-      _analytics.track(event: 'invalid');
+      _analytics?.track(event: 'invalid');
       log.error(e.toString());
       throw ExitException(ExitCodeType.commandNotFound);
     }
@@ -133,7 +135,9 @@ class ServerpodCommandRunner extends CommandRunner {
   @override
   Future<void> runCommand(ArgResults topLevelResults) async {
     _setLogLevel(topLevelResults);
-    _analytics.enabled = topLevelResults[GlobalFlags.analytics];
+    if (!topLevelResults[GlobalFlags.analytics]) {
+      _analytics = null;
+    }
 
     await _onPreCommandEnvironmentCheck();
     await _preCommandPrints();
@@ -141,13 +145,13 @@ class ServerpodCommandRunner extends CommandRunner {
     try {
       await super.runCommand(topLevelResults);
       if (topLevelResults.command == null) {
-        _analytics.track(event: 'help');
+        _analytics?.track(event: 'help');
       } else {
-        _analytics.track(event: topLevelResults.command!.name!);
+        _analytics?.track(event: topLevelResults.command!.name!);
       }
     } on UsageException catch (e) {
       log.error(e.toString());
-      _analytics.track(event: 'invalid');
+      _analytics?.track(event: 'invalid');
       throw ExitException(ExitCodeType.commandNotFound);
     }
   }
@@ -160,6 +164,8 @@ class ServerpodCommandRunner extends CommandRunner {
   @override
   ArgParser get argParser => _argParser;
   final ArgParser _argParser = ArgParser(usageLineLength: log.wrapTextColumn);
+
+  bool analyticsEnabled() => _analytics != null;
 
   void addCommands(List<Command> commands) {
     for (var command in commands) {

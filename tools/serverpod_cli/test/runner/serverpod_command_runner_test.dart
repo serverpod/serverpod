@@ -187,7 +187,7 @@ void main() {
       await fixture.runner.run(args);
 
       expect(fixture.mockCommand.numberOfRuns, equals(1));
-      expect(fixture.analytics.enabled, isTrue);
+      expect(fixture.runner.analyticsEnabled(), isTrue);
     });
 
     test('when analytics flag is provided', () async {
@@ -201,7 +201,7 @@ void main() {
       await fixture.runner.run(args);
 
       expect(fixture.mockCommand.numberOfRuns, equals(1));
-      expect(fixture.analytics.enabled, isTrue);
+      expect(fixture.runner.analyticsEnabled(), isTrue);
     });
 
     test('when no-analytics flag is provided', () async {
@@ -215,7 +215,7 @@ void main() {
       await fixture.runner.run(args);
 
       expect(fixture.mockCommand.numberOfRuns, equals(1));
-      expect(fixture.analytics.enabled, isFalse);
+      expect(fixture.runner.analyticsEnabled(), isFalse);
     });
   });
   group('Logger Initialization - ', () {
