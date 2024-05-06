@@ -56,4 +56,12 @@ class VoidLogger extends Logger {
   }) async {
     return await runner();
   }
+
+  @override
+  void write(
+    String message,
+    LogLevel logLevel, {
+    bool newParagraph = false,
+    bool newLine = true,
+  }) {}
 }

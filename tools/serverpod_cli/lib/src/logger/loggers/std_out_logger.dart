@@ -127,7 +127,7 @@ class StdOutLogger extends Logger {
     // Write an empty line before the progress message if a new paragraph is
     // requested.
     if (newParagraph) {
-      _write(
+      write(
         '',
         LogLevel.info,
         newParagraph: false,
@@ -163,7 +163,7 @@ class StdOutLogger extends Logger {
         _SeveritySpanHelpers.highlightAnsiCode(logLevel, isHint);
     var message = sourceSpan.toString(color: highlightAnsiCode);
 
-    _write(message, logLevel, newParagraph: newParagraph);
+    write(message, logLevel, newParagraph: newParagraph);
   }
 
   @override
@@ -221,7 +221,7 @@ class StdOutLogger extends Logger {
       message = _wrapText(message, wrapTextColumn ?? _defaultColumnWrap);
     }
 
-    _write(
+    write(
       message,
       logLevel,
       newParagraph: newParagraph,
@@ -229,10 +229,11 @@ class StdOutLogger extends Logger {
     );
   }
 
-  void _write(
+  @override
+  void write(
     String message,
     LogLevel logLevel, {
-    required newParagraph,
+    newParagraph = false,
     newLine = true,
   }) {
     _stopAnimationInProgress();
@@ -256,19 +257,19 @@ class StdOutLogger extends Logger {
 }
 
 /// Windows version of the [StdOutLogger].
-/// The operates in the same way but filters out emojis not compatible with
-/// Windows.
+/// The logger operates in the same way but filters out emojis not compatible
+/// with Windows.
 class WindowsStdOutLogger extends StdOutLogger {
   WindowsStdOutLogger(super.logLevel);
 
   @override
-  void _write(
+  void write(
     String message,
     LogLevel logLevel, {
-    required newParagraph,
+    newParagraph = false,
     newLine = true,
   }) {
-    super._write(
+    super.write(
       message
           .replaceAll('🥳', '=D')
           .replaceAll(

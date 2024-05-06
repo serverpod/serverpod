@@ -71,6 +71,19 @@ abstract class Logger {
     bool newParagraph,
   });
 
+  /// Directly write a [message] to the output.
+  /// Generally the other methods should be used instead of this. But this
+  /// method can be used for more direct control of the output.
+  ///
+  /// If [newParagraph] is set to true, output is written as a new paragraph.
+  /// [LogLevel] can be set to control the log level of the message.
+  void write(
+    String message,
+    LogLevel logLevel, {
+    bool newParagraph = false,
+    bool newLine = true,
+  });
+
   /// Returns a [Future] that completes once all logging is complete.
   Future<void> flush();
 }
