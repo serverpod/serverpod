@@ -20,8 +20,9 @@ abstract class GlobalFlags {
   static const analyticsAbbr = 'a';
 }
 
-typedef LoggerInit = void Function(LogLevel);
-typedef PreCommandEnvironmentCheck = Future<void> Function();
+typedef OnBeforeRunCommand = Future<void> Function(
+  ServerpodCommandRunner runner,
+);
 
 Future<void> _preCommandEnvironmentChecks() async {
   // Check that required tools are installed
@@ -57,23 +58,43 @@ Future<void> _preCommandEnvironmentChecks() async {
   }
 }
 
+Future<void> _preCommandPrints(ServerpodCommandRunner runner) async {
+  if (runner._productionMode) {
+    await promptToUpdateIfNeeded(runner._cliVersion);
+  } else {
+    log.debug(
+      'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
+    );
+    log.debug('SERVERPOD_HOME is set to $serverpodHome');
+
+    if (!resourceManager.isTemplatesInstalled) {
+      log.warning('Could not find templates.');
+    }
+  }
+}
+
+Future<void> _serverpodOnBeforeRunCommand(ServerpodCommandRunner runner) async {
+  await _preCommandEnvironmentChecks();
+  await _preCommandPrints(runner);
+}
+
 class ServerpodCommandRunner extends CommandRunner {
   Analytics? _analytics;
   final bool _productionMode;
   final Version _cliVersion;
-  final PreCommandEnvironmentCheck _onPreCommandEnvironmentCheck;
+  final OnBeforeRunCommand _onBeforeRunCommand;
 
   ServerpodCommandRunner({
     required Analytics? analytics,
     required bool productionMode,
     required Version cliVersion,
-    required PreCommandEnvironmentCheck onPreCommandEnvironmentCheck,
+    required OnBeforeRunCommand onBeforeRunCommand,
     required String executableName,
     required String description,
   })  : _analytics = analytics,
         _productionMode = productionMode,
         _cliVersion = cliVersion,
-        _onPreCommandEnvironmentCheck = onPreCommandEnvironmentCheck,
+        _onBeforeRunCommand = onBeforeRunCommand,
         super(executableName, description) {
     argParser.addFlag(
       GlobalFlags.quiet,
@@ -108,14 +129,13 @@ class ServerpodCommandRunner extends CommandRunner {
     Analytics analytics,
     bool productionMode,
     Version cliVersion, {
-    PreCommandEnvironmentCheck onPreCommandEnvironmentCheck =
-        _preCommandEnvironmentChecks,
+    OnBeforeRunCommand onBeforeRunCommand = _serverpodOnBeforeRunCommand,
   }) {
     return ServerpodCommandRunner(
       analytics: analytics,
       productionMode: productionMode,
       cliVersion: cliVersion,
-      onPreCommandEnvironmentCheck: onPreCommandEnvironmentCheck,
+      onBeforeRunCommand: onBeforeRunCommand,
       executableName: 'serverpod',
       description: 'Manage your serverpod app development',
     );
@@ -139,8 +159,7 @@ class ServerpodCommandRunner extends CommandRunner {
       _analytics = null;
     }
 
-    await _onPreCommandEnvironmentCheck();
-    await _preCommandPrints();
+    await _onBeforeRunCommand(this);
 
     try {
       await super.runCommand(topLevelResults);
@@ -186,20 +205,5 @@ class ServerpodCommandRunner extends CommandRunner {
     }
 
     log.logLevel = logLevel;
-  }
-
-  Future<void> _preCommandPrints() async {
-    if (_productionMode) {
-      await promptToUpdateIfNeeded(_cliVersion);
-    } else {
-      log.debug(
-        'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
-      );
-      log.debug('SERVERPOD_HOME is set to $serverpodHome');
-
-      if (!resourceManager.isTemplatesInstalled) {
-        log.warning('Could not find templates.');
-      }
-    }
   }
 }

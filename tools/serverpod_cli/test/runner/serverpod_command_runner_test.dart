@@ -80,7 +80,7 @@ TestFixture createTestFixture() {
     analytics,
     false,
     Version(1, 1, 0),
-    onPreCommandEnvironmentCheck: () => Future(() => {}),
+    onBeforeRunCommand: (_) => Future(() => {}),
   );
   var mockCommand = MockCommand();
   runner.addCommand(mockCommand);
