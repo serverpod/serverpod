@@ -13,13 +13,19 @@ import 'package:serverpod_cli/src/commands/language_server.dart';
 import 'package:serverpod_cli/src/commands/create_migration.dart';
 import 'package:serverpod_cli/src/commands/upgrade.dart';
 import 'package:serverpod_cli/src/commands/version.dart';
+import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/exit_exception.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
-final Analytics _analytics = MixPanelAnalytics();
+const _mixPanelToken = '05e8ab306c393c7482e0f41851a176d8';
+final Analytics _analytics = MixPanelAnalytics(
+  uniqueUserId: ResourceManager().uniqueUserId,
+  projectToken: _mixPanelToken,
+  version: templateVersion,
+);
 
 void main(List<String> args) async {
   await runZonedGuarded(
