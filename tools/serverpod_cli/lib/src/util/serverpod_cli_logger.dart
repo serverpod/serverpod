@@ -9,6 +9,14 @@ import 'package:serverpod_cli/src/util/ansi_style.dart';
 /// Singleton instance of logger.
 Logger? _logger;
 
+/// Replacements for emojis that are not supported on Windows.
+final Map<String, String> _windowsLoggerReplacements = {
+  '🥳': '=D',
+  '✅': AnsiStyle.bold.wrap(AnsiStyle.lightGreen.wrap('✓')),
+  '🚀': '',
+  '📦': '',
+};
+
 /// Initializer for logger singleton.
 /// Runs checks to pick the best suitable logger for the environment.
 /// This should only be called once from runtime entry points.
@@ -19,7 +27,7 @@ void initializeLogger() {
   );
 
   _logger = Platform.isWindows
-      ? WindowsStdOutLogger(LogLevel.info)
+      ? StdOutLogger(LogLevel.info, replacements: _windowsLoggerReplacements)
       : StdOutLogger(LogLevel.info);
 }
 

@@ -14,7 +14,10 @@ class StdOutLogger extends Logger {
 
   Progress? trackedAnimationInProgress;
 
-  StdOutLogger(super.logLevel);
+  final Map<String, String>? _replacements;
+
+  StdOutLogger(super.logLevel, {Map<String, String>? replacements})
+      : _replacements = replacements;
 
   @override
   int? get wrapTextColumn => stdout.hasTerminal ? stdout.terminalColumns : null;
@@ -211,6 +214,14 @@ class StdOutLogger extends Logger {
     newParagraph = false,
     newLine = true,
   }) {
+    message = switch (_replacements) {
+      null => message,
+      Map<String, String> replacements => replacements.entries.fold(
+          message,
+          (String acc, entry) => acc.replaceAll(entry.key, entry.value),
+        ),
+    };
+
     _stopAnimationInProgress();
     if (logLevel.index >= LogLevel.warning.index) {
       stderr.write('${newParagraph ? '\n' : ''}$message${newLine ? '\n' : ''}');
@@ -228,35 +239,6 @@ class StdOutLogger extends Logger {
     }
 
     trackedAnimationInProgress = null;
-  }
-}
-
-/// Windows version of the [StdOutLogger].
-/// The logger operates in the same way but filters out emojis not compatible
-/// with Windows.
-class WindowsStdOutLogger extends StdOutLogger {
-  WindowsStdOutLogger(super.logLevel);
-
-  @override
-  void write(
-    String message,
-    LogLevel logLevel, {
-    newParagraph = false,
-    newLine = true,
-  }) {
-    super.write(
-      message
-          .replaceAll('🥳', '=D')
-          .replaceAll(
-            '✅',
-            AnsiStyle.bold.wrap(AnsiStyle.lightGreen.wrap('✓')),
-          )
-          .replaceAll('🚀', '')
-          .replaceAll('📦', ''),
-      logLevel,
-      newParagraph: newParagraph,
-      newLine: newLine,
-    );
   }
 }
 
