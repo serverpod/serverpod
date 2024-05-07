@@ -1,6 +1,6 @@
+import 'package:firebase_admin/firebase_admin.dart' as fb;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
-import 'package:firebase_admin/firebase_admin.dart';
 import 'package:serverpod_auth_server/src/business/firebase_auth.dart';
 
 const _authMethod = 'firebase';
@@ -12,7 +12,7 @@ class FirebaseEndpoint extends Endpoint {
     Session session,
     String idToken,
   ) async {
-    Auth auth;
+    fb.Auth auth;
     session.log('Firebase authenticate', level: LogLevel.debug);
     try {
       auth = FirebaseAuth.app.auth();
