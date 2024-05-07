@@ -157,8 +157,6 @@ fieldScopes:
   - retrieveObject:
 futureCalls:
   - makeFutureCall:
-jsonProtocol:
-  - getJsonForProtocol:
 listParameters:
   - returnIntList:
   - returnIntListList:
@@ -239,6 +237,8 @@ redis:
   - listenToChannel:
   - postToChannel:
   - countSubscribedChannels:
+serverOnlyScopedFieldModel:
+  - getScopeServerOnlyField:
 signInRequired:
   - testMethod:
 simple:

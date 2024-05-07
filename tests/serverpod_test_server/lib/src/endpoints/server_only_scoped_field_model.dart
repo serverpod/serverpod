@@ -3,11 +3,12 @@ import 'dart:async';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 
-class JsonProtocolEndpoint extends Endpoint {
-  Future<ScopeServerOnlyField> getJsonForProtocol(
+class ServerOnlyScopedFieldModelEndpoint extends Endpoint {
+  Future<ScopeServerOnlyField> getScopeServerOnlyField(
     Session session,
   ) async {
     return ScopeServerOnlyField(
+      serverOnlyScope: Types(anInt: 2),
       nested: ScopeServerOnlyField(
         allScope: Types(anInt: 1),
         serverOnlyScope: Types(anInt: 2),
@@ -23,6 +24,7 @@ class JsonProtocolEndpoint extends Endpoint {
           await sendStreamMessage(
             session,
             ScopeServerOnlyField(
+              serverOnlyScope: Types(anInt: 2),
               nested: ScopeServerOnlyField(
                 allScope: Types(anInt: 1),
                 serverOnlyScope: Types(anInt: 2),

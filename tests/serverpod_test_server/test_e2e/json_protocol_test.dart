@@ -12,24 +12,19 @@ void main() {
 
     setUpAll(() async {
       response = await http.post(
-        Uri.parse("${serverUrl}jsonProtocol"),
-        body: jsonEncode({"method": "getJsonForProtocol"}),
+        Uri.parse("${serverUrl}serverOnlyScopedFieldModel"),
+        body: jsonEncode({"method": "getScopeServerOnlyField"}),
       );
     });
 
     test('then it should return status code 200', () {
-      expect(
-        response.statusCode,
-        200,
-      );
+      expect(response.statusCode, 200);
     });
 
-    test('then it should contain the "nested" key', () {
+    test('then the serialized response body should contain the "nested" key',
+        () {
       Map jsonMap = jsonDecode(response.body);
-      expect(
-        jsonMap,
-        contains('nested'),
-      );
+      expect(jsonMap, contains('nested'));
     });
   });
 
@@ -40,18 +35,20 @@ void main() {
 
     setUpAll(() async {
       response = await http.post(
-        Uri.parse("${serverUrl}jsonProtocol"),
-        body: jsonEncode({"method": "getJsonForProtocol"}),
+        Uri.parse("${serverUrl}serverOnlyScopedFieldModel"),
+        body: jsonEncode({"method": "getScopeServerOnlyField"}),
       );
     });
 
-    test('then the nested object should not contain server-only field', () {
+    test('then the response body should not contain server-only field', () {
+      Map jsonMap = jsonDecode(response.body);
+      expect(jsonMap, isNot(contains('serverOnlyScope')));
+    });
+
+    test('then the "nested" object should not contain server-only field', () {
       Map jsonMap = jsonDecode(response.body);
       Map nestedMap = jsonMap['nested'];
-      expect(
-        nestedMap,
-        isNot(contains('serverOnlyScope')),
-      );
+      expect(nestedMap, isNot(contains('serverOnlyScope')));
     });
   });
 
@@ -76,7 +73,15 @@ void main() {
     );
 
     test(
-      'then the serialized response JSON body should contain "object" key',
+      'then the serialized response body should contain "endpoint" key',
+      () async {
+        Map responseMap = jsonDecode(message);
+        expect(responseMap, contains('endpoint'));
+      },
+    );
+
+    test(
+      'then the serialized response body should contain "object" key',
       () async {
         Map responseMap = jsonDecode(message);
         expect(responseMap, contains('object'));
@@ -84,7 +89,16 @@ void main() {
     );
 
     test(
-      'then the "object" JSON inside serialized response body should contain "data" key',
+      'then the "object" json object inside serialized response body should contain "className" key',
+      () async {
+        Map responseMap = jsonDecode(message);
+        Map objectMap = responseMap['object'];
+        expect(objectMap, contains('className'));
+      },
+    );
+
+    test(
+      'then the "object" json object inside serialized response body should contain "data" key',
       () async {
         Map responseMap = jsonDecode(message);
         Map objectMap = responseMap['object'];
@@ -107,7 +121,15 @@ void main() {
       });
 
       test(
-        'then the serialized object should not contain server-only field',
+        'then the "data" json object should not contain server-only field',
+        () async {
+          Map? nestedMap = jsonDecode(message)['object']?['data'];
+          expect(nestedMap, isNot(contains('serverOnlyScope')));
+        },
+      );
+
+      test(
+        'then the "nested" json object should not contain server-only field',
         () async {
           Map? nestedMap = jsonDecode(message)['object']?['data']?['nested'];
           expect(nestedMap, isNot(contains('serverOnlyScope')));

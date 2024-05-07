@@ -611,22 +611,34 @@ void main() {
     });
   });
 
-  test(
-      'Given an object with a server only field then that field is not serialized.',
-      () {
-    var object = ScopeServerOnlyField(
-      nested: ScopeServerOnlyField(
-        allScope: Types(anInt: 1),
+  group("Given an object with server only field, ", () {
+    test('then the serialized json should not contain server-only field.', () {
+      var object = ScopeServerOnlyField(
         serverOnlyScope: Types(anInt: 2),
-      ),
-    );
+      );
 
-    var jsonMap = object.toJsonForProtocol();
+      var jsonMap = object.toJsonForProtocol();
 
-    expect(jsonMap, {
-      'nested': {
-        'allScope': {'anInt': 1},
-      },
+      expect(jsonMap, {});
+    });
+
+    test(
+        'then the serialized "nested" json should not contain server-only field',
+        () {
+      var object = ScopeServerOnlyField(
+        nested: ScopeServerOnlyField(
+          allScope: Types(anInt: 1),
+          serverOnlyScope: Types(anInt: 2),
+        ),
+      );
+
+      var jsonMap = object.toJsonForProtocol();
+
+      expect(jsonMap, {
+        'nested': {
+          'allScope': {'anInt': 1},
+        },
+      });
     });
   });
 }

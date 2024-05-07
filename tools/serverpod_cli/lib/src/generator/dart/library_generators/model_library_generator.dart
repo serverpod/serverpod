@@ -633,6 +633,9 @@ class SerializableModelLibraryGenerator {
 
         var filteredFields = fields;
 
+        // since the [toJson] method is included both on server and client side models,
+        // on the client side the server-only fields are missing and we should not
+        // generate serialization for these fields.
         if (!serverCode) {
           filteredFields =
               fields.where((field) => field.shouldSerializeField(serverCode));
@@ -1755,3 +1758,7 @@ class SerializableModelLibraryGenerator {
     return refer(field.name);
   }
 }
+
+
+
+

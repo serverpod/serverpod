@@ -45,18 +45,18 @@ import 'package:serverpod_test_client/src/protocol/models_with_relations/one_to_
     as _i23;
 import 'package:serverpod_test_client/src/protocol/object_field_scopes.dart'
     as _i24;
-import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field.dart'
-    as _i25;
-import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i26;
+import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i25;
 import 'package:serverpod_test_client/src/protocol/models_with_relations/one_to_many/customer.dart'
-    as _i27;
+    as _i26;
 import 'package:serverpod_test_client/src/protocol/models_with_relations/one_to_many/comment.dart'
-    as _i28;
+    as _i27;
 import 'package:serverpod_test_client/src/protocol/models_with_relations/one_to_many/order.dart'
-    as _i29;
+    as _i28;
 import 'package:serverpod_test_module_client/serverpod_test_module_client.dart'
-    as _i30;
+    as _i29;
 import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
+    as _i30;
+import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field.dart'
     as _i31;
 import 'protocol.dart' as _i32;
 
@@ -1301,21 +1301,6 @@ class EndpointFutureCalls extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointJsonProtocol extends _i1.EndpointRef {
-  EndpointJsonProtocol(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'jsonProtocol';
-
-  _i2.Future<_i25.ScopeServerOnlyField> getJsonForProtocol() =>
-      caller.callServerEndpoint<_i25.ScopeServerOnlyField>(
-        'jsonProtocol',
-        'getJsonForProtocol',
-        {},
-      );
-}
-
-/// {@category Endpoint}
 class EndpointListParameters extends _i1.EndpointRef {
   EndpointListParameters(_i1.EndpointCaller caller) : super(caller);
 
@@ -1597,17 +1582,17 @@ class EndpointMapParameters extends _i1.EndpointRef {
         {'map': map},
       );
 
-  _i2.Future<Map<_i26.TestEnum, int>> returnEnumIntMap(
-          Map<_i26.TestEnum, int> map) =>
-      caller.callServerEndpoint<Map<_i26.TestEnum, int>>(
+  _i2.Future<Map<_i25.TestEnum, int>> returnEnumIntMap(
+          Map<_i25.TestEnum, int> map) =>
+      caller.callServerEndpoint<Map<_i25.TestEnum, int>>(
         'mapParameters',
         'returnEnumIntMap',
         {'map': map},
       );
 
-  _i2.Future<Map<String, _i26.TestEnum>> returnEnumMap(
-          Map<String, _i26.TestEnum> map) =>
-      caller.callServerEndpoint<Map<String, _i26.TestEnum>>(
+  _i2.Future<Map<String, _i25.TestEnum>> returnEnumMap(
+          Map<String, _i25.TestEnum> map) =>
+      caller.callServerEndpoint<Map<String, _i25.TestEnum>>(
         'mapParameters',
         'returnEnumMap',
         {'map': map},
@@ -1747,39 +1732,39 @@ class EndpointOneToMany extends _i1.EndpointRef {
   @override
   String get name => 'oneToMany';
 
-  _i2.Future<List<_i27.Customer>> customerOrderByOrderCountAscending() =>
-      caller.callServerEndpoint<List<_i27.Customer>>(
+  _i2.Future<List<_i26.Customer>> customerOrderByOrderCountAscending() =>
+      caller.callServerEndpoint<List<_i26.Customer>>(
         'oneToMany',
         'customerOrderByOrderCountAscending',
         {},
       );
 
-  _i2.Future<List<_i27.Customer>>
+  _i2.Future<List<_i26.Customer>>
       customerOrderByOrderCountAscendingWhereDescriptionIs(
               String description) =>
-          caller.callServerEndpoint<List<_i27.Customer>>(
+          caller.callServerEndpoint<List<_i26.Customer>>(
             'oneToMany',
             'customerOrderByOrderCountAscendingWhereDescriptionIs',
             {'description': description},
           );
 
-  _i2.Future<List<_i28.Comment>> commentInsert(List<_i28.Comment> comments) =>
-      caller.callServerEndpoint<List<_i28.Comment>>(
+  _i2.Future<List<_i27.Comment>> commentInsert(List<_i27.Comment> comments) =>
+      caller.callServerEndpoint<List<_i27.Comment>>(
         'oneToMany',
         'commentInsert',
         {'comments': comments},
       );
 
-  _i2.Future<List<_i29.Order>> orderInsert(List<_i29.Order> orders) =>
-      caller.callServerEndpoint<List<_i29.Order>>(
+  _i2.Future<List<_i28.Order>> orderInsert(List<_i28.Order> orders) =>
+      caller.callServerEndpoint<List<_i28.Order>>(
         'oneToMany',
         'orderInsert',
         {'orders': orders},
       );
 
-  _i2.Future<List<_i27.Customer>> customerInsert(
-          List<_i27.Customer> customers) =>
-      caller.callServerEndpoint<List<_i27.Customer>>(
+  _i2.Future<List<_i26.Customer>> customerInsert(
+          List<_i26.Customer> customers) =>
+      caller.callServerEndpoint<List<_i26.Customer>>(
         'oneToMany',
         'customerInsert',
         {'customers': customers},
@@ -1805,15 +1790,15 @@ class EndpointModuleSerialization extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<_i30.ModuleClass> modifyModuleObject(_i30.ModuleClass object) =>
-      caller.callServerEndpoint<_i30.ModuleClass>(
+  _i2.Future<_i29.ModuleClass> modifyModuleObject(_i29.ModuleClass object) =>
+      caller.callServerEndpoint<_i29.ModuleClass>(
         'moduleSerialization',
         'modifyModuleObject',
         {'object': object},
       );
 
-  _i2.Future<_i31.ModuleDatatype> serializeNestedModuleObject() =>
-      caller.callServerEndpoint<_i31.ModuleDatatype>(
+  _i2.Future<_i30.ModuleDatatype> serializeNestedModuleObject() =>
+      caller.callServerEndpoint<_i30.ModuleDatatype>(
         'moduleSerialization',
         'serializeNestedModuleObject',
         {},
@@ -1954,6 +1939,21 @@ class EndpointRedis extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointServerOnlyScopedFieldModel extends _i1.EndpointRef {
+  EndpointServerOnlyScopedFieldModel(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'serverOnlyScopedFieldModel';
+
+  _i2.Future<_i31.ScopeServerOnlyField> getScopeServerOnlyField() =>
+      caller.callServerEndpoint<_i31.ScopeServerOnlyField>(
+        'serverOnlyScopedFieldModel',
+        'getScopeServerOnlyField',
+        {},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointSignInRequired extends _i1.EndpointRef {
   EndpointSignInRequired(_i1.EndpointCaller caller) : super(caller);
 
@@ -2058,12 +2058,12 @@ class EndpointSubDirTest extends _i1.EndpointRef {
 class _Modules {
   _Modules(Client client) {
     auth = _i3.Caller(client);
-    module = _i30.Caller(client);
+    module = _i29.Caller(client);
   }
 
   late final _i3.Caller auth;
 
-  late final _i30.Caller module;
+  late final _i29.Caller module;
 }
 
 class Client extends _i1.ServerpodClient {
@@ -2106,7 +2106,6 @@ class Client extends _i1.ServerpodClient {
     failedCalls = EndpointFailedCalls(this);
     fieldScopes = EndpointFieldScopes(this);
     futureCalls = EndpointFutureCalls(this);
-    jsonProtocol = EndpointJsonProtocol(this);
     listParameters = EndpointListParameters(this);
     logging = EndpointLogging(this);
     loggingDisabled = EndpointLoggingDisabled(this);
@@ -2116,6 +2115,7 @@ class Client extends _i1.ServerpodClient {
     namedParameters = EndpointNamedParameters(this);
     optionalParameters = EndpointOptionalParameters(this);
     redis = EndpointRedis(this);
+    serverOnlyScopedFieldModel = EndpointServerOnlyScopedFieldModel(this);
     signInRequired = EndpointSignInRequired(this);
     simple = EndpointSimple(this);
     streaming = EndpointStreaming(this);
@@ -2159,8 +2159,6 @@ class Client extends _i1.ServerpodClient {
 
   late final EndpointFutureCalls futureCalls;
 
-  late final EndpointJsonProtocol jsonProtocol;
-
   late final EndpointListParameters listParameters;
 
   late final EndpointLogging logging;
@@ -2178,6 +2176,8 @@ class Client extends _i1.ServerpodClient {
   late final EndpointOptionalParameters optionalParameters;
 
   late final EndpointRedis redis;
+
+  late final EndpointServerOnlyScopedFieldModel serverOnlyScopedFieldModel;
 
   late final EndpointSignInRequired signInRequired;
 
@@ -2212,7 +2212,6 @@ class Client extends _i1.ServerpodClient {
         'failedCalls': failedCalls,
         'fieldScopes': fieldScopes,
         'futureCalls': futureCalls,
-        'jsonProtocol': jsonProtocol,
         'listParameters': listParameters,
         'logging': logging,
         'loggingDisabled': loggingDisabled,
@@ -2222,6 +2221,7 @@ class Client extends _i1.ServerpodClient {
         'namedParameters': namedParameters,
         'optionalParameters': optionalParameters,
         'redis': redis,
+        'serverOnlyScopedFieldModel': serverOnlyScopedFieldModel,
         'signInRequired': signInRequired,
         'simple': simple,
         'streaming': streaming,
