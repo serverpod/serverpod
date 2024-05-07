@@ -1,25 +1,38 @@
-# TEMPLATE
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
 
-name: serverpod_auth_facebook_flutter
-description: Sign in with Facebook for the Serverpod auth module.
-version: SERVERPOD_VERSION
+name: serverpod_auth_apple_flutter
+description: Sign in with Apple for the Serverpod auth module.
+version: 2.0.0-alpha.2
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: DART_VERSION
-  flutter: FLUTTER_VERSION
+  sdk: '>=3.1.0 <4.0.0'
+  flutter: '>=3.13.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  serverpod_auth_client: SERVERPOD_VERSION
-  serverpod_auth_shared_flutter: SERVERPOD_VERSION
-  flutter_facebook_auth: ^6.2.0
+  serverpod_auth_client: 2.0.0-alpha.2
+  serverpod_auth_shared_flutter: 2.0.0-alpha.2
+  sign_in_with_apple: ^4.3.0
 
 dev_dependencies:
-  serverpod_lints: SERVERPOD_VERSION
+  serverpod_lints: 2.0.0-alpha.2
   flutter_test:
     sdk: flutter
+
+dependency_overrides:
+  serverpod_auth_client:
+    path: ../serverpod_auth_client
+  serverpod_auth_shared_flutter:
+    path: ../serverpod_auth_shared_flutter
+  serverpod_lints:
+    path: ../../../packages/serverpod_lints
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -28,8 +41,8 @@ dev_dependencies:
 flutter:
 
   # To add assets to your package, add an assets section, like this:
-   assets:
-     - assets/facebook-icon.png
+  assets:
+    - assets/facebook-icon.png
   #   - images/a_dot_ham.jpeg
   #
   # For details regarding assets in packages, see
