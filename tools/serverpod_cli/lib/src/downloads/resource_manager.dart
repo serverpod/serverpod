@@ -4,7 +4,7 @@ import 'package:archive/archive.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/downloads/local_storage_manager.dart';
-import 'package:serverpod_cli/src/util/latest_cli_version.dart';
+import 'package:serverpod_cli/src/util/package_version.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:uuid/uuid.dart';
 
@@ -50,7 +50,7 @@ class ResourceManager {
   }
 
   Future<void> storeLatestCliVersion(
-    CliVersionData cliVersionData, {
+    PackageVersionData cliVersionData, {
     String? localStoragePath,
   }) async {
     localStoragePath ??= localStorageDirectory.path;
@@ -66,12 +66,12 @@ class ResourceManager {
     );
   }
 
-  Future<CliVersionData?> tryFetchLatestCliVersion({
+  Future<PackageVersionData?> tryFetchLatestCliVersion({
     String? localStoragePath,
   }) async {
     localStoragePath ??= localStorageDirectory.path;
 
-    CliVersionData? deleteFile(Object e, File file) {
+    PackageVersionData? deleteFile(Object e, File file) {
       try {
         file.deleteSync();
       } catch (_) {
@@ -84,7 +84,7 @@ class ResourceManager {
     return LocalStorageManager.tryFetchAndDeserializeJsonFile(
       fileName: ResourceManagerConstants.latestVersionFilePath,
       localStoragePath: localStoragePath,
-      fromJson: CliVersionData.fromJson,
+      fromJson: PackageVersionData.fromJson,
       onReadError: deleteFile,
       onDeserializationError: deleteFile,
     );

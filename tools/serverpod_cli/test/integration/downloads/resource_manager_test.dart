@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager_constants.dart';
-import 'package:serverpod_cli/src/util/latest_cli_version.dart';
+import 'package:serverpod_cli/src/util/package_version.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -20,7 +20,7 @@ void main() {
     });
 
     test('serialization roundtrip for latest cli version artefact.', () async {
-      var storedArtefact = CliVersionData(Version(1, 1, 1), DateTime.now());
+      var storedArtefact = PackageVersionData(Version(1, 1, 1), DateTime.now());
 
       await resourceManager.storeLatestCliVersion(storedArtefact,
           localStoragePath: testCacheFolderPath);

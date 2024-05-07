@@ -5,7 +5,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager_constants.dart';
 import 'package:serverpod_cli/src/logger/loggers/void_logger.dart';
-import 'package:serverpod_cli/src/util/latest_cli_version.dart';
+import 'package:serverpod_cli/src/util/package_version.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 
@@ -15,7 +15,7 @@ void main() {
     'integration',
     'util',
     'test_assets',
-    'temp_latest_cli_version',
+    'temp_package_version',
   );
 
   initializeLoggerWith(VoidLogger());
@@ -31,7 +31,7 @@ void main() {
     Version version,
     DateTime validUntil,
   ) async {
-    var storedArtefact = CliVersionData(version, validUntil);
+    var storedArtefact = PackageVersionData(version, validUntil);
 
     await resourceManager.storeLatestCliVersion(storedArtefact,
         localStoragePath: testStorageFolderPath);
@@ -48,17 +48,16 @@ void main() {
       storeVersionOnDisk(
           versionForTest, DateTime.now().add(const Duration(hours: 1)));
 
-      var fetchedVersion = await LatestCliVersion.tryFetchLatestValidCliVersion(
-        storeLatestCliVersion: (CliVersionData versionArtefact) =>
+      var fetchedVersion = await PackageVersion.fetchLatestPackageVersion(
+        storePackageVersionData: (PackageVersionData versionArtefact) =>
             resourceManager.storeLatestCliVersion(
           versionArtefact,
           localStoragePath: testStorageFolderPath,
         ),
-        fetchLatestCliVersionFromLocalStorage: () =>
-            resourceManager.tryFetchLatestCliVersion(
+        loadPackageVersionData: () => resourceManager.tryFetchLatestCliVersion(
           localStoragePath: testStorageFolderPath,
         ),
-        fetchLatestCliVersionFromPubDev: () async => null,
+        fetchLatestPackageVersion: () async => null,
       );
 
       expect(fetchedVersion, isNotNull);
@@ -78,18 +77,17 @@ void main() {
           () async {
         var pubDevVersion = versionForTest.nextMajor;
 
-        var fetchedVersion =
-            await LatestCliVersion.tryFetchLatestValidCliVersion(
-          storeLatestCliVersion: (CliVersionData versionArtefact) =>
+        var fetchedVersion = await PackageVersion.fetchLatestPackageVersion(
+          storePackageVersionData: (PackageVersionData versionArtefact) =>
               resourceManager.storeLatestCliVersion(
             versionArtefact,
             localStoragePath: testStorageFolderPath,
           ),
-          fetchLatestCliVersionFromLocalStorage: () =>
+          loadPackageVersionData: () =>
               resourceManager.tryFetchLatestCliVersion(
             localStoragePath: testStorageFolderPath,
           ),
-          fetchLatestCliVersionFromPubDev: () async => pubDevVersion,
+          fetchLatestPackageVersion: () async => pubDevVersion,
         );
 
         expect(fetchedVersion, isNotNull);
@@ -97,17 +95,17 @@ void main() {
       });
 
       test('when failed to fetch latest version from pub.dev.', () async {
-        var version = await LatestCliVersion.tryFetchLatestValidCliVersion(
-          storeLatestCliVersion: (CliVersionData versionArtefact) =>
+        var version = await PackageVersion.fetchLatestPackageVersion(
+          storePackageVersionData: (PackageVersionData versionArtefact) =>
               resourceManager.storeLatestCliVersion(
             versionArtefact,
             localStoragePath: testStorageFolderPath,
           ),
-          fetchLatestCliVersionFromLocalStorage: () =>
+          loadPackageVersionData: () =>
               resourceManager.tryFetchLatestCliVersion(
             localStoragePath: testStorageFolderPath,
           ),
-          fetchLatestCliVersionFromPubDev: () async => null,
+          fetchLatestPackageVersion: () async => null,
         );
 
         expect(version, isNull);
@@ -117,17 +115,16 @@ void main() {
 
   group('No file on disk', () {
     test('when successful in fetching latest version from pub.dev.', () async {
-      var version = await LatestCliVersion.tryFetchLatestValidCliVersion(
-        storeLatestCliVersion: (CliVersionData versionArtefact) =>
+      var version = await PackageVersion.fetchLatestPackageVersion(
+        storePackageVersionData: (PackageVersionData versionArtefact) =>
             resourceManager.storeLatestCliVersion(
           versionArtefact,
           localStoragePath: testStorageFolderPath,
         ),
-        fetchLatestCliVersionFromLocalStorage: () =>
-            resourceManager.tryFetchLatestCliVersion(
+        loadPackageVersionData: () => resourceManager.tryFetchLatestCliVersion(
           localStoragePath: testStorageFolderPath,
         ),
-        fetchLatestCliVersionFromPubDev: () async => versionForTest,
+        fetchLatestPackageVersion: () async => versionForTest,
       );
 
       expect(version, isNotNull);
@@ -138,17 +135,16 @@ void main() {
     });
 
     test('when failed to fetch latest version from pub.dev.', () async {
-      var version = await LatestCliVersion.tryFetchLatestValidCliVersion(
-        storeLatestCliVersion: (CliVersionData versionArtefact) =>
+      var version = await PackageVersion.fetchLatestPackageVersion(
+        storePackageVersionData: (PackageVersionData versionArtefact) =>
             resourceManager.storeLatestCliVersion(
           versionArtefact,
           localStoragePath: testStorageFolderPath,
         ),
-        fetchLatestCliVersionFromLocalStorage: () =>
-            resourceManager.tryFetchLatestCliVersion(
+        loadPackageVersionData: () => resourceManager.tryFetchLatestCliVersion(
           localStoragePath: testStorageFolderPath,
         ),
-        fetchLatestCliVersionFromPubDev: () async => null,
+        fetchLatestPackageVersion: () async => null,
       );
 
       expect(version, isNull);
