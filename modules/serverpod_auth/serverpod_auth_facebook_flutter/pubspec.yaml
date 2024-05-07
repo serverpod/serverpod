@@ -1,8 +1,8 @@
 # This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
 # Mode: development
 
-name: serverpod_auth_apple_flutter
-description: Sign in with Apple for the Serverpod auth module.
+name: serverpod_auth_facebook_flutter
+description: Sign in with Facebook for the Serverpod auth module.
 version: 2.0.0-alpha.2
 repository: https://github.com/serverpod/serverpod
 

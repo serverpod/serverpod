@@ -1,7 +1,7 @@
 # TEMPLATE
 
-name: serverpod_auth_apple_flutter
-description: Sign in with Apple for the Serverpod auth module.
+name: serverpod_auth_facebook_flutter
+description: Sign in with Facebook for the Serverpod auth module.
 version: SERVERPOD_VERSION
 repository: https://github.com/serverpod/serverpod
 
