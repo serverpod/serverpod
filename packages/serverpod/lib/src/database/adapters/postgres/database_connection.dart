@@ -369,16 +369,8 @@ class DatabaseConnection {
     Transaction? transaction,
     bool ignoreRows = false,
     bool simpleQueryMode = false,
-    Object? parameters,
+    QueryParameters? parameters,
   }) async {
-    assert(
-      parameters == null ||
-          parameters is List<Object?> ||
-          parameters is Map<String, Object?> ||
-          parameters is QueryParameters,
-      'Parameter type should be one of: QueryParameters || List<Object?> || Map<String, Object?>',
-    );
-
     assert(
       simpleQueryMode == false ||
           (simpleQueryMode == true && parameters == null),
@@ -395,18 +387,11 @@ class DatabaseConnection {
           postgresTransaction?.executionContext ?? _postgresConnection;
 
       var result = await context.execute(
-        switch (parameters) {
-          (Map<String, Object?> _) => pg.Sql.named(query),
-          (QueryParametersNamed _) => pg.Sql.named(query),
-          _ => query,
-        },
+        parameters is QueryParametersNamed ? pg.Sql.named(query) : query,
         timeout: timeout,
         ignoreRows: ignoreRows,
         queryMode: simpleQueryMode ? pg.QueryMode.simple : null,
-        parameters: switch (parameters) {
-          (QueryParameters _) => parameters.parameters,
-          _ => parameters,
-        },
+        parameters: parameters?.parameters,
       );
 
       _logQuery(

@@ -209,7 +209,7 @@ class Database {
   /// [List] with columns will be returned.
   ///
   /// You are responsible to sanitize the query to avoid SQL injection.
-  @Deprecated('use [query] instead.')
+  @Deprecated('use [query] with parameter bindings instead.')
   Future<DatabaseResult> unsafeQuery(
     String query, {
     int? timeoutInSeconds,
@@ -244,7 +244,7 @@ class Database {
   /// by the query.
   ///
   /// You are responsible to sanitize the query to avoid SQL injection.
-  @Deprecated('use [execute] instead.')
+  @Deprecated('use [execute] with parameter binding instead.')
   Future<int> unsafeExecute(
     String query, {
     int? timeoutInSeconds,
