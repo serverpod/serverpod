@@ -13,9 +13,11 @@ dependencies:
   serverpod_serialization: SERVERPOD_VERSION
   crypto: ^3.0.2
   email_validator: ^2.1.17
-  firebase_admin: ^0.2.0
-  googleapis: ^11.0.0
-  googleapis_auth: ^1.4.0
+  firebase_admin:
+    git:
+      url: https://github.com/lukehutch/firebase_admin.git
+  googleapis: ^13.1.0
+  googleapis_auth: ^1.6.0
   http: ">=0.13.0 <2.0.0"
   image: ^4.0.15
   jose: ^0.3.3
@@ -24,6 +26,7 @@ dependencies:
 dev_dependencies:
   serverpod_lints: SERVERPOD_VERSION
   test: ^1.24.2
+  intl: ^0.19.0
 
 dependency_overrides:
   serverpod:
