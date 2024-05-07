@@ -1758,7 +1758,3 @@ class SerializableModelLibraryGenerator {
     return refer(field.name);
   }
 }
-
-
-
-
