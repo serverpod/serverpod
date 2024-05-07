@@ -15,7 +15,7 @@ dependencies:
     sdk: flutter
   serverpod_auth_client: 2.0.0-alpha.2
   serverpod_auth_shared_flutter: 2.0.0-alpha.2
-  sign_in_with_apple: ^4.3.0
+  flutter_facebook_auth: ^6.2.0
 
 dev_dependencies:
   serverpod_lints: 2.0.0-alpha.2
