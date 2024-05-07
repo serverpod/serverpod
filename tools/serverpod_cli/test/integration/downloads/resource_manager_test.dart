@@ -4,6 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager_constants.dart';
+import 'package:serverpod_cli/src/util/latest_cli_version.dart';
 import 'package:test/test.dart';
 
 void main() {

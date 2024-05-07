@@ -1,26 +1,13 @@
 import 'dart:io';
 
-import 'package:http/http.dart';
-import 'package:http/testing.dart';
 import 'package:path/path.dart' as p;
-import 'package:http/http.dart' as http;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager_constants.dart';
 import 'package:serverpod_cli/src/logger/loggers/void_logger.dart';
 import 'package:serverpod_cli/src/util/latest_cli_version.dart';
-import 'package:serverpod_cli/src/util/pub_api_client.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
-
-String _getPubDevResponse(Version version) {
-  return '''
-{
-    "name": "serverpod_cli",
-    "versions": ["$version"]
-}
-''';
-}
 
 void main() {
   var testStorageFolderPath = p.join(
@@ -40,16 +27,6 @@ void main() {
     }
   });
 
-  var testStorageService =
-      CliVersionStorageService(optionalLocalStoragePath: testStorageFolderPath);
-
-  PubDevService getTestPubDevService(http.Client testClient) {
-    return PubDevService(
-      optionalLocalStoragePath: testStorageFolderPath,
-      pubDevClient: PubApiClient(httpClient: testClient),
-    );
-  }
-
   void storeVersionOnDisk(
     Version version,
     DateTime validUntil,
@@ -64,20 +41,6 @@ void main() {
     expect(file.existsSync(), isTrue);
   }
 
-  MockClient createMockClient({
-    required String body,
-    required int status,
-    Duration responseDelay = const Duration(seconds: 0),
-  }) {
-    return MockClient((request) {
-      if (request.method != 'GET') throw NoSuchMethodError;
-      return Future<Response>(() async {
-        await Future.delayed(responseDelay);
-        return http.Response(body, status);
-      });
-    });
-  }
-
   var versionForTest = Version(1, 1, 0);
 
   group('Stored version on disk', () {
@@ -85,8 +48,18 @@ void main() {
       storeVersionOnDisk(
           versionForTest, DateTime.now().add(const Duration(hours: 1)));
 
-      var fetchedVersion = await tryFetchLatestValidCliVersion(
-          localStorageService: testStorageService);
+      var fetchedVersion = await LatestCliVersion.tryFetchLatestValidCliVersion(
+        storeLatestCliVersion: (CliVersionData versionArtefact) =>
+            resourceManager.storeLatestCliVersion(
+          versionArtefact,
+          localStoragePath: testStorageFolderPath,
+        ),
+        fetchLatestCliVersionFromLocalStorage: () =>
+            resourceManager.tryFetchLatestCliVersion(
+          localStoragePath: testStorageFolderPath,
+        ),
+        fetchLatestCliVersionFromPubDev: () async => null,
+      );
 
       expect(fetchedVersion, isNotNull);
       expect(fetchedVersion, versionForTest);
@@ -104,28 +77,38 @@ void main() {
       test('when successful in fetching latest version from pub.dev.',
           () async {
         var pubDevVersion = versionForTest.nextMajor;
-        var client = createMockClient(
-          body: _getPubDevResponse(pubDevVersion),
-          status: HttpStatus.ok,
-        );
 
-        var fetchedVersion = await tryFetchLatestValidCliVersion(
-            localStorageService: testStorageService,
-            pubDevService: getTestPubDevService(client));
+        var fetchedVersion =
+            await LatestCliVersion.tryFetchLatestValidCliVersion(
+          storeLatestCliVersion: (CliVersionData versionArtefact) =>
+              resourceManager.storeLatestCliVersion(
+            versionArtefact,
+            localStoragePath: testStorageFolderPath,
+          ),
+          fetchLatestCliVersionFromLocalStorage: () =>
+              resourceManager.tryFetchLatestCliVersion(
+            localStoragePath: testStorageFolderPath,
+          ),
+          fetchLatestCliVersionFromPubDev: () async => pubDevVersion,
+        );
 
         expect(fetchedVersion, isNotNull);
         expect(fetchedVersion, pubDevVersion);
       });
 
       test('when failed to fetch latest version from pub.dev.', () async {
-        var client = createMockClient(
-          body: '{"error": { "message": "unknown" } }',
-          status: HttpStatus.notFound,
+        var version = await LatestCliVersion.tryFetchLatestValidCliVersion(
+          storeLatestCliVersion: (CliVersionData versionArtefact) =>
+              resourceManager.storeLatestCliVersion(
+            versionArtefact,
+            localStoragePath: testStorageFolderPath,
+          ),
+          fetchLatestCliVersionFromLocalStorage: () =>
+              resourceManager.tryFetchLatestCliVersion(
+            localStoragePath: testStorageFolderPath,
+          ),
+          fetchLatestCliVersionFromPubDev: () async => null,
         );
-
-        var version = await tryFetchLatestValidCliVersion(
-            localStorageService: testStorageService,
-            pubDevService: getTestPubDevService(client));
 
         expect(version, isNull);
       });
@@ -134,16 +117,18 @@ void main() {
 
   group('No file on disk', () {
     test('when successful in fetching latest version from pub.dev.', () async {
-      var client = createMockClient(
-        body: _getPubDevResponse(versionForTest),
-        status: HttpStatus.ok,
+      var version = await LatestCliVersion.tryFetchLatestValidCliVersion(
+        storeLatestCliVersion: (CliVersionData versionArtefact) =>
+            resourceManager.storeLatestCliVersion(
+          versionArtefact,
+          localStoragePath: testStorageFolderPath,
+        ),
+        fetchLatestCliVersionFromLocalStorage: () =>
+            resourceManager.tryFetchLatestCliVersion(
+          localStoragePath: testStorageFolderPath,
+        ),
+        fetchLatestCliVersionFromPubDev: () async => versionForTest,
       );
-
-      var version = await tryFetchLatestValidCliVersion(
-          localStorageService: testStorageService,
-          pubDevService: getTestPubDevService(
-            client,
-          ));
 
       expect(version, isNotNull);
       expect(version, versionForTest);
@@ -153,14 +138,18 @@ void main() {
     });
 
     test('when failed to fetch latest version from pub.dev.', () async {
-      var client = createMockClient(
-        body: '{"error": { "message": "unknown" } }',
-        status: HttpStatus.notFound,
+      var version = await LatestCliVersion.tryFetchLatestValidCliVersion(
+        storeLatestCliVersion: (CliVersionData versionArtefact) =>
+            resourceManager.storeLatestCliVersion(
+          versionArtefact,
+          localStoragePath: testStorageFolderPath,
+        ),
+        fetchLatestCliVersionFromLocalStorage: () =>
+            resourceManager.tryFetchLatestCliVersion(
+          localStoragePath: testStorageFolderPath,
+        ),
+        fetchLatestCliVersionFromPubDev: () async => null,
       );
-
-      var version = await tryFetchLatestValidCliVersion(
-          localStorageService: testStorageService,
-          pubDevService: getTestPubDevService(client));
 
       expect(version, isNull);
       var localStorageFile = File(p.join(testStorageFolderPath,

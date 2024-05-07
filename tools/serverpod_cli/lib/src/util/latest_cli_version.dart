@@ -1,68 +1,49 @@
 import 'package:pub_semver/pub_semver.dart';
-import 'package:serverpod_cli/src/downloads/resource_manager.dart';
-import 'package:serverpod_cli/src/util/pub_api_client.dart';
 
 abstract class LatestCliVersionConstants {
-  static const serverpodPackageName = 'serverpod_cli';
   static const badConnectionRetryTimeout = Duration(hours: 1);
   static const localStorageValidityTime = Duration(days: 1);
 }
 
-/// Attempts to fetch the latest cli version from either local storage of pub.dev
-Future<Version?> tryFetchLatestValidCliVersion({
-  localStorageService = const CliVersionStorageService(),
-  PubDevService? pubDevService,
-}) async {
-  var latestCliVersion = await localStorageService.fetchLatestCliVersion();
+abstract class LatestCliVersion {
+  static Future<Version?> tryFetchLatestValidCliVersion({
+    required Future<void> Function(CliVersionData versionArtefact)
+        storeLatestCliVersion,
+    required Future<CliVersionData?> Function()
+        fetchLatestCliVersionFromLocalStorage,
+    required Future<Version?> Function() fetchLatestCliVersionFromPubDev,
+  }) async {
+    var storedVersionData = await fetchLatestCliVersionFromLocalStorage();
 
-  if (latestCliVersion != null) return latestCliVersion;
+    if (storedVersionData != null && _validVersion(storedVersionData)) {
+      return storedVersionData.version;
+    }
 
-  var service = pubDevService ?? PubDevService();
-  latestCliVersion = await service.tryFetchAndStoreLatestVersion();
+    var pubDevVersion = await fetchLatestCliVersionFromPubDev();
 
-  return latestCliVersion;
-}
-
-class CliVersionStorageService {
-  final String? optionalLocalStoragePath;
-
-  const CliVersionStorageService({this.optionalLocalStoragePath});
-
-  Future<Version?> fetchLatestCliVersion() async {
-    var localStorageData = await resourceManager.tryFetchLatestCliVersion(
-      localStoragePath: optionalLocalStoragePath,
+    await _storePubDevVersion(
+      pubDevVersion,
+      storeLatestCliVersion: storeLatestCliVersion,
     );
-    if (localStorageData == null) return null;
 
-    return localStorageData.validUntil.isAfter(DateTime.now())
-        ? localStorageData.version
-        : null;
+    return pubDevVersion;
   }
-}
 
-class PubDevService {
-  final String? _optionalLocalStoragePath;
-  final PubApiClient _client;
+  static bool _validVersion(CliVersionData versionData) {
+    return versionData.validUntil.isAfter(DateTime.now());
+  }
 
-  PubDevService({
-    String? optionalLocalStoragePath,
-    PubApiClient? pubDevClient,
-  })  : _optionalLocalStoragePath = optionalLocalStoragePath,
-        _client = pubDevClient ?? PubApiClient();
-
-  Future<Version?> tryFetchAndStoreLatestVersion() async {
-    var pubDevLatestVersion = await _client.tryFetchLatestStableVersion(
-      LatestCliVersionConstants.serverpodPackageName,
-    );
-
+  static Future<void> _storePubDevVersion(
+    Version? version, {
+    required Future<void> Function(CliVersionData versionArtefact)
+        storeLatestCliVersion,
+  }) async {
     CliVersionData versionArtefact;
-    Version? returnVersion;
-    if (pubDevLatestVersion != null) {
+    if (version != null) {
       versionArtefact = CliVersionData(
-        pubDevLatestVersion,
+        version,
         DateTime.now().add(LatestCliVersionConstants.localStorageValidityTime),
       );
-      returnVersion = pubDevLatestVersion;
     } else {
       versionArtefact = CliVersionData(
         Version.none,
@@ -70,8 +51,23 @@ class PubDevService {
       );
     }
 
-    await resourceManager.storeLatestCliVersion(versionArtefact,
-        localStoragePath: _optionalLocalStoragePath);
-    return returnVersion;
+    await storeLatestCliVersion(versionArtefact);
   }
+}
+
+class CliVersionData {
+  Version version;
+  DateTime validUntil;
+
+  CliVersionData(this.version, this.validUntil);
+
+  factory CliVersionData.fromJson(Map<String, dynamic> json) => CliVersionData(
+        Version.parse(json['version']),
+        DateTime.fromMillisecondsSinceEpoch(json['valid_until']),
+      );
+
+  Map<String, dynamic> toJson() => {
+        'version': version.toString(),
+        'valid_until': validUntil.millisecondsSinceEpoch
+      };
 }

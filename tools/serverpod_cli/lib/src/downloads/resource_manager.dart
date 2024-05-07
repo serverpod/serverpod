@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
-import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/downloads/local_storage_manager.dart';
+import 'package:serverpod_cli/src/util/latest_cli_version.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:uuid/uuid.dart';
 
@@ -193,22 +193,5 @@ class ServerpodCloudData {
 
   Map<String, dynamic> toJson() => {
         'token': token,
-      };
-}
-
-class CliVersionData {
-  Version version;
-  DateTime validUntil;
-
-  CliVersionData(this.version, this.validUntil);
-
-  factory CliVersionData.fromJson(Map<String, dynamic> json) => CliVersionData(
-        Version.parse(json['version']),
-        DateTime.fromMillisecondsSinceEpoch(json['valid_until']),
-      );
-
-  Map<String, dynamic> toJson() => {
-        'version': version.toString(),
-        'valid_until': validUntil.millisecondsSinceEpoch
       };
 }
