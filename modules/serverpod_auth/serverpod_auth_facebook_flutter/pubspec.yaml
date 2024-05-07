@@ -1,25 +1,23 @@
-# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
-# Mode: development
-publish_to: none
+# TEMPLATE
 
 name: serverpod_auth_facebook_flutter
 description: Sign in with Facebook for the Serverpod auth module.
-version: 2.0.0-alpha.2
+version: SERVERPOD_VERSION
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.10.0"
+  sdk: DART_VERSION
+  flutter: FLUTTER_VERSION
 
 dependencies:
   flutter:
     sdk: flutter
-  serverpod_auth_client: 2.0.0-alpha.2
-  serverpod_auth_shared_flutter: 2.0.0-alpha.2
+  serverpod_auth_client: SERVERPOD_VERSION
+  serverpod_auth_shared_flutter: SERVERPOD_VERSION
   flutter_facebook_auth: ^6.2.0
 
 dev_dependencies:
-  serverpod_lints: 2.0.0-alpha.2
+  serverpod_lints: SERVERPOD_VERSION
   flutter_test:
     sdk: flutter
 
