@@ -1,62 +1,22 @@
-import 'dart:io';
-
-import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
-import 'package:serverpod_cli/src/downloads/resource_manager.dart';
-import 'package:serverpod_cli/src/downloads/resource_manager_constants.dart';
-import 'package:serverpod_cli/src/logger/loggers/void_logger.dart';
 import 'package:serverpod_cli/src/util/package_version.dart';
-import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var testStorageFolderPath = p.join(
-    'test',
-    'integration',
-    'util',
-    'test_assets',
-    'temp_package_version',
-  );
-
-  initializeLoggerWith(VoidLogger());
-
-  tearDown(() {
-    var directory = Directory(testStorageFolderPath);
-    if (directory.existsSync()) {
-      directory.deleteSync(recursive: true);
-    }
-  });
-
-  void storeVersionOnDisk(
-    Version version,
-    DateTime validUntil,
-  ) async {
-    var storedArtefact = PackageVersionData(version, validUntil);
-
-    await resourceManager.storeLatestCliVersion(storedArtefact,
-        localStoragePath: testStorageFolderPath);
-    var file = File(p.join(
-        testStorageFolderPath, ResourceManagerConstants.latestVersionFilePath));
-
-    expect(file.existsSync(), isTrue);
-  }
-
   var versionForTest = Version(1, 1, 0);
 
-  group('Stored version on disk', () {
-    test('fetched with "valid until" time in the future.', () async {
-      storeVersionOnDisk(
-          versionForTest, DateTime.now().add(const Duration(hours: 1)));
+  group('Given version is returned from load', () {
+    test(
+        'when fetched with "valid until" time in the future then version is returned.',
+        () async {
+      var packageVersionData = PackageVersionData(
+        versionForTest,
+        DateTime.now().add(const Duration(hours: 1)),
+      );
 
       var fetchedVersion = await PackageVersion.fetchLatestPackageVersion(
-        storePackageVersionData: (PackageVersionData versionArtefact) =>
-            resourceManager.storeLatestCliVersion(
-          versionArtefact,
-          localStoragePath: testStorageFolderPath,
-        ),
-        loadPackageVersionData: () => resourceManager.tryFetchLatestCliVersion(
-          localStoragePath: testStorageFolderPath,
-        ),
+        storePackageVersionData: (PackageVersionData _) async => (),
+        loadPackageVersionData: () async => packageVersionData,
         fetchLatestPackageVersion: () async => null,
       );
 
@@ -65,92 +25,116 @@ void main() {
     });
 
     group('with "valid until" already passed', () {
-      setUp(() {
-        storeVersionOnDisk(
-            versionForTest,
-            DateTime.now().subtract(
-              const Duration(hours: 1),
-            ));
-      });
-
-      test('when successful in fetching latest version from pub.dev.',
+      test(
+          'when successful in fetching latest version from fetch then new version is stored and returned.',
           () async {
+        PackageVersionData? storedPackageVersion;
+        PackageVersionData packageVersionData = PackageVersionData(
+          versionForTest,
+          DateTime.now().subtract(
+            const Duration(hours: 1),
+          ),
+        );
         var pubDevVersion = versionForTest.nextMajor;
 
         var fetchedVersion = await PackageVersion.fetchLatestPackageVersion(
-          storePackageVersionData: (PackageVersionData versionArtefact) =>
-              resourceManager.storeLatestCliVersion(
-            versionArtefact,
-            localStoragePath: testStorageFolderPath,
-          ),
-          loadPackageVersionData: () =>
-              resourceManager.tryFetchLatestCliVersion(
-            localStoragePath: testStorageFolderPath,
-          ),
+          storePackageVersionData:
+              (PackageVersionData versionDataToStore) async =>
+                  (storedPackageVersion = versionDataToStore),
+          loadPackageVersionData: () async => packageVersionData,
           fetchLatestPackageVersion: () async => pubDevVersion,
         );
 
         expect(fetchedVersion, isNotNull);
         expect(fetchedVersion, pubDevVersion);
+        expect(storedPackageVersion, isNotNull);
+        expect(storedPackageVersion?.version, pubDevVersion);
+        var timeDifferent = storedPackageVersion?.validUntil.difference(
+            DateTime.now()
+                .add(PackageVersionConstants.localStorageValidityTime));
+        expect(
+          timeDifferent,
+          lessThan(const Duration(minutes: 1)),
+          reason: 'Successfully stored version should have a valid until time '
+              'close to the current time plus the validity time.',
+        );
       });
 
-      test('when failed to fetch latest version from pub.dev.', () async {
+      test('when failing to fetch latest then null is returned.', () async {
+        PackageVersionData? storedPackageVersion;
         var version = await PackageVersion.fetchLatestPackageVersion(
-          storePackageVersionData: (PackageVersionData versionArtefact) =>
-              resourceManager.storeLatestCliVersion(
-            versionArtefact,
-            localStoragePath: testStorageFolderPath,
-          ),
-          loadPackageVersionData: () =>
-              resourceManager.tryFetchLatestCliVersion(
-            localStoragePath: testStorageFolderPath,
-          ),
+          storePackageVersionData:
+              (PackageVersionData packageVersionData) async =>
+                  (storedPackageVersion = packageVersionData),
+          loadPackageVersionData: () async => null,
           fetchLatestPackageVersion: () async => null,
         );
 
         expect(version, isNull);
+        expect(storedPackageVersion, isNotNull);
+        var timeDifferent = storedPackageVersion?.validUntil.difference(
+            DateTime.now()
+                .add(PackageVersionConstants.badConnectionRetryTimeout));
+        expect(
+          timeDifferent,
+          lessThan(const Duration(minutes: 1)),
+          reason: 'Failed fetch stored version should have a valid until time '
+              'close to the current time plus the bad connection retry timeout.',
+        );
       });
     });
   });
 
-  group('No file on disk', () {
-    test('when successful in fetching latest version from pub.dev.', () async {
+  group('Given no version is returned from load', () {
+    test(
+        'when successful in fetching latest version then version is stored and returned.',
+        () async {
+      PackageVersionData? storedPackageVersion;
       var version = await PackageVersion.fetchLatestPackageVersion(
-        storePackageVersionData: (PackageVersionData versionArtefact) =>
-            resourceManager.storeLatestCliVersion(
-          versionArtefact,
-          localStoragePath: testStorageFolderPath,
-        ),
-        loadPackageVersionData: () => resourceManager.tryFetchLatestCliVersion(
-          localStoragePath: testStorageFolderPath,
-        ),
+        storePackageVersionData:
+            (PackageVersionData packageVersionData) async =>
+                (storedPackageVersion = packageVersionData),
+        loadPackageVersionData: () async => null,
         fetchLatestPackageVersion: () async => versionForTest,
       );
 
       expect(version, isNotNull);
       expect(version, versionForTest);
-      var localStorageFile = File(p.join(testStorageFolderPath,
-          ResourceManagerConstants.latestVersionFilePath));
-      expect(localStorageFile.existsSync(), isTrue);
+      expect(storedPackageVersion, isNotNull);
+      expect(storedPackageVersion?.version, versionForTest);
+      var timeDifferent = storedPackageVersion?.validUntil.difference(
+          DateTime.now().add(PackageVersionConstants.localStorageValidityTime));
+      expect(
+        timeDifferent,
+        lessThan(const Duration(minutes: 1)),
+        reason: 'Successfully stored version should have a valid until time '
+            'close to the current time plus the validity time.',
+      );
     });
 
-    test('when failed to fetch latest version from pub.dev.', () async {
+    test(
+        'when failing to fetch latest then timeout is stored and null is returned.',
+        () async {
+      PackageVersionData? storedPackageVersion;
       var version = await PackageVersion.fetchLatestPackageVersion(
-        storePackageVersionData: (PackageVersionData versionArtefact) =>
-            resourceManager.storeLatestCliVersion(
-          versionArtefact,
-          localStoragePath: testStorageFolderPath,
-        ),
-        loadPackageVersionData: () => resourceManager.tryFetchLatestCliVersion(
-          localStoragePath: testStorageFolderPath,
-        ),
+        storePackageVersionData:
+            (PackageVersionData packageVersionData) async =>
+                (storedPackageVersion = packageVersionData),
+        loadPackageVersionData: () async => null,
         fetchLatestPackageVersion: () async => null,
       );
 
       expect(version, isNull);
-      var localStorageFile = File(p.join(testStorageFolderPath,
-          ResourceManagerConstants.latestVersionFilePath));
-      expect(localStorageFile.existsSync(), isTrue);
+      expect(storedPackageVersion, isNotNull);
+      var timeDifferent = storedPackageVersion?.validUntil.difference(
+          DateTime.now()
+              .add(PackageVersionConstants.badConnectionRetryTimeout));
+      expect(
+        timeDifferent,
+        lessThan(const Duration(minutes: 1)),
+        reason: 'Failed fetch stored version should have a valid until time '
+            'close to the current time plus the bad connection retry timeout.',
+      );
     });
   });
 }
