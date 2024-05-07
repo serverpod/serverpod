@@ -42,6 +42,9 @@ dependencies:
 dev_dependencies:
   serverpod_lints: SERVERPOD_VERSION
   test: ^1.24.2
+  firebase_admin:
+    git:
+      url: https://github.com/lukehutch/firebase_admin.git
 
 dependency_overrides:
   serverpod_shared:
