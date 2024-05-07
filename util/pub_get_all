@@ -22,7 +22,7 @@ dart pub upgrade
 
 echo "\n### examples/auth_example/auth_example_flutter"
 cd $BASE/examples/auth_example/auth_example_flutter
-dart pub upgrade
+flutter pub upgrade
 
 echo "\n### examples/auth_example/auth_example_server"
 cd $BASE/examples/auth_example/auth_example_server
@@ -34,7 +34,7 @@ dart pub upgrade
 
 echo "\n### examples/chat/chat_flutter"
 cd $BASE/examples/chat/chat_flutter
-dart pub upgrade
+flutter pub upgrade
 
 echo "\n### examples/chat/chat_server"
 cd $BASE/examples/chat/chat_server
@@ -58,7 +58,7 @@ dart pub upgrade
 
 echo "\n### serverpod_flutter"
 cd $BASE/packages/serverpod_flutter
-dart pub upgrade
+flutter pub upgrade
 
 # Tests
 
@@ -102,7 +102,7 @@ dart pub upgrade
 
 echo "\n### projectname_flutter"
 cd $BASE/templates/serverpod_templates/projectname_flutter
-dart pub upgrade
+flutter pub upgrade
 
 echo "\n### modulename_server"
 cd $BASE/templates/serverpod_templates/modulename_server
@@ -124,23 +124,23 @@ dart pub upgrade
 
 echo "\n### serverpod_auth_shared_flutter"
 cd $BASE/modules/serverpod_auth/serverpod_auth_shared_flutter
-dart pub upgrade
+flutter pub upgrade
 
 echo "\n### serverpod_auth_apple_flutter"
 cd $BASE/modules/serverpod_auth/serverpod_auth_apple_flutter
-dart pub upgrade
+flutter pub upgrade
 
 echo "\n### serverpod_auth_google_flutter"
 cd $BASE/modules/serverpod_auth/serverpod_auth_google_flutter
-dart pub upgrade
+flutter pub upgrade
 
 echo "\n### serverpod_auth_email_flutter"
 cd $BASE/modules/serverpod_auth/serverpod_auth_email_flutter
-dart pub upgrade
+flutter pub upgrade
 
 echo "\n### serverpod_auth_firebase_flutter"
 cd $BASE/modules/serverpod_auth/serverpod_auth_firebase_flutter
-dart pub upgrade
+flutter pub upgrade
 
 # Chat module
 
@@ -154,7 +154,7 @@ dart pub upgrade
 
 echo "\n### serverpod_chat_flutter"
 cd $BASE/modules/serverpod_chat/serverpod_chat_flutter
-dart pub upgrade
+flutter pub upgrade
 
 # Integrations
 

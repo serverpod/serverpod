@@ -6,8 +6,6 @@ name: serverpod_auth_facebook_flutter
 description: Sign in with Facebook for the Serverpod auth module.
 version: VERSION
 repository: https://github.com/serverpod/serverpod
-homepage: https://serverpod.dev
-issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
   sdk: ">=2.17.0 <3.0.0"
@@ -34,8 +32,8 @@ dev_dependencies:
 flutter:
 
   # To add assets to your package, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+   assets:
+     - assets/facebook-icon.png
   #   - images/a_dot_ham.jpeg
   #
   # For details regarding assets in packages, see
