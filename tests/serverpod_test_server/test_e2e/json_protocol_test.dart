@@ -17,22 +17,35 @@ void main() {
       );
     });
 
-    test('it should return status code 200', () {
+    test('then it should return status code 200', () {
       expect(
         response.statusCode,
         200,
       );
     });
 
-    test('it should contain the "nested" key', () {
+    test('then it should contain the "nested" key', () {
       Map jsonMap = jsonDecode(response.body);
       expect(
         jsonMap,
         contains('nested'),
       );
     });
+  });
 
-    test('the nested object should not contain server-only fields', () {
+  group(
+      "Given a Serverpod server when fetching an object with server only field, ",
+      () {
+    late http.Response response;
+
+    setUpAll(() async {
+      response = await http.post(
+        Uri.parse("${serverUrl}jsonProtocol"),
+        body: jsonEncode({"method": "getJsonForProtocol"}),
+      );
+    });
+
+    test('then the nested object should not contain server-only field', () {
       Map jsonMap = jsonDecode(response.body);
       Map nestedMap = jsonMap['nested'];
       expect(
@@ -49,7 +62,7 @@ void main() {
 
     setUpAll(() async {
       WebSocketChannel websocket = WebSocketChannel.connect(
-        Uri.parse("ws://localhost:8080/websocket"),
+        Uri.parse(serverWebsocketUrl),
       );
       message = await websocket.stream.asBroadcastStream().first;
       await websocket.sink.close();
@@ -87,14 +100,14 @@ void main() {
 
       setUpAll(() async {
         WebSocketChannel websocket = WebSocketChannel.connect(
-          Uri.parse("ws://localhost:8080/websocket"),
+          Uri.parse(serverWebsocketUrl),
         );
         message = await websocket.stream.asBroadcastStream().first;
         await websocket.sink.close();
       });
 
       test(
-        'the serialized object should not contain server-only fields',
+        'then the serialized object should not contain server-only field',
         () async {
           Map? nestedMap = jsonDecode(message)['object']?['data']?['nested'];
           expect(nestedMap, isNot(contains('serverOnlyScope')));
