@@ -1,10 +1,10 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_cli/src/downloads/local_storage_manager.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:uuid/uuid.dart';
 
@@ -15,19 +15,8 @@ import 'package:serverpod_cli/src/shared/environment.dart';
 final resourceManager = ResourceManager();
 
 class ResourceManager {
-  Directory get homeDirectory {
-    var envVars = Platform.environment;
-
-    if (Platform.isWindows) {
-      return Directory(envVars['UserProfile']!);
-    } else if (Platform.isLinux || Platform.isMacOS) {
-      return Directory(envVars['HOME']!);
-    }
-    throw (Exception('Unsupported platform.'));
-  }
-
   Directory get localStorageDirectory =>
-      Directory(p.join(homeDirectory.path, '.serverpod'));
+      Directory(p.join(LocalStorageManager.homeDirectory.path, '.serverpod'));
 
   Directory get versionedDir =>
       Directory(p.join(localStorageDirectory.path, templateVersion));
@@ -65,52 +54,40 @@ class ResourceManager {
     String? localStoragePath,
   }) async {
     localStoragePath ??= localStorageDirectory.path;
-    var latestCliVersionFile = File(p.join(
-      localStoragePath,
-      ResourceManagerConstants.latestVersionFilePath,
-    ));
 
-    try {
-      if (!latestCliVersionFile.existsSync()) {
-        latestCliVersionFile.createSync(recursive: true);
-      }
-
-      var json = jsonEncode(cliVersionData);
-
-      latestCliVersionFile.writeAsStringSync(json);
-    } catch (e) {
-      // Failed to write latest cli version to file.
-    }
+    return LocalStorageManager.storeJsonFile(
+      fileName: ResourceManagerConstants.latestVersionFilePath,
+      json: cliVersionData.toJson(),
+      localStoragePath: localStoragePath,
+      onError: (_) {
+        // Failed to store latest cli version to file.
+        // Silently ignore since users can't do anything about it.
+      },
+    );
   }
 
   Future<CliVersionData?> tryFetchLatestCliVersion({
     String? localStoragePath,
   }) async {
     localStoragePath ??= localStorageDirectory.path;
-    var latestCliVersionFile = File(p.join(
-      localStoragePath,
-      ResourceManagerConstants.latestVersionFilePath,
-    ));
 
-    try {
-      if (latestCliVersionFile.existsSync()) {
-        var json = jsonDecode(latestCliVersionFile.readAsStringSync());
-        return CliVersionData.fromJson(json);
-      }
-    } catch (e) {
-      // Failed to read latest cli version from file.
-    }
-
-    // If the file exists it might be corrupted so we delete it.
-    if (latestCliVersionFile.existsSync()) {
+    CliVersionData? deleteFile(Object e, File file) {
       try {
-        latestCliVersionFile.deleteSync();
-      } catch (e) {
-        // Failed to delete file
+        file.deleteSync();
+      } catch (_) {
+        // Failed to delete file.
+        // Silently ignore since users can't do anything about it.
       }
+      return null;
     }
 
-    return null;
+    return LocalStorageManager.tryFetchAndDeserializeJsonFile(
+      fileName: ResourceManagerConstants.latestVersionFilePath,
+      localStoragePath: localStoragePath,
+      fromJson: CliVersionData.fromJson,
+      onReadError: deleteFile,
+      onDeserializationError: deleteFile,
+    );
   }
 
   Future<void> storeServerpodCloudData(
@@ -118,22 +95,15 @@ class ResourceManager {
     String? localStoragePath,
   }) async {
     localStoragePath ??= localStorageDirectory.path;
-    var serverpodCloudDataFile = File(p.join(
-      localStoragePath,
-      ResourceManagerConstants.serverpodCloudDataFilePath,
-    ));
 
-    try {
-      if (!serverpodCloudDataFile.existsSync()) {
-        serverpodCloudDataFile.createSync(recursive: true);
-      }
-
-      var json = jsonEncode(cloudData);
-
-      serverpodCloudDataFile.writeAsStringSync(json);
-    } catch (e) {
-      throw Exception('Failed to store serverpod cloud data. error: $e');
-    }
+    return LocalStorageManager.storeJsonFile(
+      fileName: ResourceManagerConstants.serverpodCloudDataFilePath,
+      json: cloudData.toJson(),
+      localStoragePath: localStoragePath,
+      onError: (e) {
+        throw Exception('Failed to store serverpod cloud data. error: $e');
+      },
+    );
   }
 
   /// Removes the serverpod cloud data file from the local storage.
@@ -141,41 +111,39 @@ class ResourceManager {
   /// Throws an exception if the file could not be removed.
   Future<void> removeServerpodCloudData({String? localStoragePath}) async {
     localStoragePath ??= localStorageDirectory.path;
-    var serverpodCloudDataFile = File(p.join(
-      localStoragePath,
-      ResourceManagerConstants.serverpodCloudDataFilePath,
-    ));
 
-    if (serverpodCloudDataFile.existsSync()) {
-      serverpodCloudDataFile.deleteSync();
-    }
+    return LocalStorageManager.removeFile(
+      fileName: ResourceManagerConstants.serverpodCloudDataFilePath,
+      localStoragePath: localStoragePath,
+      onError: (e) {
+        throw Exception('Failed to remove serverpod cloud data. error: $e');
+      },
+    );
   }
 
   Future<ServerpodCloudData?> tryFetchServerpodCloudData({
     String? localStoragePath,
   }) async {
     localStoragePath ??= localStorageDirectory.path;
-    var serverpodCloudDataFile = File(p.join(
-      localStoragePath,
-      ResourceManagerConstants.serverpodCloudDataFilePath,
-    ));
 
-    if (!serverpodCloudDataFile.existsSync()) return null;
-
-    try {
-      var json = jsonDecode(serverpodCloudDataFile.readAsStringSync());
-      return ServerpodCloudData.fromJson(json);
-    } catch (_) {
+    ServerpodCloudData? deleteFile(Object e, File file) {
       try {
-        serverpodCloudDataFile.deleteSync();
+        file.deleteSync();
       } catch (deleteError) {
         log.warning(
           'Failed to delete stored serverpod cloud data file. Error: $deleteError',
         );
       }
+      return null;
     }
 
-    return null;
+    return LocalStorageManager.tryFetchAndDeserializeJsonFile(
+      fileName: ResourceManagerConstants.serverpodCloudDataFilePath,
+      localStoragePath: localStoragePath,
+      fromJson: ServerpodCloudData.fromJson,
+      onReadError: deleteFile,
+      onDeserializationError: deleteFile,
+    );
   }
 
   String get packageDownloadUrl =>
