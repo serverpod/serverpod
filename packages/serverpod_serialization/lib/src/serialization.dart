@@ -26,9 +26,7 @@ abstract mixin class SerializableEntity {
 /// The [ProtocolSerialization] defines a toJsonForProtocol method which makes it
 /// possible to limit what fields are serialized
 abstract interface class ProtocolSerialization {
-  /// Returns a serialized JSON structure of the model, ready to be sent
-  /// through the API. This does not include fields that are marked as
-  /// database only.
+  /// Returns a JSON structure of the model, optimized for Protocol communication.
   dynamic toJsonForProtocol();
 }
 
