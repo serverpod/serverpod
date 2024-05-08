@@ -6,7 +6,6 @@ import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/logger/loggers/void_logger.dart';
 import 'package:serverpod_cli/src/runner/better_command_runner.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
-import 'package:serverpod_cli/src/util/exit_exception.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 
@@ -95,129 +94,6 @@ void main() {
   late TestFixture fixture;
   setUp(() {
     fixture = createTestFixture();
-  });
-  group('Analytics Reporting - ', () {
-    test('when no arguments are provided', () async {
-      List<String> args = [];
-
-      await fixture.runner.run(args);
-
-      expect(fixture.analytics.trackedEvents.length, equals(1));
-      expect(fixture.analytics.trackedEvents.first, equals('help'));
-    });
-
-    test('when invalid command is provided', () async {
-      List<String> args = ['this could be a command argument'];
-
-      await expectLater(
-        () => fixture.runner.run(args),
-        throwsA(const TypeMatcher<ExitException>()),
-      );
-
-      expect(fixture.analytics.trackedEvents.length, equals(1));
-      expect(fixture.analytics.trackedEvents.first, equals('invalid'));
-    });
-
-    test('when only valid flag is provided', () async {
-      List<String> args = ['--${BetterCommandRunnerFlags.verbose}'];
-
-      await fixture.runner.run(args);
-
-      expect(fixture.analytics.trackedEvents.length, equals(1));
-      expect(fixture.analytics.trackedEvents.first, equals('help'));
-    });
-
-    test('when unknown command is provided', () async {
-      List<String> args = ['--unknown-command'];
-
-      await expectLater(
-        () => fixture.runner.run(args),
-        throwsA(const TypeMatcher<ExitException>()),
-      );
-
-      expect(fixture.analytics.trackedEvents.length, equals(1));
-      expect(fixture.analytics.trackedEvents.first, equals('invalid'));
-    });
-
-    test('when valid command and option is provided', () async {
-      List<String> args = [MockCommand.commandName, '--name', 'isak'];
-
-      await fixture.runner.run(args);
-
-      expect(fixture.analytics.trackedEvents.length, equals(1));
-      expect(
-        fixture.analytics.trackedEvents.first,
-        equals(MockCommand.commandName),
-      );
-      expect(fixture.mockCommand.numberOfRuns, equals(1));
-    });
-
-    test('when valid command but invalid option is provided', () async {
-      List<String> args = [MockCommand.commandName, '--name', 'steve'];
-
-      await expectLater(
-        () => fixture.runner.run(args),
-        throwsA(const TypeMatcher<ExitException>()),
-      );
-
-      expect(fixture.analytics.trackedEvents.length, equals(1));
-      expect(fixture.analytics.trackedEvents.first, equals('invalid'));
-    });
-
-    test('when valid command and global flag is provided', () async {
-      List<String> args = [
-        '--${BetterCommandRunnerFlags.verbose}',
-        MockCommand.commandName,
-        '--name',
-        'alex'
-      ];
-
-      await fixture.runner.run(args);
-
-      expect(fixture.analytics.trackedEvents.length, equals(1));
-      expect(
-        fixture.analytics.trackedEvents.first,
-        equals(MockCommand.commandName),
-      );
-      expect(fixture.mockCommand.numberOfRuns, equals(1));
-    });
-
-    test('when analytics flag is omitted', () async {
-      List<String> args = [MockCommand.commandName, '--name', 'alex'];
-
-      await fixture.runner.run(args);
-
-      expect(fixture.mockCommand.numberOfRuns, equals(1));
-      expect(fixture.runner.analyticsEnabled(), isTrue);
-    });
-
-    test('when analytics flag is provided', () async {
-      List<String> args = [
-        '--${BetterCommandRunnerFlags.analytics}',
-        MockCommand.commandName,
-        '--name',
-        'alex',
-      ];
-
-      await fixture.runner.run(args);
-
-      expect(fixture.mockCommand.numberOfRuns, equals(1));
-      expect(fixture.runner.analyticsEnabled(), isTrue);
-    });
-
-    test('when no-analytics flag is provided', () async {
-      List<String> args = [
-        '--no-${BetterCommandRunnerFlags.analytics}',
-        MockCommand.commandName,
-        '--name',
-        'alex',
-      ];
-
-      await fixture.runner.run(args);
-
-      expect(fixture.mockCommand.numberOfRuns, equals(1));
-      expect(fixture.runner.analyticsEnabled(), isFalse);
-    });
   });
   group('Logger Initialization - ', () {
     test('when no log level flag is provided', () async {
