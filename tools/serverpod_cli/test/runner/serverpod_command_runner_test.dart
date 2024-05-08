@@ -4,6 +4,7 @@ import 'package:serverpod_cli/src/analytics/analytics.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/logger/loggers/void_logger.dart';
+import 'package:serverpod_cli/src/runner/better_command_runner.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/exit_exception.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -118,7 +119,7 @@ void main() {
     });
 
     test('when only valid flag is provided', () async {
-      List<String> args = ['--${GlobalFlags.verbose}'];
+      List<String> args = ['--${BetterCommandRunnerFlags.verbose}'];
 
       await fixture.runner.run(args);
 
@@ -165,7 +166,7 @@ void main() {
 
     test('when valid command and global flag is provided', () async {
       List<String> args = [
-        '--${GlobalFlags.verbose}',
+        '--${BetterCommandRunnerFlags.verbose}',
         MockCommand.commandName,
         '--name',
         'alex'
@@ -192,7 +193,7 @@ void main() {
 
     test('when analytics flag is provided', () async {
       List<String> args = [
-        '--${GlobalFlags.analytics}',
+        '--${BetterCommandRunnerFlags.analytics}',
         MockCommand.commandName,
         '--name',
         'alex',
@@ -206,7 +207,7 @@ void main() {
 
     test('when no-analytics flag is provided', () async {
       List<String> args = [
-        '--no-${GlobalFlags.analytics}',
+        '--no-${BetterCommandRunnerFlags.analytics}',
         MockCommand.commandName,
         '--name',
         'alex',
@@ -227,18 +228,20 @@ void main() {
       expect(log.logLevel, equals(LogLevel.info));
     });
 
-    test('when only --${GlobalFlags.verbose} flag is provided', () async {
+    test('when only --${BetterCommandRunnerFlags.verbose} flag is provided',
+        () async {
       List<String> args = [
-        '--${GlobalFlags.verbose}',
+        '--${BetterCommandRunnerFlags.verbose}',
       ];
 
       await fixture.runner.run(args);
 
       expect(log.logLevel, equals(LogLevel.debug));
     });
-    test('when only --${GlobalFlags.quiet} flag is provided', () async {
+    test('when only --${BetterCommandRunnerFlags.quiet} flag is provided',
+        () async {
       List<String> args = [
-        '--${GlobalFlags.quiet}',
+        '--${BetterCommandRunnerFlags.quiet}',
       ];
 
       await fixture.runner.run(args);
@@ -247,11 +250,11 @@ void main() {
     });
 
     test(
-        'when --${GlobalFlags.verbose} and --${GlobalFlags.quiet} flags are provided',
+        'when --${BetterCommandRunnerFlags.verbose} and --${BetterCommandRunnerFlags.quiet} flags are provided',
         () async {
       List<String> args = [
-        '--${GlobalFlags.verbose}',
-        '--${GlobalFlags.quiet}',
+        '--${BetterCommandRunnerFlags.verbose}',
+        '--${BetterCommandRunnerFlags.quiet}',
       ];
 
       await fixture.runner.run(args);
