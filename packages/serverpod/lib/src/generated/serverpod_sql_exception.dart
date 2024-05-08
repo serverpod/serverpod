@@ -11,7 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ServerpodSqlException extends _i1.SerializableEntity
-    implements _i1.SerializableException {
+    implements _i1.SerializableException, _i1.ProtocolSerialization {
   ServerpodSqlException._({
     required this.message,
     required this.sql,
@@ -47,7 +47,7 @@ abstract class ServerpodSqlException extends _i1.SerializableEntity
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'message': message,
       'sql': sql,

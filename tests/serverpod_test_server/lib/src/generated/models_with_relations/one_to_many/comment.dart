@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class Comment extends _i1.TableRow {
+abstract class Comment extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   Comment._({
     int? id,
     required this.description,
@@ -68,12 +69,12 @@ abstract class Comment extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'description': description,
       'orderId': orderId,
-      if (order != null) 'order': order?.allToJson(),
+      if (order != null) 'order': order?.toJsonForProtocol(),
     };
   }
 

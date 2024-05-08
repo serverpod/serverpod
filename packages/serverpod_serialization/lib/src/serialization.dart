@@ -13,19 +13,21 @@ typedef constructor<T> = T Function(
 /// The [SerializableEntity] is the base class for all serializable objects in
 /// Serverpod, except primitives.
 abstract mixin class SerializableEntity {
-  /// Returns a serialized JSON structure of the model, ready to be sent
-  /// through the API. This does not include fields that are marked as
-  /// database only.
-  dynamic toJson();
-
   /// Returns a serialized JSON structure of the model which also includes
   /// fields used by the database.
-  dynamic allToJson() => toJson();
+  dynamic toJson();
 
   @override
   String toString() {
     return SerializationManager.encode(this);
   }
+}
+
+/// The [ProtocolSerialization] defines a toJsonForProtocol method which makes it
+/// possible to limit what fields are serialized
+abstract interface class ProtocolSerialization {
+  /// Returns a JSON structure of the model, optimized for Protocol communication.
+  dynamic toJsonForProtocol();
 }
 
 /// Get the type provided as an generic. Useful for getting a nullable type.
@@ -136,7 +138,7 @@ abstract class SerializationManager {
 
     return {
       'className': className,
-      'data': data,
+      'data': data is ProtocolSerialization ? data.toJsonForProtocol() : data,
     };
   }
 
@@ -165,9 +167,21 @@ abstract class SerializationManager {
           return (nonEncodable as dynamic)?.toJson();
         }
       },
-    ).convert(
-      object,
-    );
+    ).convert(object);
+  }
+
+  /// Encode the provided [object] to a Json-formatted [String].
+  /// if object implements [ProtocolSerialization] interface then
+  /// [toJsonForProtocol] it will be used instead of [toJson] method
+  static String encodeForProtocol(
+    Object? object, {
+    bool formatted = false,
+  }) {
+    if (object is ProtocolSerialization) {
+      return encode(object.toJsonForProtocol(), formatted: formatted);
+    }
+
+    return encode(object, formatted: formatted);
   }
 
   /// Encode the provided [object] to a json-formatted [String], include class

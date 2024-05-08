@@ -68,6 +68,16 @@ void main() {
             reason: 'Missing extends clause for SerializableEntity.');
       });
 
+      test('implements ProtocolSerialization.', () {
+        expect(
+            CompilationUnitHelpers.hasImplementsClause(
+              maybeClassNamedExample!,
+              name: 'ProtocolSerialization',
+            ),
+            isTrue,
+            reason: 'Missing implements clause for ProtocolSerialization');
+      });
+
       test('has a fromJson factory.', () {
         expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
@@ -88,14 +98,14 @@ void main() {
             reason: 'Missing declaration for toJson method');
       });
 
-      test('has a allToJson method.', () {
+      test('has a toJsonForProtocol method.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
               maybeClassNamedExample!,
-              name: 'allToJson',
+              name: 'toJsonForProtocol',
             ),
             isTrue,
-            reason: 'Missing declaration for allToJson method.');
+            reason: 'Missing declaration for toJsonForProtocol method.');
       });
     }, skip: maybeClassNamedExample == null);
   });
@@ -136,6 +146,16 @@ void main() {
             ),
             isTrue,
             reason: 'Missing extends clause for TableRow.');
+      });
+
+      test('implements ProtocolSerialization', () {
+        expect(
+            CompilationUnitHelpers.hasImplementsClause(
+              maybeClassNamedExample!,
+              name: 'ProtocolSerialization',
+            ),
+            isTrue,
+            reason: 'Missing implements clause for ProtocolSerialization.');
       });
 
       group('has a constructor', () {
@@ -524,16 +544,16 @@ void main() {
               reason: 'Field declaration missing for $fieldName.');
         });
 
-        test('has a allToJson that uses hidden class variable.', () {
-          var maybeAllToJson = CompilationUnitHelpers.tryFindMethodDeclaration(
+        test('has a toJson that uses hidden class variable.', () {
+          var maybeToJson = CompilationUnitHelpers.tryFindMethodDeclaration(
             maybeClassNamedExample!,
-            name: 'allToJson',
+            name: 'toJson',
           );
 
-          expect(maybeAllToJson, isNotNull,
-              reason: 'Missing declaration for allToJson method.');
-          expect(maybeAllToJson!.toSource(),
-              contains('\'$fieldName\' : _$fieldName'),
+          expect(maybeToJson, isNotNull,
+              reason: 'Missing declaration for toJson method.');
+          expect(
+              maybeToJson!.toSource(), contains('\'$fieldName\' : _$fieldName'),
               reason:
                   'Missing use of hidden class variable in setColumn method.');
         });

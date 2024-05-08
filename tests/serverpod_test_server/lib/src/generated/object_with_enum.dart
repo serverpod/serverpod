@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class ObjectWithEnum extends _i1.TableRow {
+abstract class ObjectWithEnum extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   ObjectWithEnum._({
     int? id,
     required this.testEnum,
@@ -92,7 +93,7 @@ abstract class ObjectWithEnum extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'testEnum': testEnum.toJson(),

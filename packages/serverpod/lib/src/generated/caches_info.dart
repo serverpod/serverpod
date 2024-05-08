@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// High level information about the caches.
-abstract class CachesInfo extends _i1.SerializableEntity {
+abstract class CachesInfo extends _i1.SerializableEntity
+    implements _i1.ProtocolSerialization {
   CachesInfo._({
     required this.local,
     required this.localPrio,
@@ -60,11 +61,11 @@ abstract class CachesInfo extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'local': local.allToJson(),
-      'localPrio': localPrio.allToJson(),
-      'global': global.allToJson(),
+      'local': local.toJsonForProtocol(),
+      'localPrio': localPrio.toJsonForProtocol(),
+      'global': global.toJsonForProtocol(),
     };
   }
 }

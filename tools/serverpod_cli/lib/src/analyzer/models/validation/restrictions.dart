@@ -15,6 +15,7 @@ import 'model_relations.dart';
 
 const _globallyRestrictedKeywords = [
   'toJson',
+  'toJsonForProtocol',
   'fromJson',
   'toString',
   'hashCode',
@@ -93,7 +94,6 @@ const _databaseModelReservedFieldNames = [
   'findSingleRow',
   'find',
   'setColumn',
-  'allToJson',
   'toJsonForDatabase',
   'tableName',
   'include',

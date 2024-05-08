@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class FilterConstraint extends _i1.SerializableEntity {
+abstract class FilterConstraint extends _i1.SerializableEntity
+    implements _i1.ProtocolSerialization {
   FilterConstraint._({
     required this.type,
     required this.column,
@@ -61,7 +62,7 @@ abstract class FilterConstraint extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'type': type.toJson(),
       'column': column,
