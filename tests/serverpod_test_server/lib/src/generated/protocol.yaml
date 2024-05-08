@@ -33,6 +33,8 @@ s3CloudStorage:
   - getPublicUrlForFile:
   - getDirectFilePostUrl:
   - verifyDirectFileUpload:
+customClassProtocol:
+  - getProtocolField:
 customTypes:
   - returnCustomClass:
   - returnCustomClassNullable:

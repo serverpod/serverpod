@@ -108,8 +108,9 @@ import 'package:serverpod_test_client/src/protocol/models_with_relations/one_to_
 import 'package:serverpod_test_client/src/protocol/models_with_relations/one_to_many/order.dart'
     as _i82;
 import 'package:serverpod_test_client/src/custom_classes.dart' as _i83;
-import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i84;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i85;
+import 'package:serverpod_test_client/src/protocol_custom_classes.dart' as _i84;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i85;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i86;
 export 'exception_with_data.dart';
 export 'long_identifiers/deep_includes/city_with_long_table_name.dart';
 export 'long_identifiers/deep_includes/organization_with_long_table_name.dart';
@@ -1506,27 +1507,35 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i83.CustomClass) {
       return _i83.CustomClass.fromJson(data, this) as T;
     }
-    if (t == _i84.ExternalCustomClass) {
-      return _i84.ExternalCustomClass.fromJson(data, this) as T;
+    if (t == _i84.ProtocolCustomClass) {
+      return _i84.ProtocolCustomClass.fromJson(data, this) as T;
     }
-    if (t == _i84.FreezedCustomClass) {
-      return _i84.FreezedCustomClass.fromJson(data, this) as T;
+    if (t == _i85.ExternalCustomClass) {
+      return _i85.ExternalCustomClass.fromJson(data, this) as T;
+    }
+    if (t == _i85.FreezedCustomClass) {
+      return _i85.FreezedCustomClass.fromJson(data, this) as T;
     }
     if (t == _i1.getType<_i83.CustomClass?>()) {
       return (data != null ? _i83.CustomClass.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i84.ExternalCustomClass?>()) {
+    if (t == _i1.getType<_i84.ProtocolCustomClass?>()) {
       return (data != null
-          ? _i84.ExternalCustomClass.fromJson(data, this)
+          ? _i84.ProtocolCustomClass.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i84.FreezedCustomClass?>()) {
+    if (t == _i1.getType<_i85.ExternalCustomClass?>()) {
       return (data != null
-          ? _i84.FreezedCustomClass.fromJson(data, this)
+          ? _i85.ExternalCustomClass.fromJson(data, this)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i85.FreezedCustomClass?>()) {
+      return (data != null
+          ? _i85.FreezedCustomClass.fromJson(data, this)
           : null) as T;
     }
     try {
-      return _i85.Protocol().deserialize<T>(data, t);
+      return _i86.Protocol().deserialize<T>(data, t);
     } catch (_) {}
     try {
       return _i69.Protocol().deserialize<T>(data, t);
@@ -1537,7 +1546,7 @@ class Protocol extends _i1.SerializationManager {
   @override
   String? getClassNameForObject(Object data) {
     String? className;
-    className = _i85.Protocol().getClassNameForObject(data);
+    className = _i86.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
@@ -1548,10 +1557,13 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i83.CustomClass) {
       return 'CustomClass';
     }
-    if (data is _i84.ExternalCustomClass) {
+    if (data is _i84.ProtocolCustomClass) {
+      return 'ProtocolCustomClass';
+    }
+    if (data is _i85.ExternalCustomClass) {
       return 'ExternalCustomClass';
     }
-    if (data is _i84.FreezedCustomClass) {
+    if (data is _i85.FreezedCustomClass) {
       return 'FreezedCustomClass';
     }
     if (data is _i2.ExceptionWithData) {
@@ -1759,7 +1771,7 @@ class Protocol extends _i1.SerializationManager {
   dynamic deserializeByClassName(Map<String, dynamic> data) {
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
-      return _i85.Protocol().deserializeByClassName(data);
+      return _i86.Protocol().deserializeByClassName(data);
     }
     if (data['className'].startsWith('serverpod_test_module.')) {
       data['className'] = data['className'].substring(22);
@@ -1768,11 +1780,14 @@ class Protocol extends _i1.SerializationManager {
     if (data['className'] == 'CustomClass') {
       return deserialize<_i83.CustomClass>(data['data']);
     }
+    if (data['className'] == 'ProtocolCustomClass') {
+      return deserialize<_i84.ProtocolCustomClass>(data['data']);
+    }
     if (data['className'] == 'ExternalCustomClass') {
-      return deserialize<_i84.ExternalCustomClass>(data['data']);
+      return deserialize<_i85.ExternalCustomClass>(data['data']);
     }
     if (data['className'] == 'FreezedCustomClass') {
-      return deserialize<_i84.FreezedCustomClass>(data['data']);
+      return deserialize<_i85.FreezedCustomClass>(data['data']);
     }
     if (data['className'] == 'ExceptionWithData') {
       return deserialize<_i2.ExceptionWithData>(data['data']);

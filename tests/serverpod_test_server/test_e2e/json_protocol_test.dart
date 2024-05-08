@@ -137,4 +137,45 @@ void main() {
       );
     },
   );
+
+  group(
+      "Given a Serverpod server when fetching an custom class object with server only field, ",
+      () {
+    late http.Response response;
+
+    setUpAll(() async {
+      response = await http.post(
+        Uri.parse("${serverUrl}customClassProtocol"),
+        body: jsonEncode({"method": "getProtocolField"}),
+      );
+    });
+
+    test('then the response body should not contain server-only field', () {
+      Map jsonMap = jsonDecode(response.body);
+      expect(jsonMap, isNot(contains('serverOnlyValue')));
+    });
+  });
+
+  group(
+    "Given a Serverpod server with WebSocket connection, when listening for a serialized custom class object with server only field, ",
+    () {
+      late dynamic message;
+
+      setUpAll(() async {
+        WebSocketChannel websocket = WebSocketChannel.connect(
+          Uri.parse(serverWebsocketUrl),
+        );
+        message = await websocket.stream.asBroadcastStream().first;
+        await websocket.sink.close();
+      });
+
+      test(
+        'then the "data" json object should not contain server-only field',
+        () async {
+          Map? nestedMap = jsonDecode(message)['object']?['data'];
+          expect(nestedMap, isNot(contains('serverOnlyValue')));
+        },
+      );
+    },
+  );
 }
