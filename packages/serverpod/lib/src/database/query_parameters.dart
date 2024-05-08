@@ -1,4 +1,4 @@
-/// Provides parameters for direct database queries with [Database.query]
+/// Provides parameters for direct database queries
 abstract class QueryParameters {
   /// retrieve current parameters
   Object? get parameters;
@@ -6,7 +6,7 @@ abstract class QueryParameters {
   /// Named parameters are indicated by using @
   ///
   /// ```dart
-  /// var result = await query(
+  /// var result = await db.unsafeQuery(
   ///     'SELECT id FROM apparel WHERE color = @color AND size = @size',
   ///     QueryParameters.named({
   ///       'color': 'green',
@@ -20,7 +20,7 @@ abstract class QueryParameters {
   /// Positional parameters are indicated by using $
   ///
   /// ```dart
-  /// var result = await query(
+  /// var result = await db.unsafeQuery(
   ///     'SELECT id FROM apparel WHERE color = $1 AND size = $2',
   ///     QueryParameters.positional(['green', 'XL']));
   /// ```
@@ -29,12 +29,12 @@ abstract class QueryParameters {
   }
 }
 
-/// Named parameters for query.
+/// Named parameters for direct database queries.
 class QueryParametersNamed implements QueryParameters {
   /// Named parameters are indicated by using @
   ///
   /// ```dart
-  /// var result = await query(
+  /// var result = await db.unsafeQuery(
   ///     'SELECT id FROM apparel WHERE color = @color AND size = @size',
   ///     QueryParametersNamed({
   ///       'color': 'green',
@@ -50,13 +50,13 @@ class QueryParametersNamed implements QueryParameters {
   Map<String, Object?> get parameters => _parameters;
 }
 
-/// Positional Parameters for [query]
+/// Positional parameters for direct database queries
 class QueryParametersPositional implements QueryParameters {
   /// pos params
   /// Positional parameters are indicated by using $
   ///
   /// ```dart
-  /// var result = await query(
+  /// var result = await db.unsafeQuery(
   ///     'SELECT id FROM apparel WHERE color = $1 AND size = $2',
   ///     QueryParametersPositional(['green', 'XL']));
   /// ```
