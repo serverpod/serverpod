@@ -160,6 +160,11 @@ class SerializableModelLibraryGenerator {
             refer('SerializableEntity', serverpodUrl(serverCode));
       }
 
+      if (serverCode) {
+        classBuilder.implements
+            .add(refer('ProtocolSerialization', serverpodUrl(serverCode)));
+      }
+
       classBuilder.fields.addAll(_buildModelClassFields(
         fields,
         tableName,
@@ -188,7 +193,8 @@ class SerializableModelLibraryGenerator {
 
       // Serialization for database and everything
       if (serverCode) {
-        classBuilder.methods.add(_buildModelClassAllToJsonMethod(fields));
+        classBuilder.methods
+            .add(_buildModelClassToJsonForProtocolMethod(fields));
 
         if (tableName != null) {
           classBuilder.methods.addAll([
@@ -322,13 +328,13 @@ class SerializableModelLibraryGenerator {
         }))
         ..methods.add(Method((methodBuilder) {
           methodBuilder
-            ..name = 'allToJson'
+            ..name = 'toJson'
             ..annotations.add(refer('override'))
             ..returns = refer('Map<String, dynamic>')
             ..body = Block((blockBuilder) {
               blockBuilder.statements.add(
                 refer('var jsonMap')
-                    .assign(refer('super').property('allToJson').call([]))
+                    .assign(refer('super').property('toJson').call([]))
                     .statement,
               );
 
@@ -617,31 +623,43 @@ class SerializableModelLibraryGenerator {
     );
   }
 
-  Method _buildModelClassAllToJsonMethod(
-      List<SerializableModelFieldDefinition> fields) {
-    return Method(
-      (m) {
-        m.returns = refer('Map<String,dynamic>');
-        m.name = 'allToJson';
-        m.annotations.add(refer('override'));
-
-        m.body = _createToJsonBodyFromFields(fields, 'allToJson');
-      },
-    );
-  }
-
   Method _buildModelClassToJsonMethod(
-    List<SerializableModelFieldDefinition> fields,
-  ) {
+      Iterable<SerializableModelFieldDefinition> fields) {
     return Method(
       (m) {
         m.returns = refer('Map<String,dynamic>');
         m.name = 'toJson';
         m.annotations.add(refer('override'));
 
+        var filteredFields = fields;
+
+        // since the [toJson] method is included both on server and client side models,
+        // on the client side the server-only fields are missing and we should not
+        // generate serialization for these fields.
+        if (!serverCode) {
+          filteredFields =
+              fields.where((field) => field.shouldSerializeField(serverCode));
+        }
+
+        m.body = _createToJsonBodyFromFields(filteredFields, 'toJson');
+      },
+    );
+  }
+
+  Method _buildModelClassToJsonForProtocolMethod(
+    Iterable<SerializableModelFieldDefinition> fields,
+  ) {
+    return Method(
+      (m) {
+        m.returns = refer('Map<String,dynamic>');
+        m.name = 'toJsonForProtocol';
+        m.annotations.add(refer('override'));
+
         var filteredFields =
             fields.where((field) => field.shouldSerializeField(serverCode));
-        m.body = _createToJsonBodyFromFields(filteredFields, 'toJson');
+
+        m.body =
+            _createToJsonBodyFromFields(filteredFields, 'toJsonForProtocol');
       },
     );
   }

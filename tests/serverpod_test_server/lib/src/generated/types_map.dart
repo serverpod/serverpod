@@ -13,7 +13,8 @@ import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class TypesMap extends _i1.SerializableEntity {
+abstract class TypesMap extends _i1.SerializableEntity
+    implements _i1.ProtocolSerialization {
   TypesMap._({
     this.anIntKey,
     this.aBoolKey,
@@ -376,7 +377,7 @@ abstract class TypesMap extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (anIntKey != null) 'anIntKey': anIntKey?.toJson(),
       if (aBoolKey != null) 'aBoolKey': aBoolKey?.toJson(),
@@ -396,13 +397,16 @@ abstract class TypesMap extends _i1.SerializableEntity {
         'aStringifiedEnumKey':
             aStringifiedEnumKey?.toJson(keyToJson: (k) => k.toJson()),
       if (anObjectKey != null)
-        'anObjectKey': anObjectKey?.toJson(keyToJson: (k) => k.allToJson()),
+        'anObjectKey':
+            anObjectKey?.toJson(keyToJson: (k) => k.toJsonForProtocol()),
       if (aMapKey != null)
         'aMapKey': aMapKey?.toJson(
-            keyToJson: (k) => k.toJson(keyToJson: (k) => k.allToJson())),
+            keyToJson: (k) =>
+                k.toJson(keyToJson: (k) => k.toJsonForProtocol())),
       if (aListKey != null)
         'aListKey': aListKey?.toJson(
-            keyToJson: (k) => k.toJson(valueToJson: (v) => v.allToJson())),
+            keyToJson: (k) =>
+                k.toJson(valueToJson: (v) => v.toJsonForProtocol())),
       if (anIntValue != null) 'anIntValue': anIntValue?.toJson(),
       if (aBoolValue != null) 'aBoolValue': aBoolValue?.toJson(),
       if (aDoubleValue != null) 'aDoubleValue': aDoubleValue?.toJson(),
@@ -425,13 +429,15 @@ abstract class TypesMap extends _i1.SerializableEntity {
             aStringifiedEnumValue?.toJson(valueToJson: (v) => v.toJson()),
       if (anObjectValue != null)
         'anObjectValue':
-            anObjectValue?.toJson(valueToJson: (v) => v.allToJson()),
+            anObjectValue?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       if (aMapValue != null)
         'aMapValue': aMapValue?.toJson(
-            valueToJson: (v) => v.toJson(valueToJson: (v) => v.allToJson())),
+            valueToJson: (v) =>
+                v.toJson(valueToJson: (v) => v.toJsonForProtocol())),
       if (aListValue != null)
         'aListValue': aListValue?.toJson(
-            valueToJson: (v) => v.toJson(valueToJson: (v) => v.allToJson())),
+            valueToJson: (v) =>
+                v.toJson(valueToJson: (v) => v.toJsonForProtocol())),
     };
   }
 }

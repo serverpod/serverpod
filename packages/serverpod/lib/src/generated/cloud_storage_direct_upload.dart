@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Connects a table for handling uploading of files.
-abstract class CloudStorageDirectUploadEntry extends _i1.TableRow {
+abstract class CloudStorageDirectUploadEntry extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   CloudStorageDirectUploadEntry._({
     int? id,
     required this.storageId,
@@ -79,7 +80,7 @@ abstract class CloudStorageDirectUploadEntry extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'storageId': storageId,

@@ -13,7 +13,8 @@ import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class TypesList extends _i1.SerializableEntity {
+abstract class TypesList extends _i1.SerializableEntity
+    implements _i1.ProtocolSerialization {
   TypesList._({
     this.anInt,
     this.aBool,
@@ -165,7 +166,7 @@ abstract class TypesList extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (anInt != null) 'anInt': anInt?.toJson(),
       if (aBool != null) 'aBool': aBool?.toJson(),
@@ -184,13 +185,15 @@ abstract class TypesList extends _i1.SerializableEntity {
         'aStringifiedEnum':
             aStringifiedEnum?.toJson(valueToJson: (v) => v.toJson()),
       if (anObject != null)
-        'anObject': anObject?.toJson(valueToJson: (v) => v.allToJson()),
+        'anObject': anObject?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       if (aMap != null)
         'aMap': aMap?.toJson(
-            valueToJson: (v) => v.toJson(valueToJson: (v) => v.allToJson())),
+            valueToJson: (v) =>
+                v.toJson(valueToJson: (v) => v.toJsonForProtocol())),
       if (aList != null)
         'aList': aList?.toJson(
-            valueToJson: (v) => v.toJson(valueToJson: (v) => v.allToJson())),
+            valueToJson: (v) =>
+                v.toJson(valueToJson: (v) => v.toJsonForProtocol())),
     };
   }
 }

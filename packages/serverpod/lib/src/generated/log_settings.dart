@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Log settings for the server.
-abstract class LogSettings extends _i1.SerializableEntity {
+abstract class LogSettings extends _i1.SerializableEntity
+    implements _i1.ProtocolSerialization {
   LogSettings._({
     required this.logLevel,
     required this.logAllSessions,
@@ -115,7 +116,7 @@ abstract class LogSettings extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'logLevel': logLevel.toJson(),
       'logAllSessions': logAllSessions,

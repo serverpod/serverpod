@@ -13,7 +13,8 @@ import 'protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Information about health and connection metrics.
-abstract class ServerHealthResult extends _i1.SerializableEntity {
+abstract class ServerHealthResult extends _i1.SerializableEntity
+    implements _i1.ProtocolSerialization {
   ServerHealthResult._({
     required this.metrics,
     required this.connectionInfos,
@@ -56,11 +57,11 @@ abstract class ServerHealthResult extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'metrics': metrics.toJson(valueToJson: (v) => v.allToJson()),
+      'metrics': metrics.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'connectionInfos':
-          connectionInfos.toJson(valueToJson: (v) => v.allToJson()),
+          connectionInfos.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 }

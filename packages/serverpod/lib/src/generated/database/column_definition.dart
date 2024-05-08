@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
 /// The definition of a (desired) column in the database.
-abstract class ColumnDefinition extends _i1.SerializableEntity {
+abstract class ColumnDefinition extends _i1.SerializableEntity
+    implements _i1.ProtocolSerialization {
   ColumnDefinition._({
     required this.name,
     required this.columnType,
@@ -76,7 +77,7 @@ abstract class ColumnDefinition extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'name': name,
       'columnType': columnType.toJson(),
