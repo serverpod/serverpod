@@ -1,16 +1,19 @@
 import 'package:http/http.dart' as http;
 import 'package:pub_api_client/pub_api_client.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 class PubApiClient {
   final PubClient _pubClient;
   final Duration _requestTimeout;
+  final void Function(String error)? _onError;
 
-  PubApiClient(
-      {http.Client? httpClient, requestTimeout = const Duration(seconds: 2)})
-      : _pubClient = PubClient(client: httpClient),
-        _requestTimeout = requestTimeout;
+  PubApiClient({
+    void Function(String error)? onError,
+    http.Client? httpClient,
+    requestTimeout = const Duration(seconds: 2),
+  })  : _pubClient = PubClient(client: httpClient),
+        _requestTimeout = requestTimeout,
+        _onError = onError;
 
   /// Tries to fetch the latest stable version, version does not include '-' or '+',
   /// for the package named [packageName].
@@ -24,7 +27,7 @@ class PubApiClient {
           .timeout(_requestTimeout);
       latestStableVersion = _tryGetLatestStableVersion(packageVersions);
     } catch (e) {
-      log.error('Failed to fetch latest version for $packageName.');
+      _onError?.call('Failed to fetch latest version for $packageName.');
       _logPubClientException(e);
       return null;
     }
@@ -34,8 +37,8 @@ class PubApiClient {
     try {
       return Version.parse(latestStableVersion);
     } catch (e) {
-      log.error('Failed to parse version for $packageName');
-      log.error(e.toString());
+      _onError
+          ?.call('Failed to parse version for $packageName: ${e.toString()}');
       return null;
     }
   }
@@ -54,9 +57,9 @@ class PubApiClient {
   /// Issue: https://github.com/leoafarias/pub_api_client/issues/35
   void _logPubClientException(Object exception) {
     try {
-      log.error(exception.toString());
+      _onError?.call(exception.toString());
     } catch (_) {
-      log.error(exception.runtimeType.toString());
+      _onError?.call(exception.runtimeType.toString());
     }
   }
 

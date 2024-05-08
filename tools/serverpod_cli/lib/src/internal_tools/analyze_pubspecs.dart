@@ -49,7 +49,7 @@ Future<void> _checkLatestVersion(
     Map<String, List<_ServerpodDependency>> dependencies) async {
   log.info('Checking latest pub versions.');
   try {
-    var pub = PubApiClient();
+    var pub = PubApiClient(onError: log.error);
     for (var depName in dependencies.keys) {
       var deps = dependencies[depName]!;
       var depVersion = deps.first.version;

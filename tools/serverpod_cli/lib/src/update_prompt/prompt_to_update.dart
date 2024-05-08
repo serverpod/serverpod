@@ -14,7 +14,7 @@ Future<void> promptToUpdateIfNeeded(Version currentVersion) async {
           ),
       loadPackageVersionData: () => resourceManager.tryFetchLatestCliVersion(),
       fetchLatestPackageVersion: () async {
-        var pubClient = PubApiClient();
+        var pubClient = PubApiClient(onError: log.error);
         return await pubClient.tryFetchLatestStableVersion('serverpod_cli');
       });
   if (latestVersion == null) return;
