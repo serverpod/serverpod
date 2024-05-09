@@ -13,7 +13,6 @@ class ProtocolCustomClass extends SerializableEntity
 
   factory ProtocolCustomClass.fromJson(
     Map<String, dynamic> json,
-    SerializationManager manager,
   ) {
     return ProtocolCustomClass(
       value: json["value"] as String?,

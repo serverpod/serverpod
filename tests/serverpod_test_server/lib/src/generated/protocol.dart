@@ -4153,34 +4153,31 @@ class Protocol extends _i1.SerializationManagerServer {
           as dynamic;
     }
     if (t == _i87.CustomClass) {
-      return _i87.CustomClass.fromJson(data, this) as T;
+      return _i87.CustomClass.fromJson(data) as T;
     }
     if (t == _i88.ProtocolCustomClass) {
-      return _i88.ProtocolCustomClass.fromJson(data, this) as T;
+      return _i88.ProtocolCustomClass.fromJson(data) as T;
     }
     if (t == _i89.ExternalCustomClass) {
-      return _i89.ExternalCustomClass.fromJson(data, this) as T;
+      return _i89.ExternalCustomClass.fromJson(data) as T;
     }
     if (t == _i89.FreezedCustomClass) {
-      return _i89.FreezedCustomClass.fromJson(data, this) as T;
+      return _i89.FreezedCustomClass.fromJson(data) as T;
     }
     if (t == _i1.getType<_i87.CustomClass?>()) {
-      return (data != null ? _i87.CustomClass.fromJson(data, this) : null) as T;
+      return (data != null ? _i87.CustomClass.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i88.ProtocolCustomClass?>()) {
-      return (data != null
-          ? _i88.ProtocolCustomClass.fromJson(data, this)
-          : null) as T;
+      return (data != null ? _i88.ProtocolCustomClass.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i89.ExternalCustomClass?>()) {
-      return (data != null
-          ? _i89.ExternalCustomClass.fromJson(data, this)
-          : null) as T;
+      return (data != null ? _i89.ExternalCustomClass.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i89.FreezedCustomClass?>()) {
-      return (data != null
-          ? _i89.FreezedCustomClass.fromJson(data, this)
-          : null) as T;
+      return (data != null ? _i89.FreezedCustomClass.fromJson(data) : null)
+          as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
