@@ -1,6 +1,6 @@
 // TODO: Put public facing types in this file.
 
-import 'package:serverpod_serialization/serverpod_serialization.dart';
+
 
 class ExternalCustomClass {
   final String value;
@@ -9,8 +9,7 @@ class ExternalCustomClass {
 
   String toJson() => value;
 
-  static ExternalCustomClass fromJson(
-      dynamic data, SerializationManager serializationManager) {
+  static ExternalCustomClass fromJson(dynamic data) {
     return ExternalCustomClass(data);
   }
 }
