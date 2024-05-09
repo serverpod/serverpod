@@ -223,5 +223,13 @@ void main() {
       Map jsonMap = jsonDecode(response.body);
       expect(jsonMap, contains('data'));
     });
+
+    test('then the serialized "data" object inside response body contain all the fields', () {
+      Map jsonMap = jsonDecode(response.body)["data"];
+      expect(jsonMap, contains('message'));
+      expect(jsonMap, contains('creationDate'));
+      expect(jsonMap, contains('errorFields'));
+      expect(jsonMap, contains('someNullableField'));
+    });
   });
 }
