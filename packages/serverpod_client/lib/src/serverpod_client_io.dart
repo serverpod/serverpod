@@ -4,9 +4,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:serverpod_client/serverpod_client.dart';
 
-import 'serverpod_client_shared.dart';
 import 'serverpod_client_shared_private.dart';
 
 /// Handles communication with the server. Is typically overridden by
@@ -70,11 +69,27 @@ abstract class ServerpodClient extends ServerpodClientShared {
       var data = await _readResponse(response);
 
       if (response.statusCode != HttpStatus.ok) {
-        throw getExceptionFrom(
-          data: data,
-          serializationManager: serializationManager,
-          statusCode: response.statusCode,
-        );
+        if (data.isEmpty) {
+          throw switch (response.statusCode) {
+            HttpStatus.badRequest => throw ServerpodClientException(
+                'Bad request', response.statusCode),
+            HttpStatus.unauthorized => throw ServerpodClientException(
+                'Unauthorized', response.statusCode),
+            HttpStatus.forbidden =>
+              throw ServerpodClientException('Forbidden', response.statusCode),
+            HttpStatus.notFound =>
+              throw ServerpodClientException('Not found', response.statusCode),
+            HttpStatus.internalServerError => throw ServerpodClientException(
+                'Internal server error', response.statusCode),
+            _ => ServerpodClientException('Unknown error', response.statusCode),
+          };
+        } else {
+          throw getExceptionFrom(
+            data: data,
+            serializationManager: serializationManager,
+            statusCode: response.statusCode,
+          );
+        }
       }
 
       T result;
