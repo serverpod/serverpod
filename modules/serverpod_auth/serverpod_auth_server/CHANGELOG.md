@@ -1,10 +1,12 @@
 ## 2.0.0-alpha.3
 - feat: Adds parameter arguments to unsafe database queries.
-- fix: Return objects are removed from database delete methods.
+- fix: BREAKING. Database delete methods now return removed objects.
 - fix: Retrieves and removes future call entries in a single operation.
 - fix: Improves server only field validation.
 - fix: BREAKING. Removes automatic redirect from Relic.
 - fix: BREAKING. Removes `SerializationManager` as a parameter from `fromJson` factory constructor.
+- fix: BREAKING. Remove allToJson method.
+- fix: toJson now includes all fields of Serverpod Models.
 - chore: Bumps minimum required Dart version to 3.1.
 
 ## 2.0.0-alpha.2
