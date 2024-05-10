@@ -1,7 +1,7 @@
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/exit_exception.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 class CloudLogoutCommand extends ServerpodCommand {
   @override

@@ -1,5 +1,4 @@
 import 'package:serverpod_cli/src/logger/logger.dart';
-import 'package:source_span/source_span.dart';
 
 /// Logger that logs no output.
 ///
@@ -40,10 +39,6 @@ class VoidLogger extends Logger {
   }) {}
 
   @override
-  void sourceSpanException(SourceSpanException sourceSpan,
-      {bool newParagraph = false}) {}
-
-  @override
   Future<void> flush() {
     return Future(() => {});
   }
@@ -56,4 +51,12 @@ class VoidLogger extends Logger {
   }) async {
     return await runner();
   }
+
+  @override
+  void write(
+    String message,
+    LogLevel logLevel, {
+    bool newParagraph = false,
+    bool newLine = true,
+  }) {}
 }

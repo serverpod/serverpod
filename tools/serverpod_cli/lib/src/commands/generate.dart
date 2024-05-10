@@ -10,6 +10,7 @@ import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
 import 'package:serverpod_cli/src/util/exit_exception.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 class GenerateCommand extends ServerpodCommand {
   @override

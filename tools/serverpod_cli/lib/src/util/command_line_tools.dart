@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 class CommandLineTools {
   static Future<bool> dartPubGet(Directory dir) async {

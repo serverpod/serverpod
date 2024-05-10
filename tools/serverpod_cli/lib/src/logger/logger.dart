@@ -1,8 +1,3 @@
-import 'dart:io';
-
-import 'package:serverpod_cli/src/logger/loggers/std_out_logger.dart';
-import 'package:source_span/source_span.dart';
-
 /// Serverpods internal logger interface.
 /// All logging output should go through this interface.
 /// The purpose is to simplify implementing and switching out concrete logger
@@ -52,14 +47,6 @@ abstract class Logger {
     LogType type,
   });
 
-  /// Display a [SourceSpanException] to the user.
-  /// Commands should use this to log [SourceSpanException] with
-  /// enhanced highlighting if possible.
-  void sourceSpanException(
-    SourceSpanException sourceSpan, {
-    bool newParagraph,
-  });
-
   /// Display a progress message on [LogLevel.info] while running [runner]
   /// function.
   ///
@@ -69,6 +56,19 @@ abstract class Logger {
     String message,
     Future<bool> Function() runner, {
     bool newParagraph,
+  });
+
+  /// Directly write a [message] to the output.
+  /// Generally the other methods should be used instead of this. But this
+  /// method can be used for more direct control of the output.
+  ///
+  /// If [newParagraph] is set to true, output is written as a new paragraph.
+  /// [LogLevel] can be set to control the log level of the message.
+  void write(
+    String message,
+    LogLevel logLevel, {
+    bool newParagraph = false,
+    bool newLine = true,
   });
 
   /// Returns a [Future] that completes once all logging is complete.
@@ -130,44 +130,4 @@ class TextLogType extends LogType {
   final TextLogStyle style;
 
   const TextLogType({required this.style});
-}
-
-/// Singleton instance of logger.
-Logger? _logger;
-
-/// Initializer for logger singleton.
-/// Runs checks to pick the best suitable logger for the environment.
-/// This should only be called once from runtime entry points.
-void initializeLogger() {
-  assert(
-    _logger == null,
-    'Only one logger initialization is allowed.',
-  );
-
-  _logger = Platform.isWindows
-      ? WindowsStdOutLogger(LogLevel.info)
-      : StdOutLogger(LogLevel.info);
-}
-
-/// Initializer for logger singleton.
-/// Uses passed in [logger] to initialize the singleton.
-/// This should only be called once from runtime entry points.
-void initializeLoggerWith(Logger logger) {
-  assert(
-    _logger == null,
-    'Only one logger initialization is allowed.',
-  );
-
-  _logger = logger;
-}
-
-/// Singleton accessor for logger.
-/// Default initializes a [StdOutLogger] if initialization is not run before
-/// this call.
-Logger get log {
-  if (_logger == null) {
-    initializeLogger();
-  }
-
-  return _logger!;
 }

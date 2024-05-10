@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 class DatabaseSetup {

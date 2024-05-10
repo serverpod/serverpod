@@ -1,11 +1,9 @@
 import 'dart:io';
 import 'dart:math' as math;
 
-import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/ansi_style.dart';
 import 'package:serverpod_cli/src/logger/helpers/progress.dart';
-import 'package:source_span/source_span.dart';
 import 'package:super_string/super_string.dart';
 
 /// Logger that logs using the [Stdout] library.
@@ -16,7 +14,10 @@ class StdOutLogger extends Logger {
 
   Progress? trackedAnimationInProgress;
 
-  StdOutLogger(super.logLevel);
+  final Map<String, String>? _replacements;
+
+  StdOutLogger(super.logLevel, {Map<String, String>? replacements})
+      : _replacements = replacements;
 
   @override
   int? get wrapTextColumn => stdout.hasTerminal ? stdout.terminalColumns : null;
@@ -127,7 +128,7 @@ class StdOutLogger extends Logger {
     // Write an empty line before the progress message if a new paragraph is
     // requested.
     if (newParagraph) {
-      _write(
+      write(
         '',
         LogLevel.info,
         newParagraph: false,
@@ -141,29 +142,6 @@ class StdOutLogger extends Logger {
     trackedAnimationInProgress = null;
     success ? progress.complete() : progress.fail();
     return success;
-  }
-
-  @override
-  void sourceSpanException(
-    SourceSpanException sourceSpan, {
-    bool newParagraph = false,
-  }) {
-    var logLevel = LogLevel.error;
-    bool isHint = false;
-
-    if (sourceSpan is SourceSpanSeverityException) {
-      var severity = sourceSpan.severity;
-      isHint = severity == SourceSpanSeverity.hint;
-      logLevel = _SeveritySpanHelpers.severityToLogLevel(severity);
-    }
-
-    if (!shouldLog(logLevel)) return;
-
-    var highlightAnsiCode =
-        _SeveritySpanHelpers.highlightAnsiCode(logLevel, isHint);
-    var message = sourceSpan.toString(color: highlightAnsiCode);
-
-    _write(message, logLevel, newParagraph: newParagraph);
   }
 
   @override
@@ -221,7 +199,7 @@ class StdOutLogger extends Logger {
       message = _wrapText(message, wrapTextColumn ?? _defaultColumnWrap);
     }
 
-    _write(
+    write(
       message,
       logLevel,
       newParagraph: newParagraph,
@@ -229,12 +207,21 @@ class StdOutLogger extends Logger {
     );
   }
 
-  void _write(
+  @override
+  void write(
     String message,
     LogLevel logLevel, {
-    required newParagraph,
+    newParagraph = false,
     newLine = true,
   }) {
+    message = switch (_replacements) {
+      null => message,
+      Map<String, String> replacements => replacements.entries.fold(
+          message,
+          (String acc, entry) => acc.replaceAll(entry.key, entry.value),
+        ),
+    };
+
     _stopAnimationInProgress();
     if (logLevel.index >= LogLevel.warning.index) {
       stderr.write('${newParagraph ? '\n' : ''}$message${newLine ? '\n' : ''}');
@@ -252,35 +239,6 @@ class StdOutLogger extends Logger {
     }
 
     trackedAnimationInProgress = null;
-  }
-}
-
-/// Windows version of the [StdOutLogger].
-/// The operates in the same way but filters out emojis not compatible with
-/// Windows.
-class WindowsStdOutLogger extends StdOutLogger {
-  WindowsStdOutLogger(super.logLevel);
-
-  @override
-  void _write(
-    String message,
-    LogLevel logLevel, {
-    required newParagraph,
-    newLine = true,
-  }) {
-    super._write(
-      message
-          .replaceAll('🥳', '=D')
-          .replaceAll(
-            '✅',
-            AnsiStyle.bold.wrap(AnsiStyle.lightGreen.wrap('✓')),
-          )
-          .replaceAll('🚀', '')
-          .replaceAll('📦', ''),
-      logLevel,
-      newParagraph: newParagraph,
-      newLine: newLine,
-    );
   }
 }
 
@@ -373,39 +331,4 @@ String _formatAsBox({
   buffer.write('┘');
 
   return buffer.toString();
-}
-
-abstract class _SeveritySpanHelpers {
-  static LogLevel severityToLogLevel(SourceSpanSeverity severity) {
-    switch (severity) {
-      case SourceSpanSeverity.error:
-        return LogLevel.error;
-      case SourceSpanSeverity.warning:
-        return LogLevel.warning;
-      case SourceSpanSeverity.info:
-      case SourceSpanSeverity.hint:
-        return LogLevel.info;
-    }
-  }
-
-  static String highlightAnsiCode(LogLevel severity, bool isHint) {
-    if (severity == LogLevel.info && isHint) {
-      return AnsiStyle.cyan.ansiCode;
-    }
-
-    switch (severity) {
-      case LogLevel.nothing:
-        assert(severity != LogLevel.nothing,
-            'Log level nothing should never be used for a log message');
-        return AnsiStyle.terminalDefault.ansiCode;
-      case LogLevel.error:
-        return AnsiStyle.red.ansiCode;
-      case LogLevel.warning:
-        return AnsiStyle.yellow.ansiCode;
-      case LogLevel.info:
-        return AnsiStyle.blue.ansiCode;
-      case LogLevel.debug:
-        return AnsiStyle.cyan.ansiCode;
-    }
-  }
 }

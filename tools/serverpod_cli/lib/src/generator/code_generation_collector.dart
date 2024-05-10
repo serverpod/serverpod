@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:source_span/source_span.dart';
 
 /// A [CodeAnalysisCollector] that also keeps track of generated files.

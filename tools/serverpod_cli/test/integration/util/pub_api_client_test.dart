@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
-import 'package:serverpod_cli/src/logger/loggers/void_logger.dart';
 import 'package:serverpod_cli/src/util/pub_api_client.dart';
 import 'package:test/test.dart';
 
@@ -27,7 +25,6 @@ abstract class PubApiClientTestConstants {
 }
 
 void main() {
-  initializeLoggerWith(VoidLogger());
   test(
       'Empty body and not found status response when fetching latest version then does not throw.',
       () async {
