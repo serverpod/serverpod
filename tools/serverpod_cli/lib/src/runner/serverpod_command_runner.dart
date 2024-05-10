@@ -1,13 +1,10 @@
+import 'package:cli_tools/cli_tools.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:serverpod_cli/src/analytics/analytics.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
-import 'package:serverpod_cli/src/runner/better_command_runner.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
-import 'package:serverpod_cli/src/util/exit_exception.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 Future<void> _preCommandEnvironmentChecks() async {

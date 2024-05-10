@@ -1,11 +1,10 @@
 import 'dart:io';
 
+import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
-import 'package:serverpod_cli/src/util/exit_exception.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';

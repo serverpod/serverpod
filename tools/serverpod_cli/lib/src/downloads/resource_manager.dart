@@ -1,10 +1,9 @@
 import 'dart:io';
 
 import 'package:archive/archive.dart';
+import 'package:cli_tools/cli_tools.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/src/downloads/local_storage_manager.dart';
-import 'package:serverpod_cli/src/util/package_version.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:uuid/uuid.dart';
 
