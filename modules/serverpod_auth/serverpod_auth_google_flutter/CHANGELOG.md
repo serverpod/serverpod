@@ -1,3 +1,14 @@
+## 2.0.0-alpha.3
+- feat: Adds parameter arguments to unsafe database queries.
+- fix: BREAKING. Database delete methods now return removed objects.
+- fix: Retrieves and removes future call entries in a single operation.
+- fix: Improves server only field validation.
+- fix: BREAKING. Removes automatic redirect from Relic.
+- fix: BREAKING. Removes `SerializationManager` as a parameter from `fromJson` factory constructor.
+- fix: BREAKING. Remove allToJson method.
+- fix: toJson now includes all fields of Serverpod Models.
+- chore: Bumps minimum required Dart version to 3.1.
+
 ## 2.0.0-alpha.2
 - feat: Adds `upgrade` command to Serverpod CLI.
 - feat: Introduces `CacheMissHandler` to improve cache API.
@@ -15,6 +26,17 @@
 - fix: BREAKING. Introduces `DatabaseException`.
 - fix: BREAKING. Introduces new types for database result sets.
 - fix: BREAKING. Updates transaction interface in database.
+
+## 1.2.7
+- fix: Spelling fix in UserAuthentication.
+- fix: Prevents crash when web or template directory is missing (webserver).
+- fix: Removes server only fields from client protocol deserialization.
+- fix: Improved error messages in email authentication.
+- fix: Minor log fixes.
+- fix: Prevents generating empty endpoints variable when no endpoints are defined.
+- fix: Adds Docker support for x86 architectures.
+- fix: Adds timestamps to `generate --watch` command.
+- chore: Updates dependencies.
 
 ## 1.2.6
 - feat: Adds missing callbacks when sending chat messages in chat module.
