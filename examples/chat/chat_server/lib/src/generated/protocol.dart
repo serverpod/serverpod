@@ -97,13 +97,25 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
-    } catch (_) {}
+    } catch (e) {
+      if (e is! _i1.SerializationTypeNotFoundException) {
+        rethrow;
+      }
+    }
     try {
       return _i4.Protocol().deserialize<T>(data, t);
-    } catch (_) {}
+    } catch (e) {
+      if (e is! _i1.SerializationTypeNotFoundException) {
+        rethrow;
+      }
+    }
     try {
       return _i2.Protocol().deserialize<T>(data, t);
-    } catch (_) {}
+    } catch (e) {
+      if (e is! _i1.SerializationTypeNotFoundException) {
+        rethrow;
+      }
+    }
     return super.deserialize<T>(data, t);
   }
 
