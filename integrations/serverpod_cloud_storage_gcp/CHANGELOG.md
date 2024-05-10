@@ -1,3 +1,14 @@
+## 1.2.7
+- fix: Spelling fix in UserAuthentication.
+- fix: Prevents crash when web or template directory is missing (webserver).
+- fix: Removes server only fields from client protocol deserializtion.
+- fix: Improved error messages in email authentication.
+- fix: Minor log fixes.
+- fix: Prevents generating empty endpoints variable when no endpoints are defined.
+- fix: Adds Docker support for x86 architectures.
+- fix: Adds timestamps to `generate --watch` command.
+- chore: Updates dependencies.
+
 ## 1.2.6
 - feat: Adds missing callbacks when sending chat messages in chat module.
 - fix: Updates password hash algorithm for email authentication. (Security Advisories)[https://github.com/serverpod/serverpod/security/advisories]
