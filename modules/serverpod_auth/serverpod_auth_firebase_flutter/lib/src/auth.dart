@@ -23,6 +23,10 @@ Future<UserInfo?> signInWithFirebase({
           return SignInScreen(
             providers: authProviders,
             actions: [
+              AuthCancelledAction((context) {
+                completer.complete(null);
+                Navigator.of(context).pop();
+              }),
               AuthStateChangeAction<SignedIn>((context, state) async {
                 try {
                   if (state.user == null) {
