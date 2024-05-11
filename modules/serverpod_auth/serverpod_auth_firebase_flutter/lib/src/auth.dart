@@ -14,76 +14,65 @@ Future<UserInfo?> signInWithFirebase({
   required BuildContext context,
   bool debug = false,
 }) async {
-  var completer = Completer<UserInfo?>();
+  final navigator = Navigator.of(context);
+  return await navigator.push<UserInfo?>(
+    MaterialPageRoute(
+      builder: (context) {
+        return SignInScreen(
+          providers: authProviders,
+          actions: [
+            AuthCancelledAction((context) {
+              Navigator.of(context).pop(null);
+            }),
+            AuthStateChangeAction<SignedIn>((context, state) async {
+              if (state.user == null) {
+                navigator.pop(null);
+                return;
+              } else {
+                var user = state.user!;
 
-  unawaited(
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) {
-          return SignInScreen(
-            providers: authProviders,
-            actions: [
-              AuthCancelledAction((context) {
-                completer.complete(null);
-                Navigator.of(context).pop();
-              }),
-              AuthStateChangeAction<SignedIn>((context, state) async {
                 try {
-                  if (state.user == null) {
-                    completer.complete(null);
-                  } else {
-                    var user = state.user!;
+                  var idToken = await user.getIdToken();
+                  var serverResponse =
+                      await caller.firebase.authenticate(idToken!);
 
-                    try {
-                      var idToken = await user.getIdToken();
-                      var serverResponse =
-                          await caller.firebase.authenticate(idToken!);
-
-                      if (!serverResponse.success) {
-                        // Failed to sign in.
-                        if (kDebugMode) {
-                          print(
-                            'serverpod_auth_firebase: Failed to authenticate '
-                            'with Serverpod backend: '
-                            '${serverResponse.failReason ?? 'reason unknown'}'
-                            '. Aborting.',
-                          );
-                        }
-                        completer.complete(null);
-                        return;
-                      }
-
-                      // Store the user info in the session manager.
-                      var sessionManager = await SessionManager.instance;
-                      await sessionManager.registerSignedInUser(
-                        serverResponse.userInfo!,
-                        serverResponse.keyId!,
-                        serverResponse.key!,
+                  if (!serverResponse.success) {
+                    // Failed to sign in.
+                    if (kDebugMode) {
+                      print(
+                        'serverpod_auth_firebase: Failed to authenticate '
+                        'with Serverpod backend: '
+                        '${serverResponse.failReason ?? 'reason unknown'}'
+                        '. Aborting.',
                       );
-
-                      completer.complete(serverResponse.userInfo);
-                      return;
-                    } catch (e) {
-                      if (kDebugMode) {
-                        print('serverpod_auth_firebase: Failed to authenticate '
-                            'with Serverpod backend: $e');
-                      }
-                      completer.complete(null);
-                      return;
                     }
+                    navigator.pop(null);
+                    return;
                   }
-                } finally {
-                  Navigator.of(context).pop();
+
+                  // Store the user info in the session manager.
+                  var sessionManager = await SessionManager.instance;
+                  await sessionManager.registerSignedInUser(
+                    serverResponse.userInfo!,
+                    serverResponse.keyId!,
+                    serverResponse.key!,
+                  );
+
+                  navigator.pop(serverResponse.userInfo);
+                  return;
+                } catch (e) {
+                  if (kDebugMode) {
+                    print('serverpod_auth_firebase: Failed to authenticate '
+                        'with Serverpod backend: $e');
+                  }
+                  navigator.pop(null);
+                  return;
                 }
-              })
-            ],
-          );
-        },
-      ),
+              }
+            }),
+          ],
+        );
+      },
     ),
   );
-
-  var result = await completer.future;
-
-  return result;
 }
