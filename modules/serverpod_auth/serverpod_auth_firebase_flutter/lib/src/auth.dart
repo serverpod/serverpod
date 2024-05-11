@@ -1,10 +1,10 @@
 import 'dart:async';
 
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 
 /// Attempts to Sign in with Firebase. If successful, a [UserInfo] is returned.
 /// If the attempt is not a success, null is returned.
@@ -59,6 +59,10 @@ Future<UserInfo?> signInWithFirebase({
                     completer.complete(serverResponse.userInfo);
                     return;
                   } catch (e) {
+                    if (kDebugMode) {
+                      print('serverpod_auth_firebase: Failed to authenticate '
+                          'with Serverpod backend: $e');
+                    }
                     completer.complete(null);
                     return;
                   }
