@@ -92,6 +92,7 @@ class SessionManager with ChangeNotifier {
       await caller.client.updateStreamingConnectionAuthenticationKey(null);
 
       _signedInUser = null;
+      await _storeSharedPrefs();
       await keyManager.remove();
 
       notifyListeners();
