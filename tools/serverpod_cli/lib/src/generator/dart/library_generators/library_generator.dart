@@ -172,24 +172,14 @@ class LibraryGenerator {
                     const Code(';}'),
                   ])),
           for (var module in config.modules)
-            Code.scope(
-              (a) {
-                return 'try{return ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().deserialize<T>(data,t);}'
-                    'catch(e){'
-                    'if(${a(refer('e'))} is! ${a(refer('SerializationTypeNotFoundException', serverpodUrl(serverCode)))}){'
-                    'rethrow;}'
-                    '}';
-              },
-            ),
+            Code.scope((a) =>
+                'try{return ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().deserialize<T>(data,t);}'
+                'on ${a(refer('DeserializationTypeNotFoundException', serverpodUrl(serverCode)))} catch(_){}'),
           if (config.name != 'serverpod' &&
               (serverCode || config.dartClientDependsOnServiceClient))
-            Code.scope((a) {
-              return 'try{return ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().deserialize<T>(data,t);}'
-                  'catch(e){'
-                  'if(${a(refer('e'))} is! ${a(refer('SerializationTypeNotFoundException', serverpodUrl(serverCode)))}){'
-                  'rethrow;}'
-                  '}';
-            }),
+            Code.scope((a) =>
+                'try{return ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().deserialize<T>(data,t);}'
+                'on ${a(refer('DeserializationTypeNotFoundException', serverpodUrl(serverCode)))} catch(_){}'),
           const Code('return super.deserialize<T>(data,t);'),
         ])),
       Method((m) => m

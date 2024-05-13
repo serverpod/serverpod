@@ -12,12 +12,26 @@ typedef constructor<T> = T Function(
 
 /// Exception thrown when no deserialization type was found during
 /// protocol deserialization
-class SerializationTypeNotFoundException implements Exception {
+class DeserializationTypeNotFoundException implements Exception {
   /// The exception message that was thrown.
   final String message;
 
-  /// Creates a new [SerializationTypeNotFoundException].
-  SerializationTypeNotFoundException(this.message);
+  /// The type that was not found.
+  final Type? type;
+
+  /// Creates a new [DeserializationTypeNotFoundException].
+  DeserializationTypeNotFoundException(
+    this.message, {
+    this.type,
+  });
+
+  /// Creates a new [DeserializationTypeNotFoundException] with the given type.
+  factory DeserializationTypeNotFoundException.typeError(Type t) {
+    return DeserializationTypeNotFoundException(
+      'No deserialization found for type $t',
+      type: t,
+    );
+  }
 
   @override
   String toString() => message;
@@ -91,9 +105,8 @@ abstract class SerializationManager {
       if (data == null) return null as T;
       return UuidValueJsonExtension.fromJson(data) as T;
     }
-    throw SerializationTypeNotFoundException(
-      'No deserialization found for type $t',
-    );
+
+    throw DeserializationTypeNotFoundException.typeError(t);
   }
 
   /// Get the className for the provided object.
