@@ -10,6 +10,25 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 typedef constructor<T> = T Function(
     dynamic jsonSerialization, SerializationManager serializationManager);
 
+/// Exception thrown when no deserialization type was found during
+/// protocol deserialization
+class DeserializationTypeNotFoundException implements Exception {
+  /// The exception message that was thrown.
+  final String message;
+
+  /// The type that was not found.
+  final Type? type;
+
+  /// Creates a new [DeserializationTypeNotFoundException].
+  DeserializationTypeNotFoundException({
+    String? message,
+    this.type,
+  }) : message = message ?? 'No deserialization found for type $type';
+
+  @override
+  String toString() => message;
+}
+
 /// The [SerializableEntity] is the base class for all serializable objects in
 /// Serverpod, except primitives.
 abstract mixin class SerializableEntity {
@@ -78,7 +97,10 @@ abstract class SerializationManager {
       if (data == null) return null as T;
       return UuidValueJsonExtension.fromJson(data) as T;
     }
-    throw FormatException('No deserialization found for type $t');
+
+    throw DeserializationTypeNotFoundException(
+      type: t,
+    );
   }
 
   /// Get the className for the provided object.

@@ -1533,10 +1533,10 @@ class Protocol extends _i1.SerializationManager {
     }
     try {
       return _i86.Protocol().deserialize<T>(data, t);
-    } catch (_) {}
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
       return _i69.Protocol().deserialize<T>(data, t);
-    } catch (_) {}
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 

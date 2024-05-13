@@ -146,7 +146,7 @@ class Protocol extends _i1.SerializationManager {
     }
     try {
       return _i14.Protocol().deserialize<T>(data, t);
-    } catch (_) {}
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
