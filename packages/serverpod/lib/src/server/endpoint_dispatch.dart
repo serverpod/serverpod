@@ -143,27 +143,35 @@ abstract class EndpointDispatch {
   /// returned, otherwise a [ResultAuthenticationFailed] describing the issue is
   /// returned.
   Future<ResultAuthenticationFailed?> canUserAccessEndpoint(
-      Session session, Endpoint endpoint) async {
+    Session session,
+    Endpoint endpoint,
+  ) async {
     var auth = session.authenticationKey;
     if (endpoint.requireLogin) {
       if (auth == null) {
-        return ResultAuthenticationFailed('No authentication provided');
+        return ResultAuthenticationFailed.unauthenticated(
+          'No authentication provided',
+        );
       }
       if (!await session.isUserSignedIn) {
-        return ResultAuthenticationFailed('Authentication failed');
+        return ResultAuthenticationFailed.unauthenticated(
+          'Authentication failed',
+        );
       }
     }
 
     if (endpoint.requiredScopes.isNotEmpty) {
       if (!await session.isUserSignedIn) {
-        return ResultAuthenticationFailed(
-            'Sign in required to access this endpoint');
+        return ResultAuthenticationFailed.unauthenticated(
+          'Sign in required to access this endpoint',
+        );
       }
 
       for (var requiredScope in endpoint.requiredScopes) {
         if (!(await session.scopes)!.contains(requiredScope)) {
-          return ResultAuthenticationFailed(
-              'User does not have access to scope ${requiredScope.name}');
+          return ResultAuthenticationFailed.insufficientAccess(
+            'User does not have access to scope ${requiredScope.name}',
+          );
         }
       }
     }
@@ -263,13 +271,41 @@ class ResultInvalidParams extends Result {
   }
 }
 
+/// The type of failures that can occur during authentication.
+enum AuthenticationFailureReason {
+  /// No valid authentication key was provided.
+  unauthenticated,
+
+  /// The authentication key provided did not have sufficient access.
+  insufficientAccess,
+}
+
 /// The result of a failed [Endpoint] method call where authentication failed.
 class ResultAuthenticationFailed extends Result {
   /// Description of the error.
   final String errorDescription;
 
+  /// The reason why the authentication failed.
+  final AuthenticationFailureReason reason;
+
   /// Creates a new [ResultAuthenticationFailed] object.
-  ResultAuthenticationFailed(this.errorDescription);
+  ResultAuthenticationFailed._(this.errorDescription, this.reason);
+
+  /// Creates a new [ResultAuthenticationFailed] object when the user failed to
+  /// provide a valid authentication key.
+  factory ResultAuthenticationFailed.unauthenticated(String message) =>
+      ResultAuthenticationFailed._(
+        message,
+        AuthenticationFailureReason.unauthenticated,
+      );
+
+  /// Creates a new [ResultAuthenticationFailed] object when the user provided
+  /// an authentication key that did not have sufficient access.
+  factory ResultAuthenticationFailed.insufficientAccess(String message) =>
+      ResultAuthenticationFailed._(
+        message,
+        AuthenticationFailureReason.insufficientAccess,
+      );
 
   @override
   String toString() {

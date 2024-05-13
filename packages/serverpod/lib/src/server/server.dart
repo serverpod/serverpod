@@ -294,6 +294,7 @@ class Server {
         // TODO: Log to database?
         stderr.writeln('Malformed call: $result');
       }
+
       request.response.statusCode = HttpStatus.badRequest;
       await request.response.close();
       return;
@@ -302,7 +303,11 @@ class Server {
         // TODO: Log to database?
         stderr.writeln('Access denied: $result');
       }
-      request.response.statusCode = HttpStatus.forbidden;
+
+      request.response.statusCode = switch (result.reason) {
+        AuthenticationFailureReason.unauthenticated => HttpStatus.unauthorized,
+        AuthenticationFailureReason.insufficientAccess => HttpStatus.forbidden,
+      };
       await request.response.close();
       return;
     } else if (result is ResultInternalServerError) {
