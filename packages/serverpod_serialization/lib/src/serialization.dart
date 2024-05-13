@@ -10,9 +10,13 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 typedef constructor<T> = T Function(
     dynamic jsonSerialization, SerializationManager serializationManager);
 
+/// Exception thrown when no deserialization type was found during
+/// protocol deserialization
 class SerializationTypeNotFoundException implements Exception {
+  /// The exception message that was thrown.
   final String message;
 
+  /// Creates a new [SerializationTypeNotFoundException].
   SerializationTypeNotFoundException(this.message);
 
   @override
