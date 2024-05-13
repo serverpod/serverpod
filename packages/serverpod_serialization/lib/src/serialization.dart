@@ -20,18 +20,10 @@ class DeserializationTypeNotFoundException implements Exception {
   final Type? type;
 
   /// Creates a new [DeserializationTypeNotFoundException].
-  DeserializationTypeNotFoundException(
-    this.message, {
+  DeserializationTypeNotFoundException({
+    String? message,
     this.type,
-  });
-
-  /// Creates a new [DeserializationTypeNotFoundException] with the given type.
-  factory DeserializationTypeNotFoundException.typeError(Type t) {
-    return DeserializationTypeNotFoundException(
-      'No deserialization found for type $t',
-      type: t,
-    );
-  }
+  }) : message = message ?? 'No deserialization found for type $type';
 
   @override
   String toString() => message;
@@ -106,7 +98,9 @@ abstract class SerializationManager {
       return UuidValueJsonExtension.fromJson(data) as T;
     }
 
-    throw DeserializationTypeNotFoundException.typeError(t);
+    throw DeserializationTypeNotFoundException(
+      type: t,
+    );
   }
 
   /// Get the className for the provided object.
