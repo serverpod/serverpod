@@ -109,6 +109,10 @@ class AuthConfig {
   /// Called when a user should be sent a validation code on account setup.
   final SendValidationEmailCallback? sendValidationEmail;
 
+  /// The length of the validation code used in the authentication process.
+  /// This value determines the number of digits in the validation code. Default is 8.
+  final int validationCodeLength;
+
   /// The time for password resets to be valid. Default is one day.
   final Duration passwordResetExpirationTime;
 
@@ -155,6 +159,7 @@ class AuthConfig {
     this.onUserUpdated,
     this.sendPasswordResetEmail,
     this.sendValidationEmail,
+    this.validationCodeLength = 8,
     this.passwordResetExpirationTime = const Duration(hours: 24),
     this.extraSaltyHash = true,
     this.firebaseServiceAccountKeyJson =
