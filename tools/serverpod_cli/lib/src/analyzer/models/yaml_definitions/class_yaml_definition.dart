@@ -56,7 +56,7 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.parent,
-                isDeprecated: true,
+                isRemoved: true,
                 mutuallyExclusiveKeys: {
                   Keyword.relation,
                 },
@@ -130,7 +130,7 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.database,
-                isDeprecated: true,
+                isRemoved: true,
                 alternativeUsageMessage: 'Use "scope=serverOnly" instead.',
                 valueRestriction: BooleanValueRestriction().validate,
                 mutuallyExclusiveKeys: {
@@ -141,7 +141,7 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.api,
-                isDeprecated: true,
+                isRemoved: true,
                 alternativeUsageMessage: 'Use "!persist" instead.',
                 valueRestriction: BooleanValueRestriction().validate,
                 mutuallyExclusiveKeys: {
