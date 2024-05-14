@@ -36,11 +36,7 @@ void main() {
         }
       }
 
-      // Only perform the check for dart:io. On web -1 will be returned as
-      // failing status codes cannot be detected.
-      if (!identical(0, 0.0)) {
-        expect(statusCode, equals(403));
-      }
+      expect(statusCode, equals(401));
     });
 
     test('Authenticate with incorrect credentials', () async {
@@ -87,11 +83,7 @@ void main() {
         }
       }
 
-      // Only perform the check for dart:io. On web -1 will be returned as
-      // failing status codes cannot be detected.
-      if (!identical(0, 0.0)) {
-        expect(statusCode, equals(403));
-      }
+      expect(statusCode, equals(401));
     });
   });
 
