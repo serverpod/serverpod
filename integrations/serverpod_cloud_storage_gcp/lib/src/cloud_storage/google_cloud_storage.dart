@@ -24,9 +24,9 @@ class GoogleCloudStorage extends CloudStorage {
     required this.bucket,
     String? publicHost,
   })  : assert(serverpod.getPassword('HMACAccessKeyId') != null,
-            'HMACAccessKeyId must be present in your password.yaml file'),
+            'HMACAccessKeyId must be present in your passwords.yaml file'),
         assert(serverpod.getPassword('HMACSecretKey') != null,
-            'HMACSecretKey must be present in your password.yaml file'),
+            'HMACSecretKey must be present in your passwords.yaml file'),
         _hmacAccessKeyId = serverpod.getPassword('HMACAccessKeyId')!,
         _hmacSecretKey = serverpod.getPassword('HMACSecretKey')!,
         super(storageId) {
