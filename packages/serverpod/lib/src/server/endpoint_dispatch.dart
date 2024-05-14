@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:serverpod/src/authentication/authentication_info.dart';
+import 'package:serverpod/src/authentication/scope.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'endpoint.dart';
@@ -94,7 +96,12 @@ abstract class EndpointDispatch {
     var inputParams = session.queryParameters;
 
     try {
-      var authFailed = await canUserAccessEndpoint(session, connector.endpoint);
+      var endpoint = connector.endpoint;
+      var authFailed = await canUserAccessEndpoint(
+        () => session.authenticationInfo,
+        endpoint.requireLogin,
+        endpoint.requiredScopes,
+      );
       if (authFailed != null) {
         return authFailed;
       }
@@ -142,39 +149,32 @@ abstract class EndpointDispatch {
   /// Checks if a user can access an [Endpoint]. If access is granted null is
   /// returned, otherwise a [ResultAuthenticationFailed] describing the issue is
   /// returned.
-  Future<ResultAuthenticationFailed?> canUserAccessEndpoint(
-    Session session,
-    Endpoint endpoint,
+  static Future<ResultAuthenticationFailed?> canUserAccessEndpoint(
+    Future<AuthenticationInfo?> Function() authInfoProvider,
+    bool requiresLogin,
+    Set<Scope> requiredScopes,
   ) async {
-    var auth = session.authenticationKey;
-    if (endpoint.requireLogin) {
-      if (auth == null) {
-        return ResultAuthenticationFailed.unauthenticated(
-          'No authentication provided',
-        );
-      }
-      if (!await session.isUserSignedIn) {
-        return ResultAuthenticationFailed.unauthenticated(
-          'Authentication failed',
-        );
-      }
+    var authenticationRequired = requiresLogin || requiredScopes.isNotEmpty;
+
+    if (!authenticationRequired) {
+      return null;
     }
 
-    if (endpoint.requiredScopes.isNotEmpty) {
-      if (!await session.isUserSignedIn) {
-        return ResultAuthenticationFailed.unauthenticated(
-          'Sign in required to access this endpoint',
-        );
-      }
-
-      for (var requiredScope in endpoint.requiredScopes) {
-        if (!(await session.scopes)!.contains(requiredScope)) {
-          return ResultAuthenticationFailed.insufficientAccess(
-            'User does not have access to scope ${requiredScope.name}',
-          );
-        }
-      }
+    var info = await authInfoProvider();
+    if (info == null) {
+      return ResultAuthenticationFailed.unauthenticated(
+        'No valid authentication provided',
+      );
     }
+
+    var missingUserScopes = Set.from(requiredScopes)..removeAll(info.scopes);
+
+    if (missingUserScopes.isNotEmpty) {
+      return ResultAuthenticationFailed.insufficientAccess(
+        'User is missing required scope${missingUserScopes.length > 1 ? 's' : ''}: $missingUserScopes',
+      );
+    }
+
     return null;
   }
 

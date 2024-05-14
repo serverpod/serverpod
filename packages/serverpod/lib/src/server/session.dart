@@ -32,6 +32,15 @@ abstract class Session {
   @internal
   late final SessionLogEntryCache sessionLogs;
 
+  AuthenticationInfo? _authenticationInfo;
+
+  /// The authentication information for the session.
+  /// This will be null if the session is not authenticated.
+  Future<AuthenticationInfo?> get authenticationInfo async {
+    if (!_initialized) await _initialize();
+    return _authenticationInfo;
+  }
+
   int? _authenticatedUser;
   Set<Scope>? _scopes;
 
@@ -112,10 +121,10 @@ abstract class Session {
     }
 
     if (server.authenticationHandler != null && _authenticationKey != null) {
-      var authenticationInfo =
+      _authenticationInfo =
           await server.authenticationHandler!(this, _authenticationKey!);
-      _scopes = authenticationInfo?.scopes;
-      _authenticatedUser = authenticationInfo?.authenticatedUserId;
+      _scopes = _authenticationInfo?.scopes;
+      _authenticatedUser = _authenticationInfo?.authenticatedUserId;
     }
 
     _initialized = true;
@@ -335,6 +344,7 @@ class StreamingSession extends Session {
   @internal
   void updateAuthenticationKey(String? authenticationKey) {
     _authenticationKey = authenticationKey;
+    _initialized = false;
   }
 }
 

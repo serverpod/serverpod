@@ -426,8 +426,12 @@ class Server {
             throw Exception('Endpoint not found: $endpointName');
           }
 
-          var authFailed = await endpoints.canUserAccessEndpoint(
-              session, endpointConnector.endpoint);
+          var endpoint = endpointConnector.endpoint;
+          var authFailed = await EndpointDispatch.canUserAccessEndpoint(
+            () => session.authenticationInfo,
+            endpoint.requireLogin,
+            endpoint.requiredScopes,
+          );
 
           if (authFailed == null) {
             // Process the message.
@@ -513,11 +517,17 @@ class Server {
   }
 
   Future<void> _callStreamOpened(
-      StreamingSession session, Endpoint endpoint) async {
+    StreamingSession session,
+    Endpoint endpoint,
+  ) async {
     try {
       // TODO: We need to mark stream as accessbile (in endpoint?) and check
       // future messages that are passed to this endpoint.
-      var authFailed = await endpoints.canUserAccessEndpoint(session, endpoint);
+      var authFailed = await EndpointDispatch.canUserAccessEndpoint(
+        () => session.authenticationInfo,
+        endpoint.requireLogin,
+        endpoint.requiredScopes,
+      );
       if (authFailed == null) await endpoint.streamOpened(session);
     } catch (e) {
       return;
@@ -525,9 +535,15 @@ class Server {
   }
 
   Future<void> _callStreamClosed(
-      StreamingSession session, Endpoint endpoint) async {
+    StreamingSession session,
+    Endpoint endpoint,
+  ) async {
     try {
-      var authFailed = await endpoints.canUserAccessEndpoint(session, endpoint);
+      var authFailed = await EndpointDispatch.canUserAccessEndpoint(
+        () => session.authenticationInfo,
+        endpoint.requireLogin,
+        endpoint.requiredScopes,
+      );
       if (authFailed == null) await endpoint.streamClosed(session);
     } catch (e) {
       return;
