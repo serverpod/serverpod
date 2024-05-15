@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class OrganizationWithLongTableName extends _i1.TableRow {
+abstract class OrganizationWithLongTableName extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   OrganizationWithLongTableName._({
     int? id,
     required this.name,
@@ -81,14 +82,14 @@ abstract class OrganizationWithLongTableName extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (people != null)
-        'people': people?.toJson(valueToJson: (v) => v.allToJson()),
+        'people': people?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       if (cityId != null) 'cityId': cityId,
-      if (city != null) 'city': city?.allToJson(),
+      if (city != null) 'city': city?.toJsonForProtocol(),
     };
   }
 

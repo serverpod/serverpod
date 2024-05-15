@@ -10,7 +10,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class ObjectWithParent extends _i1.TableRow {
+abstract class ObjectWithParent extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   ObjectWithParent._({
     int? id,
     required this.other,
@@ -50,7 +51,7 @@ abstract class ObjectWithParent extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'other': other,

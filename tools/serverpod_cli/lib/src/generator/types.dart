@@ -388,9 +388,9 @@ class TypeDefinition {
             Code.scope((a) => nullable
                 ? '(data!=null?'
                     '${a(reference(serverCode, config: config))}'
-                    '.fromJson(data,this):null)as T'
+                    '.fromJson(data):null)as T'
                 : '${a(reference(serverCode, config: config))}'
-                    '.fromJson(data,this) as T'))
+                    '.fromJson(data) as T'))
       ];
     } else {
       return [];

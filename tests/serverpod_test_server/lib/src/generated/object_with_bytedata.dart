@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class ObjectWithByteData extends _i1.TableRow {
+abstract class ObjectWithByteData extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   ObjectWithByteData._({
     int? id,
     required this.byteData,
@@ -53,7 +54,7 @@ abstract class ObjectWithByteData extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'byteData': byteData.toJson(),

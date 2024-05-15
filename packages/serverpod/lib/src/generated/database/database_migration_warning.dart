@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class DatabaseMigrationWarning extends _i1.SerializableEntity {
+abstract class DatabaseMigrationWarning extends _i1.SerializableEntity
+    implements _i1.ProtocolSerialization {
   DatabaseMigrationWarning._({
     required this.type,
     required this.message,
@@ -72,7 +73,7 @@ abstract class DatabaseMigrationWarning extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'type': type.toJson(),
       'message': message,

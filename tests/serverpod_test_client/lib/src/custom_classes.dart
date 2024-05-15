@@ -14,8 +14,7 @@ class CustomClass extends SerializableEntity {
   @override
   String toJson() => value;
 
-  static CustomClass fromJson(
-      dynamic data, SerializationManager serializationManager) {
+  static CustomClass fromJson(dynamic data) {
     return CustomClass(data);
   }
 }

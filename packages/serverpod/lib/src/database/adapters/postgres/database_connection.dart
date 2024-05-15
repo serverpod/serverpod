@@ -3,20 +3,21 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod/src/database/adapters/postgres/postgres_database_result.dart';
-import 'package:serverpod/src/database/concepts/columns.dart';
-import 'package:serverpod/src/database/concepts/table_relation.dart';
-import 'package:serverpod/src/database/exceptions.dart';
-import 'package:serverpod/src/database/sql_query_builder.dart';
 import 'package:serverpod/src/database/adapters/postgres/postgres_result_parser.dart';
+import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
+import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
+import 'package:serverpod/src/database/exceptions.dart';
+import 'package:serverpod/src/database/sql_query_builder.dart';
 
 import '../../../generated/protocol.dart';
 import '../../../server/session.dart';
-import '../../database_pool_manager.dart';
 import '../../concepts/expressions.dart';
 import '../../concepts/table.dart';
+import '../../database_pool_manager.dart';
+import '../../query_parameters.dart';
 
 /// A connection to the database. In most cases the [Database] db object in
 /// the [Session] object should be used when connecting with the database.
@@ -139,7 +140,7 @@ class DatabaseConnection {
     var columnNames =
         selectedColumns.map((e) => '"${e.columnName}"').join(', ');
 
-    var values = rows.map((row) => row.allToJson()).map((row) {
+    var values = rows.map((row) => row.toJson()).map((row) {
       var values = selectedColumns.map((column) {
         var unformattedValue = row[column.columnName];
         return DatabasePoolManager.encoder.convert(unformattedValue);
@@ -348,12 +349,14 @@ class DatabaseConnection {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
+    QueryParameters? parameters,
   }) async {
     var result = await _query(
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
+      parameters: parameters,
     );
 
     return PostgresDatabaseResult(result);
@@ -366,7 +369,14 @@ class DatabaseConnection {
     Transaction? transaction,
     bool ignoreRows = false,
     bool simpleQueryMode = false,
+    QueryParameters? parameters,
   }) async {
+    assert(
+      simpleQueryMode == false ||
+          (simpleQueryMode == true && parameters == null),
+      'simpleQueryMode does not support parameters',
+    );
+
     var postgresTransaction = _castToPostgresTransaction(transaction);
     var timeout =
         timeoutInSeconds != null ? Duration(seconds: timeoutInSeconds) : null;
@@ -377,10 +387,11 @@ class DatabaseConnection {
           postgresTransaction?.executionContext ?? _postgresConnection;
 
       var result = await context.execute(
-        query,
+        parameters is QueryParametersNamed ? pg.Sql.named(query) : query,
         timeout: timeout,
         ignoreRows: ignoreRows,
         queryMode: simpleQueryMode ? pg.QueryMode.simple : null,
+        parameters: parameters?.parameters,
       );
 
       _logQuery(
@@ -416,6 +427,7 @@ class DatabaseConnection {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
+    QueryParameters? parameters,
   }) async {
     var result = await _query(
       session,
@@ -423,6 +435,7 @@ class DatabaseConnection {
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
       ignoreRows: true,
+      parameters: parameters,
     );
 
     return result.affectedRows;
@@ -664,9 +677,7 @@ class DatabaseConnection {
     Iterable<TableRow> rows,
     Iterable<Column> column,
   ) {
-    return rows
-        .map((row) => row.allToJson() as Map<String, dynamic>)
-        .map((row) {
+    return rows.map((row) => row.toJson() as Map<String, dynamic>).map((row) {
       var values = column.map((column) {
         var unformattedValue = row[column.columnName];
 

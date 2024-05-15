@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Just some simple data.
-abstract class SimpleData extends _i1.TableRow {
+abstract class SimpleData extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   SimpleData._({
     int? id,
     required this.num,
@@ -54,7 +55,7 @@ abstract class SimpleData extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'num': num,

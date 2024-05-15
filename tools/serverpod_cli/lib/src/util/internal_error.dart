@@ -1,4 +1,4 @@
-import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 void printInternalError(dynamic error, StackTrace stackTrace) {
   log.error(

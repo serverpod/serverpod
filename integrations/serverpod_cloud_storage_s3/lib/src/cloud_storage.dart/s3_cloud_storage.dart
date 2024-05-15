@@ -24,9 +24,9 @@ class S3CloudStorage extends CloudStorage {
     required this.bucket,
     String? publicHost,
   })  : assert(serverpod.getPassword('AWSAccessKeyId') != null,
-            'AWSAccessKeyId must be present in your password.yaml file'),
+            'AWSAccessKeyId must be present in your passwords.yaml file'),
         assert(serverpod.getPassword('AWSSecretKey') != null,
-            'AWSSecretKey must be present in your password.yaml file'),
+            'AWSSecretKey must be present in your passwords.yaml file'),
         _awsAccessKeyId = serverpod.getPassword('AWSAccessKeyId')!,
         _awsSecretKey = serverpod.getPassword('AWSSecretKey')!,
         super(storageId) {

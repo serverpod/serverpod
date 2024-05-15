@@ -13,7 +13,8 @@ import 'protocol.dart' as _i2;
 
 /// Information about an override for log settings for either an entire
 /// endpoint or a specific method.
-abstract class LogSettingsOverride extends _i1.SerializableEntity {
+abstract class LogSettingsOverride extends _i1.SerializableEntity
+    implements _i1.ProtocolSerialization {
   LogSettingsOverride._({
     this.module,
     this.endpoint,
@@ -67,12 +68,12 @@ abstract class LogSettingsOverride extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (module != null) 'module': module,
       if (endpoint != null) 'endpoint': endpoint,
       if (method != null) 'method': method,
-      'logSettings': logSettings.allToJson(),
+      'logSettings': logSettings.toJsonForProtocol(),
     };
   }
 }

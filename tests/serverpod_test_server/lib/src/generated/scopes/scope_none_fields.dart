@@ -10,7 +10,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class ScopeNoneFields extends _i1.TableRow {
+abstract class ScopeNoneFields extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   ScopeNoneFields._({int? id}) : super(id);
 
   factory ScopeNoneFields({int? id}) = _ScopeNoneFieldsImpl;
@@ -31,15 +32,15 @@ abstract class ScopeNoneFields extends _i1.TableRow {
   ScopeNoneFields copyWith({int? id});
   @override
   Map<String, dynamic> toJson() {
-    return {if (id != null) 'id': id};
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
       if (_name != null) 'name': _name,
     };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {if (id != null) 'id': id};
   }
 
   static ScopeNoneFieldsInclude include() {
@@ -97,8 +98,8 @@ class ScopeNoneFieldsImplicit extends _ScopeNoneFieldsImpl {
   String? $name;
 
   @override
-  Map<String, dynamic> allToJson() {
-    var jsonMap = super.allToJson();
+  Map<String, dynamic> toJson() {
+    var jsonMap = super.toJson();
     jsonMap.addAll({'name': $name});
     return jsonMap;
   }

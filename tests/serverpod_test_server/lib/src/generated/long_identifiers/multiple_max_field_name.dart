@@ -10,7 +10,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class MultipleMaxFieldName extends _i1.TableRow {
+abstract class MultipleMaxFieldName extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   MultipleMaxFieldName._({
     int? id,
     required this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
@@ -66,21 +67,21 @@ abstract class MultipleMaxFieldName extends _i1.TableRow {
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
       'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2':
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
+      if (_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId !=
+          null)
+        '_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId':
+            _relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId,
     };
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1':
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
       'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2':
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
-      if (_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId !=
-          null)
-        '_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId':
-            _relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId,
     };
   }
 
@@ -180,8 +181,8 @@ class MultipleMaxFieldNameImplicit extends _MultipleMaxFieldNameImpl {
   int? $_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId;
 
   @override
-  Map<String, dynamic> allToJson() {
-    var jsonMap = super.allToJson();
+  Map<String, dynamic> toJson() {
+    var jsonMap = super.toJson();
     jsonMap.addAll({
       '_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId':
           $_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId

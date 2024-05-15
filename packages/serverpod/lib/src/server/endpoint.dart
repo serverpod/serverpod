@@ -1,9 +1,9 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
+import '../authentication/scope.dart';
 import 'server.dart';
 import 'serverpod.dart';
 import 'session.dart';
-import '../authentication/scope.dart';
 
 /// The [Endpoint] is an entrypoint to the [Server]. To add a custom [Endpoint]
 /// to a [Server], create a subclass and place it in the `endpoints` directory.
