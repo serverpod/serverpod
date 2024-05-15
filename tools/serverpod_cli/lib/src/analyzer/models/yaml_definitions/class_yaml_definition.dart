@@ -66,7 +66,6 @@ class ClassYamlDefinition {
                 keyRestriction: restrictions.validateRelationKey,
                 valueRestriction:
                     restrictions.validateRelationInterdependencies,
-                mutuallyExclusiveKeys: {Keyword.parent},
                 allowEmptyNestedValue: true,
                 nested: {
                   ValidateNode(
@@ -106,7 +105,6 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.scope,
-                mutuallyExclusiveKeys: {Keyword.database, Keyword.api},
                 valueRestriction: EnumValueRestriction(
                   enums: ModelFieldScopeDefinition.values,
                   additionalRestriction: ScopeValueRestriction(
@@ -119,10 +117,7 @@ class ClassYamlDefinition {
                 keyRestriction: restrictions.validatePersistKey,
                 valueRestriction: BooleanValueRestriction().validate,
                 mutuallyExclusiveKeys: {
-                  Keyword.database,
-                  Keyword.api,
                   Keyword.relation,
-                  Keyword.parent,
                 },
               ),
               ValidateNode(

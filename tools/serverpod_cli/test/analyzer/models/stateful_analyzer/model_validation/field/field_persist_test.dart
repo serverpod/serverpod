@@ -201,11 +201,6 @@ void main() {
           .validateAll();
 
       expect(collector.errors, isNotEmpty);
-
-      var error = collector.errors.last;
-
-      expect(error.message,
-          'The "persist" property is mutually exclusive with the "parent" property.');
     },
   );
 
@@ -388,17 +383,10 @@ void main() {
       StatefulAnalyzer(config, models, onErrorsCollector(collector))
           .validateAll();
 
-      expect(collector.errors.length, greaterThan(1));
-
-      var error1 = collector.errors[0];
-      var error2 = collector.errors[1];
+      expect(collector.errors.length, 1);
 
       expect(
-        error1.message,
-        'The "persist" property is mutually exclusive with the "api" property.',
-      );
-      expect(
-        error2.message,
+        collector.errors.firstOrNull?.message,
         'The "api" property is deprecated. Use "!persist" instead.',
       );
     },
@@ -422,17 +410,10 @@ void main() {
       StatefulAnalyzer(config, models, onErrorsCollector(collector))
           .validateAll();
 
-      expect(collector.errors.length, greaterThan(1));
-
-      var error1 = collector.errors[0];
-      var error2 = collector.errors[1];
+      expect(collector.errors.length, 1);
 
       expect(
-        error1.message,
-        'The "persist" property is mutually exclusive with the "database" property.',
-      );
-      expect(
-        error2.message,
+        collector.errors.firstOrNull?.message,
         'The "database" property is deprecated. Use "scope=serverOnly" instead.',
       );
     },
