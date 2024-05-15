@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:serverpod/src/authentication/authentication_info.dart';
+import 'package:serverpod/src/authentication/scope.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'endpoint.dart';
@@ -94,7 +96,12 @@ abstract class EndpointDispatch {
     var inputParams = session.queryParameters;
 
     try {
-      var authFailed = await canUserAccessEndpoint(session, connector.endpoint);
+      var endpoint = connector.endpoint;
+      var authFailed = await canUserAccessEndpoint(
+        () => session.authenticationInfo,
+        endpoint.requireLogin,
+        endpoint.requiredScopes,
+      );
       if (authFailed != null) {
         return authFailed;
       }
@@ -142,31 +149,32 @@ abstract class EndpointDispatch {
   /// Checks if a user can access an [Endpoint]. If access is granted null is
   /// returned, otherwise a [ResultAuthenticationFailed] describing the issue is
   /// returned.
-  Future<ResultAuthenticationFailed?> canUserAccessEndpoint(
-      Session session, Endpoint endpoint) async {
-    var auth = session.authenticationKey;
-    if (endpoint.requireLogin) {
-      if (auth == null) {
-        return ResultAuthenticationFailed('No authentication provided');
-      }
-      if (!await session.isUserSignedIn) {
-        return ResultAuthenticationFailed('Authentication failed');
-      }
+  static Future<ResultAuthenticationFailed?> canUserAccessEndpoint(
+    Future<AuthenticationInfo?> Function() authInfoProvider,
+    bool requiresLogin,
+    Set<Scope> requiredScopes,
+  ) async {
+    var authenticationRequired = requiresLogin || requiredScopes.isNotEmpty;
+
+    if (!authenticationRequired) {
+      return null;
     }
 
-    if (endpoint.requiredScopes.isNotEmpty) {
-      if (!await session.isUserSignedIn) {
-        return ResultAuthenticationFailed(
-            'Sign in required to access this endpoint');
-      }
-
-      for (var requiredScope in endpoint.requiredScopes) {
-        if (!(await session.scopes)!.contains(requiredScope)) {
-          return ResultAuthenticationFailed(
-              'User does not have access to scope ${requiredScope.name}');
-        }
-      }
+    var info = await authInfoProvider();
+    if (info == null) {
+      return ResultAuthenticationFailed.unauthenticated(
+        'No valid authentication provided',
+      );
     }
+
+    var missingUserScopes = Set.from(requiredScopes)..removeAll(info.scopes);
+
+    if (missingUserScopes.isNotEmpty) {
+      return ResultAuthenticationFailed.insufficientAccess(
+        'User is missing required scope${missingUserScopes.length > 1 ? 's' : ''}: $missingUserScopes',
+      );
+    }
+
     return null;
   }
 
@@ -263,13 +271,41 @@ class ResultInvalidParams extends Result {
   }
 }
 
+/// The type of failures that can occur during authentication.
+enum AuthenticationFailureReason {
+  /// No valid authentication key was provided.
+  unauthenticated,
+
+  /// The authentication key provided did not have sufficient access.
+  insufficientAccess,
+}
+
 /// The result of a failed [Endpoint] method call where authentication failed.
 class ResultAuthenticationFailed extends Result {
   /// Description of the error.
   final String errorDescription;
 
+  /// The reason why the authentication failed.
+  final AuthenticationFailureReason reason;
+
   /// Creates a new [ResultAuthenticationFailed] object.
-  ResultAuthenticationFailed(this.errorDescription);
+  ResultAuthenticationFailed._(this.errorDescription, this.reason);
+
+  /// Creates a new [ResultAuthenticationFailed] object when the user failed to
+  /// provide a valid authentication key.
+  factory ResultAuthenticationFailed.unauthenticated(String message) =>
+      ResultAuthenticationFailed._(
+        message,
+        AuthenticationFailureReason.unauthenticated,
+      );
+
+  /// Creates a new [ResultAuthenticationFailed] object when the user provided
+  /// an authentication key that did not have sufficient access.
+  factory ResultAuthenticationFailed.insufficientAccess(String message) =>
+      ResultAuthenticationFailed._(
+        message,
+        AuthenticationFailureReason.insufficientAccess,
+      );
 
   @override
   String toString() {
