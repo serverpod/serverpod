@@ -521,8 +521,6 @@ class Server {
     Endpoint endpoint,
   ) async {
     try {
-      // TODO: We need to mark stream as accessbile (in endpoint?) and check
-      // future messages that are passed to this endpoint.
       var authFailed = await EndpointDispatch.canUserAccessEndpoint(
         () => session.authenticationInfo,
         endpoint.requireLogin,
