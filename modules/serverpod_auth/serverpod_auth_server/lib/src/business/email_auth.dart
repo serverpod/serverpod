@@ -578,8 +578,16 @@ class Emails {
   }
 
   static String _generateVerificationCode() {
+    var lenValidationCode = AuthConfig.current.validationCodeLength;
+
+    if (lenValidationCode <= 0) {
+      throw Exception(
+        'Invalid validation code length: $lenValidationCode. Length must be at least 1.',
+      );
+    }
+
     return Random().nextString(
-      length: AuthConfig.current.validationCodeLength,
+      length: lenValidationCode,
       chars: '0123456789',
     );
   }
