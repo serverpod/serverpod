@@ -406,41 +406,4 @@ fields:
       );
     }, skip: errors.isEmpty);
   });
-
-  group(
-    'Given a class with a field with a parent set',
-    () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
-            class: Example
-            table: example
-            fields:
-              parentId: int, parent=example
-            ''',
-        ).build()
-      ];
-      StatefulAnalyzer analyzer = StatefulAnalyzer(config, models);
-      var definitions = analyzer.validateAll();
-
-      var definition = definitions.first as ClassDefinition;
-      var relation = definition.fields.last.relation;
-
-      test('then the onDelete is set to Cascading', () {
-        var foreignRelation = relation as ForeignRelationDefinition;
-        expect(
-          foreignRelation.onDelete.name.toString().toLowerCase(),
-          'cascade',
-        );
-      });
-
-      test('then the onUpdate is set to NoAction', () {
-        var foreignRelation = relation as ForeignRelationDefinition;
-        expect(
-          foreignRelation.onUpdate.name.toString().toLowerCase(),
-          'noaction',
-        );
-      });
-    },
-  );
 }

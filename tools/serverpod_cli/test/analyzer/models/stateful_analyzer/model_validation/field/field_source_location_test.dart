@@ -65,9 +65,9 @@ fields:
       var error = collector.errors.first;
       expect(error.span, isNotNull);
       expect(error.span!.start.line, 3);
-      expect(error.span!.start.column, 22);
+      expect(error.span!.start.column, 15);
       expect(error.span!.end.line, 3);
-      expect(error.span!.end.column, 22);
+      expect(error.span!.end.column, 21);
     },
   );
 
@@ -98,9 +98,9 @@ fields:
       var error = collector.errors.first;
       expect(error.span, isNotNull);
       expect(error.span!.start.line, 3);
-      expect(error.span!.start.column, 22);
+      expect(error.span!.start.column, 15);
       expect(error.span!.end.line, 3);
-      expect(error.span!.end.column, 34);
+      expect(error.span!.end.column, 21);
     },
   );
 

@@ -1,4 +1,3 @@
-import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
@@ -29,56 +28,8 @@ void main() {
       var error = collector.errors.first;
       expect(
         error.message,
-        'The parent must reference a valid table name (e.g. parent=table_name). "" is not a valid parent name.',
+        'The "parent" property is deprecated. Use the relation keyword instead. E.g. relation(parent=parent_table). Note that the default onDelete action changes from "Cascade" to "NoAction" when using the relation keyword.',
       );
-    },
-  );
-
-  test(
-    'Given a class with a field with a parent, then the generated model has a parentTable property set to the parent table name.',
-    () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
-            class: Example
-            table: example
-            fields:
-              parentId: int, parent=example
-            ''',
-        ).build()
-      ];
-      StatefulAnalyzer analyzer = StatefulAnalyzer(config, models);
-      var definitions = analyzer.validateAll();
-
-      var definition = definitions.first as ClassDefinition;
-      var relation = definition.fields.last.relation;
-
-      expect(relation.runtimeType, ForeignRelationDefinition);
-      expect((relation as ForeignRelationDefinition).parentTable, 'example');
-    },
-  );
-
-  test(
-    'Given a class with a field with a parent with whitespace in the syntax, then the generated model has a parentTable property set to the parent table name.',
-    () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
-            class: Example
-            table: example
-            fields:
-              parentId: int, parent = example
-            ''',
-        ).build()
-      ];
-      StatefulAnalyzer analyzer = StatefulAnalyzer(config, models);
-
-      var definitions = analyzer.validateAll();
-      var definition = definitions.first as ClassDefinition;
-
-      var relation = definition.fields.last.relation;
-      expect(relation.runtimeType, ForeignRelationDefinition);
-      expect((relation as ForeignRelationDefinition).parentTable, 'example');
     },
   );
 
@@ -132,7 +83,7 @@ void main() {
       var error = collector.errors.first;
       expect(
         error.message,
-        'The parent table "unknown_table" was not found in any model.',
+        'The "parent" property is deprecated. Use the relation keyword instead. E.g. relation(parent=parent_table). Note that the default onDelete action changes from "Cascade" to "NoAction" when using the relation keyword.',
       );
     },
   );
@@ -183,10 +134,8 @@ void main() {
       expect(collector.errors, isNotEmpty);
       var error = collector.errors.first;
 
-      expect(
-        error.message,
-        'The "table" property must be defined in the class to set a parent on a field.',
-      );
+      expect(error.message,
+          'The "parent" property is deprecated. Use the relation keyword instead. E.g. relation(parent=parent_table). Note that the default onDelete action changes from "Cascade" to "NoAction" when using the relation keyword.');
     },
   );
 
@@ -210,10 +159,8 @@ void main() {
       expect(collector.errors, isNotEmpty);
       var error = collector.errors.first;
 
-      expect(
-        error.message,
-        'The "parent" value must be a String.',
-      );
+      expect(error.message,
+          'The "parent" property is deprecated. Use the relation keyword instead. E.g. relation(parent=parent_table). Note that the default onDelete action changes from "Cascade" to "NoAction" when using the relation keyword.');
     },
   );
 }

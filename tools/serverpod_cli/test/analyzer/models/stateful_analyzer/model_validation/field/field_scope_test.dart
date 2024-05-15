@@ -67,94 +67,6 @@ void main() {
       },
     );
 
-    test(
-      'Given a class with a field with a negated api keyword, then the generated model should be persisted.',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-            class: Example
-            fields:
-              name: String, !api
-            ''',
-          ).build(),
-        ];
-
-        StatefulAnalyzer analyzer = StatefulAnalyzer(config, models);
-        var definitions = analyzer.validateAll();
-        var definition = definitions.first as ClassDefinition;
-
-        expect(
-          definition.fields.last.shouldPersist,
-          isTrue,
-        );
-      },
-    );
-
-    test(
-      'Given a class with a field with a negated database keyword, then the generated model has the scope all.',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-            class: Example
-            fields:
-              name: String, !database
-            ''',
-          ).build(),
-        ];
-
-        StatefulAnalyzer analyzer = StatefulAnalyzer(config, models);
-        var definitions = analyzer.validateAll();
-        var definition = definitions.first as ClassDefinition;
-
-        expect(
-          definition.fields.last.scope,
-          ModelFieldScopeDefinition.all,
-        );
-      },
-    );
-
-    test(
-      'Given a class with a field with both the api and database keywords, then collect an error that only one of them is allowed.',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-            class: Example
-            fields:
-              name: String?, api, database
-            ''',
-          ).build(),
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(
-          collector.errors,
-          hasLength(greaterThan(1)),
-        );
-
-        var message1 =
-            'The "api" property is mutually exclusive with the "database" property.';
-        var message2 =
-            'The "database" property is mutually exclusive with the "api" property.';
-
-        var hasDatabaseError = collector.errors.any(
-          (error) => error.message == message1,
-        );
-
-        var hasApiError = collector.errors.any(
-          (error) => error.message == message2,
-        );
-
-        expect(hasDatabaseError, isTrue);
-        expect(hasApiError, isTrue);
-      },
-    );
-
     group(
       'Given a class with a field with the scope set to database',
       () {
@@ -175,8 +87,7 @@ void main() {
           models,
           onErrorsCollector(collector),
         );
-        var definitions = analyzer.validateAll();
-        var definition = definitions.first as ClassDefinition;
+        analyzer.validateAll();
 
         test('then an error is reported', () {
           expect(collector.errors, isNotEmpty);
@@ -189,15 +100,8 @@ void main() {
             'The "database" property is deprecated. Use "scope=serverOnly" instead.',
           );
 
-          expect(error.severity, SourceSpanSeverity.info);
+          expect(error.severity, SourceSpanSeverity.error);
         }, skip: collector.errors.isEmpty);
-
-        test('then the generated model has the serverOnly scope.', () {
-          expect(
-            definition.fields.last.scope,
-            ModelFieldScopeDefinition.serverOnly,
-          );
-        });
       },
     );
 
@@ -218,8 +122,7 @@ void main() {
         var collector = CodeGenerationCollector();
         StatefulAnalyzer analyzer =
             StatefulAnalyzer(config, models, onErrorsCollector(collector));
-        var definitions = analyzer.validateAll();
-        var definition = definitions.first as ClassDefinition;
+        analyzer.validateAll();
 
         test('then an error is reported', () {
           expect(collector.errors, isNotEmpty);
@@ -232,40 +135,8 @@ void main() {
             'The "api" property is deprecated. Use "!persist" instead.',
           );
 
-          expect(error.severity, SourceSpanSeverity.info);
+          expect(error.severity, SourceSpanSeverity.error);
         }, skip: collector.errors.isEmpty);
-
-        test('then the generated model should not be persisted.', () {
-          expect(
-            definition.fields.last.shouldPersist,
-            isFalse,
-          );
-        });
-      },
-    );
-
-    test(
-      'Given a class with a field with database set to an invalid value, then collect an error that the value must be a bool.',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-            class: Example
-            fields:
-              name: String?, database=INVALID
-            ''',
-          ).build(),
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors.length, greaterThan(0));
-
-        var error = collector.errors.first;
-
-        expect(error.message, 'The value must be a boolean.');
       },
     );
 
@@ -290,7 +161,10 @@ void main() {
 
         var error = collector.errors.first;
 
-        expect(error.message, 'The value must be a boolean.');
+        expect(
+          error.message,
+          'The "api" property is deprecated. Use "!persist" instead.',
+        );
       },
     );
 
@@ -320,7 +194,8 @@ void main() {
         );
 
         var message =
-            'The "api" property is mutually exclusive with the "parent" property.';
+            'The "api" property is deprecated. Use "!persist" instead.';
+
 
         var hasError = collector.errors.any(
           (error) => error.message == message,
@@ -516,7 +391,7 @@ void main() {
       );
       expect(
         error2.message,
-        'The "database" property is mutually exclusive with the "scope" property.',
+        'The "database" property is deprecated. Use "scope=serverOnly" instead.',
       );
     },
   );
@@ -553,7 +428,7 @@ void main() {
       );
       expect(
         error2.message,
-        'The "api" property is mutually exclusive with the "scope" property.',
+        'The "api" property is deprecated. Use "!persist" instead.',
       );
     },
   );

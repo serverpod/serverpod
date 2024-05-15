@@ -399,7 +399,7 @@ void main() {
       );
       expect(
         error2.message,
-        'The "api" property is mutually exclusive with the "persist" property.',
+        'The "api" property is deprecated. Use "!persist" instead.',
       );
     },
   );
@@ -433,7 +433,7 @@ void main() {
       );
       expect(
         error2.message,
-        'The "database" property is mutually exclusive with the "persist" property.',
+        'The "database" property is deprecated. Use "scope=serverOnly" instead.',
       );
     },
   );

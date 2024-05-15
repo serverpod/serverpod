@@ -380,7 +380,7 @@ void main() {
       );
       expect(
         collector.errors.first.message,
-        'The "parent" property is mutually exclusive with the "relation" property.',
+        'The "parent" property is deprecated. Use the relation keyword instead. E.g. relation(parent=parent_table). Note that the default onDelete action changes from "Cascade" to "NoAction" when using the relation keyword.',
       );
     },
   );

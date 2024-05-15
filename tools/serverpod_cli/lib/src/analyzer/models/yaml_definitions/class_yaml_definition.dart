@@ -56,13 +56,10 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.parent,
+                isDeprecated: true,
                 isRemoved: true,
-                mutuallyExclusiveKeys: {
-                  Keyword.relation,
-                },
                 alternativeUsageMessage:
                     'Use the relation keyword instead. E.g. relation(parent=parent_table). Note that the default onDelete action changes from "Cascade" to "NoAction" when using the relation keyword.',
-                valueRestriction: restrictions.validateParentName,
               ),
               ValidateNode(
                 Keyword.relation,
@@ -130,26 +127,15 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.database,
+                isDeprecated: true,
                 isRemoved: true,
                 alternativeUsageMessage: 'Use "scope=serverOnly" instead.',
-                valueRestriction: BooleanValueRestriction().validate,
-                mutuallyExclusiveKeys: {
-                  Keyword.api,
-                  Keyword.scope,
-                  Keyword.persist
-                },
               ),
               ValidateNode(
                 Keyword.api,
+                isDeprecated: true,
                 isRemoved: true,
                 alternativeUsageMessage: 'Use "!persist" instead.',
-                valueRestriction: BooleanValueRestriction().validate,
-                mutuallyExclusiveKeys: {
-                  Keyword.database,
-                  Keyword.scope,
-                  Keyword.parent,
-                  Keyword.persist,
-                },
               ),
             },
           ),
