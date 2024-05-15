@@ -510,9 +510,9 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
 
   Future<void> _resetPassword() async {
     _resetIssues();
-    if (_passwordController.text.length < 8) {
+    if (_passwordController.text.length < widget.minPasswordLength) {
       setState(() {
-        _passwordIssue = 'Min 8 characters';
+        _passwordIssue = 'Min ${widget.minPasswordLength} characters';
       });
       return;
     }
