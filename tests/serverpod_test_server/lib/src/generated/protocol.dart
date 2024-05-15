@@ -3838,6 +3838,11 @@ class Protocol extends _i1.SerializationManagerServer {
               deserialize<String>(k), deserialize<List<_i73.Types>>(v)))
           : null) as dynamic;
     }
+    if (t == _i1.getType<List<String>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<String>(e)).toList()
+          : null) as dynamic;
+    }
     if (t == List<_i75.SimpleData>) {
       return (data as List).map((e) => deserialize<_i75.SimpleData>(e)).toList()
           as dynamic;

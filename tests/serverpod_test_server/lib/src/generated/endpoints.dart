@@ -264,6 +264,12 @@ class Endpoints extends _i1.EndpointDispatch {
           'signInRequired',
           null,
         ),
+      'adminScopeRequired': _i30.AdminScopeRequiredEndpoint()
+        ..initialize(
+          server,
+          'adminScopeRequired',
+          null,
+        ),
       'simple': _i31.SimpleEndpoint()
         ..initialize(
           server,
@@ -407,6 +413,11 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<String>(),
               nullable: false,
             ),
+            'scopes': _i1.ParameterDescription(
+              name: 'scopes',
+              type: _i1.getType<List<String>?>(),
+              nullable: true,
+            ),
           },
           call: (
             _i1.Session session,
@@ -417,6 +428,7 @@ class Endpoints extends _i1.EndpointDispatch {
             session,
             params['email'],
             params['password'],
+            params['scopes'],
           ),
         ),
         'signOut': _i1.MethodConnector(
@@ -4336,6 +4348,23 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['signInRequired'] as _i30.SignInRequiredEndpoint)
+                  .testMethod(session),
+        )
+      },
+    );
+    connectors['adminScopeRequired'] = _i1.EndpointConnector(
+      name: 'adminScopeRequired',
+      endpoint: endpoints['adminScopeRequired']!,
+      methodConnectors: {
+        'testMethod': _i1.MethodConnector(
+          name: 'testMethod',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['adminScopeRequired']
+                      as _i30.AdminScopeRequiredEndpoint)
                   .testMethod(session),
         )
       },
