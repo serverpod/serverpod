@@ -335,21 +335,25 @@ mixin _ColumnNumberOperations<T> on _ValueOperatorColumn<T> {
   }
 
   /// Database greater than operator.
+  /// Throws [ArgumentError] if [other] is not an [Expression], [T] or [Column].
   Expression operator >(dynamic other) {
     return _GreaterThanExpression(this, _createValueExpression(other));
   }
 
   /// Database greater or equal than operator.
+  /// Throws [ArgumentError] if [other] is not an [Expression], [T] or [Column].
   Expression operator >=(dynamic other) {
     return _GreaterOrEqualExpression(this, _createValueExpression(other));
   }
 
   /// Database less than operator.
+  /// Throws [ArgumentError] if [other] is not an [Expression], [T] or [Column].
   Expression operator <(dynamic other) {
     return _LessThanExpression(this, _createValueExpression(other));
   }
 
   /// Database less or equal than operator.
+  /// Throws [ArgumentError] if [other] is not an [Expression], [T] or [Column].
   Expression operator <=(dynamic other) {
     return _LessThanOrEqualExpression(this, _createValueExpression(other));
   }
@@ -367,7 +371,9 @@ mixin _ColumnNumberOperations<T> on _ValueOperatorColumn<T> {
       return Expression(other);
     }
 
-    return EscapedExpression(other);
+    throw ArgumentError(
+      'Invalid type for comparison: ${other.runtimeType}, allowed types are Expression, $T or Column',
+    );
   }
 }
 
