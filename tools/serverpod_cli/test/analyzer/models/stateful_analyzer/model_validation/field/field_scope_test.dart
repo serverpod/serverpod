@@ -196,7 +196,6 @@ void main() {
         var message =
             'The "api" property is deprecated. Use "!persist" instead.';
 
-
         var hasError = collector.errors.any(
           (error) => error.message == message,
         );
