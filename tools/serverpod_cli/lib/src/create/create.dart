@@ -125,7 +125,8 @@ Future<bool> performCreate(
         await log.progress('Getting Flutter app package dependencies.', () {
       return CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
     });
-    success &= await log.progress('Updating Flutter app MacOS entitlements.', () {
+    success &=
+        await log.progress('Updating Flutter app MacOS entitlements.', () {
       return EntitlementsModifier.addNetworkToEntitlements(
           serverpodDirs.flutterDir);
     });
