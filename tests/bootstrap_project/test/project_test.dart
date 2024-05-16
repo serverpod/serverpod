@@ -7,7 +7,6 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
-import 'package:xml/xml.dart';
 
 const tempDirName = 'temp';
 
@@ -359,30 +358,25 @@ void main() async {
           var exists = file.existsSync();
           expect(exists, isTrue,
               reason: "DebugProfile entitlements does not exist.");
-          var document = XmlDocument.parse(file.readAsStringSync());
-          var networkClientKeyExists = document.findAllElements('key').any(
-                (node) => node.innerText == 'com.apple.security.network.client',
-              );
-
-          var networkClientValueIsTrue = false;
-          if (networkClientKeyExists) {
-            var nextElement = document
-                .findAllElements('key')
-                .firstWhere(
-                  (node) =>
-                      node.innerText == 'com.apple.security.network.client',
-                )
-                .nextElementSibling;
-            networkClientValueIsTrue =
-                nextElement != null && nextElement.name.local == 'true';
-          }
-
-          expect(networkClientKeyExists, isTrue,
-              reason:
-                  'Network client key does not exist in DebugProfile entitlements.');
-          expect(networkClientValueIsTrue, isTrue,
-              reason:
-                  'Network client key is not set to true in DebugProfile entitlements.');
+          String contents = file.readAsStringSync();
+          String expected = '''
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+	<key>com.apple.security.cs.allow-jit</key>
+	<true/>
+  <key>com.apple.security.network.client</key>
+  <true/>
+	<key>com.apple.security.network.server</key>
+	<true/>
+</dict>
+</plist>
+''';
+          expect(contents.trim(), expected.trim(),
+              reason: "DebugProfile entitlements is not as expected.");
         });
 
         test('macOS Release entitlements has network client tag and true', () {
@@ -392,30 +386,21 @@ void main() async {
           var exists = file.existsSync();
           expect(exists, isTrue,
               reason: "Release entitlements does not exist.");
-          var document = XmlDocument.parse(file.readAsStringSync());
-          var networkClientKeyExists = document.findAllElements('key').any(
-                (node) => node.innerText == 'com.apple.security.network.client',
-              );
+          String contents = file.readAsStringSync();
+          String expected = '''
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+	<key>com.apple.security.network.client</key>
+  <true/>
+</dict>
+</plist>''';
 
-          var networkClientValueIsTrue = false;
-          if (networkClientKeyExists) {
-            var nextElement = document
-                .findAllElements('key')
-                .firstWhere(
-                  (node) =>
-                      node.innerText == 'com.apple.security.network.client',
-                )
-                .nextElementSibling;
-            networkClientValueIsTrue =
-                nextElement != null && nextElement.name.local == 'true';
-          }
-
-          expect(networkClientKeyExists, isTrue,
-              reason:
-                  'Network client key does not exist in Release entitlements.');
-          expect(networkClientValueIsTrue, isTrue,
-              reason:
-                  'Network client key is not set to true in Release entitlements.');
+          expect(contents.trim(), expected.trim(),
+              reason: "Release entitlements is not as expected.");
         });
         test('has a main file', () {
           expect(

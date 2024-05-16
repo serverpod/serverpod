@@ -17,7 +17,7 @@ dev_dependencies:
   test: ^1.24.2
   path: ^1.8.2
   serverpod_cli: 2.0.0-alpha.3
-  xml: ^6.5.0
+
 dependency_overrides:
   serverpod:
     path: ../../packages/serverpod
