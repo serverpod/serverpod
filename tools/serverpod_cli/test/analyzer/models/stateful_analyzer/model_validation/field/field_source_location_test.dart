@@ -38,7 +38,6 @@ fields:
     },
   );
 
-
   test(
     'Given a class with a field with an empty string entry at the end, then no errors was generated.',
     () {
