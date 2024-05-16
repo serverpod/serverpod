@@ -36,6 +36,9 @@ class EndpointsAnalyzer {
     await _refreshContextForFiles(changedFiles);
 
     var endpointDefs = <EndpointDefinition>[];
+
+    List<(ResolvedLibraryResult, String, String)> validLibraries = [];
+    Map<String, int> endpointClassMap = {};
     await for (var (library, filePath, rootPath) in _libraries) {
       var maybeDartErrors = await _getErrorsForFile(library.session, filePath);
       if (maybeDartErrors.isNotEmpty) {
@@ -52,18 +55,38 @@ class EndpointsAnalyzer {
         continue;
       }
 
-      var validationErrors = _validateLibrary(library, filePath, endpointDefs);
+      for (var endpointClass in _getEndpointClasses(library)) {
+        var className = endpointClass.name;
+        endpointClassMap.update(
+          className,
+          (value) => value + 1,
+          ifAbsent: () => 1,
+        );
+      }
+
+      validLibraries.add((library, filePath, rootPath));
+    }
+
+    var duplicateEndpointClasses = endpointClassMap.entries
+        .where((entry) => entry.value > 1)
+        .map((entry) => entry.key)
+        .toSet();
+
+    for (var (library, filePath, rootPath) in validLibraries) {
+      var validationErrors = _validateLibrary(
+        library,
+        filePath,
+        duplicateEndpointClasses,
+      );
       collector.addErrors(validationErrors.values.expand((e) => e).toList());
 
-      List<EndpointDefinition> endpointsToBeAdded = _parseLibrary(
+      endpointDefs.addAll(_parseLibrary(
         library,
         collector,
         filePath,
         rootPath,
         validationErrors,
-      );
-
-      endpointDefs.addAll(endpointsToBeAdded);
+      ));
     }
 
     return endpointDefs;
@@ -149,16 +172,16 @@ class EndpointsAnalyzer {
   Map<String, List<SourceSpanSeverityException>> _validateLibrary(
     ResolvedLibraryResult library,
     String filePath,
-    List<EndpointDefinition> endpointDefs,
+    Set<String> duplicatedClasses,
   ) {
-    var topElements = library.element.topLevelElements;
-    var classElements = topElements.whereType<ClassElement>();
-    var endpointClasses =
-        classElements.where(EndpointClassAnalyzer.isEndpointClass);
+    var endpointClasses = _getEndpointClasses(library);
 
     var validationErrors = <String, List<SourceSpanSeverityException>>{};
     for (var classElement in endpointClasses) {
-      var errors = EndpointClassAnalyzer.validate(classElement, endpointDefs);
+      var errors = EndpointClassAnalyzer.validate(
+        classElement,
+        duplicatedClasses,
+      );
       if (errors.isNotEmpty) {
         validationErrors[EndpointClassAnalyzer.elementNamespace(
           classElement,
@@ -198,5 +221,12 @@ class EndpointsAnalyzer {
         }
       }
     }
+  }
+
+  Iterable<ClassElement> _getEndpointClasses(ResolvedLibraryResult library) {
+    var topElements = library.element.topLevelElements;
+    return topElements
+        .whereType<ClassElement>()
+        .where(EndpointClassAnalyzer.isEndpointClass);
   }
 }
