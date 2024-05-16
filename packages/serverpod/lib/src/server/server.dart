@@ -228,7 +228,15 @@ class Server {
       await request.response.close();
       return;
     } else if (uri.path == '/websocket') {
-      var webSocket = await WebSocketTransformer.upgrade(request);
+      WebSocket webSocket;
+      try {
+        webSocket = await WebSocketTransformer.upgrade(request);
+      } catch (e) {
+        // Handle "WebSocketException: Invalid WebSocket upgrade request"
+        request.response.statusCode = HttpStatus.badRequest;
+        await request.response.close();
+        return;
+      }
       webSocket.pingInterval = const Duration(seconds: 30);
       unawaited(_handleWebsocket(webSocket, request));
       return;
