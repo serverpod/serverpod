@@ -71,8 +71,7 @@ class EntitlementsModifier {
         debugProfileContent, debugProfileContentWithAddedClient);
     bool releaseResult = await _modifyEntitlements(releaseEntitlementsPath,
         releaseProfileContent, releaseProfileContentWithAddedClient);
-
-    return true && true;
+    return debugResult && releaseResult;
   }
 
   /// Modifies the entitlements file by adding the network client entitlement.
