@@ -2,6 +2,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 import 'package:firebase_admin/firebase_admin.dart';
 import 'package:serverpod_auth_server/src/business/firebase_auth.dart';
+import 'package:serverpod_auth_server/src/business/user_authentication.dart';
 
 const _authMethod = 'firebase';
 
@@ -76,7 +77,11 @@ class FirebaseEndpoint extends Endpoint {
         );
       }
 
-      var authKey = await session.auth.signInUser(userInfo.id!, _authMethod);
+      var authKey = await UserAuthentication.signInUser(
+        session,
+        userInfo.id!,
+        _authMethod,
+      );
 
       return AuthenticationResponse(
         success: true,

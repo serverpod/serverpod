@@ -3,6 +3,7 @@
 // the documentation on how to add endpoints to your server.
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_server/src/business/user_authentication.dart';
 
 import '../business/config.dart';
 import '../generated/protocol.dart';
@@ -11,19 +12,19 @@ import '../generated/protocol.dart';
 class StatusEndpoint extends Endpoint {
   /// Returns true if the client user is signed in.
   Future<bool> isSignedIn(Session session) async {
-    var userId = await session.auth.authenticatedUserId;
+    var userId = (await session.auth)?.authenticatedUserId;
     return userId != null;
   }
 
   /// Signs out a user.
   Future<void> signOut(Session session) async {
-    await session.auth.signOutUser();
+    await UserAuthentication.signOutUser(session);
   }
 
   /// Gets the [UserInfo] for a signed in user, or null if the user is currently
   /// not signed in with the server.
   Future<UserInfo?> getUserInfo(Session session) async {
-    var userId = await session.auth.authenticatedUserId;
+    var userId = (await session.auth)?.authenticatedUserId;
     if (userId == null) return null;
     return await UserInfo.db.findById(session, userId);
   }

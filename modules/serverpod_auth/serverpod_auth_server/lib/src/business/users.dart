@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/src/business/config.dart';
+import 'package:serverpod_auth_server/src/business/user_authentication.dart';
 
 import '../generated/protocol.dart';
 
@@ -137,7 +138,7 @@ class Users {
     await session.db.updateRow(userInfo);
     await invalidateCacheForUser(session, userId);
     // Sign out user
-    await session.auth.signOutUser(userId: userId);
+    await UserAuthentication.signOutUser(session, userId: userId);
   }
 
   /// Unblocks a user so that they can log in again.

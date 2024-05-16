@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:jose/jose.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_server/src/business/user_authentication.dart';
 
 import '../business/users.dart';
 import '../generated/protocol.dart';
@@ -108,7 +109,11 @@ class AppleEndpoint extends Endpoint {
       );
     }
 
-    var authKey = await session.auth.signInUser(userInfo.id!, _authMethod);
+    var authKey = await UserAuthentication.signInUser(
+      session,
+      userInfo.id!,
+      _authMethod,
+    );
 
     return AuthenticationResponse(
       success: true,
