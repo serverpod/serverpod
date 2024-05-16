@@ -53,7 +53,7 @@ void main() async {
     expect(
       createAccountRequest,
       isTrue,
-      reason: 'Generated validation code is 8 characters long, which is valid',
+      reason: 'Generated validation code is 4 characters long, which is valid',
     );
 
     assert(generatedValidationCode?.length == 4);
