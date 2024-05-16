@@ -11,8 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Authentication info for Sign in with Apple.
-abstract class AppleAuthInfo extends _i1.SerializableEntity
-    implements _i1.ProtocolSerialization {
+abstract class AppleAuthInfo
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   AppleAuthInfo._({
     required this.userIdentifier,
     this.email,

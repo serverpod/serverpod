@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class UserNoteWithALongName extends _i1.SerializableEntity {
+abstract class UserNoteWithALongName implements _i1.SerializableModel {
   UserNoteWithALongName._({
     this.id,
     required this.name,

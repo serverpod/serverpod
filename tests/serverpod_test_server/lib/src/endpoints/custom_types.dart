@@ -62,7 +62,7 @@ class CustomTypesEndpoint extends Endpoint {
   @override
   Future<void> handleStreamMessage(
     StreamingSession session,
-    SerializableEntity message,
+    SerializableModel message,
   ) async {
     if (message is CustomClass) {
       await sendStreamMessage(

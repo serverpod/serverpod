@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
 
-abstract class TypesList extends _i1.SerializableEntity {
+abstract class TypesList implements _i1.SerializableModel {
   TypesList._({
     this.anInt,
     this.aBool,

@@ -6,7 +6,7 @@ import 'dart:typed_data';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// The constructor takes JSON structure and turns it into a decoded
-/// [SerializableEntity].
+/// [SerializableModel].
 typedef constructor<T> = T Function(
     dynamic jsonSerialization, SerializationManager serializationManager);
 
@@ -31,7 +31,7 @@ class DeserializationTypeNotFoundException implements Exception {
 
 /// The [SerializableEntity] is the base class for all serializable objects in
 /// Serverpod, except primitives.
-abstract mixin class SerializableEntity {
+abstract interface class SerializableModel {
   /// Returns a serialized JSON structure of the model which also includes
   /// fields used by the database.
   dynamic toJson();
@@ -41,6 +41,7 @@ abstract mixin class SerializableEntity {
     return SerializationManager.encode(this);
   }
 }
+
 
 /// The [ProtocolSerialization] defines a toJsonForProtocol method which makes it
 /// possible to limit what fields are serialized

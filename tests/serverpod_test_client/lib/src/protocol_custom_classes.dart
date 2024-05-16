@@ -1,7 +1,6 @@
-// ignore: depend_on_referenced_packages
 import 'package:serverpod_client/serverpod_client.dart';
 
-class ProtocolCustomClass extends SerializableEntity {
+class ProtocolCustomClass implements SerializableModel {
   final String? value;
 
   ProtocolCustomClass({

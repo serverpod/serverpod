@@ -11,7 +11,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class UserNoteCollectionWithALongName extends _i1.SerializableEntity {
+abstract class UserNoteCollectionWithALongName
+    implements _i1.SerializableModel {
   UserNoteCollectionWithALongName._({
     this.id,
     required this.name,

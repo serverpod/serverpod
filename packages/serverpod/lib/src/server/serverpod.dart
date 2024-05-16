@@ -8,11 +8,11 @@ import 'package:serverpod/src/config/version.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/migrations/migration_manager.dart';
 import 'package:serverpod/src/redis/controller.dart';
+import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager.dart';
-import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../authentication/default_authentication_handler.dart';
@@ -72,7 +72,7 @@ class Serverpod {
   /// running.
   final HealthCheckHandler? healthCheckHandler;
 
-  /// [SerializationManager] used to serialize [SerializableEntity], both
+  /// [SerializationManager] used to serialize [SerializableModel], both
   /// when sending data to a method in an [Endpoint], but also for caching, and
   /// [FutureCall]s.
   final SerializationManagerServer serializationManager;
@@ -675,10 +675,10 @@ class Serverpod {
   }
 
   /// Calls a [FutureCall] by its name after the specified delay, optionally
-  /// passing a [SerializableEntity] object as parameter.
+  /// passing a [SerializableModel] object as parameter.
   Future<void> futureCallWithDelay(
     String callName,
-    SerializableEntity? object,
+    SerializableModel? object,
     Duration delay, {
     String? identifier,
   }) async {
@@ -698,10 +698,10 @@ class Serverpod {
   }
 
   /// Calls a [FutureCall] by its name at the specified time, optionally passing
-  /// a [SerializableEntity] object as parameter.
+  /// a [SerializableModel] object as parameter.
   Future<void> futureCallAtTime(
     String callName,
-    SerializableEntity? object,
+    SerializableModel? object,
     DateTime time, {
     String? identifier,
   }) async {

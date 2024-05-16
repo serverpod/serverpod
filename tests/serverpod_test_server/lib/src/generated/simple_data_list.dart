@@ -12,8 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class SimpleDataList extends _i1.SerializableEntity
-    implements _i1.ProtocolSerialization {
+abstract class SimpleDataList
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   SimpleDataList._({required this.rows});
 
   factory SimpleDataList({required List<_i2.SimpleData> rows}) =

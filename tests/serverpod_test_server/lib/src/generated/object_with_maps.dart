@@ -13,8 +13,8 @@ import 'protocol.dart' as _i2;
 import 'dart:typed_data' as _i3;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class ObjectWithMaps extends _i1.SerializableEntity
-    implements _i1.ProtocolSerialization {
+abstract class ObjectWithMaps
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ObjectWithMaps._({
     required this.dataMap,
     required this.intMap,

@@ -11,8 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// An entry in the distributed cache.
-abstract class DistributedCacheEntry extends _i1.SerializableEntity
-    implements _i1.ProtocolSerialization {
+abstract class DistributedCacheEntry
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   DistributedCacheEntry._({required this.data});
 
   factory DistributedCacheEntry({required String data}) =

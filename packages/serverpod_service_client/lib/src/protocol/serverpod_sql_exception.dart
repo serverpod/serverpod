@@ -10,8 +10,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ServerpodSqlException extends _i1.SerializableEntity
-    implements _i1.SerializableException {
+abstract class ServerpodSqlException
+    implements _i1.SerializableException, _i1.SerializableModel {
   ServerpodSqlException._({
     required this.message,
     required this.sql,

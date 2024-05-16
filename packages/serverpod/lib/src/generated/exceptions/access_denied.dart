@@ -10,8 +10,11 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class AccessDeniedException extends _i1.SerializableEntity
-    implements _i1.SerializableException, _i1.ProtocolSerialization {
+abstract class AccessDeniedException
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   AccessDeniedException._({required this.message});
 
   factory AccessDeniedException({required String message}) =

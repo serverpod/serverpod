@@ -79,11 +79,11 @@ abstract class Endpoint {
   /// Invoked when a message is sent to this endpoint from the client.
   /// Override this method to create your own custom [StreamingEndpoint].
   Future<void> handleStreamMessage(
-      StreamingSession session, SerializableEntity message) async {}
+      StreamingSession session, SerializableModel message) async {}
 
   /// Sends an event to the client represented by the [Session] object.
   Future<void> sendStreamMessage(
-      StreamingSession session, SerializableEntity message) async {
+      StreamingSession session, SerializableModel message) async {
     var prefix = moduleName == null ? '' : '$moduleName.';
 
     var data = {

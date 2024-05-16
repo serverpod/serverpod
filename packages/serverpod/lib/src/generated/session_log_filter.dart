@@ -11,8 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// The log filter is used when searching for specific log entries.
-abstract class SessionLogFilter extends _i1.SerializableEntity
-    implements _i1.ProtocolSerialization {
+abstract class SessionLogFilter
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   SessionLogFilter._({
     this.endpoint,
     this.method,

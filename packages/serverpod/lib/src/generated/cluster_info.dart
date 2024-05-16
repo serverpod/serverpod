@@ -13,8 +13,8 @@ import 'protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Information about a cluster of servers.
-abstract class ClusterInfo extends _i1.SerializableEntity
-    implements _i1.ProtocolSerialization {
+abstract class ClusterInfo
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ClusterInfo._({required this.servers});
 
   factory ClusterInfo({required List<_i2.ClusterServerInfo> servers}) =

@@ -14,8 +14,8 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Defines the current state of the database, including information about
 /// installed modules and migrations.
-abstract class DatabaseDefinitions extends _i1.SerializableEntity
-    implements _i1.ProtocolSerialization {
+abstract class DatabaseDefinitions
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   DatabaseDefinitions._({
     required this.target,
     required this.live,

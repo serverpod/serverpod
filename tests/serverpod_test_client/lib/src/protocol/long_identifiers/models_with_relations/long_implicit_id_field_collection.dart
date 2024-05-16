@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class LongImplicitIdFieldCollection extends _i1.SerializableEntity {
+abstract class LongImplicitIdFieldCollection implements _i1.SerializableModel {
   LongImplicitIdFieldCollection._({
     this.id,
     required this.name,

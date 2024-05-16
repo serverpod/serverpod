@@ -156,8 +156,8 @@ class SerializableModelLibraryGenerator {
 
         classBuilder.methods.add(_buildModelClassTableGetter());
       } else {
-        classBuilder.extend =
-            refer('SerializableEntity', serverpodUrl(serverCode));
+        classBuilder.implements
+            .add(refer('SerializableModel', serverpodUrl(serverCode)));
       }
 
       if (serverCode) {
@@ -1633,7 +1633,7 @@ class SerializableModelLibraryGenerator {
         Enum((e) {
           e.name = enumDefinition.className;
           e.docs.addAll(enumDefinition.documentation ?? []);
-          e.mixins.add(refer('SerializableEntity', serverpodUrl(serverCode)));
+          e.implements.add(refer('SerializableModel', serverpodUrl(serverCode)));
           e.values.addAll([
             for (var value in enumDefinition.values)
               EnumValue((v) {

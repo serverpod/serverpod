@@ -13,8 +13,8 @@ import 'protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A chat message post request.
-abstract class ChatMessagePost extends _i1.SerializableEntity
-    implements _i1.ProtocolSerialization {
+abstract class ChatMessagePost
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ChatMessagePost._({
     required this.channel,
     required this.message,
