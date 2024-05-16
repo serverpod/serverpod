@@ -169,8 +169,10 @@ class AuthConfig {
     this.allowUnsecureRandom = false,
   }) {
     if (validationCodeLength < 1) {
-      throw Exception(
-        'Invalid validation code length: $validationCodeLength. Length must be at least 1.',
+      throw ArgumentError.value(
+        validationCodeLength,
+        'validationCodeLength',
+        'must be at least 1',
       );
     }
   }
