@@ -428,7 +428,7 @@ class Server {
 
           var endpoint = endpointConnector.endpoint;
           var authFailed = await EndpointDispatch.canUserAccessEndpoint(
-            () => session.authenticationInfo,
+            () => session.auth,
             endpoint.requireLogin,
             endpoint.requiredScopes,
           );
@@ -522,7 +522,7 @@ class Server {
   ) async {
     try {
       var authFailed = await EndpointDispatch.canUserAccessEndpoint(
-        () => session.authenticationInfo,
+        () => session.auth,
         endpoint.requireLogin,
         endpoint.requiredScopes,
       );
@@ -538,7 +538,7 @@ class Server {
   ) async {
     try {
       var authFailed = await EndpointDispatch.canUserAccessEndpoint(
-        () => session.authenticationInfo,
+        () => session.auth,
         endpoint.requireLogin,
         endpoint.requiredScopes,
       );
