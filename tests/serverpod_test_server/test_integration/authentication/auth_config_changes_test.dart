@@ -21,16 +21,9 @@ void main() async {
       ),
     );
 
-    var createAccountRequest =
-        await Emails.createAccountRequest(session, userName, email, password);
+    await Emails.createAccountRequest(session, userName, email, password);
 
-    expect(
-      createAccountRequest,
-      isTrue,
-      reason: 'Generated validation code is 8 characters long, which is valid',
-    );
-
-    assert(generatedValidationCode?.length == 8);
+    expect(generatedValidationCode, hasLength(8));
   });
 
   test(
@@ -47,16 +40,9 @@ void main() async {
       ),
     );
 
-    var createAccountRequest =
-        await Emails.createAccountRequest(session, userName, email, password);
+    await Emails.createAccountRequest(session, userName, email, password);
 
-    expect(
-      createAccountRequest,
-      isTrue,
-      reason: 'Generated validation code is 4 characters long, which is valid',
-    );
-
-    assert(generatedValidationCode?.length == 4);
+    expect(generatedValidationCode, hasLength(4));
   });
 
   test(
@@ -64,10 +50,10 @@ void main() async {
       () {
     expect(
         () => AuthConfig(validationCodeLength: 0),
-        throwsA(isA<Exception>().having(
+        throwsA(isA<ArgumentError>().having(
           (e) => e.toString(),
           'message',
-          contains('Invalid validation code length'),
+          contains('must be at least 1'),
         )));
   });
 
@@ -76,10 +62,10 @@ void main() async {
       () {
     expect(
         () => AuthConfig(validationCodeLength: -4),
-        throwsA(isA<Exception>().having(
+        throwsA(isA<ArgumentError>().having(
           (e) => e.toString(),
           'message',
-          contains('Invalid validation code length'),
+          contains('must be at least 1'),
         )));
   });
 }
