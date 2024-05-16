@@ -33,7 +33,7 @@ class ChatEndpoint extends Endpoint {
 
   @override
   Future<void> streamOpened(StreamingSession session) async {
-    var userId = (await session.auth)?.authenticatedUserId;
+    var userId = (await session.auth)?.userId;
 
     if (userId != null) {
       setUserObject(
@@ -54,7 +54,7 @@ class ChatEndpoint extends Endpoint {
     if (message is ChatJoinChannel) {
       // Check if unauthenticated users is ok
       if (!ChatConfig.current.allowUnauthenticatedUsers &&
-          (await session.auth)?.authenticatedUserId == null) {
+          (await session.auth)?.userId == null) {
         await sendStreamMessage(
             session,
             ChatJoinChannelFailed(
@@ -286,7 +286,7 @@ class ChatEndpoint extends Endpoint {
   Future<ChatMessageAttachmentUploadDescription?>
       createAttachmentUploadDescription(
           Session session, String fileName) async {
-    var userId = (await session.auth)?.authenticatedUserId;
+    var userId = (await session.auth)?.userId;
     if (userId == null) return null;
 
     var filePath = _generateAttachmentFilePath(userId, fileName);
@@ -306,7 +306,7 @@ class ChatEndpoint extends Endpoint {
         .verifyDirectFileUpload(storageId: 'public', path: filePath);
     var url =
         await session.storage.getPublicUrl(storageId: 'public', path: filePath);
-    var userId = (await session.auth)?.authenticatedUserId;
+    var userId = (await session.auth)?.userId;
 
     if (userId == null) return null;
 

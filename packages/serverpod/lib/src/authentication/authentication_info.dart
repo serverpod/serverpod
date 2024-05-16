@@ -10,11 +10,11 @@ typedef AuthenticationHandler = Future<AuthenticationInfo?> Function(
 /// Allowed scopes are defined for each [Endpoint].
 class AuthenticationInfo {
   /// Id for an authenticated user.
-  final int authenticatedUserId;
+  final int userId;
 
   /// The scopes that the user can access.
   final Set<Scope> scopes;
 
   /// Creates a new [AuthenticationInfo].
-  AuthenticationInfo(this.authenticatedUserId, this.scopes);
+  AuthenticationInfo(this.userId, this.scopes);
 }

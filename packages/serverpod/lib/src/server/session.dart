@@ -155,7 +155,7 @@ abstract class Session {
         this,
         exception: error == null ? null : '$error',
         stackTrace: stackTrace,
-        authenticatedUserId: _auth?.authenticatedUserId,
+        authenticatedUserId: _auth?.userId,
       );
     } catch (e, stackTrace) {
       stderr.writeln('Failed to close session: $e');
