@@ -9,6 +9,7 @@ import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
+import 'package:serverpod_cli/src/util/entitlements_modifier.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -124,7 +125,7 @@ Future<bool> performCreate(
       return CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
     });
     success &= await log.progress('Updating entitlements.', () {
-      return CommandLineTools.addNetworkToEntitlements(
+      return EntitlementsModifier.addNetworkToEntitlements(
           serverpodDirs.flutterDir);
     });
   } else if (template == ServerpodTemplateType.module) {

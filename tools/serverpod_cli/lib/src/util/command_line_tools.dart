@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:serverpod_cli/src/logger/logger.dart';
-import 'package:xml/xml.dart';
 
 class CommandLineTools {
   static Future<bool> dartPubGet(Directory dir) async {
@@ -48,50 +47,6 @@ class CommandLineTools {
       arguments: arguments,
     );
     return exitCode == 0;
-  }
-
-  static Future<bool> addNetworkToEntitlements(Directory dir) async {
-    var debugEntitlementsPath =
-        '${dir.path}/macos/Runner/DebugProfile.entitlements';
-    var releaseEntitlementsPath =
-        '${dir.path}/macos/Runner/Release.entitlements';
-
-    bool debugResult = await _modifyEntitlements(debugEntitlementsPath);
-    bool releaseResult = await _modifyEntitlements(releaseEntitlementsPath);
-
-    return debugResult && releaseResult;
-  }
-
-  static Future<bool> _modifyEntitlements(String filePath) async {
-    try {
-      var file = File(filePath);
-      var document = XmlDocument.parse(file.readAsStringSync());
-
-      var exists = document.findAllElements('key').any(
-            (node) => node.innerText == 'com.apple.security.network.client',
-          );
-
-      if (!exists) {
-        var dict = document.findAllElements('dict').first;
-        var keyNode = XmlElement(
-            XmlName('key'), [], [XmlText('com.apple.security.network.client')]);
-        var trueNode = XmlElement(XmlName('true'));
-
-        dict.children.add(keyNode);
-        dict.children.add(trueNode);
-
-        file.writeAsStringSync(document.toXmlString(pretty: true));
-        log.debug('Added `com.apple.security.network.client` entitlement.');
-      } else {
-        log.debug(
-            '`com.apple.security.network.client` entitlement already exists.');
-      }
-
-      return true;
-    } catch (e) {
-      log.error('Error modifying entitlements: $e');
-      return false;
-    }
   }
 }
 
