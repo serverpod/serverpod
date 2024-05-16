@@ -16,9 +16,6 @@ class WebServer {
   /// The port the webserver is running on.
   late final int _port;
 
-  /// The hostname of the webserver.
-  late final String _hostname;
-
   /// A list of [Route] which defines how to handle path passed to the server.
   final List<Route> routes = <Route>[];
 
@@ -35,7 +32,6 @@ class WebServer {
     }
 
     _port = config.port;
-    _hostname = config.publicHost;
   }
 
   bool _running = false;
@@ -119,14 +115,6 @@ class WebServer {
           'Malformed call, invalid uri from ${request.connectionInfo?.remoteAddress.address}');
 
       request.response.statusCode = HttpStatus.badRequest;
-      await request.response.close();
-      return;
-    }
-
-    if (uri.host != _hostname) {
-      var redirect = uri.replace(host: _hostname);
-      request.response.headers.add('Location', redirect.toString());
-      request.response.statusCode = HttpStatus.movedPermanently;
       await request.response.close();
       return;
     }

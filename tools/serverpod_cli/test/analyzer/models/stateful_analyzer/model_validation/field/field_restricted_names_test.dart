@@ -19,6 +19,7 @@ void main() {
 
   var restrictedFieldNames = [
     'toJson',
+    'toJsonForProtocol',
     'fromJson',
     'toString',
     'hashCode',
@@ -94,7 +95,6 @@ void main() {
     'findSingleRow',
     'find',
     'setColumn',
-    'allToJson',
     'toJsonForDatabase',
     'tableName',
     'include',

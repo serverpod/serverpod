@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 import '../generated/version.dart';
 

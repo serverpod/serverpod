@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A log entry for a message sent in a streaming session.
-abstract class MessageLogEntry extends _i1.TableRow {
+abstract class MessageLogEntry extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   MessageLogEntry._({
     int? id,
     required this.sessionLogId,
@@ -126,7 +127,7 @@ abstract class MessageLogEntry extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'sessionLogId': sessionLogId,

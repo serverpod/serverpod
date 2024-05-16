@@ -37,6 +37,7 @@ dependencies:
   stream_channel: ^2.1.1
   lsp_server: ^0.3.0
   pub_semver: ^2.1.4
+  cli_tools: ^0.0.2
 
 dev_dependencies:
   serverpod_lints: SERVERPOD_VERSION

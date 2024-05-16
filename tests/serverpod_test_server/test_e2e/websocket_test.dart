@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_module_client/serverpod_test_module_client.dart';
 import 'package:serverpod_test_client/src/custom_classes.dart';
@@ -170,6 +173,101 @@ void main() {
         i += 1;
         if (i == nums.length) break;
       }
+      client.closeStreamingConnection();
+      client.signInRequired.resetStream();
+    });
+
+    group('Given signed in user without "admin" scope', () {
+      setUp(() async {
+        var response = await client.authentication.authenticate(
+          'test@foo.bar',
+          'password',
+        );
+        assert(response.success, 'Failed to authenticate user');
+        await client.authenticationKeyManager
+            ?.put('${response.keyId}:${response.key}');
+        assert(
+            await client.modules.auth.status.isSignedIn(), 'Failed to sign in');
+        await client.openStreamingConnection(
+          disconnectOnLostInternetConnection: false,
+        );
+      });
+
+      tearDown(() async {
+        await client.authenticationKeyManager?.remove();
+        await client.authentication.removeAllUsers();
+        await client.authentication.signOut();
+        assert(
+          await client.modules.auth.status.isSignedIn() == false,
+          'Still signed in after teardown',
+        );
+        client.closeStreamingConnection();
+        client.adminScopeRequired.resetStream();
+      });
+
+      test(
+          'when sending message to stream endpoint that requires "admin" scope then message is ignored.',
+          () async {
+        await client.adminScopeRequired.sendStreamMessage(SimpleData(num: 666));
+
+        expectLater(
+          client.adminScopeRequired.stream.first.timeout(
+            Duration(seconds: 2),
+          ),
+          throwsA(isA<TimeoutException>()),
+        );
+      });
+    });
+
+    group('Given signed in user with "admin" scope', () {
+      setUp(() async {
+        var response = await client.authentication.authenticate(
+          'test@foo.bar',
+          'password',
+          [Scope.admin.name!],
+        );
+        assert(response.success, 'Failed to authenticate user');
+        await client.authenticationKeyManager
+            ?.put('${response.keyId}:${response.key}');
+        assert(
+            await client.modules.auth.status.isSignedIn(), 'Failed to sign in');
+        await client.openStreamingConnection(
+          disconnectOnLostInternetConnection: false,
+        );
+      });
+
+      tearDown(() async {
+        await client.authenticationKeyManager?.remove();
+        await client.authentication.removeAllUsers();
+        await client.authentication.signOut();
+        assert(
+          await client.modules.auth.status.isSignedIn() == false,
+          'Still signed in after teardown',
+        );
+        client.closeStreamingConnection();
+        client.adminScopeRequired.resetStream();
+      });
+
+      test(
+          'when sending message to stream endpoint that requires "admin" scope then message is processed.',
+          () async {
+        const streamedNumber = 666;
+        await client.adminScopeRequired.sendStreamMessage(
+          SimpleData(num: streamedNumber),
+        );
+
+        expectLater(
+            client.adminScopeRequired.stream.first.timeout(
+              Duration(seconds: 2),
+            ),
+            completion(
+              isA<SerializableEntity>().having(
+                (e) => (e as SimpleData).num,
+                'num',
+                streamedNumber,
+              ),
+            ));
+      });
     });
   });
 

@@ -13,7 +13,8 @@ import 'protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Runtime settings of the server.
-abstract class RuntimeSettings extends _i1.TableRow {
+abstract class RuntimeSettings extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   RuntimeSettings._({
     int? id,
     required this.logSettings,
@@ -83,12 +84,12 @@ abstract class RuntimeSettings extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
-      'logSettings': logSettings.allToJson(),
-      'logSettingsOverrides':
-          logSettingsOverrides.toJson(valueToJson: (v) => v.allToJson()),
+      'logSettings': logSettings.toJsonForProtocol(),
+      'logSettingsOverrides': logSettingsOverrides.toJson(
+          valueToJson: (v) => v.toJsonForProtocol()),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     };

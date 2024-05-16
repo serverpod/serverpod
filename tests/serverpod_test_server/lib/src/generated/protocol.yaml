@@ -33,6 +33,8 @@ s3CloudStorage:
   - getPublicUrlForFile:
   - getDirectFilePostUrl:
   - verifyDirectFileUpload:
+customClassProtocol:
+  - getProtocolField:
 customTypes:
   - returnCustomClass:
   - returnCustomClassNullable:
@@ -237,7 +239,11 @@ redis:
   - listenToChannel:
   - postToChannel:
   - countSubscribedChannels:
+serverOnlyScopedFieldModel:
+  - getScopeServerOnlyField:
 signInRequired:
+  - testMethod:
+adminScopeRequired:
   - testMethod:
 simple:
   - setGlobalInt:

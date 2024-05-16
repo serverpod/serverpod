@@ -10,7 +10,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class ServerOnlyClass extends _i1.SerializableEntity {
+abstract class ServerOnlyClass extends _i1.SerializableEntity
+    implements _i1.ProtocolSerialization {
   ServerOnlyClass._({required this.foo});
 
   factory ServerOnlyClass({required String foo}) = _ServerOnlyClassImpl;
@@ -24,12 +25,12 @@ abstract class ServerOnlyClass extends _i1.SerializableEntity {
   ServerOnlyClass copyWith({String? foo});
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {'foo': foo};
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {'foo': foo};
+  Map<String, dynamic> toJsonForProtocol() {
+    return {};
   }
 }
 

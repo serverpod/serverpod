@@ -173,11 +173,13 @@ class LibraryGenerator {
                   ])),
           for (var module in config.modules)
             Code.scope((a) =>
-                'try{return ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().deserialize<T>(data,t);}catch(_){}'),
+                'try{return ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().deserialize<T>(data,t);}'
+                'on ${a(refer('DeserializationTypeNotFoundException', serverpodUrl(serverCode)))} catch(_){}'),
           if (config.name != 'serverpod' &&
               (serverCode || config.dartClientDependsOnServiceClient))
             Code.scope((a) =>
-                'try{return ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().deserialize<T>(data,t);}catch(_){}'),
+                'try{return ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().deserialize<T>(data,t);}'
+                'on ${a(refer('DeserializationTypeNotFoundException', serverpodUrl(serverCode)))} catch(_){}'),
           const Code('return super.deserialize<T>(data,t);'),
         ])),
       Method((m) => m

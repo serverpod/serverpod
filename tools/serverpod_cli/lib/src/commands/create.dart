@@ -1,7 +1,7 @@
+import 'package:cli_tools/cli_tools.dart';
 import 'package:serverpod_cli/src/create/create.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
-import 'package:serverpod_cli/src/util/exit_exception.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 class CreateCommand extends ServerpodCommand {
   final templateTypes =

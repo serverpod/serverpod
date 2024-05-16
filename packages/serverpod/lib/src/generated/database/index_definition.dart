@@ -13,7 +13,8 @@ import '../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// The definition of a (desired) index in the database.
-abstract class IndexDefinition extends _i1.SerializableEntity {
+abstract class IndexDefinition extends _i1.SerializableEntity
+    implements _i1.ProtocolSerialization {
   IndexDefinition._({
     required this.indexName,
     this.tableSpace,
@@ -94,11 +95,11 @@ abstract class IndexDefinition extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'indexName': indexName,
       if (tableSpace != null) 'tableSpace': tableSpace,
-      'elements': elements.toJson(valueToJson: (v) => v.allToJson()),
+      'elements': elements.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'type': type,
       'isUnique': isUnique,
       'isPrimary': isPrimary,

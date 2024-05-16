@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class DatabaseMigration extends _i1.SerializableEntity {
+abstract class DatabaseMigration extends _i1.SerializableEntity
+    implements _i1.ProtocolSerialization {
   DatabaseMigration._({
     required this.actions,
     required this.warnings,
@@ -60,10 +61,10 @@ abstract class DatabaseMigration extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'actions': actions.toJson(valueToJson: (v) => v.allToJson()),
-      'warnings': warnings.toJson(valueToJson: (v) => v.allToJson()),
+      'actions': actions.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'warnings': warnings.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'migrationApiVersion': migrationApiVersion,
     };
   }
