@@ -28,6 +28,10 @@ void main() {
 
       var error = collector.errors.first as SourceSpanSeverityException;
       expect(error.severity, SourceSpanSeverity.error);
+      expect(
+        error.message,
+        'The "database" property is deprecated. Use "scope=serverOnly" instead.',
+      );
     },
   );
 }

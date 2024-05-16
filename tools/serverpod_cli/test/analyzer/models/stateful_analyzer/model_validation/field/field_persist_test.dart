@@ -203,7 +203,6 @@ void main() {
       expect(collector.errors, isNotEmpty);
 
       var error = collector.errors.first as SourceSpanSeverityException;
-      print(error.severity);
 
       expect(
         error.message,
