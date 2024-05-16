@@ -183,28 +183,6 @@ void main() {
   );
 
   test(
-    'Given a class with a field with persist negated and a relation defined, then collect an error that the keys are mutually exclusive.',
-    () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
-          class: Example
-          table: example
-          fields:
-            parent: int?, !persist, parent=example
-          ''',
-        ).build()
-      ];
-
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
-
-      expect(collector.errors, isNotEmpty);
-    },
-  );
-
-  test(
     'Given a class with a field with a persist key set to true, then collect an info that the keyword is unnecessary.',
     () {
       var models = [
@@ -225,6 +203,7 @@ void main() {
       expect(collector.errors, isNotEmpty);
 
       var error = collector.errors.first as SourceSpanSeverityException;
+      print(error.severity);
 
       expect(
         error.message,
@@ -362,60 +341,6 @@ void main() {
       var error = collector.errors.last;
 
       expect(error.message, 'The value must be a boolean.');
-    },
-  );
-
-  test(
-    'Given a class with a field with both the persist and api keywords, then collect an error that only one of them is allowed.',
-    () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
-        class: Example
-        table: example
-        fields:
-          name: String, persist, api
-        ''',
-        ).build()
-      ];
-
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
-
-      expect(collector.errors.length, 1);
-
-      expect(
-        collector.errors.firstOrNull?.message,
-        'The "api" property is deprecated. Use "!persist" instead.',
-      );
-    },
-  );
-
-  test(
-    'Given a class with a field with both the persist and database keywords, then collect an error that only one of them is allowed.',
-    () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
-        class: Example
-        table: example
-        fields:
-          name: String, !persist, database
-        ''',
-        ).build()
-      ];
-
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
-
-      expect(collector.errors.length, 1);
-
-      expect(
-        collector.errors.firstOrNull?.message,
-        'The "database" property is deprecated. Use "scope=serverOnly" instead.',
-      );
     },
   );
 }

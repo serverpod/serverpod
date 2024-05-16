@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
   test(
-    'Given a class with a field with a parent, then a error is generated.',
+    'Given a class with a field with a database keyword, then a error is generated.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -16,7 +16,7 @@ void main() {
           class: Example
           table: example
           fields:
-            parentId: int, parent=example
+            parentId: int, database
           ''',
         ).build()
       ];

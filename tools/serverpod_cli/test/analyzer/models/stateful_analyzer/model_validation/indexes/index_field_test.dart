@@ -116,7 +116,7 @@ void main() {
   );
 
   test(
-    'Given a class with an index with a field that has an api scope, then collect an error that the field is missing in the class.',
+    'Given a class with an index with a field that has an !persist scope, then collect an error that the field is missing in the class.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -125,7 +125,7 @@ void main() {
           table: example
           fields:
             name: String
-            apiField: String, api
+            apiField: String, !persist
           indexes:
             example_index:
               fields: apiField
