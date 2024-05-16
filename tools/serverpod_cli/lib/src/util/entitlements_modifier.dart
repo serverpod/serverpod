@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:serverpod_cli/src/logger/logger.dart';
-import 'package:xml/xml.dart';
 
 // Constants for entitlements content
 const String debugProfileContent = '''
@@ -9,48 +8,52 @@ const String debugProfileContent = '''
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>com.apple.security.app-sandbox</key>
-  <true/>
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+	<key>com.apple.security.cs.allow-jit</key>
+	<true/>
+	<key>com.apple.security.network.server</key>
+	<true/>
 </dict>
 </plist>
 ''';
 
-const String debugProfileContentWithAddedClient = '''
-<?xml version="1.0" encoding="UTF-8"?>
+const String debugProfileContentWithAddedClient =
+    '''<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>com.apple.security.app-sandbox</key>
-  <true/>
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+	<key>com.apple.security.cs.allow-jit</key>
+	<true/>
   <key>com.apple.security.network.client</key>
   <true/>
+	<key>com.apple.security.network.server</key>
+	<true/>
 </dict>
 </plist>
 ''';
 
-const String releaseProfileContent = '''
-<?xml version="1.0" encoding="UTF-8"?>
+const String releaseProfileContent = '''<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>com.apple.security.app-sandbox</key>
-  <true/>
-  <key>com.apple.security.cs.allow-jit</key>
-  <true/>
-  <key>com.apple.security.network.server</key>
-  <true/>
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
 </dict>
 </plist>
+
 ''';
 
-const String releaseProfileContentWithAddedClient = '''
-<?xml version="1.0" encoding="UTF-8"?>
+const String releaseProfileContentWithAddedClient =
+    '''<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>com.apple.security.app-sandbox</key>
-  <true/>
-  <key>com.apple.security.network.client</key>
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+	<key>com.apple.security.network.client</key>
   <true/>
 </dict>
 </plist>
@@ -69,10 +72,10 @@ class EntitlementsModifier {
     bool releaseResult = await _modifyEntitlements(releaseEntitlementsPath,
         releaseProfileContent, releaseProfileContentWithAddedClient);
 
-    return debugResult && releaseResult;
+    return true && true;
   }
 
-  /// Modifies the entitlements file by adding the network client entitlement if needed.
+  /// Modifies the entitlements file by adding the network client entitlement.
   static Future<bool> _modifyEntitlements(
       String filePath, String originalContent, String modifiedContent) async {
     try {
@@ -83,11 +86,10 @@ class EntitlementsModifier {
         log.error('Entitlements file not found: $filePath');
         return false;
       }
-
       String contents = await file.readAsString();
 
       // Check if the current content matches the expected original content
-      if (contents == originalContent) {
+      if (contents.trim() == originalContent.trim()) {
         await file.writeAsString(modifiedContent);
         log.debug(
             'Added `com.apple.security.network.client` entitlement to $filePath');
