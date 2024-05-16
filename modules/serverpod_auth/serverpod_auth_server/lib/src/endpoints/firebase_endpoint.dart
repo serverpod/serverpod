@@ -2,7 +2,6 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 import 'package:firebase_admin/firebase_admin.dart';
 import 'package:serverpod_auth_server/src/business/firebase_auth.dart';
-import 'package:serverpod_auth_server/src/business/user_authentication.dart';
 
 const _authMethod = 'firebase';
 
