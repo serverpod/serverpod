@@ -46,6 +46,13 @@ abstract class Session {
     return _auth;
   }
 
+  /// Returns true if the user is signed in.
+  Future<bool> get isUserSignedIn async {
+    return (await auth) != null;
+  }
+
+  String? _authenticationKey;
+
   /// An custom object associated with this [Session]. This is especially
   /// useful for keeping track of the state in a [StreamingEndpoint].
   dynamic userObject;
@@ -61,11 +68,6 @@ abstract class Session {
     }
     return database;
   }
-
-  String? _authenticationKey;
-
-  /// The authentication key passed from the client.
-  String? get authenticationKey => _authenticationKey;
 
   /// Provides access to all caches used by the server.
   Caches get caches => server.caches;
@@ -119,16 +121,10 @@ abstract class Session {
     }
 
     if (server.authenticationHandler != null && _authenticationKey != null) {
-      _auth =
-          await server.authenticationHandler!(this, _authenticationKey!);
+      _auth = await server.authenticationHandler!(this, _authenticationKey!);
     }
 
     _initialized = true;
-  }
-
-  /// Returns true if the user is signed in.
-  Future<bool> get isUserSignedIn async {
-    return (await auth) != null;
   }
 
   /// Returns the duration this session has been open.
