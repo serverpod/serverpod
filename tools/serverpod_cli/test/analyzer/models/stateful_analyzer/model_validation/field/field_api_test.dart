@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
   test(
-    'Given a class with a field with a parent, then a error is generated.',
+    'Given a class with a field with a api keyword, then a error is generated.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -16,7 +16,7 @@ void main() {
           class: Example
           table: example
           fields:
-            parentId: int, parent=example
+            parentId: int, api
           ''',
         ).build()
       ];
@@ -30,7 +30,7 @@ void main() {
       expect(error.severity, SourceSpanSeverity.error);
       expect(
         error.message,
-        'The "parent" property is deprecated. Use the relation keyword instead. E.g. relation(parent=parent_table). Note that the default onDelete action changes from "Cascade" to "NoAction" when using the relation keyword.',
+        'The "api" property is deprecated. Use "!persist" instead.',
       );
     },
   );
