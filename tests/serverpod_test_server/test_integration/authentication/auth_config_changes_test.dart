@@ -35,9 +35,28 @@ void main() async {
 
   test(
       'Given a positive integer as validation code length when creating an account then validation code has the specified length.',
-      () {
-    final auth = AuthConfig(validationCodeLength: 4);
-    expect(auth.validationCodeLength, 4);
+      () async {
+    String? generatedValidationCode;
+    AuthConfig.set(
+      AuthConfig(
+        validationCodeLength: 4,
+        sendValidationEmail: (session, email, validationCode) async {
+          generatedValidationCode = validationCode;
+          return true;
+        },
+      ),
+    );
+
+    var createAccountRequest =
+        await Emails.createAccountRequest(session, userName, email, password);
+
+    expect(
+      createAccountRequest,
+      isTrue,
+      reason: 'Generated validation code is 8 characters long, which is valid',
+    );
+
+    assert(generatedValidationCode?.length == 4);
   });
 
   test(
