@@ -24,21 +24,13 @@ class Expression<T> {
   List<Column> get columns => [];
 
   /// Database AND operator.
-  Expression operator &(dynamic other) {
-    if (other is Expression) {
-      return _AndExpression(this, other);
-    }
-
-    return _AndExpression(this, EscapedExpression(other));
+  Expression operator &(Expression other) {
+    return _AndExpression(this, other);
   }
 
   /// Database OR operator.
-  Expression operator |(dynamic other) {
-    if (other is Expression) {
-      return _OrExpression(this, other);
-    }
-
-    return _OrExpression(this, EscapedExpression(other));
+  Expression operator |(Expression other) {
+    return _OrExpression(this, other);
   }
 
   /// Iterator for all [Expression]s in the expression.
