@@ -8,5 +8,3 @@ const defaultAuthKeySalt = 'salty';
 String hashString(String secret, String string) {
   return sha256.convert(utf8.encode(secret + string)).toString();
 }
-
-
