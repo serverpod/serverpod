@@ -167,5 +167,11 @@ class AuthConfig {
     this.maxPasswordLength = 128,
     this.minPasswordLength = 8,
     this.allowUnsecureRandom = false,
-  });
+  }) {
+    if (validationCodeLength < 1) {
+      throw Exception(
+        'Invalid validation code length: $validationCodeLength. Length must be at least 1.',
+      );
+    }
+  }
 }
