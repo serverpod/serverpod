@@ -74,7 +74,7 @@ void main() {
       var error = collector.errors.first;
       expect(
         error.message,
-        'The field name "missingField" is not added to the class or has an api scope.',
+        'The field name "missingField" is not added to the class or has an !persist scope.',
       );
     },
   );
@@ -147,7 +147,7 @@ void main() {
       var error = collector.errors.last;
       expect(
         error.message,
-        'The field name "apiField" is not added to the class or has an api scope.',
+        'The field name "apiField" is not added to the class or has an !persist scope.',
       );
     },
   );
@@ -183,7 +183,7 @@ void main() {
       var error = collector.errors.first;
       expect(
         error.message,
-        'The field name "" is not added to the class or has an api scope.',
+        'The field name "" is not added to the class or has an !persist scope.',
       );
     },
   );
