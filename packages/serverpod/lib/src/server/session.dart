@@ -121,7 +121,8 @@ abstract class Session {
     }
 
     if (server.authenticationHandler != null && _authenticationKey != null) {
-      _authenticated = await server.authenticationHandler!(this, _authenticationKey!);
+      _authenticated =
+          await server.authenticationHandler!(this, _authenticationKey!);
     }
 
     _initialized = true;
