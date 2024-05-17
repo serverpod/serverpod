@@ -13,7 +13,30 @@ class SignInRequiredEndpoint extends Endpoint {
 
   @override
   Future<void> handleStreamMessage(
-      StreamingSession session, SerializableModel message) async {
+    StreamingSession session,
+    SerializableModel message,
+  ) async {
+    if (message is SimpleData) {
+      unawaited(Future.delayed(const Duration(seconds: 1)).then((value) async {
+        await sendStreamMessage(session, message);
+      }));
+    }
+  }
+}
+
+class AdminScopeRequiredEndpoint extends Endpoint {
+  @override
+  Set<Scope> get requiredScopes => {Scope.admin};
+
+  Future<bool> testMethod(Session session) async {
+    return true;
+  }
+
+  @override
+  Future<void> handleStreamMessage(
+    StreamingSession session,
+    SerializableModel message,
+  ) async {
     if (message is SimpleData) {
       unawaited(Future.delayed(const Duration(seconds: 1)).then((value) async {
         await sendStreamMessage(session, message);

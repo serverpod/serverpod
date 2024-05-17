@@ -123,14 +123,16 @@ class EndpointAuthentication extends _i1.EndpointRef {
 
   _i2.Future<_i3.AuthenticationResponse> authenticate(
     String email,
-    String password,
-  ) =>
+    String password, [
+    List<String>? scopes,
+  ]) =>
       caller.callServerEndpoint<_i3.AuthenticationResponse>(
         'authentication',
         'authenticate',
         {
           'email': email,
           'password': password,
+          'scopes': scopes,
         },
       );
 
@@ -1984,6 +1986,20 @@ class EndpointSignInRequired extends _i1.EndpointRef {
       );
 }
 
+/// {@category Endpoint}
+class EndpointAdminScopeRequired extends _i1.EndpointRef {
+  EndpointAdminScopeRequired(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'adminScopeRequired';
+
+  _i2.Future<bool> testMethod() => caller.callServerEndpoint<bool>(
+        'adminScopeRequired',
+        'testMethod',
+        {},
+      );
+}
+
 /// A simple endpoint that modifies a global integer. This class is meant for
 /// testing and the documentation has multiple lines.
 /// {@category Endpoint}
@@ -2135,6 +2151,7 @@ class Client extends _i1.ServerpodClient {
     redis = EndpointRedis(this);
     serverOnlyScopedFieldModel = EndpointServerOnlyScopedFieldModel(this);
     signInRequired = EndpointSignInRequired(this);
+    adminScopeRequired = EndpointAdminScopeRequired(this);
     simple = EndpointSimple(this);
     streaming = EndpointStreaming(this);
     streamingLogging = EndpointStreamingLogging(this);
@@ -2201,6 +2218,8 @@ class Client extends _i1.ServerpodClient {
 
   late final EndpointSignInRequired signInRequired;
 
+  late final EndpointAdminScopeRequired adminScopeRequired;
+
   late final EndpointSimple simple;
 
   late final EndpointStreaming streaming;
@@ -2244,6 +2263,7 @@ class Client extends _i1.ServerpodClient {
         'redis': redis,
         'serverOnlyScopedFieldModel': serverOnlyScopedFieldModel,
         'signInRequired': signInRequired,
+        'adminScopeRequired': adminScopeRequired,
         'simple': simple,
         'streaming': streaming,
         'streamingLogging': streamingLogging,

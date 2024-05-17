@@ -294,6 +294,7 @@ class Server {
         // TODO: Log to database?
         stderr.writeln('Malformed call: $result');
       }
+
       request.response.statusCode = HttpStatus.badRequest;
       await request.response.close();
       return;
@@ -302,7 +303,11 @@ class Server {
         // TODO: Log to database?
         stderr.writeln('Access denied: $result');
       }
-      request.response.statusCode = HttpStatus.forbidden;
+
+      request.response.statusCode = switch (result.reason) {
+        AuthenticationFailureReason.unauthenticated => HttpStatus.unauthorized,
+        AuthenticationFailureReason.insufficientAccess => HttpStatus.forbidden,
+      };
       await request.response.close();
       return;
     } else if (result is ResultInternalServerError) {
@@ -421,8 +426,12 @@ class Server {
             throw Exception('Endpoint not found: $endpointName');
           }
 
-          var authFailed = await endpoints.canUserAccessEndpoint(
-              session, endpointConnector.endpoint);
+          var endpoint = endpointConnector.endpoint;
+          var authFailed = await EndpointDispatch.canUserAccessEndpoint(
+            () => session.authenticationInfo,
+            endpoint.requireLogin,
+            endpoint.requiredScopes,
+          );
 
           if (authFailed == null) {
             // Process the message.
@@ -508,11 +517,15 @@ class Server {
   }
 
   Future<void> _callStreamOpened(
-      StreamingSession session, Endpoint endpoint) async {
+    StreamingSession session,
+    Endpoint endpoint,
+  ) async {
     try {
-      // TODO: We need to mark stream as accessbile (in endpoint?) and check
-      // future messages that are passed to this endpoint.
-      var authFailed = await endpoints.canUserAccessEndpoint(session, endpoint);
+      var authFailed = await EndpointDispatch.canUserAccessEndpoint(
+        () => session.authenticationInfo,
+        endpoint.requireLogin,
+        endpoint.requiredScopes,
+      );
       if (authFailed == null) await endpoint.streamOpened(session);
     } catch (e) {
       return;
@@ -520,9 +533,15 @@ class Server {
   }
 
   Future<void> _callStreamClosed(
-      StreamingSession session, Endpoint endpoint) async {
+    StreamingSession session,
+    Endpoint endpoint,
+  ) async {
     try {
-      var authFailed = await endpoints.canUserAccessEndpoint(session, endpoint);
+      var authFailed = await EndpointDispatch.canUserAccessEndpoint(
+        () => session.authenticationInfo,
+        endpoint.requireLogin,
+        endpoint.requiredScopes,
+      );
       if (authFailed == null) await endpoint.streamClosed(session);
     } catch (e) {
       return;

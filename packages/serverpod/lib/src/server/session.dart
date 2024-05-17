@@ -32,8 +32,19 @@ abstract class Session {
   @internal
   late final SessionLogEntryCache sessionLogs;
 
-  int? _authenticatedUser;
-  Set<Scope>? _scopes;
+  AuthenticationInfo? _authenticationInfo;
+
+  void _updateAuthenticationInfo(AuthenticationInfo? info) {
+    _initialized = true;
+    _authenticationInfo = info;
+  }
+
+  /// The authentication information for the session.
+  /// This will be null if the session is not authenticated.
+  Future<AuthenticationInfo?> get authenticationInfo async {
+    if (!_initialized) await _initialize();
+    return _authenticationInfo;
+  }
 
   /// An custom object associated with this [Session]. This is especially
   /// useful for keeping track of the state in a [StreamingEndpoint].
@@ -112,19 +123,11 @@ abstract class Session {
     }
 
     if (server.authenticationHandler != null && _authenticationKey != null) {
-      var authenticationInfo =
+      _authenticationInfo =
           await server.authenticationHandler!(this, _authenticationKey!);
-      _scopes = authenticationInfo?.scopes;
-      _authenticatedUser = authenticationInfo?.authenticatedUserId;
     }
 
     _initialized = true;
-  }
-
-  /// Returns the scopes associated with an authenticated user.
-  Future<Set<Scope>?> get scopes async {
-    if (!_initialized) await _initialize();
-    return _scopes;
   }
 
   /// Returns true if the user is signed in.
@@ -156,7 +159,7 @@ abstract class Session {
         this,
         exception: error == null ? null : '$error',
         stackTrace: stackTrace,
-        authenticatedUserId: _authenticatedUser,
+        authenticatedUserId: _authenticationInfo?.authenticatedUserId,
       );
     } catch (e, stackTrace) {
       stderr.writeln('Failed to close session: $e');
@@ -335,6 +338,7 @@ class StreamingSession extends Session {
   @internal
   void updateAuthenticationKey(String? authenticationKey) {
     _authenticationKey = authenticationKey;
+    _initialized = false;
   }
 }
 
@@ -361,8 +365,8 @@ class UserAuthentication {
   /// Returns the id of an authenticated user or null if the user isn't signed
   /// in.
   Future<int?> get authenticatedUserId async {
-    if (!_session._initialized) await _session._initialize();
-    return _session._authenticatedUser;
+    var authInfo = await _session.authenticationInfo;
+    return authInfo?.authenticatedUserId;
   }
 
   /// Signs in an user to the server. The user should have been authenticated
@@ -389,7 +393,7 @@ class UserAuthentication {
       method: method,
     );
 
-    _session._authenticatedUser = userId;
+    _session._updateAuthenticationInfo(AuthenticationInfo(userId, scopes));
     var result = await AuthKey.db.insertRow(_session, authKey);
     return result.copyWith(key: key);
   }
@@ -402,7 +406,7 @@ class UserAuthentication {
 
     await _session.db
         .deleteWhere<AuthKey>(where: AuthKey.t.userId.equals(userId));
-    _session._authenticatedUser = null;
+    _session._updateAuthenticationInfo(null);
   }
 }
 
