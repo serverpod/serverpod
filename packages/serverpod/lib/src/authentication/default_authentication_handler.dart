@@ -1,8 +1,7 @@
 import '../server/session.dart';
 import 'authentication_info.dart';
 
-/// The default [AuthenticationHandler], uses the auth_key table from the
-/// database to authenticate a user.
+/// The default [AuthenticationHandler], throws an [UnimplementedError].
 Future<AuthenticationInfo?> defaultAuthenticationHandler(
   Session session,
   String key,
