@@ -29,26 +29,26 @@ abstract class Session {
   @internal
   late final SessionLogEntryCache sessionLogs;
 
-  AuthenticationInfo? _auth;
+  AuthenticationInfo? _authenticated;
 
   /// Updates the authentication information for the session.
   /// This is typically done by the [Server] when the user is authenticated.
   /// Using this method modifies the authenticated user for this session.
-  void updateAuth(AuthenticationInfo? info) {
+  void updateAuthenticated(AuthenticationInfo? info) {
     _initialized = true;
-    _auth = info;
+    _authenticated = info;
   }
 
   /// The authentication information for the session.
   /// This will be null if the session is not authenticated.
-  Future<AuthenticationInfo?> get auth async {
+  Future<AuthenticationInfo?> get authenticated async {
     if (!_initialized) await _initialize();
-    return _auth;
+    return _authenticated;
   }
 
   /// Returns true if the user is signed in.
   Future<bool> get isUserSignedIn async {
-    return (await auth) != null;
+    return (await authenticated) != null;
   }
 
   String? _authenticationKey;
@@ -121,7 +121,7 @@ abstract class Session {
     }
 
     if (server.authenticationHandler != null && _authenticationKey != null) {
-      _auth = await server.authenticationHandler!(this, _authenticationKey!);
+      _authenticated = await server.authenticationHandler!(this, _authenticationKey!);
     }
 
     _initialized = true;
@@ -151,7 +151,7 @@ abstract class Session {
         this,
         exception: error == null ? null : '$error',
         stackTrace: stackTrace,
-        authenticatedUserId: _auth?.userId,
+        authenticatedUserId: _authenticated?.userId,
       );
     } catch (e, stackTrace) {
       stderr.writeln('Failed to close session: $e');

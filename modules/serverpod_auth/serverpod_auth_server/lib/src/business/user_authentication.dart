@@ -29,7 +29,7 @@ class UserAuthentication {
       method: method,
     );
 
-    session.updateAuth(AuthenticationInfo(userId, scopes));
+    session.updateAuthenticated(AuthenticationInfo(userId, scopes));
     var result = await AuthKey.db.insertRow(session, authKey);
     return result.copyWith(key: key);
   }
@@ -37,11 +37,11 @@ class UserAuthentication {
   /// Signs out a user from the server and deletes all authentication keys.
   /// This means that the user will be signed out from all connected devices.
   static Future<void> signOutUser(Session session, {int? userId}) async {
-    userId ??= (await session.auth)?.userId;
+    userId ??= (await session.authenticated)?.userId;
     if (userId == null) return;
 
     await session.db
         .deleteWhere<AuthKey>(where: AuthKey.t.userId.equals(userId));
-    session.updateAuth(null);
+    session.updateAuthenticated(null);
   }
 }

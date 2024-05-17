@@ -98,7 +98,7 @@ abstract class EndpointDispatch {
     try {
       var endpoint = connector.endpoint;
       var authFailed = await canUserAccessEndpoint(
-        () => session.auth,
+        () => session.authenticated,
         endpoint.requireLogin,
         endpoint.requiredScopes,
       );
