@@ -29,19 +29,13 @@ class DeserializationTypeNotFoundException implements Exception {
   String toString() => message;
 }
 
-/// The [SerializableEntity] is the base class for all serializable objects in
+/// The [SerializableModel] is the base interface for all serializable objects in
 /// Serverpod, except primitives.
 abstract interface class SerializableModel {
   /// Returns a serialized JSON structure of the model which also includes
   /// fields used by the database.
   dynamic toJson();
-
-  @override
-  String toString() {
-    return SerializationManager.encode(this);
-  }
 }
-
 
 /// The [ProtocolSerialization] defines a toJsonForProtocol method which makes it
 /// possible to limit what fields are serialized
