@@ -4,7 +4,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 import 'package:serverpod_auth_server/src/business/authentication_util.dart';
 
-/// The default [AuthenticationHandler], uses the auth_key table from the
+/// The [AuthenticationHandler], uses the auth_key table from the
 /// database to authenticate a user.
 Future<AuthenticationInfo?> authenticationHandler(
   Session session,
