@@ -368,8 +368,8 @@ void main() async {
 	<true/>
 	<key>com.apple.security.cs.allow-jit</key>
 	<true/>
-  <key>com.apple.security.network.client</key>
-  <true/>
+	<key>com.apple.security.network.client</key>
+	<true/>
 	<key>com.apple.security.network.server</key>
 	<true/>
 </dict>
@@ -395,7 +395,7 @@ void main() async {
 	<key>com.apple.security.app-sandbox</key>
 	<true/>
 	<key>com.apple.security.network.client</key>
-  <true/>
+	<true/>
 </dict>
 </plist>''';
 
