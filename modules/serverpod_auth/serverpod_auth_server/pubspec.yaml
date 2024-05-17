@@ -12,6 +12,7 @@ environment:
 dependencies:
   serverpod: 2.0.0-alpha.3
   serverpod_serialization: 2.0.0-alpha.3
+  serverpod_shared: 2.0.0-alpha.3
   crypto: ^3.0.2
   email_validator: ^2.1.17
   firebase_admin: ^0.2.0

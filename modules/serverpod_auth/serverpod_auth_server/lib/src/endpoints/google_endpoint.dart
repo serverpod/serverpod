@@ -12,6 +12,7 @@ import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/src/business/config.dart';
 import 'package:serverpod_auth_server/src/business/google_auth.dart';
+import 'package:serverpod_auth_server/src/business/user_authentication.dart';
 import 'package:serverpod_auth_server/src/business/user_images.dart';
 
 import '../business/users.dart';
@@ -98,7 +99,11 @@ class GoogleEndpoint extends Endpoint {
       }
     }
 
-    var authKey = await session.auth.signInUser(userInfo.id!, _authMethod);
+    var authKey = await UserAuthentication.signInUser(
+      session,
+      userInfo.id!,
+      _authMethod,
+    );
 
     authClient.close();
 
@@ -175,7 +180,11 @@ class GoogleEndpoint extends Endpoint {
 
       // Authentication looks ok!
 
-      var authKey = await session.auth.signInUser(userInfo.id!, 'google');
+      var authKey = await UserAuthentication.signInUser(
+        session,
+        userInfo.id!,
+        _authMethod,
+      );
 
       return AuthenticationResponse(
         success: true,
