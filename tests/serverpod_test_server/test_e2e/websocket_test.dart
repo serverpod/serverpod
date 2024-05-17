@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
-import 'package:serverpod_test_module_client/serverpod_test_module_client.dart';
 import 'package:serverpod_test_client/src/custom_classes.dart';
+import 'package:serverpod_test_module_client/serverpod_test_module_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:test/test.dart';
@@ -261,7 +261,7 @@ void main() {
               Duration(seconds: 2),
             ),
             completion(
-              isA<SerializableEntity>().having(
+              isA<SerializableModel>().having(
                 (e) => (e as SimpleData).num,
                 'num',
                 streamedNumber,
