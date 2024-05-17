@@ -7,8 +7,8 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 class UserAuthentication {
   /// Signs in an user to the server. The user should have been authenticated
   /// before signing them in. Send the AuthKey.id and key to the client and
-  /// use that to authenticate in future calls. In most cases, it's more
-  /// convenient to use the serverpod_auth module for authentication.
+  /// use that to authenticate in future calls. In most situations you should
+  /// use one of the auth providers instead of this method.
   static Future<AuthKey> signInUser(Session session, int userId, String method,
       {Set<Scope> scopes = const {}}) async {
     var signInSalt = session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
