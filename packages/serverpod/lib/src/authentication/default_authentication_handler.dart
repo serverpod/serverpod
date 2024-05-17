@@ -7,6 +7,6 @@ Future<AuthenticationInfo?> defaultAuthenticationHandler(
   String key,
 ) async {
   throw UnimplementedError(
-    'Authentication not implemented. Set the param authenticationHandler in the Server constructor to override the default. Checkout the serverpod_auth package https://docs.serverpod.dev/concepts/authentication/setup.',
+    'Authentication not implemented. Set the param authenticationHandler in the Serverpod constructor to override the default. Authentication is easily implemented using the serverpod_auth package/Read more on how to implement authentication in Serverpod here  https://docs.serverpod.dev/concepts/authentication/setup.',
   );
 }
