@@ -15,6 +15,7 @@ void run(List<String> args) async {
     args,
     Protocol(),
     Endpoints(),
+    authenticationHandler: auth.authenticationHandler,
   );
 
   Protocol.customConstructors[CustomClass2] =

@@ -48,7 +48,8 @@ class AuthenticationEndpoint extends Endpoint {
 
       if (userInfo == null) return AuthenticationResponse(success: false);
 
-      var authKey = await session.auth.signInUser(
+      var authKey = await UserAuthentication.signInUser(
+        session,
         userInfo.id!,
         'test',
         scopes: scopes?.map((e) => Scope(e)).toSet() ?? const {},
@@ -65,6 +66,6 @@ class AuthenticationEndpoint extends Endpoint {
   }
 
   Future<void> signOut(Session session) async {
-    await session.auth.signOutUser();
+    await UserAuthentication.signOutUser(session);
   }
 }

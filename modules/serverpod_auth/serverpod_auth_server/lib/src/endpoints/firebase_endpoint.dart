@@ -76,7 +76,11 @@ class FirebaseEndpoint extends Endpoint {
         );
       }
 
-      var authKey = await session.auth.signInUser(userInfo.id!, _authMethod);
+      var authKey = await UserAuthentication.signInUser(
+        session,
+        userInfo.id!,
+        _authMethod,
+      );
 
       return AuthenticationResponse(
         success: true,

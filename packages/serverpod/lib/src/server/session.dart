@@ -5,9 +5,6 @@ import 'dart:typed_data';
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/features.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
-
-import '../authentication/util.dart';
 import '../cache/caches.dart';
 import '../database/database.dart';
 import '../generated/protocol.dart';
@@ -32,19 +29,29 @@ abstract class Session {
   @internal
   late final SessionLogEntryCache sessionLogs;
 
-  AuthenticationInfo? _authenticationInfo;
+  AuthenticationInfo? _authenticated;
 
-  void _updateAuthenticationInfo(AuthenticationInfo? info) {
+  /// Updates the authentication information for the session.
+  /// This is typically done by the [Server] when the user is authenticated.
+  /// Using this method modifies the authenticated user for this session.
+  void updateAuthenticated(AuthenticationInfo? info) {
     _initialized = true;
-    _authenticationInfo = info;
+    _authenticated = info;
   }
 
   /// The authentication information for the session.
   /// This will be null if the session is not authenticated.
-  Future<AuthenticationInfo?> get authenticationInfo async {
+  Future<AuthenticationInfo?> get authenticated async {
     if (!_initialized) await _initialize();
-    return _authenticationInfo;
+    return _authenticated;
   }
+
+  /// Returns true if the user is signed in.
+  Future<bool> get isUserSignedIn async {
+    return (await authenticated) != null;
+  }
+
+  String? _authenticationKey;
 
   /// An custom object associated with this [Session]. This is especially
   /// useful for keeping track of the state in a [StreamingEndpoint].
@@ -62,19 +69,11 @@ abstract class Session {
     return database;
   }
 
-  String? _authenticationKey;
-
-  /// The authentication key passed from the client.
-  String? get authenticationKey => _authenticationKey;
-
   /// Provides access to all caches used by the server.
   Caches get caches => server.caches;
 
   /// Map of passwords loaded from config/passwords.yaml
   Map<String, String> get passwords => server.passwords;
-
-  /// Methods related to user authentication.
-  late final UserAuthentication auth;
 
   /// Provides access to the cloud storages used by this [Serverpod].
   late final StorageAccess storage;
@@ -99,7 +98,6 @@ abstract class Session {
   }) {
     _startTime = DateTime.now();
 
-    auth = UserAuthentication._(this);
     storage = StorageAccess._(this);
     messages = MessageCentralAccess._(this);
 
@@ -123,16 +121,11 @@ abstract class Session {
     }
 
     if (server.authenticationHandler != null && _authenticationKey != null) {
-      _authenticationInfo =
+      _authenticated =
           await server.authenticationHandler!(this, _authenticationKey!);
     }
 
     _initialized = true;
-  }
-
-  /// Returns true if the user is signed in.
-  Future<bool> get isUserSignedIn async {
-    return (await auth.authenticatedUserId) != null;
   }
 
   /// Returns the duration this session has been open.
@@ -159,7 +152,7 @@ abstract class Session {
         this,
         exception: error == null ? null : '$error',
         stackTrace: stackTrace,
-        authenticatedUserId: _authenticationInfo?.authenticatedUserId,
+        authenticatedUserId: _authenticated?.userId,
       );
     } catch (e, stackTrace) {
       stderr.writeln('Failed to close session: $e');
@@ -354,60 +347,6 @@ class FutureCallSession extends Session {
     required this.futureCallName,
     super.enableLogging = true,
   });
-}
-
-/// Collects methods for authenticating users.
-class UserAuthentication {
-  final Session _session;
-
-  UserAuthentication._(this._session);
-
-  /// Returns the id of an authenticated user or null if the user isn't signed
-  /// in.
-  Future<int?> get authenticatedUserId async {
-    var authInfo = await _session.authenticationInfo;
-    return authInfo?.authenticatedUserId;
-  }
-
-  /// Signs in an user to the server. The user should have been authenticated
-  /// before signing them in. Send the AuthKey.id and key to the client and
-  /// use that to authenticate in future calls. In most cases, it's more
-  /// convenient to use the serverpod_auth module for authentication.
-  Future<AuthKey> signInUser(int userId, String method,
-      {Set<Scope> scopes = const {}}) async {
-    var signInSalt = _session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
-
-    var key = generateRandomString();
-    var hash = hashString(signInSalt, key);
-
-    var scopeNames = <String>[];
-    for (var scope in scopes) {
-      if (scope.name != null) scopeNames.add(scope.name!);
-    }
-
-    var authKey = AuthKey(
-      userId: userId,
-      hash: hash,
-      key: key,
-      scopeNames: scopeNames,
-      method: method,
-    );
-
-    _session._updateAuthenticationInfo(AuthenticationInfo(userId, scopes));
-    var result = await AuthKey.db.insertRow(_session, authKey);
-    return result.copyWith(key: key);
-  }
-
-  /// Signs out a user from the server and deletes all authentication keys.
-  /// This means that the user will be signed out from all connected devices.
-  Future<void> signOutUser({int? userId}) async {
-    userId ??= await authenticatedUserId;
-    if (userId == null) return;
-
-    await _session.db
-        .deleteWhere<AuthKey>(where: AuthKey.t.userId.equals(userId));
-    _session._updateAuthenticationInfo(null);
-  }
 }
 
 /// Collects methods for accessing cloud storage.
