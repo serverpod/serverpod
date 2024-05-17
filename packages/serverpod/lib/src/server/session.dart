@@ -33,7 +33,7 @@ abstract class Session {
 
   /// Updates the authentication information for the session.
   /// This is typically done by the [Server] when the user is authenticated.
-  /// Setting this value modifies the authenticated user for this session.
+  /// Using this method modifies the authenticated user for this session.
   void updateAuth(AuthenticationInfo? info) {
     _initialized = true;
     _auth = info;
