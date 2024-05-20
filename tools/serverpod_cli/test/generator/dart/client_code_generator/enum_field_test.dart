@@ -19,6 +19,7 @@ void main() {
     'protocol',
     'example.dart',
   );
+
   group('Given enum named Example serialized by index when generating code',
       () {
     var models = [
