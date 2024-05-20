@@ -4155,6 +4155,9 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i87.CustomClass) {
       return _i87.CustomClass.fromJson(data) as T;
     }
+    if (t == _i87.CustomClass2) {
+      return _i87.CustomClass2.fromJson(data) as T;
+    }
     if (t == _i88.ProtocolCustomClass) {
       return _i88.ProtocolCustomClass.fromJson(data) as T;
     }
@@ -4166,6 +4169,9 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i87.CustomClass?>()) {
       return (data != null ? _i87.CustomClass.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i87.CustomClass2?>()) {
+      return (data != null ? _i87.CustomClass2.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i88.ProtocolCustomClass?>()) {
       return (data != null ? _i88.ProtocolCustomClass.fromJson(data) : null)
@@ -4204,6 +4210,9 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (data is _i87.CustomClass) {
       return 'CustomClass';
+    }
+    if (data is _i87.CustomClass2) {
+      return 'CustomClass2';
     }
     if (data is _i88.ProtocolCustomClass) {
       return 'ProtocolCustomClass';
@@ -4433,6 +4442,9 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (data['className'] == 'CustomClass') {
       return deserialize<_i87.CustomClass>(data['data']);
+    }
+    if (data['className'] == 'CustomClass2') {
+      return deserialize<_i87.CustomClass2>(data['data']);
     }
     if (data['className'] == 'ProtocolCustomClass') {
       return deserialize<_i88.ProtocolCustomClass>(data['data']);
