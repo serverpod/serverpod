@@ -453,6 +453,10 @@ class Server {
             } catch (e, s) {
               messageError = e;
               messageStackTrace = s;
+              stderr.writeln('${DateTime.now().toUtc()} Internal server error. '
+                  'Uncaught exception in handleStreamMessage.');
+              stderr.writeln('$e');
+              stderr.writeln('$s');
             }
 
             var duration =
