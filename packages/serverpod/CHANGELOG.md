@@ -111,7 +111,7 @@ This is a summary of the new features in version 1.2.0. For the full list, pleas
 - feat: Improves compatibility for `serverpod create` by not running Docker through tooling.
 - fix: Makes endpoint classes public to enable Dart doc.
 - fix: Serializable exceptions now work with modules.
-- fix: handles invalid return types when parsing endpoint methods.
+- fix: Handles invalid return types when parsing endpoint methods.
 - fix: Fixes localhost on Android emulator.
 - fix: Use explicit version for all Serverpod packages.
 - fix: Uses git version of CLI in local tests.
