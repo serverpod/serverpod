@@ -103,6 +103,7 @@ class GoogleEndpoint extends Endpoint {
       session,
       userInfo.id!,
       _authMethod,
+      scopes: userInfo.scopes,
     );
 
     authClient.close();
@@ -184,6 +185,7 @@ class GoogleEndpoint extends Endpoint {
         session,
         userInfo.id!,
         _authMethod,
+        scopes: userInfo.scopes,
       );
 
       return AuthenticationResponse(
