@@ -5,7 +5,7 @@ fields:
   id: int?
 
   ### The first name or nickname of the user.
-  userName: String
+  userName: String?
 
   ### The full name of the user.
   fullName: String?

@@ -14,24 +14,24 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class EmailPasswordReset extends _i1.SerializableEntity
     implements _i1.ProtocolSerialization {
   EmailPasswordReset._({
-    required this.userName,
+    this.userName,
     required this.email,
   });
 
   factory EmailPasswordReset({
-    required String userName,
+    String? userName,
     required String email,
   }) = _EmailPasswordResetImpl;
 
   factory EmailPasswordReset.fromJson(Map<String, dynamic> jsonSerialization) {
     return EmailPasswordReset(
-      userName: jsonSerialization['userName'] as String,
+      userName: jsonSerialization['userName'] as String?,
       email: jsonSerialization['email'] as String,
     );
   }
 
   /// The user name of the user.
-  String userName;
+  String? userName;
 
   /// The email of the user.
   String email;
@@ -43,7 +43,7 @@ abstract class EmailPasswordReset extends _i1.SerializableEntity
   @override
   Map<String, dynamic> toJson() {
     return {
-      'userName': userName,
+      if (userName != null) 'userName': userName,
       'email': email,
     };
   }
@@ -51,15 +51,17 @@ abstract class EmailPasswordReset extends _i1.SerializableEntity
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      'userName': userName,
+      if (userName != null) 'userName': userName,
       'email': email,
     };
   }
 }
 
+class _Undefined {}
+
 class _EmailPasswordResetImpl extends EmailPasswordReset {
   _EmailPasswordResetImpl({
-    required String userName,
+    String? userName,
     required String email,
   }) : super._(
           userName: userName,
@@ -68,11 +70,11 @@ class _EmailPasswordResetImpl extends EmailPasswordReset {
 
   @override
   EmailPasswordReset copyWith({
-    String? userName,
+    Object? userName = _Undefined,
     String? email,
   }) {
     return EmailPasswordReset(
-      userName: userName ?? this.userName,
+      userName: userName is String? ? userName : this.userName,
       email: email ?? this.email,
     );
   }

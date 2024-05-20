@@ -16,7 +16,7 @@ abstract class UserInfoPublic extends _i1.SerializableEntity
     implements _i1.ProtocolSerialization {
   UserInfoPublic._({
     this.id,
-    required this.userName,
+    this.userName,
     this.fullName,
     required this.created,
     this.imageUrl,
@@ -24,7 +24,7 @@ abstract class UserInfoPublic extends _i1.SerializableEntity
 
   factory UserInfoPublic({
     int? id,
-    required String userName,
+    String? userName,
     String? fullName,
     required DateTime created,
     String? imageUrl,
@@ -33,7 +33,7 @@ abstract class UserInfoPublic extends _i1.SerializableEntity
   factory UserInfoPublic.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserInfoPublic(
       id: jsonSerialization['id'] as int?,
-      userName: jsonSerialization['userName'] as String,
+      userName: jsonSerialization['userName'] as String?,
       fullName: jsonSerialization['fullName'] as String?,
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       imageUrl: jsonSerialization['imageUrl'] as String?,
@@ -44,7 +44,7 @@ abstract class UserInfoPublic extends _i1.SerializableEntity
   int? id;
 
   /// The first name or nickname of the user.
-  String userName;
+  String? userName;
 
   /// The full name of the user.
   String? fullName;
@@ -66,7 +66,7 @@ abstract class UserInfoPublic extends _i1.SerializableEntity
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'userName': userName,
+      if (userName != null) 'userName': userName,
       if (fullName != null) 'fullName': fullName,
       'created': created.toJson(),
       if (imageUrl != null) 'imageUrl': imageUrl,
@@ -77,7 +77,7 @@ abstract class UserInfoPublic extends _i1.SerializableEntity
   Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
-      'userName': userName,
+      if (userName != null) 'userName': userName,
       if (fullName != null) 'fullName': fullName,
       'created': created.toJson(),
       if (imageUrl != null) 'imageUrl': imageUrl,
@@ -90,7 +90,7 @@ class _Undefined {}
 class _UserInfoPublicImpl extends UserInfoPublic {
   _UserInfoPublicImpl({
     int? id,
-    required String userName,
+    String? userName,
     String? fullName,
     required DateTime created,
     String? imageUrl,
@@ -105,14 +105,14 @@ class _UserInfoPublicImpl extends UserInfoPublic {
   @override
   UserInfoPublic copyWith({
     Object? id = _Undefined,
-    String? userName,
+    Object? userName = _Undefined,
     Object? fullName = _Undefined,
     DateTime? created,
     Object? imageUrl = _Undefined,
   }) {
     return UserInfoPublic(
       id: id is int? ? id : this.id,
-      userName: userName ?? this.userName,
+      userName: userName is String? ? userName : this.userName,
       fullName: fullName is String? ? fullName : this.fullName,
       created: created ?? this.created,
       imageUrl: imageUrl is String? ? imageUrl : this.imageUrl,
