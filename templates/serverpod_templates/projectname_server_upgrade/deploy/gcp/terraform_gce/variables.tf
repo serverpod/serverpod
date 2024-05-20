@@ -34,6 +34,6 @@ variable "DATABASE_PASSWORD_PRODUCTION" {
 }
 
 variable "DATABASE_PASSWORD_STAGING" {
-  description = "The staging database password, you can find it in the config/passwords.yaml file (no need to specify if you aren't deployning a staging environment)."
+  description = "The staging database password, you can find it in the config/passwords.yaml file (no need to specify if you aren't deploying a staging environment)."
   type        = string
 }
