@@ -71,6 +71,8 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+      - name: Install dependencies
+        run: bash util/pub_get_all
       - name: Run serverpod generate
         run: bash util/run_tests_serverpod_generate
 
