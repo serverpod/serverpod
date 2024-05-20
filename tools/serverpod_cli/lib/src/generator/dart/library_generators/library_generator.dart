@@ -54,17 +54,6 @@ class LibraryGenerator {
 
     protocol.fields.addAll([
       Field((f) => f
-        ..name = 'customConstructors'
-        ..static = true
-        ..type = TypeReference((t) => t
-          ..symbol = 'Map'
-          ..types.addAll([
-            refer('Type'),
-            refer('constructor', serverpodUrl(serverCode)),
-          ]))
-        ..modifier = FieldModifier.final$
-        ..assignment = literalMap({}).code),
-      Field((f) => f
         ..name = '_instance'
         ..static = true
         ..type = refer('Protocol')
@@ -116,8 +105,6 @@ class LibraryGenerator {
           ..type = refer('Type?')))
         ..body = Block.of([
           const Code('t ??= T;'),
-          const Code(
-              'if(customConstructors.containsKey(t)){return customConstructors[t]!(data, this) as T;}'),
           ...(<Expression, Code>{
             for (var classInfo in models)
               refer(classInfo.className, classInfo.fileRef()): Code.scope(
