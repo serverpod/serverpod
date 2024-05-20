@@ -251,7 +251,7 @@ TableMigration? generateTableMigration(
     }
   }
 
-  // Check that all added columns can be created in a modfication of the table
+  // Check that all added columns can be created in a modification of the table
   for (var column in addColumns) {
     if (!column.canBeCreatedInTableMigration) {
       warnings.add(

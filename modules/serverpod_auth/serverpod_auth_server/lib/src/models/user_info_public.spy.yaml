@@ -1,4 +1,4 @@
-### Information about a user that can safely be publically accessible.
+### Information about a user that can safely be publicly accessible.
 class: UserInfoPublic
 fields:
   ### Id of the user, if known.

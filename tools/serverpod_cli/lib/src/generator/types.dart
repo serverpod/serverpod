@@ -218,9 +218,9 @@ class TypeDefinition {
     );
   }
 
-  /// Get the qgsql type that represents this [TypeDefinition] in the database.
+  /// Get the pgsql type that represents this [TypeDefinition] in the database.
   String get databaseType {
-    // TODO: add all suported types here
+    // TODO: add all supported types here
     var enumSerialization = serializeEnum;
     if (enumSerialization != null && isEnumType) {
       switch (enumSerialization) {
@@ -250,7 +250,7 @@ class TypeDefinition {
 
   /// Get the [Column] extending class name representing this [TypeDefinition].
   String get columnType {
-    // TODO: add all suported types here
+    // TODO: add all supported types here
     if (isEnumType) return 'ColumnEnum';
     if (className == 'int') return 'ColumnInt';
     if (className == 'double') return 'ColumnDouble';

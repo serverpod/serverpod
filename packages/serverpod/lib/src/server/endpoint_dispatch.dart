@@ -262,7 +262,7 @@ class ResultInvalidParams extends Result {
   /// Description of the error.
   final String errorDescription;
 
-  /// Creates a new [ResutInvalidParams] object.
+  /// Creates a new [ResultInvalidParams] object.
   ResultInvalidParams(this.errorDescription);
 
   @override

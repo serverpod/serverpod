@@ -51,7 +51,7 @@ abstract class Endpoint {
 
   final Map<Session, dynamic> _userObjects = {};
 
-  /// Retrieves a custom object assiciated with this [Endpoint] and [Session].
+  /// Retrieves a custom object associated with this [Endpoint] and [Session].
   dynamic getUserObject(Session session) {
     return _userObjects[session];
   }

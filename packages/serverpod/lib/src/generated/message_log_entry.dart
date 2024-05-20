@@ -70,7 +70,7 @@ abstract class MessageLogEntry extends _i1.TableRow
   /// The id of the message this entry is associated with.
   int messageId;
 
-  /// The entpoint this message is associated with.
+  /// The endpoint this message is associated with.
   String endpoint;
 
   /// The class name of the message this entry is associated with.
@@ -281,7 +281,7 @@ class MessageLogEntryTable extends _i1.Table {
   /// The id of the message this entry is associated with.
   late final _i1.ColumnInt messageId;
 
-  /// The entpoint this message is associated with.
+  /// The endpoint this message is associated with.
   late final _i1.ColumnString endpoint;
 
   /// The class name of the message this entry is associated with.

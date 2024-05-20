@@ -5,7 +5,7 @@ fields:
   ### The user id associated with the token.
   userId: int
 
-  ### The token iteself.
+  ### The token itself.
   refreshToken: String
 indexes:
   serverpod_google_refresh_token_userId_idx:

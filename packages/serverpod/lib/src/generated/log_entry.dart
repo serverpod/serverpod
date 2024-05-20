@@ -75,7 +75,7 @@ abstract class LogEntry extends _i1.TableRow
   /// The id of the server which created this log entry.
   String serverId;
 
-  /// Timpstamp of this log entry.
+  /// Timestamp of this log entry.
   DateTime time;
 
   /// The log level of this entry.
@@ -284,7 +284,7 @@ class LogEntryTable extends _i1.Table {
   /// The id of the server which created this log entry.
   late final _i1.ColumnString serverId;
 
-  /// Timpstamp of this log entry.
+  /// Timestamp of this log entry.
   late final _i1.ColumnDateTime time;
 
   /// The log level of this entry.
