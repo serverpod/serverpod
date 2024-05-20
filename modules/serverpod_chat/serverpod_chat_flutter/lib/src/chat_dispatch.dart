@@ -26,7 +26,7 @@ class ChatDispatch {
     _handleStreamMessages();
   }
 
-  /// Adds a listener to a specifiec chat channel. It's only allowed to add one
+  /// Adds a listener to a specific chat channel. It's only allowed to add one
   /// listener per channel.
   void addListener(String channel, ChatMessageListener listener,
       {String? unauthenticatedUserName}) {

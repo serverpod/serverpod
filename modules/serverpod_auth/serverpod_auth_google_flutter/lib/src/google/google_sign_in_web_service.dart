@@ -92,7 +92,7 @@ class _SignInSession {
     });
   }
 
-  // Called when we recieve the code from open window.
+  // Called when we receive the code from open window.
   void completeWithCode(String code) {
     if (!isClosed) {
       codeCompleter.complete(code);

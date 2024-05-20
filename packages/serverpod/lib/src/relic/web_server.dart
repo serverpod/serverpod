@@ -219,7 +219,7 @@ abstract class Route {
     headers.contentType = ContentType('text', 'html', charset: 'utf-8');
   }
 
-  /// Handles a call to this route. This method is repsonsible for setting
+  /// Handles a call to this route. This method is responsible for setting
   /// a correct response headers, status code, and write the response body to
   /// `request.response`.
   Future<bool> handleCall(Session session, HttpRequest request);
@@ -279,7 +279,7 @@ abstract class Route {
   }
 }
 
-/// A [WidgetRoute] is the most convienient way to create routes in your server.
+/// A [WidgetRoute] is the most convenient way to create routes in your server.
 /// Override the [build] method and return an appropriate [Widget].
 abstract class WidgetRoute extends Route {
   /// Override this method to build your web [Widget] from the current [session]

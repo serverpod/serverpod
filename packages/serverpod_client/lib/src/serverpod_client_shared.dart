@@ -247,7 +247,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     if (disconnectOnLostInternetConnection) {
       assert(
         _connectivityMonitor != null,
-        'To enable automatic disconnect on lost internet connection, you need to set the connectivityMonitor propery.',
+        'To enable automatic disconnect on lost internet connection, you need to set the connectivityMonitor property.',
       );
     }
     _disconnectOnLostInternetConnection = disconnectOnLostInternetConnection;

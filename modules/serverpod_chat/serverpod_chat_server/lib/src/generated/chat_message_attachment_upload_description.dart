@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-/// A description for uploading an attachement.
+/// A description for uploading an attachment.
 abstract class ChatMessageAttachmentUploadDescription
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ChatMessageAttachmentUploadDescription._({

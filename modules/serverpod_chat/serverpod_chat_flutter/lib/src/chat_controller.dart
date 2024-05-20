@@ -14,7 +14,7 @@ typedef ChatControllerReceivedMessageCallback = void Function(
 
 /// Handles all interaction with a chat channel.
 class ChatController {
-  /// The identifiying channel name of chat this controller is handling.
+  /// The identifying channel name of chat this controller is handling.
   late final String channel;
 
   /// Reference to the module.
@@ -26,7 +26,7 @@ class ChatController {
   /// True if the chat is ephemeral and shouldn't be saved to the database.
   final bool ephemeral;
 
-  /// Name of an autheticated user.
+  /// Name of an authenticated user.
   final String? unauthenticatedUserName;
 
   /// Reference to the dispatch that handles multiple chat channels.
@@ -316,7 +316,7 @@ class ChatController {
     }
   }
 
-  // Listeners for recevied message chunks
+  // Listeners for received message chunks
 
   /// Adds a listener for received chunks of messages.
   void addReceivedMessageChunkListener(VoidCallback listener) {

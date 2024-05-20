@@ -291,7 +291,7 @@ void main() {
       }
 
       // This test failed some times due to some kind of race condition.
-      // Idealy we would not use a hard coded delay here.
+      // Ideally we would not use a hard coded delay here.
       // Ticket: https://github.com/serverpod/serverpod/issues/773
       await Future.delayed(const Duration(seconds: 5));
 

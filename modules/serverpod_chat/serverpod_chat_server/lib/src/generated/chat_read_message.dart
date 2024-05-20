@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-/// Message to notifiy the server that messages have been read.
+/// Message to notify the server that messages have been read.
 abstract class ChatReadMessage extends _i1.TableRow
     implements _i1.ProtocolSerialization {
   ChatReadMessage._({

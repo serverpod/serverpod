@@ -40,7 +40,7 @@ abstract class GoogleRefreshToken extends _i1.TableRow
   /// The user id associated with the token.
   int userId;
 
-  /// The token iteself.
+  /// The token itself.
   String refreshToken;
 
   @override
@@ -145,7 +145,7 @@ class GoogleRefreshTokenTable extends _i1.Table {
   /// The user id associated with the token.
   late final _i1.ColumnInt userId;
 
-  /// The token iteself.
+  /// The token itself.
   late final _i1.ColumnString refreshToken;
 
   @override

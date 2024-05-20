@@ -11,9 +11,9 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-/// Information about a user that can safely be publically accessible.
-abstract class UserInfoPublic
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+/// Information about a user that can safely be publicly accessible.
+abstract class UserInfoPublic extends _i1.SerializableEntity
+    implements _i1.ProtocolSerialization {
   UserInfoPublic._({
     this.id,
     required this.userName,

@@ -16,7 +16,7 @@ enum ForeignKeyMatchType implements _i1.SerializableModel {
   /// to be null unless all foreign key columns are null.
   full,
 
-  /// [partial] is not yet implemented in postges. Don't use this.
+  /// [partial] is not yet implemented in postgres. Don't use this.
   partial,
 
   /// [simple] allows any of the foreign key columns to be null.

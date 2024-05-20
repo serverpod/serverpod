@@ -40,7 +40,7 @@ abstract class GoogleRefreshToken implements _i1.SerializableModel {
   /// The user id associated with the token.
   int userId;
 
-  /// The token iteself.
+  /// The token itself.
   String refreshToken;
 
   GoogleRefreshToken copyWith({

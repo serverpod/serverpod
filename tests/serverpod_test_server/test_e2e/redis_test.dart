@@ -22,7 +22,7 @@ void main() {
     });
 
     test('Get non-existing', () async {
-      var retrievedData = await client.redis.getSimpleData('test-nonexistant');
+      var retrievedData = await client.redis.getSimpleData('test-nonexistent');
       expect(retrievedData, isNull);
     });
 

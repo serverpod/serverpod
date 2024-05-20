@@ -69,7 +69,7 @@ class SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
           ),
       onPressed: () {
         // Open a dialog with just the progress indicator that isn't
-        // dismissable.
+        // dismissible.
         showLoadingBarrier(context: context);
         var navigator = Navigator.of(context, rootNavigator: true);
 
