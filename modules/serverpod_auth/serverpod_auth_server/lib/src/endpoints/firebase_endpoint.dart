@@ -80,6 +80,7 @@ class FirebaseEndpoint extends Endpoint {
         session,
         userInfo.id!,
         _authMethod,
+        scopes: userInfo.scopes,
       );
 
       return AuthenticationResponse(
