@@ -52,7 +52,7 @@ class StreamingConnectionHandler {
 
   /// Disposes the connection handler, but does not close the connection.
   void dispose() {
-    client.addStreamingConnectionStatusListener(_onConnectionStatusChanged);
+    client.removeStreamingConnectionStatusListener(_onConnectionStatusChanged);
     _countdownTimer?.cancel();
     _countdownTimer = null;
   }
