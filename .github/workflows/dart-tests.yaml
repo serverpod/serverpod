@@ -72,7 +72,7 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
       - name: Run serverpod generate
-        run: util/run_tests_serverpod_generate
+        run: bash util/run_tests_serverpod_generate
 
   update_pubspecs:
     name: update pubspecs
