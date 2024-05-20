@@ -1676,6 +1676,8 @@ class SerializableModelLibraryGenerator {
               e.methods.addAll(enumSerializationMethodsByName(enumDefinition));
               break;
           }
+
+          e.methods.add(_buildToStringMethod(serverCode));
         }),
       );
     });
@@ -1709,7 +1711,7 @@ class SerializableModelLibraryGenerator {
           ..name = 'toJson'
           ..lambda = true
           ..body = refer('index').code,
-      )
+      ),
     ];
   }
 
@@ -1741,14 +1743,6 @@ class SerializableModelLibraryGenerator {
           ..lambda = true
           ..body = refer('name').code,
       ),
-      Method(
-        (m) => m
-          ..annotations.add(refer('override'))
-          ..returns = refer('String')
-          ..name = 'toString'
-          ..lambda = true
-          ..body = refer('toJson').call([]).code,
-      )
     ];
   }
 

@@ -35,5 +35,10 @@ enum DatabaseMigrationWarningType implements _i1.SerializableModel {
   @override
   String toJson() => name;
   @override
-  String toString() => toJson();
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }

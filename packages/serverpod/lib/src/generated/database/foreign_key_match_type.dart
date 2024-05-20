@@ -40,4 +40,11 @@ enum ForeignKeyMatchType implements _i1.SerializableModel {
 
   @override
   int toJson() => index;
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
