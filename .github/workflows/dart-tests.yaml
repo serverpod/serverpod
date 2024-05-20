@@ -40,7 +40,7 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
       - name: Install dependencies
-        run: util/pub_get_all
+        run: bash util/pub_get_all
       - name: Analyze
         run: bash util/run_tests_analyze
 
@@ -56,7 +56,7 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
       - name: Install dependencies
-        run: util/pub_get_all
+        run: bash util/pub_get_all
       - name: Analyze
         run: bash util/run_tests_analyze --allow-infos
 
@@ -86,7 +86,7 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
       - name: Run serverpod update pubspecs
-        run: util/run_tests_update_pubspecs
+        run: bash util/run_tests_update_pubspecs
 
   unit_tests:
     name: Unit tests

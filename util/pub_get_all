@@ -19,19 +19,16 @@ fi
 
 echo "PUB UPGRADE ALL"
 
-declare -a paths=(
+declare -a dart_paths=(
   "packages/serverpod"
   "examples/auth_example/auth_example_client"
-  "examples/auth_example/auth_example_flutter"
   "examples/auth_example/auth_example_server"
   "examples/chat/chat_client"
-  "examples/chat/chat_flutter"
   "examples/chat/chat_server"
   "packages/serverpod_client"
   "packages/serverpod_serialization"
   "packages/serverpod_service_client"
   "packages/serverpod_shared"
-  "packages/serverpod_flutter"
   "tests/serverpod_test_client"
   "tests/serverpod_test_server"
   "tests/serverpod_test_shared"
@@ -41,30 +38,40 @@ declare -a paths=(
   "tests/serverpod_cli_e2e_test"
   "templates/serverpod_templates/projectname_server"
   "templates/serverpod_templates/projectname_client"
-  "templates/serverpod_templates/projectname_flutter"
   "templates/serverpod_templates/modulename_server"
   "templates/serverpod_templates/modulename_client"
   "modules/serverpod_auth/serverpod_auth_server"
   "modules/serverpod_auth/serverpod_auth_client"
-  "modules/serverpod_auth/serverpod_auth_shared_flutter"
-  "modules/serverpod_auth/serverpod_auth_apple_flutter"
-  "modules/serverpod_auth/serverpod_auth_google_flutter"
-  "modules/serverpod_auth/serverpod_auth_email_flutter"
-  "modules/serverpod_auth/serverpod_auth_firebase_flutter"
   "modules/serverpod_chat/serverpod_chat_server"
   "modules/serverpod_chat/serverpod_chat_client"
-  "modules/serverpod_chat/serverpod_chat_flutter"
   "integrations/serverpod_cloud_storage_s3"
   "integrations/serverpod_cloud_storage_gcp"
   "tools/serverpod_cli"
 )
 
-for path in "${paths[@]}"; do
+declare -a flutter_paths=(
+  "examples/auth_example/auth_example_flutter"
+  "examples/chat/chat_flutter"
+  "packages/serverpod_flutter"
+  "templates/serverpod_templates/projectname_flutter"
+  "modules/serverpod_auth/serverpod_auth_shared_flutter"
+  "modules/serverpod_auth/serverpod_auth_apple_flutter"
+  "modules/serverpod_auth/serverpod_auth_google_flutter"
+  "modules/serverpod_auth/serverpod_auth_email_flutter"
+  "modules/serverpod_auth/serverpod_auth_firebase_flutter"
+  "modules/serverpod_chat/serverpod_chat_flutter"
+)
+
+# Upgrade Dart packages
+for path in "${dart_paths[@]}"; do
   echo "\n### $path"
   cd "$BASE/$path"
-  if [[ "$path" == *flutter* ]]; then
-    flutter pub upgrade $OFFLINE_MODE
-  else
-    dart pub upgrade $OFFLINE_MODE
-  fi
+  dart pub upgrade $OFFLINE_MODE
+done
+
+# Upgrade Flutter packages
+for path in "${flutter_paths[@]}"; do
+  echo "\n### $path"
+  cd "$BASE/$path"
+  flutter pub upgrade $OFFLINE_MODE
 done
