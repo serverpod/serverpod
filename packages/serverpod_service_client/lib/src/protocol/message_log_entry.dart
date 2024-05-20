@@ -70,7 +70,7 @@ abstract class MessageLogEntry extends _i1.SerializableEntity {
   /// The id of the message this entry is associated with.
   int messageId;
 
-  /// The entpoint this message is associated with.
+  /// The endpoint this message is associated with.
   String endpoint;
 
   /// The class name of the message this entry is associated with.

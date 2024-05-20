@@ -364,7 +364,7 @@ class LogManager {
   /// Logs an entry, depending on the session type it will be logged directly
   /// to the database or stored in the temporary cache until the session is
   /// closed. Call [shouldLogEntry] to check if the entry should be logged
-  /// before calling this method. This method can be called asyncronously.
+  /// before calling this method. This method can be called asynchronously.
   @internal
   Future<void> logEntry(Session session, LogEntry entry) async {
     await _internalLogger(
@@ -380,7 +380,7 @@ class LogManager {
   /// Logs a query, depending on the session type it will be logged directly
   /// to the database or stored in the temporary cache until the session is
   /// closed. Call [shouldLogQuery] to check if the entry should be logged
-  /// before calling this method. This method can be called asyncronously.
+  /// before calling this method. This method can be called asynchronously.
   @internal
   Future<void> logQuery(Session session, QueryLogEntry entry) async {
     await _internalLogger(
@@ -397,7 +397,7 @@ class LogManager {
   /// logged directly to the database or stored in the temporary cache until the
   /// session is closed. Call [shouldLogMessage] to check if the entry should be
   /// logged before calling this method. This method can be called
-  /// asyncronously.
+  /// asynchronously.
   @internal
   Future<void> logMessage(Session session, MessageLogEntry entry) async {
     await _internalLogger(

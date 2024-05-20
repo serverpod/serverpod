@@ -667,7 +667,7 @@ class DatabaseConnection {
       Column<dynamic>? orderBy, bool orderDescending) {
     assert(orderByList == null || orderBy == null);
     if (orderBy != null) {
-      // If order by is set then order by list is overriden.
+      // If order by is set then order by list is overridden.
       return [Order(column: orderBy, orderDescending: orderDescending)];
     }
     return orderByList;

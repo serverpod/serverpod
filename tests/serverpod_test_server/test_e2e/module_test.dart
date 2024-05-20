@@ -41,7 +41,7 @@ void main() {
 
   group('Nested modules classes.', () {
     test(
-      'Given a generated protocol class with a custom class, then serialze the internal data.',
+      'Given a generated protocol class with a custom class, then serialize the internal data.',
       () async {
         var result =
             await client.moduleSerialization.serializeNestedModuleObject();

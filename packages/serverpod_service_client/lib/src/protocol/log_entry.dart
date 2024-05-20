@@ -74,7 +74,7 @@ abstract class LogEntry extends _i1.SerializableEntity {
   /// The id of the server which created this log entry.
   String serverId;
 
-  /// Timpstamp of this log entry.
+  /// Timestamp of this log entry.
   DateTime time;
 
   /// The log level of this entry.

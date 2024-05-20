@@ -22,7 +22,7 @@ enum ServerpodRole {
   maintenance,
 }
 
-/// The overaching logging mode of the server. This can be set to either
+/// The overarching logging mode of the server. This can be set to either
 /// [normal] or [verbose]. In [normal] mode, only important messages are logged,
 /// which is the default.
 enum ServerpodLoggingMode {
