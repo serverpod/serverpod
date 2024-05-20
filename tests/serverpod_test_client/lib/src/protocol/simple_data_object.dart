@@ -30,6 +30,14 @@ abstract class SimpleDataObject implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {'object': object.toJson()};
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _SimpleDataObjectImpl extends SimpleDataObject {

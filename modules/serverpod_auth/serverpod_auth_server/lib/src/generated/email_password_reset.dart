@@ -55,6 +55,14 @@ abstract class EmailPasswordReset
       'email': email,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _EmailPasswordResetImpl extends EmailPasswordReset {

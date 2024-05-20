@@ -35,6 +35,14 @@ abstract class BulkQueryColumnDescription
   Map<String, dynamic> toJsonForProtocol() {
     return {'name': name};
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _BulkQueryColumnDescriptionImpl extends BulkQueryColumnDescription {

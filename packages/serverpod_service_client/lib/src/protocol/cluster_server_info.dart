@@ -29,6 +29,14 @@ abstract class ClusterServerInfo implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {'serverId': serverId};
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _ClusterServerInfoImpl extends ClusterServerInfo {

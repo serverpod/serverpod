@@ -106,6 +106,14 @@ abstract class IndexDefinition
       if (predicate != null) 'predicate': predicate,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

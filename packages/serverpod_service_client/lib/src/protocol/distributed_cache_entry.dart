@@ -30,6 +30,14 @@ abstract class DistributedCacheEntry implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {'data': data};
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _DistributedCacheEntryImpl extends DistributedCacheEntry {

@@ -30,6 +30,14 @@ abstract class AccessDeniedException
   Map<String, dynamic> toJson() {
     return {'message': message};
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _AccessDeniedExceptionImpl extends AccessDeniedException {

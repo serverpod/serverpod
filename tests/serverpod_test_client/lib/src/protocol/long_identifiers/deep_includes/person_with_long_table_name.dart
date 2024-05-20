@@ -65,6 +65,14 @@ abstract class PersonWithLongTableName implements _i1.SerializableModel {
       if (organization != null) 'organization': organization?.toJson(),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

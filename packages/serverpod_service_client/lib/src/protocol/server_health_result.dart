@@ -53,6 +53,14 @@ abstract class ServerHealthResult implements _i1.SerializableModel {
       'connectionInfos': connectionInfos.toJson(valueToJson: (v) => v.toJson()),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _ServerHealthResultImpl extends ServerHealthResult {

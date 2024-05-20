@@ -82,6 +82,14 @@ abstract class DatabaseMigrationWarning
       'destrucive': destrucive,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _DatabaseMigrationWarningImpl extends DatabaseMigrationWarning {

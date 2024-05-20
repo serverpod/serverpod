@@ -117,6 +117,14 @@ abstract class Post extends _i1.TableRow implements _i1.ProtocolSerialization {
       include: include,
     );
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

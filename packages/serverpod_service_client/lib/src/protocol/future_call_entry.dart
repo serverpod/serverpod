@@ -80,6 +80,14 @@ abstract class FutureCallEntry implements _i1.SerializableModel {
       if (identifier != null) 'identifier': identifier,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

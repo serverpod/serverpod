@@ -56,6 +56,14 @@ abstract class ObjectWithUuid implements _i1.SerializableModel {
       if (uuidNullable != null) 'uuidNullable': uuidNullable?.toJson(),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

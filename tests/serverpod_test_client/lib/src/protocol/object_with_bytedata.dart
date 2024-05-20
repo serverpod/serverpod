@@ -48,6 +48,14 @@ abstract class ObjectWithByteData implements _i1.SerializableModel {
       'byteData': byteData.toJson(),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

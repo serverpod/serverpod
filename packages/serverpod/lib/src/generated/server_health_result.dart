@@ -64,6 +64,14 @@ abstract class ServerHealthResult
           connectionInfos.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _ServerHealthResultImpl extends ServerHealthResult {

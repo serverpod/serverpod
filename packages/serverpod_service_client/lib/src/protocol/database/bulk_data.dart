@@ -45,6 +45,14 @@ abstract class BulkData implements _i1.SerializableModel {
       'data': data,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _BulkDataImpl extends BulkData {

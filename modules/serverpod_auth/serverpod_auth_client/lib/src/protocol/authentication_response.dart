@@ -80,6 +80,14 @@ abstract class AuthenticationResponse implements _i1.SerializableModel {
       if (failReason != null) 'failReason': failReason?.toJson(),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

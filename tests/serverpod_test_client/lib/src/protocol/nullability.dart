@@ -488,6 +488,14 @@ abstract class Nullability implements _i1.SerializableModel {
         'aNullableMapWithNullableInts': aNullableMapWithNullableInts?.toJson(),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

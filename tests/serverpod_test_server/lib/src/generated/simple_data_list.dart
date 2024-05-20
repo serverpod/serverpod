@@ -38,6 +38,14 @@ abstract class SimpleDataList
   Map<String, dynamic> toJsonForProtocol() {
     return {'rows': rows.toJson(valueToJson: (v) => v.toJsonForProtocol())};
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _SimpleDataListImpl extends SimpleDataList {

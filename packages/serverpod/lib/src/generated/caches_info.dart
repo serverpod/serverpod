@@ -68,6 +68,14 @@ abstract class CachesInfo
       'global': global.toJsonForProtocol(),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _CachesInfoImpl extends CachesInfo {

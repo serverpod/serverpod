@@ -91,6 +91,14 @@ abstract class AppleAuthInfo
       'authorizationCode': authorizationCode,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

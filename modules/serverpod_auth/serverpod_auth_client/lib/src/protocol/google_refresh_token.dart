@@ -56,6 +56,14 @@ abstract class GoogleRefreshToken implements _i1.SerializableModel {
       'refreshToken': refreshToken,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

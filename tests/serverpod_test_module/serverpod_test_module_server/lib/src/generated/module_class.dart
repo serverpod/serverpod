@@ -52,6 +52,14 @@ abstract class ModuleClass
       'data': data,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _ModuleClassImpl extends ModuleClass {

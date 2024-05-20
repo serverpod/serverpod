@@ -113,6 +113,14 @@ abstract class LogSettings implements _i1.SerializableModel {
       'slowQueryDuration': slowQueryDuration,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _LogSettingsImpl extends LogSettings {

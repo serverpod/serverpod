@@ -34,6 +34,14 @@ abstract class ChatLeaveChannel
   Map<String, dynamic> toJsonForProtocol() {
     return {'channel': channel};
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _ChatLeaveChannelImpl extends ChatLeaveChannel {

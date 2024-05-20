@@ -26,6 +26,14 @@ abstract class NotServerOnlyClass implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {'foo': foo};
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _NotServerOnlyClassImpl extends NotServerOnlyClass {

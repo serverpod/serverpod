@@ -64,6 +64,14 @@ abstract class MultipleMaxFieldName implements _i1.SerializableModel {
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

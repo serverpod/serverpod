@@ -36,6 +36,14 @@ abstract class DistributedCacheEntry
   Map<String, dynamic> toJsonForProtocol() {
     return {'data': data};
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _DistributedCacheEntryImpl extends DistributedCacheEntry {

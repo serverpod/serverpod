@@ -56,6 +56,14 @@ abstract class ChatJoinChannelFailed
       'reason': reason,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _ChatJoinChannelFailedImpl extends ChatJoinChannelFailed {

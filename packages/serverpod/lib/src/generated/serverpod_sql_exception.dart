@@ -56,6 +56,14 @@ abstract class ServerpodSqlException
       'sql': sql,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _ServerpodSqlExceptionImpl extends ServerpodSqlException {

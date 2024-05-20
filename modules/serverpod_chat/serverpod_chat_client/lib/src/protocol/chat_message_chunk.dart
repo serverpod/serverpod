@@ -57,6 +57,14 @@ abstract class ChatMessageChunk implements _i1.SerializableModel {
       'hasOlderMessages': hasOlderMessages,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _ChatMessageChunkImpl extends ChatMessageChunk {

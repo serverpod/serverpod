@@ -64,6 +64,14 @@ abstract class ChatReadMessage implements _i1.SerializableModel {
       'lastReadMessageId': lastReadMessageId,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

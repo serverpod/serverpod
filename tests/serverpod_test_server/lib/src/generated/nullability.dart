@@ -576,6 +576,14 @@ abstract class Nullability
         'aNullableMapWithNullableInts': aNullableMapWithNullableInts?.toJson(),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

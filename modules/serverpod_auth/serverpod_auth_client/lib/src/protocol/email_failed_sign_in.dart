@@ -65,6 +65,14 @@ abstract class EmailFailedSignIn implements _i1.SerializableModel {
       'ipAddress': ipAddress,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

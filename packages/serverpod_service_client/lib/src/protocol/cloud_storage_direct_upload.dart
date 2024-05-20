@@ -74,6 +74,14 @@ abstract class CloudStorageDirectUploadEntry implements _i1.SerializableModel {
       'authKey': authKey,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

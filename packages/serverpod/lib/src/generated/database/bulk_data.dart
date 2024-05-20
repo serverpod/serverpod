@@ -54,6 +54,14 @@ abstract class BulkData
       'data': data,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _BulkDataImpl extends BulkData {

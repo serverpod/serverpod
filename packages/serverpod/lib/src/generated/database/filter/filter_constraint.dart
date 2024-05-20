@@ -70,6 +70,14 @@ abstract class FilterConstraint
       if (value2 != null) 'value2': value2,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

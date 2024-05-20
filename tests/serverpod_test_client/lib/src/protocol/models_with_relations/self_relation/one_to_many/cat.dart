@@ -74,6 +74,14 @@ abstract class Cat implements _i1.SerializableModel {
         'kittens': kittens?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

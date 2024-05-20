@@ -50,6 +50,14 @@ abstract class SimpleData implements _i1.SerializableModel {
       'num': num,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

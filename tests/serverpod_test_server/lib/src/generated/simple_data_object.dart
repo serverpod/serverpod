@@ -36,6 +36,14 @@ abstract class SimpleDataObject
   Map<String, dynamic> toJsonForProtocol() {
     return {'object': object.toJsonForProtocol()};
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _SimpleDataObjectImpl extends SimpleDataObject {

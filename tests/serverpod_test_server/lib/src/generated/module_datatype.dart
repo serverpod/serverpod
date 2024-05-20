@@ -69,6 +69,14 @@ abstract class ModuleDatatype
       'map': map.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _ModuleDatatypeImpl extends ModuleDatatype {

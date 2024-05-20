@@ -46,6 +46,14 @@ abstract class EmailPasswordReset implements _i1.SerializableModel {
       'email': email,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _EmailPasswordResetImpl extends EmailPasswordReset {

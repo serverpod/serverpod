@@ -91,6 +91,14 @@ abstract class Citizen implements _i1.SerializableModel {
       if (oldCompany != null) 'oldCompany': oldCompany?.toJson(),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

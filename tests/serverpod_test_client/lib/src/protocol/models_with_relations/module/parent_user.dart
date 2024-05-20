@@ -53,6 +53,14 @@ abstract class ParentUser implements _i1.SerializableModel {
       if (userInfoId != null) 'userInfoId': userInfoId,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

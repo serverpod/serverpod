@@ -32,6 +32,14 @@ abstract class ServerOnlyClass
   Map<String, dynamic> toJsonForProtocol() {
     return {};
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _ServerOnlyClassImpl extends ServerOnlyClass {

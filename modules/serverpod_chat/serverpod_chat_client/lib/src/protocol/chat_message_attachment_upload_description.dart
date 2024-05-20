@@ -49,6 +49,14 @@ abstract class ChatMessageAttachmentUploadDescription
       'uploadDescription': uploadDescription,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _ChatMessageAttachmentUploadDescriptionImpl

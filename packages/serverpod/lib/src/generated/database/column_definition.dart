@@ -86,6 +86,14 @@ abstract class ColumnDefinition
       if (dartType != null) 'dartType': dartType,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

@@ -32,6 +32,14 @@ abstract class SimpleDataMap implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {'data': data.toJson(valueToJson: (v) => v.toJson())};
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _SimpleDataMapImpl extends SimpleDataMap {

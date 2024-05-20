@@ -57,6 +57,14 @@ abstract class DatabaseMigration implements _i1.SerializableModel {
       'migrationApiVersion': migrationApiVersion,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _DatabaseMigrationImpl extends DatabaseMigration {

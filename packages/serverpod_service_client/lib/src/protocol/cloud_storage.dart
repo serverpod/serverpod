@@ -93,6 +93,14 @@ abstract class CloudStorageEntry implements _i1.SerializableModel {
       'verified': verified,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

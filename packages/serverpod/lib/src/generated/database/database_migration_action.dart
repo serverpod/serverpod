@@ -77,6 +77,14 @@ abstract class DatabaseMigrationAction
       if (createTable != null) 'createTable': createTable?.toJsonForProtocol(),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

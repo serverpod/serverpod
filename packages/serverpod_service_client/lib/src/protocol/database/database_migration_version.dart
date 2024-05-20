@@ -67,6 +67,14 @@ abstract class DatabaseMigrationVersion implements _i1.SerializableModel {
       if (timestamp != null) 'timestamp': timestamp?.toJson(),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

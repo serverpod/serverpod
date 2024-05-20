@@ -125,6 +125,14 @@ abstract class ForeignKeyDefinition
       if (matchType != null) 'matchType': matchType?.toJson(),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

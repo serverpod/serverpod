@@ -157,6 +157,14 @@ abstract class TableMigration
       'warnings': warnings.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

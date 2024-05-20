@@ -67,6 +67,14 @@ abstract class CacheInfo
       if (keys != null) 'keys': keys?.toJson(),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

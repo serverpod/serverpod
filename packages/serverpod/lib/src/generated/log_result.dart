@@ -41,6 +41,14 @@ abstract class LogResult
       'entries': entries.toJson(valueToJson: (v) => v.toJsonForProtocol())
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _LogResultImpl extends LogResult {

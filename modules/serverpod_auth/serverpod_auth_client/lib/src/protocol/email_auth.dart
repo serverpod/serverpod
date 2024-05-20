@@ -64,6 +64,14 @@ abstract class EmailAuth implements _i1.SerializableModel {
       'hash': hash,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

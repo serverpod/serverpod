@@ -46,6 +46,14 @@ abstract class ChatJoinChannel implements _i1.SerializableModel {
       if (userName != null) 'userName': userName,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

@@ -49,6 +49,14 @@ abstract class ReadWriteTestEntry implements _i1.SerializableModel {
       'number': number,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

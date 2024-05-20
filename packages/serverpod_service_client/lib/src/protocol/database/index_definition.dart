@@ -91,6 +91,14 @@ abstract class IndexDefinition implements _i1.SerializableModel {
       if (predicate != null) 'predicate': predicate,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

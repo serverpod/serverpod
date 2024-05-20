@@ -58,6 +58,14 @@ abstract class IndexElementDefinition
       'definition': definition,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _IndexElementDefinitionImpl extends IndexElementDefinition {

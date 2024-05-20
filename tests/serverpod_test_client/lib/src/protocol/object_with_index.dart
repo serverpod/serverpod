@@ -53,6 +53,14 @@ abstract class ObjectWithIndex implements _i1.SerializableModel {
       'indexed2': indexed2,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

@@ -66,6 +66,14 @@ abstract class ChatJoinedChannel implements _i1.SerializableModel {
       'userInfo': userInfo.toJson(),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _ChatJoinedChannelImpl extends ChatJoinedChannel {

@@ -28,6 +28,14 @@ abstract class ChatLeaveChannel implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {'channel': channel};
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _ChatLeaveChannelImpl extends ChatLeaveChannel {

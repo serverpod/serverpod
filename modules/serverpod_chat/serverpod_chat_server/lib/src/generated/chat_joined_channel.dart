@@ -77,6 +77,14 @@ abstract class ChatJoinedChannel
       'userInfo': userInfo.toJsonForProtocol(),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _ChatJoinedChannelImpl extends ChatJoinedChannel {

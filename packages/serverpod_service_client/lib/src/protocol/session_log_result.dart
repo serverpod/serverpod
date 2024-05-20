@@ -34,6 +34,14 @@ abstract class SessionLogResult implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {'sessionLog': sessionLog.toJson(valueToJson: (v) => v.toJson())};
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _SessionLogResultImpl extends SessionLogResult {

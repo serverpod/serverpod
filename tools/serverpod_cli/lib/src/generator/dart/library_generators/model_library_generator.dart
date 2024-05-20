@@ -209,6 +209,8 @@ class SerializableModelLibraryGenerator {
           ]);
         }
       }
+
+      classBuilder.methods.add(_buildToStringMethod(serverCode));
     });
   }
 
@@ -660,6 +662,28 @@ class SerializableModelLibraryGenerator {
 
         m.body =
             _createToJsonBodyFromFields(filteredFields, 'toJsonForProtocol');
+      },
+    );
+  }
+
+  Method _buildToStringMethod(
+    bool serverCode,
+  ) {
+    return Method(
+      (m) {
+        m.returns = refer('String');
+        m.name = 'toString';
+        m.annotations.add(refer('override'));
+        m.body = Block.of([
+          const Code('return '),
+          refer('SerializationManager', serverpodUrl(serverCode))
+              .property('encode')
+              .call(
+            [refer('this')],
+            {'formatted': refer('true')},
+          ).code,
+          const Code(';'),
+        ]);
       },
     );
   }

@@ -93,6 +93,14 @@ abstract class ServerHealthConnectionInfo implements _i1.SerializableModel {
       'granularity': granularity,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

@@ -92,6 +92,14 @@ abstract class ChatMessageAttachment
       if (previewHeight != null) 'previewHeight': previewHeight,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

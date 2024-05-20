@@ -44,6 +44,14 @@ abstract class BulkDataException
       if (query != null) 'query': query,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

@@ -122,6 +122,14 @@ abstract class MessageLogEntry implements _i1.SerializableModel {
       'order': order,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

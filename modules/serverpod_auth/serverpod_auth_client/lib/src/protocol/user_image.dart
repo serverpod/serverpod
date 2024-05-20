@@ -64,6 +64,14 @@ abstract class UserImage implements _i1.SerializableModel {
       'url': url,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

@@ -74,6 +74,14 @@ abstract class Organization implements _i1.SerializableModel {
       if (city != null) 'city': city?.toJson(),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

@@ -66,6 +66,14 @@ abstract class DatabaseMigrationAction implements _i1.SerializableModel {
       if (createTable != null) 'createTable': createTable?.toJson(),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

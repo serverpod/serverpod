@@ -62,6 +62,14 @@ abstract class BulkQueryResult implements _i1.SerializableModel {
       'duration': duration.toJson(),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _BulkQueryResultImpl extends BulkQueryResult {

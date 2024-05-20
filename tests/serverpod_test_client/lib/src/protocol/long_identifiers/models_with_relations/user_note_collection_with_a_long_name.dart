@@ -59,6 +59,14 @@ abstract class UserNoteCollectionWithALongName
       if (notes != null) 'notes': notes?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

@@ -39,6 +39,14 @@ abstract class SimpleDataMap
   Map<String, dynamic> toJsonForProtocol() {
     return {'data': data.toJson(valueToJson: (v) => v.toJsonForProtocol())};
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _SimpleDataMapImpl extends SimpleDataMap {

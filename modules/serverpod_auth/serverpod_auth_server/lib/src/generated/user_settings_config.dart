@@ -82,6 +82,14 @@ abstract class UserSettingsConfig
       'canEditUserImage': canEditUserImage,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _UserSettingsConfigImpl extends UserSettingsConfig {

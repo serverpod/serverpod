@@ -29,6 +29,14 @@ abstract class BulkQueryColumnDescription implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {'name': name};
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _BulkQueryColumnDescriptionImpl extends BulkQueryColumnDescription {

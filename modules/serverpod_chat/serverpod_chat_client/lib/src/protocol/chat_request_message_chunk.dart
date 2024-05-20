@@ -47,6 +47,14 @@ abstract class ChatRequestMessageChunk implements _i1.SerializableModel {
       'lastMessageId': lastMessageId,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _ChatRequestMessageChunkImpl extends ChatRequestMessageChunk {

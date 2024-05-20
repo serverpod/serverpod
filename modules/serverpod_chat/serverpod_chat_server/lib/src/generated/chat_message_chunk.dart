@@ -68,6 +68,14 @@ abstract class ChatMessageChunk
       'hasOlderMessages': hasOlderMessages,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _ChatMessageChunkImpl extends ChatMessageChunk {

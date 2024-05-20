@@ -64,6 +64,14 @@ abstract class Company implements _i1.SerializableModel {
       if (town != null) 'town': town?.toJson(),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}

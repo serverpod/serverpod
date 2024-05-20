@@ -70,6 +70,14 @@ abstract class UserSettingsConfig implements _i1.SerializableModel {
       'canEditUserImage': canEditUserImage,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _UserSettingsConfigImpl extends UserSettingsConfig {

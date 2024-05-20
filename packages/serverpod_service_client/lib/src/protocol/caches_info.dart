@@ -58,6 +58,14 @@ abstract class CachesInfo implements _i1.SerializableModel {
       'global': global.toJson(),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _CachesInfoImpl extends CachesInfo {

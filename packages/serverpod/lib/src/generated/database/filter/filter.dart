@@ -66,6 +66,14 @@ abstract class Filter
           constraints.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _FilterImpl extends Filter {

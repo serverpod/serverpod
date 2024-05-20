@@ -78,6 +78,14 @@ abstract class RuntimeSettings implements _i1.SerializableModel {
       'logMalformedCalls': logMalformedCalls,
     };
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(
+      this,
+      formatted: true,
+    );
+  }
 }
 
 class _Undefined {}
