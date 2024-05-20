@@ -86,7 +86,7 @@ void main() {
     test('then generated enum has toString method', () {
       expect(
         codeMap[expectedFileName],
-        contains('String toString() => toJson();'),
+        contains('String toString() => name;'),
       );
     });
   });

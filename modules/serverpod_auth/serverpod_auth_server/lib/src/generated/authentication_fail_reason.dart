@@ -39,5 +39,5 @@ enum AuthenticationFailReason implements _i1.SerializableModel {
   @override
   int toJson() => index;
   @override
-  String toString() => index.toString();
+  String toString() => name;
 }

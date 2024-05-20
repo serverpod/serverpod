@@ -1716,8 +1716,8 @@ class SerializableModelLibraryGenerator {
           ..returns = refer('String')
           ..name = 'toString'
           ..lambda = true
-          ..body = refer('index').property('toString').call([]).code,
-      )
+          ..body = refer('name').code,
+      ),
     ];
   }
 
@@ -1756,7 +1756,7 @@ class SerializableModelLibraryGenerator {
           ..name = 'toString'
           ..lambda = true
           ..body = refer('name').code,
-      )
+      ),
     ];
   }
 
