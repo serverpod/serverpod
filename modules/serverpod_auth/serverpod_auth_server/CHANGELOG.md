@@ -66,7 +66,7 @@
 - fix: Makes it possible to create modules from templates in developer mode.
 - fix: Correctly marks nested enum types in the analyzer.
 - fix: Adds support for all Serverpod's supported types as keys in Maps.
-- fix: Restric fields with scopes other than all to be nullable.
+- fix: Restrict fields with scopes other than all to be nullable.
 - fix: Uses pubspec override instead of direct paths (to improve score on pub.dev).
 - fix: Less restrictive enum naming rules.
 - fix: Pins Dart and Busybox docker image versions (only for new projects).
@@ -80,9 +80,9 @@
 - fix: Removes old generated folder from Dockerfile.
 - fix: Prevents database analyzer from crashing when missing table.
 - fix: Fixes issue with DevTools extension not being bundled with the `serverpod` package.
-- fix: Ingores all null fields in JSON map serialization.
+- fix: Ignores all null fields in JSON map serialization.
 - fix: Improved error message if port is in use when starting server.
-- chore: Bumbs `vm_service` version to support latest version.
+- chore: Bumps `vm_service` version to support latest version.
 
 ## 1.2.0
 This is a summary of the new features in version 1.2.0. For the full list, please refer to the [commits](https://github.com/serverpod/serverpod/commits/main/) on Github. Instructions for updating from 1.1 of Serverpod is available in our documentation [here](https://docs.serverpod.dev/upgrading/upgrade-to-one-point-two).
@@ -92,7 +92,7 @@ This is a summary of the new features in version 1.2.0. For the full list, pleas
 - feat: Adds Visual Studio Code extension.
 - feat: Syntax highlighting in model files.
 - feat: Adds LSP server for analyzing model files.
-- feat: CLI automatically detects modules withouth the need to modify the generator file.
+- feat: CLI automatically detects modules without the need to modify the generator file.
 - feat: Validates project names on `serverpod create`.
 - feat: Validates Serverpod packages and CLI version in `serverpod generate`.
 - feat: Prompts user to update Serverpod when running an old version of the CLI.
@@ -111,7 +111,7 @@ This is a summary of the new features in version 1.2.0. For the full list, pleas
 - feat: Improves compatibility for `serverpod create` by not running Docker through tooling.
 - fix: Makes endpoint classes public to enable Dart doc.
 - fix: Serializable exceptions now work with modules.
-- fix: Handels invalid return types when parsing endpoint methods.
+- fix: handles invalid return types when parsing endpoint methods.
 - fix: Fixes localhost on Android emulator.
 - fix: Use explicit version for all Serverpod packages.
 - fix: Uses git version of CLI in local tests.
@@ -124,7 +124,7 @@ This is a summary of the new features in version 1.2.0. For the full list, pleas
 - docs: Many improvements to API documentation.
 - chore: Updates to latest version of Flutter.
 - chore: Updates dependencies.
-- chore: Fixes deprected methods.
+- chore: Fixes deprecated methods.
 - chore: Makes Dart & Flutter version requirements consistent across packages.
 - chore: Adds serverpod_lints package.
 - ci: Now runs tests on multiple Flutter versions.
@@ -183,7 +183,7 @@ This is a summary of the new features in version 1.2.0. For the full list, pleas
 - fix: Deprecate `database` and `api` keywords.
 - fix: Stop generator from getting stuck on circular dependencies.
 - fix: Handle invalid YAML errors and report them.
-- fix: Only report duplicated and invald negations once.
+- fix: Only report duplicated and invalid negations once.
 - fix: Adds deep check of `DateTime` and `Uint8List` during deserialization.
 - fix: Deserialization of `DateTime` handles `null` explicitly.
 - fix: Only return valid entries from analyzer.
@@ -228,20 +228,20 @@ This is a summary of the new features in version 1.2.0. For the full list, pleas
 ## 1.1.0
 - feat: Lightweight run mode and support for serverless platforms.
 - feat: Support for Google Cloud Platform deployments, including Terraform module.
-- feat: Adds serializable exeptions that can be passed from the server to the client.
+- feat: Adds serializable exceptions that can be passed from the server to the client.
 - feat: Adds `serverOnly` option to yaml-files, which is set to true will prevent the code to be generated for the client.
 - feat: Support for `UUID` in serialization.
 - feat: New supported static file types in Relic.
 - feat: Allows endpoints in sub directories.
 - feat: Support for GCP Cloud Storage.
 - feat: Support for connecting to Postgres through a UNIX socket.
-- feat: Adds database maintanance methods to Insights APIs (still experimental and API may change).
+- feat: Adds database maintenance methods to Insights APIs (still experimental and API may change).
 - docs: Improved documentation.
 - fix: Better output on startup to aid in debugging connectivity issues.
 - fix: Prevents self referencing table to cause `serverpod generate` to hang.
 - fix: Adds email from Firebase to UserInfo in auth module.
 - fix: Don't print stack trace when Google signin disconnect fails.
-- fix: Return bool from `SessionManager.initizlize()` to indicate if server was reached.
+- fix: Return bool from `SessionManager.initialize()` to indicate if server was reached.
 - fix: Better recovery when parsing yaml-files.
 - chore: Migrates Firebase to new Flutter APIs.
 - chore: Updates dependencies.
