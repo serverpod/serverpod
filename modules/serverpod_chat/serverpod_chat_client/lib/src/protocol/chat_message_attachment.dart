@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-/// An attachement to a chat message. Typically an image or a file.
+/// An attachment to a chat message. Typically an image or a file.
 abstract class ChatMessageAttachment extends _i1.SerializableEntity {
   ChatMessageAttachment._({
     required this.fileName,
