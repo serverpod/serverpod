@@ -19,7 +19,7 @@ abstract class UserInfo extends _i1.SerializableEntity {
   UserInfo._({
     this.id,
     required this.userIdentifier,
-    required this.userName,
+    this.userName,
     this.fullName,
     this.email,
     required this.created,
@@ -31,7 +31,7 @@ abstract class UserInfo extends _i1.SerializableEntity {
   factory UserInfo({
     int? id,
     required String userIdentifier,
-    required String userName,
+    String? userName,
     String? fullName,
     String? email,
     required DateTime created,
@@ -44,7 +44,7 @@ abstract class UserInfo extends _i1.SerializableEntity {
     return UserInfo(
       id: jsonSerialization['id'] as int?,
       userIdentifier: jsonSerialization['userIdentifier'] as String,
-      userName: jsonSerialization['userName'] as String,
+      userName: jsonSerialization['userName'] as String?,
       fullName: jsonSerialization['fullName'] as String?,
       email: jsonSerialization['email'] as String?,
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
@@ -66,7 +66,7 @@ abstract class UserInfo extends _i1.SerializableEntity {
   String userIdentifier;
 
   /// The first name of the user or the user's nickname.
-  String userName;
+  String? userName;
 
   /// The full name of the user.
   String? fullName;
@@ -102,7 +102,7 @@ abstract class UserInfo extends _i1.SerializableEntity {
     return {
       if (id != null) 'id': id,
       'userIdentifier': userIdentifier,
-      'userName': userName,
+      if (userName != null) 'userName': userName,
       if (fullName != null) 'fullName': fullName,
       if (email != null) 'email': email,
       'created': created.toJson(),
@@ -119,7 +119,7 @@ class _UserInfoImpl extends UserInfo {
   _UserInfoImpl({
     int? id,
     required String userIdentifier,
-    required String userName,
+    String? userName,
     String? fullName,
     String? email,
     required DateTime created,
@@ -142,7 +142,7 @@ class _UserInfoImpl extends UserInfo {
   UserInfo copyWith({
     Object? id = _Undefined,
     String? userIdentifier,
-    String? userName,
+    Object? userName = _Undefined,
     Object? fullName = _Undefined,
     Object? email = _Undefined,
     DateTime? created,
@@ -153,7 +153,7 @@ class _UserInfoImpl extends UserInfo {
     return UserInfo(
       id: id is int? ? id : this.id,
       userIdentifier: userIdentifier ?? this.userIdentifier,
-      userName: userName ?? this.userName,
+      userName: userName is String? ? userName : this.userName,
       fullName: fullName is String? ? fullName : this.fullName,
       email: email is String? ? email : this.email,
       created: created ?? this.created,
