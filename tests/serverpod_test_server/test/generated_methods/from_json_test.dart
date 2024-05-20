@@ -143,7 +143,7 @@ void main() {
 
   group('Given a class with a nullable DateTime field, ', () {
     test(
-        'when deserializing from a JSON string representing a DateTime, then the result matches the expected valuee',
+        'when deserializing from a JSON string representing a DateTime, then the result matches the expected value',
         () {
       expect(
         Types.fromJson({'aDateTime': '2024-01-01T00:00:00.000Z'}).aDateTime,
