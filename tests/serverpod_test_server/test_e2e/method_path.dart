@@ -20,7 +20,7 @@ void main() {
 
     test('fail if method name is incorrect', () async {
       var result = await http.post(
-        Uri.parse('${serverUrl}simple?method=helloNonExistant&name=Bob'),
+        Uri.parse('${serverUrl}simple?method=helloNonExistent&name=Bob'),
       );
 
       expect(result.statusCode, equals(400));
@@ -39,7 +39,7 @@ void main() {
 
     test('fail if method name is incorrect', () async {
       var result = await http.post(
-        Uri.parse('${serverUrl}simple/helloNonExistant?name=Andy'),
+        Uri.parse('${serverUrl}simple/helloNonExistent?name=Andy'),
       );
 
       expect(result.statusCode, equals(400));
@@ -60,7 +60,7 @@ void main() {
     test('fail if method name is incorrect', () async {
       var result = await http.post(
         Uri.parse(
-            '${serverUrl}serverpod_test_module.module?method=helloNonExistant&name=Bob'),
+            '${serverUrl}serverpod_test_module.module?method=helloNonExistent&name=Bob'),
       );
 
       expect(result.statusCode, equals(400));
@@ -80,7 +80,7 @@ void main() {
     test('fail if method name is incorrect', () async {
       var result = await http.post(
         Uri.parse(
-            '${serverUrl}serverpod_test_module.module/helloNonExistant?name=Andy'),
+            '${serverUrl}serverpod_test_module.module/helloNonExistent?name=Andy'),
       );
 
       expect(result.statusCode, equals(400));
