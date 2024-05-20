@@ -29,11 +29,8 @@ class DeserializationTypeNotFoundException implements Exception {
   String toString() => message;
 }
 
-/// The [SerializableEntity] is the base class for all serializable objects in
-/// Serverpod, except primitives.
-///
 /// **DEPRECATED**: This class is deprecated and will be removed in version 2.1.
-/// Please use the [SerializableModel] interface instead for creating serializable
+/// Please implement the [SerializableModel] interface instead for creating serializable
 /// models.
 ///
 /// **Migration Guide**:
