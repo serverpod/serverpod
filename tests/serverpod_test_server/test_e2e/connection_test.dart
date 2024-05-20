@@ -22,10 +22,6 @@ ByteData createByteData() {
 void main() {
   var client = Client(serverUrl);
 
-  setUp(() {
-    Protocol().registerCustomConstructors();
-  });
-
   group('Calls', () {
     test('Named parameters basic call', () async {
       var result = await client.namedParameters.namedParametersMethod(
