@@ -23,7 +23,7 @@ dependencies:
     path: $pathToServerpodRoot/packages/serverpod
 
 dev_dependencies:
-  lints: ^3.0.0
+  lints: '>=3.0.0 <5.0.0'
 
 dependency_overrides:
   serverpod_shared:
