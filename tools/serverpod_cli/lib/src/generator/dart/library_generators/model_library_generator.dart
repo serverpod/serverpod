@@ -680,7 +680,6 @@ class SerializableModelLibraryGenerator {
               .property('encode')
               .call(
             [refer('this')],
-            {'formatted': refer('true')},
           ).code,
           const Code(';'),
         ]);

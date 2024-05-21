@@ -123,10 +123,7 @@ abstract class FutureCallEntry extends _i1.TableRow
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(
-      this,
-      formatted: true,
-    );
+    return _i1.SerializationManager.encode(this);
   }
 }
 

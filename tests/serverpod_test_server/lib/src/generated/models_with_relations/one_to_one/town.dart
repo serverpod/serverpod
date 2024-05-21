@@ -103,10 +103,7 @@ abstract class Town extends _i1.TableRow implements _i1.ProtocolSerialization {
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(
-      this,
-      formatted: true,
-    );
+    return _i1.SerializationManager.encode(this);
   }
 }
 

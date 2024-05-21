@@ -99,10 +99,7 @@ abstract class ObjectFieldScopes extends _i1.TableRow
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(
-      this,
-      formatted: true,
-    );
+    return _i1.SerializationManager.encode(this);
   }
 }
 

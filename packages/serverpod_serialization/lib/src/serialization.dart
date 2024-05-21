@@ -53,7 +53,7 @@ class DeserializationTypeNotFoundException implements Exception {
 /// [migration documentation](https://docs.serverpod.dev/next/upgrading/upgrade-to-two)
 @Deprecated(
   'This class is deprecated and will be removed in version 2.1. '
-  'Please use SerializableModel instead.',
+  'Please implement SerializableModel instead.',
 )
 abstract mixin class SerializableEntity implements SerializableModel {
   @override

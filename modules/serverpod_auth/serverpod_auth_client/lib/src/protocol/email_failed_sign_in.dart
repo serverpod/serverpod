@@ -68,10 +68,7 @@ abstract class EmailFailedSignIn implements _i1.SerializableModel {
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(
-      this,
-      formatted: true,
-    );
+    return _i1.SerializationManager.encode(this);
   }
 }
 

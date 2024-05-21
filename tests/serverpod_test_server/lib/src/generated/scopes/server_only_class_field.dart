@@ -66,10 +66,7 @@ abstract class ServerOnlyClassField
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(
-      this,
-      formatted: true,
-    );
+    return _i1.SerializationManager.encode(this);
   }
 }
 
