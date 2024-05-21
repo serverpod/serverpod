@@ -13,8 +13,8 @@ import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class TypesMap extends _i1.SerializableEntity
-    implements _i1.ProtocolSerialization {
+abstract class TypesMap
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   TypesMap._({
     this.anIntKey,
     this.aBoolKey,
@@ -439,6 +439,11 @@ abstract class TypesMap extends _i1.SerializableEntity
             valueToJson: (v) =>
                 v.toJson(valueToJson: (v) => v.toJsonForProtocol())),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

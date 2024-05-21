@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// A chunk of chat messages.
-abstract class ChatMessageChunk extends _i1.SerializableEntity {
+abstract class ChatMessageChunk implements _i1.SerializableModel {
   ChatMessageChunk._({
     required this.channel,
     required this.messages,
@@ -56,6 +56,11 @@ abstract class ChatMessageChunk extends _i1.SerializableEntity {
       'messages': messages.toJson(valueToJson: (v) => v.toJson()),
       'hasOlderMessages': hasOlderMessages,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

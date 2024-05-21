@@ -13,8 +13,8 @@ import '../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// The definition of a (desired) index in the database.
-abstract class IndexDefinition extends _i1.SerializableEntity
-    implements _i1.ProtocolSerialization {
+abstract class IndexDefinition
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   IndexDefinition._({
     required this.indexName,
     this.tableSpace,
@@ -105,6 +105,11 @@ abstract class IndexDefinition extends _i1.SerializableEntity
       'isPrimary': isPrimary,
       if (predicate != null) 'predicate': predicate,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

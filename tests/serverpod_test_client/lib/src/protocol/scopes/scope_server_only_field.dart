@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-abstract class ScopeServerOnlyField extends _i1.SerializableEntity {
+abstract class ScopeServerOnlyField implements _i1.SerializableModel {
   ScopeServerOnlyField._({
     this.allScope,
     this.nested,
@@ -50,6 +50,11 @@ abstract class ScopeServerOnlyField extends _i1.SerializableEntity {
       if (allScope != null) 'allScope': allScope?.toJson(),
       if (nested != null) 'nested': nested?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Bindings to a log entry in the database.
-abstract class LogEntry extends _i1.SerializableEntity {
+abstract class LogEntry implements _i1.SerializableModel {
   LogEntry._({
     this.id,
     required this.sessionLogId,
@@ -120,6 +120,11 @@ abstract class LogEntry extends _i1.SerializableEntity {
       if (stackTrace != null) 'stackTrace': stackTrace,
       'order': order,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

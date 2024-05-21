@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// High level information about the caches.
-abstract class CachesInfo extends _i1.SerializableEntity {
+abstract class CachesInfo implements _i1.SerializableModel {
   CachesInfo._({
     required this.local,
     required this.localPrio,
@@ -57,6 +57,11 @@ abstract class CachesInfo extends _i1.SerializableEntity {
       'localPrio': localPrio.toJson(),
       'global': global.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

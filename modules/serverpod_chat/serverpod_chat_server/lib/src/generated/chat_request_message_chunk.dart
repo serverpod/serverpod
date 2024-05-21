@@ -11,8 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Message to request a new chunk of messages from the server.
-abstract class ChatRequestMessageChunk extends _i1.SerializableEntity
-    implements _i1.ProtocolSerialization {
+abstract class ChatRequestMessageChunk
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ChatRequestMessageChunk._({
     required this.channel,
     required this.lastMessageId,
@@ -55,6 +55,11 @@ abstract class ChatRequestMessageChunk extends _i1.SerializableEntity
       'channel': channel,
       'lastMessageId': lastMessageId,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

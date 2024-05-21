@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ScopeNoneFields extends _i1.SerializableEntity {
+abstract class ScopeNoneFields implements _i1.SerializableModel {
   ScopeNoneFields._({this.id});
 
   factory ScopeNoneFields({int? id}) = _ScopeNoneFieldsImpl;
@@ -28,6 +28,11 @@ abstract class ScopeNoneFields extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {if (id != null) 'id': id};
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

@@ -13,8 +13,8 @@ import 'protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Information about health and connection metrics.
-abstract class ServerHealthResult extends _i1.SerializableEntity
-    implements _i1.ProtocolSerialization {
+abstract class ServerHealthResult
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ServerHealthResult._({
     required this.metrics,
     required this.connectionInfos,
@@ -63,6 +63,11 @@ abstract class ServerHealthResult extends _i1.SerializableEntity
       'connectionInfos':
           connectionInfos.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Information about a user that can safely be publicly accessible.
-abstract class UserInfoPublic extends _i1.SerializableEntity {
+abstract class UserInfoPublic implements _i1.SerializableModel {
   UserInfoPublic._({
     this.id,
     this.userName,
@@ -69,6 +69,11 @@ abstract class UserInfoPublic extends _i1.SerializableEntity {
       'created': created.toJson(),
       if (imageUrl != null) 'imageUrl': imageUrl,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

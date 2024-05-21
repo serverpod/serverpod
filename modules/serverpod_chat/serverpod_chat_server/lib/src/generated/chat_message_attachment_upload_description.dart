@@ -12,7 +12,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A description for uploading an attachment.
 abstract class ChatMessageAttachmentUploadDescription
-    extends _i1.SerializableEntity implements _i1.ProtocolSerialization {
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ChatMessageAttachmentUploadDescription._({
     required this.filePath,
     required this.uploadDescription,
@@ -56,6 +56,11 @@ abstract class ChatMessageAttachmentUploadDescription
       'filePath': filePath,
       'uploadDescription': uploadDescription,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

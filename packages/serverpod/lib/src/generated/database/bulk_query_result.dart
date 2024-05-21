@@ -12,8 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class BulkQueryResult extends _i1.SerializableEntity
-    implements _i1.ProtocolSerialization {
+abstract class BulkQueryResult
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   BulkQueryResult._({
     required this.headers,
     required this.data,
@@ -73,6 +73,11 @@ abstract class BulkQueryResult extends _i1.SerializableEntity
       'numAffectedRows': numAffectedRows,
       'duration': duration.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

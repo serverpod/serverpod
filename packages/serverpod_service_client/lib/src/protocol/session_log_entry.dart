@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Log entry for a session.
-abstract class SessionLogEntry extends _i1.SerializableEntity {
+abstract class SessionLogEntry implements _i1.SerializableModel {
   SessionLogEntry._({
     this.id,
     required this.serverId,
@@ -148,6 +148,11 @@ abstract class SessionLogEntry extends _i1.SerializableEntity {
       if (isOpen != null) 'isOpen': isOpen,
       'touched': touched.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

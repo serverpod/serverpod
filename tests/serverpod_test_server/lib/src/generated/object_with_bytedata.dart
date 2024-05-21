@@ -84,6 +84,11 @@ abstract class ObjectWithByteData extends _i1.TableRow
       include: include,
     );
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
+  }
 }
 
 class _Undefined {}

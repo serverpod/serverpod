@@ -12,8 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Log settings for the server.
-abstract class LogSettings extends _i1.SerializableEntity
-    implements _i1.ProtocolSerialization {
+abstract class LogSettings
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   LogSettings._({
     required this.logLevel,
     required this.logAllSessions,
@@ -129,6 +129,11 @@ abstract class LogSettings extends _i1.SerializableEntity
       'slowSessionDuration': slowSessionDuration,
       'slowQueryDuration': slowQueryDuration,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

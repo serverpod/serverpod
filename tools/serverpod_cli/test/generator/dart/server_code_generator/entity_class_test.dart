@@ -1,13 +1,12 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
 import 'package:test/test.dart';
-import 'package:path/path.dart' as path;
-
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -58,14 +57,14 @@ void main() {
     });
 
     group('then the class named $testClassName', () {
-      test('inherits from SerializableModel.', () {
+      test('implements SerializableModel.', () {
         expect(
-            CompilationUnitHelpers.hasExtendsClause(
+            CompilationUnitHelpers.hasImplementsClause(
               maybeClassNamedExample!,
-              name: 'SerializableEntity',
+              name: 'SerializableModel',
             ),
             isTrue,
-            reason: 'Missing extends clause for SerializableEntity.');
+            reason: 'Missing implements clause for SerializableModel.');
       });
 
       test('implements ProtocolSerialization.', () {

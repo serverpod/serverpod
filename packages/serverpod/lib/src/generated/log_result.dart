@@ -13,8 +13,8 @@ import 'protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A list of log entries, used to return logging data.
-abstract class LogResult extends _i1.SerializableEntity
-    implements _i1.ProtocolSerialization {
+abstract class LogResult
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   LogResult._({required this.entries});
 
   factory LogResult({required List<_i2.LogEntry> entries}) = _LogResultImpl;
@@ -40,6 +40,11 @@ abstract class LogResult extends _i1.SerializableEntity
     return {
       'entries': entries.toJson(valueToJson: (v) => v.toJsonForProtocol())
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

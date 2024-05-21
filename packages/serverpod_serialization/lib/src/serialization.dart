@@ -24,17 +24,45 @@ class DeserializationTypeNotFoundException implements Exception {
   String toString() => message;
 }
 
-/// The [SerializableEntity] is the base class for all serializable objects in
-/// Serverpod, except primitives.
-abstract mixin class SerializableEntity {
-  /// Returns a serialized JSON structure of the model which also includes
-  /// fields used by the database.
-  dynamic toJson();
-
+/// **DEPRECATED**: This class is deprecated and will be removed in version 2.1.
+/// Please implement the [SerializableModel] interface instead for creating serializable
+/// models.
+///
+/// **Migration Guide**:
+/// - Replace `extends SerializableEntity` with `implements SerializableModel`
+///   in your model classes.
+///
+/// ```dart
+/// // Before:
+/// class CustomClass extends SerializableEntity {
+///   // Your code here
+/// }
+///
+/// // After:
+/// class CustomClass implements SerializableModel {
+///   // Your code here
+/// }
+/// ```
+///
+/// For more details, refer to the
+/// [migration documentation](https://docs.serverpod.dev/next/upgrading/upgrade-to-two)
+@Deprecated(
+  'This class is deprecated and will be removed in version 2.1. '
+  'Please implement SerializableModel instead.',
+)
+abstract mixin class SerializableEntity implements SerializableModel {
   @override
   String toString() {
     return SerializationManager.encode(this);
   }
+}
+
+/// The [SerializableModel] is the base interface for all serializable objects in
+/// Serverpod, except primitives.
+abstract interface class SerializableModel {
+  /// Returns a serialized JSON structure of the model which also includes
+  /// fields used by the database.
+  dynamic toJson();
 }
 
 /// The [ProtocolSerialization] defines a toJsonForProtocol method which makes it

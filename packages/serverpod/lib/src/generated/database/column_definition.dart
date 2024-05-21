@@ -12,8 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
 /// The definition of a (desired) column in the database.
-abstract class ColumnDefinition extends _i1.SerializableEntity
-    implements _i1.ProtocolSerialization {
+abstract class ColumnDefinition
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ColumnDefinition._({
     required this.name,
     required this.columnType,
@@ -85,6 +85,11 @@ abstract class ColumnDefinition extends _i1.SerializableEntity
       if (columnDefault != null) 'columnDefault': columnDefault,
       if (dartType != null) 'dartType': dartType,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

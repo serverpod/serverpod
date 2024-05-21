@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A serialized future call with bindings to the database.
-abstract class FutureCallEntry extends _i1.SerializableEntity {
+abstract class FutureCallEntry implements _i1.SerializableModel {
   FutureCallEntry._({
     this.id,
     required this.name,
@@ -79,6 +79,11 @@ abstract class FutureCallEntry extends _i1.SerializableEntity {
       'serverId': serverId,
       if (identifier != null) 'identifier': identifier,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

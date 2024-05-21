@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
 
-abstract class Nullability extends _i1.SerializableEntity {
+abstract class Nullability implements _i1.SerializableModel {
   Nullability._({
     required this.anInt,
     this.aNullableInt,
@@ -487,6 +487,11 @@ abstract class Nullability extends _i1.SerializableEntity {
       if (aNullableMapWithNullableInts != null)
         'aNullableMapWithNullableInts': aNullableMapWithNullableInts?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
 
-abstract class Types extends _i1.SerializableEntity {
+abstract class Types implements _i1.SerializableModel {
   Types._({
     this.id,
     this.anInt,
@@ -124,6 +124,11 @@ abstract class Types extends _i1.SerializableEntity {
       if (aStringifiedEnum != null)
         'aStringifiedEnum': aStringifiedEnum?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

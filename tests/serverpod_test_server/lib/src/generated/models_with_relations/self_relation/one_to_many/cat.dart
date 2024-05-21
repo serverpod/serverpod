@@ -119,6 +119,11 @@ abstract class Cat extends _i1.TableRow implements _i1.ProtocolSerialization {
       include: include,
     );
   }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
+  }
 }
 
 class _Undefined {}

@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A log entry for a database query.
-abstract class QueryLogEntry extends _i1.SerializableEntity {
+abstract class QueryLogEntry implements _i1.SerializableModel {
   QueryLogEntry._({
     this.id,
     required this.serverId,
@@ -121,6 +121,11 @@ abstract class QueryLogEntry extends _i1.SerializableEntity {
       'slow': slow,
       'order': order,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

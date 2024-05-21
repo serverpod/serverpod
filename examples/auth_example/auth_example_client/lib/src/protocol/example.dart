@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class Example extends _i1.SerializableEntity {
+abstract class Example implements _i1.SerializableModel {
   Example._({
     required this.name,
     required this.data,
@@ -42,6 +42,11 @@ abstract class Example extends _i1.SerializableEntity {
       'name': name,
       'data': data,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

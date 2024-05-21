@@ -95,6 +95,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
   Map<String, ModuleEndpointCaller> get moduleLookup;
 
   Map<String, EndpointRef>? _consolidatedEndpointRefLookupCache;
+
   Map<String, EndpointRef> get _consolidatedEndpointRefLookup {
     if (_consolidatedEndpointRefLookupCache != null) {
       return _consolidatedEndpointRefLookupCache!;
@@ -206,7 +207,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
   }
 
   Future<void> _sendSerializableObjectToStream(
-      String endpoint, SerializableEntity message) async {
+      String endpoint, SerializableModel message) async {
     var data = {
       'endpoint': endpoint,
       'object': {
@@ -406,15 +407,15 @@ abstract class EndpointRef {
   /// The name of the endpoint this reference is connected to.
   String get name;
 
-  /// The stream controller handles the stream of [SerializableEntity] sent
+  /// The stream controller handles the stream of [SerializableModel] sent
   /// from the server endpoint to the client, if it supports streaming.
-  var _streamController = StreamController<SerializableEntity>();
+  var _streamController = StreamController<SerializableModel>();
 
   /// Stream of messages sent from an endpoint that supports streaming.
-  Stream<SerializableEntity> get stream => _streamController.stream;
+  Stream<SerializableModel> get stream => _streamController.stream;
 
   /// Sends a message to the endpoint's stream.
-  Future<void> sendStreamMessage(SerializableEntity message) async {
+  Future<void> sendStreamMessage(SerializableModel message) async {
     return client._sendSerializableObjectToStream(name, message);
   }
 
@@ -428,6 +429,6 @@ abstract class EndpointRef {
     } catch (e) {
       // Just in case, an issue happens when closing the stream.
     }
-    _streamController = StreamController<SerializableEntity>();
+    _streamController = StreamController<SerializableModel>();
   }
 }

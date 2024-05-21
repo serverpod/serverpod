@@ -156,8 +156,8 @@ class SerializableModelLibraryGenerator {
 
         classBuilder.methods.add(_buildModelClassTableGetter());
       } else {
-        classBuilder.extend =
-            refer('SerializableEntity', serverpodUrl(serverCode));
+        classBuilder.implements
+            .add(refer('SerializableModel', serverpodUrl(serverCode)));
       }
 
       if (serverCode) {
@@ -209,6 +209,8 @@ class SerializableModelLibraryGenerator {
           ]);
         }
       }
+
+      classBuilder.methods.add(_buildToStringMethod(serverCode));
     });
   }
 
@@ -660,6 +662,27 @@ class SerializableModelLibraryGenerator {
 
         m.body =
             _createToJsonBodyFromFields(filteredFields, 'toJsonForProtocol');
+      },
+    );
+  }
+
+  Method _buildToStringMethod(
+    bool serverCode,
+  ) {
+    return Method(
+      (m) {
+        m.returns = refer('String');
+        m.name = 'toString';
+        m.annotations.add(refer('override'));
+        m.body = Block.of([
+          const Code('return '),
+          refer('SerializationManager', serverpodUrl(serverCode))
+              .property('encode')
+              .call(
+            [refer('this')],
+          ).code,
+          const Code(';'),
+        ]);
       },
     );
   }
@@ -1633,7 +1656,8 @@ class SerializableModelLibraryGenerator {
         Enum((e) {
           e.name = enumDefinition.className;
           e.docs.addAll(enumDefinition.documentation ?? []);
-          e.mixins.add(refer('SerializableEntity', serverpodUrl(serverCode)));
+          e.implements
+              .add(refer('SerializableModel', serverpodUrl(serverCode)));
           e.values.addAll([
             for (var value in enumDefinition.values)
               EnumValue((v) {
@@ -1684,7 +1708,15 @@ class SerializableModelLibraryGenerator {
           ..name = 'toJson'
           ..lambda = true
           ..body = refer('index').code,
-      )
+      ),
+      Method(
+        (m) => m
+          ..annotations.add(refer('override'))
+          ..returns = refer('String')
+          ..name = 'toString'
+          ..lambda = true
+          ..body = refer('name').code,
+      ),
     ];
   }
 
@@ -1722,8 +1754,8 @@ class SerializableModelLibraryGenerator {
           ..returns = refer('String')
           ..name = 'toString'
           ..lambda = true
-          ..body = refer('toJson').call([]).code,
-      )
+          ..body = refer('name').code,
+      ),
     ];
   }
 

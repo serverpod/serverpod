@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A request for creating an email signin. Created during the sign up process
 /// to keep track of the user's details and verification code.
-abstract class EmailCreateAccountRequest extends _i1.SerializableEntity {
+abstract class EmailCreateAccountRequest implements _i1.SerializableModel {
   EmailCreateAccountRequest._({
     this.id,
     required this.userName,
@@ -73,6 +73,11 @@ abstract class EmailCreateAccountRequest extends _i1.SerializableEntity {
       'hash': hash,
       'verificationCode': verificationCode,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

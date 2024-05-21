@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
 
 /// Represents a foreign key.
-abstract class ForeignKeyDefinition extends _i1.SerializableEntity {
+abstract class ForeignKeyDefinition implements _i1.SerializableModel {
   ForeignKeyDefinition._({
     required this.constraintName,
     required this.columns,
@@ -108,6 +108,11 @@ abstract class ForeignKeyDefinition extends _i1.SerializableEntity {
       if (onDelete != null) 'onDelete': onDelete?.toJson(),
       if (matchType != null) 'matchType': matchType?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

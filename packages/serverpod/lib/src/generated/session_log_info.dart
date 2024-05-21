@@ -13,8 +13,8 @@ import 'protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Compounded information about a session log.
-abstract class SessionLogInfo extends _i1.SerializableEntity
-    implements _i1.ProtocolSerialization {
+abstract class SessionLogInfo
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   SessionLogInfo._({
     required this.sessionLogEntry,
     required this.queries,
@@ -81,6 +81,11 @@ abstract class SessionLogInfo extends _i1.SerializableEntity
       'logs': logs.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'messages': messages.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
