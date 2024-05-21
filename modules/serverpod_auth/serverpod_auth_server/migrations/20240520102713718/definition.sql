@@ -99,7 +99,7 @@ CREATE INDEX "serverpod_user_image_user_id" ON "serverpod_user_image" USING btre
 CREATE TABLE "serverpod_user_info" (
     "id" bigserial PRIMARY KEY,
     "userIdentifier" text NOT NULL,
-    "userName" text NOT NULL,
+    "userName" text,
     "fullName" text,
     "email" text,
     "created" timestamp without time zone NOT NULL,
@@ -353,9 +353,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_auth
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth', '20240516152014635', now())
+    VALUES ('serverpod_auth', '20240520102713718', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240516152014635', "timestamp" = now();
+    DO UPDATE SET "version" = '20240520102713718', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

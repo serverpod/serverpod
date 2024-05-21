@@ -24,5 +24,9 @@ class CustomClass2 {
 
   const CustomClass2(this.value);
 
+  factory CustomClass2.fromJson(dynamic data) {
+    return CustomClass2(data['text']);
+  }
+
   dynamic toJson() => {'text': value};
 }

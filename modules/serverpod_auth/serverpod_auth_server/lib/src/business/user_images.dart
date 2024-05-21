@@ -158,7 +158,7 @@ Future<Image> defaultUserImageGenerator(UserInfo userInfo) => Isolate.run(() {
       var font = roboto_138;
 
       // Get first letter of the user name (or * if not found in bitmap font).
-      var name = userInfo.userName;
+      var name = userInfo.userName ?? '';
       var charCode =
           (name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '*')
               .codeUnits[0];

@@ -472,8 +472,8 @@
         {
           "name": "userName",
           "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
+          "isNullable": true,
+          "dartType": "String?"
         },
         {
           "name": "fullName",
@@ -1694,7 +1694,7 @@
   "installedModules": [
     {
       "module": "serverpod_auth",
-      "version": "20240516152014635"
+      "version": "20240520102713718"
     },
     {
       "module": "serverpod",

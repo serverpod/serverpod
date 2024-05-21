@@ -45,8 +45,6 @@ class Protocol extends _i1.SerializationManagerServer {
 
   factory Protocol() => _instance;
 
-  static final Map<Type, _i1.constructor> customConstructors = {};
-
   static final Protocol _instance = Protocol._();
 
   static final List<_i2.TableDefinition> targetTableDefinitions = [
@@ -539,8 +537,8 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ColumnDefinition(
           name: 'userName',
           columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
+          isNullable: true,
+          dartType: 'String?',
         ),
         _i2.ColumnDefinition(
           name: 'fullName',
@@ -631,9 +629,6 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
-    if (customConstructors.containsKey(t)) {
-      return customConstructors[t]!(data, this) as T;
-    }
     if (t == _i3.AppleAuthInfo) {
       return _i3.AppleAuthInfo.fromJson(data) as T;
     }

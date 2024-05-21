@@ -5,11 +5,6 @@ import 'dart:typed_data';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-/// The constructor takes JSON structure and turns it into a decoded
-/// [SerializableModel].
-typedef constructor<T> = T Function(
-    dynamic jsonSerialization, SerializationManager serializationManager);
-
 /// Exception thrown when no deserialization type was found during
 /// protocol deserialization
 class DeserializationTypeNotFoundException implements Exception {

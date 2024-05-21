@@ -472,8 +472,8 @@
         {
           "name": "userName",
           "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
+          "isNullable": true,
+          "dartType": "String?"
         },
         {
           "name": "fullName",
