@@ -8,11 +8,11 @@ import 'package:serverpod/src/config/version.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/migrations/migration_manager.dart';
 import 'package:serverpod/src/redis/controller.dart';
+import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager.dart';
-import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../authentication/default_authentication_handler.dart';
@@ -784,12 +784,11 @@ class Serverpod {
       try {
         await session.db.testConnection();
         return session;
-      } catch (e, stackTrace) {
+      } catch (e) {
         // Write connection error to stderr.
         stderr.writeln(
           'Failed to connect to the database. Retrying in 10 seconds. $e',
         );
-        stderr.writeln('$stackTrace');
         if (!printedDatabaseConnectionError) {
           stderr.writeln('Database configuration:');
           stderr.writeln(config.database.toString());
