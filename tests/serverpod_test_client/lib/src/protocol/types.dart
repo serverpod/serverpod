@@ -46,7 +46,7 @@ abstract class Types implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       anInt: jsonSerialization['anInt'] as int?,
       aBool: jsonSerialization['aBool'] as bool?,
-      aDouble: jsonSerialization['aDouble'] as double?,
+      aDouble: (jsonSerialization['aDouble'] as num?)?.toDouble(),
       aDateTime: jsonSerialization['aDateTime'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['aDateTime']),

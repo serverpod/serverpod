@@ -117,8 +117,9 @@ abstract class Nullability
     return Nullability(
       anInt: jsonSerialization['anInt'] as int,
       aNullableInt: jsonSerialization['aNullableInt'] as int?,
-      aDouble: jsonSerialization['aDouble'] as double,
-      aNullableDouble: jsonSerialization['aNullableDouble'] as double?,
+      aDouble: (jsonSerialization['aDouble'] as num).toDouble(),
+      aNullableDouble:
+          (jsonSerialization['aNullableDouble'] as num?)?.toDouble(),
       aBool: jsonSerialization['aBool'] as bool,
       aNullableBool: jsonSerialization['aNullableBool'] as bool?,
       aString: jsonSerialization['aString'] as String,

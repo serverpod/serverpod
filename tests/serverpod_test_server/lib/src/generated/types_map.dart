@@ -82,8 +82,8 @@ abstract class TypesMap
           ?.fold<Map<bool, String>>(
               {}, (t, e) => {...t, e['k'] as bool: e['v'] as String}),
       aDoubleKey: (jsonSerialization['aDoubleKey'] as List?)
-          ?.fold<Map<double, String>>(
-              {}, (t, e) => {...t, e['k'] as double: e['v'] as String}),
+          ?.fold<Map<double, String>>({},
+              (t, e) => {...t, (e['k'] as num).toDouble(): e['v'] as String}),
       aDateTimeKey: (jsonSerialization['aDateTimeKey'] as List?)
           ?.fold<Map<DateTime, String>>(
               {},
@@ -176,7 +176,7 @@ abstract class TypesMap
       aDoubleValue:
           (jsonSerialization['aDoubleValue'] as Map?)?.map((k, v) => MapEntry(
                 k as String,
-                v as double,
+                (v as num).toDouble(),
               )),
       aDateTimeValue:
           (jsonSerialization['aDateTimeValue'] as Map?)?.map((k, v) => MapEntry(

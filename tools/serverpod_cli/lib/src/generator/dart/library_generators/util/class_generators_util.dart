@@ -200,8 +200,7 @@ Expression _buildDoubleTypeFromJson(
   return CodeExpression(
     Block.of([
       valueExpression.asA(refer('num${type.nullable ? '?' : ''}')).code,
-      if (type.nullable) const Code('?'),
-      const Code('.toDouble()'),
+      Code('${type.nullable ? '?.' : '.'}toDouble()'),
     ]),
   );
 }

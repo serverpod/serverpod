@@ -48,7 +48,7 @@ abstract class MessageLogEntry implements _i1.SerializableModel {
       messageId: jsonSerialization['messageId'] as int,
       endpoint: jsonSerialization['endpoint'] as String,
       messageName: jsonSerialization['messageName'] as String,
-      duration: jsonSerialization['duration'] as double,
+      duration: (jsonSerialization['duration'] as num).toDouble(),
       error: jsonSerialization['error'] as String?,
       stackTrace: jsonSerialization['stackTrace'] as String?,
       slow: jsonSerialization['slow'] as bool,

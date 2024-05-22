@@ -47,7 +47,7 @@ abstract class QueryLogEntry implements _i1.SerializableModel {
       sessionLogId: jsonSerialization['sessionLogId'] as int,
       messageId: jsonSerialization['messageId'] as int?,
       query: jsonSerialization['query'] as String,
-      duration: jsonSerialization['duration'] as double,
+      duration: (jsonSerialization['duration'] as num).toDouble(),
       numRows: jsonSerialization['numRows'] as int?,
       error: jsonSerialization['error'] as String?,
       stackTrace: jsonSerialization['stackTrace'] as String?,
