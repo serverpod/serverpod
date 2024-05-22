@@ -81,6 +81,15 @@ void main() {
         isNull,
       );
     });
+
+    test(
+        'when deserializing from JSON with a int type value, then the result matches the expected value',
+        () {
+      expect(
+        Types.fromJson({'aDouble': 1}).aDouble,
+        1.0,
+      );
+    });
   });
 
   group('Given a class with a nullable boolean field, ', () {

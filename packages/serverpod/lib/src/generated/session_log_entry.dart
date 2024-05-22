@@ -56,7 +56,7 @@ abstract class SessionLogEntry extends _i1.TableRow
       module: jsonSerialization['module'] as String?,
       endpoint: jsonSerialization['endpoint'] as String?,
       method: jsonSerialization['method'] as String?,
-      duration: jsonSerialization['duration'] as double?,
+      duration: (jsonSerialization['duration'] as num?)?.toDouble(),
       numQueries: jsonSerialization['numQueries'] as int?,
       slow: jsonSerialization['slow'] as bool?,
       error: jsonSerialization['error'] as String?,

@@ -51,8 +51,10 @@ abstract class LogSettings
       logSlowQueries: jsonSerialization['logSlowQueries'] as bool,
       logFailedSessions: jsonSerialization['logFailedSessions'] as bool,
       logFailedQueries: jsonSerialization['logFailedQueries'] as bool,
-      slowSessionDuration: jsonSerialization['slowSessionDuration'] as double,
-      slowQueryDuration: jsonSerialization['slowQueryDuration'] as double,
+      slowSessionDuration:
+          (jsonSerialization['slowSessionDuration'] as num).toDouble(),
+      slowQueryDuration:
+          (jsonSerialization['slowQueryDuration'] as num).toDouble(),
     );
   }
 

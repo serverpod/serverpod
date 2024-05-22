@@ -54,7 +54,7 @@ abstract class TypesList
       aBool:
           (jsonSerialization['aBool'] as List?)?.map((e) => e as bool).toList(),
       aDouble: (jsonSerialization['aDouble'] as List?)
-          ?.map((e) => e as double)
+          ?.map((e) => (e as num).toDouble())
           .toList(),
       aDateTime: (jsonSerialization['aDateTime'] as List?)
           ?.map((e) => _i1.DateTimeJsonExtension.fromJson(e))

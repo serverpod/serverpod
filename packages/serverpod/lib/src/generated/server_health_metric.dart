@@ -44,7 +44,7 @@ abstract class ServerHealthMetric extends _i1.TableRow
       timestamp:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
       isHealthy: jsonSerialization['isHealthy'] as bool,
-      value: jsonSerialization['value'] as double,
+      value: (jsonSerialization['value'] as num).toDouble(),
       granularity: jsonSerialization['granularity'] as int,
     );
   }
