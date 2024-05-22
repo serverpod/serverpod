@@ -115,11 +115,15 @@ Expression _buildFromJson(
 
   ValueType valueType = type.valueType;
   switch (valueType) {
-    case ValueType.int:
-    case ValueType.double:
     case ValueType.string:
     case ValueType.bool:
+    case ValueType.int:
       return _buildPrimitiveTypeFromJson(
+        type,
+        valueExpression,
+      );
+    case ValueType.double:
+      return _buildDoubleTypeFromJson(
         type,
         valueExpression,
       );
@@ -185,6 +189,19 @@ Expression _buildPrimitiveTypeFromJson(
       valueExpression.code,
       Code('as ${type.className}'),
       if (type.nullable) const Code('?'),
+    ]),
+  );
+}
+
+Expression _buildDoubleTypeFromJson(
+  TypeDefinition type,
+  Expression valueExpression,
+) {
+  return CodeExpression(
+    Block.of([
+      valueExpression.asA(refer('num${type.nullable ? '?' : ''}')).code,
+      if (type.nullable) const Code('?'),
+      const Code('.toDouble()'),
     ]),
   );
 }
