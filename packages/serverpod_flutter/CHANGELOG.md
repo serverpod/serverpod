@@ -1,31 +1,43 @@
-## 2.0.0-alpha.3
-- feat: Adds parameter arguments to unsafe database queries.
+## 2.0.0-rc.1
 - fix: BREAKING. Database delete methods now return removed objects.
-- fix: Retrieves and removes future call entries in a single operation.
-- fix: Improves server only field validation.
 - fix: BREAKING. Removes automatic redirect from Relic.
 - fix: BREAKING. Removes `SerializationManager` as a parameter from `fromJson` factory constructor.
 - fix: BREAKING. Remove allToJson method.
-- fix: toJson now includes all fields of Serverpod Models.
-- chore: Bumps minimum required Dart version to 3.1.
-
-## 2.0.0-alpha.2
-- feat: Adds `upgrade` command to Serverpod CLI.
-- feat: Introduces `CacheMissHandler` to improve cache API.
-- fix: Maps Dart `int` to `bigint` in database.
-- fix: Generates thumbnails in isolates for auth and chat module.
-- fix: Improved logging in CLI.
-- docs: Corrects spelling mistakes.
-- docs: Improved documentation for chat module.
-- chore: BREAKING. Updates Postgres library to new major version.
-
-## 2.0.0-alpha.1
-- feat: Serverpod mini. Allows running Serverpod without the database.
-- fix: Changes root file name in modules to follow Dart standards.
+- fix: BREAKING. Makes user name nullable in `UserInfo`.
 - fix: BREAKING. Removes deprecated methods.
 - fix: BREAKING. Introduces `DatabaseException`.
 - fix: BREAKING. Introduces new types for database result sets.
 - fix: BREAKING. Updates transaction interface in database.
+- fix: BREAKING. Changes `SerializableEntity` mixin into `SerializableModel` interface.
+- fix: BREAKING. Removes support for implicit string to expression conversion.
+- fix: BREAKING. Marks deprecated yaml keywords as `isRemoved`.
+- fix: BREAKING. Move authentication implementaqtions from core to auth module.
+- fix: BREAKING. Removes `customConstructor` map from protocol class.
+- chore: BREAKING. Updates Postgres library to new major version.
+- feat: Adds parameter arguments to unsafe database queries.
+- feat: Adds `upgrade` command to Serverpod CLI.
+- feat: Introduces `CacheMissHandler` to improve cache API.
+- feat: Serverpod mini. Allows running Serverpod without the database.
+- feat: Makes email verification code length customizable.
+- feat: Adds client entitlements to MacOS after creating Flutter project.
+- fix: Improves server only field validation.
+- fix: Retrieves and removes future call entries in a single operation.
+- fix: toJson now includes all fields of Serverpod Models.
+- fix: Maps Dart `int` to `bigint` in database.
+- fix: Generates thumbnails in isolates for auth and chat module.
+- fix: Improved logging in CLI.
+- fix: Changes root file name in modules to follow Dart standards.
+- fix: Removes useless stack trace print from database connection check.
+- fix: Uses user scopes from `UserInfo` when authenticating in all providers.
+- fix: Prevents silencing deserialization exceptions for unmatched class types.
+- fix: Removes deprecated `generated` folder from Serverpod's upgrade template.
+- fix: Endpoint requests can now respond with 401 or 403 on failed authentication.
+- fix: Gives error when enpoint classes have naming conflicts.
+- fix: Run `_storeSharedPrefs` in `logOut` method to preserve state.
+- fix: Prints streaming message handler exceptions to console.
+- chore: Bumps minimum required Dart version to 3.1.
+- docs: Corrects spelling mistakes.
+- docs: Improved documentation for chat module.
 
 ## 1.2.7
 - fix: Spelling fix in UserAuthentication.
