@@ -326,11 +326,21 @@ abstract class ServerpodClientShared extends EndpointCaller {
     _websocketConnectionStatusListeners.remove(listener);
   }
 
+  /// Checks if the streaming connection status has changed, and if so,
+  /// notifies listeners.
   void _notifyWebSocketConnectionStatusListeners() {
-    for (var listener in _websocketConnectionStatusListeners) {
-      listener();
+    var currStreamingConnectionStatus = streamingConnectionStatus;
+    if (currStreamingConnectionStatus != prevStreamingConnectionStatus) {
+      prevStreamingConnectionStatus = currStreamingConnectionStatus;
+      for (var listener in _websocketConnectionStatusListeners) {
+        listener();
+      }
     }
   }
+
+  /// The previous streaming connection status (used to detect changes in
+  /// connection status, so that listeners can be notified)
+  StreamingConnectionStatus? prevStreamingConnectionStatus;
 
   /// Returns the current status of the streaming connection. It can be one of
   /// connected, connecting, or disconnected. Use the
