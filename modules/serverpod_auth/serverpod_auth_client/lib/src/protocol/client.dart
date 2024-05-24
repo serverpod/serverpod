@@ -331,3 +331,4 @@ class Caller extends _i1.ModuleEndpointCaller {
         'serverpod_auth.user': user,
       };
 }
+ 

@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
-import 'package:firebase_admin/firebase_admin.dart';
 import 'package:serverpod_auth_server/src/business/firebase_auth.dart';
+import 'package:serverpod_auth_server/src/firebase/auth.dart';
 
 const _authMethod = 'firebase';
 
@@ -15,7 +15,7 @@ class FirebaseEndpoint extends Endpoint {
     Auth auth;
     session.log('Firebase authenticate', level: LogLevel.debug);
     try {
-      auth = FirebaseAuth.app.auth();
+      auth = FirebaseAuth.auth;
     } catch (e, stackTrace) {
       session.log(
         'Failed to create Firebase app. Have you correctly configured the service account key?',
