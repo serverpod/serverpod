@@ -1,25 +1,23 @@
 import 'package:openid_client/openid_client.dart';
 
+import '../../firebase_admin.dart';
+import '../app/app_extension.dart';
 import 'package:meta/meta.dart';
-import 'package:serverpod_auth_server/src/firebase/app.dart';
+import '../utils/validator.dart' as validator;
 
 /// Class for verifying general purpose Firebase JWTs.
 ///
 /// This verifies ID tokens and session cookies.
 class FirebaseTokenVerifier {
   final App app;
+  final String projectId;
 
   final String _jwtName = 'ID token';
 
   static FirebaseTokenVerifier Function(App app) factory =
       (app) => FirebaseTokenVerifier(app);
 
-  FirebaseTokenVerifier(this.app);
-
-  /// Validates that a string is a valid Firebase Auth uid.
-  bool _isUid(String? uid) {
-    return uid != null && uid.isNotEmpty && uid.length <= 128;
-  }
+  FirebaseTokenVerifier(this.app) : projectId = app.projectId;
 
   /// Verifies the format and signature of a Firebase Auth JWT token.
   Future<IdToken> verifyJwt(String jwtToken) async {
@@ -28,15 +26,13 @@ class FirebaseTokenVerifier {
     var credential = client.createCredential(idToken: jwtToken);
 
     await for (var e in credential.validateToken()) {
-      throw Exception(
-        'Validating $_jwtName failed: $e',
-      );
+      throw FirebaseAuthError.invalidArgument(
+          'Validating $_jwtName failed: $e');
     }
 
-    if (!_isUid(credential.idToken.claims.subject)) {
-      throw Exception(
-        '$_jwtName has "sub" (subject) claim which is not a valid uid',
-      );
+    if (!validator.isUid(credential.idToken.claims.subject)) {
+      throw FirebaseAuthError.invalidArgument(
+          '$_jwtName has "sub" (subject) claim which is not a valid uid');
     }
 
     return credential.idToken;
@@ -44,7 +40,7 @@ class FirebaseTokenVerifier {
 
   @visibleForTesting
   Future<Client> getOpenIdClient() async {
-    var issuer = await Issuer.discover(Issuer.firebase(app.options.projectId));
-    return Client(issuer, app.options.projectId);
+    var issuer = await Issuer.discover(Issuer.firebase(projectId));
+    return Client(issuer, projectId);
   }
 }
