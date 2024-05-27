@@ -2,6 +2,7 @@ import 'package:http/http.dart';
 
 import '../app.dart';
 
+/// [BaseClient] wrapper to make all api requests authorized
 class AuthorizedHttpClient extends BaseClient {
   final App app;
 
@@ -9,6 +10,7 @@ class AuthorizedHttpClient extends BaseClient {
 
   final Client client = httpClientFactory();
 
+  /// Creates a new [AuthorizedHttpClient] object
   AuthorizedHttpClient(this.app, [this.timeout]);
 
   @override

@@ -1,9 +1,4 @@
-import 'dart:convert';
-import 'dart:io';
-
-
 import 'package:serverpod_auth_server/src/firebase/firebase_admin.dart';
-import 'package:serverpod_auth_server/src/firebase/utils/env.dart';
 
 import 'auth/credential.dart';
 
@@ -48,8 +43,7 @@ class FirebaseAdmin {
   ///   * [App]
   ///   * [cert]
   ///   * [certFromPath]
-  App initializeApp([AppOptions? options, String name = defaultAppName]) {
-    options ??= _loadOptionsFromEnvVar(Credentials.applicationDefault());
+  App initializeApp(AppOptions options, [String name = defaultAppName]) {
     if (name.isEmpty) {
       throw FirebaseAppError.invalidAppName(
         'Invalid Firebase app name "$name" provided. App name must be a non-empty string.',
@@ -110,33 +104,5 @@ class FirebaseAdmin {
   /// Creates app certificate from service account file at specified [path].
   Credential certFromPath(String path) {
     return ServiceAccountCredential(path);
-  }
-
-  /// Parse the file pointed to by the FIREBASE_CONFIG_VAR, if it exists.
-  /// Or if the FIREBASE_CONFIG_ENV contains a valid JSON object, parse it
-  /// directly.
-  /// If the environment variable contains a string that starts with '{' it will
-  /// be parsed as JSON, otherwise it will be assumed to be pointing to a file.
-  AppOptions _loadOptionsFromEnvVar(Credential? credential) {
-    var config = env[firebaseConfigVar];
-    if (config == null || config.isEmpty) {
-      return AppOptions(credential: credential!);
-    }
-    try {
-      var contents =
-          config.startsWith('{') ? config : File(config).readAsStringSync();
-      var v = json.decode(contents) as Map;
-      return AppOptions(
-        credential: credential!,
-        projectId: v['projectId'],
-        databaseUrl: v['databaseURL'],
-        storageBucket: v['storageBucket'],
-      );
-    } catch (error) {
-      // Throw a nicely formed error message if the file contents cannot be parsed
-      throw FirebaseAppError.invalidAppOptions(
-        'Failed to parse app options file: $error',
-      );
-    }
   }
 }

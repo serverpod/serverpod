@@ -1,5 +1,7 @@
+import 'package:serverpod_auth_server/src/firebase/auth/credential.dart';
+
 import 'firebase_admin.dart';
-import 'app/app.dart';
+import 'app/firebase_internals.dart';
 import 'service.dart';
 
 /// Represents initialized Firebase application and provides access to the
@@ -13,7 +15,6 @@ class App {
 
   final FirebaseAppInternals _internals;
 
-  
   FirebaseAppInternals get internals => _internals;
 
   /// Do not call this constructor directly. Instead, use

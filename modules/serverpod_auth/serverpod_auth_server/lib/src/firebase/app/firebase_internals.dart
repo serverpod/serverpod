@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:serverpod_auth_server/src/firebase/auth/credential.dart';
 import 'package:serverpod_auth_server/src/firebase/firebase_admin.dart';
 
 import 'package:clock/clock.dart';

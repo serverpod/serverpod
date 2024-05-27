@@ -19,13 +19,15 @@ class _MyApiRequester extends commons.ApiRequester {
       : super(httpClient, rootUrl, basePath, {});
 
   @override
-  Future request(String requestUrl, String method,
-      {String? body,
-      Map<String, List<String>>? queryParams,
-      commons.Media? uploadMedia,
-      commons.UploadOptions? uploadOptions,
-      commons.DownloadOptions? downloadOptions =
-          commons.DownloadOptions.metadata}) async {
+  Future request(
+    String requestUrl,
+    String method, {
+    String? body,
+    Map<String, List<String>>? queryParams,
+    commons.Media? uploadMedia,
+    commons.UploadOptions? uploadOptions,
+    commons.DownloadOptions? downloadOptions = commons.DownloadOptions.metadata,
+  }) async {
     queryParams ??= {};
     try {
       var fields = queryParams.remove('fields') ?? [];

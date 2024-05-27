@@ -3,25 +3,33 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:x509/x509.dart';
 import '../utils/error.dart';
-import 'package:http/http.dart' as http;
 import 'package:jose/jose.dart';
-import '../credential.dart';
 import 'package:clock/clock.dart';
 import 'package:openid_client/openid_client.dart' as openid;
 
 /// Contains the properties necessary to use service-account JSON credentials.
 class Certificate {
+  /// Firebase Project ID
   final String? projectId;
+
+  /// Firebase Private Key
   final JsonWebKey privateKey;
+
+  /// Firebase client email
   final String clientEmail;
 
-  Certificate(
-      {this.projectId, required this.privateKey, required this.clientEmail});
+  Certificate({
+    this.projectId,
+    required this.privateKey,
+    required this.clientEmail,
+  });
 
+  /// Creates a new [Certificate] object form a file path
   factory Certificate.fromPath(String filePath) {
     try {
       return Certificate.fromJson(
-          json.decode(File(filePath).readAsStringSync()));
+        json.decode(File(filePath).readAsStringSync()),
+      );
     } on FirebaseException {
       rethrow;
     } catch (error) {
@@ -32,6 +40,7 @@ class Certificate {
     }
   }
 
+  /// Creates a new [Certificate] object form json
   factory Certificate.fromJson(Map<String, dynamic> json) {
     var privateKey = json['private_key'];
     if (privateKey is! String) privateKey = null;
@@ -67,7 +76,10 @@ class Certificate {
     });
 
     return Certificate(
-        projectId: json['project_id'], privateKey: k, clientEmail: clientEmail);
+      projectId: json['project_id'],
+      privateKey: k,
+      clientEmail: clientEmail,
+    );
   }
 }
 
@@ -81,7 +93,8 @@ class ServiceAccountCredential extends _OpenIdCredential
       : certificate = Certificate.fromJson(json),
         super(json['client_id']!, null);
 
-  factory ServiceAccountCredential(serviceAccountPathOrObject) {
+  /// Creates a new [ServiceAccountCredential] from json or path
+  factory ServiceAccountCredential(dynamic serviceAccountPathOrObject) {
     {
       if (serviceAccountPathOrObject is Map) {
         return ServiceAccountCredential.fromJson(
@@ -89,11 +102,13 @@ class ServiceAccountCredential extends _OpenIdCredential
       }
       try {
         return ServiceAccountCredential.fromJson(
-            json.decode(File(serviceAccountPathOrObject).readAsStringSync()));
+          json.decode(
+            File(serviceAccountPathOrObject).readAsStringSync(),
+          ),
+        );
       } on FirebaseException {
         rethrow;
       } catch (error) {
-        // Throw a nicely formed error message if the file contents cannot be parsed
         throw FirebaseAppError.invalidCredential(
           'Failed to parse certificate key file: $error',
         );
@@ -102,7 +117,7 @@ class ServiceAccountCredential extends _OpenIdCredential
   }
 
   String _createAuthJwt() {
-    final claims = {
+    var claims = {
       'scope': [
         'https://www.googleapis.com/auth/cloud-platform',
         'https://www.googleapis.com/auth/firebase.database',
@@ -170,9 +185,10 @@ abstract class FirebaseCredential implements Credential {
 
 /// Implementation of Credential that gets access tokens from refresh tokens.
 class RefreshTokenCredential extends _OpenIdCredential {
+  /// Refresh token
   final String refreshToken;
-  final http.Client httpClient = http.Client();
 
+  /// Creates a new [RefreshTokenCredential] object
   RefreshTokenCredential(Map<String, dynamic> json)
       : refreshToken = json['refresh_token'],
         super(json['client_id'], json['client_secret']);
@@ -181,4 +197,22 @@ class RefreshTokenCredential extends _OpenIdCredential {
   Future<openid.Credential> createCredential(openid.Client client) async {
     return client.createCredential(refreshToken: refreshToken);
   }
+}
+
+/// Interface which provides Google OAuth2 access tokens used to authenticate
+/// with Firebase services.
+abstract class Credential {
+  /// Returns a Google OAuth2 [AccessToken] object used to authenticate with
+  /// Firebase services.
+  Future<AccessToken> getAccessToken();
+}
+
+/// Google OAuth2 access token object used to authenticate with Firebase
+/// services.
+abstract class AccessToken {
+  /// The actual Google OAuth2 access token.
+  String get accessToken;
+
+  /// Access token expiration time
+  DateTime get expirationTime;
 }
