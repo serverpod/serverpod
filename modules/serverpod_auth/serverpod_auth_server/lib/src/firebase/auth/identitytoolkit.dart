@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:firebaseapis/identitytoolkit/v1.dart';
 import 'package:firebaseapis/identitytoolkit/v1.dart' as id;
-import 'package:firebaseapis/identitytoolkit/v2.dart' as v2;
 
 import 'package:http/http.dart' as http;
 import 'package:_discoveryapis_commons/_discoveryapis_commons.dart' as commons;
@@ -62,6 +61,8 @@ class _MyApiRequester extends commons.ApiRequester {
   }
 }
 
+/// Implements Google Identity Toolkit API lets you use open standards to verify a
+/// user's identity.
 class IdentityToolkitApi implements id.IdentityToolkitApi {
   final commons.ApiRequester _requester;
 
@@ -72,11 +73,7 @@ class IdentityToolkitApi implements id.IdentityToolkitApi {
   @override
   V1Resource get v1 => V1Resource(_requester);
 
-  v2.AccountsMfaEnrollmentResource get mfaEnrollment =>
-      v2.AccountsMfaEnrollmentResource(_requester);
-  v2.AccountsMfaSignInResource get mfaSignIn =>
-      v2.AccountsMfaSignInResource(_requester);
-
+  /// Creates a new [IdentityToolkitApi] with the given [Client] and configs
   IdentityToolkitApi(http.Client client,
       {String rootUrl = 'https://identitytoolkit.googleapis.com/',
       String servicePath = ''})

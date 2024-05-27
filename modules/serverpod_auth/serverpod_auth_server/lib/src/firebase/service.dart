@@ -5,6 +5,4 @@ import 'app.dart';
 abstract class FirebaseService {
   /// The app associated with the Auth service instance.
   App get app;
-
-  Future<void> delete();
 }

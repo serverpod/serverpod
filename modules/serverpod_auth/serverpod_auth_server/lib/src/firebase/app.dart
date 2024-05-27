@@ -1,6 +1,4 @@
-import 'dart:async';
-
-import '../firebase_admin.dart';
+import 'firebase_admin.dart';
 import 'app/app.dart';
 import 'service.dart';
 
@@ -14,6 +12,9 @@ class App {
   final Map<Type, FirebaseService> _services = {};
 
   final FirebaseAppInternals _internals;
+
+  
+  FirebaseAppInternals get internals => _internals;
 
   /// Do not call this constructor directly. Instead, use
   /// [FirebaseAdmin.initializeApp] to create an app.
@@ -41,18 +42,6 @@ class App {
   /// Gets the [Auth] service for this application.
   Auth auth() => _getService(() => Auth(this));
 
-  /// Renders this app unusable and frees the resources of all associated
-  /// services.
-  Future<void> delete() async {
-    _checkDestroyed();
-    FirebaseAdmin.instance.removeApp(_name);
-
-    internals.delete();
-
-    await Future.wait(_services.values.map((v) => v.delete()));
-    _services.clear();
-  }
-
   T _getService<T extends FirebaseService>(T Function() factory) {
     _checkDestroyed();
     return (_services[T] ??= factory()) as T;
@@ -66,10 +55,6 @@ class App {
       );
     }
   }
-}
-
-extension AppInternalsExtension on App {
-  FirebaseAppInternals get internals => _internals;
 }
 
 /// Available options to pass to initializeApp().
@@ -95,6 +80,7 @@ class AppOptions {
   /// The client email address of the service account.
   final String? serviceAccountId;
 
+  /// Creates new [AppOptions] object
   AppOptions({
     required this.credential,
     this.databaseUrl,

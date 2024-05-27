@@ -1,7 +1,7 @@
 library firebase_admin;
 
-export 'src/admin.dart';
-export 'src/app.dart' hide AppInternalsExtension;
-export 'src/auth.dart';
-export 'src/utils/error.dart';
-export 'src/credential.dart' hide setApplicationDefaultCredential;
+export 'admin.dart';
+export 'app.dart';
+export 'auth.dart';
+export 'utils/error.dart';
+export 'credential.dart' hide setApplicationDefaultCredential;

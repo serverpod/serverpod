@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:openid_client/openid_client_io.dart';
-import 'package:serverpod_auth_server/src/firebase/src/utils/env.dart';
+import 'package:serverpod_auth_server/src/firebase/utils/env.dart';
 
 import 'auth/credential.dart';
 import 'utils/error.dart';

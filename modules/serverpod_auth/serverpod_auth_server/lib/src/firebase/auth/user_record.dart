@@ -4,9 +4,6 @@ import 'package:snapshot/snapshot.dart';
 
 import '../auth.dart';
 
-/// 'REDACTED', encoded as a base64 string.
-final _b64Redacted = base64.encode('REDACTED'.codeUnits);
-
 final _decoder = SnapshotDecoder()
   ..register<String, Map<String, dynamic>>((v) => json.decode(v),
       format: 'json')
@@ -42,16 +39,6 @@ class UserRecord extends UnmodifiableSnapshotView {
   /// Whether or not the user is disabled.
   bool get disabled => get('disabled') ?? false;
 
-  /// The user's hashed password (base64-encoded), only if Firebase Auth hashing
-  /// algorithm (SCRYPT) is used.
-  ///
-  /// If a different hashing algorithm had been used when uploading this user,
-  /// as is typical when migrating from another Auth system, this will be an
-  /// empty string. If no password is set, this is null. This is only available
-  /// when the user is obtained from [Auth.listUsers].
-  String? get passwordHash =>
-      get('passwordHash') == _b64Redacted ? null : get('passwordHash');
-
   /// The user's password salt (base64-encoded), only if Firebase Auth hashing
   /// algorithm (SCRYPT) is used.
   ///
@@ -78,6 +65,7 @@ class UserRecord extends UnmodifiableSnapshotView {
   /// on big account changes (password resets, password or email updates, etc).
   DateTime? get tokensValidAfterTime => get('validSince', format: 'epoch');
 
-  UserRecord.fromJson(Map<String, dynamic> map)
-      : super.fromJson(map, decoder: _decoder);
+  /// Creates a new [UserRecord] object from [Map<String, dynamic>]
+  UserRecord.fromJson(Map<String, dynamic> super.map)
+      : super.fromJson(decoder: _decoder);
 }

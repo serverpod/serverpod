@@ -1,6 +1,6 @@
 import 'package:openid_client/openid_client.dart';
 
-import '../../firebase_admin.dart';
+import '../firebase_admin.dart';
 import '../app/app_extension.dart';
 import 'package:meta/meta.dart';
 import '../utils/validator.dart' as validator;
@@ -9,15 +9,16 @@ import '../utils/validator.dart' as validator;
 ///
 /// This verifies ID tokens and session cookies.
 class FirebaseTokenVerifier {
+  /// Firebase App
   final App app;
-  final String projectId;
 
   final String _jwtName = 'ID token';
 
   static FirebaseTokenVerifier Function(App app) factory =
       (app) => FirebaseTokenVerifier(app);
 
-  FirebaseTokenVerifier(this.app) : projectId = app.projectId;
+  /// Creates a new [FirebaseTokenVerifier] with an [App]
+  FirebaseTokenVerifier(this.app);
 
   /// Verifies the format and signature of a Firebase Auth JWT token.
   Future<IdToken> verifyJwt(String jwtToken) async {
@@ -40,7 +41,7 @@ class FirebaseTokenVerifier {
 
   @visibleForTesting
   Future<Client> getOpenIdClient() async {
-    var issuer = await Issuer.discover(Issuer.firebase(projectId));
-    return Client(issuer, projectId);
+    var issuer = await Issuer.discover(Issuer.firebase(app.projectId));
+    return Client(issuer, app.projectId);
   }
 }

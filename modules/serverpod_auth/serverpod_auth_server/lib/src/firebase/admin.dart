@@ -3,7 +3,7 @@ import 'dart:io';
 
 
 import 'package:serverpod_auth_server/src/firebase/firebase_admin.dart';
-import 'package:serverpod_auth_server/src/firebase/src/utils/env.dart';
+import 'package:serverpod_auth_server/src/firebase/utils/env.dart';
 
 import 'auth/credential.dart';
 
@@ -138,11 +138,5 @@ class FirebaseAdmin {
         'Failed to parse app options file: $error',
       );
     }
-  }
-}
-
-extension FirebaseAdminExtension on FirebaseAdmin {
-  void removeApp(String name) {
-    _apps.remove(name);
   }
 }

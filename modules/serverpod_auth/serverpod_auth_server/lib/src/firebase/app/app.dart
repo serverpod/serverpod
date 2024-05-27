@@ -1,12 +1,12 @@
 import 'dart:async';
 
-
 import 'package:serverpod_auth_server/src/firebase/firebase_admin.dart';
 
-import '../credential.dart';
 import 'package:clock/clock.dart';
 
+/// Holds Firebase app internal informations
 class FirebaseAppInternals {
+  /// Firebase App Credentials
   final Credential credential;
   bool _isDeleted = false;
 
@@ -15,7 +15,10 @@ class FirebaseAppInternals {
   Timer? _tokenRefreshTimeout;
   final List<void Function(String token)> _tokenListeners = [];
 
+  /// Creates new [FirebaseAppInternals] with given [credential]
   FirebaseAppInternals(this.credential);
+
+  /// tells if app internals are deleted or not
   bool get isDeleted => _isDeleted;
 
   /// Gets an auth token for the associated app.
@@ -66,7 +69,7 @@ class FirebaseAppInternals {
         // minutes before it expires. Once a token refresh succeeds, no further retries are
         // needed; if it fails, retry every minute until the token expires (resulting in a total
         // of four retries: at 4, 3, 2, and 1 minutes).
-        var refreshTime = expiresIn - Duration(minutes: 5);
+        var refreshTime = expiresIn - const Duration(minutes: 5);
         var numRetries = 4;
 
         // In the rare cases the token is short-lived (that is, it expires in less than five
@@ -137,7 +140,7 @@ class FirebaseAppInternals {
         // refresh the token, an error will be logged once the existing token expires and we try
         // to fetch a fresh one.
         if (numRetries > 0) {
-          _setTokenRefreshTimeout(Duration(minutes: 1), numRetries - 1);
+          _setTokenRefreshTimeout(const Duration(minutes: 1), numRetries - 1);
         }
       }
     });

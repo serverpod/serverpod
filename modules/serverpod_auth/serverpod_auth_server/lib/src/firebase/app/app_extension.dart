@@ -1,26 +1,27 @@
 import 'dart:io';
 
+import 'package:serverpod_auth_server/src/firebase/auth/credential.dart';
 
-import 'package:serverpod_auth_server/src/firebase/src/auth/credential.dart';
+import '../firebase_admin.dart';
 
-import '../../firebase_admin.dart';
-
+/// Exposes Firebase App [projectId] variable
 extension GetProjectIdExtension on App {
+  /// Firebase app project id
   String get projectId => _getProjectId(this);
 }
 
 String _getProjectId(App app) {
-  final options = app.options;
+  var options = app.options;
   if (options.projectId != null && options.projectId!.isNotEmpty) {
     return options.projectId!;
   }
 
-  final cert = _tryGetCertificate(options.credential);
+  var cert = _tryGetCertificate(options.credential);
   if (cert != null && cert.projectId != null && cert.projectId!.isNotEmpty) {
     return cert.projectId!;
   }
 
-  final projectId = Platform.environment['GOOGLE_CLOUD_PROJECT'] ??
+  var projectId = Platform.environment['GOOGLE_CLOUD_PROJECT'] ??
       Platform.environment['GCLOUD_PROJECT'];
   if (projectId != null && projectId.isNotEmpty) {
     return projectId;
