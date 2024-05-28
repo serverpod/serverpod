@@ -1,41 +1,30 @@
-import 'package:openid_client/openid_client.dart';
+import 'package:openid_client/openid_client_io.dart';
 
-import '../firebase_admin.dart';
-import '../app/app_extension.dart';
-import 'package:meta/meta.dart';
-import '../utils/validator.dart' as validator;
+class TokenVerifier {
+  final String _projectId;
+  final Client? _client;
 
-/// Class for verifying general purpose Firebase JWTs.
-///
-/// This verifies ID tokens and session cookies.
-class FirebaseTokenVerifier {
-  /// Firebase App
-  final App app;
-
-  final String _jwtName = 'ID token';
-
-  /// Creates a [FirebaseTokenVerifier] singletone object
-  static FirebaseTokenVerifier Function(App app) factory =
-      (app) => FirebaseTokenVerifier(app);
-
-  /// Creates a new [FirebaseTokenVerifier] with an [App]
-  FirebaseTokenVerifier(this.app);
+  TokenVerifier(
+    String projectId, {
+    Client? client,
+  })  : _projectId = projectId,
+        _client = client;
 
   /// Verifies the format and signature of a Firebase Auth JWT token.
   Future<IdToken> verifyJwt(String jwtToken) async {
-    var client = await getOpenIdClient();
+    var client = _client ?? await _getOpenIdClient();
 
     var credential = client.createCredential(idToken: jwtToken);
 
     await for (var e in credential.validateToken()) {
-      throw FirebaseAuthError.invalidArgument(
-        'Validating $_jwtName failed: $e',
+      throw Exception(
+        'Validating ID token failed: $e',
       );
     }
 
-    if (!validator.isUid(credential.idToken.claims.subject)) {
-      throw FirebaseAuthError.invalidArgument(
-        '$_jwtName has "sub" (subject) claim which is not a valid uid',
+    if (!_isUid(credential.idToken.claims.subject)) {
+      throw Exception(
+        'ID token has "sub" (subject) claim which is not a valid uid',
       );
     }
 
@@ -43,9 +32,13 @@ class FirebaseTokenVerifier {
   }
 
   /// Creates a new openid [Client] object
-  @visibleForTesting
-  Future<Client> getOpenIdClient() async {
-    var issuer = await Issuer.discover(Issuer.firebase(app.projectId));
-    return Client(issuer, app.projectId);
+  Future<Client> _getOpenIdClient() async {
+    var issuer = await Issuer.discover(Issuer.firebase(_projectId));
+    return Client(issuer, _projectId);
+  }
+
+  /// Validates that a string is a valid Firebase Auth uid.
+  bool _isUid(String? uid) {
+    return uid != null && uid.isNotEmpty && uid.length <= 128;
   }
 }

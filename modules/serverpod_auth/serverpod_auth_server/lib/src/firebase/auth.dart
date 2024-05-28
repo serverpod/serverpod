@@ -1,39 +1,60 @@
-import 'package:openid_client/openid_client.dart';
-import 'package:serverpod_auth_server/src/firebase/firebase_admin.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'package:googleapis_auth/auth_io.dart';
+import 'package:openid_client/openid_client_io.dart';
+import 'package:serverpod_auth_server/src/firebase/auth/account_api.dart';
 import 'package:serverpod_auth_server/src/firebase/auth/token_verifier.dart';
 
-import 'auth/auth_api_request.dart';
-import 'service.dart';
+class Auth {
+  static Auth instance = Auth._init();
 
-export 'auth/user_record.dart';
+  TokenVerifier? _tokenVerifier;
+  AccountApi? _accountApi;
 
-/// The Firebase Auth service interface.
-class Auth implements FirebaseService {
-  @override
-  final App app;
+  Auth._init();
 
-  final AuthRequestHandler _authRequestHandler;
-  final FirebaseTokenVerifier _tokenVerifier;
+  Future<void> init(
+    String firebaseServiceAccountKeyJson, {
+    AuthClient? authClient,
+    Client? tokenClient,
+  }) async {
+    Map<String, dynamic> json = jsonDecode(
+      await File(firebaseServiceAccountKeyJson).readAsString(),
+    );
 
-  /// Do not call this constructor directly. Instead, use app().auth.
-  Auth(this.app)
-      : _authRequestHandler = AuthRequestHandler(app),
-        _tokenVerifier = FirebaseTokenVerifier.factory(app);
+    var projectId = json['project_id'];
+    if (projectId == null) {
+      throw Exception('Invalid Project ID');
+    }
 
-  /// Gets the user data for the user corresponding to a given [uid].
-  Future<UserRecord> getUser(String uid) async {
-    return await _authRequestHandler.getAccountInfoByUid(uid);
+    var accountClient = authClient ??
+        await clientViaServiceAccount(
+          ServiceAccountCredentials.fromJson(json),
+          [
+            'https://www.googleapis.com/auth/cloud-platform',
+            'https://www.googleapis.com/auth/identitytoolkit',
+            'https://www.googleapis.com/auth/userinfo.email',
+          ],
+        );
+
+    _tokenVerifier = TokenVerifier(
+      projectId,
+      client: tokenClient,
+    );
+    _accountApi = AccountApi(
+      projectId,
+      accountClient,
+    );
   }
 
-  /// Verifies a Firebase ID token (JWT).
-  ///
-  /// If the token is valid, the returned [Future] is completed with an instance
-  /// of [IdToken]; otherwise, the future is completed with an error.
-  /// An optional flag can be passed to additionally check whether the ID token
-  /// was revoked.
-  Future<IdToken> verifyIdToken(String idToken,
-      [bool checkRevoked = false]) async {
-    var decodedIdToken = await _tokenVerifier.verifyJwt(idToken);
+  Future<IdToken> verifyIdToken(
+    String idToken, [
+    bool checkRevoked = false,
+  ]) async {
+    if (_accountApi == null || _tokenVerifier == null) {
+      throw Exception('FirebaseAdmin not initialized!');
+    }
+    var decodedIdToken = await _tokenVerifier!.verifyJwt(idToken);
     // Whether to check if the token was revoked.
     if (!checkRevoked) {
       return decodedIdToken;
@@ -41,21 +62,22 @@ class Auth implements FirebaseService {
     return _verifyDecodedJwtNotRevoked(decodedIdToken);
   }
 
-  /// Verifies the decoded Firebase issued JWT is not revoked. Returns a future
-  /// that resolves with the decoded claims on success. Rejects the future with
-  /// revocation error if revoked.
-  Future<IdToken> _verifyDecodedJwtNotRevoked(IdToken decodedIdToken) async {
+  Future<IdToken> _verifyDecodedJwtNotRevoked(
+    IdToken decodedIdToken,
+  ) async {
     // Get tokens valid after time for the corresponding user.
-    var user = await getUser(decodedIdToken.claims.subject);
+    var user = await _accountApi!.getUserByUiid(decodedIdToken.claims.subject);
     // If no tokens valid after time available, token is not revoked.
-    if (user.tokensValidAfterTime != null) {
+    if (user.validSince != null) {
       // Get the ID token authentication time.
       var authTimeUtc = decodedIdToken.claims.authTime!;
       // Get user tokens valid after time.
-      var validSinceUtc = user.tokensValidAfterTime!;
+      var validSinceUtc = DateTime.fromMicrosecondsSinceEpoch(
+        (num.parse(user.validSince!) * 1000).toInt(),
+      );
       // Check if authentication time is older than valid since time.
       if (authTimeUtc.isBefore(validSinceUtc)) {
-        throw FirebaseAuthError.idTokenRevoked();
+        throw Exception('The Firebase ID token has been revoked.');
       }
     }
     // All checks above passed. Return the decoded token.

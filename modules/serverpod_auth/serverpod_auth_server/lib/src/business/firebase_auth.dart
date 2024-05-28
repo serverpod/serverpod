@@ -3,23 +3,19 @@ import 'package:serverpod_auth_server/src/firebase/firebase_admin.dart';
 
 /// Convenience methods for handling authentication with Firebase.
 class FirebaseAuth {
-  static App? _app;
+  static Auth? _auth;
 
   /// Returns the Firebase app.
-  static App get app {
-    if (_app != null) {
-      return _app!;
+  static Future<Auth> get auth async {
+    if (_auth != null) {
+      return _auth!;
     }
 
-    var cert = FirebaseAdmin.instance.certFromPath(
+    await Auth.instance.init(
       AuthConfig.current.firebaseServiceAccountKeyJson,
     );
 
-    var app = FirebaseAdmin.instance.initializeApp(
-      AppOptions(credential: cert),
-    );
-
-    _app = app;
-    return app;
+    _auth = Auth.instance;
+    return _auth!;
   }
 }

@@ -15,7 +15,7 @@ class FirebaseEndpoint extends Endpoint {
     Auth auth;
     session.log('Firebase authenticate', level: LogLevel.debug);
     try {
-      auth = FirebaseAuth.app.auth();
+      auth = await FirebaseAuth.auth;
     } catch (e, stackTrace) {
       session.log(
         'Failed to create Firebase app. Have you correctly configured the service account key?',

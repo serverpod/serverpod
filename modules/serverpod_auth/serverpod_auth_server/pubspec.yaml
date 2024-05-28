@@ -18,11 +18,7 @@ dependencies:
 
   openid_client: ^0.4.3
   meta: ^1.4.0
-  snapshot: ^0.2.5
   firebaseapis: ^0.2.0
-  dotenv: ^4.2.0
-  clock: ^1.1.1
-  _discoveryapis_commons: ^1.0.4
 
   googleapis: ^11.0.0
   googleapis_auth: ^1.5.0
@@ -34,6 +30,7 @@ dependencies:
 dev_dependencies:
   serverpod_lints: 2.0.0-rc.1
   test: ^1.24.2
+  mockito: ^5.0.10
 
 dependency_overrides:
   serverpod:
