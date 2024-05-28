@@ -290,12 +290,12 @@ abstract class ServerpodClientShared extends EndpointCaller {
     _webSocket = null;
     _cancelConnectionTimer();
 
+    // Notify listeners that websocket has been closed
+    _notifyWebSocketConnectionStatusListeners();
+
     // Hack for dart:io version of websocket to get time to close the stream
     // in _listenToWebSocket
     await Future.delayed(const Duration(milliseconds: 100));
-
-    // Notify listeners that websocket has been closed
-    _notifyWebSocketConnectionStatusListeners();
   }
 
   Future<void> _listenToWebSocketStream() async {
