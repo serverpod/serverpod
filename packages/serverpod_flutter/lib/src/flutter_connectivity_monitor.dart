@@ -18,8 +18,8 @@ class FlutterConnectivityMonitor extends ConnectivityMonitor {
     // Start listening to connection status changes.
     _connectivitySubscription =
         Connectivity().onConnectivityChanged.listen((connectivityResultList) {
-      var connected = !connectivityResultList.any((connectivityResult) =>
-          connectivityResult == ConnectivityResult.none);
+      var connected = connectivityResultList.any((connectivityResult) =>
+          connectivityResult != ConnectivityResult.none);
       if (!_receivedFirstEvent) {
         // Skip the first event if it happens immediately on launch as it may
         // not be correct on some platforms.
