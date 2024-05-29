@@ -1,11 +1,13 @@
 import 'package:openid_client/openid_client_io.dart';
 
+/// JWT verifier
 class TokenVerifier {
   final String _projectId;
   final Client? _client;
 
-  TokenVerifier(
-    String projectId, {
+  /// Creates a new [TokenVerifier] object with a [projectId] and [Client]
+  TokenVerifier({
+    required String projectId,
     Client? client,
   })  : _projectId = projectId,
         _client = client;

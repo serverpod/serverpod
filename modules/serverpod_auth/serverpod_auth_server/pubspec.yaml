@@ -31,6 +31,9 @@ dev_dependencies:
   serverpod_lints: 2.0.0-rc.1
   test: ^1.24.2
   mockito: ^5.0.10
+  jose: ^0.3.2
+  clock: ^1.1.0
+  rsa_pkcs: ^2.1.0
 
 dependency_overrides:
   serverpod:

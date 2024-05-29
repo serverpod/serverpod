@@ -10,19 +10,16 @@ void main() {
   File? jsonFile;
 
   setUp(() async {
-    var jsonMap = {
-      'project_id': 'test-project',
-      'private_key': 'test-key',
-      'client_email': 'test-email',
-    };
-    var jsonString = json.encode(jsonMap);
     jsonFile = File('test-service-account-key.json');
-    await jsonFile?.writeAsString(jsonString);
+    await jsonFile?.writeAsString(json.encode(testAccountServiceJson));
 
     await auth.init(
       'test-service-account-key.json',
-      authClient: MockAuthClient(),
-      tokenClient: MockTokenClient(),
+      authBaseClient: MockAuthBaseClient(),
+      openIdClient: MockTokenClient(
+        projectId: testAccountServiceJson['project_id'],
+        issuer: getTestIssuer(),
+      ),
     );
   });
 
@@ -30,13 +27,26 @@ void main() {
     jsonFile?.deleteSync();
   });
 
-  group('FirebaseAdmin', () {
-    test('verifyIdToken throws exception if not initialized', () async {
-      expect(
-        () => auth.verifyIdToken('test-id-token'),
-        throwsA(isA<Exception>()),
+  group(
+    'FirebaseAdmin',
+    () {
+      test(
+        'verifyIdToken throws exception if not initialized',
+        () async {
+          var idToken = generateMockIdToken(
+            projectId: 'project_id',
+            uid: 'abcdefghijklmnopqrstuvwxyz',
+          );
+
+          var verifiedToken = await auth.verifyIdToken(idToken);
+
+          expect(
+            idToken,
+            verifiedToken.toCompactSerialization(),
+          );
+        },
       );
-    });
-    // Add more tests as needed
-  });
+      // Add more tests as needed
+    },
+  );
 }
