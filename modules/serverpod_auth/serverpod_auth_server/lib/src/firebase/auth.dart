@@ -1,43 +1,32 @@
-import 'dart:convert';
-import 'dart:io';
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:openid_client/openid_client_io.dart';
 import 'package:serverpod_auth_server/src/firebase/auth/auth_account_api.dart';
 import 'package:serverpod_auth_server/src/firebase/auth/auth_http_client.dart';
 import 'package:serverpod_auth_server/src/firebase/auth/token_verifier.dart';
 
-void main() async {
-  var jsonPath =
-      '/Users/kkucaj/Desktop/my-atelier-prod-firebase-adminsdk-969n0-5e54519c4d.json';
+// void main() async {
+//   var jsonPath =
+//       '/Users/kkucaj/Desktop/my-atelier-prod-firebase-adminsdk-969n0-5e54519c4d.json';
 
-  var idToken =
-      'eyJhbGciOiJSUzI1NiIsImtpZCI6IjVkNjE3N2E5Mjg2ZDI1Njg0NTI2OWEzMTM2ZDNmNjY0MjZhNGQ2NDIiLCJ0eXAiOiJKV1QifQ.eyJyZXZlbnVlQ2F0RW50aXRsZW1lbnRzIjpbXSwiaXNzIjoiaHR0cHM6Ly9zZWN1cmV0b2tlbi5nb29nbGUuY29tL215LWF0ZWxpZXItcHJvZCIsImF1ZCI6Im15LWF0ZWxpZXItcHJvZCIsImF1dGhfdGltZSI6MTcxNDU4MTExNSwidXNlcl9pZCI6Ik9sNko0MmRnSzNaRDlhUFpqQ3RSRHJBM1d0cjEiLCJzdWIiOiJPbDZKNDJkZ0szWkQ5YVBaakN0UkRyQTNXdHIxIiwiaWF0IjoxNzE2OTgyMzAzLCJleHAiOjE3MTY5ODU5MDMsImVtYWlsIjoia2t1Y2FqLmNvbnRhY3RAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsia2t1Y2FqLmNvbnRhY3RAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.te6R4P0way7EHT5XZvVnCjPVbU8UWPISFcMY4DHTByww_k4PpGh7esAvxcKok0jd3xK3uIJ-njAlI5TzYKlp7rFZKklm6ocrHndEJxYga3spQmi0E5xwh3L_9aTw2CFCutFl6zO4d8Mm5gyMFwH1ACFCGt1bYn4kmwJExEwJ_DBKeK4SjO6aou6xafNYW7zVky3h4m7NyP-PxiQ53QspHPYMHfuCmSCrCZJPzKvIT662LLoA0a1g4ZGxNx2VJGKQrT0WOB6zfv5H1KjR6ViDwcqAqF-2xNgnm41Rl8LKzkhZWkMtrEBxvOo3ILLTrrfchr2XqwElYt8kWkQZOQSFlA';
-  await Auth.instance.init(jsonPath);
+//   var idToken =
+//       'eyJhbGciOiJSUzI1NiIsImtpZCI6IjVkNjE3N2E5Mjg2ZDI1Njg0NTI2OWEzMTM2ZDNmNjY0MjZhNGQ2NDIiLCJ0eXAiOiJKV1QifQ.eyJyZXZlbnVlQ2F0RW50aXRsZW1lbnRzIjpbXSwiaXNzIjoiaHR0cHM6Ly9zZWN1cmV0b2tlbi5nb29nbGUuY29tL215LWF0ZWxpZXItcHJvZCIsImF1ZCI6Im15LWF0ZWxpZXItcHJvZCIsImF1dGhfdGltZSI6MTcxNDU4MTExNSwidXNlcl9pZCI6Ik9sNko0MmRnSzNaRDlhUFpqQ3RSRHJBM1d0cjEiLCJzdWIiOiJPbDZKNDJkZ0szWkQ5YVBaakN0UkRyQTNXdHIxIiwiaWF0IjoxNzE2OTg5NjM5LCJleHAiOjE3MTY5OTMyMzksImVtYWlsIjoia2t1Y2FqLmNvbnRhY3RAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsia2t1Y2FqLmNvbnRhY3RAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.FYMWvemm90NWenaHGSGM_d_e2rxszpGD1GiRZNUBi6oinBKO7h4Efwu2mCSM_OGdlqJo18u1vjILFAOmhmetoyjsWXya-vfy3uoVu8XKJ0nl5yyrFbfU2Qv7gYef_-rcDRnREmKXKGEh_66d2FJiW_mIdlXI3UJ-snCOVBJ4XpPmGTmYrAglJXNw787dlu9C-AsvVugSYReuHTRK6ZSthrGIqDGC4dt5_rLO981nGRCtVL9EH9KS9KatdLTotYUtuWV0mcLZ9xqo_zli_aClXeVlsaUR_RjIg9b0GlBZZuV7tEtiSxw-xIaROp5ct5cXuCeaKRGFiiaZX9iPjnejMQ';
+//   await Auth.instance.init(jsonPath);
 
-  var token = await Auth.instance.verifyIdToken(idToken);
-  print(token.toCompactSerialization());
-}
+//   var token = await Auth.instance.verifyIdToken(idToken);
+//   print(token.toCompactSerialization());
+// }
 
 /// Firebase Auth Manager
 class Auth {
-  /// Firebase Singletone Auth
-  static Auth instance = Auth._init();
-
   TokenVerifier? _tokenVerifier;
   AuthRequestApi? _accountApi;
 
-  Auth._init();
-
   /// Firebase Auth initialization with firebaseServiceAccountKeyJson
   Future<void> init(
-    String firebaseServiceAccountKeyJson, {
+    Map<String, dynamic> json, {
     AuthBaseClient? authBaseClient,
     Client? openIdClient,
   }) async {
-    Map<String, dynamic> json = jsonDecode(
-      await File(firebaseServiceAccountKeyJson).readAsString(),
-    );
-
     var projectId = json['project_id'];
     if (projectId == null) {
       throw Exception('Invalid Project ID');
@@ -57,6 +46,7 @@ class Auth {
       projectId: projectId,
       client: openIdClient,
     );
+
     _accountApi = AuthRequestApi(
       projectId: projectId,
       client: client,

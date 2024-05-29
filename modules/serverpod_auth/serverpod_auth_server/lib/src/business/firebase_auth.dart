@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 import 'package:serverpod_auth_server/src/firebase/firebase_admin.dart';
 
@@ -11,11 +14,16 @@ class FirebaseAuth {
       return _auth!;
     }
 
-    await Auth.instance.init(
-      AuthConfig.current.firebaseServiceAccountKeyJson,
+    Map<String, dynamic> json = jsonDecode(
+      await File(AuthConfig.current.firebaseServiceAccountKeyJson)
+          .readAsString(),
     );
 
-    _auth = Auth.instance;
+    var auth = Auth();
+
+    await auth.init(json);
+
+    _auth = auth;
     return _auth!;
   }
 }
