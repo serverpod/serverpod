@@ -33,7 +33,7 @@ class FirebaseEndpoint extends Endpoint {
     session.log('Created Auth object', level: LogLevel.debug);
 
     try {
-      var token = await auth.verifyIdToken(idToken, true);
+      var token = await auth.verifyIdToken(idToken);
       session.log('Verified idToken', level: LogLevel.debug);
       var claims = token.claims;
 

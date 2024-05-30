@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:clock/clock.dart';
 import 'package:http/http.dart' as http;
 import 'package:jose/jose.dart';
 import 'package:mockito/mockito.dart';
@@ -10,11 +9,9 @@ import 'package:serverpod_auth_server/src/firebase/auth/auth_http_client.dart';
 import 'package:rsa_pkcs/rsa_pkcs.dart';
 
 class MockAuthBaseClient extends Mock implements AuthBaseClient {
-  final String uuid;
   final Map<String, dynamic> userJson;
 
   MockAuthBaseClient({
-    required this.uuid,
     required this.userJson,
   });
 
@@ -47,23 +44,19 @@ class MockAuthBaseClient extends Mock implements AuthBaseClient {
     }
 
     Map<String, dynamic> body = jsonDecode(request.body);
-    List<String> localeId = List<String>.from(body['localeId'] ?? []);
-    if (localeId.contains(uuid)) {
-      return http.StreamedResponse(
-        http.ByteStream.fromBytes(
-          jsonEncode({
-            'kind': 'identitytoolkit#GetAccountInfoResponse',
-            'users': []
-          }).runes.toList(),
-        ),
-        200,
-        headers: {'content-type': 'application/json'},
-      );
+    List<String> localeId = List<String>.from(body['localId'] ?? []);
+
+    List<dynamic> users = [];
+    if (localeId.contains(userJson['localId'])) {
+      users.add(userJson);
     }
 
     return http.StreamedResponse(
       http.ByteStream.fromBytes(
-        jsonEncode(userJson).runes.toList(),
+        jsonEncode({
+          'kind': 'identitytoolkit#GetAccountInfoResponse',
+          'users': users,
+        }).runes.toList(),
       ),
       200,
       headers: {'content-type': 'application/json'},
@@ -123,11 +116,12 @@ String generateMockIdToken({
 
   var claims = {
     'aud': projectId,
-    'exp': clock.now().add(const Duration(hours: 1)).millisecondsSinceEpoch ~/
-        1000,
+    'exp':
+        DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch ~/
+            1000,
     'iss': 'https://securetoken.google.com/$projectId',
     'sub': uid,
-    'auth_time': clock.now().millisecondsSinceEpoch ~/ 1000,
+    'auth_time': DateTime.now().millisecondsSinceEpoch ~/ 1000,
     ...overrides,
   };
 
@@ -208,3 +202,42 @@ Issuer getTestIssuer() {
 
   return Issuer(OpenIdProviderMetadata.fromJson(config));
 }
+
+Map<String, dynamic> getUserRecord({
+  required String uuid,
+  required DateTime validSince,
+}) =>
+    {
+      'localId': uuid,
+      'email': 'user@gmail.com',
+      'emailVerified': true,
+      'displayName': 'John Doe',
+      'phoneNumber': '+11234567890',
+      'providerUserInfo': [
+        {
+          'providerId': 'google.com',
+          'displayName': 'John Doe',
+          'photoUrl': 'https://lh3.googleusercontent.com/1234567890/photo.jpg',
+          'federatedId': '1234567890',
+          'email': 'user@gmail.com',
+          'rawId': '1234567890',
+        },
+        {
+          'providerId': 'facebook.com',
+          'displayName': 'John Smith',
+          'photoUrl': 'https://facebook.com/0987654321/photo.jpg',
+          'federatedId': '0987654321',
+          'email': 'user@facebook.com',
+          'rawId': '0987654321',
+        },
+        {
+          'providerId': 'phone',
+          'phoneNumber': '+11234567890',
+          'rawId': '+11234567890',
+        },
+      ],
+      'photoUrl': 'https://lh3.googleusercontent.com/1234567890/photo.jpg',
+      'validSince': '${validSince.millisecondsSinceEpoch}',
+      'lastLoginAt': '1476235905000',
+      'createdAt': '1476136676000',
+    };

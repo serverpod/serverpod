@@ -20,7 +20,6 @@ class FirebaseAuth {
     );
 
     var auth = Auth();
-
     await auth.init(json);
 
     _auth = auth;

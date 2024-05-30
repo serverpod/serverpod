@@ -1,4 +1,5 @@
 import 'package:openid_client/openid_client_io.dart';
+import 'package:serverpod_auth_server/src/firebase/errors/firebase_error.dart';
 
 /// JWT verifier
 class TokenVerifier {
@@ -19,13 +20,13 @@ class TokenVerifier {
     var credential = client.createCredential(idToken: jwtToken);
 
     await for (var e in credential.validateToken()) {
-      throw Exception(
+      throw FirebaseError(
         'Validating ID token failed: $e',
       );
     }
 
     if (!_isUid(credential.idToken.claims.subject)) {
-      throw Exception(
+      throw FirebaseError(
         'ID token has "sub" (subject) claim which is not a valid uid',
       );
     }
