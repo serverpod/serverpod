@@ -29,6 +29,8 @@ dependencies:
 dev_dependencies:
   serverpod_lints: SERVERPOD_VERSION
   test: ^1.24.2
+  mockito: ^5.0.10
+  rsa_pkcs: ^2.1.0
 
 dependency_overrides:
   serverpod:
