@@ -258,6 +258,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       _firstMessageReceived = false;
       var host = await websocketHost;
       _webSocket = WebSocketChannel.connect(Uri.parse(host));
+      await _webSocket?.ready;
 
       // We are sending the ping message to the server, so that we are
       // guaranteed to get a first message in return. This will verify that we
