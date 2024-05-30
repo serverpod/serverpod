@@ -1,4 +1,4 @@
-## 2.0.0-rc.1
+## 2.0.0
 - fix: BREAKING. Database delete methods now return removed objects.
 - fix: BREAKING. Removes automatic redirect from Relic.
 - fix: BREAKING. Removes `SerializationManager` as a parameter from `fromJson` factory constructor.

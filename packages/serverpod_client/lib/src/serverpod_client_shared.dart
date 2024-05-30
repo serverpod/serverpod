@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -275,6 +276,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
         }
       });
     } catch (e) {
+      stderr.writeln('Failed to open streaming connection: $e');
       _webSocket = null;
       _cancelConnectionTimer();
       rethrow;
@@ -290,6 +292,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
     await _webSocket?.sink.close();
     _webSocket = null;
     _cancelConnectionTimer();
+
+    // Notify listeners that websocket has been closed
+    _notifyWebSocketConnectionStatusListeners();
 
     // Hack for dart:io version of websocket to get time to close the stream
     // in _listenToWebSocket
@@ -310,6 +315,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       _webSocket = null;
       _cancelConnectionTimer();
     } catch (e) {
+      stderr.writeln('Error while listening to websocket stream: $e');
       _webSocket = null;
       _cancelConnectionTimer();
     }
