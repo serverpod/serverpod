@@ -59,7 +59,6 @@ class GoogleAuth {
 
     return AutoRefreshingClient(
       client,
-      const GoogleAuthEndpoints(),
       clientId,
       credentials,
       closeUnderlyingClient: true,
