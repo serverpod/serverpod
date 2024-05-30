@@ -67,7 +67,34 @@ class GoogleEndpoint extends Endpoint {
 
     email = email.toLowerCase();
 
-    var userInfo = await _setupUserInfo(session, email, name, fullName, image);
+    var userInfo = await _setupUserInfo(
+      session,
+      email,
+      name,
+      fullName,
+      image,
+      (session, userInfo) async {
+        if (authClient.credentials.refreshToken != null) {
+          // Store refresh token, so that we can access this data at a later time.
+          var token = await GoogleRefreshToken.db.findFirstRow(
+            session,
+            where: (t) => t.userId.equals(userInfo.id!),
+          );
+          if (token == null) {
+            token = GoogleRefreshToken(
+              userId: userInfo.id!,
+              refreshToken: jsonEncode(authClient.credentials.toJson()),
+            );
+            await GoogleRefreshToken.db.insertRow(session, token);
+          } else {
+            token.refreshToken = jsonEncode(authClient.credentials.toJson());
+            await GoogleRefreshToken.db.updateRow(session, token);
+          }
+        }
+
+        await AuthConfig.current.onUserCreated?.call(session, userInfo);
+      },
+    );
 
     if (userInfo == null) {
       return AuthenticationResponse(
@@ -79,24 +106,6 @@ class GoogleEndpoint extends Endpoint {
         success: false,
         failReason: AuthenticationFailReason.blocked,
       );
-    }
-
-    if (authClient.credentials.refreshToken != null) {
-      // Store refresh token, so that we can access this data at a later time.
-      var token = await GoogleRefreshToken.db.findFirstRow(
-        session,
-        where: (t) => t.userId.equals(userInfo.id!),
-      );
-      if (token == null) {
-        token = GoogleRefreshToken(
-          userId: userInfo.id!,
-          refreshToken: jsonEncode(authClient.credentials.toJson()),
-        );
-        await GoogleRefreshToken.db.insertRow(session, token);
-      } else {
-        token.refreshToken = jsonEncode(authClient.credentials.toJson());
-        await GoogleRefreshToken.db.updateRow(session, token);
-      }
     }
 
     var authKey = await UserAuthentication.signInUser(
@@ -180,7 +189,6 @@ class GoogleEndpoint extends Endpoint {
       }
 
       // Authentication looks ok!
-
       var authKey = await UserAuthentication.signInUser(
         session,
         userInfo.id!,
@@ -205,8 +213,14 @@ class GoogleEndpoint extends Endpoint {
     }
   }
 
-  Future<UserInfo?> _setupUserInfo(Session session, String email, String name,
-      String fullName, String? image) async {
+  Future<UserInfo?> _setupUserInfo(
+    Session session,
+    String email,
+    String name,
+    String fullName,
+    String? image, [
+    UserInfoUpdateCallback? onUserCreatedOverride,
+  ]) async {
     var userInfo = await Users.findUserByEmail(session, email);
     if (userInfo == null) {
       userInfo = UserInfo(
@@ -218,7 +232,13 @@ class GoogleEndpoint extends Endpoint {
         created: DateTime.now().toUtc(),
         scopeNames: [],
       );
-      userInfo = await Users.createUser(session, userInfo, _authMethod);
+      userInfo = await Users.createUser(
+        session,
+        userInfo,
+        _authMethod,
+        null,
+        onUserCreatedOverride,
+      );
 
       // Set the user image.
       if (userInfo?.id != null && image != null) {
