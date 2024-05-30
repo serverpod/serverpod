@@ -231,16 +231,8 @@ class Server {
       WebSocket webSocket;
       try {
         webSocket = await WebSocketTransformer.upgrade(request);
-      } catch (e) {
-        // Handle "WebSocketException: Invalid WebSocket upgrade request".
-        stderr.writeln('Failed to upgrade connection to websocket: $e');
-        try {
-          request.response.statusCode = HttpStatus.badRequest;
-          await request.response.close();
-        } catch (e) {
-          // The statusCode setter throws StateException if the the header has
-          // already been sent. Ignore this.
-        }
+      } on WebSocketException {
+        stderr.writeln('Failed to upgrade connection to websocket');
         return;
       }
       webSocket.pingInterval = const Duration(seconds: 30);
