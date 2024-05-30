@@ -70,7 +70,6 @@ void main() async {
       UniqueData.db.update(
         session,
         toUpdate,
-        columns: (_) => [SimpleData.t.num],
       ),
       throwsA(isA<ArgumentError>()),
     );
