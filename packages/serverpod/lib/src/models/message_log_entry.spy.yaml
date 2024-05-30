@@ -11,7 +11,7 @@ fields:
   ### The id of the message this entry is associated with.
   messageId: int
 
-  ### The entpoint this message is associated with.
+  ### The endpoint this message is associated with.
   endpoint: String
 
   ### The class name of the message this entry is associated with.

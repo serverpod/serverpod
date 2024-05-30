@@ -5,7 +5,7 @@ import 'serverpod_client_shared.dart';
 /// Represents the state of the connection handler.
 class StreamingConnectionHandlerState {
   /// Time in seconds until next connection attempt. Only set if the connection
-  /// [status] is StreaminConnectionStatus.waitingToRetry.
+  /// [status] is StreamingConnectionStatus.waitingToRetry.
   final int? retryInSeconds;
 
   /// The status of the connection.
@@ -19,12 +19,12 @@ class StreamingConnectionHandlerState {
 
 /// The StreamingConnection handler manages the web socket connection and its
 /// state. It will automatically reconnect to the server if the connection is
-/// lost. The [listener] will be notfied whenever the connection state changes
+/// lost. The [listener] will be notified whenever the connection state changes
 /// and once every second when counting down to reconnect. The time between
 /// reconnection attempts is specified with [retryEverySeconds], default is 5
 /// seconds.
 class StreamingConnectionHandler {
-  /// The Serverpod client this StremingConnectionHandler is managing.
+  /// The Serverpod client this StreamingConnectionHandler is managing.
   final ServerpodClientShared client;
 
   /// Time in seconds between connection attempts. Default is 5 seconds.
@@ -52,7 +52,7 @@ class StreamingConnectionHandler {
 
   /// Disposes the connection handler, but does not close the connection.
   void dispose() {
-    client.addStreamingConnectionStatusListener(_onConnectionStatusChanged);
+    client.removeStreamingConnectionStatusListener(_onConnectionStatusChanged);
     _countdownTimer?.cancel();
     _countdownTimer = null;
   }

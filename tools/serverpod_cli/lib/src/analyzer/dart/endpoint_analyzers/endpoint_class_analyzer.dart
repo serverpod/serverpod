@@ -2,6 +2,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
 
 abstract class EndpointClassAnalyzer {
   /// Parses an [ClassElement] into a [EndpointDefinition].
@@ -43,8 +44,22 @@ abstract class EndpointClassAnalyzer {
   /// Validates the [ClassElement] and returns a list of errors.
   static List<SourceSpanSeverityException> validate(
     ClassElement classElement,
+    Set<String> duplicateClasses,
   ) {
-    return [];
+    List<SourceSpanSeverityException> errors = [];
+
+    if (duplicateClasses.contains(classElement.name)) {
+      errors.add(
+        SourceSpanSeverityException(
+          'Multiple endpoint definitions for ${classElement.name} exists. '
+          'Please provide a unique name for each endpoint class.',
+          classElement.span,
+          severity: SourceSpanSeverity.error,
+        ),
+      );
+    }
+
+    return errors;
   }
 
   static String _formatEndpointName(String className) {

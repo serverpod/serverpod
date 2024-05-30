@@ -350,7 +350,58 @@ void main() async {
             reason: 'Flutter pubspec file does not exist.',
           );
         });
+        test('macOS DebugProfile entitlements has network client tag and true',
+            () {
+          var entitlementsPath = path.join(tempPath, flutterDir, 'macos',
+              'Runner', 'DebugProfile.entitlements');
+          var file = File(entitlementsPath);
+          var exists = file.existsSync();
+          expect(exists, isTrue,
+              reason: "DebugProfile entitlements does not exist.");
+          String contents = file.readAsStringSync();
+          String expected = '''
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+	<key>com.apple.security.cs.allow-jit</key>
+	<true/>
+	<key>com.apple.security.network.client</key>
+	<true/>
+	<key>com.apple.security.network.server</key>
+	<true/>
+</dict>
+</plist>
+''';
+          expect(contents.trim(), expected.trim(),
+              reason: "DebugProfile entitlements is not as expected.");
+        });
 
+        test('macOS Release entitlements has network client tag and true', () {
+          var entitlementsPath = path.join(
+              tempPath, flutterDir, 'macos', 'Runner', 'Release.entitlements');
+          var file = File(entitlementsPath);
+          var exists = file.existsSync();
+          expect(exists, isTrue,
+              reason: "Release entitlements does not exist.");
+          String contents = file.readAsStringSync();
+          String expected = '''
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+	<key>com.apple.security.network.client</key>
+	<true/>
+</dict>
+</plist>''';
+
+          expect(contents.trim(), expected.trim(),
+              reason: "Release entitlements is not as expected.");
+        });
         test('has a main file', () {
           expect(
             File(path.join(tempPath, flutterDir, 'lib', 'main.dart'))

@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class Citizen extends _i1.SerializableEntity {
+abstract class Citizen implements _i1.SerializableModel {
   Citizen._({
     this.id,
     required this.name,
@@ -90,6 +90,11 @@ abstract class Citizen extends _i1.SerializableEntity {
       if (oldCompanyId != null) 'oldCompanyId': oldCompanyId,
       if (oldCompany != null) 'oldCompany': oldCompany?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

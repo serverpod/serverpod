@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A log entry for a database query.
-abstract class QueryLogEntry extends _i1.TableRow {
+abstract class QueryLogEntry extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   QueryLogEntry._({
     int? id,
     required this.serverId,
@@ -47,7 +48,7 @@ abstract class QueryLogEntry extends _i1.TableRow {
       sessionLogId: jsonSerialization['sessionLogId'] as int,
       messageId: jsonSerialization['messageId'] as int?,
       query: jsonSerialization['query'] as String,
-      duration: jsonSerialization['duration'] as double,
+      duration: (jsonSerialization['duration'] as num).toDouble(),
       numRows: jsonSerialization['numRows'] as int?,
       error: jsonSerialization['error'] as String?,
       stackTrace: jsonSerialization['stackTrace'] as String?,
@@ -126,7 +127,7 @@ abstract class QueryLogEntry extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'serverId': serverId,
@@ -164,6 +165,11 @@ abstract class QueryLogEntry extends _i1.TableRow {
       orderByList: orderByList?.call(QueryLogEntry.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

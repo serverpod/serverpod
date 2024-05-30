@@ -15,7 +15,7 @@ dependencies:
   code_builder: ^4.4.0
   dart_style: ^2.3.0
   http: ">=0.13.0 <2.0.0"
-  intl: ^0.18.0
+  intl: '>=0.18.0 < 0.20.0'
   recase: ^4.1.0
   built_collection: ^5.1.1
   package_config: ^2.1.0
@@ -37,7 +37,7 @@ dependencies:
   stream_channel: ^2.1.1
   lsp_server: ^0.3.0
   pub_semver: ^2.1.4
-
+  cli_tools: ^0.0.2
 
 dev_dependencies:
   serverpod_lints: SERVERPOD_VERSION

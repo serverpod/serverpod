@@ -12,6 +12,7 @@ import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/src/business/config.dart';
 import 'package:serverpod_auth_server/src/business/google_auth.dart';
+import 'package:serverpod_auth_server/src/business/user_authentication.dart';
 import 'package:serverpod_auth_server/src/business/user_images.dart';
 
 import '../business/users.dart';
@@ -66,7 +67,34 @@ class GoogleEndpoint extends Endpoint {
 
     email = email.toLowerCase();
 
-    var userInfo = await _setupUserInfo(session, email, name, fullName, image);
+    var userInfo = await _setupUserInfo(
+      session,
+      email,
+      name,
+      fullName,
+      image,
+      (session, userInfo) async {
+        if (authClient.credentials.refreshToken != null) {
+          // Store refresh token, so that we can access this data at a later time.
+          var token = await GoogleRefreshToken.db.findFirstRow(
+            session,
+            where: (t) => t.userId.equals(userInfo.id!),
+          );
+          if (token == null) {
+            token = GoogleRefreshToken(
+              userId: userInfo.id!,
+              refreshToken: jsonEncode(authClient.credentials.toJson()),
+            );
+            await GoogleRefreshToken.db.insertRow(session, token);
+          } else {
+            token.refreshToken = jsonEncode(authClient.credentials.toJson());
+            await GoogleRefreshToken.db.updateRow(session, token);
+          }
+        }
+
+        await AuthConfig.current.onUserCreated?.call(session, userInfo);
+      },
+    );
 
     if (userInfo == null) {
       return AuthenticationResponse(
@@ -80,25 +108,12 @@ class GoogleEndpoint extends Endpoint {
       );
     }
 
-    if (authClient.credentials.refreshToken != null) {
-      // Store refresh token, so that we can access this data at a later time.
-      var token = await GoogleRefreshToken.db.findFirstRow(
-        session,
-        where: (t) => t.userId.equals(userInfo.id!),
-      );
-      if (token == null) {
-        token = GoogleRefreshToken(
-          userId: userInfo.id!,
-          refreshToken: jsonEncode(authClient.credentials.toJson()),
-        );
-        await GoogleRefreshToken.db.insertRow(session, token);
-      } else {
-        token.refreshToken = jsonEncode(authClient.credentials.toJson());
-        await GoogleRefreshToken.db.updateRow(session, token);
-      }
-    }
-
-    var authKey = await session.auth.signInUser(userInfo.id!, _authMethod);
+    var authKey = await UserAuthentication.signInUser(
+      session,
+      userInfo.id!,
+      _authMethod,
+      scopes: userInfo.scopes,
+    );
 
     authClient.close();
 
@@ -174,8 +189,12 @@ class GoogleEndpoint extends Endpoint {
       }
 
       // Authentication looks ok!
-
-      var authKey = await session.auth.signInUser(userInfo.id!, 'google');
+      var authKey = await UserAuthentication.signInUser(
+        session,
+        userInfo.id!,
+        _authMethod,
+        scopes: userInfo.scopes,
+      );
 
       return AuthenticationResponse(
         success: true,
@@ -194,8 +213,14 @@ class GoogleEndpoint extends Endpoint {
     }
   }
 
-  Future<UserInfo?> _setupUserInfo(Session session, String email, String name,
-      String fullName, String? image) async {
+  Future<UserInfo?> _setupUserInfo(
+    Session session,
+    String email,
+    String name,
+    String fullName,
+    String? image, [
+    UserInfoUpdateCallback? onUserCreatedOverride,
+  ]) async {
     var userInfo = await Users.findUserByEmail(session, email);
     if (userInfo == null) {
       userInfo = UserInfo(
@@ -207,7 +232,13 @@ class GoogleEndpoint extends Endpoint {
         created: DateTime.now().toUtc(),
         scopeNames: [],
       );
-      userInfo = await Users.createUser(session, userInfo, _authMethod);
+      userInfo = await Users.createUser(
+        session,
+        userInfo,
+        _authMethod,
+        null,
+        onUserCreatedOverride,
+      );
 
       // Set the user image.
       if (userInfo?.id != null && image != null) {

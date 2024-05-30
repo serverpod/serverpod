@@ -116,10 +116,10 @@ void main() {
         );
       });
 
-      test('then an override allToJson method is defined', () {
+      test('then an override toJson method is defined', () {
         var method = CompilationUnitHelpers.tryFindMethodDeclaration(
             implicitClass,
-            name: 'allToJson');
+            name: 'toJson');
 
         expect(method, isNotNull);
         expect(method?.returnType?.toSource(), 'Map<String, dynamic>');
@@ -238,10 +238,10 @@ void main() {
       });
     });
 
-    test('then an override allToJson method is defined', () {
+    test('then an override toJson method is defined', () {
       var method = CompilationUnitHelpers.tryFindMethodDeclaration(
           implicitClass!,
-          name: 'allToJson');
+          name: 'toJson');
 
       expect(method, isNotNull);
       expect(method?.returnType?.toSource(), 'Map<String, dynamic>');

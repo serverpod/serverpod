@@ -1,13 +1,12 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
 import 'package:test/test.dart';
-import 'package:path/path.dart' as path;
-
-import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
-import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -58,14 +57,24 @@ void main() {
     });
 
     group('then the class named $testClassName', () {
-      test('inherits from SerializableModel.', () {
+      test('implements SerializableModel.', () {
         expect(
-            CompilationUnitHelpers.hasExtendsClause(
+            CompilationUnitHelpers.hasImplementsClause(
               maybeClassNamedExample!,
-              name: 'SerializableEntity',
+              name: 'SerializableModel',
             ),
             isTrue,
-            reason: 'Missing extends clause for SerializableEntity.');
+            reason: 'Missing implements clause for SerializableModel.');
+      });
+
+      test('implements ProtocolSerialization.', () {
+        expect(
+            CompilationUnitHelpers.hasImplementsClause(
+              maybeClassNamedExample!,
+              name: 'ProtocolSerialization',
+            ),
+            isTrue,
+            reason: 'Missing implements clause for ProtocolSerialization');
       });
 
       test('has a fromJson factory.', () {
@@ -88,14 +97,14 @@ void main() {
             reason: 'Missing declaration for toJson method');
       });
 
-      test('has a allToJson method.', () {
+      test('has a toJsonForProtocol method.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
               maybeClassNamedExample!,
-              name: 'allToJson',
+              name: 'toJsonForProtocol',
             ),
             isTrue,
-            reason: 'Missing declaration for allToJson method.');
+            reason: 'Missing declaration for toJsonForProtocol method.');
       });
     }, skip: maybeClassNamedExample == null);
   });
@@ -136,6 +145,16 @@ void main() {
             ),
             isTrue,
             reason: 'Missing extends clause for TableRow.');
+      });
+
+      test('implements ProtocolSerialization', () {
+        expect(
+            CompilationUnitHelpers.hasImplementsClause(
+              maybeClassNamedExample!,
+              name: 'ProtocolSerialization',
+            ),
+            isTrue,
+            reason: 'Missing implements clause for ProtocolSerialization.');
       });
 
       group('has a constructor', () {
@@ -524,16 +543,16 @@ void main() {
               reason: 'Field declaration missing for $fieldName.');
         });
 
-        test('has a allToJson that uses hidden class variable.', () {
-          var maybeAllToJson = CompilationUnitHelpers.tryFindMethodDeclaration(
+        test('has a toJson that uses hidden class variable.', () {
+          var maybeToJson = CompilationUnitHelpers.tryFindMethodDeclaration(
             maybeClassNamedExample!,
-            name: 'allToJson',
+            name: 'toJson',
           );
 
-          expect(maybeAllToJson, isNotNull,
-              reason: 'Missing declaration for allToJson method.');
-          expect(maybeAllToJson!.toSource(),
-              contains('\'$fieldName\' : _$fieldName'),
+          expect(maybeToJson, isNotNull,
+              reason: 'Missing declaration for toJson method.');
+          expect(
+              maybeToJson!.toSource(), contains('\'$fieldName\' : _$fieldName'),
               reason:
                   'Missing use of hidden class variable in setColumn method.');
         });

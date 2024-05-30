@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'dart:typed_data' as _i3;
 
-abstract class ObjectWithMaps extends _i1.SerializableEntity {
+abstract class ObjectWithMaps implements _i1.SerializableModel {
   ObjectWithMaps._({
     required this.dataMap,
     required this.intMap,
@@ -195,6 +195,11 @@ abstract class ObjectWithMaps extends _i1.SerializableEntity {
           nullableUuidMap.toJson(valueToJson: (v) => v?.toJson()),
       'intIntMap': intIntMap.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

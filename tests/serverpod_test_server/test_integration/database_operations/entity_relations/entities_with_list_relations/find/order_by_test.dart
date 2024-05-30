@@ -31,7 +31,7 @@ void main() async {
         Person(name: 'Isak'),
         Person(name: 'Alex'),
       ]);
-      // Attach Tom, Jane and John to San Fransisco
+      // Attach Tom, Jane and John to San Francisco
       await City.db.attach.citizens(session, cities[1], people.sublist(0, 3));
       // Attach Viktor, Isak and Alex to Stockholm
       await City.db.attach.citizens(session, cities[0], people.sublist(3, 6));
@@ -47,7 +47,7 @@ void main() async {
       // Attach Serverpod to Stockholm
       await City.db.attachRow
           .organizations(session, cities[0], organizations[2]);
-      // Attach Apple and Google to San Fransisco
+      // Attach Apple and Google to San Francisco
       await City.db.attach
           .organizations(session, cities[1], organizations.sublist(0, 2));
       // Attach Barclays and BBC to London

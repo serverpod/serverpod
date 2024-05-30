@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class UniqueData extends _i1.SerializableEntity {
+abstract class UniqueData implements _i1.SerializableModel {
   UniqueData._({
     this.id,
     required this.number,
@@ -52,6 +52,11 @@ abstract class UniqueData extends _i1.SerializableEntity {
       'number': number,
       'email': email,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

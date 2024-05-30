@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-abstract class BulkData extends _i1.SerializableEntity {
+abstract class BulkData implements _i1.SerializableModel {
   BulkData._({
     required this.tableDefinition,
     required this.data,
@@ -44,6 +44,11 @@ abstract class BulkData extends _i1.SerializableEntity {
       'tableDefinition': tableDefinition.toJson(),
       'data': data,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

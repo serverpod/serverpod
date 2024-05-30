@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../protocol.dart' as _i2;
 
-abstract class Blocking extends _i1.TableRow {
+abstract class Blocking extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   Blocking._({
     int? id,
     required this.blockedId,
@@ -78,13 +79,13 @@ abstract class Blocking extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'blockedId': blockedId,
-      if (blocked != null) 'blocked': blocked?.allToJson(),
+      if (blocked != null) 'blocked': blocked?.toJsonForProtocol(),
       'blockedById': blockedById,
-      if (blockedBy != null) 'blockedBy': blockedBy?.allToJson(),
+      if (blockedBy != null) 'blockedBy': blockedBy?.toJsonForProtocol(),
     };
   }
 
@@ -116,6 +117,11 @@ abstract class Blocking extends _i1.TableRow {
       orderByList: orderByList?.call(Blocking.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

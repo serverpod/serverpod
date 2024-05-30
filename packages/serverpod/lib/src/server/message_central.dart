@@ -4,7 +4,7 @@ import 'package:serverpod/serverpod.dart';
 
 /// The callback used by listeners of the [MessageCentral].
 typedef MessageCentralListenerCallback = void Function(
-    SerializableEntity message);
+    SerializableModel message);
 
 /// The [MessageCentral] handles communication within the server, and between
 /// servers in a cluster. It is especially useful when working with streaming
@@ -28,7 +28,7 @@ class MessageCentral {
   /// could not be established.
   Future<int> postMessage(
     String channelName,
-    SerializableEntity message, {
+    SerializableModel message, {
     bool global = false,
   }) async {
     if (global) {
@@ -102,7 +102,7 @@ class MessageCentral {
     if (messageObj == null) {
       return;
     }
-    postMessage(channelName, messageObj as SerializableEntity, global: false);
+    postMessage(channelName, messageObj as SerializableModel, global: false);
   }
 
   /// Removes a listener from a named channel.

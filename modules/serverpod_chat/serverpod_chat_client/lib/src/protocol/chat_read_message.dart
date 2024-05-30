@@ -10,8 +10,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-/// Message to notifiy the server that messages have been read.
-abstract class ChatReadMessage extends _i1.SerializableEntity {
+/// Message to notify the server that messages have been read.
+abstract class ChatReadMessage implements _i1.SerializableModel {
   ChatReadMessage._({
     this.id,
     required this.channel,
@@ -63,6 +63,11 @@ abstract class ChatReadMessage extends _i1.SerializableEntity {
       'userId': userId,
       'lastReadMessageId': lastReadMessageId,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

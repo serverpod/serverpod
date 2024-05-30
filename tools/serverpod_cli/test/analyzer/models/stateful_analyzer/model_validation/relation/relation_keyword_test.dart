@@ -353,39 +353,6 @@ void main() {
   });
 
   test(
-    'Given a class with a field with a relation and parent keyword, then an error is collected that they are mutually exclusive key.',
-    () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
-          class: Example
-          table: example
-          fields:
-            parentId: int, relation(parent=example), parent=example
-          ''',
-        ).build()
-      ];
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      );
-      analyzer.validateAll();
-
-      expect(
-        collector.errors,
-        isNotEmpty,
-        reason: 'Expected an error',
-      );
-      expect(
-        collector.errors.first.message,
-        'The "parent" property is mutually exclusive with the "relation" property.',
-      );
-    },
-  );
-
-  test(
     'Given a class with a field with a relation, but the parent keyword defined twice, then an error is collected that locates the second parent key.',
     () {
       var models = [

@@ -6,6 +6,7 @@ import 'package:serverpod/src/database/concepts/order.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/concepts/database_result.dart';
+import 'package:serverpod/src/database/query_parameters.dart';
 
 import '../server/session.dart';
 import 'adapters/postgres/database_connection.dart';
@@ -206,39 +207,49 @@ class Database {
 
   /// Executes a single SQL query. A [List] of rows represented of another
   /// [List] with columns will be returned.
-  /// You are responsible to sanitize the query to avoid SQL injection.
+  ///
+  /// You are responsible to sanitize the query to avoid SQL injection. Always
+  /// use QueryParameters for passing values to SQL queries.
   Future<DatabaseResult> unsafeQuery(
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
+    QueryParameters? parameters,
   }) async {
     return _databaseConnection.query(
       _session,
       query,
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
+      parameters: parameters,
     );
   }
 
   /// Executes a single SQL query. Returns the number of rows that were affected
   /// by the query.
-  /// You are responsible to sanitize the query to avoid SQL injection.
+  ///
+  /// You are responsible to sanitize the query to avoid SQL injection. Always
+  /// use QueryParameters for passing values to SQL queries.
   Future<int> unsafeExecute(
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
+    QueryParameters? parameters,
   }) async {
     return _databaseConnection.execute(
       _session,
       query,
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
+      parameters: parameters,
     );
   }
 
   /// Executes a single SQL query in simple query mode.
   /// A [List] of rows represented of another [List] with columns will be
   /// returned.
+  ///
+  /// The simple query protocol does not support parameter binding.
   /// You are responsible to sanitize the query to avoid SQL injection.
   ///
   /// Simple query mode is useful for queries that contain multiple statements.
@@ -257,6 +268,8 @@ class Database {
 
   /// Executes a single SQL query in simple query mode.
   /// Returns the number of rows that were affected by the query.
+  ///
+  /// The simple query protocol does not support parameter binding.
   /// You are responsible to sanitize the query to avoid SQL injection.
   ///
   /// Simple query mode is useful for queries that contain multiple statements.

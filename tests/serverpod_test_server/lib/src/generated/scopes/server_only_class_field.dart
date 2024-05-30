@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class ServerOnlyClassField extends _i1.SerializableEntity {
+abstract class ServerOnlyClassField
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ServerOnlyClassField._({
     this.serverOnlyClassList,
     this.serverOnlyClassMap,
@@ -48,19 +49,24 @@ abstract class ServerOnlyClassField extends _i1.SerializableEntity {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      if (serverOnlyClassList != null)
+        'serverOnlyClassList':
+            serverOnlyClassList?.toJson(valueToJson: (v) => v.toJson()),
+      if (serverOnlyClassMap != null)
+        'serverOnlyClassMap':
+            serverOnlyClassMap?.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {};
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {
-      if (serverOnlyClassList != null)
-        'serverOnlyClassList':
-            serverOnlyClassList?.toJson(valueToJson: (v) => v.allToJson()),
-      if (serverOnlyClassMap != null)
-        'serverOnlyClassMap':
-            serverOnlyClassMap?.toJson(valueToJson: (v) => v.allToJson()),
-    };
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

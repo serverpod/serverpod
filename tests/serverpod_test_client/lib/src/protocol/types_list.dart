@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
 
-abstract class TypesList extends _i1.SerializableEntity {
+abstract class TypesList implements _i1.SerializableModel {
   TypesList._({
     this.anInt,
     this.aBool,
@@ -52,7 +52,7 @@ abstract class TypesList extends _i1.SerializableEntity {
       aBool:
           (jsonSerialization['aBool'] as List?)?.map((e) => e as bool).toList(),
       aDouble: (jsonSerialization['aDouble'] as List?)
-          ?.map((e) => e as double)
+          ?.map((e) => (e as num).toDouble())
           .toList(),
       aDateTime: (jsonSerialization['aDateTime'] as List?)
           ?.map((e) => _i1.DateTimeJsonExtension.fromJson(e))
@@ -161,6 +161,11 @@ abstract class TypesList extends _i1.SerializableEntity {
         'aList': aList?.toJson(
             valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

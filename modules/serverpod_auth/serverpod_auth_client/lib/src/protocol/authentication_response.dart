@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Provides a response to an authentication attempt.
-abstract class AuthenticationResponse extends _i1.SerializableEntity {
+abstract class AuthenticationResponse implements _i1.SerializableModel {
   AuthenticationResponse._({
     required this.success,
     this.key,
@@ -79,6 +79,11 @@ abstract class AuthenticationResponse extends _i1.SerializableEntity {
       if (userInfo != null) 'userInfo': userInfo?.toJson(),
       if (failReason != null) 'failReason': failReason?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

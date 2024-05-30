@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
 /// Defines an element of an index.
-abstract class IndexElementDefinition extends _i1.SerializableEntity {
+abstract class IndexElementDefinition
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   IndexElementDefinition._({
     required this.type,
     required this.definition,
@@ -51,11 +52,16 @@ abstract class IndexElementDefinition extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'type': type.toJson(),
       'definition': definition,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for a Google refresh token.
-abstract class GoogleRefreshToken extends _i1.TableRow {
+abstract class GoogleRefreshToken extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   GoogleRefreshToken._({
     int? id,
     required this.userId,
@@ -39,7 +40,7 @@ abstract class GoogleRefreshToken extends _i1.TableRow {
   /// The user id associated with the token.
   int userId;
 
-  /// The token iteself.
+  /// The token itself.
   String refreshToken;
 
   @override
@@ -60,7 +61,7 @@ abstract class GoogleRefreshToken extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'userId': userId,
@@ -90,6 +91,11 @@ abstract class GoogleRefreshToken extends _i1.TableRow {
       orderByList: orderByList?.call(GoogleRefreshToken.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -136,7 +142,7 @@ class GoogleRefreshTokenTable extends _i1.Table {
   /// The user id associated with the token.
   late final _i1.ColumnInt userId;
 
-  /// The token iteself.
+  /// The token itself.
   late final _i1.ColumnString refreshToken;
 
   @override

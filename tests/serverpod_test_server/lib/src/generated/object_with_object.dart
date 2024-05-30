@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class ObjectWithObject extends _i1.TableRow {
+abstract class ObjectWithObject extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   ObjectWithObject._({
     int? id,
     required this.data,
@@ -109,20 +110,21 @@ abstract class ObjectWithObject extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
-      'data': data.allToJson(),
-      if (nullableData != null) 'nullableData': nullableData?.allToJson(),
-      'dataList': dataList.toJson(valueToJson: (v) => v.allToJson()),
+      'data': data.toJsonForProtocol(),
+      if (nullableData != null)
+        'nullableData': nullableData?.toJsonForProtocol(),
+      'dataList': dataList.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       if (nullableDataList != null)
         'nullableDataList':
-            nullableDataList?.toJson(valueToJson: (v) => v.allToJson()),
-      'listWithNullableData':
-          listWithNullableData.toJson(valueToJson: (v) => v?.allToJson()),
+            nullableDataList?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'listWithNullableData': listWithNullableData.toJson(
+          valueToJson: (v) => v?.toJsonForProtocol()),
       if (nullableListWithNullableData != null)
         'nullableListWithNullableData': nullableListWithNullableData?.toJson(
-            valueToJson: (v) => v?.allToJson()),
+            valueToJson: (v) => v?.toJsonForProtocol()),
     };
   }
 
@@ -148,6 +150,11 @@ abstract class ObjectWithObject extends _i1.TableRow {
       orderByList: orderByList?.call(ObjectWithObject.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

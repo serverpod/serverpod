@@ -10,8 +10,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class FileNotFoundException extends _i1.SerializableEntity
-    implements _i1.SerializableException {
+abstract class FileNotFoundException
+    implements _i1.SerializableException, _i1.SerializableModel {
   FileNotFoundException._({required this.message});
 
   factory FileNotFoundException({required String message}) =
@@ -29,6 +29,11 @@ abstract class FileNotFoundException extends _i1.SerializableEntity
   @override
   Map<String, dynamic> toJson() {
     return {'message': message};
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

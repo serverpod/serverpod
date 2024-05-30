@@ -414,7 +414,7 @@ void main() async {
   });
 
   test(
-      'Given a list relation when quering with a where clause in the included list then the result only includes the rows satisfying the where clause.',
+      'Given a list relation when querying with a where clause in the included list then the result only includes the rows satisfying the where clause.',
       () async {
     var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
 
@@ -455,7 +455,7 @@ void main() async {
   });
 
   test(
-      'Given a list relation when quering with a orderBy clause in the included list then the result is ordered by the orderBy clause.',
+      'Given a list relation when querying with a orderBy clause in the included list then the result is ordered by the orderBy clause.',
       () async {
     var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
 
@@ -490,7 +490,7 @@ void main() async {
   });
 
   test(
-      'Given a list relation when quering with a orderBy in descending order clause in the included list then the result is ordered by the orderBy clause.',
+      'Given a list relation when querying with a orderBy in descending order clause in the included list then the result is ordered by the orderBy clause.',
       () async {
     var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
 
@@ -525,7 +525,7 @@ void main() async {
   });
 
   test(
-      'Given a list relation when quering with multiple orderBy clauses in the included list then the the result is ordered by all the orderedBy clauses.',
+      'Given a list relation when querying with multiple orderBy clauses in the included list then the the result is ordered by all the orderedBy clauses.',
       () async {
     var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
 

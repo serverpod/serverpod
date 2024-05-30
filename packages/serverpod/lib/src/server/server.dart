@@ -178,6 +178,7 @@ class Server {
     stdout.writeln('$name stopped');
   }
 
+  //TODO: encode analyze
   void _handleRequest(HttpRequest request) async {
     serverpod
         .logVerbose('handleRequest: ${request.method} ${request.uri.path}');
@@ -293,6 +294,7 @@ class Server {
         // TODO: Log to database?
         stderr.writeln('Malformed call: $result');
       }
+
       request.response.statusCode = HttpStatus.badRequest;
       await request.response.close();
       return;
@@ -301,7 +303,11 @@ class Server {
         // TODO: Log to database?
         stderr.writeln('Access denied: $result');
       }
-      request.response.statusCode = HttpStatus.forbidden;
+
+      request.response.statusCode = switch (result.reason) {
+        AuthenticationFailureReason.unauthenticated => HttpStatus.unauthorized,
+        AuthenticationFailureReason.insufficientAccess => HttpStatus.forbidden,
+      };
       await request.response.close();
       return;
     } else if (result is ResultInternalServerError) {
@@ -335,7 +341,9 @@ class Server {
           request.response.add(byteData.buffer.asUint8List());
         }
       } else {
-        var serializedModel = SerializationManager.encode(result.returnValue);
+        var serializedModel = SerializationManager.encodeForProtocol(
+          result.returnValue,
+        );
         request.response.write(serializedModel);
       }
       await request.response.close();
@@ -397,7 +405,11 @@ class Server {
             var args = data['args'] as Map;
 
             if (command == 'ping') {
-              webSocket.add(SerializationManager.encode({'command': 'pong'}));
+              webSocket.add(
+                SerializationManager.encodeForProtocol(
+                  {'command': 'pong'},
+                ),
+              );
             } else if (command == 'auth') {
               var authKey = args['key'] as String?;
               session.updateAuthenticationKey(authKey);
@@ -414,8 +426,12 @@ class Server {
             throw Exception('Endpoint not found: $endpointName');
           }
 
-          var authFailed = await endpoints.canUserAccessEndpoint(
-              session, endpointConnector.endpoint);
+          var endpoint = endpointConnector.endpoint;
+          var authFailed = await EndpointDispatch.canUserAccessEndpoint(
+            () => session.authenticated,
+            endpoint.requireLogin,
+            endpoint.requiredScopes,
+          );
 
           if (authFailed == null) {
             // Process the message.
@@ -423,7 +439,7 @@ class Server {
             dynamic messageError;
             StackTrace? messageStackTrace;
 
-            SerializableEntity? message;
+            SerializableModel? message;
             try {
               session.sessionLogs.currentEndpoint = endpointName;
 
@@ -437,6 +453,10 @@ class Server {
             } catch (e, s) {
               messageError = e;
               messageStackTrace = s;
+              stderr.writeln('${DateTime.now().toUtc()} Internal server error. '
+                  'Uncaught exception in handleStreamMessage.');
+              stderr.writeln('$e');
+              stderr.writeln('$s');
             }
 
             var duration =
@@ -501,11 +521,15 @@ class Server {
   }
 
   Future<void> _callStreamOpened(
-      StreamingSession session, Endpoint endpoint) async {
+    StreamingSession session,
+    Endpoint endpoint,
+  ) async {
     try {
-      // TODO: We need to mark stream as accessbile (in endpoint?) and check
-      // future messages that are passed to this endpoint.
-      var authFailed = await endpoints.canUserAccessEndpoint(session, endpoint);
+      var authFailed = await EndpointDispatch.canUserAccessEndpoint(
+        () => session.authenticated,
+        endpoint.requireLogin,
+        endpoint.requiredScopes,
+      );
       if (authFailed == null) await endpoint.streamOpened(session);
     } catch (e) {
       return;
@@ -513,9 +537,15 @@ class Server {
   }
 
   Future<void> _callStreamClosed(
-      StreamingSession session, Endpoint endpoint) async {
+    StreamingSession session,
+    Endpoint endpoint,
+  ) async {
     try {
-      var authFailed = await endpoints.canUserAccessEndpoint(session, endpoint);
+      var authFailed = await EndpointDispatch.canUserAccessEndpoint(
+        () => session.authenticated,
+        endpoint.requireLogin,
+        endpoint.requiredScopes,
+      );
       if (authFailed == null) await endpoint.streamClosed(session);
     } catch (e) {
       return;

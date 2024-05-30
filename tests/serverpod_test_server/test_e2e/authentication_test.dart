@@ -1,3 +1,4 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_key_manager.dart';
@@ -36,11 +37,7 @@ void main() {
         }
       }
 
-      // Only perform the check for dart:io. On web -1 will be returned as
-      // failing status codes cannot be detected.
-      if (!identical(0, 0.0)) {
-        expect(statusCode, equals(403));
-      }
+      expect(statusCode, equals(401));
     });
 
     test('Authenticate with incorrect credentials', () async {
@@ -87,11 +84,7 @@ void main() {
         }
       }
 
-      // Only perform the check for dart:io. On web -1 will be returned as
-      // failing status codes cannot be detected.
-      if (!identical(0, 0.0)) {
-        expect(statusCode, equals(403));
-      }
+      expect(statusCode, equals(401));
     });
   });
 
@@ -114,6 +107,69 @@ void main() {
 
       // We should not have added any new users
       expect(newUserCount - oldUserCount, equals(0));
+    });
+  });
+
+  group('Given signed in user without "admin" scope', () {
+    setUp(() async {
+      var response = await client.authentication.authenticate(
+        'test@foo.bar',
+        'password',
+      );
+      assert(response.success, 'Failed to authenticate user');
+      await client.authenticationKeyManager
+          ?.put('${response.keyId}:${response.key}');
+      assert(
+          await client.modules.auth.status.isSignedIn(), 'Failed to sign in');
+    });
+
+    tearDown(() async {
+      await client.authenticationKeyManager?.remove();
+      await client.authentication.removeAllUsers();
+      await client.authentication.signOut();
+      assert(
+        await client.modules.auth.status.isSignedIn() == false,
+        'Still signed in after teardown',
+      );
+    });
+    test(
+        'when accessing endpoint that requires "admin" scope then 403 is returned.',
+        () async {
+      expectLater(
+          client.adminScopeRequired.testMethod(),
+          throwsA(isA<ServerpodClientException>()
+              .having((e) => e.statusCode, 'statusCode', 403)));
+    });
+  });
+
+  group('Given signed in user with "admin" scope', () {
+    setUp(() async {
+      var response = await client.authentication.authenticate(
+        'test@foo.bar',
+        'password',
+        [Scope.admin.name!],
+      );
+      assert(response.success, 'Failed to authenticate user');
+      await client.authenticationKeyManager
+          ?.put('${response.keyId}:${response.key}');
+      assert(
+          await client.modules.auth.status.isSignedIn(), 'Failed to sign in');
+    });
+
+    tearDown(() async {
+      await client.authenticationKeyManager?.remove();
+      await client.authentication.removeAllUsers();
+      await client.authentication.signOut();
+      assert(
+        await client.modules.auth.status.isSignedIn() == false,
+        'Still signed in after teardown',
+      );
+    });
+    test(
+        'when accessing endpoint that requires "admin" scope then request is successful.',
+        () async {
+      var result = await client.adminScopeRequired.testMethod();
+      expect(result, equals(true));
     });
   });
 }

@@ -156,8 +156,13 @@ class SerializableModelLibraryGenerator {
 
         classBuilder.methods.add(_buildModelClassTableGetter());
       } else {
-        classBuilder.extend =
-            refer('SerializableEntity', serverpodUrl(serverCode));
+        classBuilder.implements
+            .add(refer('SerializableModel', serverpodUrl(serverCode)));
+      }
+
+      if (serverCode) {
+        classBuilder.implements
+            .add(refer('ProtocolSerialization', serverpodUrl(serverCode)));
       }
 
       classBuilder.fields.addAll(_buildModelClassFields(
@@ -188,7 +193,8 @@ class SerializableModelLibraryGenerator {
 
       // Serialization for database and everything
       if (serverCode) {
-        classBuilder.methods.add(_buildModelClassAllToJsonMethod(fields));
+        classBuilder.methods
+            .add(_buildModelClassToJsonForProtocolMethod(fields));
 
         if (tableName != null) {
           classBuilder.methods.addAll([
@@ -203,6 +209,8 @@ class SerializableModelLibraryGenerator {
           ]);
         }
       }
+
+      classBuilder.methods.add(_buildToStringMethod(serverCode));
     });
   }
 
@@ -322,13 +330,13 @@ class SerializableModelLibraryGenerator {
         }))
         ..methods.add(Method((methodBuilder) {
           methodBuilder
-            ..name = 'allToJson'
+            ..name = 'toJson'
             ..annotations.add(refer('override'))
             ..returns = refer('Map<String, dynamic>')
             ..body = Block((blockBuilder) {
               blockBuilder.statements.add(
                 refer('var jsonMap')
-                    .assign(refer('super').property('allToJson').call([]))
+                    .assign(refer('super').property('toJson').call([]))
                     .statement,
               );
 
@@ -617,31 +625,64 @@ class SerializableModelLibraryGenerator {
     );
   }
 
-  Method _buildModelClassAllToJsonMethod(
-      List<SerializableModelFieldDefinition> fields) {
-    return Method(
-      (m) {
-        m.returns = refer('Map<String,dynamic>');
-        m.name = 'allToJson';
-        m.annotations.add(refer('override'));
-
-        m.body = _createToJsonBodyFromFields(fields, 'allToJson');
-      },
-    );
-  }
-
   Method _buildModelClassToJsonMethod(
-    List<SerializableModelFieldDefinition> fields,
-  ) {
+      Iterable<SerializableModelFieldDefinition> fields) {
     return Method(
       (m) {
         m.returns = refer('Map<String,dynamic>');
         m.name = 'toJson';
         m.annotations.add(refer('override'));
 
+        var filteredFields = fields;
+
+        // since the [toJson] method is included both on server and client side models,
+        // on the client side the server-only fields are missing and we should not
+        // generate serialization for these fields.
+        if (!serverCode) {
+          filteredFields =
+              fields.where((field) => field.shouldSerializeField(serverCode));
+        }
+
+        m.body = _createToJsonBodyFromFields(filteredFields, 'toJson');
+      },
+    );
+  }
+
+  Method _buildModelClassToJsonForProtocolMethod(
+    Iterable<SerializableModelFieldDefinition> fields,
+  ) {
+    return Method(
+      (m) {
+        m.returns = refer('Map<String,dynamic>');
+        m.name = 'toJsonForProtocol';
+        m.annotations.add(refer('override'));
+
         var filteredFields =
             fields.where((field) => field.shouldSerializeField(serverCode));
-        m.body = _createToJsonBodyFromFields(filteredFields, 'toJson');
+
+        m.body =
+            _createToJsonBodyFromFields(filteredFields, 'toJsonForProtocol');
+      },
+    );
+  }
+
+  Method _buildToStringMethod(
+    bool serverCode,
+  ) {
+    return Method(
+      (m) {
+        m.returns = refer('String');
+        m.name = 'toString';
+        m.annotations.add(refer('override'));
+        m.body = Block.of([
+          const Code('return '),
+          refer('SerializationManager', serverpodUrl(serverCode))
+              .property('encode')
+              .call(
+            [refer('this')],
+          ).code,
+          const Code(';'),
+        ]);
       },
     );
   }
@@ -1615,7 +1656,8 @@ class SerializableModelLibraryGenerator {
         Enum((e) {
           e.name = enumDefinition.className;
           e.docs.addAll(enumDefinition.documentation ?? []);
-          e.mixins.add(refer('SerializableEntity', serverpodUrl(serverCode)));
+          e.implements
+              .add(refer('SerializableModel', serverpodUrl(serverCode)));
           e.values.addAll([
             for (var value in enumDefinition.values)
               EnumValue((v) {
@@ -1666,7 +1708,15 @@ class SerializableModelLibraryGenerator {
           ..name = 'toJson'
           ..lambda = true
           ..body = refer('index').code,
-      )
+      ),
+      Method(
+        (m) => m
+          ..annotations.add(refer('override'))
+          ..returns = refer('String')
+          ..name = 'toString'
+          ..lambda = true
+          ..body = refer('name').code,
+      ),
     ];
   }
 
@@ -1704,8 +1754,8 @@ class SerializableModelLibraryGenerator {
           ..returns = refer('String')
           ..name = 'toString'
           ..lambda = true
-          ..body = refer('toJson').call([]).code,
-      )
+          ..body = refer('name').code,
+      ),
     ];
   }
 

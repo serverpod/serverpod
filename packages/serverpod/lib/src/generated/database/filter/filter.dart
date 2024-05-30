@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class Filter extends _i1.SerializableEntity {
+abstract class Filter
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Filter._({
     required this.name,
     required this.table,
@@ -57,12 +58,18 @@ abstract class Filter extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'name': name,
       'table': table,
-      'constraints': constraints.toJson(valueToJson: (v) => v.allToJson()),
+      'constraints':
+          constraints.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

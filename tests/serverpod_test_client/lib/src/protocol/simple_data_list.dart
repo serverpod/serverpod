@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
-abstract class SimpleDataList extends _i1.SerializableEntity {
+abstract class SimpleDataList implements _i1.SerializableModel {
   SimpleDataList._({required this.rows});
 
   factory SimpleDataList({required List<_i2.SimpleData> rows}) =
@@ -30,6 +30,11 @@ abstract class SimpleDataList extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {'rows': rows.toJson(valueToJson: (v) => v.toJson())};
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
