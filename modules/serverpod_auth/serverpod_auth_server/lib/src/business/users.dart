@@ -11,6 +11,7 @@ class Users {
     Session session,
     UserInfo userInfo, [
     String? authMethod,
+    bool manageOnUserCreated = true,
   ]) async {
     if (AuthConfig.current.onUserWillBeCreated != null) {
       var approved = await AuthConfig.current.onUserWillBeCreated!(
@@ -23,7 +24,7 @@ class Users {
 
     userInfo = await UserInfo.db.insertRow(session, userInfo);
     if (userInfo.id != null) {
-      if (AuthConfig.current.onUserCreated != null) {
+      if (AuthConfig.current.onUserCreated != null && manageOnUserCreated) {
         await AuthConfig.current.onUserCreated!(session, userInfo);
       }
       return userInfo;

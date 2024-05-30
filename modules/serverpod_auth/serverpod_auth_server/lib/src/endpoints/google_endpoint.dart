@@ -67,7 +67,14 @@ class GoogleEndpoint extends Endpoint {
 
     email = email.toLowerCase();
 
-    var userInfo = await _setupUserInfo(session, email, name, fullName, image);
+    var userInfo = await _setupUserInfo(
+      session,
+      email,
+      name,
+      fullName,
+      image,
+      false,
+    );
 
     if (userInfo == null) {
       return AuthenticationResponse(
@@ -98,6 +105,8 @@ class GoogleEndpoint extends Endpoint {
         await GoogleRefreshToken.db.updateRow(session, token);
       }
     }
+
+    await AuthConfig.current.onUserCreated?.call(session, userInfo);
 
     var authKey = await UserAuthentication.signInUser(
       session,
@@ -180,7 +189,6 @@ class GoogleEndpoint extends Endpoint {
       }
 
       // Authentication looks ok!
-
       var authKey = await UserAuthentication.signInUser(
         session,
         userInfo.id!,
@@ -205,8 +213,14 @@ class GoogleEndpoint extends Endpoint {
     }
   }
 
-  Future<UserInfo?> _setupUserInfo(Session session, String email, String name,
-      String fullName, String? image) async {
+  Future<UserInfo?> _setupUserInfo(
+    Session session,
+    String email,
+    String name,
+    String fullName,
+    String? image, [
+    bool handleOnUserCreated = true,
+  ]) async {
     var userInfo = await Users.findUserByEmail(session, email);
     if (userInfo == null) {
       userInfo = UserInfo(
@@ -218,7 +232,12 @@ class GoogleEndpoint extends Endpoint {
         created: DateTime.now().toUtc(),
         scopeNames: [],
       );
-      userInfo = await Users.createUser(session, userInfo, _authMethod);
+      userInfo = await Users.createUser(
+        session,
+        userInfo,
+        _authMethod,
+        handleOnUserCreated,
+      );
 
       // Set the user image.
       if (userInfo?.id != null && image != null) {
