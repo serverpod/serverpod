@@ -73,7 +73,27 @@ class GoogleEndpoint extends Endpoint {
       name,
       fullName,
       image,
-      false,
+      (session, userInfo) async {
+        if (authClient.credentials.refreshToken != null) {
+          // Store refresh token, so that we can access this data at a later time.
+          var token = await GoogleRefreshToken.db.findFirstRow(
+            session,
+            where: (t) => t.userId.equals(userInfo.id!),
+          );
+          if (token == null) {
+            token = GoogleRefreshToken(
+              userId: userInfo.id!,
+              refreshToken: jsonEncode(authClient.credentials.toJson()),
+            );
+            await GoogleRefreshToken.db.insertRow(session, token);
+          } else {
+            token.refreshToken = jsonEncode(authClient.credentials.toJson());
+            await GoogleRefreshToken.db.updateRow(session, token);
+          }
+        }
+
+        await AuthConfig.current.onUserCreated?.call(session, userInfo);
+      },
     );
 
     if (userInfo == null) {
@@ -87,26 +107,6 @@ class GoogleEndpoint extends Endpoint {
         failReason: AuthenticationFailReason.blocked,
       );
     }
-
-    if (authClient.credentials.refreshToken != null) {
-      // Store refresh token, so that we can access this data at a later time.
-      var token = await GoogleRefreshToken.db.findFirstRow(
-        session,
-        where: (t) => t.userId.equals(userInfo.id!),
-      );
-      if (token == null) {
-        token = GoogleRefreshToken(
-          userId: userInfo.id!,
-          refreshToken: jsonEncode(authClient.credentials.toJson()),
-        );
-        await GoogleRefreshToken.db.insertRow(session, token);
-      } else {
-        token.refreshToken = jsonEncode(authClient.credentials.toJson());
-        await GoogleRefreshToken.db.updateRow(session, token);
-      }
-    }
-
-    await AuthConfig.current.onUserCreated?.call(session, userInfo);
 
     var authKey = await UserAuthentication.signInUser(
       session,
@@ -219,7 +219,7 @@ class GoogleEndpoint extends Endpoint {
     String name,
     String fullName,
     String? image, [
-    bool handleOnUserCreated = true,
+    UserInfoUpdateCallback? onUserCreatedOverride,
   ]) async {
     var userInfo = await Users.findUserByEmail(session, email);
     if (userInfo == null) {
@@ -236,7 +236,8 @@ class GoogleEndpoint extends Endpoint {
         session,
         userInfo,
         _authMethod,
-        handleOnUserCreated,
+        null,
+        onUserCreatedOverride,
       );
 
       // Set the user image.
