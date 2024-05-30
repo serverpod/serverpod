@@ -334,11 +334,11 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// notifies listeners.
   void _notifyWebSocketConnectionStatusListeners() {
     var currStreamingConnectionStatus = streamingConnectionStatus;
-    if (currStreamingConnectionStatus != _prevStreamingConnectionStatus) {
-      _prevStreamingConnectionStatus = currStreamingConnectionStatus;
-      for (var listener in _websocketConnectionStatusListeners) {
-        listener();
-      }
+    if (currStreamingConnectionStatus == _prevStreamingConnectionStatus) return;
+
+    _prevStreamingConnectionStatus = currStreamingConnectionStatus;
+    for (var listener in _websocketConnectionStatusListeners) {
+      listener();
     }
   }
 
