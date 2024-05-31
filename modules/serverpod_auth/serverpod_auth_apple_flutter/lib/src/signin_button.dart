@@ -19,11 +19,13 @@ class SignInWithAppleButton extends StatefulWidget {
   /// The style of the button.
   final ButtonStyle? style;
 
-  /// The label widget of the button.
-  final Widget? label;
-
-  /// The icon widget of the button.
-  final Widget? icon;
+  /// The text widget's label
+  ///
+  /// Be sure to respect the Apple branding guidelines: https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple#Creating-a-custom-Sign-in-with-Apple-button
+  /// Or your app may be rejected.
+  ///
+  /// Default to `Sign in with Apple`
+  final String? label;
 
   /// Creates a new Sign in with Google button.
   const SignInWithAppleButton({
@@ -32,7 +34,6 @@ class SignInWithAppleButton extends StatefulWidget {
     this.onFailure,
     this.style,
     this.label,
-    this.icon,
     super.key,
   });
 
@@ -74,8 +75,8 @@ class SignInWithAppleButtonState extends State<SignInWithAppleButton> {
             // Pop the loading barrier
             navigator.pop());
       },
-      label: widget.label ?? const Text('Sign in with Apple'),
-      icon: widget.icon ?? const Icon(MdiIcons.apple),
+      label: Text(widget.label ?? 'Sign in with Apple'),
+      icon: const Icon(MdiIcons.apple),
     );
   }
 }
