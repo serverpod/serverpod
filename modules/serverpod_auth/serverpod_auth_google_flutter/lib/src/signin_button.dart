@@ -36,6 +36,14 @@ class SignInWithGoogleButton extends StatefulWidget {
   /// Redirect Uri as setup in Google console.
   final Uri redirectUri;
 
+  /// The text widget's label
+  ///
+  /// Be sure to respect the Google branding guidelines: https://developers.google.com/identity/branding-guidelines
+  /// Or your app may be rejected.
+  ///
+  /// Default to `Sign in with Google`
+  final String? label;
+
   /// Creates a new Sign in with Google button.
   const SignInWithGoogleButton({
     required this.caller,
@@ -47,6 +55,7 @@ class SignInWithGoogleButton extends StatefulWidget {
     this.style,
     this.additionalScopes = const [],
     this.alignment = Alignment.centerLeft,
+    this.label,
     required this.redirectUri,
     super.key,
   });
@@ -94,7 +103,7 @@ class SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
             // Pop the loading barrier
             navigator.pop());
       },
-      label: const Text('Sign in with Google'),
+      label: Text(widget.label ?? 'Sign in with Google'),
       icon: Image.asset(
         'assets/google-icon.png',
         package: 'serverpod_auth_google_flutter',
