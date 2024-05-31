@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class PersonWithLongTableName extends _i1.SerializableEntity {
+abstract class PersonWithLongTableName implements _i1.SerializableModel {
   PersonWithLongTableName._({
     this.id,
     required this.name,
@@ -64,6 +64,11 @@ abstract class PersonWithLongTableName extends _i1.SerializableEntity {
       if (organizationId != null) 'organizationId': organizationId,
       if (organization != null) 'organization': organization?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

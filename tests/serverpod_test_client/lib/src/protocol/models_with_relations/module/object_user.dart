@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i2;
 
-abstract class ObjectUser extends _i1.SerializableEntity {
+abstract class ObjectUser implements _i1.SerializableModel {
   ObjectUser._({
     this.id,
     this.name,
@@ -63,6 +63,11 @@ abstract class ObjectUser extends _i1.SerializableEntity {
       'userInfoId': userInfoId,
       if (userInfo != null) 'userInfo': userInfo?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

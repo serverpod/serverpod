@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 abstract final class TokenListenerServer {
   static Future<String?> listenForAuthenticationToken({

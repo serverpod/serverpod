@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class BulkQueryResult extends _i1.SerializableEntity {
+abstract class BulkQueryResult
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   BulkQueryResult._({
     required this.headers,
     required this.data,
@@ -65,13 +66,18 @@ abstract class BulkQueryResult extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'headers': headers.toJson(valueToJson: (v) => v.allToJson()),
+      'headers': headers.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'data': data,
       'numAffectedRows': numAffectedRows,
       'duration': duration.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-enum EnumSerialization with _i1.SerializableEntity {
+enum EnumSerialization implements _i1.SerializableModel {
   byName,
   byIndex;
 
@@ -28,4 +28,6 @@ enum EnumSerialization with _i1.SerializableEntity {
 
   @override
   int toJson() => index;
+  @override
+  String toString() => name;
 }

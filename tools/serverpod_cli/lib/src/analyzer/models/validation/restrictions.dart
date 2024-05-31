@@ -1,6 +1,7 @@
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
+import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
@@ -9,12 +10,11 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
-import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
-
 import 'model_relations.dart';
 
 const _globallyRestrictedKeywords = [
   'toJson',
+  'toJsonForProtocol',
   'fromJson',
   'toString',
   'hashCode',
@@ -93,7 +93,6 @@ const _databaseModelReservedFieldNames = [
   'findSingleRow',
   'find',
   'setColumn',
-  'allToJson',
   'toJsonForDatabase',
   'tableName',
   'include',
@@ -886,7 +885,7 @@ class Restrictions {
     var missingFieldErrors = indexFields
         .where((field) => !validDatabaseFieldNames.contains(field))
         .map((field) => SourceSpanSeverityException(
-              'The field name "$field" is not added to the class or has an api scope.',
+              'The field name "$field" is not added to the class or has an !persist scope.',
               span,
             ));
 

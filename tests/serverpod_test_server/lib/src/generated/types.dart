@@ -13,7 +13,7 @@ import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class Types extends _i1.TableRow {
+abstract class Types extends _i1.TableRow implements _i1.ProtocolSerialization {
   Types._({
     int? id,
     this.anInt,
@@ -47,7 +47,7 @@ abstract class Types extends _i1.TableRow {
       id: jsonSerialization['id'] as int?,
       anInt: jsonSerialization['anInt'] as int?,
       aBool: jsonSerialization['aBool'] as bool?,
-      aDouble: jsonSerialization['aDouble'] as double?,
+      aDouble: (jsonSerialization['aDouble'] as num?)?.toDouble(),
       aDateTime: jsonSerialization['aDateTime'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['aDateTime']),
@@ -130,7 +130,7 @@ abstract class Types extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       if (anInt != null) 'anInt': anInt,
@@ -169,6 +169,11 @@ abstract class Types extends _i1.TableRow {
       orderByList: orderByList?.call(Types.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

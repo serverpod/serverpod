@@ -10,7 +10,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class LongImplicitIdField extends _i1.TableRow {
+abstract class LongImplicitIdField extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   LongImplicitIdField._({
     int? id,
     required this.name,
@@ -48,18 +49,18 @@ abstract class LongImplicitIdField extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'name': name,
-    };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      if (id != null) 'id': id,
-      'name': name,
       if (_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id !=
           null)
         '_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id':
             _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      if (id != null) 'id': id,
+      'name': name,
     };
   }
 
@@ -85,6 +86,11 @@ abstract class LongImplicitIdField extends _i1.TableRow {
       orderByList: orderByList?.call(LongImplicitIdField.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -136,8 +142,8 @@ class LongImplicitIdFieldImplicit extends _LongImplicitIdFieldImpl {
   int? $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id;
 
   @override
-  Map<String, dynamic> allToJson() {
-    var jsonMap = super.allToJson();
+  Map<String, dynamic> toJson() {
+    var jsonMap = super.toJson();
     jsonMap.addAll({
       '_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id':
           $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id

@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-abstract class DatabaseMigrationAction extends _i1.SerializableEntity {
+abstract class DatabaseMigrationAction implements _i1.SerializableModel {
   DatabaseMigrationAction._({
     required this.type,
     this.deleteTable,
@@ -65,6 +65,11 @@ abstract class DatabaseMigrationAction extends _i1.SerializableEntity {
       if (alterTable != null) 'alterTable': alterTable?.toJson(),
       if (createTable != null) 'createTable': createTable?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

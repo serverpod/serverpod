@@ -10,8 +10,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-/// Message to notifiy the server that messages have been read.
-abstract class ChatReadMessage extends _i1.TableRow {
+/// Message to notify the server that messages have been read.
+abstract class ChatReadMessage extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   ChatReadMessage._({
     int? id,
     required this.channel,
@@ -68,7 +69,7 @@ abstract class ChatReadMessage extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'channel': channel,
@@ -99,6 +100,11 @@ abstract class ChatReadMessage extends _i1.TableRow {
       orderByList: orderByList?.call(ChatReadMessage.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

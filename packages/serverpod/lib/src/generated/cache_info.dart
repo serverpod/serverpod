@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Provides high level information about a cache.
-abstract class CacheInfo extends _i1.SerializableEntity {
+abstract class CacheInfo
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   CacheInfo._({
     required this.numEntries,
     required this.maxEntries,
@@ -59,12 +60,17 @@ abstract class CacheInfo extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'numEntries': numEntries,
       'maxEntries': maxEntries,
       if (keys != null) 'keys': keys?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

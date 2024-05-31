@@ -5,7 +5,7 @@ yum update -y
 # Install yum packages
 echo "Installing ruby"
 yum install ruby -y
-ehco "Installing wget"
+echo "Installing wget"
 yum install wget -y
 
 # Install Dart

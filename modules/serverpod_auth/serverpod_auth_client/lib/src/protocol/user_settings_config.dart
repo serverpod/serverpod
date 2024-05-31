@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// User settings.
-abstract class UserSettingsConfig extends _i1.SerializableEntity {
+abstract class UserSettingsConfig implements _i1.SerializableModel {
   UserSettingsConfig._({
     required this.canSeeUserName,
     required this.canSeeFullName,
@@ -69,6 +69,11 @@ abstract class UserSettingsConfig extends _i1.SerializableEntity {
       'canEditFullName': canEditFullName,
       'canEditUserImage': canEditUserImage,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

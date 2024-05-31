@@ -1,11 +1,11 @@
 import 'dart:io';
 
+import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as p;
 import 'package:pubspec_parse/pubspec_parse.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
-import 'package:serverpod_cli/src/util/pub_api_client.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 /// The internal tool for analyzing the pubspec.yaml files in the Serverpod
 /// repo.
@@ -48,7 +48,7 @@ Future<void> _checkLatestVersion(
     Map<String, List<_ServerpodDependency>> dependencies) async {
   log.info('Checking latest pub versions.');
   try {
-    var pub = PubApiClient();
+    var pub = PubApiClient(onError: log.error);
     for (var depName in dependencies.keys) {
       var deps = dependencies[depName]!;
       var depVersion = deps.first.version;

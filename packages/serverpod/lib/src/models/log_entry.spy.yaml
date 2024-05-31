@@ -14,7 +14,7 @@ fields:
   ### The id of the server which created this log entry.
   serverId: String
 
-  ### Timpstamp of this log entry.
+  ### Timestamp of this log entry.
   time: DateTime
 
   ### The log level of this entry.

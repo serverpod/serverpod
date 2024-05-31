@@ -12,7 +12,7 @@ class StreamingEndpoint extends Endpoint {
 
   @override
   Future<void> handleStreamMessage(
-      StreamingSession session, SerializableEntity message) async {
+      StreamingSession session, SerializableModel message) async {
     if (message is ModuleClass) {
       unawaited(Future.delayed(const Duration(seconds: 1)).then((value) async {
         await sendStreamMessage(session, message);

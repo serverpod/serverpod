@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
 /// An entry in the database for an uploaded file.
-abstract class CloudStorageEntry extends _i1.SerializableEntity {
+abstract class CloudStorageEntry implements _i1.SerializableModel {
   CloudStorageEntry._({
     this.id,
     required this.storageId,
@@ -92,6 +92,11 @@ abstract class CloudStorageEntry extends _i1.SerializableEntity {
       'byteData': byteData.toJson(),
       'verified': verified,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

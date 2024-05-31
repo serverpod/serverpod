@@ -13,7 +13,8 @@ import 'protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A chunk of chat messages.
-abstract class ChatMessageChunk extends _i1.SerializableEntity {
+abstract class ChatMessageChunk
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ChatMessageChunk._({
     required this.channel,
     required this.messages,
@@ -60,12 +61,17 @@ abstract class ChatMessageChunk extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'channel': channel,
-      'messages': messages.toJson(valueToJson: (v) => v.allToJson()),
+      'messages': messages.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'hasOlderMessages': hasOlderMessages,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

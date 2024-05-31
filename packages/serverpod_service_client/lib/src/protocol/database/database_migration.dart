@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-abstract class DatabaseMigration extends _i1.SerializableEntity {
+abstract class DatabaseMigration implements _i1.SerializableModel {
   DatabaseMigration._({
     required this.actions,
     required this.warnings,
@@ -56,6 +56,11 @@ abstract class DatabaseMigration extends _i1.SerializableEntity {
       'warnings': warnings.toJson(valueToJson: (v) => v.toJson()),
       'migrationApiVersion': migrationApiVersion,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

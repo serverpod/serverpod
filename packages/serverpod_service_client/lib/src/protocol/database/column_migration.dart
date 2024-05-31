@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ColumnMigration extends _i1.SerializableEntity {
+abstract class ColumnMigration implements _i1.SerializableModel {
   ColumnMigration._({
     required this.columnName,
     required this.addNullable,
@@ -63,6 +63,11 @@ abstract class ColumnMigration extends _i1.SerializableEntity {
       'changeDefault': changeDefault,
       if (newDefault != null) 'newDefault': newDefault,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

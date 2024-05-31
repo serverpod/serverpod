@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Information about a server method.
-abstract class MethodInfo extends _i1.SerializableEntity {
+abstract class MethodInfo implements _i1.SerializableModel {
   MethodInfo._({
     this.id,
     required this.endpoint,
@@ -55,6 +55,11 @@ abstract class MethodInfo extends _i1.SerializableEntity {
       'endpoint': endpoint,
       'method': method,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

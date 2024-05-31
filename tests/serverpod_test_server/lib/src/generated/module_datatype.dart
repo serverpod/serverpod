@@ -13,7 +13,8 @@ import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
     as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class ModuleDatatype extends _i1.SerializableEntity {
+abstract class ModuleDatatype
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ModuleDatatype._({
     required this.model,
     required this.list,
@@ -61,12 +62,17 @@ abstract class ModuleDatatype extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
-      'model': model.allToJson(),
-      'list': list.toJson(valueToJson: (v) => v.allToJson()),
-      'map': map.toJson(valueToJson: (v) => v.allToJson()),
+      'model': model.toJsonForProtocol(),
+      'list': list.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'map': map.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

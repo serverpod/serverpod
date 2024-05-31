@@ -126,7 +126,7 @@ class HealthCheckManager {
   Future<void> _optimizeHealthCheckData(int numHealthChecks) async {
     var session = await _pod.createSession(enableLogging: false);
     try {
-      // Optimize connection info entreis.
+      // Optimize connection info entries.
       var didOptimizeMinutes = await _optimizeConnectionInfoEntries(
         session,
         1,

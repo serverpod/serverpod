@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-abstract class Person extends _i1.TableRow {
+abstract class Person extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   Person._({
     int? id,
     required this.name,
@@ -66,18 +67,19 @@ abstract class Person extends _i1.TableRow {
       'name': name,
       if (organizationId != null) 'organizationId': organizationId,
       if (organization != null) 'organization': organization?.toJson(),
+      if (_cityCitizensCityId != null)
+        '_cityCitizensCityId': _cityCitizensCityId,
     };
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (organizationId != null) 'organizationId': organizationId,
-      if (organization != null) 'organization': organization?.allToJson(),
-      if (_cityCitizensCityId != null)
-        '_cityCitizensCityId': _cityCitizensCityId,
+      if (organization != null)
+        'organization': organization?.toJsonForProtocol(),
     };
   }
 
@@ -103,6 +105,11 @@ abstract class Person extends _i1.TableRow {
       orderByList: orderByList?.call(Person.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -170,8 +177,8 @@ class PersonImplicit extends _PersonImpl {
   int? $_cityCitizensCityId;
 
   @override
-  Map<String, dynamic> allToJson() {
-    var jsonMap = super.allToJson();
+  Map<String, dynamic> toJson() {
+    var jsonMap = super.toJson();
     jsonMap.addAll({'_cityCitizensCityId': $_cityCitizensCityId});
     return jsonMap;
   }

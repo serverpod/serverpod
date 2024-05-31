@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ParentUser extends _i1.SerializableEntity {
+abstract class ParentUser implements _i1.SerializableModel {
   ParentUser._({
     this.id,
     this.name,
@@ -52,6 +52,11 @@ abstract class ParentUser extends _i1.SerializableEntity {
       if (name != null) 'name': name,
       if (userInfoId != null) 'userInfoId': userInfoId,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

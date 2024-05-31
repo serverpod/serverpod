@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class TableMigration extends _i1.SerializableEntity {
+abstract class TableMigration
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   TableMigration._({
     required this.name,
     this.dartName,
@@ -136,22 +137,30 @@ abstract class TableMigration extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'name': name,
       if (dartName != null) 'dartName': dartName,
       if (module != null) 'module': module,
       'schema': schema,
-      'addColumns': addColumns.toJson(valueToJson: (v) => v.allToJson()),
+      'addColumns':
+          addColumns.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'deleteColumns': deleteColumns.toJson(),
-      'modifyColumns': modifyColumns.toJson(valueToJson: (v) => v.allToJson()),
-      'addIndexes': addIndexes.toJson(valueToJson: (v) => v.allToJson()),
+      'modifyColumns':
+          modifyColumns.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'addIndexes':
+          addIndexes.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'deleteIndexes': deleteIndexes.toJson(),
       'addForeignKeys':
-          addForeignKeys.toJson(valueToJson: (v) => v.allToJson()),
+          addForeignKeys.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'deleteForeignKeys': deleteForeignKeys.toJson(),
-      'warnings': warnings.toJson(valueToJson: (v) => v.allToJson()),
+      'warnings': warnings.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

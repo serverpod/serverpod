@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
 
 /// Defines the structure of the database used by Serverpod.
-abstract class DatabaseDefinition extends _i1.SerializableEntity {
+abstract class DatabaseDefinition implements _i1.SerializableModel {
   DatabaseDefinition._({
     this.name,
     required this.moduleName,
@@ -78,6 +78,11 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
           installedModules.toJson(valueToJson: (v) => v.toJson()),
       'migrationApiVersion': migrationApiVersion,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

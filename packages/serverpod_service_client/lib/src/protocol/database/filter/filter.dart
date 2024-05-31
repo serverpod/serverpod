@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class Filter extends _i1.SerializableEntity {
+abstract class Filter implements _i1.SerializableModel {
   Filter._({
     required this.name,
     required this.table,
@@ -53,6 +53,11 @@ abstract class Filter extends _i1.SerializableEntity {
       'table': table,
       'constraints': constraints.toJson(valueToJson: (v) => v.toJson()),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

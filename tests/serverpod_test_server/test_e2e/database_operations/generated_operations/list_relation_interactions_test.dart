@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';
@@ -26,7 +28,12 @@ void main() {
       city.id!,
     );
 
-    expect(updatedCity?.citizens.toString(), contains(citizen.toString()));
+    expect(
+      updatedCity?.citizens?.toJson(
+        valueToJson: (el) => jsonEncode(el.toJson()),
+      ),
+      contains(jsonEncode(citizen.toJson())),
+    );
   });
 
   test(
@@ -53,8 +60,19 @@ void main() {
       city.id!,
     );
 
-    expect(updatedCity?.citizens.toString(), contains(citizen1.toString()));
-    expect(updatedCity?.citizens.toString(), contains(citizen2.toString()));
+    expect(
+      updatedCity?.citizens?.toJson(
+        valueToJson: (el) => jsonEncode(el.toJson()),
+      ),
+      contains(jsonEncode(citizen1.toJson())),
+    );
+
+    expect(
+      updatedCity?.citizens?.toJson(
+        valueToJson: (el) => jsonEncode(el.toJson()),
+      ),
+      contains(jsonEncode(citizen2.toJson())),
+    );
   });
 
   test(
@@ -85,8 +103,10 @@ void main() {
     );
 
     expect(
-      updatedCity?.citizens.toString(),
-      isNot(contains(citizen1.toString())),
+      updatedCity?.citizens?.toJson(
+        valueToJson: (el) => jsonEncode(el.toJson()),
+      ),
+      isNot(contains(jsonEncode(citizen1.toJson()))),
     );
   });
 
@@ -119,12 +139,16 @@ void main() {
     );
 
     expect(
-      updatedCity?.citizens.toString(),
-      isNot(contains(citizen1.toString())),
+      updatedCity?.citizens?.toJson(
+        valueToJson: (el) => jsonEncode(el.toJson()),
+      ),
+      isNot(contains(jsonEncode(citizen1.toJson()))),
     );
     expect(
-      updatedCity?.citizens.toString(),
-      isNot(contains(citizen2.toString())),
+      updatedCity?.citizens?.toJson(
+        valueToJson: (el) => jsonEncode(el.toJson()),
+      ),
+      isNot(contains(jsonEncode(citizen2.toJson()))),
     );
   });
 
@@ -150,8 +174,12 @@ void main() {
     );
 
     expect(
-      updatedOrg?.people.toString(),
-      contains(people.copyWith(organizationId: org.id).toString()),
+      updatedOrg?.people?.toJson(
+        valueToJson: (el) => jsonEncode(el.toJson()),
+      ),
+      contains(
+        jsonEncode(people.copyWith(organizationId: org.id).toJson()),
+      ),
     );
   });
 
@@ -181,12 +209,20 @@ void main() {
     );
 
     expect(
-      updatedOrg?.people.toString(),
-      contains(person1.copyWith(organizationId: org.id).toString()),
+      updatedOrg?.people?.toJson(
+        valueToJson: (el) => jsonEncode(el.toJson()),
+      ),
+      contains(
+        jsonEncode(person1.copyWith(organizationId: org.id).toJson()),
+      ),
     );
     expect(
-      updatedOrg?.people.toString(),
-      contains(person2.copyWith(organizationId: org.id).toString()),
+      updatedOrg?.people?.toJson(
+        valueToJson: (el) => jsonEncode(el.toJson()),
+      ),
+      contains(
+        jsonEncode(person2.copyWith(organizationId: org.id).toJson()),
+      ),
     );
   });
 
@@ -220,8 +256,12 @@ void main() {
     );
 
     expect(
-      updatedOrg?.people.toString(),
-      isNot(contains(person1.copyWith(organizationId: org.id).toString())),
+      updatedOrg?.people?.toJson(
+        valueToJson: (el) => jsonEncode(el.toJson()),
+      ),
+      isNot(
+        contains(jsonEncode(person1.copyWith(organizationId: org.id).toJson())),
+      ),
     );
   });
 
@@ -255,12 +295,20 @@ void main() {
     );
 
     expect(
-      updatedOrg?.people.toString(),
-      isNot(contains(person1.copyWith(organizationId: org.id).toString())),
+      updatedOrg?.people?.toJson(
+        valueToJson: (el) => jsonEncode(el.toJson()),
+      ),
+      isNot(
+        contains(jsonEncode(person1.copyWith(organizationId: org.id).toJson())),
+      ),
     );
     expect(
-      updatedOrg?.people.toString(),
-      isNot(contains(person2.copyWith(organizationId: org.id).toString())),
+      updatedOrg?.people?.toJson(
+        valueToJson: (el) => jsonEncode(el.toJson()),
+      ),
+      isNot(
+        contains(jsonEncode(person2.copyWith(organizationId: org.id).toJson())),
+      ),
     );
   });
 }

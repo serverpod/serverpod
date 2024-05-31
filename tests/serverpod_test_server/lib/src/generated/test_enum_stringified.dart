@@ -11,7 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Just an test enum.
-enum TestEnumStringified with _i1.SerializableEntity {
+enum TestEnumStringified implements _i1.SerializableModel {
   one,
   two,
   three;
@@ -33,5 +33,5 @@ enum TestEnumStringified with _i1.SerializableEntity {
   @override
   String toJson() => name;
   @override
-  String toString() => toJson();
+  String toString() => name;
 }

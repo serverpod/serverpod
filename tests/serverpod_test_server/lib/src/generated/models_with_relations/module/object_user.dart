@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i2;
 
-abstract class ObjectUser extends _i1.TableRow {
+abstract class ObjectUser extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   ObjectUser._({
     int? id,
     this.name,
@@ -68,12 +69,12 @@ abstract class ObjectUser extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       'userInfoId': userInfoId,
-      if (userInfo != null) 'userInfo': userInfo?.allToJson(),
+      if (userInfo != null) 'userInfo': userInfo?.toJsonForProtocol(),
     };
   }
 
@@ -99,6 +100,11 @@ abstract class ObjectUser extends _i1.TableRow {
       orderByList: orderByList?.call(ObjectUser.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

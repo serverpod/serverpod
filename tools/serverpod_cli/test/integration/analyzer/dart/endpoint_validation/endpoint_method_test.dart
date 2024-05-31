@@ -81,7 +81,7 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-      'Given an endpoint with excluded method name (overriden method from Endpoint class)',
+      'Given an endpoint with excluded method name (overridden method from Endpoint class)',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =

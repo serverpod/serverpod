@@ -212,7 +212,7 @@ void main() {
   });
 
   test(
-      'Given an empty map with an SerializedEntity key when serializing and unpacking the empty map is preserved.',
+      'Given an empty map with an SerializableModel key when serializing and unpacking the empty map is preserved.',
       () {
     var object = TypesMap(anObjectKey: {});
 

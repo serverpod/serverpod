@@ -10,8 +10,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ExceptionWithData extends _i1.SerializableEntity
-    implements _i1.SerializableException {
+abstract class ExceptionWithData
+    implements _i1.SerializableException, _i1.SerializableModel {
   ExceptionWithData._({
     required this.message,
     required this.creationDate,
@@ -60,6 +60,11 @@ abstract class ExceptionWithData extends _i1.SerializableEntity
       'errorFields': errorFields.toJson(),
       if (someNullableField != null) 'someNullableField': someNullableField,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
-abstract class ObjectWithEnum extends _i1.SerializableEntity {
+abstract class ObjectWithEnum implements _i1.SerializableModel {
   ObjectWithEnum._({
     this.id,
     required this.testEnum,
@@ -86,6 +86,11 @@ abstract class ObjectWithEnum extends _i1.SerializableEntity {
       'enumListList': enumListList.toJson(
           valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

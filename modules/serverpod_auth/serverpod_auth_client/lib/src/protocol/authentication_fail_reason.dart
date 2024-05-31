@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Defines a reason for a failed sign in.
-enum AuthenticationFailReason with _i1.SerializableEntity {
+enum AuthenticationFailReason implements _i1.SerializableModel {
   invalidCredentials,
   userCreationDenied,
   internalError,
@@ -38,4 +38,6 @@ enum AuthenticationFailReason with _i1.SerializableEntity {
 
   @override
   int toJson() => index;
+  @override
+  String toString() => name;
 }

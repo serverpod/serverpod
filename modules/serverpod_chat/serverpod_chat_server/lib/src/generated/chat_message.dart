@@ -14,7 +14,8 @@ import 'protocol.dart' as _i3;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A chat message.
-abstract class ChatMessage extends _i1.TableRow {
+abstract class ChatMessage extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   ChatMessage._({
     int? id,
     required this.channel,
@@ -126,19 +127,20 @@ abstract class ChatMessage extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'channel': channel,
       'message': message,
       'time': time.toJson(),
       'sender': sender,
-      if (senderInfo != null) 'senderInfo': senderInfo?.allToJson(),
+      if (senderInfo != null) 'senderInfo': senderInfo?.toJsonForProtocol(),
       'removed': removed,
       if (clientMessageId != null) 'clientMessageId': clientMessageId,
       if (sent != null) 'sent': sent,
       if (attachments != null)
-        'attachments': attachments?.toJson(valueToJson: (v) => v.allToJson()),
+        'attachments':
+            attachments?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 
@@ -164,6 +166,11 @@ abstract class ChatMessage extends _i1.TableRow {
       orderByList: orderByList?.call(ChatMessage.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

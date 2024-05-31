@@ -1,7 +1,7 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 /// A code generator is responsible for generating the code for the target
 /// language.

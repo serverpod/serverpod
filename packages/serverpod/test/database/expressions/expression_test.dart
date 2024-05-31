@@ -285,7 +285,7 @@ void main() {
     Expression expression = firstColumn.equals('test 1') &
         (secondColumn.like('test 2') | firstColumn.equals('test 1'));
 
-    group('when retrieveing columns', () {
+    group('when retrieving columns', () {
       List<Column> columns = expression.columns;
 
       test('then all columns are represented.', () {

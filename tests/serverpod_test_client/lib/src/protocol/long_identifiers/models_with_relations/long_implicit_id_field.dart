@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class LongImplicitIdField extends _i1.SerializableEntity {
+abstract class LongImplicitIdField implements _i1.SerializableModel {
   LongImplicitIdField._({
     this.id,
     required this.name,
@@ -45,6 +45,11 @@ abstract class LongImplicitIdField extends _i1.SerializableEntity {
       if (id != null) 'id': id,
       'name': name,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
