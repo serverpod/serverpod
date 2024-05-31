@@ -125,4 +125,100 @@ void main() async {
       expect(value?.num, equals(1));
     });
   });
+
+  group('Given listener registered on channel', () {
+    const channelName = 'testChannel';
+    var messageSent = SimpleData(num: 1337);
+    SimpleData? messageReceived;
+    MessageCentralListenerCallback listener = (message) {
+      if (message is SimpleData) {
+        messageReceived = message;
+      }
+    };
+
+    setUp(
+      () async => session.messages.addListener(channelName, listener),
+    );
+    tearDown(() async {
+      session.messages.removeListener(channelName, listener);
+      messageReceived = null;
+    });
+
+    test('when global message is published to channel then message is received',
+        () async {
+      await session.messages.postMessage(
+        channelName,
+        messageSent,
+        global: true,
+      );
+
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      expect(messageReceived, isNotNull);
+      expect(messageReceived?.num, messageSent.num);
+    });
+
+    test('when global message is published to channel confirmation is received',
+        () async {
+      var published = await session.messages.postMessage(
+        channelName,
+        messageSent,
+        global: true,
+      );
+
+      expect(published, true);
+    });
+
+    test(
+        'when global message is published to different channel then no message is received',
+        () async {
+      await session.messages.postMessage(
+        '${channelName}SuffixThatMakesItDifferent',
+        messageSent,
+        global: true,
+      );
+
+      expect(messageReceived, isNull);
+    });
+
+    test(
+        'when global message is published to channel with no listeners then publish is still successful',
+        () async {
+      var published = await session.messages.postMessage(
+        '${channelName}SuffixThatMakesItDifferent',
+        messageSent,
+        global: true,
+      );
+
+      expect(published, true);
+    });
+  });
+
+  group('Given stopped redis controller', () {
+    setUp(() async {
+      var controller = session.serverpod.redisController;
+      assert(controller != null, 'Expected redis controller to be not null');
+      if (controller != null) {
+        await controller.stop();
+      }
+    });
+
+    tearDown(() async {
+      var controller = session.serverpod.redisController;
+      assert(controller != null, 'Expected redis controller to be not null');
+      if (controller != null) {
+        await controller.start();
+      }
+    });
+
+    test('when publishing global message then publish fails', () async {
+      var published = await session.messages.postMessage(
+        'testChannel',
+        SimpleData(num: 1337),
+        global: true,
+      );
+
+      expect(published, false);
+    });
+  });
 }
