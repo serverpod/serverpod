@@ -102,6 +102,23 @@ CREATE TABLE "customer" (
 );
 
 --
+-- Class EmptyModel as table empty_model
+--
+CREATE TABLE "empty_model" (
+    "id" bigserial PRIMARY KEY
+);
+
+--
+-- Class EmptyModelRelationItem as table empty_model_relation_item
+--
+CREATE TABLE "empty_model_relation_item" (
+    "id" bigserial PRIMARY KEY,
+    "name" text NOT NULL,
+    "containerId" bigint NOT NULL,
+    "_emptyModelItemsEmptyModelId" bigint
+);
+
+--
 -- Class Enrollment as table enrollment
 --
 CREATE TABLE "enrollment" (
@@ -853,6 +870,22 @@ ALTER TABLE ONLY "company"
     ON UPDATE NO ACTION;
 
 --
+-- Foreign relations for "empty_model_relation_item" table
+--
+ALTER TABLE ONLY "empty_model_relation_item"
+    ADD CONSTRAINT "empty_model_relation_item_fk_0"
+    FOREIGN KEY("containerId")
+    REFERENCES "empty_model"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION;
+ALTER TABLE ONLY "empty_model_relation_item"
+    ADD CONSTRAINT "empty_model_relation_item_fk_1"
+    FOREIGN KEY("_emptyModelItemsEmptyModelId")
+    REFERENCES "empty_model"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION;
+
+--
 -- Foreign relations for "enrollment" table
 --
 ALTER TABLE ONLY "enrollment"
@@ -1095,9 +1128,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20240520103319212', now())
+    VALUES ('serverpod_test', '20240531135241978', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240520103319212', "timestamp" = now();
+    DO UPDATE SET "version" = '20240531135241978', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth
