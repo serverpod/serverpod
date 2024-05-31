@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/redis_cache.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
@@ -129,19 +131,20 @@ void main() async {
   group('Given listener registered on channel', () {
     const channelName = 'testChannel';
     var messageSent = SimpleData(num: 1337);
-    SimpleData? messageReceived;
+    late Completer<SimpleData?> messageCompleter;
     MessageCentralListenerCallback listener = (message) {
       if (message is SimpleData) {
-        messageReceived = message;
+        messageCompleter.complete(message);
       }
     };
 
-    setUp(
-      () async => session.messages.addListener(channelName, listener),
-    );
+    setUp(() async {
+      messageCompleter = Completer();
+      session.messages.addListener(channelName, listener);
+    });
+
     tearDown(() async {
       session.messages.removeListener(channelName, listener);
-      messageReceived = null;
     });
 
     test('when global message is published to channel then message is received',
@@ -152,7 +155,10 @@ void main() async {
         global: true,
       );
 
-      await Future.delayed(const Duration(milliseconds: 100));
+      var messageReceived = await messageCompleter.future.timeout(
+        Duration(seconds: 10),
+        onTimeout: () => null,
+      );
 
       expect(messageReceived, isNotNull);
       expect(messageReceived?.num, messageSent.num);
@@ -169,23 +175,55 @@ void main() async {
       expect(published, true);
     });
 
-    test(
-        'when global message is published to different channel then no message is received',
-        () async {
-      await session.messages.postMessage(
-        '${channelName}SuffixThatMakesItDifferent',
-        messageSent,
-        global: true,
-      );
+    group('when global message is published to different channel ', () {
+      var uniqueChannelName = Uuid().v4();
+      late Completer<SimpleData?> uniqueChannelMessageCompleter;
+      MessageCentralListenerCallback uniqueCannelListener = (message) {
+        if (message is SimpleData) {
+          uniqueChannelMessageCompleter.complete(message);
+        }
+      };
 
-      expect(messageReceived, isNull);
+      setUp(() async {
+        session.messages.addListener(uniqueChannelName, uniqueCannelListener);
+        uniqueChannelMessageCompleter = Completer();
+      });
+
+      tearDown(() async {
+        session.messages
+            .removeListener(uniqueChannelName, uniqueCannelListener);
+      });
+
+      test('then no message is received', () async {
+        await session.messages.postMessage(
+          uniqueChannelName,
+          messageSent,
+          global: true,
+        );
+
+        var uniqueChannelMessageReceived =
+            await uniqueChannelMessageCompleter.future.timeout(
+          Duration(seconds: 10),
+          onTimeout: () => null,
+        );
+        expect(uniqueChannelMessageReceived, isNotNull);
+
+        /// Ensure that the message was not received on the original channel
+        expectLater(
+          messageCompleter.future.timeout(
+            Duration(milliseconds: 100),
+          ),
+          throwsA(isA<TimeoutException>()),
+        );
+      });
     });
 
     test(
         'when global message is published to channel with no listeners then publish is still successful',
         () async {
+      var uniqueChannelName = Uuid().v4();
       var published = await session.messages.postMessage(
-        '${channelName}SuffixThatMakesItDifferent',
+        uniqueChannelName,
         messageSent,
         global: true,
       );
