@@ -21,12 +21,8 @@ class MessageCentral {
   /// server within the cluster. If no [destinationServerId] is provided, the
   /// message is passed on to all servers in the cluster.
   ///
-  /// Returns the number of clients that received the message. Note that in a
-  /// Redis Cluster, only clients that are connected to the same node as the
-  /// publishing client are included in the count. Returns -1 if there was an
-  /// error publishing the message, or -2 if connection to the Redis server
-  /// could not be established.
-  Future<int> postMessage(
+  /// Returns true if the message was successfully posted.
+  Future<bool> postMessage(
     String channelName,
     SerializableModel message, {
     bool global = false,
@@ -39,16 +35,17 @@ class MessageCentral {
       );
       var data =
           Serverpod.instance.serializationManager.encodeWithType(message);
-      return Serverpod.instance.redisController!.publish(channelName, data);
+      return await Serverpod.instance.redisController!
+          .publish(channelName, data);
     } else {
       // Handle internally in this server instance
       var channel = _channels[channelName];
-      if (channel == null) return 0;
+      if (channel == null) return true;
 
       for (var callback in channel) {
         callback(message);
       }
-      return channel.length;
+      return true;
     }
   }
 

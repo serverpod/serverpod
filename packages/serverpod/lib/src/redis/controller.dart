@@ -291,24 +291,20 @@ class RedisController {
   /// Publishes a message to a Redis channel. All subscribed listeners will be
   /// notified across servers.
   ///
-  /// Returns the number of clients that received the message. Note that in a
-  /// Redis Cluster, only clients that are connected to the same node as the
-  /// publishing client are included in the count. Returns -1 if there was an
-  /// error publishing the message, or -2 if connection to the Redis server
-  /// could not be established.
-  Future<int> publish(String channel, String message) async {
+  /// Returns true if the message was successfully published.
+  Future<bool> publish(String channel, String message) async {
     try {
       if (!await _connect()) {
-        return -2;
+        return false;
       }
-      var result = await _command!.send_object(
+      await _command?.send_object(
         ['PUBLISH', channel, message],
       );
-      // The result is a counter: https://redis.io/commands/publish/#return
-      return result as int;
+
+      return true;
     } catch (e) {
       _invalidateCommand();
-      return -1;
+      return false;
     }
   }
 
