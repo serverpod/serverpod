@@ -22,6 +22,8 @@ class MessageCentral {
   /// message is passed on to all servers in the cluster.
   ///
   /// Returns true if the message was successfully posted.
+  ///
+  /// Throws a [StateError] if Redis is not enabled and [global] is set to true.
   Future<bool> postMessage(
     String channelName,
     SerializableModel message, {
@@ -29,14 +31,14 @@ class MessageCentral {
   }) async {
     if (global) {
       // Send to Redis
-      assert(
-        Serverpod.instance.redisController != null,
-        'Redis needs to be enabled to use this method',
-      );
       var data =
           Serverpod.instance.serializationManager.encodeWithType(message);
-      return await Serverpod.instance.redisController!
-          .publish(channelName, data);
+      var redisController = Serverpod.instance.redisController;
+      if (redisController == null) {
+        throw StateError('Redis needs to be enabled to use this method');
+      }
+
+      return await redisController.publish(channelName, data);
     } else {
       // Handle internally in this server instance
       var channel = _channels[channelName];

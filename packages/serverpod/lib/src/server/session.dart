@@ -501,6 +501,8 @@ class MessageCentralAccess {
   /// was successfully posted.
   ///
   /// Returns true if the message was successfully posted.
+  ///
+  /// Throws a [StateError] if Redis is not enabled and [global] is set to true.
   Future<bool> postMessage(
     String channelName,
     SerializableModel message, {

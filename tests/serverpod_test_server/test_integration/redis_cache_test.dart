@@ -221,4 +221,34 @@ void main() async {
       expect(published, false);
     });
   });
+
+  group('Given null redis controller', () {
+    final tempController = session.serverpod.redisController;
+    setUp(() async {
+      assert(
+        session.serverpod.redisController != null,
+        'Expected redis controller to be not null',
+      );
+      session.serverpod.redisController = null;
+    });
+
+    tearDown(() async {
+      assert(
+        session.serverpod.redisController == null,
+        'Expected redis controller to be null',
+      );
+      session.serverpod.redisController = tempController;
+    });
+
+    test('when publishing global message then state error is thrown', () async {
+      expectLater(
+        () async => await session.messages.postMessage(
+          'testChannel',
+          SimpleData(num: 1337),
+          global: true,
+        ),
+        throwsStateError,
+      );
+    });
+  });
 }
