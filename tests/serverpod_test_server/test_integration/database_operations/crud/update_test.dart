@@ -52,6 +52,21 @@ void main() async {
   });
 
   test(
+      'Given a list of one value that is modified after being inserted when updating the object without an id then an error is thrown.',
+      () async {
+    var data = UniqueData(number: 1, email: 'info@serverpod.dev');
+
+    await UniqueData.db.insert(session, [data]);
+
+    data.email = 'dev@serverpod.dev';
+
+    expect(
+      UniqueData.db.update(session, [data]),
+      throwsA(isA<ArgumentError>()),
+    );
+  });
+
+  test(
       'Given a list of entries to update where one does not have an id then an error is thrown.',
       () async {
     var data = <UniqueData>[
