@@ -229,7 +229,13 @@ class Server {
       await request.response.close();
       return;
     } else if (uri.path == '/websocket') {
-      var webSocket = await WebSocketTransformer.upgrade(request);
+      WebSocket webSocket;
+      try {
+        webSocket = await WebSocketTransformer.upgrade(request);
+      } on WebSocketException {
+        stderr.writeln('Failed to upgrade connection to websocket');
+        return;
+      }
       webSocket.pingInterval = const Duration(seconds: 30);
       unawaited(_handleWebsocket(webSocket, request));
       return;
