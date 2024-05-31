@@ -53,6 +53,9 @@ abstract class Session {
 
   String? _authenticationKey;
 
+  /// The authentication key used to authenticate the session.
+  String? get authenticationKey => _authenticationKey;
+
   /// An custom object associated with this [Session]. This is especially
   /// useful for keeping track of the state in a [StreamingEndpoint].
   dynamic userObject;
