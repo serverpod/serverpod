@@ -1,0 +1,5 @@
+class: EmptyModelRelationItem
+table: empty_model_relation_item
+fields:
+  name: String
+  containerId: int, relation(parent=empty_model)
