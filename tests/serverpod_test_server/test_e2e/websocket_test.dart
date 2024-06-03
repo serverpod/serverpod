@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/authentication/scope.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_client/src/custom_classes.dart';
 import 'package:serverpod_test_module_client/serverpod_test_module_client.dart';
