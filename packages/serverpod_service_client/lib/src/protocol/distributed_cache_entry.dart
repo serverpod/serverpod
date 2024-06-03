@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// An entry in the distributed cache.
-abstract class DistributedCacheEntry extends _i1.SerializableEntity {
+abstract class DistributedCacheEntry implements _i1.SerializableModel {
   DistributedCacheEntry._({required this.data});
 
   factory DistributedCacheEntry({required String data}) =
@@ -29,6 +29,11 @@ abstract class DistributedCacheEntry extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {'data': data};
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

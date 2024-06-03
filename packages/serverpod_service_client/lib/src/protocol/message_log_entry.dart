@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A log entry for a message sent in a streaming session.
-abstract class MessageLogEntry extends _i1.SerializableEntity {
+abstract class MessageLogEntry implements _i1.SerializableModel {
   MessageLogEntry._({
     this.id,
     required this.sessionLogId,
@@ -48,7 +48,7 @@ abstract class MessageLogEntry extends _i1.SerializableEntity {
       messageId: jsonSerialization['messageId'] as int,
       endpoint: jsonSerialization['endpoint'] as String,
       messageName: jsonSerialization['messageName'] as String,
-      duration: jsonSerialization['duration'] as double,
+      duration: (jsonSerialization['duration'] as num).toDouble(),
       error: jsonSerialization['error'] as String?,
       stackTrace: jsonSerialization['stackTrace'] as String?,
       slow: jsonSerialization['slow'] as bool,
@@ -70,7 +70,7 @@ abstract class MessageLogEntry extends _i1.SerializableEntity {
   /// The id of the message this entry is associated with.
   int messageId;
 
-  /// The entpoint this message is associated with.
+  /// The endpoint this message is associated with.
   String endpoint;
 
   /// The class name of the message this entry is associated with.
@@ -121,6 +121,11 @@ abstract class MessageLogEntry extends _i1.SerializableEntity {
       'slow': slow,
       'order': order,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

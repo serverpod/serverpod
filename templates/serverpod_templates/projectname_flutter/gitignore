@@ -34,7 +34,7 @@
 # Web related
 lib/generated_plugin_registrant.dart
 
-# Symbolication related
+# Symbolization related
 app.*.symbols
 
 # Obfuscation related

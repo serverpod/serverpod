@@ -1,5 +1,3 @@
-import 'package:serverpod/src/generated/auth_key.dart';
-
 /// Used to define who can access an [Endpoint]. Authenticated users can be
 /// associated with a [Scope], if the same scope is defined in the [Endpoint]
 /// the user is granted access. The scope is defined by its [name].
@@ -24,16 +22,4 @@ class Scope {
 
   @override
   String toString() => 'Scope($name)';
-}
-
-/// Adds methods for scopes on [AuthKey].
-extension AuthKeyScopes on AuthKey {
-  /// Returns a set containing the scopes this user has access to.
-  Set<Scope> get scopes {
-    var set = <Scope>{};
-    for (var scopeStr in scopeNames) {
-      set.add(Scope(scopeStr));
-    }
-    return set;
-  }
 }

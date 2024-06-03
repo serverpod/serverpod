@@ -6,7 +6,7 @@ set -e
 echo "### Run serverpod generate test"
 echo "### If this test fails, make sure that you have run serverpod generate"
 echo "### on all packages with util/generate_all"
-echo "### Also check that dependency versions are consistant across packages."
+echo "### Also check that dependency versions are consistent across packages."
 
 # Install the serverpod command
 echo "### Installing CLI tools"

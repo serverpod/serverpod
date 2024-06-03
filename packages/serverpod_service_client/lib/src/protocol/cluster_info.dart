@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Information about a cluster of servers.
-abstract class ClusterInfo extends _i1.SerializableEntity {
+abstract class ClusterInfo implements _i1.SerializableModel {
   ClusterInfo._({required this.servers});
 
   factory ClusterInfo({required List<_i2.ClusterServerInfo> servers}) =
@@ -33,6 +33,11 @@ abstract class ClusterInfo extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {'servers': servers.toJson(valueToJson: (v) => v.toJson())};
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

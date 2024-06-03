@@ -10,7 +10,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class UserNote extends _i1.TableRow {
+abstract class UserNote extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   UserNote._({
     int? id,
     required this.name,
@@ -48,18 +49,18 @@ abstract class UserNote extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'name': name,
-    };
-  }
-
-  @override
-  Map<String, dynamic> allToJson() {
-    return {
-      if (id != null) 'id': id,
-      'name': name,
       if (_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId !=
           null)
         '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId':
             _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      if (id != null) 'id': id,
+      'name': name,
     };
   }
 
@@ -85,6 +86,11 @@ abstract class UserNote extends _i1.TableRow {
       orderByList: orderByList?.call(UserNote.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -136,8 +142,8 @@ class UserNoteImplicit extends _UserNoteImpl {
   int? $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
 
   @override
-  Map<String, dynamic> allToJson() {
-    var jsonMap = super.allToJson();
+  Map<String, dynamic> toJson() {
+    var jsonMap = super.toJson();
     jsonMap.addAll({
       '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId':
           $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId

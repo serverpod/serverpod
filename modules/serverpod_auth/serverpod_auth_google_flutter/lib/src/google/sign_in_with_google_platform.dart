@@ -1,10 +1,10 @@
 /// An object for internal use to pass along the idToken or serverAuthCode
-/// recieved from google during the sign in process.
+/// received from google during the sign in process.
 class ClientAuthTokens {
-  /// The auth token recieved from google.
+  /// The auth token received from google.
   final String? idToken;
 
-  /// The server auth code recieved from google.
+  /// The server auth code received from google.
   final String? serverAuthCode;
 
   /// Creates a new [ClientAuthTokens] object.

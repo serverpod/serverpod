@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Information about a single server in a cluster.
-abstract class ClusterServerInfo extends _i1.SerializableEntity {
+abstract class ClusterServerInfo implements _i1.SerializableModel {
   ClusterServerInfo._({required this.serverId});
 
   factory ClusterServerInfo({required String serverId}) =
@@ -28,6 +28,11 @@ abstract class ClusterServerInfo extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {'serverId': serverId};
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

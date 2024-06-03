@@ -22,10 +22,6 @@ ByteData createByteData() {
 void main() {
   var client = Client(serverUrl);
 
-  setUp(() {
-    Protocol().registerCustomConstructors();
-  });
-
   group('Calls', () {
     test('Named parameters basic call', () async {
       var result = await client.namedParameters.namedParametersMethod(
@@ -1116,7 +1112,7 @@ void main() {
       expect(clientException!.statusCode, equals(500));
     });
 
-    test('Exception in call from database being caugt', () async {
+    test('Exception in call from database being caught', () async {
       var result =
           await client.failedCalls.failedDatabaseQueryCaughtException();
       expect(result, equals(true));

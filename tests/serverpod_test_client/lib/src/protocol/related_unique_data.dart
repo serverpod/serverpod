@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
-abstract class RelatedUniqueData extends _i1.SerializableEntity {
+abstract class RelatedUniqueData implements _i1.SerializableModel {
   RelatedUniqueData._({
     this.id,
     required this.uniqueDataId,
@@ -63,6 +63,11 @@ abstract class RelatedUniqueData extends _i1.SerializableEntity {
       if (uniqueData != null) 'uniqueData': uniqueData?.toJson(),
       'number': number,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

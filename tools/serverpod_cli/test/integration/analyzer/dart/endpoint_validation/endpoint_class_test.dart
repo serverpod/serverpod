@@ -168,4 +168,57 @@ class ExampleEndpoint {
       expect(endpointDefinitions, isEmpty);
     });
   });
+
+  group('Given same endpoint class definition in multiple files when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var firstEndpointFile =
+          File(path.join(testDirectory.path, 'endpoint.dart'));
+      firstEndpointFile.createSync(recursive: true);
+      firstEndpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      var secondEndpointFile =
+          File(path.join(testDirectory.path, 'endpoint2.dart'));
+      secondEndpointFile.createSync(recursive: true);
+      secondEndpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then two validation errors are reported.', () {
+      expect(collector.errors, hasLength(2));
+    });
+
+    test(
+        'then validation error explains that multiple endpoint definitions exist.',
+        () {
+      expect(collector.errors.firstOrNull?.message,
+          'Multiple endpoint definitions for ExampleEndpoint exists. Please provide a unique name for each endpoint class.');
+    });
+
+    test('then no endpoint definition are created.', () {
+      expect(endpointDefinitions, isEmpty);
+    });
+  });
 }

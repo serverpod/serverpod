@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A log entry for a message sent in a streaming session.
-abstract class MessageLogEntry extends _i1.TableRow {
+abstract class MessageLogEntry extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   MessageLogEntry._({
     int? id,
     required this.sessionLogId,
@@ -48,7 +49,7 @@ abstract class MessageLogEntry extends _i1.TableRow {
       messageId: jsonSerialization['messageId'] as int,
       endpoint: jsonSerialization['endpoint'] as String,
       messageName: jsonSerialization['messageName'] as String,
-      duration: jsonSerialization['duration'] as double,
+      duration: (jsonSerialization['duration'] as num).toDouble(),
       error: jsonSerialization['error'] as String?,
       stackTrace: jsonSerialization['stackTrace'] as String?,
       slow: jsonSerialization['slow'] as bool,
@@ -69,7 +70,7 @@ abstract class MessageLogEntry extends _i1.TableRow {
   /// The id of the message this entry is associated with.
   int messageId;
 
-  /// The entpoint this message is associated with.
+  /// The endpoint this message is associated with.
   String endpoint;
 
   /// The class name of the message this entry is associated with.
@@ -126,7 +127,7 @@ abstract class MessageLogEntry extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'sessionLogId': sessionLogId,
@@ -164,6 +165,11 @@ abstract class MessageLogEntry extends _i1.TableRow {
       orderByList: orderByList?.call(MessageLogEntry.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -280,7 +286,7 @@ class MessageLogEntryTable extends _i1.Table {
   /// The id of the message this entry is associated with.
   late final _i1.ColumnInt messageId;
 
-  /// The entpoint this message is associated with.
+  /// The endpoint this message is associated with.
   late final _i1.ColumnString endpoint;
 
   /// The class name of the message this entry is associated with.

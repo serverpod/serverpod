@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// The log filter is used when searching for specific log entries.
-abstract class SessionLogFilter extends _i1.SerializableEntity {
+abstract class SessionLogFilter implements _i1.SerializableModel {
   SessionLogFilter._({
     this.endpoint,
     this.method,
@@ -85,6 +85,11 @@ abstract class SessionLogFilter extends _i1.SerializableEntity {
       'open': open,
       if (lastSessionLogId != null) 'lastSessionLogId': lastSessionLogId,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

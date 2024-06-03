@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../../protocol.dart' as _i2;
 
-abstract class Member extends _i1.SerializableEntity {
+abstract class Member implements _i1.SerializableModel {
   Member._({
     this.id,
     required this.name,
@@ -66,6 +66,11 @@ abstract class Member extends _i1.SerializableEntity {
       if (blockedBy != null)
         'blockedBy': blockedBy?.toJson(valueToJson: (v) => v.toJson()),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

@@ -11,7 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class Town extends _i1.TableRow {
+abstract class Town extends _i1.TableRow implements _i1.ProtocolSerialization {
   Town._({
     int? id,
     required this.name,
@@ -68,12 +68,12 @@ abstract class Town extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'name': name,
       if (mayorId != null) 'mayorId': mayorId,
-      if (mayor != null) 'mayor': mayor?.allToJson(),
+      if (mayor != null) 'mayor': mayor?.toJsonForProtocol(),
     };
   }
 
@@ -99,6 +99,11 @@ abstract class Town extends _i1.TableRow {
       orderByList: orderByList?.call(Town.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

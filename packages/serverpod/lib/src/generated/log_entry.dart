@@ -13,7 +13,8 @@ import 'protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Bindings to a log entry in the database.
-abstract class LogEntry extends _i1.TableRow {
+abstract class LogEntry extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   LogEntry._({
     int? id,
     required this.sessionLogId,
@@ -74,7 +75,7 @@ abstract class LogEntry extends _i1.TableRow {
   /// The id of the server which created this log entry.
   String serverId;
 
-  /// Timpstamp of this log entry.
+  /// Timestamp of this log entry.
   DateTime time;
 
   /// The log level of this entry.
@@ -126,7 +127,7 @@ abstract class LogEntry extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'sessionLogId': sessionLogId,
@@ -164,6 +165,11 @@ abstract class LogEntry extends _i1.TableRow {
       orderByList: orderByList?.call(LogEntry.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -283,7 +289,7 @@ class LogEntryTable extends _i1.Table {
   /// The id of the server which created this log entry.
   late final _i1.ColumnString serverId;
 
-  /// Timpstamp of this log entry.
+  /// Timestamp of this log entry.
   late final _i1.ColumnDateTime time;
 
   /// The log level of this entry.

@@ -1,4 +1,4 @@
-### A description for uploading an attachement.
+### A description for uploading an attachment.
 class: ChatMessageAttachmentUploadDescription
 fields:
   ### The path where the file should be uploaded.

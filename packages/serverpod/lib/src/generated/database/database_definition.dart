@@ -13,7 +13,8 @@ import '../protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Defines the structure of the database used by Serverpod.
-abstract class DatabaseDefinition extends _i1.SerializableEntity {
+abstract class DatabaseDefinition
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   DatabaseDefinition._({
     this.name,
     required this.moduleName,
@@ -82,15 +83,20 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (name != null) 'name': name,
       'moduleName': moduleName,
-      'tables': tables.toJson(valueToJson: (v) => v.allToJson()),
+      'tables': tables.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'installedModules':
-          installedModules.toJson(valueToJson: (v) => v.allToJson()),
+          installedModules.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'migrationApiVersion': migrationApiVersion,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

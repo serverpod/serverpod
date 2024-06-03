@@ -29,8 +29,9 @@ class AuthenticationEndpoint extends Endpoint {
   Future<AuthenticationResponse> authenticate(
     Session session,
     String email,
-    String password,
-  ) async {
+    String password, [
+    List<String>? scopes,
+  ]) async {
     if (email == 'test@foo.bar' && password == 'password') {
       var userInfo = await Users.findUserByEmail(session, 'test@foo.bar');
       if (userInfo == null) {
@@ -47,7 +48,12 @@ class AuthenticationEndpoint extends Endpoint {
 
       if (userInfo == null) return AuthenticationResponse(success: false);
 
-      var authKey = await session.auth.signInUser(userInfo.id!, 'test');
+      var authKey = await UserAuthentication.signInUser(
+        session,
+        userInfo.id!,
+        'test',
+        scopes: scopes?.map((e) => Scope(e)).toSet() ?? const {},
+      );
       return AuthenticationResponse(
         success: true,
         keyId: authKey.id,
@@ -60,6 +66,6 @@ class AuthenticationEndpoint extends Endpoint {
   }
 
   Future<void> signOut(Session session) async {
-    await session.auth.signOutUser();
+    await UserAuthentication.signOutUser(session);
   }
 }

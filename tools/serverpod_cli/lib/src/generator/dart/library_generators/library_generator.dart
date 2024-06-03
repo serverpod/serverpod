@@ -54,17 +54,6 @@ class LibraryGenerator {
 
     protocol.fields.addAll([
       Field((f) => f
-        ..name = 'customConstructors'
-        ..static = true
-        ..type = TypeReference((t) => t
-          ..symbol = 'Map'
-          ..types.addAll([
-            refer('Type'),
-            refer('constructor', serverpodUrl(serverCode)),
-          ]))
-        ..modifier = FieldModifier.final$
-        ..assignment = literalMap({}).code),
-      Field((f) => f
         ..name = '_instance'
         ..static = true
         ..type = refer('Protocol')
@@ -116,8 +105,6 @@ class LibraryGenerator {
           ..type = refer('Type?')))
         ..body = Block.of([
           const Code('t ??= T;'),
-          const Code(
-              'if(customConstructors.containsKey(t)){return customConstructors[t]!(data, this) as T;}'),
           ...(<Expression, Code>{
             for (var classInfo in models)
               refer(classInfo.className, classInfo.fileRef()): Code.scope(
@@ -173,11 +160,13 @@ class LibraryGenerator {
                   ])),
           for (var module in config.modules)
             Code.scope((a) =>
-                'try{return ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().deserialize<T>(data,t);}catch(_){}'),
+                'try{return ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().deserialize<T>(data,t);}'
+                'on ${a(refer('DeserializationTypeNotFoundException', serverpodUrl(serverCode)))} catch(_){}'),
           if (config.name != 'serverpod' &&
               (serverCode || config.dartClientDependsOnServiceClient))
             Code.scope((a) =>
-                'try{return ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().deserialize<T>(data,t);}catch(_){}'),
+                'try{return ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().deserialize<T>(data,t);}'
+                'on ${a(refer('DeserializationTypeNotFoundException', serverpodUrl(serverCode)))} catch(_){}'),
           const Code('return super.deserialize<T>(data,t);'),
         ])),
       Method((m) => m

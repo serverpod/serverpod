@@ -16,9 +16,6 @@ class WebServer {
   /// The port the webserver is running on.
   late final int _port;
 
-  /// The hostname of the webserver.
-  late final String _hostname;
-
   /// A list of [Route] which defines how to handle path passed to the server.
   final List<Route> routes = <Route>[];
 
@@ -35,7 +32,6 @@ class WebServer {
     }
 
     _port = config.port;
-    _hostname = config.publicHost;
   }
 
   bool _running = false;
@@ -119,14 +115,6 @@ class WebServer {
           'Malformed call, invalid uri from ${request.connectionInfo?.remoteAddress.address}');
 
       request.response.statusCode = HttpStatus.badRequest;
-      await request.response.close();
-      return;
-    }
-
-    if (uri.host != _hostname) {
-      var redirect = uri.replace(host: _hostname);
-      request.response.headers.add('Location', redirect.toString());
-      request.response.statusCode = HttpStatus.movedPermanently;
       await request.response.close();
       return;
     }
@@ -231,7 +219,7 @@ abstract class Route {
     headers.contentType = ContentType('text', 'html', charset: 'utf-8');
   }
 
-  /// Handles a call to this route. This method is repsonsible for setting
+  /// Handles a call to this route. This method is responsible for setting
   /// a correct response headers, status code, and write the response body to
   /// `request.response`.
   Future<bool> handleCall(Session session, HttpRequest request);
@@ -291,7 +279,7 @@ abstract class Route {
   }
 }
 
-/// A [WidgetRoute] is the most convienient way to create routes in your server.
+/// A [WidgetRoute] is the most convenient way to create routes in your server.
 /// Override the [build] method and return an appropriate [Widget].
 abstract class WidgetRoute extends Route {
   /// Override this method to build your web [Widget] from the current [session]

@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ObjectWithDuration extends _i1.SerializableEntity {
+abstract class ObjectWithDuration implements _i1.SerializableModel {
   ObjectWithDuration._({
     this.id,
     required this.duration,
@@ -46,6 +46,11 @@ abstract class ObjectWithDuration extends _i1.SerializableEntity {
       if (id != null) 'id': id,
       'duration': duration.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

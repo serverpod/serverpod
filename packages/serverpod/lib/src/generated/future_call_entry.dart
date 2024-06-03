@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A serialized future call with bindings to the database.
-abstract class FutureCallEntry extends _i1.TableRow {
+abstract class FutureCallEntry extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   FutureCallEntry._({
     int? id,
     required this.name,
@@ -85,7 +86,7 @@ abstract class FutureCallEntry extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'name': name,
@@ -118,6 +119,11 @@ abstract class FutureCallEntry extends _i1.TableRow {
       orderByList: orderByList?.call(FutureCallEntry.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

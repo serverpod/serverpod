@@ -1,9 +1,9 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
+import '../authentication/scope.dart';
 import 'server.dart';
 import 'serverpod.dart';
 import 'session.dart';
-import '../authentication/scope.dart';
 
 /// The [Endpoint] is an entrypoint to the [Server]. To add a custom [Endpoint]
 /// to a [Server], create a subclass and place it in the `endpoints` directory.
@@ -51,7 +51,7 @@ abstract class Endpoint {
 
   final Map<Session, dynamic> _userObjects = {};
 
-  /// Retrieves a custom object assiciated with this [Endpoint] and [Session].
+  /// Retrieves a custom object associated with this [Endpoint] and [Session].
   dynamic getUserObject(Session session) {
     return _userObjects[session];
   }
@@ -79,11 +79,11 @@ abstract class Endpoint {
   /// Invoked when a message is sent to this endpoint from the client.
   /// Override this method to create your own custom [StreamingEndpoint].
   Future<void> handleStreamMessage(
-      StreamingSession session, SerializableEntity message) async {}
+      StreamingSession session, SerializableModel message) async {}
 
   /// Sends an event to the client represented by the [Session] object.
   Future<void> sendStreamMessage(
-      StreamingSession session, SerializableEntity message) async {
+      StreamingSession session, SerializableModel message) async {
     var prefix = moduleName == null ? '' : '$moduleName.';
 
     var data = {

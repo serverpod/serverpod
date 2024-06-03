@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class ObjectWithDuration extends _i1.TableRow {
+abstract class ObjectWithDuration extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   ObjectWithDuration._({
     int? id,
     required this.duration,
@@ -52,7 +53,7 @@ abstract class ObjectWithDuration extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'duration': duration.toJson(),
@@ -81,6 +82,11 @@ abstract class ObjectWithDuration extends _i1.TableRow {
       orderByList: orderByList?.call(ObjectWithDuration.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

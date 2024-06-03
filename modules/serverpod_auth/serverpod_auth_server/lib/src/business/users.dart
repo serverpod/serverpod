@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/src/business/config.dart';
+import 'package:serverpod_auth_server/src/business/user_authentication.dart';
 
 import '../generated/protocol.dart';
 
@@ -10,24 +11,29 @@ class Users {
     Session session,
     UserInfo userInfo, [
     String? authMethod,
+    UserInfoCreationCallback? onUserWillBeCreatedOverride,
+    UserInfoUpdateCallback? onUserCreatedOverride,
   ]) async {
-    if (AuthConfig.current.onUserWillBeCreated != null) {
-      var approved = await AuthConfig.current.onUserWillBeCreated!(
-        session,
-        userInfo,
-        authMethod,
-      );
-      if (!approved) return null;
-    }
+    bool approved = switch (onUserWillBeCreatedOverride) {
+      null => await AuthConfig.current.onUserWillBeCreated?.call(
+            session,
+            userInfo,
+            authMethod,
+          ) ??
+          true,
+      _ => await onUserWillBeCreatedOverride.call(session, userInfo, authMethod)
+    };
+    if (!approved) return null;
 
     userInfo = await UserInfo.db.insertRow(session, userInfo);
-    if (userInfo.id != null) {
-      if (AuthConfig.current.onUserCreated != null) {
-        await AuthConfig.current.onUserCreated!(session, userInfo);
-      }
-      return userInfo;
+
+    if (onUserCreatedOverride == null) {
+      await AuthConfig.current.onUserCreated?.call(session, userInfo);
+    } else {
+      await onUserCreatedOverride(session, userInfo);
     }
-    return null;
+
+    return userInfo;
   }
 
   /// Finds a user by its email address. Returns null if no user is found.
@@ -137,7 +143,7 @@ class Users {
     await session.db.updateRow(userInfo);
     await invalidateCacheForUser(session, userId);
     // Sign out user
-    await session.auth.signOutUser(userId: userId);
+    await UserAuthentication.signOutUser(session, userId: userId);
   }
 
   /// Unblocks a user so that they can log in again.

@@ -15,6 +15,7 @@ void run(List<String> args) async {
     args,
     Protocol(),
     Endpoints(),
+    authenticationHandler: auth.authenticationHandler,
   );
 
   // Configures sign in with email to print out the validation codes on the

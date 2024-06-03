@@ -1,6 +1,6 @@
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 abstract class ServerpodCommand extends Command {
   @override

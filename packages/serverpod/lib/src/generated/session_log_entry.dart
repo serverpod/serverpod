@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Log entry for a session.
-abstract class SessionLogEntry extends _i1.TableRow {
+abstract class SessionLogEntry extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   SessionLogEntry._({
     int? id,
     required this.serverId,
@@ -55,7 +56,7 @@ abstract class SessionLogEntry extends _i1.TableRow {
       module: jsonSerialization['module'] as String?,
       endpoint: jsonSerialization['endpoint'] as String?,
       method: jsonSerialization['method'] as String?,
-      duration: jsonSerialization['duration'] as double?,
+      duration: (jsonSerialization['duration'] as num?)?.toDouble(),
       numQueries: jsonSerialization['numQueries'] as int?,
       slow: jsonSerialization['slow'] as bool?,
       error: jsonSerialization['error'] as String?,
@@ -154,7 +155,7 @@ abstract class SessionLogEntry extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'serverId': serverId,
@@ -196,6 +197,11 @@ abstract class SessionLogEntry extends _i1.TableRow {
       orderByList: orderByList?.call(SessionLogEntry.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

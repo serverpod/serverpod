@@ -5,6 +5,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
 import 'package:serverpod_auth_server/src/business/email_secrets.dart';
 import 'package:serverpod_auth_server/src/business/password_hash.dart';
+import 'package:serverpod_auth_server/src/business/user_authentication.dart';
 import 'package:serverpod_auth_server/src/business/user_images.dart';
 
 /// Collection of utility methods when working with email authentication.
@@ -561,7 +562,8 @@ class Emails {
     session.log(' - user found', level: LogLevel.debug);
 
     // Sign in user and return user info
-    var auth = await session.auth.signInUser(
+    var auth = await UserAuthentication.signInUser(
+      session,
       entry.userId,
       'email',
       scopes: userInfo.scopes,
@@ -579,7 +581,7 @@ class Emails {
 
   static String _generateVerificationCode() {
     return Random().nextString(
-      length: 8,
+      length: AuthConfig.current.validationCodeLength,
       chars: '0123456789',
     );
   }

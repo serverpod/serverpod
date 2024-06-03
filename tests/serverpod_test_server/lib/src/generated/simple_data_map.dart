@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class SimpleDataMap extends _i1.SerializableEntity {
+abstract class SimpleDataMap
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   SimpleDataMap._({required this.data});
 
   factory SimpleDataMap({required Map<String, _i2.SimpleData> data}) =
@@ -35,8 +36,13 @@ abstract class SimpleDataMap extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
-    return {'data': data.toJson(valueToJson: (v) => v.allToJson())};
+  Map<String, dynamic> toJsonForProtocol() {
+    return {'data': data.toJson(valueToJson: (v) => v.toJsonForProtocol())};
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

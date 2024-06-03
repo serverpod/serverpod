@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class FilterConstraint extends _i1.SerializableEntity {
+abstract class FilterConstraint implements _i1.SerializableModel {
   FilterConstraint._({
     required this.type,
     required this.column,
@@ -58,6 +58,11 @@ abstract class FilterConstraint extends _i1.SerializableEntity {
       'value': value,
       if (value2 != null) 'value2': value2,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

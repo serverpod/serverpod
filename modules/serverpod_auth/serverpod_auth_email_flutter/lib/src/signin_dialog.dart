@@ -59,6 +59,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
   _Page _page = _Page.createAccount;
 
   bool _enabled = true;
+  bool _isPasswordObscured = true;
 
   @override
   void initState() {
@@ -105,11 +106,21 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
         TextField(
           enabled: _enabled,
           controller: _passwordController,
-          obscureText: true,
+          obscureText: _isPasswordObscured,
           decoration: InputDecoration(
             hintText: 'Password',
             helperText: ' ',
             errorText: _passwordIssue,
+            suffixIcon: IconButton(
+              icon: Icon(
+                _isPasswordObscured ? Icons.visibility : Icons.visibility_off,
+              ),
+              onPressed: () {
+                setState(() {
+                  _isPasswordObscured = !_isPasswordObscured;
+                });
+              },
+            ),
           ),
           onChanged: (_) {
             setState(() {
@@ -155,11 +166,21 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
         TextField(
           enabled: _enabled,
           controller: _passwordController,
-          obscureText: true,
+          obscureText: _isPasswordObscured,
           decoration: InputDecoration(
             hintText: 'Password',
             helperText: ' ',
             errorText: _passwordIssue,
+            suffixIcon: IconButton(
+              icon: Icon(
+                _isPasswordObscured ? Icons.visibility : Icons.visibility_off,
+              ),
+              onPressed: () {
+                setState(() {
+                  _isPasswordObscured = !_isPasswordObscured;
+                });
+              },
+            ),
           ),
           onChanged: (_) {
             setState(() {
@@ -510,9 +531,9 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
 
   Future<void> _resetPassword() async {
     _resetIssues();
-    if (_passwordController.text.length < 8) {
+    if (_passwordController.text.length < widget.minPasswordLength) {
       setState(() {
-        _passwordIssue = 'Min 8 characters';
+        _passwordIssue = 'Min ${widget.minPasswordLength} characters';
       });
       return;
     }

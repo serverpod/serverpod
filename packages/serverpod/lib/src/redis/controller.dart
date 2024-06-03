@@ -290,16 +290,18 @@ class RedisController {
 
   /// Publishes a message to a Redis channel. All subscribed listeners will be
   /// notified across servers.
+  ///
+  /// Returns true if the message was successfully published.
   Future<bool> publish(String channel, String message) async {
     try {
       if (!await _connect()) {
         return false;
       }
-      var result = await _command!.send_object(
+      await _command?.send_object(
         ['PUBLISH', channel, message],
       );
-      //TODO: fix: result seems to be a counter. (https://redis.io/commands/publish/#return)
-      return result == 'OK';
+
+      return true;
     } catch (e) {
       _invalidateCommand();
       return false;

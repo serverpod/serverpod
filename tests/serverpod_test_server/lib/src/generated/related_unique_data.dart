@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
-abstract class RelatedUniqueData extends _i1.TableRow {
+abstract class RelatedUniqueData extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   RelatedUniqueData._({
     int? id,
     required this.uniqueDataId,
@@ -68,11 +69,11 @@ abstract class RelatedUniqueData extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'uniqueDataId': uniqueDataId,
-      if (uniqueData != null) 'uniqueData': uniqueData?.allToJson(),
+      if (uniqueData != null) 'uniqueData': uniqueData?.toJsonForProtocol(),
       'number': number,
     };
   }
@@ -99,6 +100,11 @@ abstract class RelatedUniqueData extends _i1.TableRow {
       orderByList: orderByList?.call(RelatedUniqueData.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ObjectWithIndex extends _i1.SerializableEntity {
+abstract class ObjectWithIndex implements _i1.SerializableModel {
   ObjectWithIndex._({
     this.id,
     required this.indexed,
@@ -52,6 +52,11 @@ abstract class ObjectWithIndex extends _i1.SerializableEntity {
       'indexed': indexed,
       'indexed2': indexed2,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

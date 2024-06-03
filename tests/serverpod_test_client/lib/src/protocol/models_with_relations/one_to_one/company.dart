@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class Company extends _i1.SerializableEntity {
+abstract class Company implements _i1.SerializableModel {
   Company._({
     this.id,
     required this.name,
@@ -63,6 +63,11 @@ abstract class Company extends _i1.SerializableEntity {
       'townId': townId,
       if (town != null) 'town': town?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

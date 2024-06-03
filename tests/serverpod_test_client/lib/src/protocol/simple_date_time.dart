@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Just some simple data.
-abstract class SimpleDateTime extends _i1.SerializableEntity {
+abstract class SimpleDateTime implements _i1.SerializableModel {
   SimpleDateTime._({
     this.id,
     required this.dateTime,
@@ -48,6 +48,11 @@ abstract class SimpleDateTime extends _i1.SerializableEntity {
       if (id != null) 'id': id,
       'dateTime': dateTime.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

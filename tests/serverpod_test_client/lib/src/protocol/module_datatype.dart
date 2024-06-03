@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_test_module_client/serverpod_test_module_client.dart'
     as _i2;
 
-abstract class ModuleDatatype extends _i1.SerializableEntity {
+abstract class ModuleDatatype implements _i1.SerializableModel {
   ModuleDatatype._({
     required this.model,
     required this.list,
@@ -57,6 +57,11 @@ abstract class ModuleDatatype extends _i1.SerializableEntity {
       'list': list.toJson(valueToJson: (v) => v.toJson()),
       'map': map.toJson(valueToJson: (v) => v.toJson()),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

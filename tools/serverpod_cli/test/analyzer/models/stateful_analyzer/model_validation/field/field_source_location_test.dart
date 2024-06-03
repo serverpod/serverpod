@@ -39,15 +39,15 @@ fields:
   );
 
   test(
-    'Given a class with a field with the parent keyword but without a value, then collect an error that locates the parent keyword in the comma separated string.',
+    'Given a class with a field with a relation, but without parent keyword value, then collect an error that locates the parent keyword in the comma separated string.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
           '''
-class: Example
-table: example
-fields:
-  nameId: int, parent=
+          class: Example
+          table: example
+          fields:
+            nameId: int, relation(parent=)
           ''',
         ).build()
       ];
@@ -65,22 +65,22 @@ fields:
       var error = collector.errors.first;
       expect(error.span, isNotNull);
       expect(error.span!.start.line, 3);
-      expect(error.span!.start.column, 22);
+      expect(error.span!.start.column, 41);
       expect(error.span!.end.line, 3);
-      expect(error.span!.end.column, 22);
+      expect(error.span!.end.column, 41);
     },
   );
 
   test(
-    'Given a class with a field with the parent keyword with an invalid table name, then collect an error that locates the value in the comma separated string.',
+    'Given a class with a field with a relation, but an invalid table name for parent keyword, then collect an error that locates the value in the comma separated string.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
           '''
-class: Example
-table: example
-fields:
-  nameId: int, parent=InvalidName_
+          class: Example
+          table: example
+          fields:
+            nameId: int, relation(parent=InvalidName_)
           ''',
         ).build()
       ];
@@ -98,9 +98,9 @@ fields:
       var error = collector.errors.first;
       expect(error.span, isNotNull);
       expect(error.span!.start.line, 3);
-      expect(error.span!.start.column, 22);
+      expect(error.span!.start.column, 41);
       expect(error.span!.end.line, 3);
-      expect(error.span!.end.column, 34);
+      expect(error.span!.end.column, 53);
     },
   );
 
@@ -168,10 +168,10 @@ fields:
       var models = [
         ModelSourceBuilder().withYaml(
           '''
-class: Example
-table: example
-fields:
-  nameId: int, database, database, parent=example
+          class: Example
+          table: example
+          fields:
+            nameId: int, !persist, !persist
           ''',
         ).build()
       ];
@@ -189,9 +189,9 @@ fields:
       var error = collector.errors.first;
       expect(error.span, isNotNull);
       expect(error.span!.start.line, 3);
-      expect(error.span!.start.column, 25);
+      expect(error.span!.start.column, 36);
       expect(error.span!.end.line, 3);
-      expect(error.span!.end.column, 33);
+      expect(error.span!.end.column, 43);
     },
   );
 
@@ -201,10 +201,10 @@ fields:
       var models = [
         ModelSourceBuilder().withYaml(
           '''
-class: Example
-table: example
-fields:
-  nameId: Invalid-Type, !persist
+          class: Example
+          table: example
+          fields:
+            nameId: Invalid-Type, !persist
           ''',
         ).build()
       ];
@@ -222,9 +222,9 @@ fields:
       var error = collector.errors.last;
       expect(error.span, isNotNull);
       expect(error.span!.start.line, 3);
-      expect(error.span!.start.column, 10);
+      expect(error.span!.start.column, 20);
       expect(error.span!.end.line, 3);
-      expect(error.span!.end.column, 22);
+      expect(error.span!.end.column, 32);
     },
   );
 }
