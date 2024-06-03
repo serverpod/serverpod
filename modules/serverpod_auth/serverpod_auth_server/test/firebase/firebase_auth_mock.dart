@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:jose/jose.dart';
-import 'package:rsa_pkcs/rsa_pkcs.dart';
 
 class MockAuthBaseClient extends http.BaseClient {
   final Map<String, dynamic> userJson;

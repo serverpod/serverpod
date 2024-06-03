@@ -1,3 +1,19 @@
+// https://github.com/appsup-dart/firebase_admin/blob/master/lib/src/auth.dart Licenced under Apache License.
+
+// Copyright (c) 2020, Rik Bellens.
+
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+
+//        http://www.apache.org/licenses/LICENSE-2.0
+
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
+
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:http/http.dart' as http;
 import 'package:openid_client/openid_client_io.dart';
@@ -7,49 +23,49 @@ import 'package:serverpod_auth_server/src/firebase/exceptions/firebase_exception
 
 /// Firebase Auth Manager
 class FirebaseAuthManager {
-  TokenVerifier? _tokenVerifier;
-  AuthRequestApi? _accountApi;
+  late final TokenVerifier _tokenVerifier;
+  late final AuthRequestApi _accountApi;
 
-  /// Firebase Auth initialization with firebaseServiceAccountKeyJson
-  Future<void> init(
-    Map<String, dynamic> json, {
+  /// Creates a new [FirebaseAuthManager] object with the given configs
+  FirebaseAuthManager(
+    Map<String, dynamic> firebaseServiceAccountJson, {
     http.Client? authClient,
     http.Client? openIdClient,
-  }) async {
-    var projectId = json['project_id'];
-    if (projectId == null) {
-      throw Exception('Invalid Project ID');
+  }) {
+    try {
+      if (firebaseServiceAccountJson.isEmpty) {
+        throw Exception('Invalid Firebase Account Service Json');
+      }
+
+      var projectId = firebaseServiceAccountJson['project_id'] as String?;
+      if (projectId == null || projectId.isEmpty) {
+        throw Exception('Invalid Firebase Project ID');
+      }
+
+      _accountApi = AuthRequestApi(
+        projectId: projectId,
+        credentials: ServiceAccountCredentials.fromJson(
+          firebaseServiceAccountJson,
+        ),
+        httClient: authClient,
+      );
+
+      _tokenVerifier = TokenVerifier(
+        projectId: projectId,
+        httpClient: openIdClient,
+      );
+    } catch (e) {
+      throw FirebaseInitException(
+        'Firebase Initialization Failed: $e',
+      );
     }
-
-    var client = await clientViaServiceAccount(
-      ServiceAccountCredentials.fromJson(json),
-      [
-        'https://www.googleapis.com/auth/cloud-platform',
-        'https://www.googleapis.com/auth/identitytoolkit',
-        'https://www.googleapis.com/auth/userinfo.email',
-      ],
-      baseClient: authClient,
-    );
-
-    _tokenVerifier = TokenVerifier(
-      projectId: projectId,
-      httpClient: openIdClient,
-    );
-
-    _accountApi = AuthRequestApi(
-      projectId: projectId,
-      client: client,
-    );
   }
 
   /// Firebase JWT verifier
   Future<IdToken> verifyIdToken(
     String idToken,
   ) async {
-    if (_accountApi == null || _tokenVerifier == null) {
-      throw FirebasInitException('FirebaseAdmin not initialized!');
-    }
-    var decodedIdToken = await _tokenVerifier!.verifyJwt(idToken);
+    var decodedIdToken = await _tokenVerifier.verifyJwt(idToken);
     return _verifyDecodedJwtNotRevoked(decodedIdToken);
   }
 
@@ -57,7 +73,7 @@ class FirebaseAuthManager {
     IdToken decodedIdToken,
   ) async {
     // Get tokens valid after time for the corresponding user.
-    var user = await _accountApi!.getUserByUiid(decodedIdToken.claims.subject);
+    var user = await _accountApi.getUserByUiid(decodedIdToken.claims.subject);
     // If no tokens valid after time available, token is not revoked.
     if (user.validSince != null) {
       // Get the ID token authentication time.

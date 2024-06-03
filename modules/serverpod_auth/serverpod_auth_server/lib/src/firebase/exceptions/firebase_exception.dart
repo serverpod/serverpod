@@ -11,9 +11,9 @@ abstract class FirebaseException implements Exception {
 }
 
 /// Firebase Initialization Exception
-class FirebasInitException extends FirebaseException {
-  /// Creates a new [FirebasInitException] object
-  FirebasInitException(super.message);
+class FirebaseInitException extends FirebaseException {
+  /// Creates a new [FirebaseInitException] object
+  FirebaseInitException(super.message);
 }
 
 /// Invalid User UIID Exception

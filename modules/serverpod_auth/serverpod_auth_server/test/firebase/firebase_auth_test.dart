@@ -8,10 +8,10 @@ void main() {
   group(
     'Given a Firebase Auth class with a valid UserRecord, ',
     () {
-      FirebaseAuthManager auth = FirebaseAuthManager();
+      late FirebaseAuthManager auth;
 
       setUp(() async {
-        await auth.init(
+        auth = FirebaseAuthManager(
           testAccountServiceJson,
           authClient: MockAuthBaseClient(
             userJson: getUserRecord(
@@ -19,10 +19,7 @@ void main() {
               validSince: DateTime.now().subtract(const Duration(days: 1)),
             ),
           ),
-          openIdClient: MockTokenClient(
-              // projectId: testAccountServiceJson['project_id'],
-              // issuer: getTestIssuer(),
-              ),
+          openIdClient: MockTokenClient(),
         );
       });
 
@@ -44,7 +41,7 @@ void main() {
       );
 
       test(
-        'when calling verifyIdToken with a invalid idToken uid, then an Exception should be thrown',
+        'when calling verifyIdToken with a invalid idToken uid, then an FirebaseInvalidUIIDException should be thrown',
         () async {
           var idToken = generateMockIdToken(
             projectId: 'project_id',
@@ -53,7 +50,7 @@ void main() {
 
           await expectLater(
             () async => await auth.verifyIdToken(idToken),
-            throwsA(isA<FirebaseException>()),
+            throwsA(isA<FirebaseInvalidUIIDException>()),
             reason:
                 'There is no user record corresponding to the provided identifier.',
           );
@@ -61,7 +58,7 @@ void main() {
       );
 
       test(
-        'when calling verifyIdToken with a invalid idToken, then an ArgumentError should be thrown',
+        'when calling verifyIdToken with a invalid idToken, then an FirebaseJWTException should be thrown',
         () async {
           var idToken = 'blablabla';
 
@@ -74,24 +71,34 @@ void main() {
     },
   );
 
-  group(
-    'Given a Firebase Auth class without initialization, ',
-    () {
-      FirebaseAuthManager auth = FirebaseAuthManager();
-      test(
-        'when calling verifyIdToken with a valid idToken, then an Exception should be thrown',
-        () async {
-          var idToken = generateMockIdToken(
-            projectId: 'project_id',
-            uid: 'abcdefghijklmnopqrstuvwxyz',
-          );
+  test(
+    'When initializing FirebaseAuthManager with an invalid service JSON, a FirebaseInitException should be thrown',
+    () async {
+      expect(
+        () => FirebaseAuthManager({}),
+        throwsA(isA<FirebaseInitException>()),
+        reason: 'Invalid Firebase Account Service Json',
+      );
+    },
+  );
 
-          await expectLater(
-            () async => await auth.verifyIdToken(idToken),
-            throwsA(isA<FirebaseException>()),
-            reason: 'FirebaseAdmin not initialized!',
-          );
-        },
+  test(
+    'When initializing FirebaseAuthManager with an invalid "project_id", a FirebaseInitException should be thrown',
+    () async {
+      expect(
+        () => FirebaseAuthManager({'project_id': ''}),
+        throwsA(isA<FirebaseInitException>()),
+        reason: 'Invalid Firebase Project ID',
+      );
+    },
+  );
+
+  test(
+    'When initializing FirebaseAuthManager with an valid "project_id" but missing account JSON data, a FirebaseInitException should be thrown',
+    () async {
+      expect(
+        () => FirebaseAuthManager({'project_id': 'test-test'}),
+        throwsA(isA<FirebaseInitException>()),
       );
     },
   );
@@ -99,9 +106,9 @@ void main() {
   group(
     'Given a Firebase Auth class with UserRecord valid since today, ',
     () {
-      FirebaseAuthManager auth = FirebaseAuthManager();
+      late FirebaseAuthManager auth;
       setUp(() async {
-        await auth.init(
+        auth = FirebaseAuthManager(
           testAccountServiceJson,
           authClient: MockAuthBaseClient(
             userJson: getUserRecord(
@@ -109,10 +116,7 @@ void main() {
               validSince: DateTime.now(),
             ),
           ),
-          openIdClient: MockTokenClient(
-              // projectId: testAccountServiceJson['project_id'],
-              // issuer: getTestIssuer(),
-              ),
+          openIdClient: MockTokenClient(),
         );
       });
 
@@ -131,7 +135,7 @@ void main() {
 
           await expectLater(
             () async => await auth.verifyIdToken(idToken),
-            throwsA(isA<FirebaseException>()),
+            throwsA(isA<FirebaseJWTException>()),
             reason: 'The Firebase ID token has been revoked.',
           );
         },

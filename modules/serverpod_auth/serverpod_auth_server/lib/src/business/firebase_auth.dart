@@ -19,8 +19,9 @@ class FirebaseAuth {
           .readAsString(),
     );
 
-    var authManager = FirebaseAuthManager();
-    await authManager.init(firebaseServiceAccountJson);
+    var authManager = FirebaseAuthManager(
+      firebaseServiceAccountJson,
+    );
 
     _authManager = authManager;
     return _authManager!;
