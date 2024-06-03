@@ -75,29 +75,22 @@ class ServerpodConfig {
     var doc = loadYaml(data);
 
     /// Get api server setup. This field cannot be null, so if the
-    /// configuration is missing, create a default configuration.
-    assert(doc['apiServer'] is Map, 'apiServer is missing in confing');
-    Map apiSetup = doc['apiServer'] ?? {};
-    var apiServer = apiSetup.isNotEmpty
-        ? ServerConfig._fromJson(apiSetup)
-        : ServerConfig(
-            port: 8080,
-            publicHost: 'localhost',
-            publicPort: 8080,
-            publicScheme: 'http',
-          );
+    /// configuration is missing an exception is thrown.
+    var apiSetup = doc['apiServer'];
+    if (apiSetup == null) {
+      throw Exception('apiServer is missing in config');
+    }
+
+    var apiServer = ServerConfig._fromJson(apiSetup);
 
     /// Get insights server setup
-    assert(doc['insightsServer'] is Map, 'insightsServer is missing in config');
-    Map insightsSetup = doc['insightsServer'] ?? {};
+    var insightsSetup = doc['insightsServer'];
     var insightsServer =
-        insightsSetup.isNotEmpty ? ServerConfig._fromJson(insightsSetup) : null;
+        insightsSetup != null ? ServerConfig._fromJson(insightsSetup) : null;
 
     /// Get web server setup
-    assert(doc['webServer'] is Map, 'webServer is missing in config');
-    Map webSetup = doc['webServer'] ?? {};
-    var webServer =
-        webSetup.isNotEmpty ? ServerConfig._fromJson(webSetup) : null;
+    var webSetup = doc['webServer'];
+    var webServer = webSetup != null ? ServerConfig._fromJson(webSetup) : null;
 
     // Get max request size (default to 512kb)
     var maxRequestSize = doc['maxRequestSize'] ?? 524288;
@@ -105,16 +98,13 @@ class ServerpodConfig {
     var serviceSecret = passwords['serviceSecret'];
 
     // Get database setup
-    assert(doc['database'] is Map, 'Database setup is missing in config');
-    Map dbSetup = doc['database'] ?? {};
-    var database = dbSetup.isNotEmpty
-        ? DatabaseConfig._fromJson(dbSetup, passwords)
-        : null;
+    var dbSetup = doc['database'];
+    var database =
+        dbSetup != null ? DatabaseConfig._fromJson(dbSetup, passwords) : null;
 
     // Get Redis setup
-    assert(doc['redis'] is Map, 'Redis setup is missing in config');
-    Map redisSetup = doc['redis'] ?? {};
-    var redis = redisSetup.isNotEmpty
+    var redisSetup = doc['redis'];
+    var redis = redisSetup != null
         ? RedisConfig._fromJson(redisSetup, passwords)
         : null;
 
