@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
+import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Builds a SQL query for a select statement.
@@ -296,6 +297,42 @@ class _ListQueryAdditions {
     required this.relationalFieldName,
     required this.whereAddition,
   });
+}
+
+/// Builds a SQL query for an insert statement.
+/// This is typically only used internally by the serverpod framework.
+class InsertQueryBuilder {
+  final Table _table;
+  final List<TableRow> _rows;
+
+  /// Creates a new [InsertQueryBuilder].
+  InsertQueryBuilder({
+    required Table table,
+    required List<TableRow> rows,
+  })  : _table = table,
+        _rows = rows;
+
+  /// Builds the insert SQL query.
+  String build() {
+    var selectedColumns =
+        _table.columns.where((column) => column.columnName != 'id');
+
+    var columnNames =
+        selectedColumns.map((e) => '"${e.columnName}"').join(', ');
+
+    var values = _rows.map((row) => row.toJson()).map((row) {
+      var values = selectedColumns.map((column) {
+        var unformattedValue = row[column.columnName];
+        return DatabasePoolManager.encoder.convert(unformattedValue);
+      }).join(', ');
+      return '($values)';
+    }).join(', ');
+
+    var query =
+        'INSERT INTO "${_table.tableName}" ($columnNames) VALUES $values RETURNING *';
+
+    return query;
+  }
 }
 
 /// Builds a SQL query for a count statement.

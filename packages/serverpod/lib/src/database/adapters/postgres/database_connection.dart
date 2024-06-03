@@ -134,22 +134,10 @@ class DatabaseConnection {
 
     var table = rows.first.table;
 
-    var selectedColumns =
-        table.columns.where((column) => column.columnName != 'id');
-
-    var columnNames =
-        selectedColumns.map((e) => '"${e.columnName}"').join(', ');
-
-    var values = rows.map((row) => row.toJson()).map((row) {
-      var values = selectedColumns.map((column) {
-        var unformattedValue = row[column.columnName];
-        return DatabasePoolManager.encoder.convert(unformattedValue);
-      }).join(', ');
-      return '($values)';
-    }).join(', ');
-
-    var query =
-        'INSERT INTO "${table.tableName}" ($columnNames) VALUES $values RETURNING *';
+    var query = InsertQueryBuilder(
+      table: table,
+      rows: rows,
+    ).build();
 
     var result =
         await _mappedResultsQuery(session, query, transaction: transaction);
