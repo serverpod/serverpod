@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 
@@ -23,6 +23,12 @@ class SignInWithFirebaseButton extends StatelessWidget {
   /// List of Firebase auth provider.
   final List<AuthProvider> authProviders;
 
+  /// The label widget of the button.
+  final Widget? label;
+
+  /// The icon widget of the button.
+  final Widget? icon;
+
   /// Creates a new Sign in with Firebase button.
   const SignInWithFirebaseButton({
     super.key,
@@ -31,6 +37,8 @@ class SignInWithFirebaseButton extends StatelessWidget {
     this.onSignedIn,
     this.onFailure,
     this.style,
+    this.label,
+    this.icon,
   });
 
   @override
@@ -61,8 +69,8 @@ class SignInWithFirebaseButton extends StatelessWidget {
           }
         });
       },
-      label: const Text('Sign in with Firebase'),
-      icon: const Icon(MdiIcons.firebase),
+      label: label ?? const Text('Sign in with Firebase'),
+      icon: icon ?? const Icon(MdiIcons.firebase),
     );
   }
 }
