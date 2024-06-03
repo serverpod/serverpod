@@ -7,5 +7,21 @@ WORKDIR /app
 # Copy the whole serverpod repo into the container.
 COPY . .
 
+# ENV DISPLAY=:99
+
+# RUN echo "deb http://deb.debian.org/debian/ unstable main contrib non-free" >> /etc/apt/sources.list.d/debian.list
+# RUN apt-get update
+# RUN apt-get install --fix-missing -y xvfb  
+
+# RUN apt-get install -y --no-install-recommends firefox
+
+
+WORKDIR /app/tests/serverpod_test_server
+RUN dart pub get
+
+WORKDIR /app
+
+
 # Setup database tables and start the server.
-CMD ["tests/docker/tests_single_server/run-tests.sh"]
+ENTRYPOINT ["tests/docker/tests_single_server/run-tests.sh"]
+

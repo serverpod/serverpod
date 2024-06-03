@@ -11,4 +11,5 @@ set -e
 
 cd tests/docker/tests_single_server
 
-docker compose up --abort-on-container-exit --exit-code-from tests --build --remove-orphans
+export PLATFORM=$1
+docker compose up --abort-on-container-exit --exit-code-from tests --build --remove-orphans 

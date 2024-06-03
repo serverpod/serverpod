@@ -11,7 +11,7 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies for test server.
-WORKDIR tests/serverpod_test_server
+WORKDIR /app/tests/serverpod_test_server
 RUN dart pub get
 
 # Setup database tables and start the server.
