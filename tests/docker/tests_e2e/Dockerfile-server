@@ -15,4 +15,4 @@ WORKDIR /app/tests/serverpod_test_server
 RUN dart pub get
 
 # Setup database tables and start the server.
-CMD ["../docker/tests_single_server/start-server.sh"]
+CMD ["../docker/tests_e2e/start-server.sh"]
