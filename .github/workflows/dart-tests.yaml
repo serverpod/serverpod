@@ -115,9 +115,9 @@ jobs:
       - name: Run unit tests
         run: dart test
         working-directory: ${{ matrix.path }}
-
-  single_server_tests:
-    name: Serverpod tests
+  
+  e2e_io_tests:
+    name: Serverpod E2E IO tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -127,8 +127,22 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
-      - name: Run single server tests
-        run: util/run_tests_single_server
+      - name: Run e2e tests
+        run: util/run_tests_e2e
+    
+  e2e_web_tests:
+    name: Serverpod E2E web tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.13.0', '3.19.5']
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+      - name: Run e2e tests
+        run: util/run_tests_e2e firefox
 
   integration_tests:
     name: Serverpod integration tests
