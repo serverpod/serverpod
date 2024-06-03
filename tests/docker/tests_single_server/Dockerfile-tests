@@ -7,13 +7,11 @@ WORKDIR /app
 # Copy the whole serverpod repo into the container.
 COPY . .
 
-# ENV DISPLAY=:99
+RUN echo "deb http://deb.debian.org/debian/ unstable main contrib non-free" >> /etc/apt/sources.list.d/debian.list
+RUN apt-get update
+RUN apt-get install --fix-missing -y xvfb  
 
-# RUN echo "deb http://deb.debian.org/debian/ unstable main contrib non-free" >> /etc/apt/sources.list.d/debian.list
-# RUN apt-get update
-# RUN apt-get install --fix-missing -y xvfb  
-
-# RUN apt-get install -y --no-install-recommends firefox
+RUN apt-get install -y --no-install-recommends firefox
 
 
 WORKDIR /app/tests/serverpod_test_server
