@@ -176,7 +176,7 @@ class ServerConfig {
   /// Public facing scheme, i.e. http or https.
   final String publicScheme;
 
-  ///
+  /// Creates a new [ServerConfig].
   ServerConfig({
     required this.port,
     required this.publicScheme,
@@ -184,12 +184,23 @@ class ServerConfig {
     required this.publicPort,
   });
 
-  factory ServerConfig._fromJson(Map serverSetup) {
+  factory ServerConfig._fromJson(Map serverSetup, String name) {
+    _validateJsonConfig(
+      const {
+        'port': int,
+        'publicHost': String,
+        'publicPort': int,
+        'publicScheme': String,
+      },
+      serverSetup,
+      name,
+    );
+
     return ServerConfig(
-      port: serverSetup['port'] as int,
-      publicHost: serverSetup['publicHost'] as String,
-      publicPort: serverSetup['publicPort'] as int,
-      publicScheme: serverSetup['publicScheme'] as String,
+      port: serverSetup['port'],
+      publicHost: serverSetup['publicHost'],
+      publicPort: serverSetup['publicPort'],
+      publicScheme: serverSetup['publicScheme'],
     );
   }
 
@@ -239,16 +250,31 @@ class DatabaseConfig {
     this.isUnixSocket = false,
   });
 
-  factory DatabaseConfig._fromJson(Map dbSetup, Map<String, String> passwords) {
-    assert(passwords['database'] != null, 'Database password is missing');
+  factory DatabaseConfig._fromJson(Map dbSetup, Map passwords, String name) {
+    _validateJsonConfig(
+      const {
+        'host': String,
+        'port': int,
+        'name': String,
+        'user': String,
+      },
+      dbSetup,
+      name,
+    );
+
+    var password = passwords['database'];
+    if (password == null) {
+      throw Exception('Missing database password.');
+    }
+
     return DatabaseConfig(
-      host: dbSetup['host']!,
-      port: dbSetup['port']!,
-      name: dbSetup['name']!,
-      user: dbSetup['user']!,
+      host: dbSetup['host'],
+      port: dbSetup['port'],
+      name: dbSetup['name'],
+      user: dbSetup['user'],
       requireSsl: dbSetup['requireSsl'] ?? false,
       isUnixSocket: dbSetup['isUnixSocket'] ?? false,
-      password: passwords['database']!,
+      password: passwords['database'],
     );
   }
 
@@ -292,11 +318,20 @@ class RedisConfig {
     this.password,
   });
 
-  factory RedisConfig._fromJson(Map redisSetup, Map<String, String> passwords) {
+  factory RedisConfig._fromJson(Map redisSetup, Map passwords, String name) {
+    _validateJsonConfig(
+      const {
+        'host': String,
+        'port': int,
+      },
+      redisSetup,
+      name,
+    );
+
     return RedisConfig(
       enabled: redisSetup['enabled'] ?? false,
-      host: redisSetup['host']!,
-      port: redisSetup['port']!,
+      host: redisSetup['host'],
+      port: redisSetup['port'],
       user: redisSetup['user'],
       password: passwords['redis'],
     );
@@ -314,5 +349,27 @@ class RedisConfig {
       str += 'redis pass: ********\n';
     }
     return str;
+  }
+}
+
+/// Validates that a JSON configuration contains all required keys, and that
+/// the values have the correct types.
+///
+/// Throws an exception if a key is missing or if the value has the wrong type.
+void _validateJsonConfig(
+  Map<String, Type> expectedConfiguration,
+  Map jsonConfig,
+  String name,
+) {
+  for (var MapEntry(key: key, value: value) in expectedConfiguration.entries) {
+    if (!jsonConfig.containsKey(key)) {
+      throw Exception('$name is missing required configuration for $key.');
+    }
+
+    if (jsonConfig[key].runtimeType != value) {
+      throw Exception(
+        '$name configuration has invalid type for $key. Expected $value, got ${jsonConfig[key].runtimeType}.',
+      );
+    }
   }
 }
