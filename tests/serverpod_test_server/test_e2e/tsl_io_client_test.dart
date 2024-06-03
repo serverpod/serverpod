@@ -1,3 +1,4 @@
+@TestOn('vm')
 import 'dart:io';
 
 import 'package:serverpod_service_client/serverpod_service_client.dart';
