@@ -14,13 +14,11 @@ abstract class EmptyModelRelationItem implements _i1.SerializableModel {
   EmptyModelRelationItem._({
     this.id,
     required this.name,
-    required this.containerId,
   });
 
   factory EmptyModelRelationItem({
     int? id,
     required String name,
-    required int containerId,
   }) = _EmptyModelRelationItemImpl;
 
   factory EmptyModelRelationItem.fromJson(
@@ -28,7 +26,6 @@ abstract class EmptyModelRelationItem implements _i1.SerializableModel {
     return EmptyModelRelationItem(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      containerId: jsonSerialization['containerId'] as int,
     );
   }
 
@@ -39,19 +36,15 @@ abstract class EmptyModelRelationItem implements _i1.SerializableModel {
 
   String name;
 
-  int containerId;
-
   EmptyModelRelationItem copyWith({
     int? id,
     String? name,
-    int? containerId,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
       'name': name,
-      'containerId': containerId,
     };
   }
 
@@ -67,23 +60,19 @@ class _EmptyModelRelationItemImpl extends EmptyModelRelationItem {
   _EmptyModelRelationItemImpl({
     int? id,
     required String name,
-    required int containerId,
   }) : super._(
           id: id,
           name: name,
-          containerId: containerId,
         );
 
   @override
   EmptyModelRelationItem copyWith({
     Object? id = _Undefined,
     String? name,
-    int? containerId,
   }) {
     return EmptyModelRelationItem(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      containerId: containerId ?? this.containerId,
     );
   }
 }

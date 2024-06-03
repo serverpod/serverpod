@@ -826,12 +826,6 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'String',
         ),
         _i2.ColumnDefinition(
-          name: 'containerId',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
           name: '_emptyModelItemsEmptyModelId',
           columnType: _i2.ColumnType.bigint,
           isNullable: true,
@@ -841,16 +835,6 @@ class Protocol extends _i1.SerializationManagerServer {
       foreignKeys: [
         _i2.ForeignKeyDefinition(
           constraintName: 'empty_model_relation_item_fk_0',
-          columns: ['containerId'],
-          referenceTable: 'empty_model',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.noAction,
-          matchType: null,
-        ),
-        _i2.ForeignKeyDefinition(
-          constraintName: 'empty_model_relation_item_fk_1',
           columns: ['_emptyModelItemsEmptyModelId'],
           referenceTable: 'empty_model',
           referenceTableSchema: 'public',
@@ -858,7 +842,7 @@ class Protocol extends _i1.SerializationManagerServer {
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.noAction,
           matchType: null,
-        ),
+        )
       ],
       indexes: [
         _i2.IndexDefinition(

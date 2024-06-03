@@ -15,13 +15,11 @@ abstract class EmptyModelRelationItem extends _i1.TableRow
   EmptyModelRelationItem._({
     int? id,
     required this.name,
-    required this.containerId,
   }) : super(id);
 
   factory EmptyModelRelationItem({
     int? id,
     required String name,
-    required int containerId,
   }) = _EmptyModelRelationItemImpl;
 
   factory EmptyModelRelationItem.fromJson(
@@ -29,7 +27,6 @@ abstract class EmptyModelRelationItem extends _i1.TableRow
     return EmptyModelRelationItem(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      containerId: jsonSerialization['containerId'] as int,
     );
   }
 
@@ -39,8 +36,6 @@ abstract class EmptyModelRelationItem extends _i1.TableRow
 
   String name;
 
-  int containerId;
-
   int? _emptyModelItemsEmptyModelId;
 
   @override
@@ -49,14 +44,12 @@ abstract class EmptyModelRelationItem extends _i1.TableRow
   EmptyModelRelationItem copyWith({
     int? id,
     String? name,
-    int? containerId,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
       'name': name,
-      'containerId': containerId,
       if (_emptyModelItemsEmptyModelId != null)
         '_emptyModelItemsEmptyModelId': _emptyModelItemsEmptyModelId,
     };
@@ -67,7 +60,6 @@ abstract class EmptyModelRelationItem extends _i1.TableRow
     return {
       if (id != null) 'id': id,
       'name': name,
-      'containerId': containerId,
     };
   }
 
@@ -107,23 +99,19 @@ class _EmptyModelRelationItemImpl extends EmptyModelRelationItem {
   _EmptyModelRelationItemImpl({
     int? id,
     required String name,
-    required int containerId,
   }) : super._(
           id: id,
           name: name,
-          containerId: containerId,
         );
 
   @override
   EmptyModelRelationItem copyWith({
     Object? id = _Undefined,
     String? name,
-    int? containerId,
   }) {
     return EmptyModelRelationItem(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      containerId: containerId ?? this.containerId,
     );
   }
 }
@@ -132,12 +120,10 @@ class EmptyModelRelationItemImplicit extends _EmptyModelRelationItemImpl {
   EmptyModelRelationItemImplicit._({
     int? id,
     required String name,
-    required int containerId,
     this.$_emptyModelItemsEmptyModelId,
   }) : super(
           id: id,
           name: name,
-          containerId: containerId,
         );
 
   factory EmptyModelRelationItemImplicit(
@@ -147,7 +133,6 @@ class EmptyModelRelationItemImplicit extends _EmptyModelRelationItemImpl {
     return EmptyModelRelationItemImplicit._(
       id: emptyModelRelationItem.id,
       name: emptyModelRelationItem.name,
-      containerId: emptyModelRelationItem.containerId,
       $_emptyModelItemsEmptyModelId: $_emptyModelItemsEmptyModelId,
     );
   }
@@ -170,10 +155,6 @@ class EmptyModelRelationItemTable extends _i1.Table {
       'name',
       this,
     );
-    containerId = _i1.ColumnInt(
-      'containerId',
-      this,
-    );
     $_emptyModelItemsEmptyModelId = _i1.ColumnInt(
       '_emptyModelItemsEmptyModelId',
       this,
@@ -182,15 +163,12 @@ class EmptyModelRelationItemTable extends _i1.Table {
 
   late final _i1.ColumnString name;
 
-  late final _i1.ColumnInt containerId;
-
   late final _i1.ColumnInt $_emptyModelItemsEmptyModelId;
 
   @override
   List<_i1.Column> get columns => [
         id,
         name,
-        containerId,
         $_emptyModelItemsEmptyModelId,
       ];
 }
