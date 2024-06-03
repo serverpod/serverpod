@@ -20,28 +20,34 @@ class MessageCentral {
   /// can be provided, in which case the message is sent only to that specific
   /// server within the cluster. If no [destinationServerId] is provided, the
   /// message is passed on to all servers in the cluster.
-  void postMessage(
+  ///
+  /// Returns true if the message was successfully posted.
+  ///
+  /// Throws a [StateError] if Redis is not enabled and [global] is set to true.
+  Future<bool> postMessage(
     String channelName,
     SerializableModel message, {
     bool global = false,
-  }) {
+  }) async {
     if (global) {
       // Send to Redis
-      assert(
-        Serverpod.instance.redisController != null,
-        'Redis needs to be enabled to use this method',
-      );
       var data =
           Serverpod.instance.serializationManager.encodeWithType(message);
-      Serverpod.instance.redisController!.publish(channelName, data);
+      var redisController = Serverpod.instance.redisController;
+      if (redisController == null) {
+        throw StateError('Redis needs to be enabled to use this method');
+      }
+
+      return await redisController.publish(channelName, data);
     } else {
       // Handle internally in this server instance
       var channel = _channels[channelName];
-      if (channel == null) return;
+      if (channel == null) return true;
 
       for (var callback in channel) {
         callback(message);
       }
+      return true;
     }
   }
 

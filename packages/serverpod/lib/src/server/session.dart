@@ -53,6 +53,9 @@ abstract class Session {
 
   String? _authenticationKey;
 
+  /// The authentication key used to authenticate the session.
+  String? get authenticationKey => _authenticationKey;
+
   /// An custom object associated with this [Session]. This is especially
   /// useful for keeping track of the state in a [StreamingEndpoint].
   dynamic userObject;
@@ -497,16 +500,20 @@ class MessageCentralAccess {
 
   /// Posts a [message] to a named channel. If [global] is set to true, the
   /// message will be posted to all servers in the cluster, otherwise it will
-  /// only be posted locally on the current server.
-  void postMessage(
+  /// only be posted locally on the current server. Returns true if the message
+  /// was successfully posted.
+  ///
+  /// Returns true if the message was successfully posted.
+  ///
+  /// Throws a [StateError] if Redis is not enabled and [global] is set to true.
+  Future<bool> postMessage(
     String channelName,
     SerializableModel message, {
     bool global = false,
-  }) {
-    _session.server.messageCentral.postMessage(
-      channelName,
-      message,
-      global: global,
-    );
-  }
+  }) =>
+      _session.server.messageCentral.postMessage(
+        channelName,
+        message,
+        global: global,
+      );
 }
