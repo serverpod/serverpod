@@ -73,4 +73,19 @@ void main() {
           throwsArgumentError);
     });
   });
+
+  group(
+      'Given model with only id column when building insert query then default values are used in the query.',
+      () {
+    test(
+        'when building insert query with a row then output is a valid SQL query that lists the columns.',
+        () {
+      var query = InsertQueryBuilder(
+        table: Table(tableName: 'only_id'),
+        rows: [OnlyIdClass()],
+      ).build();
+
+      expect(query, 'INSERT INTO "only_id" DEFAULT VALUES RETURNING *');
+    });
+  });
 }

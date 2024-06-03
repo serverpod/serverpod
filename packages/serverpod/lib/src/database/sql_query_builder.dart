@@ -337,10 +337,9 @@ class InsertQueryBuilder {
       return '($values)';
     }).join(', ');
 
-    var query =
-        'INSERT INTO "${_table.tableName}" ($columnNames) VALUES $values RETURNING *';
-
-    return query;
+    return columnNames.isEmpty
+        ? 'INSERT INTO "${_table.tableName}" DEFAULT VALUES RETURNING *'
+        : 'INSERT INTO "${_table.tableName}" ($columnNames) VALUES $values RETURNING *';
   }
 }
 
