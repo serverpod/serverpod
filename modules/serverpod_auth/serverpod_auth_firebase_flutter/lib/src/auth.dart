@@ -15,18 +15,18 @@ Future<UserInfo?> signInWithFirebase({
   bool debug = false,
 }) async {
   final navigator = Navigator.of(context);
-  return await navigator.push<UserInfo?>(
+  return Navigator.of(context).push<UserInfo?>(
     MaterialPageRoute(
       builder: (context) {
         return SignInScreen(
           providers: authProviders,
           actions: [
             AuthCancelledAction((context) {
-              Navigator.of(context).pop(null);
+              navigator.maybePop();
             }),
             AuthStateChangeAction<SignedIn>((context, state) async {
               if (state.user == null) {
-                navigator.pop(null);
+                navigator.maybePop();
                 return;
               } else {
                 var user = state.user!;
@@ -46,7 +46,7 @@ Future<UserInfo?> signInWithFirebase({
                         '. Aborting.',
                       );
                     }
-                    navigator.pop(null);
+                    navigator.maybePop();
                     return;
                   }
 
@@ -65,7 +65,7 @@ Future<UserInfo?> signInWithFirebase({
                     print('serverpod_auth_firebase: Failed to authenticate '
                         'with Serverpod backend: $e');
                   }
-                  navigator.pop(null);
+                  navigator.maybePop();
                   return;
                 }
               }
