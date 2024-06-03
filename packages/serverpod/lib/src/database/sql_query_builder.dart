@@ -303,14 +303,23 @@ class _ListQueryAdditions {
 /// This is typically only used internally by the serverpod framework.
 class InsertQueryBuilder {
   final Table _table;
-  final List<TableRow> _rows;
+  late final List<TableRow> _rows;
 
   /// Creates a new [InsertQueryBuilder].
   InsertQueryBuilder({
     required Table table,
     required List<TableRow> rows,
-  })  : _table = table,
-        _rows = rows;
+  }) : _table = table {
+    if (rows.isEmpty) {
+      throw ArgumentError.value(
+        rows,
+        'rows',
+        'Cannot be empty',
+      );
+    }
+
+    _rows = rows;
+  }
 
   /// Builds the insert SQL query.
   String build() {
