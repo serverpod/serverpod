@@ -2,12 +2,15 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
+// These tests uses the yaml package to parse the yaml configuration and then convert
+// then to a Map.
+// This was to better reflect the actual configuration of the ServerpodConfig.
 void main() {
   test(
-      'Given Serverpod config missing api server configuration when loading from Yaml then exception is thrown.',
+      'Given Serverpod config missing api server configuration when loading from Map then exception is thrown.',
       () {
     expect(
-      () => ServerpodConfig.loadFromYaml('', '', {}, YamlMap()),
+      () => ServerpodConfig.loadFromMap('', '', {}, {}),
       throwsA(isA<Exception>().having(
         (e) => e.toString(),
         'message',
@@ -17,7 +20,7 @@ void main() {
   });
 
   test(
-      'Given Serverpod config with api server configuration missing required port when loading from Yaml then exception is thrown.',
+      'Given Serverpod config with api server configuration missing required port when loading from Map then exception is thrown.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -27,7 +30,7 @@ apiServer:
 ''';
 
     expect(
-      () => ServerpodConfig.loadFromYaml(
+      () => ServerpodConfig.loadFromMap(
         '',
         '',
         {},
@@ -43,7 +46,7 @@ apiServer:
   });
 
   test(
-      'Given Serverpod config with api server with wrong port type when loading from Yaml then exception is thrown.',
+      'Given Serverpod config with api server with wrong port type when loading from Map then exception is thrown.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -54,7 +57,7 @@ apiServer:
 ''';
 
     expect(
-      () => ServerpodConfig.loadFromYaml(
+      () => ServerpodConfig.loadFromMap(
         '',
         '',
         {},
@@ -70,7 +73,7 @@ apiServer:
   });
 
   test(
-      'Given Serverpod config with api server configuration when loading from Yaml then config is loaded correctly.',
+      'Given Serverpod config with api server configuration when loading from Map then config is loaded correctly.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -80,7 +83,7 @@ apiServer:
   publicScheme: http
 ''';
 
-    var config = ServerpodConfig.loadFromYaml(
+    var config = ServerpodConfig.loadFromMap(
       'myRunMode',
       'myServerId',
       {'serviceSecret': 'password'},
@@ -102,7 +105,7 @@ apiServer:
   });
 
   test(
-      'Given Serverpod config with insights server configuration when loading from Yaml then config is loaded correctly.',
+      'Given Serverpod config with insights server configuration when loading from Map then config is loaded correctly.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -117,7 +120,7 @@ insightsServer:
   publicScheme: http
 ''';
 
-    var config = ServerpodConfig.loadFromYaml(
+    var config = ServerpodConfig.loadFromMap(
       '',
       '',
       {},
@@ -131,7 +134,7 @@ insightsServer:
   });
 
   test(
-      'Given Serverpod config with web server configuration when loading from Yaml then config is loaded correctly.',
+      'Given Serverpod config with web server configuration when loading from Map then config is loaded correctly.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -146,7 +149,7 @@ webServer:
   publicScheme: http
 ''';
 
-    var config = ServerpodConfig.loadFromYaml(
+    var config = ServerpodConfig.loadFromMap(
       '',
       '',
       {},
@@ -160,7 +163,7 @@ webServer:
   });
 
   test(
-      'Given Serverpod config with max request size when loading from Yaml then config is loaded correctly.',
+      'Given Serverpod config with max request size when loading from Map then config is loaded correctly.',
       () {
     var serverpodConfig = ''' 
 apiServer:
@@ -171,7 +174,7 @@ apiServer:
 maxRequestSize: 1048576
 ''';
 
-    var config = ServerpodConfig.loadFromYaml(
+    var config = ServerpodConfig.loadFromMap(
       '',
       '',
       {},
@@ -182,7 +185,7 @@ maxRequestSize: 1048576
   });
 
   test(
-      'Given Serverpod config with database configuration without password when loading from Yaml then exception is thrown.',
+      'Given Serverpod config with database configuration without password when loading from Map then exception is thrown.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -198,7 +201,7 @@ database:
 ''';
 
     expect(
-      () => ServerpodConfig.loadFromYaml(
+      () => ServerpodConfig.loadFromMap(
         '',
         '',
         {},
@@ -213,7 +216,7 @@ database:
   });
 
   test(
-      'Given Serverpod config with database configuration missing required field when loading from Yaml then exception is thrown.',
+      'Given Serverpod config with database configuration missing required field when loading from Map then exception is thrown.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -228,7 +231,7 @@ database:
 ''';
 
     expect(
-      () => ServerpodConfig.loadFromYaml(
+      () => ServerpodConfig.loadFromMap(
         '',
         '',
         {'database': 'password'},
@@ -244,7 +247,7 @@ database:
   });
 
   test(
-      'Given Serverpod config with database configuration when loading from Yaml then config is loaded correctly.',
+      'Given Serverpod config with database configuration when loading from Map then config is loaded correctly.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -259,7 +262,7 @@ database:
   user: test
 ''';
 
-    var config = ServerpodConfig.loadFromYaml(
+    var config = ServerpodConfig.loadFromMap(
       '',
       '',
       {'database': 'password'},
@@ -274,7 +277,7 @@ database:
   });
 
   test(
-      'Given Serverpod config with redis configuration missing required field when loading from Yaml then exception is thrown.',
+      'Given Serverpod config with redis configuration missing required field when loading from Map then exception is thrown.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -287,7 +290,7 @@ redis:
 ''';
 
     expect(
-      () => ServerpodConfig.loadFromYaml(
+      () => ServerpodConfig.loadFromMap(
         '',
         '',
         {},
@@ -302,7 +305,7 @@ redis:
   });
 
   test(
-      'Given Serverpod config with redis configuration when loading from Yaml then config is loaded correctly.',
+      'Given Serverpod config with redis configuration when loading from Map then config is loaded correctly.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -315,7 +318,7 @@ redis:
   port: 6379
 ''';
 
-    var config = ServerpodConfig.loadFromYaml(
+    var config = ServerpodConfig.loadFromMap(
       '',
       '',
       {'redis': 'password'},

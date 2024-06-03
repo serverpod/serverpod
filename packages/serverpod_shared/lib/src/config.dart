@@ -61,19 +61,19 @@ class ServerpodConfig {
     );
   }
 
-  /// Creates a new [ServerpodConfig] from a YAML document.
-  /// Expects the yaml document to match the specified run mode.
+  /// Creates a new [ServerpodConfig] from a configuration Map.
+  /// Expects the Map to match the specified run mode.
   ///
   /// Throws an exception if the configuration is missing required fields.
-  factory ServerpodConfig.loadFromYaml(
+  factory ServerpodConfig.loadFromMap(
     String runMode,
     String serverId,
     Map<String, String> passwords,
-    YamlMap yaml,
+    Map configMap,
   ) {
     /// Get api server setup. This field cannot be null, so if the
     /// configuration is missing an exception is thrown.
-    var apiSetup = yaml['apiServer'];
+    var apiSetup = configMap['apiServer'];
     if (apiSetup == null) {
       throw Exception('apiServer is missing in config');
     }
@@ -81,29 +81,29 @@ class ServerpodConfig {
     var apiServer = ServerConfig._fromJson(apiSetup, 'apiServer');
 
     /// Get insights server setup
-    var insightsSetup = yaml['insightsServer'];
+    var insightsSetup = configMap['insightsServer'];
     var insightsServer = insightsSetup != null
         ? ServerConfig._fromJson(insightsSetup, 'insightsServer')
         : null;
 
     /// Get web server setup
-    var webSetup = yaml['webServer'];
+    var webSetup = configMap['webServer'];
     var webServer =
         webSetup != null ? ServerConfig._fromJson(webSetup, 'webServer') : null;
 
     // Get max request size (default to 512kb)
-    var maxRequestSize = yaml['maxRequestSize'] ?? 524288;
+    var maxRequestSize = configMap['maxRequestSize'] ?? 524288;
 
     var serviceSecret = passwords['serviceSecret'];
 
     // Get database setup
-    var dbSetup = yaml['database'];
+    var dbSetup = configMap['database'];
     var database = dbSetup != null
         ? DatabaseConfig._fromJson(dbSetup, passwords, 'database')
         : null;
 
     // Get Redis setup
-    var redisSetup = yaml['redis'];
+    var redisSetup = configMap['redis'];
     var redis = redisSetup != null
         ? RedisConfig._fromJson(redisSetup, passwords, 'redis')
         : null;
@@ -133,7 +133,7 @@ class ServerpodConfig {
     data = File(_createConfigPath(runMode)).readAsStringSync();
 
     var doc = loadYaml(data);
-    return ServerpodConfig.loadFromYaml(runMode, serverId, passwords, doc);
+    return ServerpodConfig.loadFromMap(runMode, serverId, passwords, doc);
   }
 
   /// Checks if a configuration file is available on disk for the given run mode.
