@@ -54,15 +54,16 @@ class ResourceManager {
   }) async {
     localStoragePath ??= localStorageDirectory.path;
 
-    return LocalStorageManager.storeJsonFile(
-      fileName: ResourceManagerConstants.latestVersionFilePath,
-      json: cliVersionData.toJson(),
-      localStoragePath: localStoragePath,
-      onError: (_) {
-        // Failed to store latest cli version to file.
-        // Silently ignore since users can't do anything about it.
-      },
-    );
+    try {
+      await LocalStorageManager.storeJsonFile(
+        fileName: ResourceManagerConstants.latestVersionFilePath,
+        json: cliVersionData.toJson(),
+        localStoragePath: localStoragePath,
+      );
+    } catch (e) {
+      // Failed to store latest cli version to file.
+      // Silently ignore since users can't do anything about it.
+    }
   }
 
   Future<PackageVersionData?> tryFetchLatestCliVersion({
@@ -70,23 +71,28 @@ class ResourceManager {
   }) async {
     localStoragePath ??= localStorageDirectory.path;
 
-    PackageVersionData? deleteFile(Object e, File file) {
+    void deleteFile(File file) {
       try {
         file.deleteSync();
       } catch (_) {
         // Failed to delete file.
         // Silently ignore since users can't do anything about it.
       }
-      return null;
     }
 
-    return LocalStorageManager.tryFetchAndDeserializeJsonFile(
-      fileName: ResourceManagerConstants.latestVersionFilePath,
-      localStoragePath: localStoragePath,
-      fromJson: PackageVersionData.fromJson,
-      onReadError: deleteFile,
-      onDeserializationError: deleteFile,
-    );
+    try {
+      return await LocalStorageManager.tryFetchAndDeserializeJsonFile(
+        fileName: ResourceManagerConstants.latestVersionFilePath,
+        localStoragePath: localStoragePath,
+        fromJson: PackageVersionData.fromJson,
+      );
+    } on ReadException catch (e) {
+      deleteFile(e.file);
+    } on DeserializationException catch (e) {
+      deleteFile(e.file);
+    }
+
+    return null;
   }
 
   Future<void> storeServerpodCloudData(
@@ -95,14 +101,25 @@ class ResourceManager {
   }) async {
     localStoragePath ??= localStorageDirectory.path;
 
-    return LocalStorageManager.storeJsonFile(
-      fileName: ResourceManagerConstants.serverpodCloudDataFilePath,
-      json: cloudData.toJson(),
-      localStoragePath: localStoragePath,
-      onError: (e) {
-        throw Exception('Failed to store serverpod cloud data. error: $e');
-      },
-    );
+    try {
+      await LocalStorageManager.storeJsonFile(
+        fileName: ResourceManagerConstants.serverpodCloudDataFilePath,
+        json: cloudData.toJson(),
+        localStoragePath: localStoragePath,
+      );
+    } on CreateException catch (e) {
+      throw Exception(
+        'Failed to store serverpod cloud data. error: ${e.error}',
+      );
+    } on SerializationException catch (e) {
+      throw Exception(
+        'Failed to store serverpod cloud data. error: ${e.error}',
+      );
+    } on WriteException catch (e) {
+      throw Exception(
+        'Failed to store serverpod cloud data. error: ${e.error}',
+      );
+    }
   }
 
   /// Removes the serverpod cloud data file from the local storage.
@@ -111,13 +128,16 @@ class ResourceManager {
   Future<void> removeServerpodCloudData({String? localStoragePath}) async {
     localStoragePath ??= localStorageDirectory.path;
 
-    return LocalStorageManager.removeFile(
-      fileName: ResourceManagerConstants.serverpodCloudDataFilePath,
-      localStoragePath: localStoragePath,
-      onError: (e) {
-        throw Exception('Failed to remove serverpod cloud data. error: $e');
-      },
-    );
+    try {
+      await LocalStorageManager.removeFile(
+        fileName: ResourceManagerConstants.serverpodCloudDataFilePath,
+        localStoragePath: localStoragePath,
+      );
+    } on DeleteException catch (e) {
+      throw Exception(
+        'Failed to remove serverpod cloud data. error: ${e.error}',
+      );
+    }
   }
 
   Future<ServerpodCloudData?> tryFetchServerpodCloudData({
@@ -125,7 +145,7 @@ class ResourceManager {
   }) async {
     localStoragePath ??= localStorageDirectory.path;
 
-    ServerpodCloudData? deleteFile(Object e, File file) {
+    void deleteFile(File file) {
       try {
         file.deleteSync();
       } catch (deleteError) {
@@ -133,16 +153,21 @@ class ResourceManager {
           'Failed to delete stored serverpod cloud data file. Error: $deleteError',
         );
       }
-      return null;
     }
 
-    return LocalStorageManager.tryFetchAndDeserializeJsonFile(
-      fileName: ResourceManagerConstants.serverpodCloudDataFilePath,
-      localStoragePath: localStoragePath,
-      fromJson: ServerpodCloudData.fromJson,
-      onReadError: deleteFile,
-      onDeserializationError: deleteFile,
-    );
+    try {
+      return await LocalStorageManager.tryFetchAndDeserializeJsonFile(
+        fileName: ResourceManagerConstants.serverpodCloudDataFilePath,
+        localStoragePath: localStoragePath,
+        fromJson: ServerpodCloudData.fromJson,
+      );
+    } on ReadException catch (e) {
+      deleteFile(e.file);
+    } on DeserializationException catch (e) {
+      deleteFile(e.file);
+    }
+
+    return null;
   }
 
   String get packageDownloadUrl =>
