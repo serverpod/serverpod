@@ -15,7 +15,7 @@ Future<UserInfo?> signInWithFirebase({
   bool debug = false,
 }) async {
   final navigator = Navigator.of(context);
-  return Navigator.of(context).push<UserInfo?>(
+  return navigator.push<UserInfo?>(
     MaterialPageRoute(
       builder: (context) {
         return SignInScreen(
