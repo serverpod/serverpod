@@ -75,17 +75,17 @@ class FirebaseAuthManager {
     // Get tokens valid after time for the corresponding user.
     var user = await _accountApi.getUserByUiid(decodedIdToken.claims.subject);
     // If no tokens valid after time available, token is not revoked.
-    if (user.validSince != null) {
-      // Get the ID token authentication time.
-      var authTimeUtc = decodedIdToken.claims.authTime!;
-      // Get user tokens valid after time.
-      var validSinceUtc = DateTime.fromMillisecondsSinceEpoch(
-        num.parse(user.validSince!).toInt(),
-      );
-      // Check if authentication time is older than valid since time.
-      if (authTimeUtc.isBefore(validSinceUtc)) {
-        throw FirebaseJWTException('The Firebase ID token has been revoked.');
-      }
+    if (user.validSince == null) return decodedIdToken;
+
+    // Get the ID token authentication time.
+    var authTimeUtc = decodedIdToken.claims.authTime!;
+    // Get user tokens valid after time.
+    var validSinceUtc = DateTime.fromMillisecondsSinceEpoch(
+      num.parse(user.validSince!).toInt(),
+    );
+    // Check if authentication time is older than valid since time.
+    if (authTimeUtc.isBefore(validSinceUtc)) {
+      throw FirebaseJWTException('The Firebase ID token has been revoked.');
     }
     // All checks above passed. Return the decoded token.
     return decodedIdToken;
