@@ -114,7 +114,6 @@ CREATE TABLE "empty_model" (
 CREATE TABLE "empty_model_relation_item" (
     "id" bigserial PRIMARY KEY,
     "name" text NOT NULL,
-    "containerId" bigint NOT NULL,
     "_emptyModelItemsEmptyModelId" bigint
 );
 
@@ -874,12 +873,6 @@ ALTER TABLE ONLY "company"
 --
 ALTER TABLE ONLY "empty_model_relation_item"
     ADD CONSTRAINT "empty_model_relation_item_fk_0"
-    FOREIGN KEY("containerId")
-    REFERENCES "empty_model"("id")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION;
-ALTER TABLE ONLY "empty_model_relation_item"
-    ADD CONSTRAINT "empty_model_relation_item_fk_1"
     FOREIGN KEY("_emptyModelItemsEmptyModelId")
     REFERENCES "empty_model"("id")
     ON DELETE NO ACTION
@@ -1128,9 +1121,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20240531135241978', now())
+    VALUES ('serverpod_test', '20240603145858809', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240531135241978', "timestamp" = now();
+    DO UPDATE SET "version" = '20240603145858809', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth

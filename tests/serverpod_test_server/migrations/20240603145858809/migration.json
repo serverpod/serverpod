@@ -56,12 +56,6 @@
             "dartType": "String"
           },
           {
-            "name": "containerId",
-            "columnType": 6,
-            "isNullable": false,
-            "dartType": "int"
-          },
-          {
             "name": "_emptyModelItemsEmptyModelId",
             "columnType": 6,
             "isNullable": true,
@@ -71,19 +65,6 @@
         "foreignKeys": [
           {
             "constraintName": "empty_model_relation_item_fk_0",
-            "columns": [
-              "containerId"
-            ],
-            "referenceTable": "empty_model",
-            "referenceTableSchema": "public",
-            "referenceColumns": [
-              "id"
-            ],
-            "onUpdate": 3,
-            "onDelete": 3
-          },
-          {
-            "constraintName": "empty_model_relation_item_fk_1",
             "columns": [
               "_emptyModelItemsEmptyModelId"
             ],
