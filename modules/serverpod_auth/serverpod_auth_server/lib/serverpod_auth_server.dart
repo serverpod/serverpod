@@ -1,5 +1,7 @@
 library protocol;
 
+export 'src/business/authentication_handler.dart';
+export 'src/business/user_authentication.dart';
 export 'src/business/config.dart';
 export 'src/business/email_auth.dart';
 export 'src/business/google_auth.dart';

@@ -12,7 +12,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A request for creating an email signin. Created during the sign up process
 /// to keep track of the user's details and verification code.
-abstract class EmailCreateAccountRequest extends _i1.TableRow {
+abstract class EmailCreateAccountRequest extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   EmailCreateAccountRequest._({
     int? id,
     required this.userName,
@@ -78,7 +79,7 @@ abstract class EmailCreateAccountRequest extends _i1.TableRow {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'userName': userName,
@@ -110,6 +111,11 @@ abstract class EmailCreateAccountRequest extends _i1.TableRow {
       orderByList: orderByList?.call(EmailCreateAccountRequest.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

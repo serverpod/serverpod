@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:async/async.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:watcher/watcher.dart';
 
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
 
 import 'generator.dart';
 

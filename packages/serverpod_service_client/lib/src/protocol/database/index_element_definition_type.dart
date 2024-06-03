@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Used to specify how the definition of an [IndexElementDefinition]
 /// should be interpreted.
-enum IndexElementDefinitionType with _i1.SerializableEntity {
+enum IndexElementDefinitionType implements _i1.SerializableModel {
   /// Indicates, that the definition of an [IndexElementDefinition]
   /// referees to a column.
   column,
@@ -35,4 +35,6 @@ enum IndexElementDefinitionType with _i1.SerializableEntity {
 
   @override
   int toJson() => index;
+  @override
+  String toString() => name;
 }

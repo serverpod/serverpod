@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
-abstract class ObjectWithObject extends _i1.SerializableEntity {
+abstract class ObjectWithObject implements _i1.SerializableModel {
   ObjectWithObject._({
     this.id,
     required this.data,
@@ -103,6 +103,11 @@ abstract class ObjectWithObject extends _i1.SerializableEntity {
         'nullableListWithNullableData': nullableListWithNullableData?.toJson(
             valueToJson: (v) => v?.toJson()),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

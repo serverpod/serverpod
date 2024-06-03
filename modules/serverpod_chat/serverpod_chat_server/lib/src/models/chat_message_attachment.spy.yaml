@@ -1,4 +1,4 @@
-### An attachement to a chat message. Typically an image or a file.
+### An attachment to a chat message. Typically an image or a file.
 class: ChatMessageAttachment
 fields:
   ### The name of the file.

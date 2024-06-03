@@ -10,7 +10,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class ObjectFieldScopes extends _i1.TableRow {
+abstract class ObjectFieldScopes extends _i1.TableRow
+    implements _i1.ProtocolSerialization {
   ObjectFieldScopes._({
     int? id,
     required this.normal,
@@ -59,16 +60,16 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
       if (id != null) 'id': id,
       'normal': normal,
       if (api != null) 'api': api,
+      if (database != null) 'database': database,
     };
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
       'normal': normal,
       if (api != null) 'api': api,
-      if (database != null) 'database': database,
     };
   }
 
@@ -94,6 +95,11 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
       orderByList: orderByList?.call(ObjectFieldScopes.t),
       include: include,
     );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

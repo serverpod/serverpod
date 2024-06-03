@@ -6,7 +6,7 @@ import 'package:serverpod_client/serverpod_client.dart';
 // Just be careful while importing, since the serialization
 // system treats the two implementations this classes differently.
 
-class CustomClass extends SerializableEntity {
+class CustomClass implements SerializableModel {
   final String value;
 
   CustomClass(this.value);
@@ -14,8 +14,7 @@ class CustomClass extends SerializableEntity {
   @override
   String toJson() => value;
 
-  static CustomClass fromJson(
-      dynamic data, SerializationManager serializationManager) {
+  static CustomClass fromJson(dynamic data) {
     return CustomClass(data);
   }
 }
@@ -24,6 +23,10 @@ class CustomClass2 {
   final String value;
 
   const CustomClass2(this.value);
+
+  factory CustomClass2.fromJson(dynamic data) {
+    return CustomClass2(data['text']);
+  }
 
   dynamic toJson() => {'text': value};
 }

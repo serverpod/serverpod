@@ -57,19 +57,15 @@ class ClassYamlDefinition {
               ValidateNode(
                 Keyword.parent,
                 isDeprecated: true,
-                mutuallyExclusiveKeys: {
-                  Keyword.relation,
-                },
+                isRemoved: true,
                 alternativeUsageMessage:
                     'Use the relation keyword instead. E.g. relation(parent=parent_table). Note that the default onDelete action changes from "Cascade" to "NoAction" when using the relation keyword.',
-                valueRestriction: restrictions.validateParentName,
               ),
               ValidateNode(
                 Keyword.relation,
                 keyRestriction: restrictions.validateRelationKey,
                 valueRestriction:
                     restrictions.validateRelationInterdependencies,
-                mutuallyExclusiveKeys: {Keyword.parent},
                 allowEmptyNestedValue: true,
                 nested: {
                   ValidateNode(
@@ -109,7 +105,6 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.scope,
-                mutuallyExclusiveKeys: {Keyword.database, Keyword.api},
                 valueRestriction: EnumValueRestriction(
                   enums: ModelFieldScopeDefinition.values,
                   additionalRestriction: ScopeValueRestriction(
@@ -122,34 +117,20 @@ class ClassYamlDefinition {
                 keyRestriction: restrictions.validatePersistKey,
                 valueRestriction: BooleanValueRestriction().validate,
                 mutuallyExclusiveKeys: {
-                  Keyword.database,
-                  Keyword.api,
                   Keyword.relation,
-                  Keyword.parent,
                 },
               ),
               ValidateNode(
                 Keyword.database,
                 isDeprecated: true,
+                isRemoved: true,
                 alternativeUsageMessage: 'Use "scope=serverOnly" instead.',
-                valueRestriction: BooleanValueRestriction().validate,
-                mutuallyExclusiveKeys: {
-                  Keyword.api,
-                  Keyword.scope,
-                  Keyword.persist
-                },
               ),
               ValidateNode(
                 Keyword.api,
                 isDeprecated: true,
+                isRemoved: true,
                 alternativeUsageMessage: 'Use "!persist" instead.',
-                valueRestriction: BooleanValueRestriction().validate,
-                mutuallyExclusiveKeys: {
-                  Keyword.database,
-                  Keyword.scope,
-                  Keyword.parent,
-                  Keyword.persist,
-                },
               ),
             },
           ),

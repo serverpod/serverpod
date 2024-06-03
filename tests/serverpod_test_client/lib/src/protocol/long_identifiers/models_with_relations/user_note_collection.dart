@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class UserNoteCollection extends _i1.SerializableEntity {
+abstract class UserNoteCollection implements _i1.SerializableModel {
   UserNoteCollection._({
     this.id,
     required this.name,
@@ -58,6 +58,11 @@ abstract class UserNoteCollection extends _i1.SerializableEntity {
         'userNotesPropertyName':
             userNotesPropertyName?.toJson(valueToJson: (v) => v.toJson()),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

@@ -25,10 +25,16 @@ abstract class ConnectivityMonitor {
     _listeners.clear();
   }
 
+  /// Only notify listeners if the connectivity status has changed.
+  bool? _prevConnected;
+
   /// Notifies listeners of changes in connectivity. This method should only
   /// be called by classes that inherits from [ConnectivityMonitor].
   @protected
   void notifyListeners(bool connected) {
+    if (connected == _prevConnected) return;
+
+    _prevConnected = connected;
     for (var listener in _listeners) {
       listener(connected);
     }

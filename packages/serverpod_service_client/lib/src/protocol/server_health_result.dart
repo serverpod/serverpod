@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Information about health and connection metrics.
-abstract class ServerHealthResult extends _i1.SerializableEntity {
+abstract class ServerHealthResult implements _i1.SerializableModel {
   ServerHealthResult._({
     required this.metrics,
     required this.connectionInfos,
@@ -52,6 +52,11 @@ abstract class ServerHealthResult extends _i1.SerializableEntity {
       'metrics': metrics.toJson(valueToJson: (v) => v.toJson()),
       'connectionInfos': connectionInfos.toJson(valueToJson: (v) => v.toJson()),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

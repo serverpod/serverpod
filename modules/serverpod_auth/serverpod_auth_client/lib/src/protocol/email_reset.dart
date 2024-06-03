@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Database bindings for an email reset.
-abstract class EmailReset extends _i1.SerializableEntity {
+abstract class EmailReset implements _i1.SerializableModel {
   EmailReset._({
     this.id,
     required this.userId,
@@ -64,6 +64,11 @@ abstract class EmailReset extends _i1.SerializableEntity {
       'verificationCode': verificationCode,
       'expiration': expiration.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

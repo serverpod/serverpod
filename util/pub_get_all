@@ -8,165 +8,70 @@ fi
 
 set -e
 
-BASE=`pwd`
+BASE=$(pwd)
+OFFLINE_MODE=""
+
+# Check for --offline parameter
+if [ "$1" == "--offline" ]; then
+    OFFLINE_MODE="--offline"
+    echo "Running in offline mode"
+fi
 
 echo "PUB UPGRADE ALL"
 
-echo "\n### serverpod"
-cd $BASE/packages/serverpod
-dart pub upgrade
+declare -a dart_paths=(
+  "packages/serverpod"
+  "examples/auth_example/auth_example_client"
+  "examples/auth_example/auth_example_server"
+  "examples/chat/chat_client"
+  "examples/chat/chat_server"
+  "packages/serverpod_client"
+  "packages/serverpod_serialization"
+  "packages/serverpod_service_client"
+  "packages/serverpod_shared"
+  "tests/serverpod_test_client"
+  "tests/serverpod_test_server"
+  "tests/serverpod_test_shared"
+  "tests/serverpod_test_module/serverpod_test_module_client"
+  "tests/serverpod_test_module/serverpod_test_module_server"
+  "tests/bootstrap_project"
+  "tests/serverpod_cli_e2e_test"
+  "templates/serverpod_templates/projectname_server"
+  "templates/serverpod_templates/projectname_client"
+  "templates/serverpod_templates/modulename_server"
+  "templates/serverpod_templates/modulename_client"
+  "modules/serverpod_auth/serverpod_auth_server"
+  "modules/serverpod_auth/serverpod_auth_client"
+  "modules/serverpod_chat/serverpod_chat_server"
+  "modules/serverpod_chat/serverpod_chat_client"
+  "integrations/serverpod_cloud_storage_s3"
+  "integrations/serverpod_cloud_storage_gcp"
+  "tools/serverpod_cli"
+)
 
-echo "\n### examples/auth_example/auth_example_client"
-cd $BASE/examples/auth_example/auth_example_client
-dart pub upgrade
+declare -a flutter_paths=(
+  "examples/auth_example/auth_example_flutter"
+  "examples/chat/chat_flutter"
+  "packages/serverpod_flutter"
+  "templates/serverpod_templates/projectname_flutter"
+  "modules/serverpod_auth/serverpod_auth_shared_flutter"
+  "modules/serverpod_auth/serverpod_auth_apple_flutter"
+  "modules/serverpod_auth/serverpod_auth_google_flutter"
+  "modules/serverpod_auth/serverpod_auth_email_flutter"
+  "modules/serverpod_auth/serverpod_auth_firebase_flutter"
+  "modules/serverpod_chat/serverpod_chat_flutter"
+)
 
-echo "\n### examples/auth_example/auth_example_flutter"
-cd $BASE/examples/auth_example/auth_example_flutter
-dart pub upgrade
+# Upgrade Dart packages
+for path in "${dart_paths[@]}"; do
+  echo "\n### $path"
+  cd "$BASE/$path"
+  dart pub upgrade $OFFLINE_MODE
+done
 
-echo "\n### examples/auth_example/auth_example_server"
-cd $BASE/examples/auth_example/auth_example_server
-dart pub upgrade
-
-echo "\n### examples/chat/chat_client"
-cd $BASE/examples/chat/chat_client
-dart pub upgrade
-
-echo "\n### examples/chat/chat_flutter"
-cd $BASE/examples/chat/chat_flutter
-dart pub upgrade
-
-echo "\n### examples/chat/chat_server"
-cd $BASE/examples/chat/chat_server
-dart pub upgrade
-
-echo "\n### serverpod_client"
-cd $BASE/packages/serverpod_client
-dart pub upgrade
-
-echo "\n### serverpod_serialization"
-cd $BASE/packages/serverpod_serialization
-dart pub upgrade
-
-echo "\n### serverpod_service_client"
-cd $BASE/packages/serverpod_service_client
-dart pub upgrade
-
-echo "\n### serverpod_shared"
-cd $BASE/packages/serverpod_shared
-dart pub upgrade
-
-echo "\n### serverpod_flutter"
-cd $BASE/packages/serverpod_flutter
-dart pub upgrade
-
-# Tests
-
-echo "\n### serverpod_test_client"
-cd $BASE/tests/serverpod_test_client
-dart pub upgrade
-
-echo "\n### serverpod_test_server"
-cd $BASE/tests/serverpod_test_server
-dart pub upgrade
-
-echo "\n### serverpod_test_shared"
-cd $BASE/tests/serverpod_test_shared
-dart pub upgrade
-
-echo "\n### serverpod_test_module_client"
-cd $BASE/tests/serverpod_test_module/serverpod_test_module_client
-dart pub upgrade
-
-echo "\n### serverpod_test_module_server"
-cd $BASE/tests/serverpod_test_module/serverpod_test_module_server
-dart pub upgrade
-
-echo "\n### bootstrap_project"
-cd $BASE/tests/bootstrap_project
-dart pub upgrade
-
-echo "\n### serverpod_cli_e2e_test"
-cd $BASE/tests/serverpod_cli_e2e_test
-dart pub upgrade
-
-# Templates
-
-echo "\n### projectname_server"
-cd $BASE/templates/serverpod_templates/projectname_server
-dart pub upgrade
-
-echo "\n### projectname_client"
-cd $BASE/templates/serverpod_templates/projectname_client
-dart pub upgrade
-
-echo "\n### projectname_flutter"
-cd $BASE/templates/serverpod_templates/projectname_flutter
-dart pub upgrade
-
-echo "\n### modulename_server"
-cd $BASE/templates/serverpod_templates/modulename_server
-dart pub upgrade
-
-echo "\n### modulename_client"
-cd $BASE/templates/serverpod_templates/modulename_client
-dart pub upgrade
-
-# Auth module
-
-echo "\n### serverpod_auth_server"
-cd $BASE/modules/serverpod_auth/serverpod_auth_server
-dart pub upgrade
-
-echo "\n### serverpod_auth_client"
-cd $BASE/modules/serverpod_auth/serverpod_auth_client
-dart pub upgrade
-
-echo "\n### serverpod_auth_shared_flutter"
-cd $BASE/modules/serverpod_auth/serverpod_auth_shared_flutter
-dart pub upgrade
-
-echo "\n### serverpod_auth_apple_flutter"
-cd $BASE/modules/serverpod_auth/serverpod_auth_apple_flutter
-dart pub upgrade
-
-echo "\n### serverpod_auth_google_flutter"
-cd $BASE/modules/serverpod_auth/serverpod_auth_google_flutter
-dart pub upgrade
-
-echo "\n### serverpod_auth_email_flutter"
-cd $BASE/modules/serverpod_auth/serverpod_auth_email_flutter
-dart pub upgrade
-
-echo "\n### serverpod_auth_firebase_flutter"
-cd $BASE/modules/serverpod_auth/serverpod_auth_firebase_flutter
-dart pub upgrade
-
-# Chat module
-
-echo "\n### serverpod_chat_server"
-cd $BASE/modules/serverpod_chat/serverpod_chat_server
-dart pub upgrade
-
-echo "\n### serverpod_chat_client"
-cd $BASE/modules/serverpod_chat/serverpod_chat_client
-dart pub upgrade
-
-echo "\n### serverpod_chat_flutter"
-cd $BASE/modules/serverpod_chat/serverpod_chat_flutter
-dart pub upgrade
-
-# Integrations
-
-echo "\n### serverpod_cloud_storage_s3"
-cd $BASE/integrations/serverpod_cloud_storage_s3
-dart pub upgrade
-
-echo "\n### serverpod_cloud_storage_gcp"
-cd $BASE/integrations/serverpod_cloud_storage_gcp
-dart pub upgrade
-
-# Tooling
-echo "\n### serverpod_cli"
-cd $BASE/tools/serverpod_cli
-dart pub upgrade
+# Upgrade Flutter packages
+for path in "${flutter_paths[@]}"; do
+  echo "\n### $path"
+  cd "$BASE/$path"
+  flutter pub upgrade $OFFLINE_MODE
+done

@@ -1,5 +1,4 @@
 @Timeout(Duration(minutes: 12))
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -388,7 +387,7 @@ class TestEndpoint extends Endpoint {
   });
 
   group(
-      'Given a serializable entity used in an endpoint that is moved to a subfolder when generate watch is active',
+      'Given a serializable model used in an endpoint that is moved to a subfolder when generate watch is active',
       () {
     var (projectName, commandRoot) = createRandomProjectName(tempPath);
     var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);

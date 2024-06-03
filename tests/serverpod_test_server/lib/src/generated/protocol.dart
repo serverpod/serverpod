@@ -112,7 +112,8 @@ import 'package:serverpod_test_server/src/generated/models_with_relations/one_to
 import 'package:serverpod_test_server/src/generated/models_with_relations/one_to_many/order.dart'
     as _i86;
 import 'package:serverpod_test_server/src/custom_classes.dart' as _i87;
-import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i88;
+import 'package:serverpod_test_server/src/protocol_custom_classes.dart' as _i88;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i89;
 export 'exception_with_data.dart';
 export 'long_identifiers/deep_includes/city_with_long_table_name.dart';
 export 'long_identifiers/deep_includes/organization_with_long_table_name.dart';
@@ -186,8 +187,6 @@ class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
 
   factory Protocol() => _instance;
-
-  static final Map<Type, _i1.constructor> customConstructors = {};
 
   static final Protocol _instance = Protocol._();
 
@@ -2816,9 +2815,6 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
-    if (customConstructors.containsKey(t)) {
-      return customConstructors[t]!(data, this) as T;
-    }
     if (t == _i5.ExceptionWithData) {
       return _i5.ExceptionWithData.fromJson(data) as T;
     }
@@ -3837,6 +3833,11 @@ class Protocol extends _i1.SerializationManagerServer {
               deserialize<String>(k), deserialize<List<_i73.Types>>(v)))
           : null) as dynamic;
     }
+    if (t == _i1.getType<List<String>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<String>(e)).toList()
+          : null) as dynamic;
+    }
     if (t == List<_i75.SimpleData>) {
       return (data as List).map((e) => deserialize<_i75.SimpleData>(e)).toList()
           as dynamic;
@@ -4152,36 +4153,47 @@ class Protocol extends _i1.SerializationManagerServer {
           as dynamic;
     }
     if (t == _i87.CustomClass) {
-      return _i87.CustomClass.fromJson(data, this) as T;
+      return _i87.CustomClass.fromJson(data) as T;
     }
-    if (t == _i88.ExternalCustomClass) {
-      return _i88.ExternalCustomClass.fromJson(data, this) as T;
+    if (t == _i87.CustomClass2) {
+      return _i87.CustomClass2.fromJson(data) as T;
     }
-    if (t == _i88.FreezedCustomClass) {
-      return _i88.FreezedCustomClass.fromJson(data, this) as T;
+    if (t == _i88.ProtocolCustomClass) {
+      return _i88.ProtocolCustomClass.fromJson(data) as T;
+    }
+    if (t == _i89.ExternalCustomClass) {
+      return _i89.ExternalCustomClass.fromJson(data) as T;
+    }
+    if (t == _i89.FreezedCustomClass) {
+      return _i89.FreezedCustomClass.fromJson(data) as T;
     }
     if (t == _i1.getType<_i87.CustomClass?>()) {
-      return (data != null ? _i87.CustomClass.fromJson(data, this) : null) as T;
+      return (data != null ? _i87.CustomClass.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i88.ExternalCustomClass?>()) {
-      return (data != null
-          ? _i88.ExternalCustomClass.fromJson(data, this)
-          : null) as T;
+    if (t == _i1.getType<_i87.CustomClass2?>()) {
+      return (data != null ? _i87.CustomClass2.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i88.FreezedCustomClass?>()) {
-      return (data != null
-          ? _i88.FreezedCustomClass.fromJson(data, this)
-          : null) as T;
+    if (t == _i1.getType<_i88.ProtocolCustomClass?>()) {
+      return (data != null ? _i88.ProtocolCustomClass.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i89.ExternalCustomClass?>()) {
+      return (data != null ? _i89.ExternalCustomClass.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i89.FreezedCustomClass?>()) {
+      return (data != null ? _i89.FreezedCustomClass.fromJson(data) : null)
+          as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
-    } catch (_) {}
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
       return _i4.Protocol().deserialize<T>(data, t);
-    } catch (_) {}
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
       return _i2.Protocol().deserialize<T>(data, t);
-    } catch (_) {}
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
@@ -4199,10 +4211,16 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i87.CustomClass) {
       return 'CustomClass';
     }
-    if (data is _i88.ExternalCustomClass) {
+    if (data is _i87.CustomClass2) {
+      return 'CustomClass2';
+    }
+    if (data is _i88.ProtocolCustomClass) {
+      return 'ProtocolCustomClass';
+    }
+    if (data is _i89.ExternalCustomClass) {
       return 'ExternalCustomClass';
     }
-    if (data is _i88.FreezedCustomClass) {
+    if (data is _i89.FreezedCustomClass) {
       return 'FreezedCustomClass';
     }
     if (data is _i5.ExceptionWithData) {
@@ -4425,11 +4443,17 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data['className'] == 'CustomClass') {
       return deserialize<_i87.CustomClass>(data['data']);
     }
+    if (data['className'] == 'CustomClass2') {
+      return deserialize<_i87.CustomClass2>(data['data']);
+    }
+    if (data['className'] == 'ProtocolCustomClass') {
+      return deserialize<_i88.ProtocolCustomClass>(data['data']);
+    }
     if (data['className'] == 'ExternalCustomClass') {
-      return deserialize<_i88.ExternalCustomClass>(data['data']);
+      return deserialize<_i89.ExternalCustomClass>(data['data']);
     }
     if (data['className'] == 'FreezedCustomClass') {
-      return deserialize<_i88.FreezedCustomClass>(data['data']);
+      return deserialize<_i89.FreezedCustomClass>(data['data']);
     }
     if (data['className'] == 'ExceptionWithData') {
       return deserialize<_i5.ExceptionWithData>(data['data']);

@@ -84,7 +84,7 @@ class UserSettingsState extends State<UserSettings> {
 class _CompactSettings extends StatelessWidget {
   final SessionManager sessionManager;
 
-  final String userName;
+  final String? userName;
   final String? fullName;
   final UserInfo? userInfo;
 
@@ -97,6 +97,9 @@ class _CompactSettings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var localUserName = userName;
+    var localFullName = fullName;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -110,17 +113,18 @@ class _CompactSettings extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  userName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                if (fullName != null)
+                if (localUserName != null)
+                  Text(
+                    localUserName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                if (localFullName != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
-                      fullName!,
+                      localFullName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
@@ -140,7 +144,7 @@ class _CompactSettings extends StatelessWidget {
 class _LargeSettings extends StatelessWidget {
   final SessionManager sessionManager;
 
-  final String userName;
+  final String? userName;
   final String? fullName;
   final UserInfo? userInfo;
 
@@ -153,6 +157,9 @@ class _LargeSettings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var localUserName = userName;
+    var localFullName = fullName;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
@@ -163,20 +170,22 @@ class _LargeSettings extends StatelessWidget {
           borderWidth: 4,
           elevation: 2,
         ),
-        Padding(
-          padding: const EdgeInsets.only(top: 24),
-          child: Text(
-            userName,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-        ),
-        if (fullName != null)
+        const SizedBox(height: 16),
+        if (localUserName != null)
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Text(
-              fullName!,
+              localUserName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+          ),
+        if (localFullName != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              localFullName,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(

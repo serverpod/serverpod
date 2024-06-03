@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class MultipleMaxFieldName extends _i1.SerializableEntity {
+abstract class MultipleMaxFieldName implements _i1.SerializableModel {
   MultipleMaxFieldName._({
     this.id,
     required this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
@@ -63,6 +63,11 @@ abstract class MultipleMaxFieldName extends _i1.SerializableEntity {
       'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2':
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 
-/// The file uploader uploads files to Serverpods cloud storage. On the server
+/// The file uploader uploads files to Serverpod's cloud storage. On the server
 /// you can setup a custom storage service, such as S3 or Google Cloud. To
 /// directly upload a file, you first need to retrieve an upload description
 /// from your server. After the file is uploaded, make sure to notify the server

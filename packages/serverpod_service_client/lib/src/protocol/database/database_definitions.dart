@@ -13,7 +13,7 @@ import '../protocol.dart' as _i2;
 
 /// Defines the current state of the database, including information about
 /// installed modules and migrations.
-abstract class DatabaseDefinitions extends _i1.SerializableEntity {
+abstract class DatabaseDefinitions implements _i1.SerializableModel {
   DatabaseDefinitions._({
     required this.target,
     required this.live,
@@ -76,6 +76,11 @@ abstract class DatabaseDefinitions extends _i1.SerializableEntity {
       'latestAvailableMigrations':
           latestAvailableMigrations.toJson(valueToJson: (v) => v.toJson()),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

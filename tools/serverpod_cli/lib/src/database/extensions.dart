@@ -386,12 +386,12 @@ extension ForeignKeyDefinitionPgSqlGeneration on ForeignKeyDefinition {
   }) {
     var out = '';
 
-    var refColumsFmt = referenceColumns.map((e) => '"$e"');
+    var refColumnsFmt = referenceColumns.map((e) => '"$e"');
 
     out += 'ALTER TABLE ONLY "$tableName"\n';
     out += '    ADD CONSTRAINT "$constraintName"\n';
     out += '    FOREIGN KEY("${columns.join(', ')}")\n';
-    out += '    REFERENCES "$referenceTable"(${refColumsFmt.join(', ')})';
+    out += '    REFERENCES "$referenceTable"(${refColumnsFmt.join(', ')})';
 
     String? delete = onDelete?.toPgSqlAction();
     if (delete != null) {

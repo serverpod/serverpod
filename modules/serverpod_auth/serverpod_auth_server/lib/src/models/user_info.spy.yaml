@@ -11,7 +11,7 @@ fields:
   userIdentifier: String
 
   ### The first name of the user or the user's nickname.
-  userName: String
+  userName: String?
 
   ### The full name of the user.
   fullName: String?

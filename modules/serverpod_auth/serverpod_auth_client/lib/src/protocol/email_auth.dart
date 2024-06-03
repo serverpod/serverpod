@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Database bindings for a sign in with email.
-abstract class EmailAuth extends _i1.SerializableEntity {
+abstract class EmailAuth implements _i1.SerializableModel {
   EmailAuth._({
     this.id,
     required this.userId,
@@ -63,6 +63,11 @@ abstract class EmailAuth extends _i1.SerializableEntity {
       'email': email,
       'hash': hash,
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

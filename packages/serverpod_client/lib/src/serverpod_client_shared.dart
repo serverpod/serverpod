@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -95,6 +96,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
   Map<String, ModuleEndpointCaller> get moduleLookup;
 
   Map<String, EndpointRef>? _consolidatedEndpointRefLookupCache;
+
   Map<String, EndpointRef> get _consolidatedEndpointRefLookup {
     if (_consolidatedEndpointRefLookupCache != null) {
       return _consolidatedEndpointRefLookupCache!;
@@ -206,7 +208,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
   }
 
   Future<void> _sendSerializableObjectToStream(
-      String endpoint, SerializableEntity message) async {
+      String endpoint, SerializableModel message) async {
     var data = {
       'endpoint': endpoint,
       'object': {
@@ -246,7 +248,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     if (disconnectOnLostInternetConnection) {
       assert(
         _connectivityMonitor != null,
-        'To enable automatic disconnect on lost internet connection, you need to set the connectivityMonitor propery.',
+        'To enable automatic disconnect on lost internet connection, you need to set the connectivityMonitor property.',
       );
     }
     _disconnectOnLostInternetConnection = disconnectOnLostInternetConnection;
@@ -256,6 +258,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       _firstMessageReceived = false;
       var host = await websocketHost;
       _webSocket = WebSocketChannel.connect(Uri.parse(host));
+      await _webSocket?.ready;
 
       // We are sending the ping message to the server, so that we are
       // guaranteed to get a first message in return. This will verify that we
@@ -274,6 +277,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
         }
       });
     } catch (e) {
+      stderr.writeln('Failed to open streaming connection: $e');
       _webSocket = null;
       _cancelConnectionTimer();
       rethrow;
@@ -289,6 +293,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
     await _webSocket?.sink.close();
     _webSocket = null;
     _cancelConnectionTimer();
+
+    // Notify listeners that websocket has been closed
+    _notifyWebSocketConnectionStatusListeners();
 
     // Hack for dart:io version of websocket to get time to close the stream
     // in _listenToWebSocket
@@ -309,6 +316,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       _webSocket = null;
       _cancelConnectionTimer();
     } catch (e) {
+      stderr.writeln('Error while listening to websocket stream: $e');
       _webSocket = null;
       _cancelConnectionTimer();
     }
@@ -326,7 +334,17 @@ abstract class ServerpodClientShared extends EndpointCaller {
     _websocketConnectionStatusListeners.remove(listener);
   }
 
+  /// The previous streaming connection status (used to detect changes in
+  /// connection status, so that listeners can be notified)
+  StreamingConnectionStatus? _prevStreamingConnectionStatus;
+
+  /// Checks if the streaming connection status has changed, and if so,
+  /// notifies listeners.
   void _notifyWebSocketConnectionStatusListeners() {
+    var currStreamingConnectionStatus = streamingConnectionStatus;
+    if (currStreamingConnectionStatus == _prevStreamingConnectionStatus) return;
+
+    _prevStreamingConnectionStatus = currStreamingConnectionStatus;
     for (var listener in _websocketConnectionStatusListeners) {
       listener();
     }
@@ -406,15 +424,15 @@ abstract class EndpointRef {
   /// The name of the endpoint this reference is connected to.
   String get name;
 
-  /// The stream controller handles the stream of [SerializableEntity] sent
+  /// The stream controller handles the stream of [SerializableModel] sent
   /// from the server endpoint to the client, if it supports streaming.
-  var _streamController = StreamController<SerializableEntity>();
+  var _streamController = StreamController<SerializableModel>();
 
   /// Stream of messages sent from an endpoint that supports streaming.
-  Stream<SerializableEntity> get stream => _streamController.stream;
+  Stream<SerializableModel> get stream => _streamController.stream;
 
   /// Sends a message to the endpoint's stream.
-  Future<void> sendStreamMessage(SerializableEntity message) async {
+  Future<void> sendStreamMessage(SerializableModel message) async {
     return client._sendSerializableObjectToStream(name, message);
   }
 
@@ -428,6 +446,6 @@ abstract class EndpointRef {
     } catch (e) {
       // Just in case, an issue happens when closing the stream.
     }
-    _streamController = StreamController<SerializableEntity>();
+    _streamController = StreamController<SerializableModel>();
   }
 }

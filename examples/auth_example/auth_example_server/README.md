@@ -18,7 +18,7 @@ database: auth_example
 password: 9S8rYW7XeIA8bmGY9FBzOSLwQZtQEFNr
 ```
 
-Create the local `password.yaml` file in the server `config` directory. `auth_example/auth_example_server/config/password.yaml` with the following content:
+Create the local `passwords.yaml` file in the server `config` directory. `auth_example/auth_example_server/config/passwords.yaml` with the following content:
 
 ```yaml
 development:

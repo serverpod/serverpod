@@ -22,5 +22,5 @@ class NoPermissionsException extends S3Exception {
 
   @override
   String get devDebugHint =>
-      "S3 returned a 403 status code. Please make sure you have the right permissons for this request";
+      "S3 returned a 403 status code. Please make sure you have the right permissions for this request";
 }

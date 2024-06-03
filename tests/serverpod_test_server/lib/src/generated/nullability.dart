@@ -13,7 +13,8 @@ import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-abstract class Nullability extends _i1.SerializableEntity {
+abstract class Nullability
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Nullability._({
     required this.anInt,
     this.aNullableInt,
@@ -116,8 +117,9 @@ abstract class Nullability extends _i1.SerializableEntity {
     return Nullability(
       anInt: jsonSerialization['anInt'] as int,
       aNullableInt: jsonSerialization['aNullableInt'] as int?,
-      aDouble: jsonSerialization['aDouble'] as double,
-      aNullableDouble: jsonSerialization['aNullableDouble'] as double?,
+      aDouble: (jsonSerialization['aDouble'] as num).toDouble(),
+      aNullableDouble:
+          (jsonSerialization['aNullableDouble'] as num?)?.toDouble(),
       aBool: jsonSerialization['aBool'] as bool,
       aNullableBool: jsonSerialization['aNullableBool'] as bool?,
       aString: jsonSerialization['aString'] as String,
@@ -491,7 +493,7 @@ abstract class Nullability extends _i1.SerializableEntity {
   }
 
   @override
-  Map<String, dynamic> allToJson() {
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       'anInt': anInt,
       if (aNullableInt != null) 'aNullableInt': aNullableInt,
@@ -512,9 +514,9 @@ abstract class Nullability extends _i1.SerializableEntity {
         'aNullableDuration': aNullableDuration?.toJson(),
       'aUuid': aUuid.toJson(),
       if (aNullableUuid != null) 'aNullableUuid': aNullableUuid?.toJson(),
-      'anObject': anObject.allToJson(),
+      'anObject': anObject.toJsonForProtocol(),
       if (aNullableObject != null)
-        'aNullableObject': aNullableObject?.allToJson(),
+        'aNullableObject': aNullableObject?.toJsonForProtocol(),
       'anIntList': anIntList.toJson(),
       if (aNullableIntList != null)
         'aNullableIntList': aNullableIntList?.toJson(),
@@ -522,15 +524,16 @@ abstract class Nullability extends _i1.SerializableEntity {
       if (aNullableListWithNullableInts != null)
         'aNullableListWithNullableInts':
             aNullableListWithNullableInts?.toJson(),
-      'anObjectList': anObjectList.toJson(valueToJson: (v) => v.allToJson()),
+      'anObjectList':
+          anObjectList.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       if (aNullableObjectList != null)
-        'aNullableObjectList':
-            aNullableObjectList?.toJson(valueToJson: (v) => v.allToJson()),
-      'aListWithNullableObjects':
-          aListWithNullableObjects.toJson(valueToJson: (v) => v?.allToJson()),
+        'aNullableObjectList': aNullableObjectList?.toJson(
+            valueToJson: (v) => v.toJsonForProtocol()),
+      'aListWithNullableObjects': aListWithNullableObjects.toJson(
+          valueToJson: (v) => v?.toJsonForProtocol()),
       if (aNullableListWithNullableObjects != null)
         'aNullableListWithNullableObjects': aNullableListWithNullableObjects
-            ?.toJson(valueToJson: (v) => v?.allToJson()),
+            ?.toJson(valueToJson: (v) => v?.toJsonForProtocol()),
       'aDateTimeList': aDateTimeList.toJson(valueToJson: (v) => v.toJson()),
       if (aNullableDateTimeList != null)
         'aNullableDateTimeList':
@@ -573,6 +576,11 @@ abstract class Nullability extends _i1.SerializableEntity {
       if (aNullableMapWithNullableInts != null)
         'aNullableMapWithNullableInts': aNullableMapWithNullableInts?.toJson(),
     };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
   }
 }
 

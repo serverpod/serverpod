@@ -7,7 +7,7 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group(
-      'Given a model with a list relation to model with max lenght named fields',
+      'Given a model with a list relation to model with max length named fields',
       () {
     tearDown(() async {
       await MultipleMaxFieldName.db

@@ -11,12 +11,12 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Defines how a foreign key should be matched.
-enum ForeignKeyMatchType with _i1.SerializableEntity {
+enum ForeignKeyMatchType implements _i1.SerializableModel {
   /// [full] will not allow one column of a multicolumn foreign key
   /// to be null unless all foreign key columns are null.
   full,
 
-  /// [partial] is not yet implemented in postges. Don't use this.
+  /// [partial] is not yet implemented in postgres. Don't use this.
   partial,
 
   /// [simple] allows any of the foreign key columns to be null.
@@ -40,4 +40,6 @@ enum ForeignKeyMatchType with _i1.SerializableEntity {
 
   @override
   int toJson() => index;
+  @override
+  String toString() => name;
 }
