@@ -1,20 +1,20 @@
 import 'package:googleapis_auth/auth_io.dart';
+import 'package:http/http.dart' as http;
 import 'package:openid_client/openid_client_io.dart';
 import 'package:serverpod_auth_server/src/firebase/auth/auth_account_api.dart';
-import 'package:serverpod_auth_server/src/firebase/auth/auth_http_client.dart';
 import 'package:serverpod_auth_server/src/firebase/auth/token_verifier.dart';
-import 'package:serverpod_auth_server/src/firebase/errors/firebase_error.dart';
+import 'package:serverpod_auth_server/src/firebase/exceptions/firebase_exception.dart';
 
 /// Firebase Auth Manager
-class Auth {
+class FirebaseAuthManager {
   TokenVerifier? _tokenVerifier;
   AuthRequestApi? _accountApi;
 
   /// Firebase Auth initialization with firebaseServiceAccountKeyJson
   Future<void> init(
     Map<String, dynamic> json, {
-    AuthBaseClient? authBaseClient,
-    Client? openIdClient,
+    http.Client? authClient,
+    http.Client? openIdClient,
   }) async {
     var projectId = json['project_id'];
     if (projectId == null) {
@@ -28,12 +28,12 @@ class Auth {
         'https://www.googleapis.com/auth/identitytoolkit',
         'https://www.googleapis.com/auth/userinfo.email',
       ],
-      baseClient: authBaseClient ?? AuthBaseClient(),
+      baseClient: authClient,
     );
 
     _tokenVerifier = TokenVerifier(
       projectId: projectId,
-      client: openIdClient,
+      httpClient: openIdClient,
     );
 
     _accountApi = AuthRequestApi(
@@ -47,7 +47,7 @@ class Auth {
     String idToken,
   ) async {
     if (_accountApi == null || _tokenVerifier == null) {
-      throw FirebaseError('FirebaseAdmin not initialized!');
+      throw FirebasInitException('FirebaseAdmin not initialized!');
     }
     var decodedIdToken = await _tokenVerifier!.verifyJwt(idToken);
     return _verifyDecodedJwtNotRevoked(decodedIdToken);
@@ -68,7 +68,7 @@ class Auth {
       );
       // Check if authentication time is older than valid since time.
       if (authTimeUtc.isBefore(validSinceUtc)) {
-        throw FirebaseError('The Firebase ID token has been revoked.');
+        throw FirebaseJWTException('The Firebase ID token has been revoked.');
       }
     }
     // All checks above passed. Return the decoded token.

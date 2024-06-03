@@ -15,11 +15,9 @@ dependencies:
   serverpod_shared: 2.0.0
   crypto: ^3.0.2
   email_validator: ^2.1.17
-
   openid_client: ^0.4.3
   meta: ^1.8.0
   firebaseapis: ^0.2.0
-
   googleapis: ^11.0.0
   googleapis_auth: '>=1.4.0 <1.5.0'
   http: ">=0.13.0 <2.0.0"
@@ -30,8 +28,6 @@ dependencies:
 dev_dependencies:
   serverpod_lints: 2.0.0
   test: ^1.24.2
-  mockito: ^5.0.10
-  rsa_pkcs: ^2.1.0
 
 dependency_overrides:
   serverpod:

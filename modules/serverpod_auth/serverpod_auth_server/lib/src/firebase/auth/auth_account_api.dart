@@ -1,6 +1,6 @@
 import 'package:firebaseapis/identitytoolkit/v1.dart';
 import 'package:googleapis_auth/auth_io.dart';
-import 'package:serverpod_auth_server/src/firebase/errors/firebase_error.dart';
+import 'package:serverpod_auth_server/src/firebase/exceptions/firebase_exception.dart';
 
 /// Authorized http requests agains google identity toolkit api
 class AuthRequestApi {
@@ -26,7 +26,7 @@ class AuthRequestApi {
     );
 
     if (response.users == null || response.users!.isEmpty) {
-      throw FirebaseError(
+      throw FirebaseInvalidUIIDException(
         'There is no user record corresponding to the provided identifier.',
       );
     }

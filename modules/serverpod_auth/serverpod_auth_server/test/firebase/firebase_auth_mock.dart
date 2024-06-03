@@ -2,13 +2,9 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:jose/jose.dart';
-import 'package:mockito/mockito.dart';
-import 'package:openid_client/openid_client.dart';
-import 'package:openid_client/openid_client_io.dart';
-import 'package:serverpod_auth_server/src/firebase/auth/auth_http_client.dart';
 import 'package:rsa_pkcs/rsa_pkcs.dart';
 
-class MockAuthBaseClient extends Mock implements AuthBaseClient {
+class MockAuthBaseClient extends http.BaseClient {
   final Map<String, dynamic> userJson;
 
   MockAuthBaseClient({
@@ -64,46 +60,44 @@ class MockAuthBaseClient extends Mock implements AuthBaseClient {
   }
 }
 
-class MockTokenClient extends Mock implements Client {
-  final Issuer _mIssuer;
-  final String _projectId;
-
+class MockTokenClient extends http.BaseClient {
   @override
-  Issuer get issuer => _mIssuer;
+  Future<http.StreamedResponse> send(
+    http.BaseRequest request,
+  ) async {
+    var response = {
+      'issuer': 'https://securetoken.google.com/project_id',
+      'jwks_uri': Uri.dataFromString(
+              json.encode({
+                'keys': [
+                  {
+                    'kty': 'RSA',
+                    'n':
+                        'wJENcRev-eXZKvhhWLiV3Lz2MvO-naQRHo59g3vaNQnbgyduN_L4krlrJ5c6FiikXdtJNb_QrsAHSyJWCu8j3T9CruiwbidGAk2W0RuViTVspjHUTsIHExx9euWM0UomGvYkoqXahdhPL_zViVSJt-Rt8bHLsMvpb8RquTIb9iKY3SMV2tCofNmyCSgVbghq_y7lKORtV_IRguWs6R22fbkb0r2MCYoNAbZ9dqnbRIFNZBC7itYtUoTEresRWcyFMh0zfAIJycWOJlVLDLqkY2SmIx8u7fuysCg1wcoSZoStuDq02nZEMw1dx8HGzE0hynpHlloRLByuIuOAfMCCYw',
+                    'e': 'AQAB',
+                    'alg': 'RS256',
+                    'kid': testAccountServiceJson['private_key_id'],
+                  }
+                ]
+              }),
+              mimeType: 'application/json')
+          .toString(),
+      'response_types_supported': ['id_token'],
+      'subject_types_supported': ['public'],
+      'id_token_signing_alg_values_supported': ['RS256']
+    };
 
-  @override
-  String get clientId => _projectId;
-
-  MockTokenClient({
-    required Issuer issuer,
-    required String projectId,
-  })  : _mIssuer = issuer,
-        _projectId = projectId;
-
-  @override
-  Credential createCredential({
-    String? accessToken,
-    String? tokenType,
-    String? refreshToken,
-    Duration? expiresIn,
-    DateTime? expiresAt,
-    String? idToken,
-  }) {
-    return Credential.fromJson({
-      'client_id': clientId,
-      'issuer': issuer.metadata.toJson(),
-      'token': TokenResponse.fromJson(
-        {
-          'access_token': accessToken,
-          'token_type': tokenType,
-          'refresh_token': refreshToken,
-          'id_token': idToken,
-          if (expiresIn != null) 'expires_in': expiresIn.inSeconds,
-          if (expiresAt != null)
-            'expires_at': expiresAt.millisecondsSinceEpoch ~/ 1000
-        },
-      ).toJson(),
-    });
+    return http.StreamedResponse(
+      http.ByteStream.fromBytes(
+        jsonEncode(response).runes.toList(),
+      ),
+      200,
+      headers: {'content-type': 'application/json'},
+      request: http.Request(
+        request.method,
+        request.url,
+      ),
+    );
   }
 }
 
@@ -113,22 +107,31 @@ String generateMockIdToken({
   Map<String, dynamic>? overrides,
 }) {
   overrides ??= {};
-
-  var claims = {
-    'aud': projectId,
-    'exp':
-        DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch ~/
-            1000,
-    'iss': 'https://securetoken.google.com/$projectId',
-    'sub': uid,
-    'auth_time': DateTime.now().millisecondsSinceEpoch ~/ 1000,
-    ...overrides,
-  };
-
-  var key = getTestJsonWebKey();
+  var key = JsonWebKey.fromJson({
+    'kty': 'RSA',
+    'n':
+        'wJENcRev-eXZKvhhWLiV3Lz2MvO-naQRHo59g3vaNQnbgyduN_L4krlrJ5c6FiikXdtJNb_QrsAHSyJWCu8j3T9CruiwbidGAk2W0RuViTVspjHUTsIHExx9euWM0UomGvYkoqXahdhPL_zViVSJt-Rt8bHLsMvpb8RquTIb9iKY3SMV2tCofNmyCSgVbghq_y7lKORtV_IRguWs6R22fbkb0r2MCYoNAbZ9dqnbRIFNZBC7itYtUoTEresRWcyFMh0zfAIJycWOJlVLDLqkY2SmIx8u7fuysCg1wcoSZoStuDq02nZEMw1dx8HGzE0hynpHlloRLByuIuOAfMCCYw',
+    'd':
+        'MW2KG7tOykA7TBJROmq23OAL-ewiw2f3lPZSNUu3KOIM3E9ktSvCrja10IW6vTFVb1n4IrnHoPNda-W2XDwh4op4XVkQ4FVoXPL5gVcpPPzflJE5w7V-B2PKuZ7uVFJKEaWYpb8Ypj5tpQ2q6gMvDmqt5doTRKAynSO3mS3Ji5XG-EsN5XiibDa7rBqgaSJ-wabyViK-DmXdVHvDYhU69hlO3gG5JhXA4z6qPBpLW-0vuC_RJSOuPzklrrMRFF0WIhMOFnDqey9pyv3_79q630Rov-ShJJvraDl-e1AwTChPiFGeM-cB52aisz1GF12HZMHdkpMFsw3W1STd8nE64Q',
+    'p':
+        '-z6leSaAcZ3qvwpntcXSpwwJ0SSmzLTH2RJNf-Ld3eBHiSvLTG53dWB7lJtF4R1KcIwf-KGcOFJvsnepzcZBylRvT8RrAAkV0s9OiVm1lXZyaepbLg4GGFJBPi8A6VIAj7zYknToRApdW0s1x_XXChewfJDckqsevTMovdbg8Yk',
+    'q':
+        'xDYX-3mfvv_opo6HNNY3SfVunM-4vVJL-n8gWZ2w9kz3Q9Ub9YbRmI7iQaiVkO5xNuoG1n9bM-3Mnm84aQ1YeNT01YqeyQsipP5Wi-um0PzYTaBw9RO-8Gh6992OwlJiRtFk5WjalNWOxY4MU0ImnJwIfKQlUODvLmcixm68NYs',
+    'alg': 'RS256',
+    'kid': testAccountServiceJson['private_key_id'],
+  });
 
   var builder = JsonWebSignatureBuilder()
-    ..jsonContent = claims
+    ..jsonContent = {
+      'aud': projectId,
+      'exp':
+          DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch ~/
+              1000,
+      'iss': 'https://securetoken.google.com/$projectId',
+      'sub': uid,
+      'auth_time': DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      ...overrides,
+    }
     ..setProtectedHeader('kid', key.keyId)
     ..addRecipient(
       key,
@@ -146,62 +149,6 @@ Map<String, dynamic> testAccountServiceJson = {
   'client_email': 'foo@project_id.iam.gserviceaccount.com',
   'client_id': 'client_id'
 };
-
-JsonWebKey getTestJsonWebKey() {
-  RSAPKCSParser parser = RSAPKCSParser();
-  RSAKeyPair pair = parser.parsePEM(testAccountServiceJson['private_key']);
-  RSAPrivateKey? pKey = pair.private;
-
-  return JsonWebKey.fromJson({
-    'kty': 'RSA',
-    'n': intToBase64(pKey!.modulus),
-    'd': intToBase64(pKey.privateExponent),
-    'p': intToBase64(pKey.prime1),
-    'q': intToBase64(pKey.prime2),
-    'alg': 'RS256',
-    'kid': testAccountServiceJson['private_key_id']
-  });
-}
-
-String intToBase64(BigInt v) {
-  return bytesToBase64(v
-      .toRadixString(16)
-      .replaceAllMapped(RegExp('[0-9a-f]{2}'), (m) => '${m.group(0)},')
-      .split(',')
-      .where((v) => v.isNotEmpty)
-      .map((v) => int.parse(v, radix: 16))
-      .toList());
-}
-
-String bytesToBase64(List<int> bytes) {
-  return base64Url.encode(bytes).replaceAll('=', '');
-}
-
-Issuer getTestIssuer() {
-  var config = <String, dynamic>{
-    'issuer': 'https://securetoken.google.com/project_id',
-    'jwks_uri': Uri.dataFromString(
-            json.encode({
-              'keys': [
-                {
-                  'kty': 'RSA',
-                  'n':
-                      'wJENcRev-eXZKvhhWLiV3Lz2MvO-naQRHo59g3vaNQnbgyduN_L4krlrJ5c6FiikXdtJNb_QrsAHSyJWCu8j3T9CruiwbidGAk2W0RuViTVspjHUTsIHExx9euWM0UomGvYkoqXahdhPL_zViVSJt-Rt8bHLsMvpb8RquTIb9iKY3SMV2tCofNmyCSgVbghq_y7lKORtV_IRguWs6R22fbkb0r2MCYoNAbZ9dqnbRIFNZBC7itYtUoTEresRWcyFMh0zfAIJycWOJlVLDLqkY2SmIx8u7fuysCg1wcoSZoStuDq02nZEMw1dx8HGzE0hynpHlloRLByuIuOAfMCCYw',
-                  'e': 'AQAB',
-                  'alg': 'RS256',
-                  'kid': 'aaaaaaaaaabbbbbbbbbbccccccccccdddddddddd'
-                }
-              ]
-            }),
-            mimeType: 'application/json')
-        .toString(),
-    'response_types_supported': ['id_token'],
-    'subject_types_supported': ['public'],
-    'id_token_signing_alg_values_supported': ['RS256']
-  };
-
-  return Issuer(OpenIdProviderMetadata.fromJson(config));
-}
 
 Map<String, dynamic> getUserRecord({
   required String uuid,

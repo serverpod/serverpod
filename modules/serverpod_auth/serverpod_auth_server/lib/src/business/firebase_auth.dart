@@ -2,27 +2,27 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
-import 'package:serverpod_auth_server/src/firebase/firebase_admin.dart';
+import 'package:serverpod_auth_server/src/firebase/firebase_auth_manager.dart';
 
 /// Convenience methods for handling authentication with Firebase.
 class FirebaseAuth {
-  static Auth? _auth;
+  static FirebaseAuthManager? _authManager;
 
   /// Returns the Firebase app.
-  static Future<Auth> get auth async {
-    if (_auth != null) {
-      return _auth!;
+  static Future<FirebaseAuthManager> get authManager async {
+    if (_authManager != null) {
+      return _authManager!;
     }
 
-    Map<String, dynamic> json = jsonDecode(
+    var firebaseServiceAccountJson = jsonDecode(
       await File(AuthConfig.current.firebaseServiceAccountKeyJson)
           .readAsString(),
     );
 
-    var auth = Auth();
-    await auth.init(json);
+    var authManager = FirebaseAuthManager();
+    await authManager.init(firebaseServiceAccountJson);
 
-    _auth = auth;
-    return _auth!;
+    _authManager = authManager;
+    return _authManager!;
   }
 }

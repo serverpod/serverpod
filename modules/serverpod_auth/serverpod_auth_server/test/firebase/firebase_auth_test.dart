@@ -1,5 +1,5 @@
-import 'package:serverpod_auth_server/src/firebase/errors/firebase_error.dart';
-import 'package:serverpod_auth_server/src/firebase/firebase_admin.dart';
+import 'package:serverpod_auth_server/src/firebase/exceptions/firebase_exception.dart';
+import 'package:serverpod_auth_server/src/firebase/firebase_auth_manager.dart';
 import 'package:test/test.dart';
 
 import 'firebase_auth_mock.dart';
@@ -8,21 +8,21 @@ void main() {
   group(
     'Given a Firebase Auth class with a valid UserRecord, ',
     () {
-      Auth auth = Auth();
+      FirebaseAuthManager auth = FirebaseAuthManager();
 
       setUp(() async {
         await auth.init(
           testAccountServiceJson,
-          authBaseClient: MockAuthBaseClient(
+          authClient: MockAuthBaseClient(
             userJson: getUserRecord(
               uuid: 'abcdefghijklmnopqrstuvwxyz',
               validSince: DateTime.now().subtract(const Duration(days: 1)),
             ),
           ),
           openIdClient: MockTokenClient(
-            projectId: testAccountServiceJson['project_id'],
-            issuer: getTestIssuer(),
-          ),
+              // projectId: testAccountServiceJson['project_id'],
+              // issuer: getTestIssuer(),
+              ),
         );
       });
 
@@ -53,7 +53,7 @@ void main() {
 
           await expectLater(
             () async => await auth.verifyIdToken(idToken),
-            throwsA(isA<FirebaseError>()),
+            throwsA(isA<FirebaseException>()),
             reason:
                 'There is no user record corresponding to the provided identifier.',
           );
@@ -77,7 +77,7 @@ void main() {
   group(
     'Given a Firebase Auth class without initialization, ',
     () {
-      Auth auth = Auth();
+      FirebaseAuthManager auth = FirebaseAuthManager();
       test(
         'when calling verifyIdToken with a valid idToken, then an Exception should be thrown',
         () async {
@@ -88,7 +88,7 @@ void main() {
 
           await expectLater(
             () async => await auth.verifyIdToken(idToken),
-            throwsA(isA<FirebaseError>()),
+            throwsA(isA<FirebaseException>()),
             reason: 'FirebaseAdmin not initialized!',
           );
         },
@@ -99,20 +99,20 @@ void main() {
   group(
     'Given a Firebase Auth class with UserRecord valid since today, ',
     () {
-      Auth auth = Auth();
+      FirebaseAuthManager auth = FirebaseAuthManager();
       setUp(() async {
         await auth.init(
           testAccountServiceJson,
-          authBaseClient: MockAuthBaseClient(
+          authClient: MockAuthBaseClient(
             userJson: getUserRecord(
               uuid: 'abcdefghijklmnopqrstuvwxyz',
               validSince: DateTime.now(),
             ),
           ),
           openIdClient: MockTokenClient(
-            projectId: testAccountServiceJson['project_id'],
-            issuer: getTestIssuer(),
-          ),
+              // projectId: testAccountServiceJson['project_id'],
+              // issuer: getTestIssuer(),
+              ),
         );
       });
 
@@ -131,7 +131,7 @@ void main() {
 
           await expectLater(
             () async => await auth.verifyIdToken(idToken),
-            throwsA(isA<FirebaseError>()),
+            throwsA(isA<FirebaseException>()),
             reason: 'The Firebase ID token has been revoked.',
           );
         },

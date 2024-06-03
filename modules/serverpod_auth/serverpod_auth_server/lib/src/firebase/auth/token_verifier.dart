@@ -1,32 +1,49 @@
+// https://github.com/appsup-dart/firebase_admin/blob/master/lib/src/auth/token_verifier.dart Licenced under Apache License.
+
+// Copyright (c) 2020, Rik Bellens.
+
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+
+//        http://www.apache.org/licenses/LICENSE-2.0
+
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
+
 import 'package:openid_client/openid_client_io.dart';
-import 'package:serverpod_auth_server/src/firebase/errors/firebase_error.dart';
+import 'package:serverpod_auth_server/src/firebase/exceptions/firebase_exception.dart';
+import 'package:http/http.dart' as http;
 
 /// JWT verifier
 class TokenVerifier {
   final String _projectId;
-  final Client? _client;
+  final http.Client? _httpClient;
 
   /// Creates a new [TokenVerifier] object with a [projectId] and [Client]
   TokenVerifier({
     required String projectId,
-    Client? client,
+    http.Client? httpClient,
   })  : _projectId = projectId,
-        _client = client;
+        _httpClient = httpClient;
 
   /// Verifies the format and signature of a Firebase Auth JWT token.
   Future<IdToken> verifyJwt(String jwtToken) async {
-    var client = _client ?? await _getOpenIdClient();
+    var client = await _getOpenIdClient();
 
     var credential = client.createCredential(idToken: jwtToken);
 
     await for (var e in credential.validateToken()) {
-      throw FirebaseError(
+      throw FirebaseJWTException(
         'Validating ID token failed: $e',
       );
     }
 
     if (!_isUid(credential.idToken.claims.subject)) {
-      throw FirebaseError(
+      throw FirebaseJWTException(
         'ID token has "sub" (subject) claim which is not a valid uid',
       );
     }
@@ -36,8 +53,15 @@ class TokenVerifier {
 
   /// Creates a new openid [Client] object
   Future<Client> _getOpenIdClient() async {
-    var issuer = await Issuer.discover(Issuer.firebase(_projectId));
-    return Client(issuer, _projectId);
+    var issuer = await Issuer.discover(
+      Issuer.firebase(_projectId),
+      httpClient: _httpClient,
+    );
+    return Client(
+      issuer,
+      _projectId,
+      httpClient: _httpClient,
+    );
   }
 
   /// Validates that a string is a valid Firebase Auth uid.
