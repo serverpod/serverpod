@@ -72,8 +72,8 @@ apiServer:
     );
   });
 
-  test(
-      'Given Serverpod config with api server configuration when loading from Map then config is loaded correctly.',
+  group(
+      'Given Serverpod config with api server configuration when loading from Map then',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -83,29 +83,57 @@ apiServer:
   publicScheme: http
 ''';
 
+    const runMode = 'myRunMode';
+    const serverId = 'myServerId';
     var config = ServerpodConfig.loadFromMap(
-      'myRunMode',
-      'myServerId',
-      {'serviceSecret': 'password'},
+      runMode,
+      serverId,
+      {'serviceSecret': 'longpasswordthatisrequired'},
       loadYaml(serverpodConfig),
     );
 
-    expect(config.runMode, 'myRunMode');
-    expect(config.serverId, 'myServerId');
-    expect(config.apiServer.port, 8080);
-    expect(config.apiServer.publicHost, 'localhost');
-    expect(config.apiServer.publicPort, 8080);
-    expect(config.apiServer.publicScheme, 'http');
-    expect(config.insightsServer, isNull);
-    expect(config.webServer, isNull);
-    expect(config.maxRequestSize, 524288);
-    expect(config.serviceSecret, 'password');
-    expect(config.database, isNull);
-    expect(config.redis, isNull);
+    test('Run mode matches supplied value.', () {
+      expect(config.runMode, runMode);
+    });
+
+    test('Server id matches supplied value.', () {
+      expect(config.serverId, serverId);
+    });
+
+    test('Api server configuration is set.', () {
+      expect(config.apiServer.port, 8080);
+      expect(config.apiServer.publicHost, 'localhost');
+      expect(config.apiServer.publicPort, 8080);
+      expect(config.apiServer.publicScheme, 'http');
+    });
+
+    test('Insights server configuration is null.', () {
+      expect(config.insightsServer, isNull);
+    });
+
+    test('Web server configuration is null.', () {
+      expect(config.webServer, isNull);
+    });
+
+    test('Max request size is default value.', () {
+      expect(config.maxRequestSize, 524288);
+    });
+
+    test('Service secret is set.', () {
+      expect(config.serviceSecret, 'longpasswordthatisrequired');
+    });
+
+    test('Database configuration is null.', () {
+      expect(config.database, isNull);
+    });
+
+    test('Redis configuration is null.', () {
+      expect(config.redis, isNull);
+    });
   });
 
   test(
-      'Given Serverpod config with insights server configuration when loading from Map then config is loaded correctly.',
+      'Given Serverpod config with insights server configuration when loading from Map then insights server configuration is set.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -134,7 +162,7 @@ insightsServer:
   });
 
   test(
-      'Given Serverpod config with web server configuration when loading from Map then config is loaded correctly.',
+      'Given Serverpod config with web server configuration when loading from Map then web server configuration is set.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -163,7 +191,7 @@ webServer:
   });
 
   test(
-      'Given Serverpod config with max request size when loading from Map then config is loaded correctly.',
+      'Given Serverpod config with max request size when loading from Map then max request size configuration matches supplied value.',
       () {
     var serverpodConfig = ''' 
 apiServer:
@@ -247,7 +275,7 @@ database:
   });
 
   test(
-      'Given Serverpod config with database configuration when loading from Map then config is loaded correctly.',
+      'Given Serverpod config with database configuration when loading from Map then database configuration is set.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -274,6 +302,8 @@ database:
     expect(config.database?.name, 'testDb');
     expect(config.database?.user, 'test');
     expect(config.database?.password, 'password');
+    expect(config.database?.requireSsl, isFalse);
+    expect(config.database?.isUnixSocket, isFalse);
   });
 
   test(
@@ -305,7 +335,7 @@ redis:
   });
 
   test(
-      'Given Serverpod config with redis configuration when loading from Map then config is loaded correctly.',
+      'Given Serverpod config with redis configuration without when loading from Map then redis configuration is set.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -328,5 +358,6 @@ redis:
     expect(config.redis?.host, 'localhost');
     expect(config.redis?.port, 6379);
     expect(config.redis?.password, 'password');
+    expect(config.redis?.enabled, isFalse);
   });
 }
