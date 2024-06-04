@@ -24,7 +24,7 @@ class ServerpodClientBadRequest extends ServerpodClientException {
   ServerpodClientBadRequest() : super('Bad request', HttpStatus.badRequest);
 }
 
-/// Thrown if the client fails to authenticate and is therefore 
+/// Thrown if the client fails to authenticate and is therefore
 /// not authorized to perform the request.
 class ServerpodClientUnauthorized extends ServerpodClientException {
   /// Creates an Unauthorized Exception
