@@ -45,7 +45,7 @@ void main() {
       statusCode: 400,
     );
 
-    test('then a base ServerpodClientException is created', () {
+    test('then a base TestException is created', () {
       expect(exception, isA<TestException>());
     });
 
