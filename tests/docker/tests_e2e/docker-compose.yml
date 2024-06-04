@@ -1,17 +1,16 @@
-version: '3.7'
-
 services:
   serverpod_test_server:
     build:
       context: ../../..
-      dockerfile: tests/docker/tests_single_server/Dockerfile-server
+      dockerfile: tests/docker/tests_e2e/Dockerfile-server
     depends_on:
       - 'postgres'
       - 'redis'
   tests:
     build:
       context: ../../..
-      dockerfile: tests/docker/tests_single_server/Dockerfile-tests
+      dockerfile: tests/docker/tests_e2e/Dockerfile-tests
+    command: ${PLATFORM}
     depends_on:
       - 'serverpod_test_server'
   postgres:
