@@ -6,15 +6,27 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 /// Check current Serverpod CLI version and prompt user to update if needed
 Future<void> promptToUpdateIfNeeded(Version currentVersion) async {
   var latestVersion = await PackageVersion.fetchLatestPackageVersion(
-      storePackageVersionData: (PackageVersionData versionArtefact) =>
-          resourceManager.storeLatestCliVersion(
-            versionArtefact,
-          ),
-      loadPackageVersionData: () => resourceManager.tryFetchLatestCliVersion(),
-      fetchLatestPackageVersion: () async {
-        var pubClient = PubApiClient(onError: log.error);
-        return await pubClient.tryFetchLatestStableVersion('serverpod_cli');
-      });
+    storePackageVersionData: (PackageVersionData versionArtefact) =>
+        resourceManager.storeLatestCliVersion(
+      versionArtefact,
+    ),
+    loadPackageVersionData: () => resourceManager.tryFetchLatestCliVersion(),
+    fetchLatestPackageVersion: () async {
+      var pubClient = PubApiClient();
+      Version? version;
+      try {
+        version = await pubClient.tryFetchLatestStableVersion('serverpod_cli');
+      } on VersionFetchException catch (e) {
+        log.error(e.message);
+      } on VersionParseException catch (e) {
+        log.error(e.message);
+      } finally {
+        pubClient.close();
+      }
+
+      return version;
+    },
+  );
   if (latestVersion == null) return;
 
   if (currentVersion < latestVersion) {

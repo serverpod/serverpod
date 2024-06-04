@@ -1,0 +1,25 @@
+# Specify the Dart SDK base image version
+FROM dart:3.2.5 AS build
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the whole serverpod repo into the container.
+COPY . .
+
+RUN echo "deb http://deb.debian.org/debian/ unstable main contrib non-free" >> /etc/apt/sources.list.d/debian.list
+RUN apt-get update
+RUN apt-get install --fix-missing -y xvfb  
+
+RUN apt-get install -y --no-install-recommends firefox
+
+
+WORKDIR /app/tests/serverpod_test_server
+RUN dart pub get
+
+WORKDIR /app
+
+
+# Setup database tables and start the server.
+ENTRYPOINT ["tests/docker/tests_e2e/run-tests.sh"]
+

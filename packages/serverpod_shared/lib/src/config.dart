@@ -61,42 +61,52 @@ class ServerpodConfig {
     );
   }
 
-  /// Loads and parses a server configuration file. Picks config file depending
-  /// on run mode.
-  factory ServerpodConfig.load(
+  /// Creates a new [ServerpodConfig] from a configuration Map.
+  /// Expects the Map to match the specified run mode.
+  ///
+  /// Throws an exception if the configuration is missing required fields.
+  factory ServerpodConfig.loadFromMap(
     String runMode,
     String serverId,
     Map<String, String> passwords,
+    Map configMap,
   ) {
-    String data;
+    /// Get api server setup. This field cannot be null, so if the
+    /// configuration is missing an exception is thrown.
+    var apiSetup = configMap['apiServer'];
+    if (apiSetup == null) {
+      throw Exception('apiServer is missing in config');
+    }
 
-    data = File(_createConfigPath(runMode)).readAsStringSync();
+    var apiServer = ServerConfig._fromJson(apiSetup, 'apiServer');
 
-    var doc = loadYaml(data);
+    /// Get insights server setup
+    var insightsSetup = configMap['insightsServer'];
+    var insightsServer = insightsSetup != null
+        ? ServerConfig._fromJson(insightsSetup, 'insightsServer')
+        : null;
 
-    assert(doc['apiServer'] is Map, 'apiServer is missing in confing');
-    var apiServer = ServerConfig._fromJson(doc['apiServer']);
-
-    assert(doc['insightsServer'] is Map, 'insightsServer is missing in config');
-    var insightsServer = ServerConfig._fromJson(doc['insightsServer']);
-
-    assert(doc['webServer'] is Map, 'webServer is missing in config');
-    var webServer = ServerConfig._fromJson(doc['webServer']);
+    /// Get web server setup
+    var webSetup = configMap['webServer'];
+    var webServer =
+        webSetup != null ? ServerConfig._fromJson(webSetup, 'webServer') : null;
 
     // Get max request size (default to 512kb)
-    var maxRequestSize = doc['maxRequestSize'] ?? 524288;
+    var maxRequestSize = configMap['maxRequestSize'] ?? 524288;
 
     var serviceSecret = passwords['serviceSecret'];
 
     // Get database setup
-    assert(doc['database'] is Map, 'Database setup is missing in config');
-    Map dbSetup = doc['database'];
-    var database = DatabaseConfig._fromJson(dbSetup, passwords);
+    var dbSetup = configMap['database'];
+    var database = dbSetup != null
+        ? DatabaseConfig._fromJson(dbSetup, passwords, 'database')
+        : null;
 
     // Get Redis setup
-    assert(doc['redis'] is Map, 'Redis setup is missing in config');
-    Map redisSetup = doc['redis'];
-    var redis = RedisConfig._fromJson(redisSetup, passwords);
+    var redisSetup = configMap['redis'];
+    var redis = redisSetup != null
+        ? RedisConfig._fromJson(redisSetup, passwords, 'redis')
+        : null;
 
     return ServerpodConfig(
       runMode: runMode,
@@ -109,6 +119,21 @@ class ServerpodConfig {
       redis: redis,
       serviceSecret: serviceSecret,
     );
+  }
+
+  /// Loads and parses a server configuration file. Picks config file depending
+  /// on run mode.
+  factory ServerpodConfig.load(
+    String runMode,
+    String serverId,
+    Map<String, String> passwords,
+  ) {
+    String data;
+
+    data = File(_createConfigPath(runMode)).readAsStringSync();
+
+    var doc = loadYaml(data);
+    return ServerpodConfig.loadFromMap(runMode, serverId, passwords, doc);
   }
 
   /// Checks if a configuration file is available on disk for the given run mode.
@@ -151,7 +176,7 @@ class ServerConfig {
   /// Public facing scheme, i.e. http or https.
   final String publicScheme;
 
-  ///
+  /// Creates a new [ServerConfig].
   ServerConfig({
     required this.port,
     required this.publicScheme,
@@ -159,12 +184,23 @@ class ServerConfig {
     required this.publicPort,
   });
 
-  factory ServerConfig._fromJson(Map serverSetup) {
+  factory ServerConfig._fromJson(Map serverSetup, String name) {
+    _validateJsonConfig(
+      const {
+        'port': int,
+        'publicHost': String,
+        'publicPort': int,
+        'publicScheme': String,
+      },
+      serverSetup,
+      name,
+    );
+
     return ServerConfig(
-      port: serverSetup['port'] as int,
-      publicHost: serverSetup['publicHost'] as String,
-      publicPort: serverSetup['publicPort'] as int,
-      publicScheme: serverSetup['publicScheme'] as String,
+      port: serverSetup['port'],
+      publicHost: serverSetup['publicHost'],
+      publicPort: serverSetup['publicPort'],
+      publicScheme: serverSetup['publicScheme'],
     );
   }
 
@@ -214,16 +250,31 @@ class DatabaseConfig {
     this.isUnixSocket = false,
   });
 
-  factory DatabaseConfig._fromJson(Map dbSetup, Map<String, String> passwords) {
-    assert(passwords['database'] != null, 'Database password is missing');
+  factory DatabaseConfig._fromJson(Map dbSetup, Map passwords, String name) {
+    _validateJsonConfig(
+      const {
+        'host': String,
+        'port': int,
+        'name': String,
+        'user': String,
+      },
+      dbSetup,
+      name,
+    );
+
+    var password = passwords['database'];
+    if (password == null) {
+      throw Exception('Missing database password.');
+    }
+
     return DatabaseConfig(
-      host: dbSetup['host']!,
-      port: dbSetup['port']!,
-      name: dbSetup['name']!,
-      user: dbSetup['user']!,
+      host: dbSetup['host'],
+      port: dbSetup['port'],
+      name: dbSetup['name'],
+      user: dbSetup['user'],
       requireSsl: dbSetup['requireSsl'] ?? false,
       isUnixSocket: dbSetup['isUnixSocket'] ?? false,
-      password: passwords['database']!,
+      password: passwords['database'],
     );
   }
 
@@ -267,11 +318,20 @@ class RedisConfig {
     this.password,
   });
 
-  factory RedisConfig._fromJson(Map redisSetup, Map<String, String> passwords) {
+  factory RedisConfig._fromJson(Map redisSetup, Map passwords, String name) {
+    _validateJsonConfig(
+      const {
+        'host': String,
+        'port': int,
+      },
+      redisSetup,
+      name,
+    );
+
     return RedisConfig(
       enabled: redisSetup['enabled'] ?? false,
-      host: redisSetup['host']!,
-      port: redisSetup['port']!,
+      host: redisSetup['host'],
+      port: redisSetup['port'],
       user: redisSetup['user'],
       password: passwords['redis'],
     );
@@ -289,5 +349,27 @@ class RedisConfig {
       str += 'redis pass: ********\n';
     }
     return str;
+  }
+}
+
+/// Validates that a JSON configuration contains all required keys, and that
+/// the values have the correct types.
+///
+/// Throws an exception if a key is missing or if the value has the wrong type.
+void _validateJsonConfig(
+  Map<String, Type> expectedConfiguration,
+  Map jsonConfig,
+  String name,
+) {
+  for (var MapEntry(key: key, value: value) in expectedConfiguration.entries) {
+    if (!jsonConfig.containsKey(key)) {
+      throw Exception('$name is missing required configuration for $key.');
+    }
+
+    if (jsonConfig[key].runtimeType != value) {
+      throw Exception(
+        '$name configuration has invalid type for $key. Expected $value, got ${jsonConfig[key].runtimeType}.',
+      );
+    }
   }
 }
