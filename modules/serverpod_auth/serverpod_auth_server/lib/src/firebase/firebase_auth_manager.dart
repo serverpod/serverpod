@@ -32,16 +32,16 @@ class FirebaseAuthManager {
     http.Client? authClient,
     http.Client? openIdClient,
   }) {
+    if (firebaseServiceAccountJson.isEmpty) {
+      throw FirebaseInitException('Invalid Firebase Account Service Json');
+    }
+
+    var projectId = firebaseServiceAccountJson['project_id'] as String?;
+    if (projectId == null || projectId.isEmpty) {
+      throw FirebaseInitException('Invalid Firebase Project ID');
+    }
+
     try {
-      if (firebaseServiceAccountJson.isEmpty) {
-        throw Exception('Invalid Firebase Account Service Json');
-      }
-
-      var projectId = firebaseServiceAccountJson['project_id'] as String?;
-      if (projectId == null || projectId.isEmpty) {
-        throw Exception('Invalid Firebase Project ID');
-      }
-
       _accountApi = AuthRequestApi(
         projectId: projectId,
         credentials: ServiceAccountCredentials.fromJson(
@@ -49,16 +49,16 @@ class FirebaseAuthManager {
         ),
         httClient: authClient,
       );
-
-      _tokenVerifier = TokenVerifier(
-        projectId: projectId,
-        httpClient: openIdClient,
-      );
-    } catch (e) {
+    } on ArgumentError catch (e) {
       throw FirebaseInitException(
-        'Firebase Initialization Failed: $e',
+        'Firebase Initialization Argument Error: $e',
       );
     }
+
+    _tokenVerifier = TokenVerifier(
+      projectId: projectId,
+      httpClient: openIdClient,
+    );
   }
 
   /// Firebase JWT verifier

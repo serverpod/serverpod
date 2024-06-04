@@ -60,7 +60,7 @@ class FirebaseAuthBackendMock {
 }
 
 class FirebaseOpenIdBackendMock {
-  ///
+  /// Mocks the firebase project OpenId configurations
   Map<String, dynamic> get _getOpenIdConfiguration {
     return {
       'issuer': 'https://securetoken.google.com/project_id',

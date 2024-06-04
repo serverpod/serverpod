@@ -37,9 +37,19 @@ class TokenVerifier {
 
     var credential = client.createCredential(idToken: jwtToken);
 
-    await for (var e in credential.validateToken()) {
-      throw FirebaseJWTException(
-        'Validating ID token failed: $e',
+    try {
+      await for (var e in credential.validateToken()) {
+        throw FirebaseJWTException(
+          'Validating ID token failed: $e',
+        );
+      }
+    } on ArgumentError catch (e) {
+      throw FirebaseJWTFormatException(
+        'JWT Argument Error: $e',
+      );
+    } on FormatException catch (e) {
+      throw FirebaseJWTFormatException(
+        'JWT Format Exception: $e',
       );
     }
 

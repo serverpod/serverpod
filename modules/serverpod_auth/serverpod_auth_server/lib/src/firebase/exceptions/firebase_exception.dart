@@ -27,3 +27,9 @@ class FirebaseJWTException extends FirebaseException {
   /// Creates a new [FirebaseJWTException] object
   FirebaseJWTException(super.message);
 }
+
+/// Invalid JWT Format Exception
+class FirebaseJWTFormatException extends FirebaseJWTException {
+  /// Creates a new [FirebaseJWTFormatException] object
+  FirebaseJWTFormatException(super.message);
+}

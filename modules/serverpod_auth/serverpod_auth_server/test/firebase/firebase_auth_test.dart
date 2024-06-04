@@ -64,11 +64,11 @@ void main() {
       test(
         'when calling verifyIdToken with an invalid idToken, then a FirebaseJWTException is thrown',
         () async {
-          var idToken = 'blablabla';
+          var idToken = 'blablabla.test.test';
 
           await expectLater(
             () async => await auth.verifyIdToken(idToken),
-            throwsA(isA<FirebaseJWTException>()),
+            throwsA(isA<FirebaseJWTFormatException>()),
           );
         },
       );
