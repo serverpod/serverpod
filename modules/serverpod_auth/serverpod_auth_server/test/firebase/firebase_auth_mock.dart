@@ -3,41 +3,33 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:jose/jose.dart';
 
-class MockAuthBaseClient extends http.BaseClient {
+class FirebaseAuthBackendMock {
   final Map<String, dynamic> userJson;
 
-  MockAuthBaseClient({
+  FirebaseAuthBackendMock({
     required this.userJson,
   });
 
-  @override
-  Future<http.StreamedResponse> send(
-    http.BaseRequest baseRequest,
-  ) async {
-    var bodyBytes = await baseRequest.finalize().toBytes();
-    var request = http.Request(baseRequest.method, baseRequest.url)
-      ..persistentConnection = baseRequest.persistentConnection
-      ..followRedirects = baseRequest.followRedirects
-      ..maxRedirects = baseRequest.maxRedirects
-      ..headers.addAll(baseRequest.headers)
-      ..bodyBytes = bodyBytes
-      ..finalize();
+  /// Returns Firebase Mock Authentication Token
+  http.Response _getAuthenticationToken(
+    http.Request request,
+  ) {
+    Map<String, String> body = Uri.splitQueryString(request.body);
+    return http.Response(
+      jsonEncode({
+        'access_token': body['assertion'],
+        'expires_in': 3599,
+        'token_type': 'Bearer',
+      }),
+      200,
+      headers: {'content-type': 'application/json'},
+    );
+  }
 
-    if (request.url.path.endsWith('token')) {
-      Map<String, String> body = Uri.splitQueryString(request.body);
-      return http.StreamedResponse(
-        http.ByteStream.fromBytes(
-          jsonEncode({
-            'access_token': body['assertion'],
-            'expires_in': 3599,
-            'token_type': 'Bearer',
-          }).runes.toList(),
-        ),
-        200,
-        headers: {'content-type': 'application/json'},
-      );
-    }
-
+  /// Returns Firebase Mock Users filtering by [localeId]/[uid]
+  http.Response _getUsersByLocaleId(
+    http.Request request,
+  ) {
     Map<String, dynamic> body = jsonDecode(request.body);
     List<String> localeId = List<String>.from(body['localId'] ?? []);
 
@@ -46,25 +38,31 @@ class MockAuthBaseClient extends http.BaseClient {
       users.add(userJson);
     }
 
-    return http.StreamedResponse(
-      http.ByteStream.fromBytes(
-        jsonEncode({
-          'kind': 'identitytoolkit#GetAccountInfoResponse',
-          'users': users,
-        }).runes.toList(),
-      ),
+    return http.Response(
+      jsonEncode({
+        'kind': 'identitytoolkit#GetAccountInfoResponse',
+        'users': users,
+      }),
       200,
       headers: {'content-type': 'application/json'},
     );
   }
+
+  Future<http.Response> onHttpCall(
+    http.Request request,
+  ) async {
+    if (request.url.path.endsWith('token')) {
+      return _getAuthenticationToken(request);
+    }
+
+    return _getUsersByLocaleId(request);
+  }
 }
 
-class MockTokenClient extends http.BaseClient {
-  @override
-  Future<http.StreamedResponse> send(
-    http.BaseRequest request,
-  ) async {
-    var response = {
+class FirebaseOpenIdBackendMock {
+  ///
+  Map<String, dynamic> get _getOpenIdConfiguration {
+    return {
       'issuer': 'https://securetoken.google.com/project_id',
       'jwks_uri': Uri.dataFromString(
               json.encode({
@@ -85,11 +83,13 @@ class MockTokenClient extends http.BaseClient {
       'subject_types_supported': ['public'],
       'id_token_signing_alg_values_supported': ['RS256']
     };
+  }
 
-    return http.StreamedResponse(
-      http.ByteStream.fromBytes(
-        jsonEncode(response).runes.toList(),
-      ),
+  Future<http.Response> onHttpCall(
+    http.Request request,
+  ) async {
+    return http.Response(
+      jsonEncode(_getOpenIdConfiguration),
       200,
       headers: {'content-type': 'application/json'},
       request: http.Request(
@@ -101,7 +101,6 @@ class MockTokenClient extends http.BaseClient {
 }
 
 String generateMockIdToken({
-  required String projectId,
   required String uid,
   Map<String, dynamic>? overrides,
 }) {
@@ -119,6 +118,8 @@ String generateMockIdToken({
     'alg': 'RS256',
     'kid': testAccountServiceJson['private_key_id'],
   });
+
+  var projectId = testAccountServiceJson['project_id'];
 
   var builder = JsonWebSignatureBuilder()
     ..jsonContent = {
@@ -149,7 +150,7 @@ Map<String, dynamic> testAccountServiceJson = {
   'client_id': 'client_id'
 };
 
-Map<String, dynamic> getUserRecord({
+Map<String, dynamic> crateUserRecord({
   required String uuid,
   required DateTime validSince,
 }) =>
@@ -167,19 +168,6 @@ Map<String, dynamic> getUserRecord({
           'federatedId': '1234567890',
           'email': 'user@gmail.com',
           'rawId': '1234567890',
-        },
-        {
-          'providerId': 'facebook.com',
-          'displayName': 'John Smith',
-          'photoUrl': 'https://facebook.com/0987654321/photo.jpg',
-          'federatedId': '0987654321',
-          'email': 'user@facebook.com',
-          'rawId': '0987654321',
-        },
-        {
-          'providerId': 'phone',
-          'phoneNumber': '+11234567890',
-          'rawId': '+11234567890',
         },
       ],
       'photoUrl': 'https://lh3.googleusercontent.com/1234567890/photo.jpg',

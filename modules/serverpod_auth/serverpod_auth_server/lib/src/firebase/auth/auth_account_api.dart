@@ -41,7 +41,9 @@ class AuthRequestApi {
   }
 
   Future<IdentityToolkitApi> _getIdentityToolkitApi() async {
-    if (_identityToolkitApi != null) return _identityToolkitApi!;
+    var identityToolKitApi = _identityToolkitApi;
+    if (identityToolKitApi != null) return identityToolKitApi;
+
     var client = await clientViaServiceAccount(
       _credentials,
       [
@@ -51,7 +53,10 @@ class AuthRequestApi {
       ],
       baseClient: _httpClient,
     );
-    _identityToolkitApi = IdentityToolkitApi(client);
-    return _identityToolkitApi!;
+
+    identityToolKitApi = IdentityToolkitApi(client);
+    _identityToolkitApi = identityToolKitApi;
+
+    return identityToolKitApi;
   }
 }
