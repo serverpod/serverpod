@@ -62,9 +62,21 @@ void main() {
       );
 
       test(
-        'when calling verifyIdToken with an invalid idToken, then a FirebaseJWTException is thrown',
+        'when calling verifyIdToken with an invalid idToken format, then a FirebaseJWTFormatException is thrown',
         () async {
           var idToken = 'blablabla.test.test';
+
+          await expectLater(
+            () async => await auth.verifyIdToken(idToken),
+            throwsA(isA<FirebaseJWTFormatException>()),
+          );
+        },
+      );
+
+      test(
+        'when calling verifyIdToken with an malformated idToken, then a FirebaseJWTFormatException is thrown',
+        () async {
+          var idToken = 'blablabla';
 
           await expectLater(
             () async => await auth.verifyIdToken(idToken),

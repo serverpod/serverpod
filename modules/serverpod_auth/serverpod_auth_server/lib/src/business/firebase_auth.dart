@@ -13,8 +13,9 @@ class FirebaseAuth {
   /// This method will throw [FirebaseException]
   /// if it fails to load or validate the firebase user credentials
   static Future<FirebaseAuthManager> get authManager async {
-    if (_authManager != null) {
-      return _authManager!;
+    var authManager = _authManager;
+    if (authManager != null) {
+      return authManager;
     }
 
     Map<String, dynamic> firebaseServiceAccountJson;
@@ -29,11 +30,11 @@ class FirebaseAuth {
       );
     }
 
-    var authManager = FirebaseAuthManager(
+    authManager = FirebaseAuthManager(
       firebaseServiceAccountJson,
     );
 
     _authManager = authManager;
-    return _authManager!;
+    return authManager;
   }
 }

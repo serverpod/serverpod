@@ -31,13 +31,14 @@ class AuthRequestApi {
       _projectId,
     );
 
-    if (response.users == null || response.users!.isEmpty) {
+    var users = response.users;
+    if (users == null || users.isEmpty) {
       throw FirebaseInvalidUIIDException(
         'There is no user record corresponding to the provided identifier.',
       );
     }
 
-    return response.users!.first;
+    return users.first;
   }
 
   Future<IdentityToolkitApi> _getIdentityToolkitApi() async {
