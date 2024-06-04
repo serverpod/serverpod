@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
-import 'package:firebase_admin/firebase_admin.dart';
 import 'package:serverpod_auth_server/src/business/firebase_auth.dart';
+import 'package:serverpod_auth_server/src/firebase/firebase_auth_manager.dart';
 
 const _authMethod = 'firebase';
 
@@ -12,10 +12,10 @@ class FirebaseEndpoint extends Endpoint {
     Session session,
     String idToken,
   ) async {
-    Auth auth;
+    FirebaseAuthManager authManager;
     session.log('Firebase authenticate', level: LogLevel.debug);
     try {
-      auth = FirebaseAuth.app.auth();
+      authManager = await FirebaseAuth.authManager;
     } catch (e, stackTrace) {
       session.log(
         'Failed to create Firebase app. Have you correctly configured the service account key?',
@@ -33,7 +33,7 @@ class FirebaseEndpoint extends Endpoint {
     session.log('Created Auth object', level: LogLevel.debug);
 
     try {
-      var token = await auth.verifyIdToken(idToken, true);
+      var token = await authManager.verifyIdToken(idToken);
       session.log('Verified idToken', level: LogLevel.debug);
       var claims = token.claims;
 
