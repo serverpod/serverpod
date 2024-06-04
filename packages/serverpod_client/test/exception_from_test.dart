@@ -49,7 +49,7 @@ void main() {
       expect(exception, isA<TestException>());
     });
 
-    test('then the message is an unknown error', () {
+    test('then the message is parsed from the data', () {
       expect(exception.message, 'A custom exception');
     });
   });
