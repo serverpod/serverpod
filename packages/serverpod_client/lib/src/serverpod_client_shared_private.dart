@@ -32,24 +32,23 @@ dynamic getExceptionFrom({
   required SerializationManager serializationManager,
   required int statusCode,
 }) {
-  if (data.isEmpty) {
-    return switch (statusCode) {
-      HttpStatus.badRequest => ServerpodClientBadRequest(),
-      HttpStatus.unauthorized => ServerpodClientUnauthorized(),
-      HttpStatus.forbidden => ServerpodClientForbidden(),
-      HttpStatus.notFound => ServerpodClientNotFound(),
-      HttpStatus.internalServerError => ServerpodClientInternalServerError(),
-      _ => ServerpodClientException('Unknown error', statusCode),
-    };
+  if (data.isNotEmpty) {
+    try {
+      dynamic dataObject = serializationManager.decodeWithType(data);
+      if (dataObject is SerializableException) {
+        return dataObject;
+      }
+    } catch (e) {
+      // Ignore
+    }
   }
 
-  try {
-    dynamic dataObject = serializationManager.decodeWithType(data);
-    if (dataObject is SerializableException) {
-      return dataObject;
-    }
-    return (ServerpodClientException(data, statusCode));
-  } catch (e) {
-    return (ServerpodClientException(data, statusCode));
-  }
+  return switch (statusCode) {
+    HttpStatus.badRequest => ServerpodClientBadRequest(),
+    HttpStatus.unauthorized => ServerpodClientUnauthorized(),
+    HttpStatus.forbidden => ServerpodClientForbidden(),
+    HttpStatus.notFound => ServerpodClientNotFound(),
+    HttpStatus.internalServerError => ServerpodClientInternalServerError(),
+    _ => ServerpodClientException('Unknown error, data: $data', statusCode),
+  };
 }
