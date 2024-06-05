@@ -44,7 +44,7 @@ void main() async {
 
       expect(
         UniqueData.db.insert(session, data),
-        throwsA(isA<ArgumentError>()),
+        throwsA(isA<DatabaseException>()),
       );
 
       var first = await UniqueData.db.findFirstRow(session,
@@ -68,5 +68,18 @@ void main() async {
 
       expect(inserted.first.id, isNot(max));
     });
+  });
+
+  test(
+      'Given an object data without an id when calling insertRow then the created object is returned.',
+      () async {
+    var simpleData = SimpleData(num: 1);
+    var inserted = await SimpleData.db.insertRow(
+      session,
+      simpleData,
+    );
+
+    expect(inserted.id, isNotNull);
+    expect(inserted.num, 1);
   });
 }
