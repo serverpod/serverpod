@@ -85,4 +85,104 @@ void main() async {
       });
     });
   });
+
+  test(
+      'Given two entries in the database when batch deleting the rows then the deleted ids are returned.',
+      () async {
+    var data = <UniqueData>[
+      UniqueData(number: 1, email: 'info@serverpod.dev'),
+      UniqueData(number: 2, email: 'dev@serverpod.dev'),
+    ];
+
+    var inserted = await UniqueData.db.insert(session, data);
+
+    var deletedIds = await UniqueData.db.delete(session, data);
+
+    expect(deletedIds.first.id!, inserted.first.id);
+    expect(deletedIds.last.id!, inserted.last.id);
+  });
+
+  test(
+      'Given two entries in the database when batch deleting the rows then the rows are deleted from the database.',
+      () async {
+    var data = <UniqueData>[
+      UniqueData(number: 1, email: 'info@serverpod.dev'),
+      UniqueData(number: 2, email: 'dev@serverpod.dev'),
+    ];
+
+    var inserted = await UniqueData.db.insert(session, data);
+
+    await UniqueData.db.delete(session, data);
+
+    var first = await UniqueData.db.findById(session, inserted.first.id!);
+    var last = await UniqueData.db.findById(session, inserted.last.id!);
+
+    expect(first, isNull);
+    expect(last, isNull);
+  });
+
+  test(
+      'Given two entries in the database when batch deleting fails no rows are deleted from the database.',
+      () async {
+    var data = <UniqueData>[
+      UniqueData(number: 1, email: 'info@serverpod.dev'),
+      UniqueData(number: 2, email: 'dev@serverpod.dev'),
+    ];
+
+    var inserted = await UniqueData.db.insert(session, data);
+
+    var relationalData = RelatedUniqueData(
+      number: 1,
+      uniqueDataId: inserted.last.id!,
+    );
+
+    // This restricts the delete of the second entry
+    RelatedUniqueData.db.insertRow(session, relationalData);
+
+    expect(
+      UniqueData.db.delete(session, inserted),
+      throwsA(isA<ArgumentError>()),
+    );
+
+    var first = await UniqueData.db.findById(session, inserted.first.id!);
+    var last = await UniqueData.db.findById(session, inserted.last.id!);
+
+    expect(first, isNotNull);
+    expect(last, isNotNull);
+  });
+
+  test(
+      'Given two entries in the database when batch deleting one the other entry is still in the database.',
+      () async {
+    var data = <UniqueData>[
+      UniqueData(number: 1, email: 'info@serverpod.dev'),
+      UniqueData(number: 2, email: 'dev@serverpod.dev'),
+    ];
+
+    var inserted = await UniqueData.db.insert(session, data);
+
+    await UniqueData.db.delete(session, [inserted.first]);
+
+    var first = await UniqueData.db.findById(session, inserted.first.id!);
+    var last = await UniqueData.db.findById(session, inserted.last.id!);
+
+    expect(first, isNull);
+    expect(last, isNotNull);
+  });
+
+  test(
+      'Given two entries in the database when batch deleting one only that id is returned.',
+      () async {
+    var data = <UniqueData>[
+      UniqueData(number: 1, email: 'info@serverpod.dev'),
+      UniqueData(number: 2, email: 'dev@serverpod.dev'),
+    ];
+
+    var inserted = await UniqueData.db.insert(session, data);
+
+    var deleted = await UniqueData.db.delete(session, [inserted.first]);
+
+    expect(deleted, hasLength(1));
+    expect(deleted.first.id!, inserted.first.id);
+  });
 }
