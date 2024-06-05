@@ -90,8 +90,8 @@ jobs:
       - name: Run serverpod update pubspecs
         run: bash util/run_tests_update_pubspecs
 
-  unit_tests:
-    name: Unit tests
+  unit_io_tests:
+    name: Unit tests IO
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -101,6 +101,7 @@ jobs:
           [
             "tools/serverpod_cli",
             "packages/serverpod",
+            "packages/serverpod_client",
             "packages/serverpod_shared",
             "packages/serverpod_serialization",
             "tests/serverpod_test_client",
@@ -114,6 +115,27 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
       - name: Run unit tests
         run: dart test
+        working-directory: ${{ matrix.path }}
+
+  unit_web_tests:
+    name: Unit tests Web
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        flutter-version: ['3.13.0', '3.19.5']
+        os: [ubuntu-latest]
+        path:
+          [
+            "packages/serverpod_client",
+          ]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+      - uses: browser-actions/setup-chrome@v1
+      - name: Run unit tests
+        run: dart test -p chrome
         working-directory: ${{ matrix.path }}
   
   e2e_io_tests:

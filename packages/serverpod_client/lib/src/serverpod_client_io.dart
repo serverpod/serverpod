@@ -4,9 +4,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:serverpod_client/serverpod_client.dart';
 
-import 'serverpod_client_shared.dart';
 import 'serverpod_client_shared_private.dart';
 
 /// Handles communication with the server. Is typically overridden by
