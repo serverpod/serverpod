@@ -1,48 +1,69 @@
-import 'package:serverpod_test_client/serverpod_test_client.dart';
-import 'package:serverpod_test_server/test_util/config.dart';
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_test_server/src/generated/protocol.dart';
+import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
-Future<void> _createTestDatabase(Client client) async {
+Future<void> _createTestDatabase(Session session) async {
   var town = Town(name: 'Stockholm');
-  town.id = await client.relation.townInsert(town);
+  town = await Town.db.insertRow(session, town);
 
   var serverpod = Company(name: 'Serverpod', town: town, townId: town.id!);
-  serverpod.id = await client.relation.companyInsert(serverpod);
+  serverpod = await Company.db.insertRow(session, serverpod);
 
   var pods = Company(name: 'The pod', town: town, townId: town.id!);
-  pods.id = await client.relation.companyInsert(pods);
+  pods = await Company.db.insertRow(session, pods);
 
   var alice = Citizen(name: 'Alice', companyId: serverpod.id!);
   var bob = Citizen(name: 'Bob', companyId: serverpod.id!);
-  alice.id = await client.relation.citizenInsert(alice);
-  bob.id = await client.relation.citizenInsert(bob);
+  alice = await Citizen.db.insertRow(session, alice);
+  bob = await Citizen.db.insertRow(session, bob);
 
   var address = Address(street: 'Street', inhabitantId: bob.id);
-  address.id = await client.relation.addressInsert(address);
+  address = await Address.db.insertRow(session, address);
 }
 
-void main() {
-  var client = Client(serverUrl);
+Future<int> deleteAll(Session session) async {
+  var addressDeletions =
+      await Address.db.deleteWhere(session, where: (_) => Constant.bool(true));
+  var citizenDeletions =
+      await Citizen.db.deleteWhere(session, where: (_) => Constant.bool(true));
+  var companyDeletions =
+      await Company.db.deleteWhere(session, where: (_) => Constant.bool(true));
+  var townDeletions =
+      await Town.db.deleteWhere(session, where: (_) => Constant.bool(true));
+
+  var postDeletions =
+      await Post.db.deleteWhere(session, where: (_) => Constant.bool(true));
+
+  return townDeletions.length +
+      companyDeletions.length +
+      citizenDeletions.length +
+      addressDeletions.length +
+      postDeletions.length;
+}
+
+void main() async {
+  var session = await IntegrationTestServer().session();
 
   group('Given an address', () {
     late List<Citizen> citizens;
 
     setUp(() async {
-      await _createTestDatabase(client);
-      citizens = await client.relation.citizenFindAll();
+      await _createTestDatabase(session);
+      citizens = await Citizen.db.find(session, orderBy: (t) => t.id);
     });
 
-    tearDown(() async => await client.relation.deleteAll());
+    tearDown(() async => await deleteAll(session));
     test(
         'when attaching an address from the foreign key side the object holding the foreign key is updated in the database',
         () async {
       var alice = citizens.first;
       var address = Address(street: 'Street');
-      address.id = await client.relation.addressInsert(address);
+      address = await Address.db.insertRow(session, address);
 
-      await client.relation.addressAttachCitizen(address, alice);
+      await Address.db.attachRow.inhabitant(session, address, alice);
 
-      var updatedAddress = await client.relation.addressFindById(address.id!);
+      var updatedAddress = await Address.db.findById(session, address.id!);
 
       expect(updatedAddress?.inhabitantId, alice.id);
     });
@@ -50,12 +71,12 @@ void main() {
     test(
         'when detaching an address from the foreign key side the object holding the foreign key has the foreign key set to null.',
         () async {
-      var addresses = await client.relation.addressFindAll();
+      var addresses = await Address.db.find(session, orderBy: (t) => t.id);
       var address = addresses.first;
 
-      await client.relation.addressDetachCitizen(address);
+      await Address.db.detachRow.inhabitant(session, address);
 
-      var updatedAddress = await client.relation.addressFindById(address.id!);
+      var updatedAddress = await Address.db.findById(session, address.id!);
 
       expect(updatedAddress?.inhabitantId, null);
     });
@@ -65,13 +86,13 @@ void main() {
         () async {
       var alice = citizens.first;
       var address = Address(street: 'Street');
-      address.id = await client.relation.addressInsert(address);
+      address = await Address.db.insertRow(session, address);
 
       var copy = address.copyWith(street: 'New street');
 
-      await client.relation.addressAttachCitizen(copy, alice);
+      Address.db.attachRow.inhabitant(session, copy, alice);
 
-      var updatedAddress = await client.relation.addressFindById(address.id!);
+      var updatedAddress = await Address.db.findById(session, address.id!);
 
       expect(updatedAddress?.street, 'Street');
     });
@@ -83,11 +104,11 @@ void main() {
       var address = Address(street: 'Street');
 
       try {
-        await client.relation.addressAttachCitizen(address, alice);
+        await Address.db.attachRow.inhabitant(session, address, alice);
         fail('Expected an exception to be thrown');
       } catch (e) {
-        // TODO: check real exception when we support testing on the server
-        expect(e, isA<ServerpodClientInternalServerError>());
+        expect(e, isA<ArgumentError>());
+        expect((e as ArgumentError).name, 'address.id');
       }
     });
 
@@ -96,14 +117,14 @@ void main() {
         () async {
       var carol = Citizen(name: 'Carol', companyId: 0);
       var address = Address(street: 'Street');
-      address.id = await client.relation.addressInsert(address);
+      address = await Address.db.insertRow(session, address);
 
       try {
-        await client.relation.addressAttachCitizen(address, carol);
+        await Address.db.attachRow.inhabitant(session, address, carol);
         fail('Expected an exception to be thrown');
       } catch (e) {
-        // TODO: check real exception when we support testing on the server
-        expect(e, isA<ServerpodClientInternalServerError>());
+        expect(e, isA<ArgumentError>());
+        expect((e as ArgumentError).name, 'inhabitant.id');
       }
     });
 
@@ -113,11 +134,11 @@ void main() {
       var address = Address(street: 'Street');
 
       try {
-        await client.relation.addressDetachCitizen(address);
+        await Address.db.detachRow.inhabitant(session, address);
         fail('Expected an exception to be thrown');
       } catch (e) {
-        // TODO: check real exception when we support testing on the server
-        expect(e, isA<ServerpodClientInternalServerError>());
+        expect(e, isA<ArgumentError>());
+        expect((e as ArgumentError).name, 'address.id');
       }
     });
   });
@@ -127,23 +148,23 @@ void main() {
     late List<Company> companies;
 
     setUp(() async {
-      await _createTestDatabase(client);
-      citizens = await client.relation.citizenFindAll();
-      companies = await client.relation.companyFindAll();
+      await _createTestDatabase(session);
+      citizens = await Citizen.db.find(session, orderBy: (t) => t.id);
+      companies = await Company.db.find(session, orderBy: (t) => t.id);
     });
 
-    tearDown(() async => await client.relation.deleteAll());
+    tearDown(() async => await deleteAll(session));
 
     test(
         'when attaching an address from the none foreign key side the object holding the foreign key is updated in the database',
         () async {
       var alice = citizens.first;
       var address = Address(street: 'Street');
-      address.id = await client.relation.addressInsert(address);
+      address = await Address.db.insertRow(session, address);
 
-      await client.relation.citizenAttachAddress(alice, address);
+      await Citizen.db.attachRow.address(session, alice, address);
 
-      var updatedAddress = await client.relation.addressFindById(address.id!);
+      var updatedAddress = await Address.db.findById(session, address.id!);
 
       expect(updatedAddress?.inhabitantId, alice.id);
     });
@@ -153,14 +174,20 @@ void main() {
         () async {
       var bob = citizens.last;
 
-      var addresses = await client.relation.addressFindAll();
+      var addresses = await Address.db.find(
+        session,
+        orderBy: (t) => t.id,
+        include: Address.include(
+          inhabitant: Citizen.include(),
+        ),
+      );
       var address = addresses.first;
 
       var bobCopy = bob.copyWith(address: address);
 
-      await client.relation.citizenDetachAddress(bobCopy);
+      await Citizen.db.detachRow.address(session, bobCopy);
 
-      var updatedAddress = await client.relation.addressFindById(address.id!);
+      var updatedAddress = await Address.db.findById(session, address.id!);
 
       expect(updatedAddress?.inhabitantId, null);
     });
@@ -171,10 +198,12 @@ void main() {
       var citizen = citizens.first;
       var company = companies.last;
 
-      await client.relation.citizenAttachCompany(citizen, company);
+      await Citizen.db.attachRow.company(session, citizen, company);
 
-      var alice = await client.relation.citizenFindByIdWithIncludes(
+      var alice = await Citizen.db.findById(
+        session,
         citizen.id!,
+        include: Citizen.include(company: Company.include()),
       );
 
       expect(alice?.companyId, company.id);
@@ -187,11 +216,11 @@ void main() {
       var address = Address(street: 'Street');
 
       try {
-        await client.relation.citizenAttachAddress(alice, address);
+        await Citizen.db.attachRow.address(session, alice, address);
         fail('Expected an exception to be thrown');
       } catch (e) {
-        // TODO: check real exception when we support testing on the server
-        expect(e, isA<ServerpodClientInternalServerError>());
+        expect(e, isA<ArgumentError>());
+        expect((e as ArgumentError).name, 'address.id');
       }
     });
 
@@ -200,14 +229,14 @@ void main() {
         () async {
       var carol = Citizen(name: 'Carol', companyId: 0);
       var address = Address(street: 'Street');
-      address.id = await client.relation.addressInsert(address);
+      address = await Address.db.insertRow(session, address);
 
       try {
-        await client.relation.citizenAttachAddress(carol, address);
+        await Citizen.db.attachRow.address(session, carol, address);
         fail('Expected an exception to be thrown');
       } catch (e) {
-        // TODO: check real exception when we support testing on the server
-        expect(e, isA<ServerpodClientInternalServerError>());
+        expect(e, isA<ArgumentError>());
+        expect((e as ArgumentError).name, 'citizen.id');
       }
     });
 
@@ -215,16 +244,16 @@ void main() {
         'when trying to detach an address from a citizen that is not stored in the database then an exception is thrown',
         () async {
       var address = Address(street: 'Street');
-      address.id = await client.relation.addressInsert(address);
+      address = await Address.db.insertRow(session, address);
 
       var carol = Citizen(name: 'Carol', companyId: 0, address: address);
 
       try {
-        await client.relation.citizenDetachAddress(carol);
+        await Citizen.db.detachRow.address(session, carol);
         fail('Expected an exception to be thrown');
       } catch (e) {
-        // TODO: check real exception when we support testing on the server
-        expect(e, isA<ServerpodClientInternalServerError>());
+        expect(e, isA<ArgumentError>());
+        expect((e as ArgumentError).name, 'citizen.id');
       }
     });
 
@@ -234,11 +263,11 @@ void main() {
       var alice = citizens.first;
 
       try {
-        await client.relation.citizenDetachAddress(alice);
+        await Citizen.db.detachRow.address(session, alice);
         fail('Expected an exception to be thrown');
       } catch (e) {
-        // TODO: check real exception when we support testing on the server
-        expect(e, isA<ServerpodClientInternalServerError>());
+        expect(e, isA<ArgumentError>());
+        expect((e as ArgumentError).name, 'citizen.address');
       }
     });
   });
