@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.13.0']
+        flutter-version: ['3.16.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -65,7 +65,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.13.0', '3.19.5']
+        flutter-version: ['3.16.0', '3.19.5']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -81,7 +81,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.13.0', '3.19.5']
+        flutter-version: ['3.16.0', '3.19.5']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -95,7 +95,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ['3.13.0', '3.19.5']
+        flutter-version: ['3.16.0', '3.19.5']
         os: [windows-latest, ubuntu-latest]
         path:
           [
@@ -121,7 +121,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.13.0', '3.19.5']
+        flutter-version: ['3.16.0', '3.19.5']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -135,7 +135,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.13.0', '3.19.5']
+        flutter-version: ['3.16.0', '3.19.5']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -149,7 +149,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.13.0', '3.19.5']
+        flutter-version: ['3.16.0', '3.19.5']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -164,7 +164,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.13.0', '3.19.5']
+        flutter-version: ['3.16.0', '3.19.5']
         os: [ubuntu-latest]
         path: ["tests/bootstrap_project"]
     steps:
@@ -191,7 +191,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.13.0', '3.19.5']
+        flutter-version: ['3.16.0', '3.19.5']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -206,7 +206,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.13.0', '3.19.5']
+        flutter-version: ['3.16.0', '3.19.5']
         os: [ubuntu-latest]
         path: ["tests/serverpod_cli_e2e_test"]
     steps:
