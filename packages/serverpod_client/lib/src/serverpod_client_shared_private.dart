@@ -2,6 +2,8 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'serverpod_client_exception.dart';
 
+import 'dart:html' if (dart.library.io) 'dart:io';
+
 /// Encodes arguments for serialization.
 String formatArgs(
     Map<String, dynamic> args, String? authorizationKey, String method) {
@@ -30,13 +32,23 @@ dynamic getExceptionFrom({
   required SerializationManager serializationManager,
   required int statusCode,
 }) {
-  try {
-    dynamic dataObject = serializationManager.decodeWithType(data);
-    if (dataObject is SerializableException) {
-      return dataObject;
+  if (data.isNotEmpty) {
+    try {
+      dynamic dataObject = serializationManager.decodeWithType(data);
+      if (dataObject is SerializableException) {
+        return dataObject;
+      }
+    } catch (e) {
+      // Ignore
     }
-    return (ServerpodClientException(data, statusCode));
-  } catch (e) {
-    return (ServerpodClientException(data, statusCode));
   }
+
+  return switch (statusCode) {
+    HttpStatus.badRequest => ServerpodClientBadRequest(),
+    HttpStatus.unauthorized => ServerpodClientUnauthorized(),
+    HttpStatus.forbidden => ServerpodClientForbidden(),
+    HttpStatus.notFound => ServerpodClientNotFound(),
+    HttpStatus.internalServerError => ServerpodClientInternalServerError(),
+    _ => ServerpodClientException('Unknown error, data: $data', statusCode),
+  };
 }

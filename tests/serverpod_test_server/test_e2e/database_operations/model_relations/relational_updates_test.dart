@@ -87,7 +87,7 @@ void main() {
         fail('Expected an exception to be thrown');
       } catch (e) {
         // TODO: check real exception when we support testing on the server
-        expect(e.runtimeType, ServerpodClientException);
+        expect(e, isA<ServerpodClientInternalServerError>());
       }
     });
 
@@ -103,7 +103,7 @@ void main() {
         fail('Expected an exception to be thrown');
       } catch (e) {
         // TODO: check real exception when we support testing on the server
-        expect(e.runtimeType, ServerpodClientException);
+        expect(e, isA<ServerpodClientInternalServerError>());
       }
     });
 
@@ -117,7 +117,7 @@ void main() {
         fail('Expected an exception to be thrown');
       } catch (e) {
         // TODO: check real exception when we support testing on the server
-        expect(e.runtimeType, ServerpodClientException);
+        expect(e, isA<ServerpodClientInternalServerError>());
       }
     });
   });
@@ -191,7 +191,7 @@ void main() {
         fail('Expected an exception to be thrown');
       } catch (e) {
         // TODO: check real exception when we support testing on the server
-        expect(e.runtimeType, ServerpodClientException);
+        expect(e, isA<ServerpodClientInternalServerError>());
       }
     });
 
@@ -207,7 +207,7 @@ void main() {
         fail('Expected an exception to be thrown');
       } catch (e) {
         // TODO: check real exception when we support testing on the server
-        expect(e.runtimeType, ServerpodClientException);
+        expect(e, isA<ServerpodClientInternalServerError>());
       }
     });
 
@@ -224,7 +224,7 @@ void main() {
         fail('Expected an exception to be thrown');
       } catch (e) {
         // TODO: check real exception when we support testing on the server
-        expect(e.runtimeType, ServerpodClientException);
+        expect(e, isA<ServerpodClientInternalServerError>());
       }
     });
 
@@ -238,7 +238,7 @@ void main() {
         fail('Expected an exception to be thrown');
       } catch (e) {
         // TODO: check real exception when we support testing on the server
-        expect(e.runtimeType, ServerpodClientException);
+        expect(e, isA<ServerpodClientInternalServerError>());
       }
     });
   });
