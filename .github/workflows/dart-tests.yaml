@@ -122,7 +122,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ['3.13.0', '3.19.5']
+        flutter-version: ['3.16.0', '3.19.5']
         os: [ubuntu-latest]
         path:
           [
