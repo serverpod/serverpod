@@ -286,7 +286,7 @@ class _Argon2idPasswordHashGenerator implements _PasswordHashGenerator {
       desiredKeyLength: 256,
       // Required cast because of a breaking change in dart 3.2: https://github.com/dart-lang/sdk/issues/52801
       // ignore: unnecessary_cast
-      secret: _pepper != null ? utf8.encode(_pepper!) as Uint8List : null,
+      secret: _pepper != null ? utf8.encode(_pepper) as Uint8List : null,
     );
 
     var generator = Argon2BytesGenerator()..init(parameters);
