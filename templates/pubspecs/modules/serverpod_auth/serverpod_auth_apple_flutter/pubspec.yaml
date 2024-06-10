@@ -17,7 +17,7 @@ dependencies:
   material_design_icons_flutter: ">=6.0.0 < 7.0.0"
   serverpod_auth_client: SERVERPOD_VERSION
   serverpod_auth_shared_flutter: SERVERPOD_VERSION
-  sign_in_with_apple: ^5.0.0
+  sign_in_with_apple: '>=5.0.0 <7.0.0'
 
 dev_dependencies:
   flutter_test:
