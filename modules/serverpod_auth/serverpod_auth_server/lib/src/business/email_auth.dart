@@ -276,9 +276,11 @@ class Emails {
     var emailReset = EmailReset(
       userId: userInfo.id!,
       verificationCode: verificationCode,
-      expiration: DateTime.now().add(
-        AuthConfig.current.passwordResetExpirationTime,
-      ),
+      expiration: DateTime.now()
+          .add(
+            AuthConfig.current.passwordResetExpirationTime,
+          )
+          .toUtc(),
     );
     await EmailReset.db.insertRow(session, emailReset);
 
@@ -368,7 +370,7 @@ class Emails {
 
     if (emailAuth == null) {
       session.log(
-        "ser with id: '${passwordReset.userId}' has no email authentication!",
+        "User with id: '${passwordReset.userId}' has no email authentication!",
         level: LogLevel.debug,
       );
       return false;
