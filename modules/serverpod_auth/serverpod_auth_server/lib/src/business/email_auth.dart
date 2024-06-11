@@ -582,7 +582,7 @@ class Emails {
   static String _generateVerificationCode() {
     return Random().nextString(
       length: AuthConfig.current.validationCodeLength,
-      chars: '0123456789',
+      chars: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
     );
   }
 
