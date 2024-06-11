@@ -8,7 +8,6 @@ email:
   - authenticate:
   - changePassword:
   - initiatePasswordReset:
-  - verifyEmailPasswordReset:
   - resetPassword:
   - createAccountRequest:
   - createAccount:

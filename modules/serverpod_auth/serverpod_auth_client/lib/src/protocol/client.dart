@@ -14,11 +14,9 @@ import 'package:serverpod_auth_client/src/protocol/user_info.dart' as _i3;
 import 'package:serverpod_auth_client/src/protocol/authentication_response.dart'
     as _i4;
 import 'package:serverpod_auth_client/src/protocol/apple_auth_info.dart' as _i5;
-import 'package:serverpod_auth_client/src/protocol/email_password_reset.dart'
-    as _i6;
 import 'package:serverpod_auth_client/src/protocol/user_settings_config.dart'
-    as _i7;
-import 'dart:typed_data' as _i8;
+    as _i6;
+import 'dart:typed_data' as _i7;
 
 /// Endpoint for handling admin functions.
 /// {@category Endpoint}
@@ -115,16 +113,6 @@ class EndpointEmail extends _i1.EndpointRef {
         'serverpod_auth.email',
         'initiatePasswordReset',
         {'email': email},
-      );
-
-  /// Verifies a password reset code, if successful returns an
-  /// [EmailPasswordReset] object, otherwise returns null.
-  _i2.Future<_i6.EmailPasswordReset?> verifyEmailPasswordReset(
-          String verificationCode) =>
-      caller.callServerEndpoint<_i6.EmailPasswordReset?>(
-        'serverpod_auth.email',
-        'verifyEmailPasswordReset',
-        {'verificationCode': verificationCode},
       );
 
   /// Resets a users password using the reset code.
@@ -254,8 +242,8 @@ class EndpointStatus extends _i1.EndpointRef {
       );
 
   /// Gets the server configuration.
-  _i2.Future<_i7.UserSettingsConfig> getUserSettingsConfig() =>
-      caller.callServerEndpoint<_i7.UserSettingsConfig>(
+  _i2.Future<_i6.UserSettingsConfig> getUserSettingsConfig() =>
+      caller.callServerEndpoint<_i6.UserSettingsConfig>(
         'serverpod_auth.status',
         'getUserSettingsConfig',
         {},
@@ -279,7 +267,7 @@ class EndpointUser extends _i1.EndpointRef {
       );
 
   /// Sets a new user image for the signed in user.
-  _i2.Future<bool> setUserImage(_i8.ByteData image) =>
+  _i2.Future<bool> setUserImage(_i7.ByteData image) =>
       caller.callServerEndpoint<bool>(
         'serverpod_auth.user',
         'setUserImage',

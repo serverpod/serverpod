@@ -221,25 +221,6 @@ class Endpoints extends _i1.EndpointDispatch {
             params['email'],
           ),
         ),
-        'verifyEmailPasswordReset': _i1.MethodConnector(
-          name: 'verifyEmailPasswordReset',
-          params: {
-            'verificationCode': _i1.ParameterDescription(
-              name: 'verificationCode',
-              type: _i1.getType<String>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['email'] as _i4.EmailEndpoint)
-                  .verifyEmailPasswordReset(
-            session,
-            params['verificationCode'],
-          ),
-        ),
         'resetPassword': _i1.MethodConnector(
           name: 'resetPassword',
           params: {
