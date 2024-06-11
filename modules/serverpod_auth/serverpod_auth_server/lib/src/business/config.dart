@@ -171,7 +171,7 @@ class AuthConfig {
   }) {
     if (validationCodeLength < 8) {
       stderr.writeln(
-        'WARNING: Validation code length is less than 8. This is not recommended.',
+        'WARNING: Validation code length is less than 8. This makes the validation code more susceptible to brute force attacks.',
       );
     }
 
