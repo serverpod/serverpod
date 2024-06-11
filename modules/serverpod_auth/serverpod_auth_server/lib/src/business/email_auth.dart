@@ -280,9 +280,11 @@ class Emails {
     var emailReset = EmailReset(
       userId: userInfo.id!,
       verificationCode: verificationCode,
-      expiration: DateTime.now().add(
-        AuthConfig.current.passwordResetExpirationTime,
-      ),
+      expiration: DateTime.now()
+          .add(
+            AuthConfig.current.passwordResetExpirationTime,
+          )
+          .toUtc(),
     );
     await EmailReset.db.insertRow(session, emailReset);
 
@@ -299,14 +301,24 @@ class Emails {
     String verificationCode,
     String password,
   ) async {
-    var passwordReset = await EmailReset.db.findFirstRow(session, where: (t) {
-      return t.verificationCode.equals(verificationCode) &
-          (t.expiration > DateTime.now().toUtc());
-    });
+    var passwordResets = await EmailReset.db.deleteWhere(
+      session,
+      where: (t) => t.verificationCode.equals(verificationCode),
+    );
 
-    if (passwordReset == null) {
+    if (passwordResets.isEmpty) {
       session.log(
-        'Verification code is invalid or has expired!',
+        'Verification code is invalid!',
+        level: LogLevel.debug,
+      );
+      return false;
+    }
+
+    var passwordReset = passwordResets.first;
+
+    if (passwordReset.expiration.isBefore(DateTime.now().toUtc())) {
+      session.log(
+        'Verification code has expired!',
         level: LogLevel.debug,
       );
       return false;
@@ -318,7 +330,7 @@ class Emails {
 
     if (emailAuth == null) {
       session.log(
-        "ser with id: '${passwordReset.userId}' has no email authentication!",
+        "User with id: '${passwordReset.userId}' has no email authentication!",
         level: LogLevel.debug,
       );
       return false;
