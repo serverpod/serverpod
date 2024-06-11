@@ -53,7 +53,7 @@ void main() async {
         throwsA(isA<ArgumentError>().having(
           (e) => e.toString(),
           'message',
-          contains('must be at least 1'),
+          contains('must be at least 4'),
         )));
   });
 
@@ -65,7 +65,7 @@ void main() async {
         throwsA(isA<ArgumentError>().having(
           (e) => e.toString(),
           'message',
-          contains('must be at least 1'),
+          contains('must be at least 4'),
         )));
   });
 }
