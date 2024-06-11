@@ -34,15 +34,6 @@ class EmailEndpoint extends Endpoint {
     return Emails.initiatePasswordReset(session, email);
   }
 
-  /// Verifies a password reset code, if successful returns an
-  /// [EmailPasswordReset] object, otherwise returns null.
-  Future<EmailPasswordReset?> verifyEmailPasswordReset(
-    Session session,
-    String verificationCode,
-  ) {
-    return Emails.verifyEmailPasswordReset(session, verificationCode);
-  }
-
   /// Resets a users password using the reset code.
   Future<bool> resetPassword(
       Session session, String verificationCode, String password) {

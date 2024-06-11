@@ -289,50 +289,6 @@ class Emails {
     );
   }
 
-  /// Verifies a password reset code, returns a [EmailPasswordReset] object if
-  /// successful, null otherwise.
-  static Future<EmailPasswordReset?> verifyEmailPasswordReset(
-    Session session,
-    String verificationCode,
-  ) async {
-    session.log('verificationCode: $verificationCode', level: LogLevel.debug);
-
-    var passwordReset = await EmailReset.db.findFirstRow(session, where: (t) {
-      return t.verificationCode.equals(verificationCode) &
-          (t.expiration > DateTime.now().toUtc());
-    });
-
-    if (passwordReset == null) {
-      session.log(
-        'Verification code is invalid or has expired!',
-        level: LogLevel.debug,
-      );
-      return null;
-    }
-
-    var userInfo = await Users.findUserByUserId(session, passwordReset.userId);
-    if (userInfo == null) {
-      session.log(
-        "User with id: '${passwordReset.userId}' is not found!",
-        level: LogLevel.debug,
-      );
-      return null;
-    }
-
-    if (userInfo.email == null) {
-      session.log(
-        "User with id: '${passwordReset.userId}' has no email address!",
-        level: LogLevel.debug,
-      );
-      return null;
-    }
-
-    return EmailPasswordReset(
-      userName: userInfo.userName,
-      email: userInfo.email!,
-    );
-  }
-
   /// Resets a users password using a password reset verification code.
   static Future<bool> resetPassword(
     Session session,
