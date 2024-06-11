@@ -356,7 +356,7 @@ class Emails {
 
     var passwordReset = passwordResets.first;
 
-    if (passwordReset.expiration.isAfter(DateTime.now().toUtc())) {
+    if (passwordReset.expiration.isBefore(DateTime.now().toUtc())) {
       session.log(
         'Verification code has expired!',
         level: LogLevel.debug,
