@@ -159,8 +159,9 @@ class Emails {
     String? password, [
     String? hash,
   ]) async {
-    assert(password != null || hash != null,
-        'Either password or hash needs to be provided');
+    if (password == null && hash == null) {
+      throw Exception('Either password or hash needs to be provided');
+    }
     var userInfo = await Users.findUserByEmail(session, email);
 
     if (userInfo == null) {
@@ -256,10 +257,13 @@ class Emails {
     Session session,
     String email,
   ) async {
-    assert(
-      AuthConfig.current.sendPasswordResetEmail != null,
-      'ResetPasswordEmail is not configured, cannot send email.',
-    );
+    if (AuthConfig.current.sendPasswordResetEmail == null) {
+      session.log(
+        'ResetPasswordEmail is not configured, cannot send email.',
+        level: LogLevel.debug,
+      );
+      return false;
+    }
 
     email = email.trim().toLowerCase();
 
@@ -334,10 +338,13 @@ class Emails {
     String email,
     String password,
   ) async {
-    assert(
-      AuthConfig.current.sendValidationEmail != null,
-      'The sendValidationEmail property needs to be set in AuthConfig.',
-    );
+    if (AuthConfig.current.sendValidationEmail == null) {
+      session.log(
+        'SendValidationEmail is not configured, cannot send email.',
+        level: LogLevel.debug,
+      );
+      return false;
+    }
 
     try {
       // Check if user already has an account

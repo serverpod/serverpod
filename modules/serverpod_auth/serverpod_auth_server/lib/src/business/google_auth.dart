@@ -36,10 +36,11 @@ class GoogleAuth {
     Session session,
     int userId,
   ) async {
-    assert(
-      clientSecret != null,
-      'Google client secret from $_configFilePath is not loaded',
-    );
+    if (clientSecret == null) {
+      throw StateError(
+        'Google client secret from $_configFilePath is not loaded',
+      );
+    }
 
     var refreshTokenData = await GoogleRefreshToken.db.findFirstRow(
       session,
