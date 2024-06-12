@@ -1,6 +1,6 @@
 ## 2.0.1
 - fix: Writes websocket errors to stderr.
-- fix: Adss missing web socket connection notification on stream closed.
+- fix: Adds missing web socket connection notification on stream closed.
 - fix: Sign in with Email dialog can toggle visibility of passwords.
 - fix: Allows usage of user related Google API calls in `onUserCreated` callback.
 - fix: Disposes streaming connection listener when disposing handler.
