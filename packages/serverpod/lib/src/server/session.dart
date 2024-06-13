@@ -98,7 +98,7 @@ abstract class Session {
     HttpRequest? httpRequest,
     WebSocket? webSocket,
     required this.enableLogging,
-  }) {
+  }) : _authenticationKey = authenticationKey {
     _startTime = DateTime.now();
 
     storage = StorageAccess._(this);
@@ -288,6 +288,31 @@ class MethodCallSession extends Session {
     // Get the the authentication key, if any
     _authenticationKey = authenticationKey ?? queryParameters['auth'];
   }
+}
+
+/// When a call is made to an endpoint method that uses a stream [Server] a
+/// [StreamingMethodCallSession] object is created. It contains all data
+/// associated with the current connection and provides easy access to the
+/// database.
+class StreamingMethodCallSession extends Session {
+  /// The name of the method that is being called.
+  final String methodName;
+
+  /// The name of the endpoint that is being called.
+  final String endpointName;
+
+  /// The uuid of the stream.
+  final String uuid;
+
+  /// Creates a new [Session] for a method call to a streaming endpoint.
+  StreamingMethodCallSession({
+    required super.server,
+    required super.enableLogging,
+    required super.authenticationKey,
+    required this.endpointName,
+    required this.methodName,
+    required this.uuid,
+  });
 }
 
 /// When a web socket connection is opened to the [Server] a [StreamingSession]
