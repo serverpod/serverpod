@@ -159,8 +159,9 @@ class Emails {
     String? password, [
     String? hash,
   ]) async {
-    assert(password != null || hash != null,
-        'Either password or hash needs to be provided');
+    if (password == null && hash == null) {
+      throw Exception('Either password or hash needs to be provided');
+    }
     var userInfo = await Users.findUserByEmail(session, email);
 
     if (userInfo == null) {
@@ -256,10 +257,13 @@ class Emails {
     Session session,
     String email,
   ) async {
-    assert(
-      AuthConfig.current.sendPasswordResetEmail != null,
-      'ResetPasswordEmail is not configured, cannot send email.',
-    );
+    if (AuthConfig.current.sendPasswordResetEmail == null) {
+      session.log(
+        'ResetPasswordEmail is not configured, cannot send email.',
+        level: LogLevel.debug,
+      );
+      return false;
+    }
 
     email = email.trim().toLowerCase();
 
@@ -276,9 +280,11 @@ class Emails {
     var emailReset = EmailReset(
       userId: userInfo.id!,
       verificationCode: verificationCode,
-      expiration: DateTime.now().add(
-        AuthConfig.current.passwordResetExpirationTime,
-      ),
+      expiration: DateTime.now()
+          .add(
+            AuthConfig.current.passwordResetExpirationTime,
+          )
+          .toUtc(),
     );
     await EmailReset.db.insertRow(session, emailReset);
 
@@ -289,64 +295,30 @@ class Emails {
     );
   }
 
-  /// Verifies a password reset code, returns a [EmailPasswordReset] object if
-  /// successful, null otherwise.
-  static Future<EmailPasswordReset?> verifyEmailPasswordReset(
-    Session session,
-    String verificationCode,
-  ) async {
-    session.log('verificationCode: $verificationCode', level: LogLevel.debug);
-
-    var passwordReset = await EmailReset.db.findFirstRow(session, where: (t) {
-      return t.verificationCode.equals(verificationCode) &
-          (t.expiration > DateTime.now().toUtc());
-    });
-
-    if (passwordReset == null) {
-      session.log(
-        'Verification code is invalid or has expired!',
-        level: LogLevel.debug,
-      );
-      return null;
-    }
-
-    var userInfo = await Users.findUserByUserId(session, passwordReset.userId);
-    if (userInfo == null) {
-      session.log(
-        "User with id: '${passwordReset.userId}' is not found!",
-        level: LogLevel.debug,
-      );
-      return null;
-    }
-
-    if (userInfo.email == null) {
-      session.log(
-        "User with id: '${passwordReset.userId}' has no email address!",
-        level: LogLevel.debug,
-      );
-      return null;
-    }
-
-    return EmailPasswordReset(
-      userName: userInfo.userName,
-      email: userInfo.email!,
-    );
-  }
-
   /// Resets a users password using a password reset verification code.
   static Future<bool> resetPassword(
     Session session,
     String verificationCode,
     String password,
   ) async {
-    var passwordReset = await EmailReset.db.findFirstRow(session, where: (t) {
-      return t.verificationCode.equals(verificationCode) &
-          (t.expiration > DateTime.now().toUtc());
-    });
+    var passwordResets = await EmailReset.db.deleteWhere(
+      session,
+      where: (t) => t.verificationCode.equals(verificationCode),
+    );
 
-    if (passwordReset == null) {
+    if (passwordResets.isEmpty) {
       session.log(
-        'Verification code is invalid or has expired!',
+        'Verification code is invalid!',
+        level: LogLevel.debug,
+      );
+      return false;
+    }
+
+    var passwordReset = passwordResets.first;
+
+    if (passwordReset.expiration.isBefore(DateTime.now().toUtc())) {
+      session.log(
+        'Verification code has expired!',
         level: LogLevel.debug,
       );
       return false;
@@ -358,7 +330,7 @@ class Emails {
 
     if (emailAuth == null) {
       session.log(
-        "ser with id: '${passwordReset.userId}' has no email authentication!",
+        "User with id: '${passwordReset.userId}' has no email authentication!",
         level: LogLevel.debug,
       );
       return false;
@@ -378,10 +350,13 @@ class Emails {
     String email,
     String password,
   ) async {
-    assert(
-      AuthConfig.current.sendValidationEmail != null,
-      'The sendValidationEmail property needs to be set in AuthConfig.',
-    );
+    if (AuthConfig.current.sendValidationEmail == null) {
+      session.log(
+        'SendValidationEmail is not configured, cannot send email.',
+        level: LogLevel.debug,
+      );
+      return false;
+    }
 
     try {
       // Check if user already has an account
@@ -582,7 +557,6 @@ class Emails {
   static String _generateVerificationCode() {
     return Random().nextString(
       length: AuthConfig.current.validationCodeLength,
-      chars: '0123456789',
     );
   }
 

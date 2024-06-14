@@ -193,7 +193,7 @@ webServer:
   test(
       'Given Serverpod config with max request size when loading from Map then max request size configuration matches supplied value.',
       () {
-    var serverpodConfig = ''' 
+    var serverpodConfig = '''
 apiServer:
   port: 8080
   publicHost: localhost

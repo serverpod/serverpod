@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:image/image.dart';
 import 'package:serverpod/server.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
@@ -113,7 +114,7 @@ class AuthConfig {
   /// This value determines the number of digits in the validation code. Default is 8.
   final int validationCodeLength;
 
-  /// The time for password resets to be valid. Default is one day.
+  /// The time for password resets to be valid. Default is 15 minutes.
   final Duration passwordResetExpirationTime;
 
   /// True if the server should use the accounts email address as part of the
@@ -160,7 +161,7 @@ class AuthConfig {
     this.sendPasswordResetEmail,
     this.sendValidationEmail,
     this.validationCodeLength = 8,
-    this.passwordResetExpirationTime = const Duration(hours: 24),
+    this.passwordResetExpirationTime = const Duration(minutes: 15),
     this.extraSaltyHash = true,
     this.firebaseServiceAccountKeyJson =
         'config/firebase_service_account_key.json',
@@ -168,11 +169,17 @@ class AuthConfig {
     this.minPasswordLength = 8,
     this.allowUnsecureRandom = false,
   }) {
-    if (validationCodeLength < 1) {
+    if (validationCodeLength < 8) {
+      stderr.writeln(
+        'WARNING: Validation code length is less than 8. This makes the validation code more susceptible to brute force attacks.',
+      );
+    }
+
+    if (validationCodeLength < 4) {
       throw ArgumentError.value(
         validationCodeLength,
         'validationCodeLength',
-        'must be at least 1',
+        'must be at least 4',
       );
     }
   }

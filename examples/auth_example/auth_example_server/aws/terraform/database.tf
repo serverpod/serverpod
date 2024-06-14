@@ -2,7 +2,7 @@ resource "aws_db_instance" "postgres" {
   identifier          = var.project_name
   allocated_storage   = 10
   engine              = "postgres"
-  engine_version      = "14.2"
+  engine_version      = "16.3"
   instance_class      = "db.t3.micro"
   db_name             = "serverpod"
   username            = "postgres"
@@ -41,7 +41,7 @@ resource "aws_db_instance" "postgres_staging" {
   identifier          = "${var.project_name}-staging"
   allocated_storage   = 10
   engine              = "postgres"
-  engine_version      = "14.2"
+  engine_version      = "16.3"
   instance_class      = "db.t3.micro"
   db_name             = "serverpod"
   username            = "postgres"

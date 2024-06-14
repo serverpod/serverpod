@@ -14,11 +14,11 @@ dependencies:
   serverpod_shared: SERVERPOD_VERSION
   crypto: ^3.0.2
   email_validator: ^2.1.17
-  openid_client: ^0.4.3
+  openid_client: ^0.4.8
   meta: ^1.8.0
   googleapis: ^11.0.0
-  googleapis_auth: '>=1.4.0 <1.5.0'
-  http: '>=0.13.0 <2.0.0'
+  googleapis_auth: ^1.6.0
+  http: '>=1.0.0 <2.0.0'
   image: ^4.0.15
   jose: ^0.3.3
   pointycastle: ^3.7.4

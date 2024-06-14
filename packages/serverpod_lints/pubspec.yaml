@@ -3,11 +3,11 @@
 
 name: serverpod_lints
 description: Lints used by internal Serverpod packages.
-version: 2.0.0
+version: 2.0.1
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=3.1.0 <4.0.0'
+  sdk: '>=3.2.0 <4.0.0'
 
 dependencies:
   flutter_lints: '>=3.0.0 <5.0.0'

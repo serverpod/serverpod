@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 // ignore: implementation_imports
@@ -12,8 +11,7 @@ class ValueEncoder extends PostgresTextEncoder {
     if (input == null) {
       return 'NULL';
     } else if (input is ByteData) {
-      var encoded = base64Encode(input.buffer.asUint8List());
-      return 'decode(\'$encoded\', \'base64\')';
+      return input.base64encodedString();
     } else if (input is DateTime) {
       return super.convert(SerializationManager.encode(input),
           escapeStrings: escapeStrings);

@@ -128,10 +128,12 @@ class GoogleEndpoint extends Endpoint {
   /// Authenticates a user using an id token.
   Future<AuthenticationResponse> authenticateWithIdToken(
       Session session, String idToken) async {
+    var clientSecret = GoogleAuth.clientSecret;
+    if (clientSecret == null) {
+      throw StateError('The server side Google client secret is not loaded.');
+    }
     try {
-      assert(GoogleAuth.clientSecret != null,
-          'Google client secret is not loaded');
-      String clientId = GoogleAuth.clientSecret!.clientId;
+      String clientId = clientSecret.clientId;
 
       // Verify the token with Google's servers.
       // TODO: This should probably be done on this server.
@@ -275,6 +277,7 @@ class _GoogleUtils {
 
     return AutoRefreshingClient(
       client,
+      const GoogleAuthEndpoints(),
       clientId,
       credentials,
       closeUnderlyingClient: true,

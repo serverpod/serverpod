@@ -1,3 +1,29 @@
+## 2.0.1
+- fix: Writes websocket errors to stderr.
+- fix: Adds missing web socket connection notification on stream closed.
+- fix: Sign in with Email dialog can toggle visibility of passwords.
+- fix: Allows usage of user related Google API calls in `onUserCreated` callback.
+- fix: Disposes streaming connection listener when disposing handler.
+- fix: Only notifies listeners when streaming connection status changes.
+- fix: Adds ready check for websocket channel.
+- fix: Handles bad websocket upgrade requests.
+- fix: Makes sign in buttons customizable.
+- fix: Exposes getter for `Session` `authenticationKey`.
+- fix: `postMessage` in messages now returns `true` if successful.
+- fix: Improved Firebase login widget.
+- fix: Adds support for inserting models with only an `id` field.
+- fix: Throws exception if required fields are missing when parsing config files.
+- fix: Adds explicit exception types for client side exceptions.
+- fix: Correctly sets offset and length when encoding `ByteData` for database.
+- fix: Removes endpoint to validate validation code.
+- fix: Replaces asserts in auth module with throws and logs.
+- fix: Changes default values in auth config.
+- fix: Removes password reset verification code on usage attempt.
+- fix: Stops web server when shutdown method is called.
+- chore: Removes dependency to unsupported `firebase_admin` package.
+- chore: Bumps minimum Dart version to 3.2.0.
+- chore: Updates dependencies.
+
 ## 2.0.0
 - fix: BREAKING. Database delete methods now return removed objects.
 - fix: BREAKING. Removes automatic redirect from Relic.

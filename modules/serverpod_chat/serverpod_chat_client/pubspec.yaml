@@ -3,16 +3,16 @@
 
 name: serverpod_chat_client
 description: Serverpod chat module client.
-version: 2.0.0
+version: 2.0.1
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: '>=3.1.0 <4.0.0'
+  sdk: '>=3.2.0 <4.0.0'
 dependencies:
-  serverpod_client: 2.0.0
-  serverpod_auth_client: 2.0.0
+  serverpod_client: 2.0.1
+  serverpod_auth_client: 2.0.1
 
 dependency_overrides:
   serverpod_client:
