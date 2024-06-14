@@ -13,14 +13,12 @@ class PasswordManager {
     required this.runMode,
   });
 
-  /// Load all passwords for the current run mode, or null if passwords fail
-  /// to load.
-  Map<String, String>? loadPasswords() {
+  /// Load all passwords for the current run mode from the supplied [Map],
+  /// or null if passwords fail to load.
+  Map<String, String>? loadPasswordsFromMap(Map data) {
     try {
       var passwords = <String, String>{};
 
-      var passwordYaml = File('config/passwords.yaml').readAsStringSync();
-      var data = (loadYaml(passwordYaml) as Map).cast<String, Map>();
       var sharedPasswords = data['shared']?.cast<String, String>();
       var runModePasswords = data[runMode]?.cast<String, String>();
 
@@ -28,6 +26,19 @@ class PasswordManager {
       if (runModePasswords != null) passwords.addAll(runModePasswords);
 
       return passwords;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Load all passwords for the current run mode, or null if passwords fail
+  /// to load.
+  Map<String, String>? loadPasswords() {
+    try {
+      var passwordYaml = File('config/passwords.yaml').readAsStringSync();
+      var data = (loadYaml(passwordYaml) as Map).cast<String, Map>();
+
+      return loadPasswordsFromMap(data);
     } catch (e) {
       return null;
     }
