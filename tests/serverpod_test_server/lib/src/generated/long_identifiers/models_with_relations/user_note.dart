@@ -74,6 +74,7 @@ abstract class UserNote extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<UserNoteTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<UserNoteTable>? orderByList,
     UserNoteInclude? include,
   }) {
@@ -83,6 +84,7 @@ abstract class UserNote extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(UserNote.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(UserNote.t),
       include: include,
     );
@@ -195,6 +197,7 @@ class UserNoteIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -218,6 +221,7 @@ class UserNoteRepository {
     int? offset,
     _i1.OrderByBuilder<UserNoteTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<UserNoteTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -226,6 +230,7 @@ class UserNoteRepository {
       orderBy: orderBy?.call(UserNote.t),
       orderByList: orderByList?.call(UserNote.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -238,6 +243,7 @@ class UserNoteRepository {
     int? offset,
     _i1.OrderByBuilder<UserNoteTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<UserNoteTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -246,6 +252,7 @@ class UserNoteRepository {
       orderBy: orderBy?.call(UserNote.t),
       orderByList: orderByList?.call(UserNote.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

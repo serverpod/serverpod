@@ -105,6 +105,7 @@ abstract class RuntimeSettings extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     RuntimeSettingsInclude? include,
   }) {
@@ -114,6 +115,7 @@ abstract class RuntimeSettings extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(RuntimeSettings.t),
       include: include,
     );
@@ -221,6 +223,7 @@ class RuntimeSettingsIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -244,6 +247,7 @@ class RuntimeSettingsRepository {
     int? offset,
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -252,6 +256,7 @@ class RuntimeSettingsRepository {
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -264,6 +269,7 @@ class RuntimeSettingsRepository {
     int? offset,
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -272,6 +278,7 @@ class RuntimeSettingsRepository {
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

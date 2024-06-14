@@ -70,6 +70,7 @@ abstract class ObjectWithDuration extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     ObjectWithDurationInclude? include,
   }) {
@@ -79,6 +80,7 @@ abstract class ObjectWithDuration extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(ObjectWithDuration.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(ObjectWithDuration.t),
       include: include,
     );
@@ -148,6 +150,7 @@ class ObjectWithDurationIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -171,6 +174,7 @@ class ObjectWithDurationRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -179,6 +183,7 @@ class ObjectWithDurationRepository {
       orderBy: orderBy?.call(ObjectWithDuration.t),
       orderByList: orderByList?.call(ObjectWithDuration.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -191,6 +196,7 @@ class ObjectWithDurationRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -199,6 +205,7 @@ class ObjectWithDurationRepository {
       orderBy: orderBy?.call(ObjectWithDuration.t),
       orderByList: orderByList?.call(ObjectWithDuration.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

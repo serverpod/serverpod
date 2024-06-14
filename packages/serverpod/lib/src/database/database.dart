@@ -36,6 +36,7 @@ class Database {
     Column? orderBy,
     List<Order>? orderByList,
     bool orderDescending = false,
+    bool random = false,
     Transaction? transaction,
     Include? include,
   }) async {
@@ -47,6 +48,7 @@ class Database {
       orderBy: orderBy,
       orderByList: orderByList,
       orderDescending: orderDescending,
+      random: random,
       transaction: transaction,
       include: include,
     );
@@ -59,6 +61,7 @@ class Database {
     Column? orderBy,
     List<Order>? orderByList,
     bool orderDescending = false,
+    bool random = false,
     Transaction? transaction,
     Include? include,
   }) async {
@@ -69,6 +72,7 @@ class Database {
       orderBy: orderBy,
       orderByList: orderByList,
       orderDescending: orderDescending,
+      random: random,
       transaction: transaction,
       include: include,
     );

@@ -72,6 +72,7 @@ abstract class SimpleDateTime extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<SimpleDateTimeTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
     SimpleDateTimeInclude? include,
   }) {
@@ -81,6 +82,7 @@ abstract class SimpleDateTime extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(SimpleDateTime.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(SimpleDateTime.t),
       include: include,
     );
@@ -151,6 +153,7 @@ class SimpleDateTimeIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -174,6 +177,7 @@ class SimpleDateTimeRepository {
     int? offset,
     _i1.OrderByBuilder<SimpleDateTimeTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -182,6 +186,7 @@ class SimpleDateTimeRepository {
       orderBy: orderBy?.call(SimpleDateTime.t),
       orderByList: orderByList?.call(SimpleDateTime.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -194,6 +199,7 @@ class SimpleDateTimeRepository {
     int? offset,
     _i1.OrderByBuilder<SimpleDateTimeTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -202,6 +208,7 @@ class SimpleDateTimeRepository {
       orderBy: orderBy?.call(SimpleDateTime.t),
       orderByList: orderByList?.call(SimpleDateTime.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

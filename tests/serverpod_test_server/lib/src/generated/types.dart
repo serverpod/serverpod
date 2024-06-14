@@ -157,6 +157,7 @@ abstract class Types extends _i1.TableRow implements _i1.ProtocolSerialization {
     int? offset,
     _i1.OrderByBuilder<TypesTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<TypesTable>? orderByList,
     TypesInclude? include,
   }) {
@@ -166,6 +167,7 @@ abstract class Types extends _i1.TableRow implements _i1.ProtocolSerialization {
       offset: offset,
       orderBy: orderBy?.call(Types.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(Types.t),
       include: include,
     );
@@ -338,6 +340,7 @@ class TypesIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -361,6 +364,7 @@ class TypesRepository {
     int? offset,
     _i1.OrderByBuilder<TypesTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<TypesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -369,6 +373,7 @@ class TypesRepository {
       orderBy: orderBy?.call(Types.t),
       orderByList: orderByList?.call(Types.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -381,6 +386,7 @@ class TypesRepository {
     int? offset,
     _i1.OrderByBuilder<TypesTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<TypesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -389,6 +395,7 @@ class TypesRepository {
       orderBy: orderBy?.call(Types.t),
       orderByList: orderByList?.call(Types.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

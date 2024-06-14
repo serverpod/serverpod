@@ -73,6 +73,7 @@ abstract class EmptyModelRelationItem extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
     EmptyModelRelationItemInclude? include,
   }) {
@@ -82,6 +83,7 @@ abstract class EmptyModelRelationItem extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(EmptyModelRelationItem.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(EmptyModelRelationItem.t),
       include: include,
     );
@@ -190,6 +192,7 @@ class EmptyModelRelationItemIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -213,6 +216,7 @@ class EmptyModelRelationItemRepository {
     int? offset,
     _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -221,6 +225,7 @@ class EmptyModelRelationItemRepository {
       orderBy: orderBy?.call(EmptyModelRelationItem.t),
       orderByList: orderByList?.call(EmptyModelRelationItem.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -233,6 +238,7 @@ class EmptyModelRelationItemRepository {
     int? offset,
     _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -241,6 +247,7 @@ class EmptyModelRelationItemRepository {
       orderBy: orderBy?.call(EmptyModelRelationItem.t),
       orderByList: orderByList?.call(EmptyModelRelationItem.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

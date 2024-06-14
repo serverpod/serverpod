@@ -53,6 +53,7 @@ abstract class ScopeNoneFields extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     ScopeNoneFieldsInclude? include,
   }) {
@@ -62,6 +63,7 @@ abstract class ScopeNoneFields extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(ScopeNoneFields.t),
       include: include,
     );
@@ -145,6 +147,7 @@ class ScopeNoneFieldsIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -168,6 +171,7 @@ class ScopeNoneFieldsRepository {
     int? offset,
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -176,6 +180,7 @@ class ScopeNoneFieldsRepository {
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -188,6 +193,7 @@ class ScopeNoneFieldsRepository {
     int? offset,
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -196,6 +202,7 @@ class ScopeNoneFieldsRepository {
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

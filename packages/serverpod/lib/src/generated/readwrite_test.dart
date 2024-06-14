@@ -71,6 +71,7 @@ abstract class ReadWriteTestEntry extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     ReadWriteTestEntryInclude? include,
   }) {
@@ -80,6 +81,7 @@ abstract class ReadWriteTestEntry extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
       include: include,
     );
@@ -150,6 +152,7 @@ class ReadWriteTestEntryIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -173,6 +176,7 @@ class ReadWriteTestEntryRepository {
     int? offset,
     _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -181,6 +185,7 @@ class ReadWriteTestEntryRepository {
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -193,6 +198,7 @@ class ReadWriteTestEntryRepository {
     int? offset,
     _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -201,6 +207,7 @@ class ReadWriteTestEntryRepository {
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

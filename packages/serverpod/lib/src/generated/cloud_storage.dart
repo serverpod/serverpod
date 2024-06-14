@@ -121,6 +121,7 @@ abstract class CloudStorageEntry extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     CloudStorageEntryInclude? include,
   }) {
@@ -130,6 +131,7 @@ abstract class CloudStorageEntry extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(CloudStorageEntry.t),
       include: include,
     );
@@ -260,6 +262,7 @@ class CloudStorageEntryIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -283,6 +286,7 @@ class CloudStorageEntryRepository {
     int? offset,
     _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -291,6 +295,7 @@ class CloudStorageEntryRepository {
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -303,6 +308,7 @@ class CloudStorageEntryRepository {
     int? offset,
     _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -311,6 +317,7 @@ class CloudStorageEntryRepository {
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

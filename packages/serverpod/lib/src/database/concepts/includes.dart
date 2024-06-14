@@ -25,6 +25,7 @@ abstract class IncludeList extends Include {
     this.offset,
     this.orderBy,
     this.orderDescending = false,
+    this.random = false,
     this.orderByList,
     this.include,
   });
@@ -43,6 +44,9 @@ abstract class IncludeList extends Include {
 
   /// Whether the column should be ordered descending or ascending.
   bool orderDescending = false;
+
+  /// Whether the rows should be random
+  bool random = false;
 
   /// The columns to order by.
   List<Order>? orderByList;

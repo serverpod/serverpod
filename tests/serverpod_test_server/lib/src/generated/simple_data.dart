@@ -72,6 +72,7 @@ abstract class SimpleData extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<SimpleDataTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
     SimpleDataInclude? include,
   }) {
@@ -81,6 +82,7 @@ abstract class SimpleData extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(SimpleData.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(SimpleData.t),
       include: include,
     );
@@ -152,6 +154,7 @@ class SimpleDataIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -175,6 +178,7 @@ class SimpleDataRepository {
     int? offset,
     _i1.OrderByBuilder<SimpleDataTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -183,6 +187,7 @@ class SimpleDataRepository {
       orderBy: orderBy?.call(SimpleData.t),
       orderByList: orderByList?.call(SimpleData.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -195,6 +200,7 @@ class SimpleDataRepository {
     int? offset,
     _i1.OrderByBuilder<SimpleDataTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -203,6 +209,7 @@ class SimpleDataRepository {
       orderBy: orderBy?.call(SimpleData.t),
       orderByList: orderByList?.call(SimpleData.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

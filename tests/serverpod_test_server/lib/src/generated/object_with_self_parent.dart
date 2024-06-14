@@ -69,6 +69,7 @@ abstract class ObjectWithSelfParent extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<ObjectWithSelfParentTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     ObjectWithSelfParentInclude? include,
   }) {
@@ -78,6 +79,7 @@ abstract class ObjectWithSelfParent extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(ObjectWithSelfParent.t),
       include: include,
     );
@@ -147,6 +149,7 @@ class ObjectWithSelfParentIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -170,6 +173,7 @@ class ObjectWithSelfParentRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithSelfParentTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -178,6 +182,7 @@ class ObjectWithSelfParentRepository {
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
       orderByList: orderByList?.call(ObjectWithSelfParent.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -190,6 +195,7 @@ class ObjectWithSelfParentRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithSelfParentTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -198,6 +204,7 @@ class ObjectWithSelfParentRepository {
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
       orderByList: orderByList?.call(ObjectWithSelfParent.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

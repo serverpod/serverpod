@@ -121,6 +121,7 @@ abstract class ServerHealthConnectionInfo extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     ServerHealthConnectionInfoInclude? include,
   }) {
@@ -130,6 +131,7 @@ abstract class ServerHealthConnectionInfo extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
       include: include,
     );
@@ -261,6 +263,7 @@ class ServerHealthConnectionInfoIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -284,6 +287,7 @@ class ServerHealthConnectionInfoRepository {
     int? offset,
     _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -292,6 +296,7 @@ class ServerHealthConnectionInfoRepository {
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -304,6 +309,7 @@ class ServerHealthConnectionInfoRepository {
     int? offset,
     _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -312,6 +318,7 @@ class ServerHealthConnectionInfoRepository {
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

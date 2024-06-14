@@ -596,6 +596,13 @@ class SerializableModelLibraryGenerator {
           ),
           Parameter(
             (p) => p
+              ..name = 'random'
+              ..named = true
+              ..defaultTo = const Code('false')
+              ..type = refer('bool'),
+          ),
+          Parameter(
+            (p) => p
               ..name = 'orderByList'
               ..named = true
               ..type = typeOrderByListBuilder(className, serverCode),
@@ -615,6 +622,7 @@ class SerializableModelLibraryGenerator {
                 [refer(className).property('t')],
               ),
               'orderDescending': refer('orderDescending'),
+              'random': refer('random'),
               'orderByList': refer('orderByList').nullSafeProperty('call').call(
                 [refer(className).property('t')],
               ),
@@ -1489,6 +1497,12 @@ class SerializableModelLibraryGenerator {
         Parameter(
           (p) => p
             ..name = 'orderDescending'
+            ..toSuper = true
+            ..named = true,
+        ),
+        Parameter(
+          (p) => p
+            ..name = 'random'
             ..toSuper = true
             ..named = true,
         ),

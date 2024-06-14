@@ -32,6 +32,35 @@ void main() async {
     expect(dev?.email, 'dev@serverpod.dev');
   });
 
+  group("Order by random query", () {
+    test(
+        'Comparing 2 lists drawn using "random" and checking that they are different.',
+            () async {
+          var data = <UniqueData>[
+            UniqueData(number: 4, email: '4@serverpod.dev'),
+            UniqueData(number: 5, email: '5@serverpod.dev'),
+            UniqueData(number: 6, email: '6@serverpod.dev'),
+          ];
+
+          await UniqueData.db.insert(session, data);
+
+          var dataList1 = await UniqueData.db.find(
+            session,
+            random: true,
+          );
+
+          var dataList2 = await UniqueData.db.find(
+            session,
+            random: true,
+          );
+
+          expect(dataList1, isNot(equals(dataList2)));
+
+        });
+  },);
+
+
+
   group('Given an empty database', () {
     test('when trying to find an object by id then null is returned.',
         () async {

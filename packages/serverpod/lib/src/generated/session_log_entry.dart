@@ -185,6 +185,7 @@ abstract class SessionLogEntry extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<SessionLogEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     SessionLogEntryInclude? include,
   }) {
@@ -194,6 +195,7 @@ abstract class SessionLogEntry extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(SessionLogEntry.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(SessionLogEntry.t),
       include: include,
     );
@@ -414,6 +416,7 @@ class SessionLogEntryIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -437,6 +440,7 @@ class SessionLogEntryRepository {
     int? offset,
     _i1.OrderByBuilder<SessionLogEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -445,6 +449,7 @@ class SessionLogEntryRepository {
       orderBy: orderBy?.call(SessionLogEntry.t),
       orderByList: orderByList?.call(SessionLogEntry.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -457,6 +462,7 @@ class SessionLogEntryRepository {
     int? offset,
     _i1.OrderByBuilder<SessionLogEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -465,6 +471,7 @@ class SessionLogEntryRepository {
       orderBy: orderBy?.call(SessionLogEntry.t),
       orderByList: orderByList?.call(SessionLogEntry.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );
