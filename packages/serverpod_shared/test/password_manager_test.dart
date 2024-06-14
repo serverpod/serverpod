@@ -30,15 +30,15 @@ void main() {
     var passwords = PasswordManager(runMode: runMode)
         .loadPasswordsFromMap(loadYaml(_defaultPasswordConfig));
 
-    test('Passwords are not null', () {
+    test('passwords are not null', () {
       expect(passwords, isNotNull);
     });
 
-    test('Shared password matches expected value', () {
+    test('shared password matches expected value', () {
       expect(passwords!['mySharedPassword'], 'my password');
     });
 
-    test('Database password matches expected value', () {
+    test('database password matches expected value', () {
       expect(passwords!['database'], 'development db pass');
     });
   });
@@ -51,16 +51,35 @@ void main() {
     var passwords = PasswordManager(runMode: runMode)
         .loadPasswordsFromMap(loadYaml(_defaultPasswordConfig));
 
-    test('Passwords are not null', () {
+    test('passwords are not null', () {
       expect(passwords, isNotNull);
     });
 
-    test('Shared password matches expected value', () {
+    test('shared password matches expected value', () {
       expect(passwords!['mySharedPassword'], 'my password');
     });
 
-    test('Database password matches expected value', () {
+    test('database password matches expected value', () {
       expect(passwords!['database'], 'production db pass');
+    });
+  });
+
+  group('Given an empty config when loading Map in runMode development then',
+      () {
+    const runMode = 'development';
+
+    var passwords = PasswordManager(runMode: runMode).loadPasswordsFromMap({});
+
+    test('passwords are not null', () {
+      expect(passwords, isNotNull);
+    });
+
+    test('shared password is null', () {
+      expect(passwords!['mySharedPassword'], isNull);
+    });
+
+    test('database password matches expected value', () {
+      expect(passwords!['database'], isNull);
     });
   });
 }
