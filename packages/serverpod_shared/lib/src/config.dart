@@ -136,18 +136,6 @@ class ServerpodConfig {
     return ServerpodConfig.loadFromMap(runMode, serverId, passwords, doc);
   }
 
-  /// Loads and parses a server configuration file. Loads the data from the
-  /// provided [data] String.
-  factory ServerpodConfig.loadFromString(
-    String runMode,
-    String serverId,
-    String data,
-    Map<String, String> passwords,
-  ) {
-    var doc = loadYaml(data);
-    return ServerpodConfig.loadFromMap(runMode, serverId, passwords, doc);
-  }
-
   /// Checks if a configuration file is available on disk for the given run mode.
   static bool isConfigAvailable(String runMode) {
     return File(_createConfigPath(runMode)).existsSync();
