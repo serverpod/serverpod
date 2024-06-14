@@ -2,7 +2,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'serverpod_client_exception.dart';
 
-import './_sdk/html.dart' if (dart.library.io) './_sdk/io.dart';
+import './_sdk/http_status_html.dart' if (dart.library.io) './_sdk/http_status_io.dart';
 
 /// Encodes arguments for serialization.
 String formatArgs(
