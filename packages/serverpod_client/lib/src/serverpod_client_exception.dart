@@ -1,4 +1,4 @@
-import 'dart:html' if (dart.library.io) 'dart:io';
+import './_sdk/html.dart' if (dart.library.io) './_sdk/io.dart';
 
 /// [Exception] thrown when errors in communication with the server occurs.
 class ServerpodClientException implements Exception {
