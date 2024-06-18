@@ -546,6 +546,7 @@ class Server {
     Endpoint endpoint,
   ) async {
     try {
+      session.sessionLogs.currentEndpoint = endpoint.name;
       var authFailed = await EndpointDispatch.canUserAccessEndpoint(
         () => session.authenticated,
         endpoint.requireLogin,
