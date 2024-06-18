@@ -13,6 +13,7 @@ abstract class WebsocketRequestHandler {
     Server server,
     WebSocket webSocket,
     HttpRequest request,
+    void Function() onClosed,
   ) async {
     try {
       var session = StreamingSession(
@@ -157,6 +158,8 @@ abstract class WebsocketRequestHandler {
       stderr.writeln('$e');
       stderr.writeln('$stackTrace');
       return;
+    } finally {
+      onClosed();
     }
   }
 

@@ -14,6 +14,12 @@ import '../cache/caches.dart';
 /// Handling incoming calls and routing them to the correct [Endpoint]
 /// methods.
 class Server {
+  // Map of [WebSocket] connected to the server.
+  // The key is a unique identifier for the connection.
+  // The value is a tuple of a [Future] that completes when the connection is
+  // closed and the [WebSocket] object.
+  final Map<String, (Future<void>, WebSocket)> _webSockets = {};
+
   /// The [Serverpod] managing the server.
   final Serverpod serverpod;
 
@@ -237,8 +243,16 @@ class Server {
         return;
       }
       webSocket.pingInterval = const Duration(seconds: 30);
-      unawaited(
-          WebsocketRequestHandler.handleWebsocket(this, webSocket, request));
+      var websocketKey = const Uuid().v4();
+      _webSockets[websocketKey] = (
+        WebsocketRequestHandler.handleWebsocket(
+          this,
+          webSocket,
+          request,
+          () => _webSockets.remove(websocketKey),
+        ),
+        webSocket
+      );
       return;
     } else if (uri.path == '/serverpod_cloud_storage') {
       readBody = false;
@@ -380,6 +394,16 @@ class Server {
   /// Returns a [Future] that completes when the server is shut down.
   Future<void> shutdown() async {
     await _httpServer.close();
+    var webSockets = _webSockets.values.toList();
+    List<Future<void>> webSocketCompletions = [];
+    for (var (webSocketCompletion, webSocket) in webSockets) {
+      webSocketCompletions.add(webSocketCompletion);
+      await webSocket.close();
+    }
+
+    // Wait for all WebSockets to close.
+    await Future.wait(webSocketCompletions);
+
     _running = false;
   }
 }
