@@ -237,7 +237,7 @@ class Server {
         return;
       }
       webSocket.pingInterval = const Duration(seconds: 30);
-      unawaited(_handleWebsocket(webSocket, request));
+      unawaited(_handleWebsocket(this, webSocket, request));
       return;
     } else if (uri.path == '/serverpod_cloud_storage') {
       readBody = false;
@@ -375,22 +375,23 @@ class Server {
     return endpoints.handleUriCall(this, path, uri, body, request);
   }
 
-  Future<void> _handleWebsocket(
+  static Future<void> _handleWebsocket(
+    Server server,
     WebSocket webSocket,
     HttpRequest request,
   ) async {
     try {
       var session = StreamingSession(
-        server: this,
+        server: server,
         uri: request.uri,
         httpRequest: request,
         webSocket: webSocket,
       );
 
-      for (var endpointConnector in endpoints.connectors.values) {
+      for (var endpointConnector in server.endpoints.connectors.values) {
         await _callStreamOpened(session, endpointConnector.endpoint);
       }
-      for (var module in endpoints.modules.values) {
+      for (var module in server.endpoints.modules.values) {
         for (var endpointConnector in module.connectors.values) {
           await _callStreamOpened(session, endpointConnector.endpoint);
         }
@@ -425,7 +426,8 @@ class Server {
           var endpointName = data['endpoint'] as String;
           var serialization = data['object'] as Map<String, dynamic>;
 
-          var endpointConnector = endpoints.getConnectorByName(endpointName);
+          var endpointConnector =
+              server.endpoints.getConnectorByName(endpointName);
           if (endpointConnector == null) {
             throw Exception('Endpoint not found: $endpointName');
           }
@@ -447,8 +449,8 @@ class Server {
             try {
               session.sessionLogs.currentEndpoint = endpointName;
 
-              message =
-                  serializationManager.deserializeByClassName(serialization);
+              message = server.serializationManager
+                  .deserializeByClassName(serialization);
 
               if (message == null) throw Exception('Streamed message was null');
 
@@ -484,7 +486,7 @@ class Server {
             if (shouldLog) {
               var logEntry = MessageLogEntry(
                 sessionLogId: session.sessionLogs.temporarySessionId,
-                serverId: serverId,
+                serverId: server.serverId,
                 messageId: session.currentMessageId,
                 endpoint: endpointName,
                 messageName: serialization['className'],
@@ -508,10 +510,10 @@ class Server {
       }
 
       // TODO: Possibly keep a list of open streams instead
-      for (var endpointConnector in endpoints.connectors.values) {
+      for (var endpointConnector in server.endpoints.connectors.values) {
         await _callStreamClosed(session, endpointConnector.endpoint);
       }
-      for (var module in endpoints.modules.values) {
+      for (var module in server.endpoints.modules.values) {
         for (var endpointConnector in module.connectors.values) {
           await _callStreamClosed(session, endpointConnector.endpoint);
         }
@@ -524,7 +526,7 @@ class Server {
     }
   }
 
-  Future<void> _callStreamOpened(
+  static Future<void> _callStreamOpened(
     StreamingSession session,
     Endpoint endpoint,
   ) async {
@@ -541,7 +543,7 @@ class Server {
     }
   }
 
-  Future<void> _callStreamClosed(
+  static Future<void> _callStreamClosed(
     StreamingSession session,
     Endpoint endpoint,
   ) async {
