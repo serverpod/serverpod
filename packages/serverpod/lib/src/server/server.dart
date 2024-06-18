@@ -388,12 +388,10 @@ class Server {
       );
 
       for (var endpointConnector in endpoints.connectors.values) {
-        session.sessionLogs.currentEndpoint = endpointConnector.endpoint.name;
         await _callStreamOpened(session, endpointConnector.endpoint);
       }
       for (var module in endpoints.modules.values) {
         for (var endpointConnector in module.connectors.values) {
-          session.sessionLogs.currentEndpoint = endpointConnector.endpoint.name;
           await _callStreamOpened(session, endpointConnector.endpoint);
         }
       }
@@ -531,6 +529,7 @@ class Server {
     Endpoint endpoint,
   ) async {
     try {
+      session.sessionLogs.currentEndpoint = endpoint.name;
       var authFailed = await EndpointDispatch.canUserAccessEndpoint(
         () => session.authenticated,
         endpoint.requireLogin,
