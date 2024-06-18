@@ -233,7 +233,7 @@ class Server {
       try {
         webSocket = await WebSocketTransformer.upgrade(request);
       } on WebSocketException {
-        stderr.writeln('Failed to upgrade connection to websocket');
+        serverpod.logVerbose('Failed to upgrade connection to websocket');
         return;
       }
       webSocket.pingInterval = const Duration(seconds: 30);
