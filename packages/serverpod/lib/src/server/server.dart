@@ -377,8 +377,9 @@ class Server {
   }
 
   /// Shuts the server down.
-  void shutdown() {
-    _httpServer.close();
+  /// Returns a [Future] that completes when the server is shut down.
+  Future<void> shutdown() async {
+    await _httpServer.close();
     _running = false;
   }
 }

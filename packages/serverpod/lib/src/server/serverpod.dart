@@ -752,9 +752,9 @@ class Serverpod {
   /// Shuts down the Serverpod and all associated servers.
   Future<void> shutdown({bool exitProcess = true}) async {
     await redisController?.stop();
-    server.shutdown();
-    _webServer?.stop();
-    _serviceServer?.shutdown();
+    await server.shutdown();
+    await _webServer?.stop();
+    await _serviceServer?.shutdown();
     _futureCallManager?.stop();
     _healthCheckManager?.stop();
 

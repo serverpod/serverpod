@@ -184,9 +184,9 @@ class WebServer {
   }
 
   /// Stops the webserver.
-  void stop() {
+  Future<void> stop() async {
     if (_httpServer != null) {
-      _httpServer!.close();
+      await _httpServer!.close();
     }
     _running = false;
   }
