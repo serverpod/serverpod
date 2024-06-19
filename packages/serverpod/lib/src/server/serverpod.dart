@@ -415,6 +415,9 @@ class Serverpod {
   /// Starts the Serverpod and all [Server]s that it manages.
   Future<void> start() async {
     _startedTime = DateTime.now().toUtc();
+    // It is important that we start the database pool manager before
+    // attempting to connect to the database.
+    _databasePoolManager?.start();
 
     await runZonedGuarded(() async {
       // Register cloud store endpoint if we're using the database cloud store
@@ -757,6 +760,9 @@ class Serverpod {
     await _serviceServer?.shutdown();
     _futureCallManager?.stop();
     _healthCheckManager?.stop();
+
+    // This needs to be closed last as it is used by the other services.
+    await _databasePoolManager?.stop();
 
     if (exitProcess) {
       exit(0);
