@@ -59,7 +59,7 @@ void main() {
 
     setUpAll(() async {
       WebSocketChannel websocket = WebSocketChannel.connect(
-        Uri.parse(serverWebsocketUrl),
+        Uri.parse(serverEndpointWebsocketUrl),
       );
       message = await websocket.stream.asBroadcastStream().first;
       await websocket.sink.close();
@@ -114,7 +114,7 @@ void main() {
 
       setUpAll(() async {
         WebSocketChannel websocket = WebSocketChannel.connect(
-          Uri.parse(serverWebsocketUrl),
+          Uri.parse(serverEndpointWebsocketUrl),
         );
         message = await websocket.stream.asBroadcastStream().first;
         await websocket.sink.close();
@@ -163,7 +163,7 @@ void main() {
 
       setUpAll(() async {
         WebSocketChannel websocket = WebSocketChannel.connect(
-          Uri.parse(serverWebsocketUrl),
+          Uri.parse(serverEndpointWebsocketUrl),
         );
         message = await websocket.stream.asBroadcastStream().first;
         await websocket.sink.close();

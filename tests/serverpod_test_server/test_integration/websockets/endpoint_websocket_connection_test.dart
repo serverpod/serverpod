@@ -4,14 +4,14 @@ import 'package:test/test.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 void main() {
-  group('Given websocket connection with connected client', () {
+  group('Given endpoint websocket connection with connected client', () {
     var server = IntegrationTestServer.create();
     late WebSocketChannel webSocket;
 
     setUp(() async {
       await server.start();
       webSocket = WebSocketChannel.connect(
-        Uri.parse(serverWebsocketUrl),
+        Uri.parse(serverEndpointWebsocketUrl),
       );
       await webSocket.ready;
     });
@@ -33,7 +33,8 @@ void main() {
     });
   });
 
-  group('Given multiple websocket connections with connected clients', () {
+  group('Given multiple endpoint websocket connections with connected clients',
+      () {
     var server = IntegrationTestServer.create();
     late WebSocketChannel webSocket1;
     late WebSocketChannel webSocket2;
@@ -41,11 +42,11 @@ void main() {
     setUp(() async {
       await server.start();
       webSocket1 = WebSocketChannel.connect(
-        Uri.parse(serverWebsocketUrl),
+        Uri.parse(serverEndpointWebsocketUrl),
       );
       await webSocket1.ready;
       webSocket2 = WebSocketChannel.connect(
-        Uri.parse(serverWebsocketUrl),
+        Uri.parse(serverEndpointWebsocketUrl),
       );
       await webSocket2.ready;
     });

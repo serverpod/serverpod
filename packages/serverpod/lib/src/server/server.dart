@@ -7,7 +7,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/database.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/health_check.dart';
-import 'package:serverpod/src/server/websocket_request_handler.dart';
+import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
 
 import '../cache/caches.dart';
 
@@ -245,7 +245,7 @@ class Server {
       webSocket.pingInterval = const Duration(seconds: 30);
       var websocketKey = const Uuid().v4();
       _webSockets[websocketKey] = (
-        WebsocketRequestHandler.handleWebsocket(
+        EndpointWebsocketRequestHandler.handleWebsocket(
           this,
           webSocket,
           request,
