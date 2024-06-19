@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:serverpod/serverpod.dart';
 import 'package:path/path.dart' as path;
+import 'package:serverpod/serverpod.dart';
 
 /// The Serverpod webserver.
 class WebServer {
@@ -126,15 +126,24 @@ class WebServer {
       }
     }
 
-    // TODO: Fix body
-    var session = MethodCallSession(
-      server: serverpod.server,
-      uri: uri,
-      path: 'webserver',
-      body: '',
-      authenticationKey: authenticationKey,
-      httpRequest: request,
-    );
+    MethodCallSession session;
+    try {
+      // TODO: Fix body
+      session = MethodCallSession(
+        server: serverpod.server,
+        uri: uri,
+        path: 'webserver',
+        body: '',
+        authenticationKey: authenticationKey,
+        httpRequest: request,
+      );
+    } catch (e) {
+      // Triggered if the URI query parameters are malformed
+      logDebug('Failed to create method call session: $e');
+      request.response.statusCode = HttpStatus.badRequest;
+      await request.response.close();
+      return;
+    }
 
 //    print('Getting path: ${uri.path}');
 
