@@ -2,13 +2,23 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 
+const _integrationTestFlags = ['-m', 'production'];
+
 class IntegrationTestServer extends TestServerpod {
   IntegrationTestServer()
       : super(
-          ['-m', 'production'],
+          _integrationTestFlags,
           Protocol(),
           Endpoints(),
         );
+
+  static Serverpod create() {
+    return Serverpod(
+      _integrationTestFlags,
+      Protocol(),
+      Endpoints(),
+    );
+  }
 }
 
 class TestServerpod {
