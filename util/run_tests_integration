@@ -11,4 +11,4 @@ set -e
 
 cd tests/docker/tests_integration
 
-docker compose up --abort-on-container-exit --exit-code-from tests --build --remove-orphans
+docker compose up --abort-on-container-exit --exit-code-from serverpod_test_server --build --remove-orphans
