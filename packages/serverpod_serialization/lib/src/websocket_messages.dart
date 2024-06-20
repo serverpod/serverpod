@@ -24,6 +24,8 @@ sealed class WebSocketMessage {
           return OpenMethodStreamCommand(data);
         case OpenMethodStreamResponse._messageType:
           return OpenMethodStreamResponse(data);
+        case CloseMethodStreamCommand._messageType:
+          return CloseMethodStreamCommand(data);
       }
 
       throw UnknownMessageException(jsonString);
@@ -157,6 +159,80 @@ class OpenMethodStreamCommand extends WebSocketMessage {
         'args': args,
         if (auth != null) 'auth': auth,
       }.toString();
+}
+
+/// The reason a stream was closed.
+enum CloseReason {
+  /// The stream was closed because the method was done.
+  done,
+
+  /// The stream was closed because an error occurred.
+  error;
+
+  /// Try to parse a [CloseReason] from a string.
+  /// Throws an exception if the string is not recognized.
+  static CloseReason tryParse(String name) {
+    return CloseReason.values.firstWhere(
+      (element) => element.name == name,
+    );
+  }
+}
+
+/// A message sent over a websocket connection to close a websocket stream of
+/// data to an endpoint method.
+class CloseMethodStreamCommand extends WebSocketMessage {
+  static const String _messageType = 'close_method_stream_command';
+
+  /// The endpoint associated with the stream.
+  final String endpoint;
+
+  /// The method associated with the stream.
+  final String method;
+
+  /// The UUID of the stream.
+  final String uuid;
+
+  /// The parameter associated with the stream.
+  /// If this is null the close command targets the return stream of the method.
+  final String? parameter;
+
+  /// The reason the stream was closed.
+  final CloseReason reason;
+
+  /// Creates a new [CloseMethodStreamCommand].
+  CloseMethodStreamCommand(Map data)
+      : endpoint = data['endpoint'],
+        method = data['method'],
+        uuid = data['uuid'],
+        parameter = data['parameter'],
+        reason = CloseReason.tryParse(data['reason']);
+
+  /// Creates a new [CloseMethodStreamCommand] message.
+  static String buildMessage({
+    required String endpoint,
+    required String uuid,
+    String? parameter,
+    required String method,
+    required CloseReason reason,
+  }) {
+    return jsonEncode({
+      'messageType': _messageType,
+      'endpoint': endpoint,
+      'method': method,
+      'uuid': uuid,
+      if (parameter != null) 'parameter': parameter,
+      'reason': reason.name,
+    });
+  }
+
+  @override
+  String toString() => buildMessage(
+        endpoint: endpoint,
+        uuid: uuid,
+        parameter: parameter,
+        method: method,
+        reason: reason,
+      );
 }
 
 /// A message sent over a websocket connection to check if the connection is

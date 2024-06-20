@@ -143,4 +143,54 @@ void main() {
       throwsA(isA<UnknownMessageException>()),
     );
   });
+
+  test(
+      'Given a close method stream command when building websocket message from string then CloseMethodStreamCommand is returned.',
+      () {
+    var message = CloseMethodStreamCommand.buildMessage(
+      uuid: 'uuid',
+      endpoint: 'endpoint',
+      parameter: 'parameter',
+      method: 'method',
+      reason: CloseReason.done,
+    );
+    var result = WebSocketMessage.fromJsonString(message);
+    expect(result, isA<CloseMethodStreamCommand>());
+  });
+
+  test(
+      'Given an invalid close method stream command json String that is missing mandatory uuid field when building websocket message from string then UnknownMessageException is thrown having FormatException error type.',
+      () {
+    // This message is missing the mandatory uuid field.
+    var message = '''{
+      "messageType": "close_method_stream_command",
+      "endpoint": "endpoint",
+      "parameter": "parameter",
+      "method": "method",
+      "reason": "done",
+    }''';
+    expect(
+      () => WebSocketMessage.fromJsonString(message),
+      throwsA(
+        isA<UnknownMessageException>()
+            .having((e) => e.error, 'error', isA<FormatException>()),
+      ),
+    );
+  });
+  test(
+      'Given an close method stream command with an invalid reason when building websocket message from string then UnknownMessageException is thrown.',
+      () {
+    var message = '''{
+      "messageType": "close_method_stream_command",
+      "uuid": "uuid",
+      "endpoint": "endpoint",
+      "parameter": "parameter",
+      "method": "method",
+      "reason": "this reason does not exist"
+    }''';
+    expect(
+      () => WebSocketMessage.fromJsonString(message),
+      throwsA(isA<UnknownMessageException>()),
+    );
+  });
 }
