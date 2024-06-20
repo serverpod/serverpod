@@ -27,7 +27,7 @@ void main() {
   });
 
   test(
-      'Given a bad request message without mandatory field building websocket message from string then unknown message is returned.',
+      'Given a bad request message without mandatory field building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
       () {
     /// Missing mandatory field 'request'
     var message = '{"messageType": "bad_request_message"}';
@@ -41,7 +41,7 @@ void main() {
   });
 
   test(
-      'Given a upper cased command message when building websocket message from string then UnknownMessage is returned.',
+      'Given a upper cased command message when building websocket message from string then UnknownMessageException is thrown.',
       () {
     var message = PingCommand.buildMessage().toUpperCase();
     expect(
@@ -51,7 +51,7 @@ void main() {
   });
 
   test(
-      'Given an unknown command json String when building websocket message from string then UnknownMessage is returned.',
+      'Given an unknown command json String when building websocket message from string then UnknownMessageException is thrown.',
       () {
     var message = '{"messageType": "this is not a known message type"}';
     expect(
@@ -61,7 +61,7 @@ void main() {
   });
 
   test(
-      'Given an invalid json String when building websocket message from string then UnknownMessage is returned.',
+      'Given an invalid json String when building websocket message from string then UnknownMessageException is thrown having FormatException error type.',
       () {
     var message = 'This is not a valid json string';
     expect(
@@ -74,7 +74,7 @@ void main() {
   });
 
   test(
-      'Given a null messageType when building websocket message from string then UnknownMessage is returned.',
+      'Given a null messageType when building websocket message from string then UnknownMessageException is thrown.',
       () {
     var message = '{"messageType": null}';
     expect(
