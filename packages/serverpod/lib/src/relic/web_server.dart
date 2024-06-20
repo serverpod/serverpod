@@ -185,8 +185,9 @@ class WebServer {
 
   /// Stops the webserver.
   Future<void> stop() async {
-    if (_httpServer != null) {
-      await _httpServer!.close();
+    var localHttpServer = _httpServer;
+    if (localHttpServer != null) {
+      await localHttpServer.close();
     }
     _running = false;
   }

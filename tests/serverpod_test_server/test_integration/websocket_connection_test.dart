@@ -23,7 +23,7 @@ void main() {
 
     test('when server is stopped then socket is closed.', () async {
       webSocket.stream.listen((event) {
-        // Listen to the to keep it open.
+        // Listen to the stream to keep it open.
       });
       // Await connection to be established and all handshakes to be done.
       await Future.delayed(Duration(seconds: 1));
@@ -58,10 +58,10 @@ void main() {
 
     test('when server is stopped then sockets are closed.', () async {
       webSocket1.stream.listen((event) {
-        // Listen to the to keep it open.
+        // Listen to the stream to keep it open.
       });
       webSocket2.stream.listen((event) {
-        // Listen to the to keep it open.
+        // Listen to the stream to keep it open.
       });
       // Await connection to be established and all handshakes to be done.
       await Future.delayed(Duration(seconds: 1));
