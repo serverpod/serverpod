@@ -19,6 +19,14 @@ void main() {
   });
 
   test(
+      'Given a upper cased command message when building websocket message from string then UnknownMessage is returned.',
+      () {
+    var message = PingCommand.buildMessage().toUpperCase();
+    var result = WebSocketMessage.fromJsonString(message);
+    expect(result, isA<UnknownMessage>());
+  });
+
+  test(
       'Given an unknown command json String when building websocket message from string then UnknownMessage is returned.',
       () {
     var message = '{"messageType": "this is not a known message type"}';
