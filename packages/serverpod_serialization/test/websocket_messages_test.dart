@@ -177,6 +177,7 @@ void main() {
       ),
     );
   });
+
   test(
       'Given an close method stream command with an invalid reason when building websocket message from string then UnknownMessageException is thrown.',
       () {
@@ -191,6 +192,39 @@ void main() {
     expect(
       () => WebSocketMessage.fromJsonString(message),
       throwsA(isA<UnknownMessageException>()),
+    );
+  });
+
+  test(
+      'Given a method stream message when building websocket message from string then MethodStreamMessage is returned.',
+      () {
+    var message = MethodStreamMessage.buildMessage(
+      endpoint: 'endpoint',
+      method: 'method',
+      uuid: 'uuid',
+      object: '{"className": "bamboo", "data": {"number": 2}}',
+    );
+    var result = WebSocketMessage.fromJsonString(message);
+    expect(result, isA<MethodStreamMessage>());
+  });
+
+  test(
+      'Given an invalid method stream message json String that is missing mandatory endpoint field when building websocket message from string then UnknownMessageException is thrown.',
+      () {
+    // This message is missing the mandatory endpoint field.
+    var message = '''{
+      "messageType": "method_stream_message",
+      "method": "method",
+      "uuid": "uuid",
+      "object": '{"className": "bamboo", "data": {"number": 2}}',
+    }''';
+
+    expect(
+      () => WebSocketMessage.fromJsonString(message),
+      throwsA(
+        isA<UnknownMessageException>()
+            .having((e) => e.error, 'error', isA<FormatException>()),
+      ),
     );
   });
 }

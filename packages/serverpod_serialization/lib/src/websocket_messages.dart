@@ -26,6 +26,8 @@ sealed class WebSocketMessage {
           return OpenMethodStreamResponse(data);
         case CloseMethodStreamCommand._messageType:
           return CloseMethodStreamCommand(data);
+        case MethodStreamMessage._messageType:
+          return MethodStreamMessage(data);
       }
 
       throw UnknownMessageException(jsonString);
@@ -260,6 +262,62 @@ class PongCommand extends WebSocketMessage {
 
   @override
   String toString() => buildMessage();
+}
+
+/// A message sent to a method stream.
+class MethodStreamMessage extends WebSocketMessage {
+  static const String _messageType = 'method_message';
+
+  /// The endpoint the message is sent to.
+  final String endpoint;
+
+  /// The method the message is sent to.
+  final String method;
+
+  /// The UUID of the stream.
+  final String uuid;
+
+  /// The parameter the message is sent to.
+  /// If this is null the message is sent to the return stream of the method.
+  final String? parameter;
+
+  /// The object to send.
+  final String object;
+
+  /// Creates a new [MethodStreamMessage].
+  MethodStreamMessage(Map data)
+      : endpoint = data['endpoint'],
+        method = data['method'],
+        uuid = data['uuid'],
+        parameter = data['parameter'],
+        object = data['object'];
+
+  /// Builds a [MethodStreamMessage] message.
+  static String buildMessage({
+    required String endpoint,
+    required String method,
+    required String uuid,
+    String? parameter,
+    required String object,
+  }) {
+    return jsonEncode({
+      'messageType': _messageType,
+      'endpoint': endpoint,
+      'method': method,
+      'uuid': uuid,
+      if (parameter != null) 'parameter': parameter,
+      'object': object,
+    });
+  }
+
+  @override
+  String toString() => buildMessage(
+        endpoint: endpoint,
+        method: method,
+        uuid: uuid,
+        parameter: parameter,
+        object: object,
+      );
 }
 
 /// A message sent when a bad request is received.
