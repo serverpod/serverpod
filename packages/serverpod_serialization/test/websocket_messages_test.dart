@@ -82,4 +82,39 @@ void main() {
       throwsA(isA<UnknownMessageException>()),
     );
   });
+
+  test(
+      'Given an open method stream command when building websocket message from string then OpenMethodStreamCommand is returned.',
+      () {
+    var message = OpenMethodStreamCommand.buildMessage(
+      endpoint: 'endpoint',
+      method: 'method',
+      args: {'arg1': 'value1', 'arg2': 2},
+      uuid: 'uuid',
+      auth: 'auth',
+    );
+    var result = WebSocketMessage.fromJsonString(message);
+    expect(result, isA<OpenMethodStreamCommand>());
+  });
+
+  test(
+      'Given an invalid open method stream command json String that is missing mandatory endpoint field when building websocket message from string then UnknownMessageException is thrown having FormatException error type.',
+      () {
+    // This message is missing the mandatory endpoint field.
+    var message = '''{
+      "messageType": "open_method_stream_command',
+      "method": "method',
+      "args": {"arg1": "value1", "arg2": 2},
+      "uuid": "uuid",
+      "auth": "auth",
+    }''';
+
+    expect(
+      () => WebSocketMessage.fromJsonString(message),
+      throwsA(
+        isA<UnknownMessageException>()
+            .having((e) => e.error, 'error', isA<FormatException>()),
+      ),
+    );
+  });
 }

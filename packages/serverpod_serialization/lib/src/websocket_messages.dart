@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+
 /// Base class for messages sent over a WebSocket connection.
 sealed class WebSocketMessage {
   /// Converts a JSON string to a [WebSocketMessage] object.
@@ -18,6 +20,8 @@ sealed class WebSocketMessage {
           return PongCommand();
         case BadRequestMessage._messageType:
           return BadRequestMessage(data);
+        case OpenMethodStreamCommand._messageType:
+          return OpenMethodStreamCommand(data);
       }
 
       throw UnknownMessageException(jsonString);
@@ -29,6 +33,63 @@ sealed class WebSocketMessage {
       );
     }
   }
+}
+
+/// A message sent over a websocket connection to open a websocket stream of
+/// data to an endpoint method.
+class OpenMethodStreamCommand extends WebSocketMessage {
+  static const String _messageType = 'open_method_stream_command';
+
+  /// The endpoint to call.
+  final String endpoint;
+
+  /// The method to call.
+  final String method;
+
+  /// The arguments to pass to the method.
+  final String args;
+
+  /// The UUID of the stream.
+  final String uuid;
+
+  /// The authentication token.
+  final String? auth;
+
+  /// Creates a new [OpenMethodStreamCommand] message.
+  OpenMethodStreamCommand(Map data)
+      : endpoint = data['endpoint'],
+        method = data['method'],
+        args = data['args'],
+        uuid = data['uuid'],
+        auth = data['auth'];
+
+  /// Creates a new [OpenMethodStreamCommand].
+  static String buildMessage({
+    required String endpoint,
+    required String method,
+    required Map<String, dynamic> args,
+    required String uuid,
+    String? auth,
+  }) {
+    return jsonEncode({
+      'messageType': _messageType,
+      'endpoint': endpoint,
+      'method': method,
+      'uuid': uuid,
+      'args': SerializationManager.encodeForProtocol(args),
+      if (auth != null) 'auth': auth,
+    });
+  }
+
+  @override
+  String toString() => {
+        'messageType': _messageType,
+        'endpoint': endpoint,
+        'method': method,
+        'uuid': uuid,
+        'args': args,
+        if (auth != null) 'auth': auth,
+      }.toString();
 }
 
 /// A message sent over a websocket connection to check if the connection is
