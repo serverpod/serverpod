@@ -8,6 +8,7 @@ import 'package:serverpod/src/database/database.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
+import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
 
 import '../cache/caches.dart';
 
@@ -246,6 +247,27 @@ class Server {
       var websocketKey = const Uuid().v4();
       _webSockets[websocketKey] = (
         EndpointWebsocketRequestHandler.handleWebsocket(
+          this,
+          webSocket,
+          request,
+          () => _webSockets.remove(websocketKey),
+        ),
+        webSocket
+      );
+      return;
+    } else if (uri.path == '/v1/websocket') {
+      WebSocket webSocket;
+      try {
+        webSocket = await WebSocketTransformer.upgrade(request);
+      } on WebSocketException {
+        serverpod.logVerbose('Failed to upgrade connection to websocket');
+        return;
+      }
+      webSocket.pingInterval = const Duration(seconds: 30);
+      var webSocketRequestHandler = MethodWebsocketRequestHandler();
+      var websocketKey = const Uuid().v4();
+      _webSockets[websocketKey] = (
+        webSocketRequestHandler.handleWebsocket(
           this,
           webSocket,
           request,
