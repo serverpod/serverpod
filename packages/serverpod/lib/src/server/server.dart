@@ -3,17 +3,23 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/database.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/health_check.dart';
+import 'package:serverpod/src/server/websocket_request_handler.dart';
 
 import '../cache/caches.dart';
 
 /// Handling incoming calls and routing them to the correct [Endpoint]
 /// methods.
 class Server {
+  // Map of [WebSocket] connected to the server.
+  // The key is a unique identifier for the connection.
+  // The value is a tuple of a [Future] that completes when the connection is
+  // closed and the [WebSocket] object.
+  final Map<String, (Future<void>, WebSocket)> _webSockets = {};
+
   /// The [Serverpod] managing the server.
   final Serverpod serverpod;
 
@@ -233,11 +239,20 @@ class Server {
       try {
         webSocket = await WebSocketTransformer.upgrade(request);
       } on WebSocketException {
-        stderr.writeln('Failed to upgrade connection to websocket');
+        serverpod.logVerbose('Failed to upgrade connection to websocket');
         return;
       }
       webSocket.pingInterval = const Duration(seconds: 30);
-      unawaited(_handleWebsocket(webSocket, request));
+      var websocketKey = const Uuid().v4();
+      _webSockets[websocketKey] = (
+        WebsocketRequestHandler.handleWebsocket(
+          this,
+          webSocket,
+          request,
+          () => _webSockets.remove(websocketKey),
+        ),
+        webSocket
+      );
       return;
     } else if (uri.path == '/serverpod_cloud_storage') {
       readBody = false;
@@ -375,192 +390,20 @@ class Server {
     return endpoints.handleUriCall(this, path, uri, body, request);
   }
 
-  Future<void> _handleWebsocket(
-    WebSocket webSocket,
-    HttpRequest request,
-  ) async {
-    try {
-      var session = StreamingSession(
-        server: this,
-        uri: request.uri,
-        httpRequest: request,
-        webSocket: webSocket,
-      );
-
-      for (var endpointConnector in endpoints.connectors.values) {
-        session.sessionLogs.currentEndpoint = endpointConnector.endpoint.name;
-        await _callStreamOpened(session, endpointConnector.endpoint);
-      }
-      for (var module in endpoints.modules.values) {
-        for (var endpointConnector in module.connectors.values) {
-          session.sessionLogs.currentEndpoint = endpointConnector.endpoint.name;
-          await _callStreamOpened(session, endpointConnector.endpoint);
-        }
-      }
-
-      dynamic error;
-      StackTrace? stackTrace;
-
-      try {
-        await for (String jsonData in webSocket) {
-          var data = jsonDecode(jsonData) as Map;
-
-          // Handle control commands.
-          var command = data['command'] as String?;
-          if (command != null) {
-            var args = data['args'] as Map;
-
-            if (command == 'ping') {
-              webSocket.add(
-                SerializationManager.encodeForProtocol(
-                  {'command': 'pong'},
-                ),
-              );
-            } else if (command == 'auth') {
-              var authKey = args['key'] as String?;
-              session.updateAuthenticationKey(authKey);
-            }
-            continue;
-          }
-
-          // Handle messages passed to endpoints.
-          var endpointName = data['endpoint'] as String;
-          var serialization = data['object'] as Map<String, dynamic>;
-
-          var endpointConnector = endpoints.getConnectorByName(endpointName);
-          if (endpointConnector == null) {
-            throw Exception('Endpoint not found: $endpointName');
-          }
-
-          var endpoint = endpointConnector.endpoint;
-          var authFailed = await EndpointDispatch.canUserAccessEndpoint(
-            () => session.authenticated,
-            endpoint.requireLogin,
-            endpoint.requiredScopes,
-          );
-
-          if (authFailed == null) {
-            // Process the message.
-            var startTime = DateTime.now();
-            dynamic messageError;
-            StackTrace? messageStackTrace;
-
-            SerializableModel? message;
-            try {
-              session.sessionLogs.currentEndpoint = endpointName;
-
-              message =
-                  serializationManager.deserializeByClassName(serialization);
-
-              if (message == null) throw Exception('Streamed message was null');
-
-              await endpointConnector.endpoint
-                  .handleStreamMessage(session, message);
-            } catch (e, s) {
-              messageError = e;
-              messageStackTrace = s;
-              stderr.writeln('${DateTime.now().toUtc()} Internal server error. '
-                  'Uncaught exception in handleStreamMessage.');
-              stderr.writeln('$e');
-              stderr.writeln('$s');
-            }
-
-            var duration =
-                DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
-            var logManager = session.serverpod.logManager;
-
-            var slow = duration >=
-                logManager
-                    .getLogSettingsForStreamingSession(
-                      endpoint: endpointName,
-                    )
-                    .slowSessionDuration;
-
-            var shouldLog = logManager.shouldLogMessage(
-              session: session,
-              endpoint: endpointName,
-              slow: slow,
-              failed: messageError != null,
-            );
-
-            if (shouldLog) {
-              var logEntry = MessageLogEntry(
-                sessionLogId: session.sessionLogs.temporarySessionId,
-                serverId: serverId,
-                messageId: session.currentMessageId,
-                endpoint: endpointName,
-                messageName: serialization['className'],
-                duration: duration,
-                order: session.sessionLogs.currentLogOrderId,
-                error: messageError?.toString(),
-                stackTrace: messageStackTrace?.toString(),
-                slow: slow,
-              );
-              unawaited(logManager.logMessage(session, logEntry));
-
-              session.sessionLogs.currentLogOrderId += 1;
-            }
-
-            session.currentMessageId += 1;
-          }
-        }
-      } catch (e, s) {
-        error = e;
-        stackTrace = s;
-      }
-
-      // TODO: Possibly keep a list of open streams instead
-      for (var endpointConnector in endpoints.connectors.values) {
-        await _callStreamClosed(session, endpointConnector.endpoint);
-      }
-      for (var module in endpoints.modules.values) {
-        for (var endpointConnector in module.connectors.values) {
-          await _callStreamClosed(session, endpointConnector.endpoint);
-        }
-      }
-      await session.close(error: error, stackTrace: stackTrace);
-    } catch (e, stackTrace) {
-      stderr.writeln('$e');
-      stderr.writeln('$stackTrace');
-      return;
-    }
-  }
-
-  Future<void> _callStreamOpened(
-    StreamingSession session,
-    Endpoint endpoint,
-  ) async {
-    try {
-      var authFailed = await EndpointDispatch.canUserAccessEndpoint(
-        () => session.authenticated,
-        endpoint.requireLogin,
-        endpoint.requiredScopes,
-      );
-      if (authFailed == null) await endpoint.streamOpened(session);
-    } catch (e) {
-      return;
-    }
-  }
-
-  Future<void> _callStreamClosed(
-    StreamingSession session,
-    Endpoint endpoint,
-  ) async {
-    try {
-      var authFailed = await EndpointDispatch.canUserAccessEndpoint(
-        () => session.authenticated,
-        endpoint.requireLogin,
-        endpoint.requiredScopes,
-      );
-      if (authFailed == null) await endpoint.streamClosed(session);
-    } catch (e) {
-      return;
-    }
-  }
-
   /// Shuts the server down.
-  void shutdown() {
-    _httpServer.close();
+  /// Returns a [Future] that completes when the server is shut down.
+  Future<void> shutdown() async {
+    await _httpServer.close();
+    var webSockets = _webSockets.values.toList();
+    List<Future<void>> webSocketCompletions = [];
+    for (var (webSocketCompletion, webSocket) in webSockets) {
+      webSocketCompletions.add(webSocketCompletion);
+      await webSocket.close();
+    }
+
+    // Wait for all WebSockets to close.
+    await Future.wait(webSocketCompletions);
+
     _running = false;
   }
 }
