@@ -12,11 +12,11 @@ sealed class WebSocketMessage {
       var messageType = data['messageType'];
 
       switch (messageType) {
-        case PingCommand.messageType:
+        case PingCommand._messageType:
           return PingCommand();
-        case PongCommand.messageType:
+        case PongCommand._messageType:
           return PongCommand();
-        case BadRequestMessage.messageType:
+        case BadRequestMessage._messageType:
           return BadRequestMessage(data);
       }
 
@@ -34,30 +34,27 @@ sealed class WebSocketMessage {
 /// A message sent over a websocket connection to check if the connection is
 /// still alive. The other end should respond with a [PongCommand].
 class PingCommand extends WebSocketMessage {
-  /// The type of message.
-  static const String messageType = 'ping_command';
+  static const String _messageType = 'ping_command';
 
   /// Builds a [PingCommand] message.
   static String buildMessage() {
-    return jsonEncode({'messageType': messageType});
+    return jsonEncode({'messageType': _messageType});
   }
 }
 
 /// A response to a [PingCommand].
 class PongCommand extends WebSocketMessage {
-  /// The type of message.
-  static const String messageType = 'pong_command';
+  static const String _messageType = 'pong_command';
 
   /// Builds a [PongCommand] message.
   static String buildMessage() {
-    return jsonEncode({'messageType': messageType});
+    return jsonEncode({'messageType': _messageType});
   }
 }
 
 /// A message sent when a bad request is received.
 class BadRequestMessage extends WebSocketMessage {
-  /// The type of message.
-  static const String messageType = 'bad_request_message';
+  static const String _messageType = 'bad_request_message';
 
   /// The request that was bad.
   final String request;
@@ -68,7 +65,7 @@ class BadRequestMessage extends WebSocketMessage {
   /// Builds a [BadRequestMessage] message.
   static String buildMessage(String request) {
     return jsonEncode({
-      'messageType': messageType,
+      'messageType': _messageType,
       'request': request,
     });
   }
