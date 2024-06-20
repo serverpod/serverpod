@@ -3,23 +3,30 @@ import 'dart:convert';
 /// Base class for messages sent over a WebSocket connection.
 sealed class WebSocketMessage {
   /// Converts a JSON string to a [WebSocketMessage] object.
+  ///
+  /// Throws an [UnknownMessageException] if the message is not recognized.
   static WebSocketMessage fromJsonString(String jsonString) {
-    Map data;
     try {
-      data = jsonDecode(jsonString) as Map;
-    } catch (e) {
-      return UnknownMessage(jsonString);
-    }
+      Map data = jsonDecode(jsonString) as Map;
 
-    var messageType = data['messageType'];
+      var messageType = data['messageType'];
 
-    switch (messageType) {
-      case PingCommand.messageType:
-        return PingCommand();
-      case PongCommand.messageType:
-        return PongCommand();
-      default:
-        return UnknownMessage(jsonString);
+      switch (messageType) {
+        case PingCommand.messageType:
+          return PingCommand();
+        case PongCommand.messageType:
+          return PongCommand();
+        case BadRequestMessage.messageType:
+          return BadRequestMessage(data);
+      }
+
+      throw UnknownMessageException(jsonString);
+    } catch (e, stackTrace) {
+      throw UnknownMessageException(
+        jsonString,
+        error: e,
+        stackTrace: stackTrace,
+      );
     }
   }
 }
@@ -47,11 +54,41 @@ class PongCommand extends WebSocketMessage {
   }
 }
 
-/// A message that is not recognized.
-class UnknownMessage extends WebSocketMessage {
+/// A message sent when a bad request is received.
+class BadRequestMessage extends WebSocketMessage {
+  /// The type of message.
+  static const String messageType = 'bad_request_message';
+
+  /// The request that was bad.
+  final String request;
+
+  /// Creates a new [BadRequestMessage].
+  BadRequestMessage(Map data) : request = data['request'];
+
+  /// Builds a [BadRequestMessage] message.
+  static String buildMessage(String request) {
+    return jsonEncode({
+      'messageType': messageType,
+      'request': request,
+    });
+  }
+}
+
+/// Exception thrown when an unknown message is received.
+class UnknownMessageException implements Exception {
   /// The JSON string that was not recognized.
   final String jsonString;
 
-  /// Creates a new [UnknownMessage].
-  UnknownMessage(this.jsonString);
+  /// An optional error that occurred when parsing the message.
+  final Object? error;
+
+  /// An optional stack trace for the error.
+  final StackTrace? stackTrace;
+
+  /// Creates a new [UnknownMessageException].
+  UnknownMessageException(
+    this.jsonString, {
+    this.error,
+    this.stackTrace,
+  });
 }

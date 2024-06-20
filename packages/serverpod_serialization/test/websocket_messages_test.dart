@@ -19,34 +19,67 @@ void main() {
   });
 
   test(
+      'Given a bad request message when building websocket message from string then BadRequestMessage is returned.',
+      () {
+    var message = BadRequestMessage.buildMessage('This is a bad request');
+    var result = WebSocketMessage.fromJsonString(message);
+    expect(result, isA<BadRequestMessage>());
+  });
+
+  test(
+      'Given a bad request message without mandatory field building websocket message from string then unknown message is returned.',
+      () {
+    /// Missing mandatory field 'request'
+    var message = '{"messageType": "bad_request_message"}';
+    expect(
+      () => WebSocketMessage.fromJsonString(message),
+      throwsA(
+        isA<UnknownMessageException>()
+            .having((e) => e.error, 'error', isA<TypeError>()),
+      ),
+    );
+  });
+
+  test(
       'Given a upper cased command message when building websocket message from string then UnknownMessage is returned.',
       () {
     var message = PingCommand.buildMessage().toUpperCase();
-    var result = WebSocketMessage.fromJsonString(message);
-    expect(result, isA<UnknownMessage>());
+    expect(
+      () => WebSocketMessage.fromJsonString(message),
+      throwsA(isA<UnknownMessageException>()),
+    );
   });
 
   test(
       'Given an unknown command json String when building websocket message from string then UnknownMessage is returned.',
       () {
     var message = '{"messageType": "this is not a known message type"}';
-    var result = WebSocketMessage.fromJsonString(message);
-    expect(result, isA<UnknownMessage>());
+    expect(
+      () => WebSocketMessage.fromJsonString(message),
+      throwsA(isA<UnknownMessageException>()),
+    );
   });
 
   test(
       'Given an invalid json String when building websocket message from string then UnknownMessage is returned.',
       () {
     var message = 'This is not a valid json string';
-    var result = WebSocketMessage.fromJsonString(message);
-    expect(result, isA<UnknownMessage>());
+    expect(
+      () => WebSocketMessage.fromJsonString(message),
+      throwsA(
+        isA<UnknownMessageException>()
+            .having((e) => e.error, 'error', isA<FormatException>()),
+      ),
+    );
   });
 
   test(
       'Given a null messageType when building websocket message from string then UnknownMessage is returned.',
       () {
     var message = '{"messageType": null}';
-    var result = WebSocketMessage.fromJsonString(message);
-    expect(result, isA<UnknownMessage>());
+    expect(
+      () => WebSocketMessage.fromJsonString(message),
+      throwsA(isA<UnknownMessageException>()),
+    );
   });
 }
