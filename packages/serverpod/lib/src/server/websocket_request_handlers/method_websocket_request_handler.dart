@@ -35,6 +35,8 @@ class MethodWebsocketRequestHandler {
       var session = await server.serverpod.createSession();
       await session.close(error: e, stackTrace: stackTrace);
     } finally {
+      // Send a close message to the client.
+      await webSocket.close();
       onClosed();
     }
   }
