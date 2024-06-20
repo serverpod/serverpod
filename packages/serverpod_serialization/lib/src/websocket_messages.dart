@@ -30,7 +30,7 @@ class PingCommand extends WebSocketMessage {
   /// The type of message.
   static const String messageType = 'ping_command';
 
-  /// Creates a new [PingCommand].
+  /// Builds a [PingCommand] message.
   static String buildMessage() {
     return jsonEncode({'messageType': messageType});
   }
@@ -41,7 +41,7 @@ class PongCommand extends WebSocketMessage {
   /// The type of message.
   static const String messageType = 'pong_command';
 
-  /// Creates a new [PongCommand].
+  /// Builds a [PongCommand] message.
   static String buildMessage() {
     return jsonEncode({'messageType': messageType});
   }

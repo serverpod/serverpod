@@ -4,13 +4,12 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/database/database.dart';
+import 'package:serverpod/src/cache/caches.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
+import 'package:serverpod/src/database/database.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
-
-import '../cache/caches.dart';
 
 /// Handling incoming calls and routing them to the correct [Endpoint]
 /// methods.

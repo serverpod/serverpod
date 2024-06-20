@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 
 /// This class is used by the [Server] to handle incoming websocket requests
 /// to a method. It is not intended to be used directly by the user.
+@internal
 class MethodWebsocketRequestHandler {
   /// Handles incoming websocket requests.
   /// Returns a [Future] that completes when the websocket is closed.
