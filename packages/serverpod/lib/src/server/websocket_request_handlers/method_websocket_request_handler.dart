@@ -16,8 +16,18 @@ class MethodWebsocketRequestHandler {
     try {
       server.serverpod.logVerbose('Method websocket connection established.');
       await for (String jsonData in webSocket) {
-        // TODO: Implementation will be replaced here in future commits.
-        stdout.writeln('Received data: $jsonData');
+        var message = WebSocketMessage.fromJsonString(jsonData);
+
+        switch (message) {
+          case PingCommand():
+            webSocket.add(PongCommand.buildMessage());
+            break;
+          case PongCommand():
+            break;
+          case UnknownMessage():
+            server.serverpod.logVerbose(
+                'Unknown message received on websocket connection: ${message.jsonString}');
+        }
       }
     } catch (e, stackTrace) {
       var session = await server.serverpod.createSession();
