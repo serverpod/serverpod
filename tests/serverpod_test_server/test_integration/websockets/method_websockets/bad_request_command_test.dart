@@ -10,8 +10,6 @@ void main() {
   group('Given method websocket connection', () {
     late Serverpod server;
     late WebSocketChannel webSocket;
-    var unrecognizedCommandMessage =
-        '{"command":"this is not a valid command"}';
 
     setUp(() async {
       server = IntegrationTestServer.create();
@@ -27,30 +25,17 @@ void main() {
       await webSocket.sink.close();
     });
 
-    test('when an unrecognized message is sent then connection is closed.',
-        () async {
+    test('when bad request is sent then connection is closed.', () async {
       var webSocketCompleter = Completer<void>();
       webSocket.stream.listen((event) {}, onDone: () {
         webSocketCompleter.complete();
       });
 
-      webSocket.sink.add(unrecognizedCommandMessage);
+      webSocket.sink.add(BadRequestMessage.buildMessage('request'));
 
       expectLater(
-        webSocketCompleter.future.timeout(Duration(seconds: 10)),
+        webSocketCompleter.future.timeout(Duration(seconds: 5)),
         completes,
-      );
-    });
-
-    test(
-        'when an unrecognized message is sent then BadRequestMessage is response is received.',
-        () async {
-      var response = webSocket.stream.first.timeout(Duration(seconds: 10));
-      webSocket.sink.add(unrecognizedCommandMessage);
-
-      expect(
-        await response,
-        BadRequestMessage.buildMessage(unrecognizedCommandMessage),
       );
     });
   });

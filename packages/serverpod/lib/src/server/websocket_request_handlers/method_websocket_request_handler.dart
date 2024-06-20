@@ -18,7 +18,15 @@ class MethodWebsocketRequestHandler {
     try {
       server.serverpod.logVerbose('Method websocket connection established.');
       await for (String jsonData in webSocket) {
-        var message = WebSocketMessage.fromJsonString(jsonData);
+        WebSocketMessage message;
+        try {
+          message = WebSocketMessage.fromJsonString(jsonData);
+        } on UnknownMessageException catch (_) {
+          webSocket.add(BadRequestMessage.buildMessage(jsonData));
+          throw Exception(
+            'Unknown message received on websocket connection: $jsonData',
+          );
+        }
 
         switch (message) {
           case PingCommand():
@@ -26,9 +34,11 @@ class MethodWebsocketRequestHandler {
             break;
           case PongCommand():
             break;
-          case UnknownMessage():
+          case BadRequestMessage():
             server.serverpod.logVerbose(
-                'Unknown message received on websocket connection: ${message.jsonString}');
+              'Bad request message: ${message.request}, closing connection.',
+            );
+            return;
         }
       }
     } catch (e, stackTrace) {
