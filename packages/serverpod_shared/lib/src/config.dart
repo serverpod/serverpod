@@ -77,7 +77,7 @@ class ServerpodConfig {
     /// configuration is missing an exception is thrown.
     var apiSetup = configMap[ServerpodConfigMap.apiServer];
     if (apiSetup == null) {
-      throw Exception('apiServer is missing in config');
+      throw Exception('${ServerpodConfigMap.apiServer} is missing in config');
     }
 
     var apiServer = ServerConfig._fromJson(
@@ -104,7 +104,7 @@ class ServerpodConfig {
         : null;
 
     // Get max request size (default to 512kb)
-    var maxRequestSize = configMap['maxRequestSize'] ?? 524288;
+    var maxRequestSize = configMap[ServerpodEnv.maxRequestSize] ?? 524288;
 
     var serviceSecret = passwords[ServerpodPassword.serviceSecret.key];
 
@@ -213,20 +213,20 @@ class ServerConfig {
   factory ServerConfig._fromJson(Map serverSetup, String name) {
     _validateJsonConfig(
       const {
-        'port': int,
-        'publicHost': String,
-        'publicPort': int,
-        'publicScheme': String,
+        ServerpodServerConfigMap.port: int,
+        ServerpodServerConfigMap.publicHost: String,
+        ServerpodServerConfigMap.publicPort: int,
+        ServerpodServerConfigMap.publicScheme: String,
       },
       serverSetup,
       name,
     );
 
     return ServerConfig(
-      port: serverSetup['port'],
-      publicHost: serverSetup['publicHost'],
-      publicPort: serverSetup['publicPort'],
-      publicScheme: serverSetup['publicScheme'],
+      port: serverSetup[ServerpodServerConfigMap.port],
+      publicHost: serverSetup[ServerpodServerConfigMap.publicHost],
+      publicPort: serverSetup[ServerpodServerConfigMap.publicPort],
+      publicScheme: serverSetup[ServerpodServerConfigMap.publicScheme],
     );
   }
 
@@ -278,11 +278,11 @@ class DatabaseConfig {
 
   factory DatabaseConfig._fromJson(Map dbSetup, Map passwords, String name) {
     _validateJsonConfig(
-      const {
-        'host': String,
-        'port': int,
-        'name': String,
-        'user': String,
+      {
+        ServerpodEnv.databaseHost.key: String,
+        ServerpodEnv.databasePort.key: int,
+        ServerpodEnv.databaseName.key: String,
+        ServerpodEnv.databaseUser.key: String,
       },
       dbSetup,
       name,
@@ -294,12 +294,12 @@ class DatabaseConfig {
     }
 
     return DatabaseConfig(
-      host: dbSetup['host'],
-      port: dbSetup['port'],
-      name: dbSetup['name'],
-      user: dbSetup['user'],
-      requireSsl: dbSetup['requireSsl'] ?? false,
-      isUnixSocket: dbSetup['isUnixSocket'] ?? false,
+      host: dbSetup[ServerpodEnv.databaseHost.key],
+      port: dbSetup[ServerpodEnv.databasePort.key],
+      name: dbSetup[ServerpodEnv.databaseName.key],
+      user: dbSetup[ServerpodEnv.databaseUser.key],
+      requireSsl: dbSetup[ServerpodEnv.databaseRequireSsl.key] ?? false,
+      isUnixSocket: dbSetup[ServerpodEnv.databaseIsUnixSocket.key] ?? false,
       password: password,
     );
   }
@@ -346,19 +346,19 @@ class RedisConfig {
 
   factory RedisConfig._fromJson(Map redisSetup, Map passwords, String name) {
     _validateJsonConfig(
-      const {
-        'host': String,
-        'port': int,
+      {
+        ServerpodEnv.redisHost.key: String,
+        ServerpodEnv.redisPort.key: int,
       },
       redisSetup,
       name,
     );
 
     return RedisConfig(
-      enabled: redisSetup['enabled'] ?? false,
-      host: redisSetup['host'],
-      port: redisSetup['port'],
-      user: redisSetup['user'],
+      enabled: redisSetup[ServerpodEnv.redisEnabled.key] ?? false,
+      host: redisSetup[ServerpodEnv.redisHost.key],
+      port: redisSetup[ServerpodEnv.redisPort.key],
+      user: redisSetup[ServerpodEnv.redisUser.key],
       password: passwords[ServerpodPassword.redisPassword.key],
     );
   }
