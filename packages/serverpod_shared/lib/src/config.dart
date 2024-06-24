@@ -4,6 +4,9 @@ import 'package:serverpod_shared/src/environment_variables.dart';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as path;
 
+/// The configuration sections for the serverpod configuration file.
+typedef Convert<T> = T Function(String value);
+
 /// Parser for the Serverpod configuration file.
 class ServerpodConfig {
   /// The servers run mode.
@@ -75,13 +78,13 @@ class ServerpodConfig {
   ) {
     /// Get api server setup. This field cannot be null, so if the
     /// configuration is missing an exception is thrown.
-    var apiSetup = configMap[ServerpodConfigMap.apiServer];
-    if (apiSetup == null) {
+    var apiConfig = _apiConfigMap(configMap, environment);
+    if (apiConfig == null) {
       throw Exception('${ServerpodConfigMap.apiServer} is missing in config');
     }
 
     var apiServer = ServerConfig._fromJson(
-      apiSetup,
+      apiConfig,
       ServerpodConfigMap.apiServer,
     );
 
@@ -104,7 +107,7 @@ class ServerpodConfig {
         : null;
 
     // Get max request size (default to 512kb)
-    var maxRequestSize = configMap[ServerpodEnv.maxRequestSize] ?? 524288;
+    var maxRequestSize = configMap[ServerpodEnv.maxRequestSize.key] ?? 524288;
 
     var serviceSecret = passwords[ServerpodPassword.serviceSecret.key];
 
@@ -139,6 +142,34 @@ class ServerpodConfig {
       redis: redis,
       serviceSecret: serviceSecret,
     );
+  }
+
+  static Map? _apiConfigMap(Map configMap, Map<String, String> environment) {
+    var conf = configMap[ServerpodConfigMap.apiServer];
+
+    Map config = {
+      ...(conf ?? {}),
+      ..._extractMapEntry(environment, ServerpodEnv.apiPort, int.parse),
+      ..._extractMapEntry(environment, ServerpodEnv.apiPublicHost),
+      ..._extractMapEntry(environment, ServerpodEnv.apiPublicPort, int.parse),
+      ..._extractMapEntry(environment, ServerpodEnv.apiPublicScheme),
+    };
+
+    if (config.isEmpty) return null;
+
+    return config;
+  }
+
+  static Map<String, dynamic> _extractMapEntry(
+    Map<String, String> env,
+    ServerpodEnv serverpodEnv, [
+    Convert? convert,
+  ]) {
+    var content = env[serverpodEnv.variable];
+
+    if (content == null) return {};
+
+    return {serverpodEnv.key: convert?.call(content) ?? content};
   }
 
   /// Loads and parses a server configuration file. Picks config file depending

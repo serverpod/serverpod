@@ -351,7 +351,7 @@ redis:
   });
 
   test(
-      'Given Serverpod config with redis configuration without when loading from Map then redis configuration is set.',
+      'Given a Serverpod config with redis configuration without when loading from Map then redis configuration is set.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -376,5 +376,81 @@ redis:
     expect(config.redis?.port, 6379);
     expect(config.redis?.password, 'password');
     expect(config.redis?.enabled, isFalse);
+  });
+
+  test(
+      'Given an empty Serverpod config map but with the environment variables set for the api server when loading from Map then configuration then the config is created.',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {},
+      {
+        'SERVERPOD_API_SERVER_PORT': '8080',
+        'SERVERPOD_API_SERVER_PUBLIC_HOST': 'localhost',
+        'SERVERPOD_API_SERVER_PUBLIC_PORT': '8080',
+        'SERVERPOD_API_SERVER_PUBLIC_SCHEME': 'http',
+      },
+    );
+
+    expect(config.apiServer.port, 8080);
+    expect(config.apiServer.publicHost, 'localhost');
+    expect(config.apiServer.publicPort, 8080);
+    expect(config.apiServer.publicScheme, 'http');
+  });
+
+  test(
+      'Given a Serverpod config map with half the values and the environment variables the other half for the api server when loading from Map then configuration then the config is created.',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      {
+        'SERVERPOD_API_SERVER_PORT': '8080',
+        'SERVERPOD_API_SERVER_PUBLIC_HOST': 'localhost',
+      },
+    );
+
+    expect(config.apiServer.port, 8080);
+    expect(config.apiServer.publicHost, 'localhost');
+    expect(config.apiServer.publicPort, 8080);
+    expect(config.apiServer.publicScheme, 'http');
+  });
+
+  test(
+      'Given a Serverpod config map with all the values and the environment variables for the api server when loading from Map then the config is overridden by the environment variables.',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      {
+        'SERVERPOD_API_SERVER_PORT': '8090',
+        'SERVERPOD_API_SERVER_PUBLIC_HOST': 'example.com',
+        'SERVERPOD_API_SERVER_PUBLIC_PORT': '8090',
+        'SERVERPOD_API_SERVER_PUBLIC_SCHEME': 'https',
+      },
+    );
+
+    expect(config.apiServer.port, 8090);
+    expect(config.apiServer.publicHost, 'example.com');
+    expect(config.apiServer.publicPort, 8090);
+    expect(config.apiServer.publicScheme, 'https');
   });
 }
