@@ -6,11 +6,15 @@ import 'package:yaml/yaml.dart';
 // then to a Map.
 // This was to better reflect the actual configuration of the ServerpodConfig.
 void main() {
+  var runMode = 'development';
+  var serverId = 'default';
+  var passwords = {'serviceSecret': 'longpasswordthatisrequired'};
+
   test(
       'Given Serverpod config missing api server configuration when loading from Map then exception is thrown.',
       () {
     expect(
-      () => ServerpodConfig.loadFromMap('', '', {}, {}, {}),
+      () => ServerpodConfig.loadFromMap(runMode, serverId, passwords, {}, {}),
       throwsA(isA<Exception>().having(
         (e) => e.toString(),
         'message',
@@ -31,9 +35,9 @@ apiServer:
 
     expect(
       () => ServerpodConfig.loadFromMap(
-        '',
-        '',
-        {},
+        runMode,
+        serverId,
+        passwords,
         loadYaml(serverpodConfig),
         {},
       ),
@@ -59,9 +63,9 @@ apiServer:
 
     expect(
       () => ServerpodConfig.loadFromMap(
-        '',
-        '',
-        {},
+        runMode,
+        serverId,
+        passwords,
         loadYaml(serverpodConfig),
         {},
       ),
@@ -87,20 +91,22 @@ apiServer:
 
     const runMode = 'myRunMode';
     const serverId = 'myServerId';
+    const passwords = {'serviceSecret': 'LONG_PASSWORD_THAT_IS_REQUIRED'};
+
     var config = ServerpodConfig.loadFromMap(
       runMode,
       serverId,
-      {'serviceSecret': 'longpasswordthatisrequired'},
+      passwords,
       loadYaml(serverpodConfig),
       {},
     );
 
     test('Run mode matches supplied value.', () {
-      expect(config.runMode, runMode);
+      expect(config.runMode, 'myRunMode');
     });
 
     test('Server id matches supplied value.', () {
-      expect(config.serverId, serverId);
+      expect(config.serverId, 'myServerId');
     });
 
     test('Api server configuration is set.', () {
@@ -123,7 +129,7 @@ apiServer:
     });
 
     test('Service secret is set.', () {
-      expect(config.serviceSecret, 'longpasswordthatisrequired');
+      expect(config.serviceSecret, 'LONG_PASSWORD_THAT_IS_REQUIRED');
     });
 
     test('Database configuration is null.', () {
@@ -152,9 +158,9 @@ insightsServer:
 ''';
 
     var config = ServerpodConfig.loadFromMap(
-      '',
-      '',
-      {},
+      runMode,
+      serverId,
+      passwords,
       loadYaml(serverpodConfig),
       {},
     );
@@ -182,9 +188,9 @@ webServer:
 ''';
 
     var config = ServerpodConfig.loadFromMap(
-      '',
-      '',
-      {},
+      runMode,
+      serverId,
+      passwords,
       loadYaml(serverpodConfig),
       {},
     );
@@ -208,9 +214,9 @@ maxRequestSize: 1048576
 ''';
 
     var config = ServerpodConfig.loadFromMap(
-      '',
-      '',
-      {},
+      runMode,
+      serverId,
+      passwords,
       loadYaml(serverpodConfig),
       {},
     );
@@ -236,9 +242,9 @@ database:
 
     expect(
       () => ServerpodConfig.loadFromMap(
-        '',
-        '',
-        {},
+        runMode,
+        serverId,
+        passwords,
         loadYaml(serverpodConfig),
         {},
       ),
@@ -267,9 +273,9 @@ database:
 
     expect(
       () => ServerpodConfig.loadFromMap(
-        '',
-        '',
-        {'database': 'password'},
+        runMode,
+        serverId,
+        {...passwords, 'database': 'password'},
         loadYaml(serverpodConfig),
         {},
       ),
@@ -299,9 +305,9 @@ database:
 ''';
 
     var config = ServerpodConfig.loadFromMap(
-      '',
-      '',
-      {'database': 'password'},
+      runMode,
+      serverId,
+      {...passwords, 'database': 'password'},
       loadYaml(serverpodConfig),
       {},
     );
@@ -330,9 +336,9 @@ redis:
 
     expect(
       () => ServerpodConfig.loadFromMap(
-        '',
-        '',
-        {},
+        serverId,
+        runMode,
+        passwords,
         loadYaml(serverpodConfig),
         {},
       ),
@@ -359,9 +365,9 @@ redis:
 ''';
 
     var config = ServerpodConfig.loadFromMap(
-      '',
-      '',
-      {'redis': 'password'},
+      runMode,
+      serverId,
+      {...passwords, 'redis': 'password'},
       loadYaml(serverpodConfig),
       {},
     );
