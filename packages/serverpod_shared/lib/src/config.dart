@@ -7,6 +7,8 @@ import 'package:path/path.dart' as path;
 /// The configuration sections for the serverpod configuration file.
 typedef Convert<T> = T Function(String value);
 
+const int _defaultMaxRequestSize = 524288;
+
 /// Parser for the Serverpod configuration file.
 class ServerpodConfig {
   /// The servers run mode.
@@ -107,7 +109,7 @@ class ServerpodConfig {
         : null;
 
     // Get max request size (default to 512kb)
-    var maxRequestSize = configMap[ServerpodEnv.maxRequestSize.key] ?? 524288;
+    var maxRequestSize = _readMaxRequestSize(configMap, environment);
 
     var serviceSecret = passwords[ServerpodPassword.serviceSecret.key];
 
@@ -491,6 +493,22 @@ Map<String, dynamic> _extractMapEntry(
   if (content == null) return {};
 
   return {serverpodEnv.key: convert?.call(content) ?? content};
+}
+
+int _readMaxRequestSize(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+) {
+  var maxRequestSize = configMap[ServerpodEnv.maxRequestSize.key];
+  maxRequestSize =
+      environment[ServerpodEnv.maxRequestSize.variable] ?? maxRequestSize;
+
+  if (maxRequestSize is String) {
+    maxRequestSize = int.tryParse(maxRequestSize);
+  }
+
+  maxRequestSize ??= _defaultMaxRequestSize;
+  return maxRequestSize;
 }
 
 /// Validates that a JSON configuration contains all required keys, and that

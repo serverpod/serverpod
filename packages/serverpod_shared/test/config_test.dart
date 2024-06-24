@@ -455,6 +455,29 @@ redis:
   });
 
   test(
+      'Given a Serverpod config with only the api server configuration but the environment variables containing the max request size when loading from Map then the max request size is set.',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      {
+        'SERVERPOD_MAX_REQUEST_SIZE': '1048576',
+      },
+    );
+
+    expect(config.maxRequestSize, 1048576);
+  });
+
+  test(
       'Given a Serverpod config with only the api server configuration but the environment variables containing the config for the web server when loading from Map then the web server config is created.',
       () {
     var config = ServerpodConfig.loadFromMap(
