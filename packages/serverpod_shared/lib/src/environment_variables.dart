@@ -57,6 +57,12 @@ enum ServerpodEnv {
   /// The port for the redis broker.
   redisPort,
 
+  /// The user for the redis broker.
+  redisUser,
+
+  /// Toggle to enable the redis broker.
+  redisEnabled,
+
   /// The local port for the api server.
   apiPort,
 
@@ -110,6 +116,8 @@ extension ServerpodEnvExt on ServerpodEnv {
       (ServerpodEnv.databaseIsUnixSocket) => 'isUnixSocket',
       (ServerpodEnv.redisHost) => 'host',
       (ServerpodEnv.redisPort) => 'port',
+      (ServerpodEnv.redisUser) => 'user',
+      (ServerpodEnv.redisEnabled) => 'enabled',
       (ServerpodEnv.apiPort) => ServerpodServerConfigMap.port,
       (ServerpodEnv.apiPublicHost) => ServerpodServerConfigMap.publicHost,
       (ServerpodEnv.apiPublicPort) => ServerpodServerConfigMap.publicPort,
@@ -139,6 +147,8 @@ extension ServerpodEnvExt on ServerpodEnv {
         'SERVERPOD_DATABASE_IS_UNIX_SOCKET',
       (ServerpodEnv.redisHost) => 'SERVERPOD_REDIS_HOST',
       (ServerpodEnv.redisPort) => 'SERVERPOD_REDIS_PORT',
+      (ServerpodEnv.redisUser) => 'SERVERPOD_REDIS_USER',
+      (ServerpodEnv.redisEnabled) => 'SERVERPOD_REDIS_ENABLED',
       (ServerpodEnv.apiPort) => 'SERVERPOD_API_SERVER_PORT',
       (ServerpodEnv.apiPublicHost) => 'SERVERPOD_API_SERVER_PUBLIC_HOST',
       (ServerpodEnv.apiPublicPort) => 'SERVERPOD_API_SERVER_PUBLIC_PORT',

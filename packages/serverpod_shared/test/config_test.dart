@@ -792,4 +792,120 @@ redis:
 
     expect(config.database?.isUnixSocket, true);
   });
+
+  test(
+      'Given a Serverpod config with only the api server configuration but the environment variables containing the config for the redis when loading from Map then the redis config is created.',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      {...passwords, 'redis': 'password'},
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      {
+        'SERVERPOD_REDIS_HOST': 'localhost',
+        'SERVERPOD_REDIS_PORT': '6379',
+        'SERVERPOD_REDIS_USER': 'default',
+      },
+    );
+
+    expect(config.redis?.host, 'localhost');
+    expect(config.redis?.port, 6379);
+    expect(config.redis?.user, 'default');
+  });
+
+  test(
+      'Given a Serverpod config map with half the values and the environment variables the other half for the redis when loading from Map then configuration then the redis config is created',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      {...passwords, 'redis': 'password'},
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+        'redis': {
+          'port': 6379,
+        },
+      },
+      {
+        'SERVERPOD_REDIS_HOST': 'localhost',
+        'SERVERPOD_REDIS_USER': 'default',
+      },
+    );
+
+    expect(config.redis?.host, 'localhost');
+    expect(config.redis?.port, 6379);
+    expect(config.redis?.user, 'default');
+  });
+
+  test(
+      'Given a Serverpod config map with all the values and the environment variables for the redis when loading from Map then the config is overridden by the environment variables.',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      {...passwords, 'redis': 'password'},
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+        'redis': {
+          'host': 'localhost',
+          'port': 6379,
+          'user': 'default',
+        },
+      },
+      {
+        'SERVERPOD_REDIS_HOST': 'remotehost',
+        'SERVERPOD_REDIS_PORT': '6380',
+        'SERVERPOD_REDIS_USER': 'remote_user',
+      },
+    );
+
+    expect(config.redis?.host, 'remotehost');
+    expect(config.redis?.port, 6380);
+    expect(config.redis?.user, 'remote_user');
+  });
+
+  test(
+      'Given a Serverpod config with the redis enabled environment variable set when loading from Map then the redis configuration is enabled.',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      {...passwords, 'redis': 'password'},
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+        'redis': {
+          'host': 'localhost',
+          'port': 6379,
+          'user': 'default',
+        },
+      },
+      {
+        'SERVERPOD_REDIS_ENABLED': 'true',
+      },
+    );
+
+    expect(config.redis?.enabled, isTrue);
+  });
 }

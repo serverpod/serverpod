@@ -122,10 +122,10 @@ class ServerpodConfig {
         : null;
 
     // Get Redis setup
-    var redisSetup = configMap[ServerpodConfigMap.redis];
-    var redis = redisSetup != null
+    var redisConfig = _redisConfigMap(configMap, environment);
+    var redis = redisConfig != null
         ? RedisConfig._fromJson(
-            redisSetup,
+            redisConfig,
             passwords,
             ServerpodConfigMap.redis,
           )
@@ -458,6 +458,22 @@ Map? _databaseConfigMap(Map configMap, Map<String, String> environment) {
       ServerpodEnv.databaseIsUnixSocket,
       bool.parse,
     ),
+  };
+
+  if (config.isEmpty) return null;
+
+  return config;
+}
+
+Map? _redisConfigMap(Map configMap, Map<String, String> environment) {
+  var redisConfig = configMap[ServerpodConfigMap.redis] ?? {};
+
+  Map config = {
+    ...redisConfig,
+    ..._extractMapEntry(environment, ServerpodEnv.redisHost),
+    ..._extractMapEntry(environment, ServerpodEnv.redisPort, int.parse),
+    ..._extractMapEntry(environment, ServerpodEnv.redisUser),
+    ..._extractMapEntry(environment, ServerpodEnv.redisEnabled, bool.parse),
   };
 
   if (config.isEmpty) return null;
