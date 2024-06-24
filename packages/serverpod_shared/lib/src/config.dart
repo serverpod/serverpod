@@ -75,23 +75,33 @@ class ServerpodConfig {
   ) {
     /// Get api server setup. This field cannot be null, so if the
     /// configuration is missing an exception is thrown.
-    var apiSetup = configMap['apiServer'];
+    var apiSetup = configMap[ServerpodConfigMap.apiServer];
     if (apiSetup == null) {
       throw Exception('apiServer is missing in config');
     }
 
-    var apiServer = ServerConfig._fromJson(apiSetup, 'apiServer');
+    var apiServer = ServerConfig._fromJson(
+      apiSetup,
+      ServerpodConfigMap.apiServer,
+    );
 
     /// Get insights server setup
-    var insightsSetup = configMap['insightsServer'];
+    var insightsSetup = configMap[ServerpodConfigMap.insightsServer];
     var insightsServer = insightsSetup != null
-        ? ServerConfig._fromJson(insightsSetup, 'insightsServer')
+        ? ServerConfig._fromJson(
+            insightsSetup,
+            ServerpodConfigMap.insightsServer,
+          )
         : null;
 
     /// Get web server setup
-    var webSetup = configMap['webServer'];
-    var webServer =
-        webSetup != null ? ServerConfig._fromJson(webSetup, 'webServer') : null;
+    var webSetup = configMap[ServerpodConfigMap.webServer];
+    var webServer = webSetup != null
+        ? ServerConfig._fromJson(
+            webSetup,
+            ServerpodConfigMap.webServer,
+          )
+        : null;
 
     // Get max request size (default to 512kb)
     var maxRequestSize = configMap['maxRequestSize'] ?? 524288;
@@ -99,15 +109,23 @@ class ServerpodConfig {
     var serviceSecret = passwords[ServerpodPassword.serviceSecret.key];
 
     // Get database setup
-    var dbSetup = configMap['database'];
+    var dbSetup = configMap[ServerpodConfigMap.database];
     var database = dbSetup != null
-        ? DatabaseConfig._fromJson(dbSetup, passwords, 'database')
+        ? DatabaseConfig._fromJson(
+            dbSetup,
+            passwords,
+            ServerpodConfigMap.database,
+          )
         : null;
 
     // Get Redis setup
-    var redisSetup = configMap['redis'];
+    var redisSetup = configMap[ServerpodConfigMap.redis];
     var redis = redisSetup != null
-        ? RedisConfig._fromJson(redisSetup, passwords, 'redis')
+        ? RedisConfig._fromJson(
+            redisSetup,
+            passwords,
+            ServerpodConfigMap.redis,
+          )
         : null;
 
     return ServerpodConfig(

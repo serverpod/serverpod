@@ -1,3 +1,21 @@
+/// The configuration sections for the serverpod configuration file.
+class ServerpodConfigMap {
+  /// The api server configuration.
+  static const String apiServer = 'apiServer';
+
+  /// The insights server configuration.
+  static const String insightsServer = 'insightsServer';
+
+  /// The web server configuration.
+  static const String webServer = 'webServer';
+
+  /// The database configuration.
+  static const String database = 'database';
+
+  /// The redis configuration.
+  static const String redis = 'redis';
+}
+
 /// The default passwords used by the server.
 enum ServerpodPassword {
   /// The password for the database.
