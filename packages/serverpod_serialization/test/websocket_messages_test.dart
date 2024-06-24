@@ -117,4 +117,30 @@ void main() {
       ),
     );
   });
+
+  test(
+      'Given an open method stream response when building websocket message from string then OpenMethodStreamResponse is returned.',
+      () {
+    var message = OpenMethodStreamResponse.buildMessage(
+      uuid: 'uuid',
+      responseType: OpenMethodStreamResponseType.success,
+    );
+    var result = WebSocketMessage.fromJsonString(message);
+    expect(result, isA<OpenMethodStreamResponse>());
+  });
+
+  test(
+      'Given an open method stream response with an invalid response type when building websocket message from string then UnknownMessageException is thrown.',
+      () {
+    var message = '''{
+      "messageType": "open_method_stream_response",
+      "uuid": "uuid",
+      "responseType": "this response type does not exist"
+    }''';
+
+    expect(
+      () => WebSocketMessage.fromJsonString(message),
+      throwsA(isA<UnknownMessageException>()),
+    );
+  });
 }

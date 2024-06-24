@@ -22,6 +22,8 @@ sealed class WebSocketMessage {
           return BadRequestMessage(data);
         case OpenMethodStreamCommand._messageType:
           return OpenMethodStreamCommand(data);
+        case OpenMethodStreamResponse._messageType:
+          return OpenMethodStreamResponse(data);
       }
 
       throw UnknownMessageException(jsonString);
@@ -35,8 +37,73 @@ sealed class WebSocketMessage {
   }
 }
 
+/// The response to an [OpenMethodStreamCommand].
+enum OpenMethodStreamResponseType {
+  /// The stream was successfully opened.
+  success,
+
+  /// The endpoint was not found.
+  endpointNotFound,
+
+  /// The method was not found.
+  methodNotFound,
+
+  /// The user is not authenticated.
+  authenticationFailed,
+
+  /// The user does not have the required scopes.
+  insufficientScopes,
+
+  /// The arguments were invalid.
+  invalidArguments;
+
+  /// Try to parse a [OpenMethodStreamResponseType] from a string.
+  /// Throws an exception if the string is not recognized.
+  static OpenMethodStreamResponseType tryParse(String name) {
+    return OpenMethodStreamResponseType.values.firstWhere(
+      (element) => element.name == name,
+    );
+  }
+}
+
+/// A message sent over a websocket connection to respond to an
+/// [OpenMethodStreamCommand].
+class OpenMethodStreamResponse extends WebSocketMessage {
+  static const String _messageType = 'open_method_stream_response';
+
+  /// The UUID of the stream.
+  final String uuid;
+
+  /// The response type.
+  final OpenMethodStreamResponseType responseType;
+
+  /// Creates a new [OpenMethodStreamResponse].
+  OpenMethodStreamResponse(Map data)
+      : uuid = data['uuid'],
+        responseType = OpenMethodStreamResponseType.tryParse(
+          data['responseType'],
+        );
+
+  /// Builds a new [OpenMethodStreamResponse] message.
+  static String buildMessage({
+    required String uuid,
+    required OpenMethodStreamResponseType responseType,
+  }) {
+    return jsonEncode({
+      'messageType': _messageType,
+      'uuid': uuid,
+      'responseType': responseType.name,
+    });
+  }
+
+  @override
+  String toString() => buildMessage(uuid: uuid, responseType: responseType);
+}
+
 /// A message sent over a websocket connection to open a websocket stream of
 /// data to an endpoint method.
+///
+/// An [OpenMethodStreamResponse] should be sent in response to this message.
 class OpenMethodStreamCommand extends WebSocketMessage {
   static const String _messageType = 'open_method_stream_command';
 
