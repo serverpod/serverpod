@@ -40,6 +40,9 @@ class PingCommand extends WebSocketMessage {
   static String buildMessage() {
     return jsonEncode({'messageType': _messageType});
   }
+
+  @override
+  String toString() => buildMessage();
 }
 
 /// A response to a [PingCommand].
@@ -50,6 +53,9 @@ class PongCommand extends WebSocketMessage {
   static String buildMessage() {
     return jsonEncode({'messageType': _messageType});
   }
+
+  @override
+  String toString() => buildMessage();
 }
 
 /// A message sent when a bad request is received.
@@ -69,6 +75,9 @@ class BadRequestMessage extends WebSocketMessage {
       'request': request,
     });
   }
+
+  @override
+  String toString() => buildMessage(request);
 }
 
 /// Exception thrown when an unknown message is received.
