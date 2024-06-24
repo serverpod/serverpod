@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:serverpod_shared/src/environment_variables.dart';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as path;
 
@@ -95,7 +96,7 @@ class ServerpodConfig {
     // Get max request size (default to 512kb)
     var maxRequestSize = configMap['maxRequestSize'] ?? 524288;
 
-    var serviceSecret = passwords['serviceSecret'];
+    var serviceSecret = passwords[ServerpodPassword.serviceSecret.key];
 
     // Get database setup
     var dbSetup = configMap['database'];
@@ -269,7 +270,7 @@ class DatabaseConfig {
       name,
     );
 
-    var password = passwords['database'];
+    var password = passwords[ServerpodPassword.databasePassword.key];
     if (password == null) {
       throw Exception('Missing database password.');
     }
@@ -281,7 +282,7 @@ class DatabaseConfig {
       user: dbSetup['user'],
       requireSsl: dbSetup['requireSsl'] ?? false,
       isUnixSocket: dbSetup['isUnixSocket'] ?? false,
-      password: passwords['database'],
+      password: password,
     );
   }
 
@@ -340,7 +341,7 @@ class RedisConfig {
       host: redisSetup['host'],
       port: redisSetup['port'],
       user: redisSetup['user'],
-      password: passwords['redis'],
+      password: passwords[ServerpodPassword.redisPassword.key],
     );
   }
 
