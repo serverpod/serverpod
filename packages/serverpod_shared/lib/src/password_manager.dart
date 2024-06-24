@@ -15,20 +15,27 @@ class PasswordManager {
 
   /// Load all passwords for the current run mode from the supplied [Map],
   /// or null if passwords fail to load.
-  Map<String, String>? loadPasswordsFromMap(Map data) {
-    try {
-      var passwords = <String, String>{};
+  Map<String, String> loadPasswordsFromMap(Map data) {
+    var sharedPasswords = _extractPasswords(data, 'shared');
+    var runModePasswords = _extractPasswords(data, runMode);
 
-      var sharedPasswords = data['shared']?.cast<String, String>();
-      var runModePasswords = data[runMode]?.cast<String, String>();
+    return {
+      ...sharedPasswords,
+      ...runModePasswords,
+    };
+  }
 
-      if (sharedPasswords != null) passwords.addAll(sharedPasswords);
-      if (runModePasswords != null) passwords.addAll(runModePasswords);
+  Map<String, String> _extractPasswords(Map data, String key) {
+    var extracted = data[key];
+    if (extracted is! Map) return {};
 
-      return passwords;
-    } catch (e) {
-      return null;
+    if (extracted.entries.any(
+      (entry) => entry.value is! String || entry.key is! String,
+    )) {
+      return {};
     }
+
+    return extracted.cast<String, String>();
   }
 
   /// Load all passwords for the current run mode, or null if passwords fail

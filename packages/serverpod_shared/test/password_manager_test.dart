@@ -35,11 +35,11 @@ void main() {
     });
 
     test('shared password matches expected value', () {
-      expect(passwords!['mySharedPassword'], 'my password');
+      expect(passwords['mySharedPassword'], 'my password');
     });
 
     test('database password matches expected value', () {
-      expect(passwords!['database'], 'development db pass');
+      expect(passwords['database'], 'development db pass');
     });
   });
 
@@ -56,11 +56,11 @@ void main() {
     });
 
     test('shared password matches expected value', () {
-      expect(passwords!['mySharedPassword'], 'my password');
+      expect(passwords['mySharedPassword'], 'my password');
     });
 
     test('database password matches expected value', () {
-      expect(passwords!['database'], 'production db pass');
+      expect(passwords['database'], 'production db pass');
     });
   });
 
@@ -75,11 +75,44 @@ void main() {
     });
 
     test('shared password is null', () {
-      expect(passwords!['mySharedPassword'], isNull);
+      expect(passwords['mySharedPassword'], isNull);
     });
 
     test('database password matches expected value', () {
-      expect(passwords!['database'], isNull);
+      expect(passwords['database'], isNull);
+    });
+  });
+
+  group('Given a runMode that does not exist in the config file', () {
+    var passwords = PasswordManager(runMode: 'unknown_run_mode')
+        .loadPasswordsFromMap(loadYaml(_defaultPasswordConfig));
+    test('then the shared password is set.', () {
+      expect(passwords['mySharedPassword'], 'my password');
+    });
+
+    test('then the database password is null.', () {
+      expect(passwords['database'], isNull);
+    });
+  });
+
+  group('Given a config file with invalid nested data', () {
+    var passwords = PasswordManager(runMode: 'development')
+        .loadPasswordsFromMap(loadYaml('''
+shared:
+  mySharedPassword: 'my password'
+
+development:
+  database:
+    host: 'localhost'
+    password: 'development db pass'
+'''));
+
+    test('then the shared password is set.', () {
+      expect(passwords['mySharedPassword'], 'my password');
+    });
+
+    test('then the database password is null.', () {
+      expect(passwords['database'], isNull);
     });
   });
 }
