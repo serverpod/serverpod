@@ -139,18 +139,21 @@ extension ServerpodEnvExt on ServerpodEnv {
         'SERVERPOD_DATABASE_IS_UNIX_SOCKET',
       (ServerpodEnv.redisHost) => 'SERVERPOD_REDIS_HOST',
       (ServerpodEnv.redisPort) => 'SERVERPOD_REDIS_PORT',
-      (ServerpodEnv.apiPort) => 'SERVERPOD_API_PORT',
-      (ServerpodEnv.apiPublicHost) => 'SERVERPOD_API_PUBLIC_HOST',
-      (ServerpodEnv.apiPublicPort) => 'SERVERPOD_API_PUBLIC_PORT',
-      (ServerpodEnv.apiPublicScheme) => 'SERVERPOD_API_PUBLIC_SCHEME',
-      (ServerpodEnv.insightsPort) => 'SERVERPOD_INSIGHTS_PORT',
-      (ServerpodEnv.insightsPublicHost) => 'SERVERPOD_INSIGHTS_PUBLIC_HOST',
-      (ServerpodEnv.insightsPublicPort) => 'SERVERPOD_INSIGHTS_PUBLIC_PORT',
-      (ServerpodEnv.insightsPublicScheme) => 'SERVERPOD_INSIGHTS_PUBLIC_SCHEME',
-      (ServerpodEnv.webPort) => 'SERVERPOD_WEB_PORT',
-      (ServerpodEnv.webPublicHost) => 'SERVERPOD_WEB_PUBLIC_HOST',
-      (ServerpodEnv.webPublicPort) => 'SERVERPOD_WEB_PUBLIC_PORT',
-      (ServerpodEnv.webPublicScheme) => 'SERVERPOD_WEB_PUBLIC_SCHEME',
+      (ServerpodEnv.apiPort) => 'SERVERPOD_API_SERVER_PORT',
+      (ServerpodEnv.apiPublicHost) => 'SERVERPOD_API_SERVER_PUBLIC_HOST',
+      (ServerpodEnv.apiPublicPort) => 'SERVERPOD_API_SERVER_PUBLIC_PORT',
+      (ServerpodEnv.apiPublicScheme) => 'SERVERPOD_API_SERVER_PUBLIC_SCHEME',
+      (ServerpodEnv.insightsPort) => 'SERVERPOD_INSIGHTS_SERVER_PORT',
+      (ServerpodEnv.insightsPublicHost) =>
+        'SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST',
+      (ServerpodEnv.insightsPublicPort) =>
+        'SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT',
+      (ServerpodEnv.insightsPublicScheme) =>
+        'SERVERPOD_INSIGHTS_SERVER_PUBLIC_SCHEME',
+      (ServerpodEnv.webPort) => 'SERVERPOD_WEB_SERVER_PORT',
+      (ServerpodEnv.webPublicHost) => 'SERVERPOD_WEB_SERVER_PUBLIC_HOST',
+      (ServerpodEnv.webPublicPort) => 'SERVERPOD_WEB_SERVER_PUBLIC_PORT',
+      (ServerpodEnv.webPublicScheme) => 'SERVERPOD_WEB_SERVER_PUBLIC_SCHEME',
       (ServerpodEnv.maxRequestSize) => 'SERVERPOD_MAX_REQUEST_SIZE',
     };
   }
