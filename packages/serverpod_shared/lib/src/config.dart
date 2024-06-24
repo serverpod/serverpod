@@ -78,8 +78,6 @@ class ServerpodConfig {
     Map configMap,
     Map<String, String> environment,
   ) {
-    /// Get api server setup. This field cannot be null, so if the
-    /// configuration is missing an exception is thrown.
     var apiConfig = _apiConfigMap(configMap, environment);
     if (apiConfig == null) {
       throw Exception('${ServerpodConfigMap.apiServer} is missing in config');
@@ -90,7 +88,6 @@ class ServerpodConfig {
       ServerpodConfigMap.apiServer,
     );
 
-    /// Get insights server setup
     var insightsConfig = _insightsConfigMap(configMap, environment);
     var insightsServer = insightsConfig != null
         ? ServerConfig._fromJson(
@@ -99,7 +96,6 @@ class ServerpodConfig {
           )
         : null;
 
-    /// Get web server setup
     var webConfig = _webConfigMap(configMap, environment);
     var webServer = webConfig != null
         ? ServerConfig._fromJson(
@@ -108,12 +104,10 @@ class ServerpodConfig {
           )
         : null;
 
-    // Get max request size (default to 512kb)
     var maxRequestSize = _readMaxRequestSize(configMap, environment);
 
     var serviceSecret = passwords[ServerpodPassword.serviceSecret.key];
 
-    // Get database setup
     var databaseConfig = _databaseConfigMap(configMap, environment);
     var database = databaseConfig != null
         ? DatabaseConfig._fromJson(
@@ -123,7 +117,6 @@ class ServerpodConfig {
           )
         : null;
 
-    // Get Redis setup
     var redisConfig = _redisConfigMap(configMap, environment);
     var redis = redisConfig != null
         ? RedisConfig._fromJson(
