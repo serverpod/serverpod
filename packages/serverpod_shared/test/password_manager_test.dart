@@ -116,4 +116,57 @@ development:
       expect(passwords['database'], isNull);
     });
   });
+
+  group('Given an empty config file with all env passwords defined', () {
+    var passwords =
+        PasswordManager(runMode: 'development').loadPasswordsFromMap(
+      {},
+      {
+        'SERVERPOD_DATABASE_PASSWORD': 'password',
+        'SERVERPOD_SERVICE_SECRET': 'secret',
+        'SERVERPOD_REDIS_PASSWORD': 'redis',
+      },
+    );
+
+    test('then the database password is set.', () {
+      expect(passwords['database'], 'password');
+    });
+
+    test('then the service secret is set.', () {
+      expect(passwords['serviceSecret'], 'secret');
+    });
+
+    test('then the redis password is set.', () {
+      expect(passwords['redis'], 'redis');
+    });
+
+    test('then the shared password is null.', () {
+      expect(passwords['mySharedPassword'], isNull);
+    });
+  });
+
+  group('Given a config map and set environment variables', () {
+    var passwords = PasswordManager(runMode: 'development')
+        .loadPasswordsFromMap(loadYaml(_defaultPasswordConfig), {
+      'SERVERPOD_DATABASE_PASSWORD': 'password',
+      'SERVERPOD_SERVICE_SECRET': 'secret',
+      'SERVERPOD_REDIS_PASSWORD': 'redis',
+    });
+
+    test('then the database password is set from the env.', () {
+      expect(passwords['database'], 'password');
+    });
+
+    test('then the service secret is set from the env.', () {
+      expect(passwords['serviceSecret'], 'secret');
+    });
+
+    test('then the redis password is set from the env.', () {
+      expect(passwords['redis'], 'redis');
+    });
+
+    test('then the shared password is set.', () {
+      expect(passwords['mySharedPassword'], 'my password');
+    });
+  });
 }

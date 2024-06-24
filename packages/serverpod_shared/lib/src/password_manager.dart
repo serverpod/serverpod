@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:serverpod_shared/src/environment_variables.dart';
 import 'package:yaml/yaml.dart';
 
 /// Keeps track of passwords used by the server. Passwords are loaded from
@@ -22,9 +23,20 @@ class PasswordManager {
     var sharedPasswords = _extractPasswords(passwordConfig, 'shared');
     var runModePasswords = _extractPasswords(passwordConfig, runMode);
 
+    var envPasswords = ServerpodPassword.values.fold(
+      {},
+      (collection, password) {
+        var envPassword = environment[password.variable];
+        if (envPassword is! String) return collection;
+
+        return {...collection, password.key: envPassword};
+      },
+    );
+
     return {
       ...sharedPasswords,
       ...runModePasswords,
+      ...envPasswords,
     };
   }
 
