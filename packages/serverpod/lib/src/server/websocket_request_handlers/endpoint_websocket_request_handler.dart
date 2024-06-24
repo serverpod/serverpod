@@ -5,10 +5,14 @@ import 'dart:io';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 
-/// Handles incoming websocket requests for the provided [WebSocket].
-abstract class WebsocketRequestHandler {
-  /// Handles incoming websocket requests.
+/// This class is used by the [Server] to handle incoming websocket requests
+/// to an endpoint. It is not intended to be used directly by the user.
+abstract class EndpointWebsocketRequestHandler {
+  /// Creates a new [StreamingSession] and handles incoming websocket requests.
   /// Returns a [Future] that completes when the websocket is closed.
+  ///
+  /// This method dispatches incoming messages to the correct endpoint and
+  /// handles control messages such as 'ping' and 'auth'.
   static Future<void> handleWebsocket(
     Server server,
     WebSocket webSocket,
