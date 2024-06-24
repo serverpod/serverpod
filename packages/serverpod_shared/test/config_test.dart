@@ -401,6 +401,30 @@ redis:
   });
 
   test(
+      'Given a Serverpod config map that is empty but the environment variables are set to the wrong type for the api server when loading from Map then an exception is thrown.',
+      () {
+    expect(
+      () => ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {},
+        {
+          'SERVERPOD_API_SERVER_PORT': 'invalid',
+          'SERVERPOD_API_SERVER_PUBLIC_HOST': 'localhost',
+          'SERVERPOD_API_SERVER_PUBLIC_PORT': '8080',
+          'SERVERPOD_API_SERVER_PUBLIC_SCHEME': 'http',
+        },
+      ),
+      throwsA(isA<Exception>().having(
+        (e) => e.toString(),
+        'message',
+        equals('Exception: Invalid value (invalid) for SERVERPOD_API_SERVER_PORT.'),
+      )),
+    );
+  });
+
+  test(
       'Given a Serverpod config map with half the values and the environment variables the other half for the api server when loading from Map then configuration then the config is created.',
       () {
     var config = ServerpodConfig.loadFromMap(
@@ -787,6 +811,38 @@ redis:
     );
 
     expect(config.database?.requireSsl, true);
+  });
+
+  test(
+      'Given a Serverpod config with only the api server configuration but the environment variables containing the optional database variable require ssl set to an invalid value then an exception is thrown.',
+      () {
+    expect(
+      () => ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        {...passwords, 'database': 'password'},
+        {
+          'apiServer': {
+            'port': 8080,
+            'publicHost': 'localhost',
+            'publicPort': 8080,
+            'publicScheme': 'http',
+          },
+        },
+        {
+          'SERVERPOD_DATABASE_HOST': 'localhost',
+          'SERVERPOD_DATABASE_PORT': '5432',
+          'SERVERPOD_DATABASE_NAME': 'serverpod',
+          'SERVERPOD_DATABASE_USER': 'admin',
+          'SERVERPOD_DATABASE_REQUIRE_SSL': 'INVALID',
+        },
+      ),
+      throwsA(isA<Exception>().having(
+        (e) => e.toString(),
+        'message',
+        equals('Exception: Invalid value (INVALID) for SERVERPOD_DATABASE_REQUIRE_SSL.'),
+      )),
+    );
   });
 
   test(

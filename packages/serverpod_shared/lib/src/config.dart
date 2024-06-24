@@ -484,8 +484,15 @@ Map<String, dynamic> _extractMapEntry(
   var content = env[serverpodEnv.variable];
 
   if (content == null) return {};
+  if (convert == null) return {serverpodEnv.key: content};
 
-  return {serverpodEnv.key: convert?.call(content) ?? content};
+  try {
+    return {serverpodEnv.key: convert.call(content)};
+  } catch (e) {
+    throw Exception(
+      'Invalid value ($content) for ${serverpodEnv.variable}.',
+    );
+  }
 }
 
 int _readMaxRequestSize(
