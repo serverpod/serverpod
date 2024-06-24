@@ -29,6 +29,13 @@ class MethodWebsocketRequestHandler {
         }
 
         switch (message) {
+          case OpenMethodStreamCommand():
+            webSocket.add(
+              await _handleOpenMethodStreamCommand(server, webSocket, message),
+            );
+            break;
+          case OpenMethodStreamResponse():
+            break;
           case PingCommand():
             webSocket.add(PongCommand.buildMessage());
             break;
@@ -49,5 +56,94 @@ class MethodWebsocketRequestHandler {
       await webSocket.close();
       onClosed();
     }
+  }
+
+  Future<String> _handleOpenMethodStreamCommand(
+    Server server,
+    WebSocket webSocket,
+    OpenMethodStreamCommand message,
+  ) async {
+    // Validate targeted endpoint method
+    var endpointConnector =
+        server.endpoints.getConnectorByName(message.endpoint);
+    if (endpointConnector == null) {
+      server.serverpod.logVerbose(
+        'Endpoint not found for open stream request: $message',
+      );
+      return OpenMethodStreamResponse.buildMessage(
+        uuid: message.uuid,
+        responseType: OpenMethodStreamResponseType.endpointNotFound,
+      );
+    }
+
+    var methodConnector = endpointConnector.methodConnectors[message.method];
+    if (methodConnector == null) {
+      server.serverpod.logVerbose(
+        'Endpoint method not found for open stream request: $message',
+      );
+      return OpenMethodStreamResponse.buildMessage(
+        uuid: message.uuid,
+        responseType: OpenMethodStreamResponseType.methodNotFound,
+      );
+    }
+
+    // Parse arguments
+    Map<String, dynamic> args;
+    try {
+      args = EndpointDispatch.parseParameters(
+        message.args,
+        methodConnector.params,
+        server.serializationManager,
+      );
+    } catch (e) {
+      server.serverpod.logVerbose(
+        'Failed to parse parameters for open stream request: $message',
+      );
+      return OpenMethodStreamResponse.buildMessage(
+        uuid: message.uuid,
+        responseType: OpenMethodStreamResponseType.invalidArguments,
+      );
+    }
+
+    // Create session
+    var session = StreamingMethodCallSession(
+      server: server,
+      enableLogging: endpointConnector.endpoint.logSessions,
+      authenticationKey: message.auth,
+      endpointName: endpointConnector.name,
+      methodName: methodConnector.name,
+      uuid: message.uuid,
+    );
+
+    // Check authentication
+    var authFailed = await EndpointDispatch.canUserAccessEndpoint(
+      () => session.authenticated,
+      endpointConnector.endpoint.requireLogin,
+      endpointConnector.endpoint.requiredScopes,
+    );
+
+    if (authFailed != null) {
+      server.serverpod.logVerbose(
+        'Authentication failed for open stream request: $message',
+      );
+      await session.close();
+      return switch (authFailed.reason) {
+        AuthenticationFailureReason.insufficientAccess =>
+          OpenMethodStreamResponse.buildMessage(
+            uuid: message.uuid,
+            responseType: OpenMethodStreamResponseType.insufficientScopes,
+          ),
+        AuthenticationFailureReason.unauthenticated =>
+          OpenMethodStreamResponse.buildMessage(
+            uuid: message.uuid,
+            responseType: OpenMethodStreamResponseType.authenticationFailed,
+          ),
+      };
+    }
+
+    return OpenMethodStreamResponse.buildMessage(
+      uuid: message.uuid,
+      responseType: OpenMethodStreamResponseType.success,
+    );
   }
 }
