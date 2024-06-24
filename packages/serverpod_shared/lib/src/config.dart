@@ -89,10 +89,10 @@ class ServerpodConfig {
     );
 
     /// Get insights server setup
-    var insightsSetup = configMap[ServerpodConfigMap.insightsServer];
-    var insightsServer = insightsSetup != null
+    var insightsConfig = _insightsConfigMap(configMap, environment);
+    var insightsServer = insightsConfig != null
         ? ServerConfig._fromJson(
-            insightsSetup,
+            insightsConfig,
             ServerpodConfigMap.insightsServer,
           )
         : null;
@@ -142,51 +142,6 @@ class ServerpodConfig {
       redis: redis,
       serviceSecret: serviceSecret,
     );
-  }
-
-  static Map? _webConfigMap(
-      Map<dynamic, dynamic> configMap, Map<String, String> environment) {
-    var serverConfig = configMap[ServerpodConfigMap.webServer] ?? {};
-
-    Map config = {
-      ...serverConfig,
-      ..._extractMapEntry(environment, ServerpodEnv.webPort, int.parse),
-      ..._extractMapEntry(environment, ServerpodEnv.webPublicHost),
-      ..._extractMapEntry(environment, ServerpodEnv.webPublicPort, int.parse),
-      ..._extractMapEntry(environment, ServerpodEnv.webPublicScheme),
-    };
-
-    if (config.isEmpty) return null;
-
-    return config;
-  }
-
-  static Map? _apiConfigMap(Map configMap, Map<String, String> environment) {
-    var serverConfig = configMap[ServerpodConfigMap.apiServer] ?? {};
-
-    Map config = {
-      ...serverConfig,
-      ..._extractMapEntry(environment, ServerpodEnv.apiPort, int.parse),
-      ..._extractMapEntry(environment, ServerpodEnv.apiPublicHost),
-      ..._extractMapEntry(environment, ServerpodEnv.apiPublicPort, int.parse),
-      ..._extractMapEntry(environment, ServerpodEnv.apiPublicScheme),
-    };
-
-    if (config.isEmpty) return null;
-
-    return config;
-  }
-
-  static Map<String, dynamic> _extractMapEntry(
-    Map<String, String> env,
-    ServerpodEnv serverpodEnv, [
-    Convert? convert,
-  ]) {
-    var content = env[serverpodEnv.variable];
-
-    if (content == null) return {};
-
-    return {serverpodEnv.key: convert?.call(content) ?? content};
   }
 
   /// Loads and parses a server configuration file. Picks config file depending
@@ -424,6 +379,76 @@ class RedisConfig {
     }
     return str;
   }
+}
+
+Map? _insightsConfigMap(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+) {
+  var serverConfig = configMap[ServerpodConfigMap.insightsServer] ?? {};
+
+  Map config = {
+    ...serverConfig,
+    ..._extractMapEntry(environment, ServerpodEnv.insightsPort, int.parse),
+    ..._extractMapEntry(environment, ServerpodEnv.insightsPublicHost),
+    ..._extractMapEntry(
+      environment,
+      ServerpodEnv.insightsPublicPort,
+      int.parse,
+    ),
+    ..._extractMapEntry(environment, ServerpodEnv.insightsPublicScheme),
+  };
+
+  if (config.isEmpty) return null;
+
+  return config;
+}
+
+Map? _webConfigMap(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+) {
+  var serverConfig = configMap[ServerpodConfigMap.webServer] ?? {};
+
+  Map config = {
+    ...serverConfig,
+    ..._extractMapEntry(environment, ServerpodEnv.webPort, int.parse),
+    ..._extractMapEntry(environment, ServerpodEnv.webPublicHost),
+    ..._extractMapEntry(environment, ServerpodEnv.webPublicPort, int.parse),
+    ..._extractMapEntry(environment, ServerpodEnv.webPublicScheme),
+  };
+
+  if (config.isEmpty) return null;
+
+  return config;
+}
+
+Map? _apiConfigMap(Map configMap, Map<String, String> environment) {
+  var serverConfig = configMap[ServerpodConfigMap.apiServer] ?? {};
+
+  Map config = {
+    ...serverConfig,
+    ..._extractMapEntry(environment, ServerpodEnv.apiPort, int.parse),
+    ..._extractMapEntry(environment, ServerpodEnv.apiPublicHost),
+    ..._extractMapEntry(environment, ServerpodEnv.apiPublicPort, int.parse),
+    ..._extractMapEntry(environment, ServerpodEnv.apiPublicScheme),
+  };
+
+  if (config.isEmpty) return null;
+
+  return config;
+}
+
+Map<String, dynamic> _extractMapEntry(
+  Map<String, String> env,
+  ServerpodEnv serverpodEnv, [
+  Convert? convert,
+]) {
+  var content = env[serverpodEnv.variable];
+
+  if (content == null) return {};
+
+  return {serverpodEnv.key: convert?.call(content) ?? content};
 }
 
 /// Validates that a JSON configuration contains all required keys, and that

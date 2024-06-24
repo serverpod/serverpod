@@ -548,4 +548,99 @@ redis:
     expect(config.webServer?.publicPort, 8090);
     expect(config.webServer?.publicScheme, 'https');
   });
+
+  test(
+      'Given a Serverpod config with only the api server configuration but the environment variables containing the config for the insights server when loading from Map then the insights server config is created.',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+      },
+      {
+        'SERVERPOD_INSIGHTS_SERVER_PORT': '8081',
+        'SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST': 'localhost',
+        'SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT': '8081',
+        'SERVERPOD_INSIGHTS_SERVER_PUBLIC_SCHEME': 'http',
+      },
+    );
+
+    expect(config.insightsServer?.port, 8081);
+    expect(config.insightsServer?.publicHost, 'localhost');
+    expect(config.insightsServer?.publicPort, 8081);
+    expect(config.insightsServer?.publicScheme, 'http');
+  });
+
+  test(
+      'Given a Serverpod config map with half the values and the environment variables the other half for the insights server when loading from Map then configuration then the insights config is created',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+        'insightsServer': {
+          'publicPort': 8081,
+          'publicScheme': 'http',
+        },
+      },
+      {
+        'SERVERPOD_INSIGHTS_SERVER_PORT': '8081',
+        'SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST': 'localhost',
+      },
+    );
+
+    expect(config.insightsServer?.port, 8081);
+    expect(config.insightsServer?.publicHost, 'localhost');
+    expect(config.insightsServer?.publicPort, 8081);
+    expect(config.insightsServer?.publicScheme, 'http');
+  });
+
+  test(
+      'Given a Serverpod config map with all the values and the environment variables for the insights server when loading from Map then the config is overridden by the environment variables.',
+      () {
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      {
+        'apiServer': {
+          'port': 8080,
+          'publicHost': 'localhost',
+          'publicPort': 8080,
+          'publicScheme': 'http',
+        },
+        'insightsServer': {
+          'port': 8081,
+          'publicHost': 'localhost',
+          'publicPort': 8081,
+          'publicScheme': 'http',
+        },
+      },
+      {
+        'SERVERPOD_INSIGHTS_SERVER_PORT': '8090',
+        'SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST': 'example.com',
+        'SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT': '8090',
+        'SERVERPOD_INSIGHTS_SERVER_PUBLIC_SCHEME': 'https',
+      },
+    );
+
+    expect(config.insightsServer?.port, 8090);
+    expect(config.insightsServer?.publicHost, 'example.com');
+    expect(config.insightsServer?.publicPort, 8090);
+    expect(config.insightsServer?.publicScheme, 'https');
+  });
 }
