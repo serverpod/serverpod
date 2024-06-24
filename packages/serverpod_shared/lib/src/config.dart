@@ -70,6 +70,7 @@ class ServerpodConfig {
     String serverId,
     Map<String, String> passwords,
     Map configMap,
+    Map<String, String> environment,
   ) {
     /// Get api server setup. This field cannot be null, so if the
     /// configuration is missing an exception is thrown.
@@ -133,7 +134,13 @@ class ServerpodConfig {
     data = File(_createConfigPath(runMode)).readAsStringSync();
 
     var doc = loadYaml(data);
-    return ServerpodConfig.loadFromMap(runMode, serverId, passwords, doc);
+    return ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      doc,
+      Platform.environment,
+    );
   }
 
   /// Checks if a configuration file is available on disk for the given run mode.

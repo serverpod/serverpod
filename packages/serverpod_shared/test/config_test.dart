@@ -10,7 +10,7 @@ void main() {
       'Given Serverpod config missing api server configuration when loading from Map then exception is thrown.',
       () {
     expect(
-      () => ServerpodConfig.loadFromMap('', '', {}, {}),
+      () => ServerpodConfig.loadFromMap('', '', {}, {}, {}),
       throwsA(isA<Exception>().having(
         (e) => e.toString(),
         'message',
@@ -35,6 +35,7 @@ apiServer:
         '',
         {},
         loadYaml(serverpodConfig),
+        {},
       ),
       throwsA(isA<Exception>().having(
         (e) => e.toString(),
@@ -62,6 +63,7 @@ apiServer:
         '',
         {},
         loadYaml(serverpodConfig),
+        {},
       ),
       throwsA(isA<Exception>().having(
         (e) => e.toString(),
@@ -90,6 +92,7 @@ apiServer:
       serverId,
       {'serviceSecret': 'longpasswordthatisrequired'},
       loadYaml(serverpodConfig),
+      {},
     );
 
     test('Run mode matches supplied value.', () {
@@ -153,6 +156,7 @@ insightsServer:
       '',
       {},
       loadYaml(serverpodConfig),
+      {},
     );
 
     expect(config.insightsServer?.port, 8081);
@@ -182,6 +186,7 @@ webServer:
       '',
       {},
       loadYaml(serverpodConfig),
+      {},
     );
 
     expect(config.webServer?.port, 8082);
@@ -207,6 +212,7 @@ maxRequestSize: 1048576
       '',
       {},
       loadYaml(serverpodConfig),
+      {},
     );
 
     expect(config.maxRequestSize, 1048576);
@@ -234,6 +240,7 @@ database:
         '',
         {},
         loadYaml(serverpodConfig),
+        {},
       ),
       throwsA(isA<Exception>().having(
         (e) => e.toString(),
@@ -264,6 +271,7 @@ database:
         '',
         {'database': 'password'},
         loadYaml(serverpodConfig),
+        {},
       ),
       throwsA(isA<Exception>().having(
         (e) => e.toString(),
@@ -295,6 +303,7 @@ database:
       '',
       {'database': 'password'},
       loadYaml(serverpodConfig),
+      {},
     );
 
     expect(config.database?.host, 'localhost');
@@ -325,6 +334,7 @@ redis:
         '',
         {},
         loadYaml(serverpodConfig),
+        {},
       ),
       throwsA(isA<Exception>().having(
         (e) => e.toString(),
@@ -353,6 +363,7 @@ redis:
       '',
       {'redis': 'password'},
       loadYaml(serverpodConfig),
+      {},
     );
 
     expect(config.redis?.host, 'localhost');
