@@ -112,10 +112,10 @@ class ServerpodConfig {
     var serviceSecret = passwords[ServerpodPassword.serviceSecret.key];
 
     // Get database setup
-    var dbSetup = configMap[ServerpodConfigMap.database];
-    var database = dbSetup != null
+    var databaseConfig = _databaseConfigMap(configMap, environment);
+    var database = databaseConfig != null
         ? DatabaseConfig._fromJson(
-            dbSetup,
+            databaseConfig,
             passwords,
             ServerpodConfigMap.database,
           )
@@ -432,6 +432,32 @@ Map? _apiConfigMap(Map configMap, Map<String, String> environment) {
     ..._extractMapEntry(environment, ServerpodEnv.apiPublicHost),
     ..._extractMapEntry(environment, ServerpodEnv.apiPublicPort, int.parse),
     ..._extractMapEntry(environment, ServerpodEnv.apiPublicScheme),
+  };
+
+  if (config.isEmpty) return null;
+
+  return config;
+}
+
+Map? _databaseConfigMap(Map configMap, Map<String, String> environment) {
+  var databaseConfig = configMap[ServerpodConfigMap.database] ?? {};
+
+  Map config = {
+    ...databaseConfig,
+    ..._extractMapEntry(environment, ServerpodEnv.databaseHost),
+    ..._extractMapEntry(environment, ServerpodEnv.databasePort, int.parse),
+    ..._extractMapEntry(environment, ServerpodEnv.databaseName),
+    ..._extractMapEntry(environment, ServerpodEnv.databaseUser),
+    ..._extractMapEntry(
+      environment,
+      ServerpodEnv.databaseRequireSsl,
+      bool.parse,
+    ),
+    ..._extractMapEntry(
+      environment,
+      ServerpodEnv.databaseIsUnixSocket,
+      bool.parse,
+    ),
   };
 
   if (config.isEmpty) return null;
