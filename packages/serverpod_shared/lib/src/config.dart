@@ -98,10 +98,10 @@ class ServerpodConfig {
         : null;
 
     /// Get web server setup
-    var webSetup = configMap[ServerpodConfigMap.webServer];
-    var webServer = webSetup != null
+    var webConfig = _webConfigMap(configMap, environment);
+    var webServer = webConfig != null
         ? ServerConfig._fromJson(
-            webSetup,
+            webConfig,
             ServerpodConfigMap.webServer,
           )
         : null;
@@ -144,11 +144,28 @@ class ServerpodConfig {
     );
   }
 
-  static Map? _apiConfigMap(Map configMap, Map<String, String> environment) {
-    var conf = configMap[ServerpodConfigMap.apiServer];
+  static Map? _webConfigMap(
+      Map<dynamic, dynamic> configMap, Map<String, String> environment) {
+    var serverConfig = configMap[ServerpodConfigMap.webServer] ?? {};
 
     Map config = {
-      ...(conf ?? {}),
+      ...serverConfig,
+      ..._extractMapEntry(environment, ServerpodEnv.webPort, int.parse),
+      ..._extractMapEntry(environment, ServerpodEnv.webPublicHost),
+      ..._extractMapEntry(environment, ServerpodEnv.webPublicPort, int.parse),
+      ..._extractMapEntry(environment, ServerpodEnv.webPublicScheme),
+    };
+
+    if (config.isEmpty) return null;
+
+    return config;
+  }
+
+  static Map? _apiConfigMap(Map configMap, Map<String, String> environment) {
+    var serverConfig = configMap[ServerpodConfigMap.apiServer] ?? {};
+
+    Map config = {
+      ...serverConfig,
       ..._extractMapEntry(environment, ServerpodEnv.apiPort, int.parse),
       ..._extractMapEntry(environment, ServerpodEnv.apiPublicHost),
       ..._extractMapEntry(environment, ServerpodEnv.apiPublicPort, int.parse),
