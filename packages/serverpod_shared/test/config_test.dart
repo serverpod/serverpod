@@ -419,7 +419,8 @@ redis:
       throwsA(isA<Exception>().having(
         (e) => e.toString(),
         'message',
-        equals('Exception: Invalid value (invalid) for SERVERPOD_API_SERVER_PORT.'),
+        equals(
+            'Exception: Invalid value (invalid) for SERVERPOD_API_SERVER_PORT.'),
       )),
     );
   });
@@ -840,7 +841,8 @@ redis:
       throwsA(isA<Exception>().having(
         (e) => e.toString(),
         'message',
-        equals('Exception: Invalid value (INVALID) for SERVERPOD_DATABASE_REQUIRE_SSL.'),
+        equals(
+            'Exception: Invalid value (INVALID) for SERVERPOD_DATABASE_REQUIRE_SSL.'),
       )),
     );
   });
