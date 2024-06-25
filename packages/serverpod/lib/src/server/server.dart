@@ -4,12 +4,12 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/database/database.dart';
+import 'package:serverpod/src/cache/caches.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
+import 'package:serverpod/src/database/database.dart';
 import 'package:serverpod/src/server/health_check.dart';
-import 'package:serverpod/src/server/websocket_request_handler.dart';
-
-import '../cache/caches.dart';
+import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
+import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
 
 /// Handling incoming calls and routing them to the correct [Endpoint]
 /// methods.
@@ -235,23 +235,15 @@ class Server {
       await request.response.close();
       return;
     } else if (uri.path == '/websocket') {
-      WebSocket webSocket;
-      try {
-        webSocket = await WebSocketTransformer.upgrade(request);
-      } on WebSocketException {
-        serverpod.logVerbose('Failed to upgrade connection to websocket');
-        return;
-      }
-      webSocket.pingInterval = const Duration(seconds: 30);
-      var websocketKey = const Uuid().v4();
-      _webSockets[websocketKey] = (
-        WebsocketRequestHandler.handleWebsocket(
-          this,
-          webSocket,
-          request,
-          () => _webSockets.remove(websocketKey),
-        ),
-        webSocket
+      await _dispatchWebSocketUpgradeRequest(
+        request,
+        EndpointWebsocketRequestHandler.handleWebsocket,
+      );
+      return;
+    } else if (uri.path == '/v1/websocket') {
+      await _dispatchWebSocketUpgradeRequest(
+        request,
+        MethodWebsocketRequestHandler().handleWebsocket,
       );
       return;
     } else if (uri.path == '/serverpod_cloud_storage') {
@@ -370,6 +362,35 @@ class Server {
       await request.response.close();
       return;
     }
+  }
+
+  Future<void> _dispatchWebSocketUpgradeRequest(
+    HttpRequest request,
+    Future<void> Function(
+      Server,
+      WebSocket,
+      HttpRequest,
+      void Function(),
+    ) requestHandler,
+  ) async {
+    WebSocket webSocket;
+    try {
+      webSocket = await WebSocketTransformer.upgrade(request);
+    } on WebSocketException {
+      serverpod.logVerbose('Failed to upgrade connection to websocket');
+      return;
+    }
+    webSocket.pingInterval = const Duration(seconds: 30);
+    var websocketKey = const Uuid().v4();
+    _webSockets[websocketKey] = (
+      requestHandler(
+        this,
+        webSocket,
+        request,
+        () => _webSockets.remove(websocketKey),
+      ),
+      webSocket
+    );
   }
 
   Future<String?> _readBody(HttpRequest request) async {
