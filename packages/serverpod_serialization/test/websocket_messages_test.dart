@@ -227,4 +227,38 @@ void main() {
       ),
     );
   });
+
+  test(
+      'Given method stream serializable exception when building websocket message from string then MethodStreamSerializableException is returned.',
+      () {
+    var message = MethodStreamSerializableException.buildMessage(
+      endpoint: 'endpoint',
+      method: 'method',
+      uuid: 'uuid',
+      object:
+          '{"className": "serializableException", "data": {"message": "error message"}}',
+    );
+    var result = WebSocketMessage.fromJsonString(message);
+    expect(result, isA<MethodStreamSerializableException>());
+  });
+
+  test(
+      'Given invalid method stream serializable exception json String when building websocket message from string then UnknownMessageException is thrown.',
+      () {
+    // This message is missing the mandatory endpoint field.
+    var message = '''{
+      "messageType": "method_stream_serializable_exception",
+      "method": "method",
+      "uuid": "uuid",
+      "object": '{"className": "serializableException", "data": {"message": "error message"}}',
+    }''';
+
+    expect(
+      () => WebSocketMessage.fromJsonString(message),
+      throwsA(
+        isA<UnknownMessageException>()
+            .having((e) => e.error, 'error', isA<FormatException>()),
+      ),
+    );
+  });
 }
