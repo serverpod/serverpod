@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:meta/meta.dart';
@@ -35,6 +36,12 @@ class MethodWebsocketRequestHandler {
             );
             break;
           case OpenMethodStreamResponse():
+            break;
+          case MethodStreamMessage():
+            break;
+          case CloseMethodStreamCommand():
+            break;
+          case MethodStreamSerializableException():
             break;
           case PingCommand():
             webSocket.add(PongCommand.buildMessage());
@@ -141,9 +148,84 @@ class MethodWebsocketRequestHandler {
       };
     }
 
+    // Open stream for responding
+    var controller = StreamController<String>();
+    unawaited(_handleStream(
+      controller: controller,
+      methodConnector: methodConnector,
+      session: session,
+      args: args,
+      message: message,
+      server: server,
+    ));
+
+    controller.stream.listen((event) {
+      webSocket.add(event);
+    });
+
     return OpenMethodStreamResponse.buildMessage(
       uuid: message.uuid,
       responseType: OpenMethodStreamResponseType.success,
     );
+  }
+
+  Future<void> _handleStream({
+    required StreamController controller,
+    required MethodConnector methodConnector,
+    required Session session,
+    required Map<String, dynamic> args,
+    required OpenMethodStreamCommand message,
+    required Server server,
+  }) async {
+    dynamic result;
+    try {
+      result = await methodConnector.call(session, args);
+    } catch (e, stackTrace) {
+      if (e is SerializableException) {
+        controller.add(
+          MethodStreamSerializableException.buildMessage(
+            endpoint: message.endpoint,
+            method: message.method,
+            uuid: message.uuid,
+            object: server.serializationManager.encodeWithType(e),
+          ),
+        );
+      }
+
+      controller.add(
+        CloseMethodStreamCommand.buildMessage(
+          endpoint: message.endpoint,
+          uuid: message.uuid,
+          method: message.method,
+          reason: CloseReason.error,
+        ),
+      );
+
+      await session.close(error: e, stackTrace: stackTrace);
+      await controller.close();
+      return;
+    }
+
+    if (result != null) {
+      controller.add(
+        MethodStreamMessage.buildMessage(
+          endpoint: message.endpoint,
+          method: message.method,
+          uuid: message.uuid,
+          object: server.serializationManager.encodeWithType(result),
+        ),
+      );
+    }
+
+    controller.add(
+      CloseMethodStreamCommand.buildMessage(
+        endpoint: message.endpoint,
+        uuid: message.uuid,
+        method: message.method,
+        reason: CloseReason.done,
+      ),
+    );
+    await session.close();
+    await controller.close();
   }
 }
