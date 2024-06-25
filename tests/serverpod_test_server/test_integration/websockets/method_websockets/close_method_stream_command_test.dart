@@ -25,38 +25,73 @@ void main() {
       await webSocket.sink.close();
     });
 
-    test(
-        'when an CloseMethodStreamCommand message and a ping message is sent to the server then CloseMethodStreamCommand is ignored and the server only responds with a pong message.',
-        () {
-      var pongReceived = Completer<void>();
-      var otherMessageReceived = Completer<void>();
-      webSocket.stream.listen((event) {
-        var message = WebSocketMessage.fromJsonString(event);
-        if (message is PongCommand) {
-          pongReceived.complete();
-        } else {
-          otherMessageReceived.complete();
-        }
+    group('with a connected method stream ', () {
+      late Completer<void> webSocketCompleter;
+      late Completer<void> delayedResponseClosed;
+
+      var endpoint = 'methodStreaming';
+      var method = 'delayedResponse';
+      var uuid = Uuid().v4();
+
+      setUp(() async {
+        var delayedResponseOpen = Completer<void>();
+        delayedResponseClosed = Completer<void>();
+        webSocketCompleter = Completer<void>();
+
+        webSocket.stream.listen((event) {
+          var message = WebSocketMessage.fromJsonString(event);
+          if (message is OpenMethodStreamResponse) {
+            if (message.uuid == uuid) delayedResponseOpen.complete();
+          } else if (message is CloseMethodStreamCommand) {
+            if (message.uuid == uuid) delayedResponseClosed.complete();
+          }
+        }, onDone: () {
+          webSocketCompleter.complete();
+        });
+
+        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+          endpoint: endpoint,
+          method: method,
+          args: {'delay': 10},
+          uuid: uuid,
+        ));
+
+        await expectLater(
+          delayedResponseOpen.future.timeout(Duration(seconds: 5)),
+          completes,
+          reason: 'Failed to open all method streams with server.',
+        );
       });
 
-      webSocket.sink.add(CloseMethodStreamCommand.buildMessage(
-        uuid: 'uuid',
-        endpoint: 'endpoint',
-        method: 'method',
-        reason: CloseReason.done,
-      ));
-      webSocket.sink.add(PingCommand.buildMessage());
+      tearDown(() async {
+        var tempSession = await server.createSession();
 
-      expect(
-        otherMessageReceived.future,
-        doesNotComplete,
-        reason: 'OpenMethodStreamResponse not generate any messages.',
-      );
-      expect(
-        pongReceived.future.timeout(Duration(seconds: 5)),
-        completes,
-        reason: 'Failed to receive pong message from server.',
-      );
+        /// Close any open delayed response streams.
+        await server.endpoints
+            .getConnectorByName(endpoint)
+            ?.methodConnectors['completeAllDelayedResponses']
+            ?.call(tempSession, {});
+
+        await tempSession.close();
+      });
+
+      test(
+          'when stream is closed by a CloseMethodStreamCommand then websocket connection is closed.',
+          () async {
+        webSocket.sink.add(CloseMethodStreamCommand.buildMessage(
+          endpoint: endpoint,
+          method: method,
+          uuid: uuid,
+          reason: CloseReason.done,
+        ));
+
+        await expectLater(
+          webSocketCompleter.future.timeout(Duration(seconds: 5)),
+          completes,
+          reason:
+              'Websocket connection was not closed when only stream was closed.',
+        );
+      });
     });
   });
 }
