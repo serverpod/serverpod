@@ -80,7 +80,7 @@ class ServerpodConfig {
   ) {
     var apiConfig = _apiConfigMap(configMap, environment);
     if (apiConfig == null) {
-      throw Exception('${ServerpodConfigMap.apiServer} is missing in config');
+      throw _ServerpodApiServerConfigMissing();
     }
 
     var apiServer = ServerConfig._fromJson(
@@ -146,18 +146,27 @@ class ServerpodConfig {
     String serverId,
     Map<String, String> passwords,
   ) {
-    String data;
+    dynamic doc = {};
 
-    data = File(_createConfigPath(runMode)).readAsStringSync();
+    if (isConfigAvailable(runMode)) {
+      String data = File(_createConfigPath(runMode)).readAsStringSync();
+      doc = loadYaml(data);
+    }
 
-    var doc = loadYaml(data);
-    return ServerpodConfig.loadFromMap(
-      runMode,
-      serverId,
-      passwords,
-      doc,
-      Platform.environment,
-    );
+    try {
+      return ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        doc,
+        Platform.environment,
+      );
+    } catch (e) {
+      if (e is _ServerpodApiServerConfigMissing) {
+        return ServerpodConfig.defaultConfig();
+      }
+      rethrow;
+    }
   }
 
   /// Checks if a configuration file is available on disk for the given run mode.
@@ -530,5 +539,13 @@ void _validateJsonConfig(
         '$name configuration has invalid type for $key. Expected $value, got ${jsonConfig[key].runtimeType}.',
       );
     }
+  }
+}
+
+/// The configuration keys for the serverpod configuration file.
+class _ServerpodApiServerConfigMissing implements Exception {
+  @override
+  String toString() {
+    return 'Serverpod API server configuration is missing.';
   }
 }

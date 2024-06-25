@@ -18,7 +18,7 @@ void main() {
       throwsA(isA<Exception>().having(
         (e) => e.toString(),
         'message',
-        equals('Exception: apiServer is missing in config'),
+        equals('Serverpod API server configuration is missing.'),
       )),
     );
   });
