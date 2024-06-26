@@ -259,9 +259,17 @@ class MethodConnector {
   /// A function that performs a call to the named method.
   final MethodCall call;
 
+  /// True if the method returns void.
+  /// If null, no assumption can be made about the return value.
+  final bool? returnsVoid;
+
   /// Creates a new [MethodConnector].
-  MethodConnector(
-      {required this.name, required this.params, required this.call});
+  MethodConnector({
+    required this.name,
+    required this.params,
+    required this.call,
+    this.returnsVoid,
+  });
 }
 
 /// Defines a parameter in a [MethodConnector].
