@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -28,9 +29,11 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                   // The id column is not null, since it is auto incrementing.
                   isNullable: column.name != 'id' && column.type.nullable,
                   dartType: column.type.toString(),
-                  columnDefault: column.name == 'id'
-                      ? "nextval('${classDefinition.tableName!}_id_seq'::regclass)"
-                      : null,
+                  columnDefault: _getColumnDefault(
+                    column,
+                    classDefinition,
+                    ColumnType.values.byName(column.type.databaseTypeEnum),
+                  ),
                 )
           ],
           foreignKeys: _createForeignKeys(classDefinition),
@@ -108,4 +111,38 @@ List<ForeignKeyDefinition> _createForeignKeys(ClassDefinition classDefinition) {
 void _sortTableDefinitions(List<TableDefinition> tables) {
   // Sort by name to make sure that we get consistent output
   tables.sort((a, b) => a.name.compareTo(b.name));
+}
+
+String? _getColumnDefault(
+  SerializableModelFieldDefinition column,
+  ClassDefinition classDefinition,
+  ColumnType type,
+) {
+  var defaultValue = column.defaultValueType;
+  if (defaultValue == null) return null;
+
+  switch (defaultValue) {
+    case DefaultValueAllowedType.id:
+      return "nextval('${classDefinition.tableName!}_id_seq'::regclass)";
+    case DefaultValueAllowedType.dateTime:
+      var defaultVal = column.databaseDefaultValue;
+      if (defaultVal == 'now') {
+        return 'CURRENT_TIMESTAMP';
+      }
+
+      if (defaultVal is String) {
+        DateTime? dateTime = DateTime.tryParse(defaultVal);
+        if (dateTime != null) {
+          var defaultValue =
+              '\'${DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime)}\'';
+          if (type == ColumnType.timestampWithoutTimeZone) {
+            defaultValue += '::timestamp without time zone';
+          }
+          return defaultValue;
+        }
+      }
+      break;
+  }
+
+  return null;
 }
