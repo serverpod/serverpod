@@ -19,7 +19,7 @@ class FutureCallManager {
   final SerializationManager _serializationManager;
   final _futureCalls = <String, FutureCall>{};
   Timer? _timer;
-  Completer<void>? _pendingFutureCall;
+  Completer<void> _pendingFutureCall = Completer<void>()..complete();
   bool _shuttingDown = false;
 
   /// Creates a new [FutureCallManager]. Typically, this is done internally by
@@ -89,10 +89,7 @@ class FutureCallManager {
     _timer = null;
     _shuttingDown = true;
 
-    var pendingFutureCall = _pendingFutureCall;
-    if (pendingFutureCall != null) {
-      await pendingFutureCall.future;
-    }
+    await _pendingFutureCall.future;
   }
 
   void _run() async {
