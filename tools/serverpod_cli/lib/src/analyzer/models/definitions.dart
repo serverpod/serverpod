@@ -1,5 +1,4 @@
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -98,6 +97,33 @@ class SerializableModelFieldDefinition {
 
   final bool shouldPersist;
 
+  // default value
+  final dynamic defaultVal;
+
+  // default model value
+  final dynamic defaultModelVal;
+
+  // default valdatabase
+  final dynamic defaultDatabaseVal;
+
+  /// returns field default value for models
+  dynamic get modelDefaultValue => defaultModelVal ?? defaultVal;
+
+  /// returns field default value for database
+  dynamic get databaseDefaultValue => defaultDatabaseVal ?? defaultVal;
+
+  /// returns true if one of the defauls its not null
+  bool get hasDefauls =>
+      defaultVal != null ||
+      defaultModelVal != null ||
+      defaultDatabaseVal != null;
+
+  /// returns true if only has database default
+  bool get hasOnlyDatabaseDefauls =>
+      defaultVal == null &&
+      defaultModelVal == null &&
+      defaultDatabaseVal != null;
+
   /// If set the field is a relation to another table. The type of the relation
   /// [ForeignRelationDefinition], [ObjectRelationDefinition] or [ListRelationDefinition]
   /// determines where and how the relation is stored.
@@ -122,6 +148,9 @@ class SerializableModelFieldDefinition {
     required this.type,
     required this.scope,
     required this.shouldPersist,
+    this.defaultVal,
+    this.defaultModelVal,
+    this.defaultDatabaseVal,
     this.relation,
     this.documentation,
   });
@@ -166,6 +195,27 @@ class SerializableModelFieldDefinition {
         shouldPersist &&
         scope == ModelFieldScopeDefinition.none;
   }
+
+  /// Returns DefaultValueAllowedType only for fields that are allowed to have defaults
+  DefaultValueAllowedType? get defaultValueType {
+    if (name == 'id') return DefaultValueAllowedType.id;
+
+    switch (type.valueType) {
+      case ValueType.dateTime:
+        return DefaultValueAllowedType.dateTime;
+      default:
+        return null;
+    }
+  }
+
+  /// Returns true, if this field is allowed to have [default] key
+  bool get isAllowedToHaveDefault => defaultValueType != null;
+
+  /// Returns true, if this field is allowed to have [defaultModel] key
+  bool get isAllowedToHaveDefaultModel => defaultValueType != null;
+
+  /// Returns true, if this field is allowed to have [defaultDatabase] key
+  bool get isAllowedToHaveDefaultDatabase => defaultValueType != null;
 }
 
 /// The scope of a field.
@@ -425,3 +475,8 @@ const ForeignKeyAction onDeleteDefaultOld = ForeignKeyAction.cascade;
 const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;
 
 const String defaultPrimaryKeyName = 'id';
+
+enum DefaultValueAllowedType {
+  id,
+  dateTime,
+}
