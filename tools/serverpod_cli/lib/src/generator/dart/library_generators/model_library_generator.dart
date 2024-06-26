@@ -5,6 +5,7 @@ import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/class_generators/repository_classes.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -639,8 +640,8 @@ class SerializableModelLibraryGenerator {
         // on the client side the server-only fields are missing and we should not
         // generate serialization for these fields.
         if (!serverCode) {
-          filteredFields =
-              fields.where((field) => field.shouldSerializeField(serverCode));
+          filteredFields = filteredFields
+              .where((field) => field.shouldSerializeField(serverCode));
         }
 
         m.body = _createToJsonBodyFromFields(filteredFields, 'toJson');
@@ -829,6 +830,19 @@ class SerializableModelLibraryGenerator {
         setAsToThis: true,
       ));
 
+      for (SerializableModelFieldDefinition field in fields) {
+        if (!field.hasDefauls) continue;
+
+        Code? defaultCode = _getDefaultValue(field);
+        if (defaultCode == null) continue;
+
+        c.initializers.add(Block.of([
+          refer(field.name).code,
+          const Code('='),
+          refer(field.name).ifNullThen(CodeExpression(defaultCode)).code,
+        ]));
+      }
+
       if (serverCode && tableName != null) {
         c.initializers.add(refer('super').call([refer('id')]).code);
       }
@@ -892,10 +906,19 @@ class SerializableModelLibraryGenerator {
       bool hasPrimaryKey =
           field.name == 'id' && tableName != null && serverCode;
 
-      bool shouldIncludeType = !setAsToThis || hasPrimaryKey;
+      bool hasDefaults = field.hasDefauls;
+
+      bool shouldIncludeType = hasPrimaryKey || !setAsToThis;
+      bool shouldUseThis = !shouldIncludeType;
+
+      if (hasDefaults && setAsToThis) {
+        shouldIncludeType = !field.hasOnlyDatabaseDefauls;
+        shouldUseThis = !shouldIncludeType;
+      }
+
       var type = field.type.reference(
         serverCode,
-        nullable: field.type.nullable,
+        nullable: field.type.nullable || hasDefaults,
         subDirParts: classDefinition.subDirParts,
         config: config,
       );
@@ -903,12 +926,32 @@ class SerializableModelLibraryGenerator {
       return Parameter(
         (p) => p
           ..named = true
-          ..required = !field.type.nullable
+          ..required = !(field.type.nullable || hasDefaults)
           ..type = shouldIncludeType ? type : null
-          ..toThis = !shouldIncludeType
+          ..toThis = shouldUseThis
           ..name = field.name,
       );
     }).toList();
+  }
+
+  Code? _getDefaultValue(
+    SerializableModelFieldDefinition field,
+  ) {
+    var defaultVal = field.modelDefaultValue;
+
+    if (defaultVal == null) return null;
+
+    switch (field.type.valueType) {
+      case ValueType.dateTime:
+        if (defaultVal == 'now') {
+          return Code('${field.type.className}.$defaultVal()');
+        }
+        return refer(field.type.className)
+            .property('parse')
+            .call([CodeExpression(Code("'$defaultVal'"))]).code;
+      default:
+        return null;
+    }
   }
 
   List<Parameter> _buildAbstractCopyWithParameters(
@@ -947,8 +990,11 @@ class SerializableModelLibraryGenerator {
 
     for (var field in classFields) {
       modelClassFields.add(Field((f) {
-        f.type = field.type
-            .reference(serverCode, subDirParts: subDirParts, config: config);
+        f.type = field.type.reference(
+          serverCode,
+          subDirParts: subDirParts,
+          config: config,
+        );
         f
           ..name =
               _createSerializableFieldNameReference(serverCode, field).symbol
@@ -1373,7 +1419,9 @@ class SerializableModelLibraryGenerator {
       ..types.addAll([])).call([
       literalString(field.name),
       refer('this'),
-    ]);
+    ], {
+      if (field.databaseDefaultValue != null) 'hasDefaults': literalBool(true),
+    });
   }
 
   Expression _buildModelTableEnumFieldTypeReference(
@@ -1400,7 +1448,9 @@ class SerializableModelLibraryGenerator {
       literalString(field.name),
       refer('this'),
       serializedAs,
-    ]);
+    ], {
+      if (field.databaseDefaultValue != null) 'hasDefaults': literalBool(true),
+    });
   }
 
   Class _buildModelIncludeClass(
