@@ -232,7 +232,7 @@ abstract class SerializationManager {
       return encode(
         object.map(
           (k, v) => MapEntry(
-            encodeForProtocol(k),
+            encodeForProtocol(k, formatted: formatted),
             encodeForProtocol(v, formatted: formatted),
           ),
         ),
