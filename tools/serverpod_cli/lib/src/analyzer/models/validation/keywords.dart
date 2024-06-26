@@ -28,4 +28,8 @@ class Keyword {
 
   /// Special keyword to allow keys to be any string.
   static const String any = '#any';
+
+  static const String defaultKey = 'default';
+  static const String defaultModelKey = 'defaultModel';
+  static const String defaultDatabaseKey = 'defaultDatabase';
 }

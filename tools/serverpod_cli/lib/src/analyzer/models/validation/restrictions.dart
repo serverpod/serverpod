@@ -1123,6 +1123,91 @@ class Restrictions {
     return nodeExceptions.whereType<SourceSpanSeverityException>().toList();
   }
 
+  List<SourceSpanSeverityException> validateDefaultKey(
+    String parentNodeName,
+    String relation,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ClassDefinition) return [];
+
+    var field = definition.findField(parentNodeName);
+    if (field?.isAllowedToHaveDefault != true) {
+      return [
+        SourceSpanSeverityException(
+          'The "default" key is not supported for "${field?.type.className}" types',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateDefaultModelKey(
+    String parentNodeName,
+    String relation,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ClassDefinition) return [];
+
+    var field = definition.findField(parentNodeName);
+    if (field?.isAllowedToHaveDefaultModel != true) {
+      return [
+        SourceSpanSeverityException(
+          'The "defaultModel" key is not supported for "${field?.type.className}" types',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateDefaultDatabaseKey(
+    String parentNodeName,
+    String relation,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ClassDefinition) return [];
+
+    var field = definition.findField(parentNodeName);
+    if (field?.isAllowedToHaveDefaultDatabase == false) {
+      return [
+        SourceSpanSeverityException(
+          'The "defaultDatabase" key is not supported for "${field?.type.className}" types',
+          span,
+        )
+      ];
+    }
+
+    if (field?.hasOnlyDatabaseDefauls == true &&
+        field?.type.nullable == false) {
+      return [
+        SourceSpanSeverityException(
+          'When setting only the "defaultDatabase" key, its type should be nullable',
+          span,
+        )
+      ];
+    }
+
+    /// We perform this check here instead of using [mutuallyExclusiveKeys] because our
+    /// concern is specifically whether the field should be persisted in the database.
+    /// Using "persist" is allowed, while using "!persist" is not allowed.
+    if (field?.shouldPersist == false) {
+      return [
+        SourceSpanSeverityException(
+          'The "defaultDatabase" property is mutually exclusive with the "!persist" property.',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
   Map<dynamic, int> _duplicatesCount(List<dynamic> list) {
     Map<dynamic, int> valueCount = {};
     for (var listValue in list) {

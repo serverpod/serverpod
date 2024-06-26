@@ -67,6 +67,11 @@ class ClassYamlDefinition {
                 valueRestriction:
                     restrictions.validateRelationInterdependencies,
                 allowEmptyNestedValue: true,
+                mutuallyExclusiveKeys: {
+                  Keyword.defaultKey,
+                  Keyword.defaultModelKey,
+                  Keyword.defaultDatabaseKey,
+                },
                 nested: {
                   ValidateNode(
                     Keyword.parent,
@@ -131,6 +136,39 @@ class ClassYamlDefinition {
                 isDeprecated: true,
                 isRemoved: true,
                 alternativeUsageMessage: 'Use "!persist" instead.',
+              ),
+              ValidateNode(
+                Keyword.defaultKey,
+                keyRestriction: restrictions.validateDefaultKey,
+                valueRestriction: DefaultValueRestriction(
+                  Keyword.defaultKey,
+                  restrictions.documentDefinition,
+                ).validate,
+                mutuallyExclusiveKeys: {
+                  Keyword.relation,
+                },
+              ),
+              ValidateNode(
+                Keyword.defaultModelKey,
+                keyRestriction: restrictions.validateDefaultModelKey,
+                valueRestriction: DefaultValueRestriction(
+                  Keyword.defaultModelKey,
+                  restrictions.documentDefinition,
+                ).validate,
+                mutuallyExclusiveKeys: {
+                  Keyword.relation,
+                },
+              ),
+              ValidateNode(
+                Keyword.defaultDatabaseKey,
+                keyRestriction: restrictions.validateDefaultDatabaseKey,
+                valueRestriction: DefaultValueRestriction(
+                  Keyword.defaultDatabaseKey,
+                  restrictions.documentDefinition,
+                ).validate,
+                mutuallyExclusiveKeys: {
+                  Keyword.relation,
+                },
               ),
             },
           ),
