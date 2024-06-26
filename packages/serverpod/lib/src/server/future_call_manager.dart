@@ -19,6 +19,8 @@ class FutureCallManager {
   final SerializationManager _serializationManager;
   final _futureCalls = <String, FutureCall>{};
   Timer? _timer;
+  Completer<void> _pendingFutureCall = Completer<void>()..complete();
+  bool _shuttingDown = false;
 
   /// Creates a new [FutureCallManager]. Typically, this is done internally by
   /// the [Serverpod].
@@ -82,9 +84,12 @@ class FutureCallManager {
   }
 
   /// Stops the manager.
-  void stop() {
+  Future<void> stop() async {
     _timer?.cancel();
     _timer = null;
+    _shuttingDown = true;
+
+    await _pendingFutureCall.future;
   }
 
   void _run() async {
@@ -92,6 +97,9 @@ class FutureCallManager {
   }
 
   Future<void> _checkQueue() async {
+    var pendingFutureCall = Completer<void>();
+    _pendingFutureCall = pendingFutureCall;
+
     if (_server.serverpod.commandLineArgs.role == ServerpodRole.maintenance) {
       stdout.writeln('Processing future calls.');
     }
@@ -147,12 +155,15 @@ class FutureCallManager {
 
     // If we are running as a maintenance task, we shouldn't check the queue
     // again.
-    if (_server.serverpod.commandLineArgs.role == ServerpodRole.monolith) {
+    if (_server.serverpod.commandLineArgs.role == ServerpodRole.monolith &&
+        !_shuttingDown) {
       // Check the queue again in 5 seconds
       _timer = Timer(const Duration(seconds: 5), _checkQueue);
     } else if (_server.serverpod.commandLineArgs.role ==
         ServerpodRole.maintenance) {
       onCompleted();
     }
+
+    pendingFutureCall.complete();
   }
 }
