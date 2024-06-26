@@ -17,10 +17,21 @@ class DatabasePoolManager {
   /// Access to the serialization manager.
   SerializationManager get serializationManager => _serializationManager;
 
-  late pg.Pool _pgPool;
+  pg.Pool? _pgPool;
+
+  final pg.PoolSettings _poolSettings;
 
   /// Postgresql connection pool created from configuration.
-  pg.Pool get pool => _pgPool;
+  ///
+  /// Throws a [StateError] if the pool has not been started.
+  pg.Pool get pool {
+    var pgPool = _pgPool;
+    if (pgPool == null) {
+      throw StateError('Database pool not started.');
+    }
+
+    return pgPool;
+  }
 
   /// The encoder used to encode objects for storing in the database.
   static final ValueEncoder encoder = ValueEncoder();
@@ -30,15 +41,16 @@ class DatabasePoolManager {
   DatabasePoolManager(
     SerializationManagerServer serializationManager,
     this.config,
-  ) {
+  ) : _poolSettings = pg.PoolSettings(
+          maxConnectionCount: 10,
+          queryTimeout: const Duration(minutes: 1),
+          sslMode: config.requireSsl ? pg.SslMode.require : pg.SslMode.disable,
+        ) {
     _serializationManager = serializationManager;
+  }
 
-    var poolSettings = pg.PoolSettings(
-      maxConnectionCount: 10,
-      queryTimeout: const Duration(minutes: 1),
-      sslMode: config.requireSsl ? pg.SslMode.require : pg.SslMode.disable,
-    );
-
+  /// Starts the database connection pool.
+  void start() {
     // Setup database connection pool
     _pgPool = pg.Pool.withEndpoints(
       [
@@ -51,7 +63,13 @@ class DatabasePoolManager {
           isUnixSocket: config.isUnixSocket,
         )
       ],
-      settings: poolSettings,
+      settings: _poolSettings,
     );
+  }
+
+  /// Closes the database connection pool.
+  Future<void> stop() async {
+    await _pgPool?.close();
+    _pgPool = null;
   }
 }

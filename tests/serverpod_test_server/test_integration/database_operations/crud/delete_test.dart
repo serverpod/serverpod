@@ -237,10 +237,10 @@ void main() async {
       );
 
       // This restricts the delete of the second entry
-      RelatedUniqueData.db.insertRow(session, relationalData);
+      await RelatedUniqueData.db.insertRow(session, relationalData);
 
       expect(
-        UniqueData.db.delete(session, inserted),
+        () async => await UniqueData.db.delete(session, inserted),
         throwsA(isA<DatabaseException>()),
       );
 

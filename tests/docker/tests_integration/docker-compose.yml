@@ -1,7 +1,7 @@
 version: '3.7'
 
 services:
-  tests:
+  serverpod_test_server:
     build:
       context: ../../..
       dockerfile: tests/docker/tests_integration/Dockerfile
