@@ -75,6 +75,7 @@ abstract class UserNoteWithALongName extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
     UserNoteWithALongNameInclude? include,
   }) {
@@ -84,6 +85,7 @@ abstract class UserNoteWithALongName extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(UserNoteWithALongName.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(UserNoteWithALongName.t),
       include: include,
     );
@@ -197,6 +199,7 @@ class UserNoteWithALongNameIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -220,6 +223,7 @@ class UserNoteWithALongNameRepository {
     int? offset,
     _i1.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -228,6 +232,7 @@ class UserNoteWithALongNameRepository {
       orderBy: orderBy?.call(UserNoteWithALongName.t),
       orderByList: orderByList?.call(UserNoteWithALongName.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -240,6 +245,7 @@ class UserNoteWithALongNameRepository {
     int? offset,
     _i1.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -248,6 +254,7 @@ class UserNoteWithALongNameRepository {
       orderBy: orderBy?.call(UserNoteWithALongName.t),
       orderByList: orderByList?.call(UserNoteWithALongName.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

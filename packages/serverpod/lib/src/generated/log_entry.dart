@@ -153,6 +153,7 @@ abstract class LogEntry extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<LogEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<LogEntryTable>? orderByList,
     LogEntryInclude? include,
   }) {
@@ -162,6 +163,7 @@ abstract class LogEntry extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(LogEntry.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(LogEntry.t),
       include: include,
     );
@@ -340,6 +342,7 @@ class LogEntryIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -363,6 +366,7 @@ class LogEntryRepository {
     int? offset,
     _i1.OrderByBuilder<LogEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<LogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -371,6 +375,7 @@ class LogEntryRepository {
       orderBy: orderBy?.call(LogEntry.t),
       orderByList: orderByList?.call(LogEntry.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -383,6 +388,7 @@ class LogEntryRepository {
     int? offset,
     _i1.OrderByBuilder<LogEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<LogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -391,6 +397,7 @@ class LogEntryRepository {
       orderBy: orderBy?.call(LogEntry.t),
       orderByList: orderByList?.call(LogEntry.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

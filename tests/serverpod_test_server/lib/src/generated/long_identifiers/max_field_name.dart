@@ -74,6 +74,7 @@ abstract class MaxFieldName extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<MaxFieldNameTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<MaxFieldNameTable>? orderByList,
     MaxFieldNameInclude? include,
   }) {
@@ -83,6 +84,7 @@ abstract class MaxFieldName extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(MaxFieldName.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(MaxFieldName.t),
       include: include,
     );
@@ -158,6 +160,7 @@ class MaxFieldNameIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -181,6 +184,7 @@ class MaxFieldNameRepository {
     int? offset,
     _i1.OrderByBuilder<MaxFieldNameTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<MaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -189,6 +193,7 @@ class MaxFieldNameRepository {
       orderBy: orderBy?.call(MaxFieldName.t),
       orderByList: orderByList?.call(MaxFieldName.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -201,6 +206,7 @@ class MaxFieldNameRepository {
     int? offset,
     _i1.OrderByBuilder<MaxFieldNameTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<MaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -209,6 +215,7 @@ class MaxFieldNameRepository {
       orderBy: orderBy?.call(MaxFieldName.t),
       orderByList: orderByList?.call(MaxFieldName.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

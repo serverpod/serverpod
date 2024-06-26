@@ -100,6 +100,7 @@ abstract class CloudStorageDirectUploadEntry extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
     CloudStorageDirectUploadEntryInclude? include,
   }) {
@@ -109,6 +110,7 @@ abstract class CloudStorageDirectUploadEntry extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
       include: include,
     );
@@ -215,6 +217,7 @@ class CloudStorageDirectUploadEntryIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -238,6 +241,7 @@ class CloudStorageDirectUploadEntryRepository {
     int? offset,
     _i1.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -246,6 +250,7 @@ class CloudStorageDirectUploadEntryRepository {
       orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
       orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -258,6 +263,7 @@ class CloudStorageDirectUploadEntryRepository {
     int? offset,
     _i1.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -266,6 +272,7 @@ class CloudStorageDirectUploadEntryRepository {
       orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
       orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

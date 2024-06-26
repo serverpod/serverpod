@@ -258,6 +258,11 @@ class BuildRepositoryClass {
           ..defaultTo = const Code('false')
           ..named = true),
         Parameter((p) => p
+          ..type = refer('bool')
+          ..name = 'random'
+          ..defaultTo = const Code('false')
+          ..named = true),
+        Parameter((p) => p
           ..type = typeOrderByListBuilder(className, serverCode)
           ..name = 'orderByList'
           ..named = true),
@@ -291,6 +296,7 @@ class BuildRepositoryClass {
               [refer(className).property('t')],
             ),
             'orderDescending': refer('orderDescending'),
+            'random': refer('random'),
             'limit': refer('limit'),
             'offset': refer('offset'),
             'transaction': refer('transaction'),
@@ -346,6 +352,11 @@ class BuildRepositoryClass {
           ..defaultTo = const Code('false')
           ..named = true),
         Parameter((p) => p
+          ..type = refer('bool')
+          ..name = 'random'
+          ..defaultTo = const Code('false')
+          ..named = true),
+        Parameter((p) => p
           ..type = typeOrderByListBuilder(className, serverCode)
           ..name = 'orderByList'
           ..named = true),
@@ -381,6 +392,7 @@ class BuildRepositoryClass {
                 [refer(className).property('t')],
               ),
               'orderDescending': refer('orderDescending'),
+              'random': refer('random'),
               'offset': refer('offset'),
               'transaction': refer('transaction'),
               if (objectRelationFields.isNotEmpty) 'include': refer('include'),

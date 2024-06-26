@@ -76,6 +76,7 @@ abstract class ParentUser extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<ParentUserTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ParentUserTable>? orderByList,
     ParentUserInclude? include,
   }) {
@@ -85,6 +86,7 @@ abstract class ParentUser extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(ParentUser.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(ParentUser.t),
       include: include,
     );
@@ -164,6 +166,7 @@ class ParentUserIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -187,6 +190,7 @@ class ParentUserRepository {
     int? offset,
     _i1.OrderByBuilder<ParentUserTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ParentUserTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -195,6 +199,7 @@ class ParentUserRepository {
       orderBy: orderBy?.call(ParentUser.t),
       orderByList: orderByList?.call(ParentUser.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -207,6 +212,7 @@ class ParentUserRepository {
     int? offset,
     _i1.OrderByBuilder<ParentUserTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ParentUserTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -215,6 +221,7 @@ class ParentUserRepository {
       orderBy: orderBy?.call(ParentUser.t),
       orderByList: orderByList?.call(ParentUser.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

@@ -107,6 +107,7 @@ abstract class FutureCallEntry extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     FutureCallEntryInclude? include,
   }) {
@@ -116,6 +117,7 @@ abstract class FutureCallEntry extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(FutureCallEntry.t),
       include: include,
     );
@@ -236,6 +238,7 @@ class FutureCallEntryIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -259,6 +262,7 @@ class FutureCallEntryRepository {
     int? offset,
     _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -267,6 +271,7 @@ class FutureCallEntryRepository {
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -279,6 +284,7 @@ class FutureCallEntryRepository {
     int? offset,
     _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -287,6 +293,7 @@ class FutureCallEntryRepository {
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

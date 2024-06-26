@@ -153,6 +153,7 @@ abstract class MessageLogEntry extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     MessageLogEntryInclude? include,
   }) {
@@ -162,6 +163,7 @@ abstract class MessageLogEntry extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(MessageLogEntry.t),
       include: include,
     );
@@ -342,6 +344,7 @@ class MessageLogEntryIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -365,6 +368,7 @@ class MessageLogEntryRepository {
     int? offset,
     _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -373,6 +377,7 @@ class MessageLogEntryRepository {
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -385,6 +390,7 @@ class MessageLogEntryRepository {
     int? offset,
     _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -393,6 +399,7 @@ class MessageLogEntryRepository {
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

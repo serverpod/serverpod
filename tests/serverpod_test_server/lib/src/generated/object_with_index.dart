@@ -76,6 +76,7 @@ abstract class ObjectWithIndex extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<ObjectWithIndexTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
     ObjectWithIndexInclude? include,
   }) {
@@ -85,6 +86,7 @@ abstract class ObjectWithIndex extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(ObjectWithIndex.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(ObjectWithIndex.t),
       include: include,
     );
@@ -165,6 +167,7 @@ class ObjectWithIndexIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -188,6 +191,7 @@ class ObjectWithIndexRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithIndexTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -196,6 +200,7 @@ class ObjectWithIndexRepository {
       orderBy: orderBy?.call(ObjectWithIndex.t),
       orderByList: orderByList?.call(ObjectWithIndex.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -208,6 +213,7 @@ class ObjectWithIndexRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithIndexTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -216,6 +222,7 @@ class ObjectWithIndexRepository {
       orderBy: orderBy?.call(ObjectWithIndex.t),
       orderByList: orderByList?.call(ObjectWithIndex.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

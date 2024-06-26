@@ -83,6 +83,7 @@ abstract class ObjectFieldScopes extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     ObjectFieldScopesInclude? include,
   }) {
@@ -92,6 +93,7 @@ abstract class ObjectFieldScopes extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(ObjectFieldScopes.t),
       include: include,
     );
@@ -176,6 +178,7 @@ class ObjectFieldScopesIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -199,6 +202,7 @@ class ObjectFieldScopesRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -207,6 +211,7 @@ class ObjectFieldScopesRepository {
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderByList: orderByList?.call(ObjectFieldScopes.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -219,6 +224,7 @@ class ObjectFieldScopesRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -227,6 +233,7 @@ class ObjectFieldScopesRepository {
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderByList: orderByList?.call(ObjectFieldScopes.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

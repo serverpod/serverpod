@@ -11,17 +11,25 @@ typedef OrderByListBuilder<T extends Table> = List<Order> Function(T);
 /// Defines how to order a database [column].
 class Order {
   /// The columns to order by.
-  final Column column;
+  final Column? column;
 
   /// Whether the column should be ordered ascending or descending.
   final bool orderDescending;
 
+  /// Whether the order should be random
+  final bool random;
+
   /// Creates a new [Order] definition for a specific [column] and whether it
   /// should be ordered descending or ascending.
-  Order({required this.column, this.orderDescending = false});
-
+  Order({required this.column, this.orderDescending = false, this.random=false})
+;
+//      : assert(random || column != null, 'Column cannot be null if random is false.');
   @override
   String toString() {
+    if(random){
+      return ' RANDOM() ';
+    }
+
     var str = '$column';
     if (orderDescending) str += ' DESC';
     return str;

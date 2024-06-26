@@ -53,12 +53,13 @@ class DatabaseConnection {
     int? offset,
     Column? orderBy,
     bool orderDescending = false,
+    bool random = false,
     List<Order>? orderByList,
     Include? include,
     Transaction? transaction,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'find');
-    orderByList = _resolveOrderBy(orderByList, orderBy, orderDescending);
+    orderByList = _resolveOrderBy(orderByList, orderBy, orderDescending, random);
 
     var query = SelectQueryBuilder(table: table)
         .withSelectFields(table.columns)
@@ -87,6 +88,7 @@ class DatabaseConnection {
     Column? orderBy,
     List<Order>? orderByList,
     bool orderDescending = false,
+    bool random = false,
     Transaction? transaction,
     Include? include,
   }) async {
@@ -98,6 +100,7 @@ class DatabaseConnection {
       orderBy: orderBy,
       orderByList: orderByList,
       orderDescending: orderDescending,
+      random: random,
       limit: 1,
       transaction: transaction,
       include: include,
@@ -588,6 +591,7 @@ class DatabaseConnection {
           nestedInclude.orderByList,
           nestedInclude.orderBy,
           nestedInclude.orderDescending,
+          nestedInclude.random,
         );
 
         var query = SelectQueryBuilder(table: relationTable)
@@ -652,11 +656,18 @@ class DatabaseConnection {
   }
 
   List<Order>? _resolveOrderBy(List<Order>? orderByList,
-      Column<dynamic>? orderBy, bool orderDescending) {
-    assert(orderByList == null || orderBy == null);
+      Column<dynamic>? orderBy, bool orderDescending, bool random) {
+    // Assert that random is false if orderByList or orderBy is not null
+    assert(!random || (orderByList == null && orderBy == null), 'Cannot use random ordering with specified orderByList or orderBy.');
+
+    // Assert that orderByList and orderBy cannot both be set at the same time
+    assert(orderByList == null || orderBy == null, 'Cannot specify both orderByList and orderBy at the same time.');
+
     if (orderBy != null) {
       // If order by is set then order by list is overridden.
-      return [Order(column: orderBy, orderDescending: orderDescending)];
+      return [Order(column: orderBy, orderDescending: orderDescending, random: random)];
+    } else if (random) {
+      return [Order(column: null,random: random)];
     }
     return orderByList;
   }

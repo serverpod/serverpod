@@ -138,6 +138,7 @@ abstract class ObjectWithObject extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<ObjectWithObjectTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
     ObjectWithObjectInclude? include,
   }) {
@@ -147,6 +148,7 @@ abstract class ObjectWithObject extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(ObjectWithObject.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(ObjectWithObject.t),
       include: include,
     );
@@ -279,6 +281,7 @@ class ObjectWithObjectIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -302,6 +305,7 @@ class ObjectWithObjectRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithObjectTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -310,6 +314,7 @@ class ObjectWithObjectRepository {
       orderBy: orderBy?.call(ObjectWithObject.t),
       orderByList: orderByList?.call(ObjectWithObject.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -322,6 +327,7 @@ class ObjectWithObjectRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithObjectTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -330,6 +336,7 @@ class ObjectWithObjectRepository {
       orderBy: orderBy?.call(ObjectWithObject.t),
       orderByList: orderByList?.call(ObjectWithObject.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

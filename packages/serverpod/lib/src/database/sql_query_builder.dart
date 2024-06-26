@@ -963,13 +963,22 @@ String? _buildOrderByQuery({List<Order>? orderBy, _SubQueries? subQueries}) {
   return orderBy.mapIndexed((index, order) {
     var str = '';
 
+    if(order.column==null && !order.random){
+      return null;
+    }
+
     var column = order.column;
     var orderDescending = order.orderDescending;
+    var random = order.random;
     if (column is ColumnCount) {
       str = _formatOrderByCount(index, subQueries, orderDescending);
     } else {
-      str = '$column';
-      if (orderDescending) str += ' DESC';
+      if(random){
+        str=' RANDOM() ';
+      } else if(column!=null) {
+        str = '$column';
+        if (orderDescending) str += ' DESC';
+      }
     }
 
     return str;
@@ -1002,7 +1011,7 @@ LinkedHashMap<String, String> _gatherOrderByJoins(
   var orderByQueries = subQueries?._orderByQueries;
   orderBy.forEachIndexed((orderIndex, order) {
     var column = order.column;
-    var tableRelation = column.table.tableRelation;
+    var tableRelation = column?.table.tableRelation;
 
     if (tableRelation == null) return;
 
@@ -1206,11 +1215,16 @@ void _validateTableReferences(
 }) {
   List<String> exceptionMessages = [];
   if (orderBy != null) {
-    for (var column in orderBy.map((e) => e.column)) {
-      if (!column.hasBaseTable(tableName)) {
-        exceptionMessages
-            .add('"orderBy" expression referencing column $column.');
+
+    for(var el in orderBy){
+      var column = el.column;
+      if(!el.random && column != null){
+        if (!column.hasBaseTable(tableName)) {
+          exceptionMessages
+              .add('"orderBy" expression referencing column $column.');
+        }
       }
+
     }
   }
 

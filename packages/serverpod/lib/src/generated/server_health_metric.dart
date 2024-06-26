@@ -120,6 +120,7 @@ abstract class ServerHealthMetric extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<ServerHealthMetricTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
     ServerHealthMetricInclude? include,
   }) {
@@ -129,6 +130,7 @@ abstract class ServerHealthMetric extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(ServerHealthMetric.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(ServerHealthMetric.t),
       include: include,
     );
@@ -260,6 +262,7 @@ class ServerHealthMetricIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -283,6 +286,7 @@ class ServerHealthMetricRepository {
     int? offset,
     _i1.OrderByBuilder<ServerHealthMetricTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -291,6 +295,7 @@ class ServerHealthMetricRepository {
       orderBy: orderBy?.call(ServerHealthMetric.t),
       orderByList: orderByList?.call(ServerHealthMetric.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -303,6 +308,7 @@ class ServerHealthMetricRepository {
     int? offset,
     _i1.OrderByBuilder<ServerHealthMetricTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -311,6 +317,7 @@ class ServerHealthMetricRepository {
       orderBy: orderBy?.call(ServerHealthMetric.t),
       orderByList: orderByList?.call(ServerHealthMetric.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

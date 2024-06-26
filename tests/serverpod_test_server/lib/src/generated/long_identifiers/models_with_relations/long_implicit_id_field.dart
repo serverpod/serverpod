@@ -74,6 +74,7 @@ abstract class LongImplicitIdField extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<LongImplicitIdFieldTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<LongImplicitIdFieldTable>? orderByList,
     LongImplicitIdFieldInclude? include,
   }) {
@@ -83,6 +84,7 @@ abstract class LongImplicitIdField extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(LongImplicitIdField.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(LongImplicitIdField.t),
       include: include,
     );
@@ -196,6 +198,7 @@ class LongImplicitIdFieldIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -219,6 +222,7 @@ class LongImplicitIdFieldRepository {
     int? offset,
     _i1.OrderByBuilder<LongImplicitIdFieldTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<LongImplicitIdFieldTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -227,6 +231,7 @@ class LongImplicitIdFieldRepository {
       orderBy: orderBy?.call(LongImplicitIdField.t),
       orderByList: orderByList?.call(LongImplicitIdField.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -239,6 +244,7 @@ class LongImplicitIdFieldRepository {
     int? offset,
     _i1.OrderByBuilder<LongImplicitIdFieldTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<LongImplicitIdFieldTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -247,6 +253,7 @@ class LongImplicitIdFieldRepository {
       orderBy: orderBy?.call(LongImplicitIdField.t),
       orderByList: orderByList?.call(LongImplicitIdField.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );

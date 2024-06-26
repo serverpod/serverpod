@@ -80,6 +80,7 @@ abstract class ObjectWithUuid extends _i1.TableRow
     int? offset,
     _i1.OrderByBuilder<ObjectWithUuidTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
     ObjectWithUuidInclude? include,
   }) {
@@ -89,6 +90,7 @@ abstract class ObjectWithUuid extends _i1.TableRow
       offset: offset,
       orderBy: orderBy?.call(ObjectWithUuid.t),
       orderDescending: orderDescending,
+      random: random,
       orderByList: orderByList?.call(ObjectWithUuid.t),
       include: include,
     );
@@ -170,6 +172,7 @@ class ObjectWithUuidIncludeList extends _i1.IncludeList {
     super.offset,
     super.orderBy,
     super.orderDescending,
+    super.random,
     super.orderByList,
     super.include,
   }) {
@@ -193,6 +196,7 @@ class ObjectWithUuidRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithUuidTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -201,6 +205,7 @@ class ObjectWithUuidRepository {
       orderBy: orderBy?.call(ObjectWithUuid.t),
       orderByList: orderByList?.call(ObjectWithUuid.t),
       orderDescending: orderDescending,
+      random: random,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -213,6 +218,7 @@ class ObjectWithUuidRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithUuidTable>? orderBy,
     bool orderDescending = false,
+    bool random = false,
     _i1.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
@@ -221,6 +227,7 @@ class ObjectWithUuidRepository {
       orderBy: orderBy?.call(ObjectWithUuid.t),
       orderByList: orderByList?.call(ObjectWithUuid.t),
       orderDescending: orderDescending,
+      random: random,
       offset: offset,
       transaction: transaction,
     );
