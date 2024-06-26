@@ -138,6 +138,52 @@ void main() {
       });
     });
 
+    group(
+        'when a method stream is opened to an endpoint that has null return value then null MethodStreamMessage is received with null value',
+        () {
+      late Completer<int?> endpointResponse;
+
+      setUp(() async {
+        var uuid = Uuid().v4();
+        endpointResponse = Completer<int?>();
+        var streamOpened = Completer<void>();
+
+        webSocket.stream.listen((event) {
+          var message = WebSocketMessage.fromJsonString(event);
+          if (message is OpenMethodStreamResponse) {
+            streamOpened.complete();
+          } else if (message is MethodStreamMessage) {
+            endpointResponse.complete(server.serializationManager
+                .decodeWithType(message.object) as int?);
+          }
+        });
+
+        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+          endpoint: 'methodStreaming',
+          method: 'nullableResponse',
+          args: {'value': null},
+          uuid: uuid,
+        ));
+
+        await expectLater(
+          streamOpened.future.timeout(Duration(seconds: 5)),
+          completes,
+          reason: 'Failed to open method stream with server.',
+        );
+      });
+
+      test('then MethodStreamMessage with modified input is received.',
+          () async {
+        await expectLater(
+          endpointResponse.future.timeout(Duration(seconds: 5)),
+          completion(null),
+          reason: 'Return value from endpoint.',
+        );
+      });
+    },
+        skip:
+            'Enable this test once serialize and deserialize by class name supports null types.');
+
     group('when multiple methods streams are open and one of them is closed',
         () {
       late Completer<void> returningStreamClosed;

@@ -280,7 +280,10 @@ class _MethodStreamManager {
       return;
     }
 
-    if (result != null) {
+    // TODO: Support nullable return types.
+    // Becuase encodeWithType doens't support nullable we can't encode null
+    // values.
+    if (methodConnector.returnsVoid == false && result != null) {
       _postMessage(
         endpoint: message.endpoint,
         method: message.method,
