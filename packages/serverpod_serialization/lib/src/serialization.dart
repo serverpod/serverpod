@@ -223,13 +223,18 @@ abstract class SerializationManager {
     bool formatted = false,
   }) {
     if (object is List) {
-      return encode(object.map((v) => encodeForProtocol(v)).toList());
+      return encode(object
+          .map((v) => encodeForProtocol(v, formatted: formatted))
+          .toList());
     }
 
     if (object is Map) {
       return encode(
         object.map(
-          (k, v) => MapEntry(encodeForProtocol(k), encodeForProtocol(v)),
+          (k, v) => MapEntry(
+            encodeForProtocol(k),
+            encodeForProtocol(v, formatted: formatted),
+          ),
         ),
       );
     }
