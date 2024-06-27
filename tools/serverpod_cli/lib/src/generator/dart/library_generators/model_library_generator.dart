@@ -937,18 +937,18 @@ class SerializableModelLibraryGenerator {
   Code? _getDefaultValue(
     SerializableModelFieldDefinition field,
   ) {
-    var defaultVal = field.defaultModelVal;
+    var defaultValue = field.defaultModelValue;
 
-    if (defaultVal == null) return null;
+    if (defaultValue == null) return null;
 
     switch (field.type.valueType) {
       case ValueType.dateTime:
-        if (defaultVal == 'now') {
-          return Code('${field.type.className}.$defaultVal()');
+        if (defaultValue == 'now') {
+          return Code('${field.type.className}.$defaultValue()');
         }
         return refer(field.type.className)
             .property('parse')
-            .call([CodeExpression(Code("'$defaultVal'"))]).code;
+            .call([CodeExpression(Code("'$defaultValue'"))]).code;
       default:
         return null;
     }
@@ -1420,7 +1420,7 @@ class SerializableModelLibraryGenerator {
       literalString(field.name),
       refer('this'),
     ], {
-      if (field.defaultDatabaseVal != null) 'hasDefaults': literalBool(true),
+      if (field.defaultDatabaseValue != null) 'hasDefaults': literalBool(true),
     });
   }
 
@@ -1449,7 +1449,7 @@ class SerializableModelLibraryGenerator {
       refer('this'),
       serializedAs,
     ], {
-      if (field.defaultDatabaseVal != null) 'hasDefaults': literalBool(true),
+      if (field.defaultDatabaseValue != null) 'hasDefaults': literalBool(true),
     });
   }
 

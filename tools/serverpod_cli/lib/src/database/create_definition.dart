@@ -125,13 +125,13 @@ String? _getColumnDefault(
     case DefaultValueAllowedType.id:
       return "nextval('${classDefinition.tableName!}_id_seq'::regclass)";
     case DefaultValueAllowedType.dateTime:
-      var defaultVal = column.defaultDatabaseVal;
-      if (defaultVal == 'now') {
+      var defaultValue = column.defaultDatabaseValue;
+      if (defaultValue == 'now') {
         return 'CURRENT_TIMESTAMP';
       }
 
-      if (defaultVal is String) {
-        DateTime? dateTime = DateTime.tryParse(defaultVal);
+      if (defaultValue is String) {
+        DateTime? dateTime = DateTime.tryParse(defaultValue);
         if (dateTime != null) {
           var defaultValue =
               '\'${DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime)}\'';

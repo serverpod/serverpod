@@ -32,8 +32,8 @@ void main() {
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
-        expect(definition.fields.last.defaultModelVal, isNotNull);
-        expect(definition.fields.last.defaultDatabaseVal, isNotNull);
+        expect(definition.fields.last.defaultModelValue, isNotNull);
+        expect(definition.fields.last.defaultDatabaseValue, isNotNull);
       },
     );
 
@@ -143,7 +143,7 @@ void main() {
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
-        expect(definition.fields.last.defaultModelVal, isNotNull);
+        expect(definition.fields.last.defaultModelValue, isNotNull);
       },
     );
 
@@ -253,7 +253,7 @@ void main() {
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
-        expect(definition.fields.last.defaultDatabaseVal, isNotNull);
+        expect(definition.fields.last.defaultDatabaseValue, isNotNull);
       },
     );
 

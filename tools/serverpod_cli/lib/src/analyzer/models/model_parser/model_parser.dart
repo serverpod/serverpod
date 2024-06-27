@@ -194,8 +194,8 @@ class ModelParser {
 
     var scope = _parseClassFieldScope(node, serverOnlyClass);
     var shouldPersist = _parseShouldPersist(node);
-    var defaultModelVal = _parseDefaultModelValue(node);
-    var defaultDatabaseVal = _parseDefaultDatabaseValue(node);
+    var defaultModelValue = _parseDefaultModelValue(node);
+    var defaultDatabaseValue = _parseDefaultDatabaseValue(node);
 
     RelationDefinition? relation = _parseRelation(
       fieldName,
@@ -211,8 +211,8 @@ class ModelParser {
         scope: scope,
         type: typeResult,
         documentation: fieldDocumentation,
-        defaultModelVal: defaultModelVal,
-        defaultDatabaseVal: defaultDatabaseVal,
+        defaultModelValue: defaultModelValue,
+        defaultDatabaseValue: defaultDatabaseValue,
       )
     ];
   }
