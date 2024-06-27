@@ -41,7 +41,7 @@ void main() {
       });
 
       webSocket.sink.add(MethodStreamSerializableException.buildMessage(
-        uuid: 'uuid',
+        connectionId: const Uuid().v4obj(),
         endpoint: 'endpoint',
         method: 'method',
         object: server.serializationManager.encodeWithType(ExceptionWithData(

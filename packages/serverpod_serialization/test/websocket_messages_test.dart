@@ -1,5 +1,6 @@
 import 'package:serverpod_serialization/src/websocket_messages.dart';
 import 'package:test/test.dart';
+import 'package:uuid/uuid.dart';
 
 void main() {
   test(
@@ -90,7 +91,7 @@ void main() {
       endpoint: 'endpoint',
       method: 'method',
       args: {'arg1': 'value1', 'arg2': 2},
-      uuid: 'uuid',
+      connectionId: const Uuid().v4obj(),
       authentication: 'auth',
     );
     var result = WebSocketMessage.fromJsonString(message);
@@ -122,7 +123,7 @@ void main() {
       'Given an open method stream response when building websocket message from string then OpenMethodStreamResponse is returned.',
       () {
     var message = OpenMethodStreamResponse.buildMessage(
-      uuid: 'uuid',
+      connectionId: const Uuid().v4obj(),
       responseType: OpenMethodStreamResponseType.success,
     );
     var result = WebSocketMessage.fromJsonString(message);
@@ -148,7 +149,7 @@ void main() {
       'Given a close method stream command when building websocket message from string then CloseMethodStreamCommand is returned.',
       () {
     var message = CloseMethodStreamCommand.buildMessage(
-      uuid: 'uuid',
+      connectionId: const Uuid().v4obj(),
       endpoint: 'endpoint',
       parameter: 'parameter',
       method: 'method',
@@ -201,7 +202,7 @@ void main() {
     var message = MethodStreamMessage.buildMessage(
       endpoint: 'endpoint',
       method: 'method',
-      uuid: 'uuid',
+      connectionId: const Uuid().v4obj(),
       object: '{"className": "bamboo", "data": {"number": 2}}',
     );
     var result = WebSocketMessage.fromJsonString(message);
@@ -234,7 +235,7 @@ void main() {
     var message = MethodStreamSerializableException.buildMessage(
       endpoint: 'endpoint',
       method: 'method',
-      uuid: 'uuid',
+      connectionId: const Uuid().v4obj(),
       object:
           '{"className": "serializableException", "data": {"message": "error message"}}',
     );

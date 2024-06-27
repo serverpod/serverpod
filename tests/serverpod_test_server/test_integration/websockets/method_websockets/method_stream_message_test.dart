@@ -42,7 +42,7 @@ void main() {
       webSocket.sink.add(MethodStreamMessage.buildMessage(
         endpoint: 'methodStreaming',
         method: 'doubleInputValue',
-        uuid: 'uuid',
+        connectionId: const Uuid().v4obj(),
         object: server.serializationManager.encodeWithType(1),
       ));
       webSocket.sink.add(PingCommand.buildMessage());
@@ -69,7 +69,7 @@ void main() {
 
       var endpoint = 'methodStreaming';
       var method = 'doubleInputValue';
-      var uuid = Uuid().v4();
+      var connectionId = const Uuid().v4obj();
 
       setUp(() {
         endpointResponse = Completer<int>();
@@ -95,7 +95,7 @@ void main() {
           endpoint: endpoint,
           method: method,
           args: {'value': inputValue},
-          uuid: uuid,
+          connectionId: connectionId,
         ));
 
         expect(
@@ -126,7 +126,7 @@ void main() {
         var closeMethodStreamCommandMessage = await message;
         expect(closeMethodStreamCommandMessage.endpoint, endpoint);
         expect(closeMethodStreamCommandMessage.method, method);
-        expect(closeMethodStreamCommandMessage.uuid, uuid);
+        expect(closeMethodStreamCommandMessage.connectionId, connectionId);
         expect(closeMethodStreamCommandMessage.reason, CloseReason.done);
       });
 
@@ -144,7 +144,7 @@ void main() {
       late Completer<int?> endpointResponse;
 
       setUp(() async {
-        var uuid = Uuid().v4();
+        var connectionId = const Uuid().v4obj();
         endpointResponse = Completer<int?>();
         var streamOpened = Completer<void>();
 
@@ -162,7 +162,7 @@ void main() {
           endpoint: 'methodStreaming',
           method: 'nullableResponse',
           args: {'value': null},
-          uuid: uuid,
+          connectionId: connectionId,
         ));
 
         await expectLater(
@@ -197,20 +197,20 @@ void main() {
         returningStreamClosed = Completer<void>();
         delayedResponseClosed = Completer<void>();
         webSocketCompleter = Completer<void>();
-        var returningStreamUuid = Uuid().v4();
-        var delayedResponseUuid = Uuid().v4();
+        var returningStreamConnectionId = const Uuid().v4obj();
+        var delayedResponseConnectionId = const Uuid().v4obj();
 
         webSocket.stream.listen((event) {
           var message = WebSocketMessage.fromJsonString(event);
           if (message is OpenMethodStreamResponse) {
-            if (message.uuid == returningStreamUuid)
+            if (message.connectionId == returningStreamConnectionId)
               returningStreamOpen.complete();
-            else if (message.uuid == delayedResponseUuid)
+            else if (message.connectionId == delayedResponseConnectionId)
               delayedResponseOpen.complete();
           } else if (message is CloseMethodStreamCommand) {
-            if (message.uuid == returningStreamUuid)
+            if (message.connectionId == returningStreamConnectionId)
               returningStreamClosed.complete();
-            if (message.uuid == delayedResponseUuid)
+            if (message.connectionId == delayedResponseConnectionId)
               delayedResponseClosed.complete();
           }
         }, onDone: () {
@@ -221,14 +221,14 @@ void main() {
           endpoint: endpoint,
           method: 'delayedResponse',
           args: {'delay': 10},
-          uuid: delayedResponseUuid,
+          connectionId: delayedResponseConnectionId,
         ));
 
         webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: 'simpleEndpoint',
           args: {},
-          uuid: returningStreamUuid,
+          connectionId: returningStreamConnectionId,
         ));
 
         expect(

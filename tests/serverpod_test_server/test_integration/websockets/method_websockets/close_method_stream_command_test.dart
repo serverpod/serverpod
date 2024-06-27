@@ -31,7 +31,7 @@ void main() {
 
       var endpoint = 'methodStreaming';
       var method = 'delayedResponse';
-      var uuid = Uuid().v4();
+      var connectionId = const Uuid().v4obj();
 
       setUp(() async {
         var delayedResponseOpen = Completer<void>();
@@ -41,9 +41,11 @@ void main() {
         webSocket.stream.listen((event) {
           var message = WebSocketMessage.fromJsonString(event);
           if (message is OpenMethodStreamResponse) {
-            if (message.uuid == uuid) delayedResponseOpen.complete();
+            if (message.connectionId == connectionId)
+              delayedResponseOpen.complete();
           } else if (message is CloseMethodStreamCommand) {
-            if (message.uuid == uuid) delayedResponseClosed.complete();
+            if (message.connectionId == connectionId)
+              delayedResponseClosed.complete();
           }
         }, onDone: () {
           webSocketCompleter.complete();
@@ -53,7 +55,7 @@ void main() {
           endpoint: endpoint,
           method: method,
           args: {'delay': 10},
-          uuid: uuid,
+          connectionId: connectionId,
         ));
 
         await expectLater(
@@ -81,7 +83,7 @@ void main() {
         webSocket.sink.add(CloseMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: method,
-          uuid: uuid,
+          connectionId: connectionId,
           reason: CloseReason.done,
         ));
 

@@ -31,7 +31,7 @@ void main() {
         endpoint: 'this is not an existing endpoint',
         method: 'method',
         args: {},
-        uuid: 'uuid',
+        connectionId: const Uuid().v4obj(),
       ));
 
       var response = await webSocket.stream.first as String;
@@ -53,7 +53,7 @@ void main() {
         endpoint: 'methodStreaming',
         method: 'this is not an existing method',
         args: {},
-        uuid: 'uuid',
+        connectionId: const Uuid().v4obj(),
       ));
 
       var response = await webSocket.stream.first as String;
@@ -75,7 +75,7 @@ void main() {
         endpoint: 'methodStreaming',
         method: 'simpleEndpoint',
         args: {},
-        uuid: 'uuid',
+        connectionId: const Uuid().v4obj(),
       ));
 
       var response = await webSocket.stream.first as String;
@@ -97,7 +97,7 @@ void main() {
         endpoint: 'methodStreaming',
         method: 'intParameter',
         args: {},
-        uuid: 'uuid',
+        connectionId: const Uuid().v4obj(),
       ));
 
       var response = await webSocket.stream.first as String;
@@ -119,7 +119,7 @@ void main() {
         endpoint: 'methodStreaming',
         method: 'intParameter',
         args: {'value': 42},
-        uuid: 'uuid',
+        connectionId: const Uuid().v4obj(),
       ));
 
       var response = await webSocket.stream.first as String;
@@ -141,7 +141,7 @@ void main() {
         endpoint: 'authenticatedMethodStreaming',
         method: 'simpleEndpoint',
         args: {},
-        uuid: 'uuid',
+        connectionId: const Uuid().v4obj(),
         // No authentication token is provided
       ));
 
@@ -164,7 +164,7 @@ void main() {
         endpoint: 'authenticatedMethodStreaming',
         method: 'simpleEndpoint',
         args: {},
-        uuid: 'uuid',
+        connectionId: const Uuid().v4obj(),
         authentication: 'invalid token',
       ));
 
@@ -205,7 +205,7 @@ void main() {
           endpoint: 'authenticatedMethodStreaming',
           method: 'simpleEndpoint',
           args: {},
-          uuid: 'uuid',
+          connectionId: const Uuid().v4obj(),
           authentication: token,
         ));
 
@@ -251,7 +251,7 @@ void main() {
           endpoint: 'authenticatedMethodStreaming',
           method: 'simpleEndpoint',
           args: {},
-          uuid: 'uuid',
+          connectionId: const Uuid().v4obj(),
           authentication: token,
         ));
 

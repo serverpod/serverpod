@@ -41,7 +41,7 @@ void main() {
 
       webSocket.sink.add(OpenMethodStreamResponse.buildMessage(
         responseType: OpenMethodStreamResponseType.success,
-        uuid: 'uuid',
+        connectionId: const Uuid().v4obj(),
       ));
       webSocket.sink.add(PingCommand.buildMessage());
 

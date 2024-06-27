@@ -32,7 +32,7 @@ void main() {
 
       var endpoint = 'methodStreaming';
       var method = 'simpleEndpoint';
-      var uuid = Uuid().v4();
+      var connectionId = const Uuid().v4obj();
 
       setUp(() {
         endpointResponse = Completer<MethodStreamMessage>();
@@ -53,7 +53,7 @@ void main() {
           endpoint: endpoint,
           method: method,
           args: {},
-          uuid: uuid,
+          connectionId: connectionId,
         ));
 
         expect(
@@ -77,7 +77,7 @@ void main() {
         var closeMethodStreamCommandMessage = await message;
         expect(closeMethodStreamCommandMessage.endpoint, endpoint);
         expect(closeMethodStreamCommandMessage.method, method);
-        expect(closeMethodStreamCommandMessage.uuid, uuid);
+        expect(closeMethodStreamCommandMessage.connectionId, connectionId);
         expect(closeMethodStreamCommandMessage.reason, CloseReason.done);
         expect(endpointResponse.future, doesNotComplete);
       });

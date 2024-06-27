@@ -45,7 +45,7 @@ class MethodWebsocketRequestHandler {
             await _methodStreamManager.closeStream(
               endpoint: message.endpoint,
               method: message.method,
-              uuid: message.uuid,
+              connectionId: message.connectionId,
             );
           case MethodStreamSerializableException():
             break;
@@ -85,7 +85,7 @@ class MethodWebsocketRequestHandler {
         'Endpoint not found for open stream request: $message',
       );
       return OpenMethodStreamResponse.buildMessage(
-        uuid: message.uuid,
+        connectionId: message.connectionId,
         responseType: OpenMethodStreamResponseType.endpointNotFound,
       );
     }
@@ -96,7 +96,7 @@ class MethodWebsocketRequestHandler {
         'Endpoint method not found for open stream request: $message',
       );
       return OpenMethodStreamResponse.buildMessage(
-        uuid: message.uuid,
+        connectionId: message.connectionId,
         responseType: OpenMethodStreamResponseType.methodNotFound,
       );
     }
@@ -114,7 +114,7 @@ class MethodWebsocketRequestHandler {
         'Failed to parse parameters for open stream request: $message',
       );
       return OpenMethodStreamResponse.buildMessage(
-        uuid: message.uuid,
+        connectionId: message.connectionId,
         responseType: OpenMethodStreamResponseType.invalidArguments,
       );
     }
@@ -126,7 +126,7 @@ class MethodWebsocketRequestHandler {
       authenticationKey: message.authentication,
       endpointName: endpointConnector.name,
       methodName: methodConnector.name,
-      uuid: message.uuid,
+      connectionId: message.connectionId,
     );
 
     // Check authentication
@@ -144,12 +144,12 @@ class MethodWebsocketRequestHandler {
       return switch (authFailed.reason) {
         AuthenticationFailureReason.insufficientAccess =>
           OpenMethodStreamResponse.buildMessage(
-            uuid: message.uuid,
+            connectionId: message.connectionId,
             responseType: OpenMethodStreamResponseType.insufficientScopes,
           ),
         AuthenticationFailureReason.unauthenticated =>
           OpenMethodStreamResponse.buildMessage(
-            uuid: message.uuid,
+            connectionId: message.connectionId,
             responseType: OpenMethodStreamResponseType.authenticationFailed,
           ),
       };
@@ -165,7 +165,7 @@ class MethodWebsocketRequestHandler {
     );
 
     return OpenMethodStreamResponse.buildMessage(
-      uuid: message.uuid,
+      connectionId: message.connectionId,
       responseType: OpenMethodStreamResponseType.success,
     );
   }
@@ -189,12 +189,12 @@ class _MethodStreamManager {
   Future<void> closeStream({
     required String endpoint,
     required String method,
-    required String uuid,
+    required UuidValue connectionId,
   }) async {
     var controller = _streamControllers.remove(_buildStreamKey(
       endpoint: endpoint,
       method: method,
-      uuid: uuid,
+      connectionId: connectionId,
     ));
     if (controller == null) return;
 
@@ -223,16 +223,16 @@ class _MethodStreamManager {
     _streamControllers[_buildStreamKey(
       endpoint: message.endpoint,
       method: message.method,
-      uuid: message.uuid,
+      connectionId: message.connectionId,
     )] = controller;
   }
 
   String _buildStreamKey({
     required String endpoint,
     required String method,
-    required String uuid,
+    required UuidValue connectionId,
   }) =>
-      '$uuid:$endpoint:$method';
+      '$connectionId:$endpoint:$method';
 
   Future<void> _handleStream(
     MethodConnector methodConnector,
@@ -249,11 +249,11 @@ class _MethodStreamManager {
         _postMessage(
           endpoint: message.endpoint,
           method: message.method,
-          uuid: message.uuid,
+          connectionId: message.connectionId,
           message: MethodStreamSerializableException.buildMessage(
             endpoint: message.endpoint,
             method: message.method,
-            uuid: message.uuid,
+            connectionId: message.connectionId,
             object: server.serializationManager.encodeWithType(e),
           ),
         );
@@ -262,10 +262,10 @@ class _MethodStreamManager {
       _postMessage(
         endpoint: message.endpoint,
         method: message.method,
-        uuid: message.uuid,
+        connectionId: message.connectionId,
         message: CloseMethodStreamCommand.buildMessage(
           endpoint: message.endpoint,
-          uuid: message.uuid,
+          connectionId: message.connectionId,
           method: message.method,
           reason: CloseReason.error,
         ),
@@ -275,7 +275,7 @@ class _MethodStreamManager {
       await closeStream(
         endpoint: message.endpoint,
         method: message.method,
-        uuid: message.uuid,
+        connectionId: message.connectionId,
       );
       return;
     }
@@ -287,11 +287,11 @@ class _MethodStreamManager {
       _postMessage(
         endpoint: message.endpoint,
         method: message.method,
-        uuid: message.uuid,
+        connectionId: message.connectionId,
         message: MethodStreamMessage.buildMessage(
           endpoint: message.endpoint,
           method: message.method,
-          uuid: message.uuid,
+          connectionId: message.connectionId,
           object: server.serializationManager.encodeWithType(result),
         ),
       );
@@ -300,10 +300,10 @@ class _MethodStreamManager {
     _postMessage(
       endpoint: message.endpoint,
       method: message.method,
-      uuid: message.uuid,
+      connectionId: message.connectionId,
       message: CloseMethodStreamCommand.buildMessage(
         endpoint: message.endpoint,
-        uuid: message.uuid,
+        connectionId: message.connectionId,
         method: message.method,
         reason: CloseReason.done,
       ),
@@ -312,23 +312,22 @@ class _MethodStreamManager {
     await closeStream(
       endpoint: message.endpoint,
       method: message.method,
-      uuid: message.uuid,
+      connectionId: message.connectionId,
     );
   }
 
   void _postMessage({
     required String endpoint,
     required String method,
-    required String uuid,
+    required UuidValue connectionId,
     required String message,
   }) {
     var controller = _streamControllers[_buildStreamKey(
       endpoint: endpoint,
       method: method,
-      uuid: uuid,
+      connectionId: connectionId,
     )];
-    if (controller == null) return;
 
-    controller.add(message);
+    controller?.add(message);
   }
 }

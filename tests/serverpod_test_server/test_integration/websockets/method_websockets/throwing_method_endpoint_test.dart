@@ -33,7 +33,7 @@ void main() {
 
       var endpoint = 'methodStreaming';
       var method = 'throwsException';
-      var uuid = Uuid().v4();
+      var connectionId = const Uuid().v4obj();
 
       setUp(() async {
         closeMethodStreamCommand = Completer<CloseMethodStreamCommand>();
@@ -50,7 +50,7 @@ void main() {
           endpoint: endpoint,
           method: method,
           args: {},
-          uuid: uuid,
+          connectionId: connectionId,
         ));
 
         expect(
@@ -73,7 +73,7 @@ void main() {
         var closeMethodStreamCommandMessage = await message;
         expect(closeMethodStreamCommandMessage.endpoint, endpoint);
         expect(closeMethodStreamCommandMessage.method, method);
-        expect(closeMethodStreamCommandMessage.uuid, uuid);
+        expect(closeMethodStreamCommandMessage.connectionId, connectionId);
         expect(closeMethodStreamCommandMessage.reason, CloseReason.error);
       });
     });
@@ -87,7 +87,7 @@ void main() {
 
       var endpoint = 'methodStreaming';
       var method = 'throwsSerializableException';
-      var uuid = Uuid().v4();
+      var connectionId = const Uuid().v4obj();
 
       setUp(() async {
         var streamOpened = Completer<void>();
@@ -110,7 +110,7 @@ void main() {
           endpoint: endpoint,
           method: method,
           args: {},
-          uuid: uuid,
+          connectionId: connectionId,
         ));
 
         expect(
@@ -135,7 +135,8 @@ void main() {
         var methodStreamSerializableExceptionMessage = await message;
         expect(methodStreamSerializableExceptionMessage.endpoint, endpoint);
         expect(methodStreamSerializableExceptionMessage.method, method);
-        expect(methodStreamSerializableExceptionMessage.uuid, uuid);
+        expect(methodStreamSerializableExceptionMessage.connectionId,
+            connectionId);
       });
 
       test('then CloseMethodStreamCommand matching the endpoint is received.',
@@ -151,7 +152,7 @@ void main() {
         var closeMethodStreamCommandMessage = await message;
         expect(closeMethodStreamCommandMessage.endpoint, endpoint);
         expect(closeMethodStreamCommandMessage.method, method);
-        expect(closeMethodStreamCommandMessage.uuid, uuid);
+        expect(closeMethodStreamCommandMessage.connectionId, connectionId);
         expect(closeMethodStreamCommandMessage.reason, CloseReason.error);
       });
     });

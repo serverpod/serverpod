@@ -301,8 +301,8 @@ class StreamingMethodCallSession extends Session {
   /// The name of the endpoint that is being called.
   final String endpointName;
 
-  /// The uuid of the stream.
-  final String uuid;
+  /// The connection id that uniquely identifies the stream.
+  final UuidValue connectionId;
 
   /// Creates a new [Session] for a method call to a streaming endpoint.
   StreamingMethodCallSession({
@@ -311,7 +311,7 @@ class StreamingMethodCallSession extends Session {
     required super.authenticationKey,
     required this.endpointName,
     required this.methodName,
-    required this.uuid,
+    required this.connectionId,
   });
 }
 
