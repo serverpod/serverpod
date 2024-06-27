@@ -13,20 +13,11 @@ CREATE TABLE "datetime_default" (
 --
 -- ACTION CREATE TABLE
 --
-CREATE TABLE "datetime_default_database" (
-    "id" bigserial PRIMARY KEY,
-    "dateTimeDefaultDatabaseNow" timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    "dateTimeDefaultDatabaseStr" timestamp without time zone DEFAULT '2024-05-10 22:00:00'::timestamp without time zone
-);
-
---
--- ACTION CREATE TABLE
---
 CREATE TABLE "datetime_default_mix" (
     "id" bigserial PRIMARY KEY,
     "dateTimeDefaultAndDefaultModel" timestamp without time zone NOT NULL DEFAULT '2024-05-01 22:00:00'::timestamp without time zone,
-    "dateTimeDefaultAndDefaultDatabase" timestamp without time zone NOT NULL DEFAULT '2024-05-10 22:00:00'::timestamp without time zone,
-    "dateTimeDefaultModelAndDefaultDatabase" timestamp without time zone NOT NULL DEFAULT '2024-05-10 22:00:00'::timestamp without time zone
+    "dateTimeDefaultAndDefaultPersist" timestamp without time zone NOT NULL DEFAULT '2024-05-10 22:00:00'::timestamp without time zone,
+    "dateTimeDefaultModelAndDefaultPersist" timestamp without time zone NOT NULL DEFAULT '2024-05-10 22:00:00'::timestamp without time zone
 );
 
 --
@@ -39,14 +30,23 @@ CREATE TABLE "datetime_default_model" (
     "dateTimeDefaultModelStrNull" timestamp without time zone
 );
 
+--
+-- ACTION CREATE TABLE
+--
+CREATE TABLE "datetime_default_persist" (
+    "id" bigserial PRIMARY KEY,
+    "dateTimeDefaultPersistNow" timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    "dateTimeDefaultPersistStr" timestamp without time zone DEFAULT '2024-05-10 22:00:00'::timestamp without time zone
+);
+
 
 --
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20240624144605899', now())
+    VALUES ('serverpod_test', '20240627090628987', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240624144605899', "timestamp" = now();
+    DO UPDATE SET "version" = '20240627090628987', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth

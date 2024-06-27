@@ -58,54 +58,6 @@
     {
       "type": "createTable",
       "createTable": {
-        "name": "datetime_default_database",
-        "dartName": "DateTimeDefaultDatabase",
-        "module": "serverpod_test",
-        "schema": "public",
-        "columns": [
-          {
-            "name": "id",
-            "columnType": 6,
-            "isNullable": false,
-            "columnDefault": "nextval('datetime_default_database_id_seq'::regclass)",
-            "dartType": "int?"
-          },
-          {
-            "name": "dateTimeDefaultDatabaseNow",
-            "columnType": 4,
-            "isNullable": true,
-            "columnDefault": "CURRENT_TIMESTAMP",
-            "dartType": "DateTime?"
-          },
-          {
-            "name": "dateTimeDefaultDatabaseStr",
-            "columnType": 4,
-            "isNullable": true,
-            "columnDefault": "'2024-05-10 22:00:00'::timestamp without time zone",
-            "dartType": "DateTime?"
-          }
-        ],
-        "foreignKeys": [],
-        "indexes": [
-          {
-            "indexName": "datetime_default_database_pkey",
-            "elements": [
-              {
-                "type": 0,
-                "definition": "id"
-              }
-            ],
-            "type": "btree",
-            "isUnique": true,
-            "isPrimary": true
-          }
-        ],
-        "managed": true
-      }
-    },
-    {
-      "type": "createTable",
-      "createTable": {
         "name": "datetime_default_mix",
         "dartName": "DateTimeDefaultMix",
         "module": "serverpod_test",
@@ -126,14 +78,14 @@
             "dartType": "DateTime"
           },
           {
-            "name": "dateTimeDefaultAndDefaultDatabase",
+            "name": "dateTimeDefaultAndDefaultPersist",
             "columnType": 4,
             "isNullable": false,
             "columnDefault": "'2024-05-10 22:00:00'::timestamp without time zone",
             "dartType": "DateTime"
           },
           {
-            "name": "dateTimeDefaultModelAndDefaultDatabase",
+            "name": "dateTimeDefaultModelAndDefaultPersist",
             "columnType": 4,
             "isNullable": false,
             "columnDefault": "'2024-05-10 22:00:00'::timestamp without time zone",
@@ -196,6 +148,54 @@
         "indexes": [
           {
             "indexName": "datetime_default_model_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "datetime_default_persist",
+        "dartName": "DateTimeDefaultPersist",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('datetime_default_persist_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "dateTimeDefaultPersistNow",
+            "columnType": 4,
+            "isNullable": true,
+            "columnDefault": "CURRENT_TIMESTAMP",
+            "dartType": "DateTime?"
+          },
+          {
+            "name": "dateTimeDefaultPersistStr",
+            "columnType": 4,
+            "isNullable": true,
+            "columnDefault": "'2024-05-10 22:00:00'::timestamp without time zone",
+            "dartType": "DateTime?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "datetime_default_persist_pkey",
             "elements": [
               {
                 "type": 0,
