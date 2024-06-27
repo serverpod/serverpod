@@ -55,6 +55,8 @@ class TypeDefinition {
 
   bool get isIdType => className == 'int';
 
+  bool get isVoidType => className == 'void';
+
   bool get isModuleType =>
       url == 'serverpod' || (url?.startsWith(_moduleRef) ?? false);
 

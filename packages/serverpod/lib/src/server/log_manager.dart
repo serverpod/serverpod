@@ -289,6 +289,9 @@ class LogManager {
       return _getLogSettingsForInternalSession();
     } else if (session is FutureCallSession) {
       return _getLogSettingsForFutureCallSession(session.futureCallName);
+    } else if (session is MethodStreamSession) {
+      return _getLogSettingsForMethodCallSession(
+          session.endpointName, session.methodName);
     }
     throw UnimplementedError('Unknown session type');
   }
@@ -704,6 +707,9 @@ String _endpointForSession(Session session) {
   } else if (session is InternalSession) {
     // Internal session
     return 'InternalSession';
+  } else if (session is MethodStreamSession) {
+    // Streaming method call
+    return session.endpointName;
   }
 
   throw (UnimplementedError('Unknown Session type'));

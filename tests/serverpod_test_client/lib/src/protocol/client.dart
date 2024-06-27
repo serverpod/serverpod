@@ -1202,6 +1202,86 @@ class EndpointMapParameters extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointMethodStreaming extends _i1.EndpointRef {
+  EndpointMethodStreaming(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'methodStreaming';
+
+  _i2.Future<void> simpleEndpoint() => caller.callServerEndpoint<void>(
+        'methodStreaming',
+        'simpleEndpoint',
+        {},
+      );
+
+  _i2.Future<void> intParameter(int value) => caller.callServerEndpoint<void>(
+        'methodStreaming',
+        'intParameter',
+        {'value': value},
+      );
+
+  _i2.Future<int?> nullableResponse(int? value) =>
+      caller.callServerEndpoint<int?>(
+        'methodStreaming',
+        'nullableResponse',
+        {'value': value},
+      );
+
+  _i2.Future<int> doubleInputValue(int value) => caller.callServerEndpoint<int>(
+        'methodStreaming',
+        'doubleInputValue',
+        {'value': value},
+      );
+
+  /// Delays the response for [delay] seconds.
+  ///
+  /// Responses can be closed by calling [completeAllDelayedResponses].
+  _i2.Future<void> delayedResponse(int delay) =>
+      caller.callServerEndpoint<void>(
+        'methodStreaming',
+        'delayedResponse',
+        {'delay': delay},
+      );
+
+  /// Completes all delayed responses.
+  /// This makes the delayedResponse return directly.
+  _i2.Future<void> completeAllDelayedResponses() =>
+      caller.callServerEndpoint<void>(
+        'methodStreaming',
+        'completeAllDelayedResponses',
+        {},
+      );
+
+  _i2.Future<void> throwsException() => caller.callServerEndpoint<void>(
+        'methodStreaming',
+        'throwsException',
+        {},
+      );
+
+  _i2.Future<void> throwsSerializableException() =>
+      caller.callServerEndpoint<void>(
+        'methodStreaming',
+        'throwsSerializableException',
+        {},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointAuthenticatedMethodStreaming extends _i1.EndpointRef {
+  EndpointAuthenticatedMethodStreaming(_i1.EndpointCaller caller)
+      : super(caller);
+
+  @override
+  String get name => 'authenticatedMethodStreaming';
+
+  _i2.Future<void> simpleEndpoint() => caller.callServerEndpoint<void>(
+        'authenticatedMethodStreaming',
+        'simpleEndpoint',
+        {},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointModuleSerialization extends _i1.EndpointRef {
   EndpointModuleSerialization(_i1.EndpointCaller caller) : super(caller);
 
@@ -1545,6 +1625,8 @@ class Client extends _i1.ServerpodClient {
     logging = EndpointLogging(this);
     loggingDisabled = EndpointLoggingDisabled(this);
     mapParameters = EndpointMapParameters(this);
+    methodStreaming = EndpointMethodStreaming(this);
+    authenticatedMethodStreaming = EndpointAuthenticatedMethodStreaming(this);
     moduleSerialization = EndpointModuleSerialization(this);
     namedParameters = EndpointNamedParameters(this);
     optionalParameters = EndpointOptionalParameters(this);
@@ -1596,6 +1678,10 @@ class Client extends _i1.ServerpodClient {
 
   late final EndpointMapParameters mapParameters;
 
+  late final EndpointMethodStreaming methodStreaming;
+
+  late final EndpointAuthenticatedMethodStreaming authenticatedMethodStreaming;
+
   late final EndpointModuleSerialization moduleSerialization;
 
   late final EndpointNamedParameters namedParameters;
@@ -1642,6 +1728,8 @@ class Client extends _i1.ServerpodClient {
         'logging': logging,
         'loggingDisabled': loggingDisabled,
         'mapParameters': mapParameters,
+        'methodStreaming': methodStreaming,
+        'authenticatedMethodStreaming': authenticatedMethodStreaming,
         'moduleSerialization': moduleSerialization,
         'namedParameters': namedParameters,
         'optionalParameters': optionalParameters,

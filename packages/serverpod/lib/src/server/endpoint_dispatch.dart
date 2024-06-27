@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -182,6 +183,42 @@ abstract class EndpointDispatch {
       dynamic input, Type type, SerializationManager serializationManager) {
     return serializationManager.deserialize(input, type);
   }
+
+  /// Parses query parameters from a string into a map of parameters formatted
+  /// according to the provided [ParameterDescription]s.
+  ///
+  /// Throws an exception if required parameters are missing or if the
+  /// paramString can't be jsonDecoded.
+  static Map<String, dynamic> parseParameters(
+    String? paramString,
+    Map<String, ParameterDescription> descriptions,
+    SerializationManager serializationManager, {
+    Map<String, dynamic> additionalParameters = const {},
+  }) {
+    if (descriptions.isEmpty) return {};
+
+    var decodedParams = paramString == null
+        ? {}
+        : jsonDecode(paramString) as Map<String, dynamic>;
+    decodedParams.addAll(additionalParameters);
+
+    var deserializedParams = <String, dynamic>{};
+    for (var description in descriptions.values) {
+      var name = description.name;
+      var serializedParam = decodedParams[name];
+
+      if (serializedParam != null) {
+        deserializedParams[name] = serializationManager.deserialize(
+          serializedParam,
+          description.type,
+        );
+      } else if (!description.nullable) {
+        throw Exception('Missing required query parameter: $name');
+      }
+    }
+
+    return deserializedParams;
+  }
 }
 
 /// The [EndpointConnector] associates a name with and endpoint and its
@@ -219,9 +256,17 @@ class MethodConnector {
   /// A function that performs a call to the named method.
   final MethodCall call;
 
+  /// True if the method returns void.
+  /// If null, no assumption can be made about the return value.
+  final bool? returnsVoid;
+
   /// Creates a new [MethodConnector].
-  MethodConnector(
-      {required this.name, required this.params, required this.call});
+  MethodConnector({
+    required this.name,
+    required this.params,
+    required this.call,
+    this.returnsVoid,
+  });
 }
 
 /// Defines a parameter in a [MethodConnector].
