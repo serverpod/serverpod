@@ -1152,17 +1152,19 @@ class Restrictions {
     var definition = documentDefinition;
     if (definition is! ClassDefinition) return [];
 
+    var errors = <SourceSpanSeverityException>[];
+
     var field = definition.findField(parentNodeName);
     if (field?.defaultValueType == null) {
-      return [
+      errors.add(
         SourceSpanSeverityException(
           'The "defaultModel" key is not supported for "${field?.type.className}" types',
           span,
-        )
-      ];
+        ),
+      );
     }
 
-    return [];
+    return errors;
   }
 
   List<SourceSpanSeverityException> validateDefaultPersistKey(
