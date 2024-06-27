@@ -32,7 +32,8 @@ void main() {
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
-        expect(definition.fields.last.defaultVal, isNotNull);
+        expect(definition.fields.last.defaultModelVal, isNotNull);
+        expect(definition.fields.last.defaultDatabaseVal, isNotNull);
       },
     );
 

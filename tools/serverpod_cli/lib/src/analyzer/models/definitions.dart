@@ -97,32 +97,18 @@ class SerializableModelFieldDefinition {
 
   final bool shouldPersist;
 
-  // default value
-  final dynamic defaultVal;
-
   // default model value
   final dynamic defaultModelVal;
 
   // default valdatabase
   final dynamic defaultDatabaseVal;
 
-  /// returns field default value for models
-  dynamic get modelDefaultValue => defaultModelVal ?? defaultVal;
-
-  /// returns field default value for database
-  dynamic get databaseDefaultValue => defaultDatabaseVal ?? defaultVal;
-
   /// returns true if one of the defauls its not null
-  bool get hasDefauls =>
-      defaultVal != null ||
-      defaultModelVal != null ||
-      defaultDatabaseVal != null;
+  bool get hasDefauls => defaultModelVal != null || defaultDatabaseVal != null;
 
   /// returns true if only has database default
   bool get hasOnlyDatabaseDefauls =>
-      defaultVal == null &&
-      defaultModelVal == null &&
-      defaultDatabaseVal != null;
+      defaultModelVal == null && defaultDatabaseVal != null;
 
   /// If set the field is a relation to another table. The type of the relation
   /// [ForeignRelationDefinition], [ObjectRelationDefinition] or [ListRelationDefinition]
@@ -148,7 +134,6 @@ class SerializableModelFieldDefinition {
     required this.type,
     required this.scope,
     required this.shouldPersist,
-    this.defaultVal,
     this.defaultModelVal,
     this.defaultDatabaseVal,
     this.relation,

@@ -194,7 +194,6 @@ class ModelParser {
 
     var scope = _parseClassFieldScope(node, serverOnlyClass);
     var shouldPersist = _parseShouldPersist(node);
-    var defaultVal = _parseDefaultValue(node);
     var defaultModelVal = _parseDefaultModelValue(node);
     var defaultDatabaseVal = _parseDefaultDatabaseValue(node);
 
@@ -212,7 +211,6 @@ class ModelParser {
         scope: scope,
         type: typeResult,
         documentation: fieldDocumentation,
-        defaultVal: defaultVal,
         defaultModelVal: defaultModelVal,
         defaultDatabaseVal: defaultDatabaseVal,
       )
@@ -342,16 +340,14 @@ class ModelParser {
     return _parseBooleanKey(node, Keyword.persist);
   }
 
-  static dynamic _parseDefaultValue(YamlMap node) {
-    return node.nodes[Keyword.defaultKey]?.value;
-  }
-
   static dynamic _parseDefaultModelValue(YamlMap node) {
-    return node.nodes[Keyword.defaultModelKey]?.value;
+    return node.nodes[Keyword.defaultModelKey]?.value ??
+        node.nodes[Keyword.defaultKey]?.value;
   }
 
   static dynamic _parseDefaultDatabaseValue(YamlMap node) {
-    return node.nodes[Keyword.defaultDatabaseKey]?.value;
+    return node.nodes[Keyword.defaultDatabaseKey]?.value ??
+        node.nodes[Keyword.defaultKey]?.value;
   }
 
   static bool _parseBooleanKey(YamlMap node, String key) {

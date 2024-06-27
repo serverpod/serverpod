@@ -125,7 +125,7 @@ String? _getColumnDefault(
     case DefaultValueAllowedType.id:
       return "nextval('${classDefinition.tableName!}_id_seq'::regclass)";
     case DefaultValueAllowedType.dateTime:
-      var defaultVal = column.databaseDefaultValue;
+      var defaultVal = column.defaultDatabaseVal;
       if (defaultVal == 'now') {
         return 'CURRENT_TIMESTAMP';
       }

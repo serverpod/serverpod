@@ -937,7 +937,7 @@ class SerializableModelLibraryGenerator {
   Code? _getDefaultValue(
     SerializableModelFieldDefinition field,
   ) {
-    var defaultVal = field.modelDefaultValue;
+    var defaultVal = field.defaultModelVal;
 
     if (defaultVal == null) return null;
 
@@ -1420,7 +1420,7 @@ class SerializableModelLibraryGenerator {
       literalString(field.name),
       refer('this'),
     ], {
-      if (field.databaseDefaultValue != null) 'hasDefaults': literalBool(true),
+      if (field.defaultDatabaseVal != null) 'hasDefaults': literalBool(true),
     });
   }
 
@@ -1449,7 +1449,7 @@ class SerializableModelLibraryGenerator {
       refer('this'),
       serializedAs,
     ], {
-      if (field.databaseDefaultValue != null) 'hasDefaults': literalBool(true),
+      if (field.defaultDatabaseVal != null) 'hasDefaults': literalBool(true),
     });
   }
 
