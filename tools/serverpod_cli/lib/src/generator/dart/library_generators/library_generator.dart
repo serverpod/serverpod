@@ -659,68 +659,75 @@ class LibraryGenerator {
               'endpoint': refer('endpoints')
                   .index(literalString(endpoint.name))
                   .nullChecked,
-              'methodConnectors': literalMap({
-                for (var method in endpoint.methods)
-                  literalString(method.name):
-                      refer('MethodConnector', serverpodUrl(true)).call([], {
-                    'name': literalString(method.name),
-                    'params': literalMap({
-                      for (var param in [
-                        ...method.parameters,
-                        ...method.parametersPositional,
-                        ...method.parametersNamed,
-                      ])
-                        literalString(param.name):
-                            refer('ParameterDescription', serverpodUrl(true))
-                                .call([], {
-                          'name': literalString(param.name),
-                          'type': refer('getType', serverpodUrl(true)).call([],
-                              {}, [param.type.reference(true, config: config)]),
-                          'nullable': literalBool(param.type.nullable),
-                        })
-                    }),
-                    'returnsVoid': literalBool(
-                      method.returnType.generics.first.isVoidType,
-                    ),
-                    'call': Method(
-                      (m) => m
-                        ..requiredParameters.addAll([
-                          Parameter((p) => p
-                            ..name = 'session'
-                            ..type = refer('Session', serverpodUrl(true))),
-                          Parameter((p) => p
-                            ..name = 'params'
-                            ..type = TypeReference((t) => t
-                              ..symbol = 'Map'
-                              ..types.addAll([
-                                refer('String'),
-                                refer('dynamic'),
-                              ])))
-                        ])
-                        ..modifier = MethodModifier.async
-                        ..body = refer('endpoints')
-                            .index(literalString(endpoint.name))
-                            .asA(refer(
-                                endpoint.className, _endpointPath(endpoint)))
-                            .property(method.name)
-                            .call([
-                          refer('session'),
-                          for (var param in [
-                            ...method.parameters,
-                            ...method.parametersPositional
-                          ])
-                            refer('params').index(literalString(param.name)),
-                        ], {
-                          for (var param in [...method.parametersNamed])
-                            param.name: refer('params')
-                                .index(literalString(param.name)),
-                        }).code,
-                    ).closure,
-                  }),
-              })
+              'methodConnectors': literalMap(
+                {..._buildMethodConnectors(endpoint, endpoint.methods)},
+              )
             }))
             .statement
     ]);
+  }
+
+  Map<Object, Object> _buildMethodConnectors(
+    EndpointDefinition endpoint,
+    Iterable<MethodDefinition> methods,
+  ) {
+    var methodConnectors = <Object, Object>{};
+    for (var method in methods) {
+      methodConnectors[literalString(method.name)] =
+          refer('MethodConnector', serverpodUrl(true)).call([], {
+        'name': literalString(method.name),
+        'params': literalMap({
+          for (var param in [
+            ...method.parameters,
+            ...method.parametersPositional,
+            ...method.parametersNamed,
+          ])
+            literalString(param.name):
+                refer('ParameterDescription', serverpodUrl(true)).call([], {
+              'name': literalString(param.name),
+              'type': refer('getType', serverpodUrl(true))
+                  .call([], {}, [param.type.reference(true, config: config)]),
+              'nullable': literalBool(param.type.nullable),
+            })
+        }),
+        'returnsVoid': literalBool(
+          method.returnType.generics.first.isVoidType,
+        ),
+        'call': Method(
+          (m) => m
+            ..requiredParameters.addAll([
+              Parameter((p) => p
+                ..name = 'session'
+                ..type = refer('Session', serverpodUrl(true))),
+              Parameter((p) => p
+                ..name = 'params'
+                ..type = TypeReference((t) => t
+                  ..symbol = 'Map'
+                  ..types.addAll([
+                    refer('String'),
+                    refer('dynamic'),
+                  ])))
+            ])
+            ..modifier = MethodModifier.async
+            ..body = refer('endpoints')
+                .index(literalString(endpoint.name))
+                .asA(refer(endpoint.className, _endpointPath(endpoint)))
+                .property(method.name)
+                .call([
+              refer('session'),
+              for (var param in [
+                ...method.parameters,
+                ...method.parametersPositional
+              ])
+                refer('params').index(literalString(param.name)),
+            ], {
+              for (var param in [...method.parametersNamed])
+                param.name: refer('params').index(literalString(param.name)),
+            }).code,
+        ).closure,
+      });
+    }
+    return methodConnectors;
   }
 }
 
