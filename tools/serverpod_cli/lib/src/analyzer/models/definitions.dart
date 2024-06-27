@@ -104,7 +104,8 @@ class SerializableModelFieldDefinition {
   final dynamic defaultPersistValue;
 
   /// returns true if one of the defauls its not null
-  bool get hasDefauls => defaultModelValue != null || defaultPersistValue != null;
+  bool get hasDefauls =>
+      defaultModelValue != null || defaultPersistValue != null;
 
   /// returns true if only has database default
   bool get hasOnlyDatabaseDefauls =>
@@ -200,7 +201,7 @@ class SerializableModelFieldDefinition {
   bool get isAllowedToHaveDefaultModel => defaultValueType != null;
 
   /// Returns true, if this field is allowed to have [defaultDatabase] key
-  bool get isAllowedToHaveDefaultPersist=> defaultValueType != null;
+  bool get isAllowedToHaveDefaultPersist => defaultValueType != null;
 }
 
 /// The scope of a field.
