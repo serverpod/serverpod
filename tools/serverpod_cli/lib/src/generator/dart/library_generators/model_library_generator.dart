@@ -1420,7 +1420,7 @@ class SerializableModelLibraryGenerator {
       literalString(field.name),
       refer('this'),
     ], {
-      if (field.defaultDatabaseValue != null) 'hasDefaults': literalBool(true),
+      if (field.defaultPersistValue != null) 'hasDefaults': literalBool(true),
     });
   }
 
@@ -1449,7 +1449,7 @@ class SerializableModelLibraryGenerator {
       refer('this'),
       serializedAs,
     ], {
-      if (field.defaultDatabaseValue != null) 'hasDefaults': literalBool(true),
+      if (field.defaultPersistValue != null) 'hasDefaults': literalBool(true),
     });
   }
 
