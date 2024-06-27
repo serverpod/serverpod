@@ -90,8 +90,9 @@ class MethodWebsocketRequestHandler {
       );
     }
 
-    var methodConnector = endpointConnector.methodConnectors[message.method];
-    if (methodConnector == null) {
+    var endpointMethodConnector =
+        endpointConnector.methodConnectors[message.method];
+    if (endpointMethodConnector == null) {
       server.serverpod.logVerbose(
         'Endpoint method not found for open stream request: $message',
       );
@@ -106,7 +107,7 @@ class MethodWebsocketRequestHandler {
     try {
       args = EndpointDispatch.parseParameters(
         message.args,
-        methodConnector.params,
+        endpointMethodConnector.params,
         server.serializationManager,
       );
     } catch (e) {
@@ -125,7 +126,7 @@ class MethodWebsocketRequestHandler {
       enableLogging: endpointConnector.endpoint.logSessions,
       authenticationKey: message.authentication,
       endpointName: endpointConnector.name,
-      methodName: methodConnector.name,
+      methodName: endpointMethodConnector.name,
       connectionId: message.connectionId,
     );
 
@@ -156,7 +157,7 @@ class MethodWebsocketRequestHandler {
     }
 
     _methodStreamManager.createStream(
-      methodConnector: methodConnector,
+      endpointMethodConnector: endpointMethodConnector,
       session: session,
       args: args,
       message: message,
@@ -202,15 +203,20 @@ class _MethodStreamManager {
   }
 
   void createStream({
-    required MethodConnector methodConnector,
+    required EndpointMethodConnector endpointMethodConnector,
     required Session session,
     required Map<String, dynamic> args,
     required OpenMethodStreamCommand message,
     required Server server,
     required WebSocket webSocket,
   }) {
+    if (endpointMethodConnector is! MethodConnector) {
+      // TODO: This is a temporary solution and is fixed in later commits.
+      throw Exception('MethodConnector is not a MethodConnector');
+    }
+
     var controller = StreamController<String>();
-    _handleStream(methodConnector, session, args, message, server);
+    _handleStream(endpointMethodConnector, session, args, message, server);
 
     controller.stream.listen((event) {
       webSocket.add(event);

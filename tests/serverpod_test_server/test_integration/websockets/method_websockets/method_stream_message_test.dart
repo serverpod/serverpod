@@ -245,9 +245,10 @@ void main() {
         var tempSession = await server.createSession();
 
         /// Close any open delayed response streams.
-        await server.endpoints
-            .getConnectorByName(endpoint)
-            ?.methodConnectors['completeAllDelayedResponses']
+        await (server.endpoints
+                    .getConnectorByName(endpoint)
+                    ?.methodConnectors['completeAllDelayedResponses']
+                as MethodConnector?)
             ?.call(tempSession, {});
 
         await tempSession.close();
