@@ -103,7 +103,7 @@ enum ServerpodEnv {
   maxRequestSize;
 
   /// The key used in the environment configuration file.
-  String get key {
+  String get configKey {
     return switch (this) {
       (ServerpodEnv.databaseHost) => 'host',
       (ServerpodEnv.databasePort) => 'port',
@@ -133,7 +133,7 @@ enum ServerpodEnv {
   }
 
   /// The environment variable name for the key.
-  String get variable {
+  String get envVariable {
     return switch (this) {
       (ServerpodEnv.databaseHost) => 'SERVERPOD_DATABASE_HOST',
       (ServerpodEnv.databasePort) => 'SERVERPOD_DATABASE_PORT',
@@ -178,7 +178,7 @@ enum ServerpodPassword {
   redisPassword;
 
   /// The key used in the password configuration file.
-  String get key {
+  String get configKey {
     return switch (this) {
       (ServerpodPassword.databasePassword) => 'database',
       (ServerpodPassword.serviceSecret) => 'serviceSecret',
@@ -187,7 +187,7 @@ enum ServerpodPassword {
   }
 
   /// The environment variable name for the password.
-  String get variable {
+  String get envVariable {
     return switch (this) {
       (ServerpodPassword.databasePassword) => 'SERVERPOD_DATABASE_PASSWORD',
       (ServerpodPassword.serviceSecret) => 'SERVERPOD_SERVICE_SECRET',

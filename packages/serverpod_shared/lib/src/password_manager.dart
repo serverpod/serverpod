@@ -26,10 +26,10 @@ class PasswordManager {
     var envPasswords = ServerpodPassword.values.fold(
       {},
       (collection, password) {
-        var envPassword = environment[password.variable];
+        var envPassword = environment[password.envVariable];
         if (envPassword is! String) return collection;
 
-        return {...collection, password.key: envPassword};
+        return {...collection, password.configKey: envPassword};
       },
     );
 

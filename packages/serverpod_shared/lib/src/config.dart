@@ -106,7 +106,7 @@ class ServerpodConfig {
 
     var maxRequestSize = _readMaxRequestSize(configMap, environment);
 
-    var serviceSecret = passwords[ServerpodPassword.serviceSecret.key];
+    var serviceSecret = passwords[ServerpodPassword.serviceSecret.configKey];
 
     var databaseConfig = _databaseConfigMap(configMap, environment);
     var database = databaseConfig != null
@@ -286,27 +286,27 @@ class DatabaseConfig {
   factory DatabaseConfig._fromJson(Map dbSetup, Map passwords, String name) {
     _validateJsonConfig(
       {
-        ServerpodEnv.databaseHost.key: String,
-        ServerpodEnv.databasePort.key: int,
-        ServerpodEnv.databaseName.key: String,
-        ServerpodEnv.databaseUser.key: String,
+        ServerpodEnv.databaseHost.configKey: String,
+        ServerpodEnv.databasePort.configKey: int,
+        ServerpodEnv.databaseName.configKey: String,
+        ServerpodEnv.databaseUser.configKey: String,
       },
       dbSetup,
       name,
     );
 
-    var password = passwords[ServerpodPassword.databasePassword.key];
+    var password = passwords[ServerpodPassword.databasePassword.configKey];
     if (password == null) {
       throw Exception('Missing database password.');
     }
 
     return DatabaseConfig(
-      host: dbSetup[ServerpodEnv.databaseHost.key],
-      port: dbSetup[ServerpodEnv.databasePort.key],
-      name: dbSetup[ServerpodEnv.databaseName.key],
-      user: dbSetup[ServerpodEnv.databaseUser.key],
-      requireSsl: dbSetup[ServerpodEnv.databaseRequireSsl.key] ?? false,
-      isUnixSocket: dbSetup[ServerpodEnv.databaseIsUnixSocket.key] ?? false,
+      host: dbSetup[ServerpodEnv.databaseHost.configKey],
+      port: dbSetup[ServerpodEnv.databasePort.configKey],
+      name: dbSetup[ServerpodEnv.databaseName.configKey],
+      user: dbSetup[ServerpodEnv.databaseUser.configKey],
+      requireSsl: dbSetup[ServerpodEnv.databaseRequireSsl.configKey] ?? false,
+      isUnixSocket: dbSetup[ServerpodEnv.databaseIsUnixSocket.configKey] ?? false,
       password: password,
     );
   }
@@ -354,19 +354,19 @@ class RedisConfig {
   factory RedisConfig._fromJson(Map redisSetup, Map passwords, String name) {
     _validateJsonConfig(
       {
-        ServerpodEnv.redisHost.key: String,
-        ServerpodEnv.redisPort.key: int,
+        ServerpodEnv.redisHost.configKey: String,
+        ServerpodEnv.redisPort.configKey: int,
       },
       redisSetup,
       name,
     );
 
     return RedisConfig(
-      enabled: redisSetup[ServerpodEnv.redisEnabled.key] ?? false,
-      host: redisSetup[ServerpodEnv.redisHost.key],
-      port: redisSetup[ServerpodEnv.redisPort.key],
-      user: redisSetup[ServerpodEnv.redisUser.key],
-      password: passwords[ServerpodPassword.redisPassword.key],
+      enabled: redisSetup[ServerpodEnv.redisEnabled.configKey] ?? false,
+      host: redisSetup[ServerpodEnv.redisHost.configKey],
+      port: redisSetup[ServerpodEnv.redisPort.configKey],
+      user: redisSetup[ServerpodEnv.redisUser.configKey],
+      password: passwords[ServerpodPassword.redisPassword.configKey],
     );
   }
 
@@ -490,16 +490,16 @@ Map<String, dynamic> _extractMapEntry(
   ServerpodEnv serverpodEnv, [
   Convert? convert,
 ]) {
-  var content = env[serverpodEnv.variable];
+  var content = env[serverpodEnv.envVariable];
 
   if (content == null) return {};
-  if (convert == null) return {serverpodEnv.key: content};
+  if (convert == null) return {serverpodEnv.configKey: content};
 
   try {
-    return {serverpodEnv.key: convert.call(content)};
+    return {serverpodEnv.configKey: convert.call(content)};
   } catch (e) {
     throw Exception(
-      'Invalid value ($content) for ${serverpodEnv.variable}.',
+      'Invalid value ($content) for ${serverpodEnv.envVariable}.',
     );
   }
 }
@@ -508,9 +508,9 @@ int _readMaxRequestSize(
   Map<dynamic, dynamic> configMap,
   Map<String, String> environment,
 ) {
-  var maxRequestSize = configMap[ServerpodEnv.maxRequestSize.key];
+  var maxRequestSize = configMap[ServerpodEnv.maxRequestSize.configKey];
   maxRequestSize =
-      environment[ServerpodEnv.maxRequestSize.variable] ?? maxRequestSize;
+      environment[ServerpodEnv.maxRequestSize.envVariable] ?? maxRequestSize;
 
   if (maxRequestSize is String) {
     maxRequestSize = int.tryParse(maxRequestSize);
