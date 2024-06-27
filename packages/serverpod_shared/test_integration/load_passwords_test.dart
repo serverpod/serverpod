@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:test/test.dart';
+import 'package:uuid/uuid.dart';
 
 void main() {
   late ProcessResult result;
@@ -8,12 +9,14 @@ void main() {
   group(
       'Given a serverpod passwords file with the secret service and the environment variable SERVERPOD_DATABASE_PASSWORD is set when loading the passwords',
       () {
+    var dbPassword = const Uuid().v4();
+
     setUpAll(() async {
       result = await Process.run(
         'dart',
         ['run', 'runner.dart'],
         environment: {
-          'SERVERPOD_DATABASE_PASSWORD': 'db_password',
+          'SERVERPOD_DATABASE_PASSWORD': dbPassword,
         },
         workingDirectory: 'test_integration/assets/load_passwords',
       );
@@ -25,7 +28,7 @@ void main() {
     });
 
     test('then the database password is set', () {
-      expect(result.stdout, contains('database: db_password'));
+      expect(result.stdout, contains('database: $dbPassword'));
     });
 
     test('then the service secret is set', () {
@@ -39,12 +42,14 @@ void main() {
   group(
       'Given a serverpod passwords file with the secret service and the environment variable for the secret service is also set when loading the passwords',
       () {
+    var serviceSecret = const Uuid().v4();
+
     setUpAll(() async {
       result = await Process.run(
         'dart',
         ['run', 'runner.dart'],
         environment: {
-          'SERVERPOD_SERVICE_SECRET': 'my_service_secret',
+          'SERVERPOD_SERVICE_SECRET': serviceSecret,
         },
         workingDirectory: 'test_integration/assets/load_passwords',
       );
@@ -58,7 +63,7 @@ void main() {
     test('then the service secret is set from env', () {
       expect(
         result.stdout,
-        contains('serviceSecret: my_service_secret'),
+        contains('serviceSecret: $serviceSecret'),
       );
     });
   });
