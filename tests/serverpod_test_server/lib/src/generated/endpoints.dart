@@ -3015,6 +3015,99 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['methodStreaming'] as _i20.MethodStreaming)
                   .throwsSerializableException(session),
         ),
+        'simpleStream': _i1.MethodStreamConnector(
+          name: 'simpleStream',
+          params: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .simpleStream(session),
+        ),
+        'simpleStreamWithParameter': _i1.MethodStreamConnector(
+          name: 'simpleStreamWithParameter',
+          params: {
+            'value': _i1.ParameterDescription(
+              name: 'value',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .simpleStreamWithParameter(
+            session,
+            params['value'],
+          ),
+        ),
+        'simpleDataStream': _i1.MethodStreamConnector(
+          name: 'simpleDataStream',
+          params: {
+            'value': _i1.ParameterDescription(
+              name: 'value',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .simpleDataStream(
+            session,
+            params['value'],
+          ),
+        ),
+        'delayedStreamResponse': _i1.MethodStreamConnector(
+          name: 'delayedStreamResponse',
+          params: {
+            'delay': _i1.ParameterDescription(
+              name: 'delay',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .delayedStreamResponse(
+            session,
+            params['delay'],
+          ),
+        ),
+        'throwsExceptionStream': _i1.MethodStreamConnector(
+          name: 'throwsExceptionStream',
+          params: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .throwsExceptionStream(session),
+        ),
+        'throwsSerializableExceptionStream': _i1.MethodStreamConnector(
+          name: 'throwsSerializableExceptionStream',
+          params: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .throwsSerializableExceptionStream(session),
+        ),
       },
     );
     connectors['authenticatedMethodStreaming'] = _i1.EndpointConnector(
@@ -3032,7 +3125,19 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['authenticatedMethodStreaming']
                       as _i20.AuthenticatedMethodStreaming)
                   .simpleEndpoint(session),
-        )
+        ),
+        'simpleStream': _i1.MethodStreamConnector(
+          name: 'simpleStream',
+          params: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) =>
+              (endpoints['authenticatedMethodStreaming']
+                      as _i20.AuthenticatedMethodStreaming)
+                  .simpleStream(session),
+        ),
       },
     );
     connectors['moduleSerialization'] = _i1.EndpointConnector(

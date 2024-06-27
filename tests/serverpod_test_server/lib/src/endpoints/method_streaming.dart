@@ -54,6 +54,20 @@ class MethodStreaming extends Endpoint {
     return completer.future;
   }
 
+  Stream<int> delayedStreamResponse(Session session, int delay) async* {
+    var uuid = Uuid().v4();
+    var completer = Completer<void>();
+    _delayedResponses[uuid] = completer;
+
+    Future.delayed(Duration(seconds: delay), () {
+      _delayedResponses.remove(uuid)?.complete();
+    });
+
+    await completer.future;
+
+    yield 42;
+  }
+
   /// Completes all delayed responses.
   /// This makes the delayedResponse return directly.
   Future<void> completeAllDelayedResponses(Session session) async {
