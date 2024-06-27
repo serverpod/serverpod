@@ -1,5 +1,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
@@ -44,6 +45,43 @@ abstract class EndpointParameterAnalyzer {
   ) {
     List<SourceSpanSeverityException> errors = [];
     for (var parameter in parameters) {
+      var type = parameter.type;
+      if (type.isDartAsyncFuture) {
+        errors.add(SourceSpanSeverityException(
+          'The type "Future" is not a supported endpoint parameter type.',
+          parameter.span,
+        ));
+        continue;
+      }
+
+      if (type.isDartAsyncStream && type is ParameterizedType) {
+        var typeArguments = type.typeArguments;
+        if (typeArguments.length != 1) {
+          // Streams only allow a single generic so this case is only here for safety.
+          errors.add(SourceSpanSeverityException(
+            'The type "Stream" must have exactly one type argument. E.g. Stream<String>.',
+            parameter.span,
+          ));
+          continue;
+        }
+
+        var innerType = typeArguments[0];
+        if (innerType is VoidType || innerType is DynamicType) {
+          errors.add(SourceSpanSeverityException(
+            'The type "Stream" must have a type defined. E.g. Stream<String>.',
+            parameter.span,
+          ));
+          continue;
+        }
+
+        if (innerType.nullabilitySuffix != NullabilitySuffix.none) {
+          errors.add(SourceSpanSeverityException(
+            'Nullable types are not supported for "Stream" parameters.',
+            parameter.span,
+          ));
+          continue;
+        }
+      }
       try {
         TypeDefinition.fromDartType(parameter.type);
       } on FromDartTypeClassNameException catch (e) {
