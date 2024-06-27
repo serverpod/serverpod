@@ -290,11 +290,11 @@ class MethodCallSession extends Session {
   }
 }
 
-/// When a call is made to an endpoint method that uses a stream [Server] a
-/// [StreamingMethodCallSession] object is created. It contains all data
+/// When a connection is made to the [Server] to an endpoint method that uses a
+/// stream [MethodStreamSession] object is created. It contains all data
 /// associated with the current connection and provides easy access to the
 /// database.
-class StreamingMethodCallSession extends Session {
+class MethodStreamSession extends Session {
   /// The name of the method that is being called.
   final String methodName;
 
@@ -304,8 +304,8 @@ class StreamingMethodCallSession extends Session {
   /// The connection id that uniquely identifies the stream.
   final UuidValue connectionId;
 
-  /// Creates a new [Session] for a method call to a streaming endpoint.
-  StreamingMethodCallSession({
+  /// Creates a new [MethodStreamSession].
+  MethodStreamSession({
     required super.server,
     required super.enableLogging,
     required super.authenticationKey,

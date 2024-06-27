@@ -120,7 +120,7 @@ class MethodWebsocketRequestHandler {
     }
 
     // Create session
-    var session = StreamingMethodCallSession(
+    var session = MethodStreamSession(
       server: server,
       enableLogging: endpointConnector.endpoint.logSessions,
       authenticationKey: message.authentication,
