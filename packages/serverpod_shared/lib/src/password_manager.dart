@@ -17,9 +17,9 @@ class PasswordManager {
   /// Load all passwords for the current run mode from the supplied [Map],
   /// or null if passwords fail to load.
   Map<String, String> loadPasswordsFromMap(
-    Map passwordConfig,
-    Map<String, String> environment,
-  ) {
+    Map passwordConfig, {
+    Map<String, String> environment = const {},
+  }) {
     var sharedPasswords = _extractPasswords(passwordConfig, 'shared');
     var runModePasswords = _extractPasswords(passwordConfig, runMode);
 
@@ -66,7 +66,7 @@ class PasswordManager {
       var passwordYaml = File('config/passwords.yaml').readAsStringSync();
       var data = (loadYaml(passwordYaml) as Map).cast<String, Map>();
 
-      return loadPasswordsFromMap(data, Platform.environment);
+      return loadPasswordsFromMap(data, environment: Platform.environment);
     } catch (e) {
       return null;
     }

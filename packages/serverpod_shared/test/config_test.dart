@@ -14,7 +14,7 @@ void main() {
       'Given Serverpod config missing api server configuration when loading from Map then exception is thrown.',
       () {
     expect(
-      () => ServerpodConfig.loadFromMap(runMode, serverId, passwords, {}, {}),
+      () => ServerpodConfig.loadFromMap(runMode, serverId, passwords, {}),
       throwsA(isA<Exception>().having(
         (e) => e.toString(),
         'message',
@@ -39,7 +39,6 @@ apiServer:
         serverId,
         passwords,
         loadYaml(serverpodConfig),
-        {},
       ),
       throwsA(isA<Exception>().having(
         (e) => e.toString(),
@@ -67,7 +66,6 @@ apiServer:
         serverId,
         passwords,
         loadYaml(serverpodConfig),
-        {},
       ),
       throwsA(isA<Exception>().having(
         (e) => e.toString(),
@@ -98,7 +96,6 @@ apiServer:
       serverId,
       passwords,
       loadYaml(serverpodConfig),
-      {},
     );
 
     test('Run mode matches supplied value.', () {
@@ -162,7 +159,6 @@ insightsServer:
       serverId,
       passwords,
       loadYaml(serverpodConfig),
-      {},
     );
 
     expect(config.insightsServer?.port, 8081);
@@ -192,7 +188,6 @@ webServer:
       serverId,
       passwords,
       loadYaml(serverpodConfig),
-      {},
     );
 
     expect(config.webServer?.port, 8082);
@@ -218,7 +213,6 @@ maxRequestSize: 1048576
       serverId,
       passwords,
       loadYaml(serverpodConfig),
-      {},
     );
 
     expect(config.maxRequestSize, 1048576);
@@ -246,7 +240,6 @@ database:
         serverId,
         passwords,
         loadYaml(serverpodConfig),
-        {},
       ),
       throwsA(isA<Exception>().having(
         (e) => e.toString(),
@@ -277,7 +270,6 @@ database:
         serverId,
         {...passwords, 'database': 'password'},
         loadYaml(serverpodConfig),
-        {},
       ),
       throwsA(isA<Exception>().having(
         (e) => e.toString(),
@@ -309,7 +301,6 @@ database:
       serverId,
       {...passwords, 'database': 'password'},
       loadYaml(serverpodConfig),
-      {},
     );
 
     expect(config.database?.host, 'localhost');
@@ -340,7 +331,6 @@ redis:
         runMode,
         passwords,
         loadYaml(serverpodConfig),
-        {},
       ),
       throwsA(isA<Exception>().having(
         (e) => e.toString(),
@@ -369,7 +359,6 @@ redis:
       serverId,
       {...passwords, 'redis': 'password'},
       loadYaml(serverpodConfig),
-      {},
     );
 
     expect(config.redis?.host, 'localhost');
@@ -385,7 +374,6 @@ redis:
       runMode,
       serverId,
       passwords,
-      {},
       {
         'SERVERPOD_API_SERVER_PORT': '8080',
         'SERVERPOD_API_SERVER_PUBLIC_HOST': 'localhost',
@@ -408,7 +396,6 @@ redis:
         runMode,
         serverId,
         passwords,
-        {},
         {
           'SERVERPOD_API_SERVER_PORT': 'invalid',
           'SERVERPOD_API_SERVER_PUBLIC_HOST': 'localhost',
@@ -438,7 +425,7 @@ redis:
           'publicScheme': 'http',
         },
       },
-      {
+      environment: {
         'SERVERPOD_API_SERVER_PORT': '8080',
         'SERVERPOD_API_SERVER_PUBLIC_HOST': 'localhost',
       },
@@ -465,7 +452,7 @@ redis:
           'publicScheme': 'http',
         },
       },
-      {
+      environment: {
         'SERVERPOD_API_SERVER_PORT': '8090',
         'SERVERPOD_API_SERVER_PUBLIC_HOST': 'example.com',
         'SERVERPOD_API_SERVER_PUBLIC_PORT': '8090',
@@ -494,7 +481,7 @@ redis:
           'publicScheme': 'http',
         },
       },
-      {
+      environment: {
         'SERVERPOD_MAX_REQUEST_SIZE': '1048576',
       },
     );
@@ -517,7 +504,7 @@ redis:
           'publicScheme': 'http',
         },
       },
-      {
+      environment: {
         'SERVERPOD_WEB_SERVER_PORT': '8081',
         'SERVERPOD_WEB_SERVER_PUBLIC_HOST': 'localhost',
         'SERVERPOD_WEB_SERVER_PUBLIC_PORT': '8081',
@@ -550,7 +537,7 @@ redis:
           'publicScheme': 'http',
         },
       },
-      {
+      environment: {
         'SERVERPOD_WEB_SERVER_PORT': '8081',
         'SERVERPOD_WEB_SERVER_PUBLIC_HOST': 'localhost',
       },
@@ -583,7 +570,7 @@ redis:
           'publicScheme': 'http',
         },
       },
-      {
+      environment: {
         'SERVERPOD_WEB_SERVER_PORT': '8090',
         'SERVERPOD_WEB_SERVER_PUBLIC_HOST': 'example.com',
         'SERVERPOD_WEB_SERVER_PUBLIC_PORT': '8090',
@@ -612,7 +599,7 @@ redis:
           'publicScheme': 'http',
         },
       },
-      {
+      environment: {
         'SERVERPOD_INSIGHTS_SERVER_PORT': '8081',
         'SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST': 'localhost',
         'SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT': '8081',
@@ -645,7 +632,7 @@ redis:
           'publicScheme': 'http',
         },
       },
-      {
+      environment: {
         'SERVERPOD_INSIGHTS_SERVER_PORT': '8081',
         'SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST': 'localhost',
       },
@@ -678,7 +665,7 @@ redis:
           'publicScheme': 'http',
         },
       },
-      {
+      environment: {
         'SERVERPOD_INSIGHTS_SERVER_PORT': '8090',
         'SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST': 'example.com',
         'SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT': '8090',
@@ -707,7 +694,7 @@ redis:
           'publicScheme': 'http',
         },
       },
-      {
+      environment: {
         'SERVERPOD_DATABASE_HOST': 'localhost',
         'SERVERPOD_DATABASE_PORT': '5432',
         'SERVERPOD_DATABASE_NAME': 'serverpod',
@@ -740,7 +727,7 @@ redis:
           'name': 'serverpod',
         },
       },
-      {
+      environment: {
         'SERVERPOD_DATABASE_HOST': 'localhost',
         'SERVERPOD_DATABASE_USER': 'admin',
       },
@@ -773,7 +760,7 @@ redis:
           'user': 'admin',
         },
       },
-      {
+      environment: {
         'SERVERPOD_DATABASE_HOST': 'remotehost',
         'SERVERPOD_DATABASE_PORT': '5433',
         'SERVERPOD_DATABASE_NAME': 'remote_serverpod',
@@ -802,7 +789,7 @@ redis:
           'publicScheme': 'http',
         },
       },
-      {
+      environment: {
         'SERVERPOD_DATABASE_HOST': 'localhost',
         'SERVERPOD_DATABASE_PORT': '5432',
         'SERVERPOD_DATABASE_NAME': 'serverpod',
@@ -830,7 +817,7 @@ redis:
             'publicScheme': 'http',
           },
         },
-        {
+        environment: {
           'SERVERPOD_DATABASE_HOST': 'localhost',
           'SERVERPOD_DATABASE_PORT': '5432',
           'SERVERPOD_DATABASE_NAME': 'serverpod',
@@ -862,7 +849,7 @@ redis:
           'publicScheme': 'http',
         },
       },
-      {
+      environment: {
         'SERVERPOD_DATABASE_HOST': 'localhost',
         'SERVERPOD_DATABASE_PORT': '5432',
         'SERVERPOD_DATABASE_NAME': 'serverpod',
@@ -889,7 +876,7 @@ redis:
           'publicScheme': 'http',
         },
       },
-      {
+      environment: {
         'SERVERPOD_REDIS_HOST': 'localhost',
         'SERVERPOD_REDIS_PORT': '6379',
         'SERVERPOD_REDIS_USER': 'default',
@@ -919,7 +906,7 @@ redis:
           'port': 6379,
         },
       },
-      {
+      environment: {
         'SERVERPOD_REDIS_HOST': 'localhost',
         'SERVERPOD_REDIS_USER': 'default',
       },
@@ -950,7 +937,7 @@ redis:
           'user': 'default',
         },
       },
-      {
+      environment: {
         'SERVERPOD_REDIS_HOST': 'remotehost',
         'SERVERPOD_REDIS_PORT': '6380',
         'SERVERPOD_REDIS_USER': 'remote_user',
@@ -982,7 +969,7 @@ redis:
           'user': 'default',
         },
       },
-      {
+      environment: {
         'SERVERPOD_REDIS_ENABLED': 'true',
       },
     );

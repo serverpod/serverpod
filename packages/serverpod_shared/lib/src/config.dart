@@ -75,9 +75,9 @@ class ServerpodConfig {
     String runMode,
     String serverId,
     Map<String, String> passwords,
-    Map configMap,
-    Map<String, String> environment,
-  ) {
+    Map configMap, {
+    Map<String, String> environment = const {},
+  }) {
     var apiConfig = _apiConfigMap(configMap, environment);
     if (apiConfig == null) {
       throw _ServerpodApiServerConfigMissing();
@@ -159,7 +159,7 @@ class ServerpodConfig {
         serverId,
         passwords,
         doc,
-        Platform.environment,
+        environment: Platform.environment,
       );
     } catch (e) {
       if (e is _ServerpodApiServerConfigMissing) {
@@ -306,7 +306,8 @@ class DatabaseConfig {
       name: dbSetup[ServerpodEnv.databaseName.configKey],
       user: dbSetup[ServerpodEnv.databaseUser.configKey],
       requireSsl: dbSetup[ServerpodEnv.databaseRequireSsl.configKey] ?? false,
-      isUnixSocket: dbSetup[ServerpodEnv.databaseIsUnixSocket.configKey] ?? false,
+      isUnixSocket:
+          dbSetup[ServerpodEnv.databaseIsUnixSocket.configKey] ?? false,
       password: password,
     );
   }

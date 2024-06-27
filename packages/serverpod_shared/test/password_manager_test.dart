@@ -29,7 +29,7 @@ void main() {
     const runMode = 'development';
 
     var passwords = PasswordManager(runMode: runMode)
-        .loadPasswordsFromMap(loadYaml(_defaultPasswordConfig), {});
+        .loadPasswordsFromMap(loadYaml(_defaultPasswordConfig));
 
     test('passwords are not null', () {
       expect(passwords, isNotNull);
@@ -50,7 +50,7 @@ void main() {
     const runMode = 'production';
 
     var passwords = PasswordManager(runMode: runMode)
-        .loadPasswordsFromMap(loadYaml(_defaultPasswordConfig), {});
+        .loadPasswordsFromMap(loadYaml(_defaultPasswordConfig));
 
     test('passwords are not null', () {
       expect(passwords, isNotNull);
@@ -69,8 +69,7 @@ void main() {
       () {
     const runMode = 'development';
 
-    var passwords =
-        PasswordManager(runMode: runMode).loadPasswordsFromMap({}, {});
+    var passwords = PasswordManager(runMode: runMode).loadPasswordsFromMap({});
 
     test('passwords are not null', () {
       expect(passwords, isNotNull);
@@ -87,7 +86,7 @@ void main() {
 
   group('Given a runMode that does not exist in the config file', () {
     var passwords = PasswordManager(runMode: 'unknown_run_mode')
-        .loadPasswordsFromMap(loadYaml(_defaultPasswordConfig), {});
+        .loadPasswordsFromMap(loadYaml(_defaultPasswordConfig));
     test('then the shared password is set.', () {
       expect(passwords['mySharedPassword'], 'my password');
     });
@@ -113,7 +112,6 @@ development:
     expect(
       () => passwordManager.loadPasswordsFromMap(
         loadYaml(passwordsContent),
-        {},
       ),
       throwsA(isA<StateError>()),
     );
@@ -123,7 +121,7 @@ development:
     var passwords =
         PasswordManager(runMode: 'development').loadPasswordsFromMap(
       {},
-      {
+      environment: {
         'SERVERPOD_DATABASE_PASSWORD': 'password',
         'SERVERPOD_SERVICE_SECRET': 'secret',
         'SERVERPOD_REDIS_PASSWORD': 'redis',
@@ -155,7 +153,7 @@ development:
     var passwords =
         PasswordManager(runMode: 'development').loadPasswordsFromMap(
       loadYaml(_defaultPasswordConfig),
-      {
+      environment: {
         'SERVERPOD_DATABASE_PASSWORD': databasePassword,
         'SERVERPOD_SERVICE_SECRET': serviceSecret,
         'SERVERPOD_REDIS_PASSWORD': redisPassword,
