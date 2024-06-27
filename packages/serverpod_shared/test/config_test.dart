@@ -11,7 +11,7 @@ void main() {
   var passwords = {'serviceSecret': 'longpasswordthatisrequired'};
 
   test(
-      'Given Serverpod config missing api server configuration when loading from Map then exception is thrown.',
+      'Given a Serverpod config missing api server configuration when loading from Map then exception is thrown.',
       () {
     expect(
       () => ServerpodConfig.loadFromMap(runMode, serverId, passwords, {}),
@@ -24,7 +24,7 @@ void main() {
   });
 
   test(
-      'Given Serverpod config with api server configuration missing required port when loading from Map then exception is thrown.',
+      'Given a Serverpod config with api server configuration missing required port when loading from Map then exception is thrown.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -50,7 +50,7 @@ apiServer:
   });
 
   test(
-      'Given Serverpod config with api server with wrong port type when loading from Map then exception is thrown.',
+      'Given a Serverpod config with api server with wrong port type when loading from Map then exception is thrown.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -77,7 +77,7 @@ apiServer:
   });
 
   group(
-      'Given Serverpod config with api server configuration when loading from Map then',
+      'Given a Serverpod config with api server configuration when loading from Map then',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -139,7 +139,7 @@ apiServer:
   });
 
   test(
-      'Given Serverpod config with insights server configuration when loading from Map then insights server configuration is set.',
+      'Given a Serverpod config with insights server configuration when loading from Map then insights server configuration is set.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -168,7 +168,7 @@ insightsServer:
   });
 
   test(
-      'Given Serverpod config with web server configuration when loading from Map then web server configuration is set.',
+      'Given a Serverpod config with web server configuration when loading from Map then web server configuration is set.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -197,7 +197,7 @@ webServer:
   });
 
   test(
-      'Given Serverpod config with max request size when loading from Map then max request size configuration matches supplied value.',
+      'Given a Serverpod config with max request size when loading from Map then max request size configuration matches supplied value.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -219,7 +219,7 @@ maxRequestSize: 1048576
   });
 
   test(
-      'Given Serverpod config with database configuration without password when loading from Map then exception is thrown.',
+      'Given a Serverpod config with database configuration without password when loading from Map then exception is thrown.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -250,7 +250,7 @@ database:
   });
 
   test(
-      'Given Serverpod config with database configuration missing required field when loading from Map then exception is thrown.',
+      'Given a Serverpod config with database configuration missing required field when loading from Map then exception is thrown.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -281,7 +281,7 @@ database:
   });
 
   test(
-      'Given Serverpod config with database configuration when loading from Map then database configuration is set.',
+      'Given a Serverpod config with database configuration when loading from Map then database configuration is set.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -313,7 +313,7 @@ database:
   });
 
   test(
-      'Given Serverpod config with redis configuration missing required field when loading from Map then exception is thrown.',
+      'Given a Serverpod config with redis configuration missing required field when loading from Map then exception is thrown.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -341,7 +341,7 @@ redis:
   });
 
   test(
-      'Given a Serverpod config with redis configuration without when loading from Map then redis configuration is set.',
+      'Given a Serverpod config with redis configuration when loading from Map then redis configuration is set.',
       () {
     var serverpodConfig = '''
 apiServer:
@@ -368,7 +368,7 @@ redis:
   });
 
   test(
-      'Given an empty Serverpod config map but with the environment variables set for the api server when loading from Map then configuration then the config is created.',
+      'Given an empty Serverpod config map but with the environment variables set for the api server when loading from Map then the configuration is created.',
       () {
     var config = ServerpodConfig.loadFromMap(
       runMode,
