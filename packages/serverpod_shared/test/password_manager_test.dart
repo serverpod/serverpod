@@ -1,5 +1,6 @@
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
+import 'package:uuid/uuid.dart';
 import 'package:yaml/yaml.dart';
 
 const _defaultPasswordConfig = '''
@@ -147,23 +148,30 @@ development:
   });
 
   group('Given a config map and set environment variables', () {
-    var passwords = PasswordManager(runMode: 'development')
-        .loadPasswordsFromMap(loadYaml(_defaultPasswordConfig), {
-      'SERVERPOD_DATABASE_PASSWORD': 'password',
-      'SERVERPOD_SERVICE_SECRET': 'secret',
-      'SERVERPOD_REDIS_PASSWORD': 'redis',
-    });
+    var databasePassword = const Uuid().v4();
+    var serviceSecret = const Uuid().v4();
+    var redisPassword = const Uuid().v4();
+
+    var passwords =
+        PasswordManager(runMode: 'development').loadPasswordsFromMap(
+      loadYaml(_defaultPasswordConfig),
+      {
+        'SERVERPOD_DATABASE_PASSWORD': databasePassword,
+        'SERVERPOD_SERVICE_SECRET': serviceSecret,
+        'SERVERPOD_REDIS_PASSWORD': redisPassword,
+      },
+    );
 
     test('then the database password is set from the env.', () {
-      expect(passwords['database'], 'password');
+      expect(passwords['database'], databasePassword);
     });
 
     test('then the service secret is set from the env.', () {
-      expect(passwords['serviceSecret'], 'secret');
+      expect(passwords['serviceSecret'], serviceSecret);
     });
 
     test('then the redis password is set from the env.', () {
-      expect(passwords['redis'], 'redis');
+      expect(passwords['redis'], redisPassword);
     });
 
     test('then the shared password is set.', () {
