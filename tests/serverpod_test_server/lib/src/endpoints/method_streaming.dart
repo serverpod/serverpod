@@ -6,6 +6,27 @@ import 'package:serverpod_test_server/src/generated/protocol.dart';
 class MethodStreaming extends Endpoint {
   Map<String, Completer> _delayedResponses = {};
 
+  /// Check Null and Object in validation.
+  Stream<int> simpleStream(Session session) async* {
+    for (var i = 0; i < 10; i++) {
+      yield i;
+    }
+  }
+
+  Stream<int> simpleStreamWithParameter(Session session, int value) async* {
+    for (var i in List.generate(value, (index) => index)) {
+      yield i;
+    }
+  }
+
+  Stream<SimpleData> simpleDataStream(Session session, int value) async* {
+    for (var i in List.generate(value, (index) => index)) {
+      yield SimpleData(
+        num: i,
+      );
+    }
+  }
+
   Future<void> simpleEndpoint(Session session) async {}
 
   Future<void> intParameter(Session session, int value) async {}
@@ -58,6 +79,22 @@ class MethodStreaming extends Endpoint {
       someNullableField: 1,
     );
   }
+
+  Stream<int> throwsExceptionStream(Session session) async* {
+    throw Exception('This is an exception');
+  }
+
+  Stream<int> throwsSerializableExceptionStream(Session session) async* {
+    throw ExceptionWithData(
+      message: 'Throwing an exception',
+      creationDate: DateTime.now(),
+      errorFields: [
+        'first line error',
+        'second line error',
+      ],
+      someNullableField: 1,
+    );
+  }
 }
 
 class AuthenticatedMethodStreaming extends Endpoint {
@@ -68,4 +105,10 @@ class AuthenticatedMethodStreaming extends Endpoint {
   Set<Scope> get requiredScopes => {Scope.admin};
 
   Future<void> simpleEndpoint(Session session) async {}
+
+  Stream<int> simpleStream(Session session) async* {
+    for (var i = 0; i < 10; i++) {
+      yield i;
+    }
+  }
 }
