@@ -349,16 +349,16 @@ void main() {
             class: Example
             table: example
             fields:
-              stingType: String, defaultPersist=test
-              intType: int, defaultPersist=test
-              doubleType: double, defaultPersist=test
-              boolType: bool, defaultPersist=test
-              durationType: Duration, defaultPersist=test
-              byteDataType: ByteData, defaultPersist=test
-              uuidValueType: UuidValue, defaultPersist=test
-              mapType: Map<String, int>, defaultPersist=test
-              listype: List<int>, defaultPersist=test
-              classType: Example, defaultPersist=test
+              stingType: String?, defaultPersist=test
+              intType: int?, defaultPersist=test
+              doubleType: double?, defaultPersist=test
+              boolType: bool?, defaultPersist=test
+              durationType: Duration?, defaultPersist=test
+              byteDataType: ByteData?, defaultPersist=test
+              uuidValueType: UuidValue?, defaultPersist=test
+              mapType: Map<String, int>?, defaultPersist=test
+              listype: List<int>?, defaultPersist=test
+              classType: Example?, defaultPersist=test
             ''',
           ).build()
         ];
