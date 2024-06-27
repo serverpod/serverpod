@@ -99,6 +99,13 @@ void main() {
   );
 
   test(
+      'Given invalid UUID string, when deserialized to a UuidValue, then it throws an exception',
+      () {
+    String value = 'hello world';
+    expect(() => UuidValueJsonExtension.fromJson(value),
+        throwsA(isA<FormatException>()));
+  });
+  test(
     'Given a base64-encoded string, when deserialized to ByteData and then serialized back to a string, then it matches the original string',
     () {
       String value = 'decode(\'AAECAwQFBgc=\', \'base64\')';
