@@ -46,7 +46,7 @@ void main() {
       );
     });
 
-    test('when parsing null parameter string then exception is thrown.', () {
+    test('when parsing null parameter string then an exception is thrown.', () {
       expect(
         () => EndpointDispatch.parseParameters(
           null,
@@ -58,7 +58,7 @@ void main() {
     });
 
     test(
-        'when parsing a non json decodable param string then exception is thrown.',
+        'when parsing a non json decodable param string then an exception is thrown.',
         () {
       expect(
         () => EndpointDispatch.parseParameters(
@@ -71,7 +71,7 @@ void main() {
     });
 
     test(
-        'when parsing param with different argument name then exception is thrown.',
+        'when parsing param with different argument name then an exception is thrown.',
         () {
       expect(
         () => EndpointDispatch.parseParameters(
@@ -170,7 +170,7 @@ void main() {
     });
 
     test(
-        'when parsing parameter string only containing one of the required parameters then exception is thrown.',
+        'when parsing parameter string only containing one of the required parameters then an exception is thrown.',
         () {
       expect(
         () => EndpointDispatch.parseParameters(
@@ -183,7 +183,7 @@ void main() {
     });
 
     test(
-        'when parsing parameter where only one of the required parameters is passed as additional parameters then exception is thrown.',
+        'when parsing parameter where only one of the required parameters is passed as additional parameters then an exception is thrown.',
         () {
       expect(
         () => EndpointDispatch.parseParameters(
