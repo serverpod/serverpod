@@ -392,21 +392,12 @@ Map? _insightsConfigMap(
 ) {
   var serverConfig = configMap[ServerpodConfigMap.insightsServer] ?? {};
 
-  Map config = {
-    ...serverConfig,
-    ..._extractMapEntry(environment, ServerpodEnv.insightsPort, int.parse),
-    ..._extractMapEntry(environment, ServerpodEnv.insightsPublicHost),
-    ..._extractMapEntry(
-      environment,
-      ServerpodEnv.insightsPublicPort,
-      int.parse,
-    ),
-    ..._extractMapEntry(environment, ServerpodEnv.insightsPublicScheme),
-  };
-
-  if (config.isEmpty) return null;
-
-  return config;
+  return _buildConfigMap(serverConfig, environment, [
+    (ServerpodEnv.insightsPort, int.parse),
+    (ServerpodEnv.insightsPublicHost, null),
+    (ServerpodEnv.insightsPublicPort, int.parse),
+    (ServerpodEnv.insightsPublicScheme, null),
+  ]);
 }
 
 Map? _webConfigMap(
@@ -415,70 +406,58 @@ Map? _webConfigMap(
 ) {
   var serverConfig = configMap[ServerpodConfigMap.webServer] ?? {};
 
-  Map config = {
-    ...serverConfig,
-    ..._extractMapEntry(environment, ServerpodEnv.webPort, int.parse),
-    ..._extractMapEntry(environment, ServerpodEnv.webPublicHost),
-    ..._extractMapEntry(environment, ServerpodEnv.webPublicPort, int.parse),
-    ..._extractMapEntry(environment, ServerpodEnv.webPublicScheme),
-  };
-
-  if (config.isEmpty) return null;
-
-  return config;
+  return _buildConfigMap(serverConfig, environment, [
+    (ServerpodEnv.webPort, int.parse),
+    (ServerpodEnv.webPublicHost, null),
+    (ServerpodEnv.webPublicPort, int.parse),
+    (ServerpodEnv.webPublicScheme, null),
+  ]);
 }
 
 Map? _apiConfigMap(Map configMap, Map<String, String> environment) {
   var serverConfig = configMap[ServerpodConfigMap.apiServer] ?? {};
 
-  Map config = {
-    ...serverConfig,
-    ..._extractMapEntry(environment, ServerpodEnv.apiPort, int.parse),
-    ..._extractMapEntry(environment, ServerpodEnv.apiPublicHost),
-    ..._extractMapEntry(environment, ServerpodEnv.apiPublicPort, int.parse),
-    ..._extractMapEntry(environment, ServerpodEnv.apiPublicScheme),
-  };
-
-  if (config.isEmpty) return null;
-
-  return config;
+  return _buildConfigMap(serverConfig, environment, [
+    (ServerpodEnv.apiPort, int.parse),
+    (ServerpodEnv.apiPublicHost, null),
+    (ServerpodEnv.apiPublicPort, int.parse),
+    (ServerpodEnv.apiPublicScheme, null),
+  ]);
 }
 
 Map? _databaseConfigMap(Map configMap, Map<String, String> environment) {
   var databaseConfig = configMap[ServerpodConfigMap.database] ?? {};
 
-  Map config = {
-    ...databaseConfig,
-    ..._extractMapEntry(environment, ServerpodEnv.databaseHost),
-    ..._extractMapEntry(environment, ServerpodEnv.databasePort, int.parse),
-    ..._extractMapEntry(environment, ServerpodEnv.databaseName),
-    ..._extractMapEntry(environment, ServerpodEnv.databaseUser),
-    ..._extractMapEntry(
-      environment,
-      ServerpodEnv.databaseRequireSsl,
-      bool.parse,
-    ),
-    ..._extractMapEntry(
-      environment,
-      ServerpodEnv.databaseIsUnixSocket,
-      bool.parse,
-    ),
-  };
-
-  if (config.isEmpty) return null;
-
-  return config;
+  return _buildConfigMap(databaseConfig, environment, [
+    (ServerpodEnv.databaseHost, null),
+    (ServerpodEnv.databasePort, int.parse),
+    (ServerpodEnv.databaseName, null),
+    (ServerpodEnv.databaseUser, null),
+    (ServerpodEnv.databaseRequireSsl, bool.parse),
+    (ServerpodEnv.databaseIsUnixSocket, bool.parse),
+  ]);
 }
 
 Map? _redisConfigMap(Map configMap, Map<String, String> environment) {
   var redisConfig = configMap[ServerpodConfigMap.redis] ?? {};
 
+  return _buildConfigMap(redisConfig, environment, [
+    (ServerpodEnv.redisHost, null),
+    (ServerpodEnv.redisPort, int.parse),
+    (ServerpodEnv.redisUser, null),
+    (ServerpodEnv.redisEnabled, bool.parse),
+  ]);
+}
+
+Map? _buildConfigMap(
+  Map<dynamic, dynamic> serverConfig,
+  Map<String, String> environment,
+  List<(ServerpodEnv, Convert?)> envEntries,
+) {
   Map config = {
-    ...redisConfig,
-    ..._extractMapEntry(environment, ServerpodEnv.redisHost),
-    ..._extractMapEntry(environment, ServerpodEnv.redisPort, int.parse),
-    ..._extractMapEntry(environment, ServerpodEnv.redisUser),
-    ..._extractMapEntry(environment, ServerpodEnv.redisEnabled, bool.parse),
+    ...serverConfig,
+    for (var entry in envEntries)
+      ..._extractMapEntry(environment, entry.$1, entry.$2),
   };
 
   if (config.isEmpty) return null;

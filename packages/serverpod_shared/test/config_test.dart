@@ -374,7 +374,8 @@ redis:
       runMode,
       serverId,
       passwords,
-      {
+      {},
+      environment: {
         'SERVERPOD_API_SERVER_PORT': '8080',
         'SERVERPOD_API_SERVER_PUBLIC_HOST': 'localhost',
         'SERVERPOD_API_SERVER_PUBLIC_PORT': '8080',
@@ -396,7 +397,8 @@ redis:
         runMode,
         serverId,
         passwords,
-        {
+        {},
+        environment: {
           'SERVERPOD_API_SERVER_PORT': 'invalid',
           'SERVERPOD_API_SERVER_PUBLIC_HOST': 'localhost',
           'SERVERPOD_API_SERVER_PUBLIC_PORT': '8080',
