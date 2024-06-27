@@ -1,7 +1,5 @@
-import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
-import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:source_span/source_span.dart';
 
 abstract class ValueRestriction<T> {
@@ -106,56 +104,5 @@ class StringValueRestriction extends ValueRestriction {
     }
 
     return [];
-  }
-}
-
-class DefaultValueRestriction extends ValueRestriction {
-  final String key;
-  final SerializableModelDefinition? documentDefinition;
-
-  DefaultValueRestriction(this.key, this.documentDefinition);
-
-  @override
-  List<SourceSpanSeverityException> validate(
-    String parentNodeName,
-    dynamic value,
-    SourceSpan? span,
-  ) {
-    var definition = documentDefinition;
-    if (definition is! ClassDefinition) return [];
-
-    var field = definition.findField(parentNodeName);
-    switch (field?.type.valueType) {
-      case ValueType.dateTime:
-        if (value is DateTime) return [];
-        if (value == 'now') return [];
-
-        if (value is String) {
-          DateTime? dateTime = DateTime.tryParse(value);
-
-          if (dateTime != null) {
-            if (dateTime.isUtc) return [];
-
-            return [
-              SourceSpanSeverityException(
-                'The "$key" value should be a valid UTC DateTime.',
-                span,
-              )
-            ];
-          }
-        }
-
-        return [
-          SourceSpanSeverityException(
-            'The "$key" value must be a valid UTC DateTime String or "now"',
-            span,
-          )
-        ];
-      default:
-
-        /// Currently, we only provide defaults for DateTime types.
-        /// No errors are returned for other types due to existing key restrictions.
-        return [];
-    }
   }
 }

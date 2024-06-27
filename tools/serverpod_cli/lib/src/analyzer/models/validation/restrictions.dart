@@ -1132,7 +1132,7 @@ class Restrictions {
     if (definition is! ClassDefinition) return [];
 
     var field = definition.findField(parentNodeName);
-    if (field?.isAllowedToHaveDefault != true) {
+    if (field?.defaultValueType != null) {
       return [
         SourceSpanSeverityException(
           'The "default" key is not supported for "${field?.type.className}" types',
@@ -1153,7 +1153,7 @@ class Restrictions {
     if (definition is! ClassDefinition) return [];
 
     var field = definition.findField(parentNodeName);
-    if (field?.isAllowedToHaveDefaultModel != true) {
+    if (field?.defaultValueType != null) {
       return [
         SourceSpanSeverityException(
           'The "defaultModel" key is not supported for "${field?.type.className}" types',
@@ -1173,39 +1173,41 @@ class Restrictions {
     var definition = documentDefinition;
     if (definition is! ClassDefinition) return [];
 
+    var errors = <SourceSpanSeverityException>[];
+
     var field = definition.findField(parentNodeName);
-    if (field?.isAllowedToHaveDefaultPersist == false) {
-      return [
+    if (field?.defaultValueType == null) {
+      errors.add(
         SourceSpanSeverityException(
           'The "defaultPersist" key is not supported for "${field?.type.className}" types',
           span,
-        )
-      ];
+        ),
+      );
     }
 
     if (field?.hasOnlyDatabaseDefauls == true &&
         field?.type.nullable == false) {
-      return [
+      errors.add(
         SourceSpanSeverityException(
           'When setting only the "defaultPersist" key, its type should be nullable',
           span,
-        )
-      ];
+        ),
+      );
     }
 
     /// We perform this check here instead of using [mutuallyExclusiveKeys] because our
     /// concern is specifically whether the field should be persisted in the database.
     /// Using "persist" is allowed, while using "!persist" is not allowed.
     if (field?.shouldPersist == false) {
-      return [
+      errors.add(
         SourceSpanSeverityException(
           'The "defaultPersist" property is mutually exclusive with the "!persist" property.',
           span,
-        )
-      ];
+        ),
+      );
     }
 
-    return [];
+    return errors;
   }
 
   Map<dynamic, int> _duplicatesCount(List<dynamic> list) {
