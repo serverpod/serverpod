@@ -55,6 +55,9 @@ class MethodDefinition {
   /// The named parameters of this method.
   final List<ParameterDefinition> parametersNamed;
 
+  /// Whether this method contains a stream input our output.
+  final bool isStream;
+
   /// Creates a new [MethodDefinition].
   const MethodDefinition({
     required this.name,
@@ -63,6 +66,7 @@ class MethodDefinition {
     required this.parametersPositional,
     required this.parametersNamed,
     required this.returnType,
+    required this.isStream,
   });
 }
 

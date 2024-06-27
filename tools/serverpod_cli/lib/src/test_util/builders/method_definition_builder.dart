@@ -10,6 +10,7 @@ class MethodDefinitionBuilder {
   List<ParameterDefinition> _parameters = [];
   List<ParameterDefinition> _parametersPositional = [];
   List<ParameterDefinition> _parametersNamed = [];
+  bool _isStream = false;
 
   MethodDefinitionBuilder withName(String name) {
     _name = name;
@@ -44,6 +45,11 @@ class MethodDefinitionBuilder {
     return this;
   }
 
+  MethodDefinitionBuilder withIsStream(bool isStream) {
+    _isStream = isStream;
+    return this;
+  }
+
   MethodDefinition build() {
     return MethodDefinition(
       name: _name,
@@ -52,6 +58,7 @@ class MethodDefinitionBuilder {
       parameters: _parameters,
       parametersPositional: _parametersPositional,
       parametersNamed: _parametersNamed,
+      isStream: _isStream,
     );
   }
 }

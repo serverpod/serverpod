@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
@@ -31,6 +32,7 @@ abstract class EndpointMethodAnalyzer {
       parametersNamed: parameters.named,
       parametersPositional: parameters.positional,
       returnType: TypeDefinition.fromDartType(method.returnType),
+      isStream: method.returnType.isDartAsyncStream || parameters._hasStream(),
     );
 
     return definition;
@@ -68,6 +70,7 @@ abstract class EndpointMethodAnalyzer {
       _validateReturnType(
         dartType: method.returnType,
         dartElement: method,
+        hasStreamParameter: method.parameters._hasStream(),
       )
     ];
 
@@ -82,10 +85,11 @@ abstract class EndpointMethodAnalyzer {
   static SourceSpanSeverityException? _validateReturnType({
     required DartType dartType,
     required Element dartElement,
+    required bool hasStreamParameter,
   }) {
-    if (!dartType.isDartAsyncFuture) {
+    if (!(dartType.isDartAsyncFuture || dartType.isDartAsyncStream)) {
       return SourceSpanSeverityException(
-        'Return type must be a Future.',
+        'Return type must be a Future or a Stream.',
         dartElement.span,
       );
     }
@@ -99,8 +103,10 @@ abstract class EndpointMethodAnalyzer {
 
     var typeArguments = dartType.typeArguments;
     if (typeArguments.length != 1) {
+      // Interface type must always have a type argument so this is just for
+      // safety.
       return SourceSpanSeverityException(
-        'Future must have a type defined. E.g. Future<String>.',
+        'Return generic must be type defined. E.g. ${dartType.element.name}<String>.',
         dartElement.span,
       );
     }
@@ -113,7 +119,15 @@ abstract class EndpointMethodAnalyzer {
 
     if (innerType is DynamicType) {
       return SourceSpanSeverityException(
-        'Future must have a type defined. E.g. Future<String>.',
+        'Return generic must have a type defined. E.g. ${dartType.element.name}<String>.',
+        dartElement.span,
+      );
+    }
+
+    if ((dartType.isDartAsyncStream || hasStreamParameter) &&
+        innerType.nullabilitySuffix != NullabilitySuffix.none) {
+      return SourceSpanSeverityException(
+        'Nullable return type for streaming methods are not supported.',
         dartElement.span,
       );
     }
@@ -129,4 +143,15 @@ abstract class EndpointMethodAnalyzer {
 
     return null;
   }
+}
+
+extension on List<ParameterElement> {
+  bool _hasStream() {
+    return any((element) => element.type.isDartAsyncStream);
+  }
+}
+
+extension on Parameters {
+  bool _hasStream() => [...required, ...positional, ...named]
+      .any((element) => element.type.dartType?.isDartAsyncStream ?? false);
 }
