@@ -210,13 +210,24 @@ class _MethodStreamManager {
     required Server server,
     required WebSocket webSocket,
   }) {
-    if (endpointMethodConnector is! MethodConnector) {
-      // TODO: This is a temporary solution and is fixed in later commits.
-      throw Exception('MethodConnector is not a MethodConnector');
-    }
-
     var controller = StreamController<String>();
-    _handleStream(endpointMethodConnector, session, args, message, server);
+    if (endpointMethodConnector is MethodStreamConnector) {
+      _handleMethodStreamEndpoint(
+        endpointMethodConnector,
+        session,
+        args,
+        message,
+        server,
+      );
+    } else if (endpointMethodConnector is MethodConnector) {
+      _handleMethodCallEndpoint(
+        endpointMethodConnector,
+        session,
+        args,
+        message,
+        server,
+      );
+    }
 
     controller.stream.listen((event) {
       webSocket.add(event);
@@ -240,7 +251,7 @@ class _MethodStreamManager {
   }) =>
       '$connectionId:$endpoint:$method';
 
-  Future<void> _handleStream(
+  Future<void> _handleMethodCallEndpoint(
     MethodConnector methodConnector,
     Session session,
     Map<String, dynamic> args,
@@ -319,6 +330,88 @@ class _MethodStreamManager {
       endpoint: message.endpoint,
       method: message.method,
       connectionId: message.connectionId,
+    );
+  }
+
+  void _handleMethodStreamEndpoint(
+    MethodStreamConnector methodConnector,
+    Session session,
+    Map<String, dynamic> args,
+    OpenMethodStreamCommand message,
+    Server server,
+  ) {
+    methodConnector.call(session, args).listen(
+      (value) {
+        _postMessage(
+          endpoint: message.endpoint,
+          method: message.method,
+          connectionId: message.connectionId,
+          message: MethodStreamMessage.buildMessage(
+            endpoint: message.endpoint,
+            method: message.method,
+            connectionId: message.connectionId,
+            object: server.serializationManager.encodeWithType(value),
+          ),
+        );
+      },
+      onDone: () async {
+        _postMessage(
+          endpoint: message.endpoint,
+          method: message.method,
+          connectionId: message.connectionId,
+          message: CloseMethodStreamCommand.buildMessage(
+            endpoint: message.endpoint,
+            connectionId: message.connectionId,
+            method: message.method,
+            reason: CloseReason.done,
+          ),
+        );
+        await session.close();
+        await closeStream(
+          endpoint: message.endpoint,
+          method: message.method,
+          connectionId: message.connectionId,
+        );
+      },
+      onError: (e, stackTrace) async {
+        if (e is SerializableException) {
+          _postMessage(
+            endpoint: message.endpoint,
+            method: message.method,
+            connectionId: message.connectionId,
+            message: MethodStreamSerializableException.buildMessage(
+              endpoint: message.endpoint,
+              method: message.method,
+              connectionId: message.connectionId,
+              object: server.serializationManager.encodeWithType(e),
+            ),
+          );
+        }
+
+        _postMessage(
+          endpoint: message.endpoint,
+          method: message.method,
+          connectionId: message.connectionId,
+          message: CloseMethodStreamCommand.buildMessage(
+            endpoint: message.endpoint,
+            connectionId: message.connectionId,
+            method: message.method,
+            reason: CloseReason.error,
+          ),
+        );
+
+        await session.close(error: e, stackTrace: stackTrace);
+        await closeStream(
+          endpoint: message.endpoint,
+          method: message.method,
+          connectionId: message.connectionId,
+        );
+      },
+      // Cancel on error prevents the stream from continuing after an exception
+      // has been thrown. This is important since we want to close the stream
+      // when an exception is thrown and handle the complete shutdown in the
+      // onError callback.
+      cancelOnError: true,
     );
   }
 
