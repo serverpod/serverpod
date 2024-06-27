@@ -76,14 +76,14 @@ void main() async {
   );
 
   group(
-    "Given a class with 'defaultDatabase' fields",
+    "Given a class with 'defaultPersist' fields",
     () {
       test(
         'when an object of the class is created, then all fields should be null',
         () {
-          var object = DateTimeDefaultDatabase();
-          expect(object.dateTimeDefaultDatabaseNow, isNull);
-          expect(object.dateTimeDefaultDatabaseStr, isNull);
+          var object = DateTimeDefaultPersist();
+          expect(object.dateTimeDefaultPersistNow, isNull);
+          expect(object.dateTimeDefaultPersistStr, isNull);
         },
       );
     },
@@ -104,22 +104,22 @@ void main() async {
       );
 
       test(
-        'when the field has "default" and "defaultDatabase", then the field value should be the "default" value',
+        'when the field has "default" and "defaultPersist", then the field value should be the "default" value',
         () {
           var object = DateTimeDefaultMix();
           expect(
-            object.dateTimeDefaultAndDefaultDatabase,
+            object.dateTimeDefaultAndDefaultPersist,
             DateTime.parse('2024-05-01T22:00:00.000Z'),
           );
         },
       );
 
       test(
-        'when the field has "defaultModel" and "defaultDatabase", then the field value should be the "defaultModel" value',
+        'when the field has "defaultModel" and "defaultPersist", then the field value should be the "defaultModel" value',
         () {
           var object = DateTimeDefaultMix();
           expect(
-            object.dateTimeDefaultModelAndDefaultDatabase,
+            object.dateTimeDefaultModelAndDefaultPersist,
             DateTime.parse('2024-05-01T22:00:00.000Z'),
           );
         },

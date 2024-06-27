@@ -11,9 +11,9 @@ library protocol; // ignore_for_file: no_leading_underscores_for_library_prefixe
 
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'defaults/datetime_default.dart' as _i2;
-import 'defaults/datetime_default_database.dart' as _i3;
-import 'defaults/datetime_default_mix.dart' as _i4;
-import 'defaults/datetime_default_model.dart' as _i5;
+import 'defaults/datetime_default_mix.dart' as _i3;
+import 'defaults/datetime_default_model.dart' as _i4;
+import 'defaults/datetime_default_persist.dart' as _i5;
 import 'empty_model/empty_model_relation_item.dart' as _i6;
 import 'empty_model/empy_model.dart' as _i7;
 import 'exception_with_data.dart' as _i8;
@@ -101,9 +101,9 @@ import 'package:serverpod_test_client/src/protocol_custom_classes.dart' as _i80;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i81;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i82;
 export 'defaults/datetime_default.dart';
-export 'defaults/datetime_default_database.dart';
 export 'defaults/datetime_default_mix.dart';
 export 'defaults/datetime_default_model.dart';
+export 'defaults/datetime_default_persist.dart';
 export 'empty_model/empty_model_relation_item.dart';
 export 'empty_model/empy_model.dart';
 export 'exception_with_data.dart';
@@ -190,14 +190,14 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i2.DateTimeDefault) {
       return _i2.DateTimeDefault.fromJson(data) as T;
     }
-    if (t == _i3.DateTimeDefaultDatabase) {
-      return _i3.DateTimeDefaultDatabase.fromJson(data) as T;
+    if (t == _i3.DateTimeDefaultMix) {
+      return _i3.DateTimeDefaultMix.fromJson(data) as T;
     }
-    if (t == _i4.DateTimeDefaultMix) {
-      return _i4.DateTimeDefaultMix.fromJson(data) as T;
+    if (t == _i4.DateTimeDefaultModel) {
+      return _i4.DateTimeDefaultModel.fromJson(data) as T;
     }
-    if (t == _i5.DateTimeDefaultModel) {
-      return _i5.DateTimeDefaultModel.fromJson(data) as T;
+    if (t == _i5.DateTimeDefaultPersist) {
+      return _i5.DateTimeDefaultPersist.fromJson(data) as T;
     }
     if (t == _i6.EmptyModelRelationItem) {
       return _i6.EmptyModelRelationItem.fromJson(data) as T;
@@ -406,15 +406,15 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i2.DateTimeDefault?>()) {
       return (data != null ? _i2.DateTimeDefault.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i3.DateTimeDefaultDatabase?>()) {
-      return (data != null ? _i3.DateTimeDefaultDatabase.fromJson(data) : null)
+    if (t == _i1.getType<_i3.DateTimeDefaultMix?>()) {
+      return (data != null ? _i3.DateTimeDefaultMix.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i4.DateTimeDefaultModel?>()) {
+      return (data != null ? _i4.DateTimeDefaultModel.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i4.DateTimeDefaultMix?>()) {
-      return (data != null ? _i4.DateTimeDefaultMix.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i5.DateTimeDefaultModel?>()) {
-      return (data != null ? _i5.DateTimeDefaultModel.fromJson(data) : null)
+    if (t == _i1.getType<_i5.DateTimeDefaultPersist?>()) {
+      return (data != null ? _i5.DateTimeDefaultPersist.fromJson(data) : null)
           as T;
     }
     if (t == _i1.getType<_i6.EmptyModelRelationItem?>()) {
@@ -1576,14 +1576,14 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i2.DateTimeDefault) {
       return 'DateTimeDefault';
     }
-    if (data is _i3.DateTimeDefaultDatabase) {
-      return 'DateTimeDefaultDatabase';
-    }
-    if (data is _i4.DateTimeDefaultMix) {
+    if (data is _i3.DateTimeDefaultMix) {
       return 'DateTimeDefaultMix';
     }
-    if (data is _i5.DateTimeDefaultModel) {
+    if (data is _i4.DateTimeDefaultModel) {
       return 'DateTimeDefaultModel';
+    }
+    if (data is _i5.DateTimeDefaultPersist) {
+      return 'DateTimeDefaultPersist';
     }
     if (data is _i6.EmptyModelRelationItem) {
       return 'EmptyModelRelationItem';
@@ -1820,14 +1820,14 @@ class Protocol extends _i1.SerializationManager {
     if (data['className'] == 'DateTimeDefault') {
       return deserialize<_i2.DateTimeDefault>(data['data']);
     }
-    if (data['className'] == 'DateTimeDefaultDatabase') {
-      return deserialize<_i3.DateTimeDefaultDatabase>(data['data']);
-    }
     if (data['className'] == 'DateTimeDefaultMix') {
-      return deserialize<_i4.DateTimeDefaultMix>(data['data']);
+      return deserialize<_i3.DateTimeDefaultMix>(data['data']);
     }
     if (data['className'] == 'DateTimeDefaultModel') {
-      return deserialize<_i5.DateTimeDefaultModel>(data['data']);
+      return deserialize<_i4.DateTimeDefaultModel>(data['data']);
+    }
+    if (data['className'] == 'DateTimeDefaultPersist') {
+      return deserialize<_i5.DateTimeDefaultPersist>(data['data']);
     }
     if (data['className'] == 'EmptyModelRelationItem') {
       return deserialize<_i6.EmptyModelRelationItem>(data['data']);

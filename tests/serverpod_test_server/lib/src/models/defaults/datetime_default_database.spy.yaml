@@ -1,5 +1,0 @@
-class: DateTimeDefaultDatabase
-table: datetime_default_database
-fields:
-  dateTimeDefaultDatabaseNow: DateTime?, defaultDatabase=now
-  dateTimeDefaultDatabaseStr: DateTime?, defaultDatabase=2024-05-10T22:00:00.000Z

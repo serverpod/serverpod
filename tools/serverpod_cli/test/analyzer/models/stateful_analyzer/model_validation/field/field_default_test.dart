@@ -230,7 +230,7 @@ void main() {
     );
   });
 
-  group('Given a class with fields with a "defaultDatabase" keyword', () {
+  group('Given a class with fields with a "defaultPersist" keyword', () {
     test(
       'when the field is of a supported type, then the field should have a default value',
       () {
@@ -240,7 +240,7 @@ void main() {
             class: Example
             table: example
             fields:
-              dateTimeType: DateTime?, defaultDatabase=now
+              dateTimeType: DateTime?, defaultPersist=now
             ''',
           ).build()
         ];
@@ -266,7 +266,7 @@ void main() {
             class: Example
             table: example
             fields:
-              dateTimeType: DateTime, defaultDatabase=now
+              dateTimeType: DateTime, defaultPersist=now
             ''',
           ).build()
         ];
@@ -279,7 +279,7 @@ void main() {
 
         var error = collector.errors.first as SourceSpanSeverityException;
         expect(error.message,
-            'When setting only the "defaultDatabase" key, its type should be nullable');
+            'When setting only the "defaultPersist" key, its type should be nullable');
       },
     );
 
@@ -292,8 +292,8 @@ void main() {
             class: Example
             table: example
             fields:
-              dateTimeInvalid: DateTime?, defaultDatabase=test
-              dateTimeNonUtc: DateTime?, defaultDatabase=2024-06-06
+              dateTimeInvalid: DateTime?, defaultPersist=test
+              dateTimeNonUtc: DateTime?, defaultPersist=2024-06-06
             ''',
           ).build()
         ];
@@ -306,11 +306,11 @@ void main() {
 
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(firstError.message,
-            'The "defaultDatabase" value must be a valid UTC DateTime String or "now"');
+            'The "defaultPersist" value must be a valid UTC DateTime String or "now"');
 
         var secondError = collector.errors.last as SourceSpanSeverityException;
         expect(secondError.message,
-            'The "defaultDatabase" value should be a valid UTC DateTime.');
+            'The "defaultPersist" value should be a valid UTC DateTime.');
       },
     );
 
@@ -323,7 +323,7 @@ void main() {
             class: Example
             table: example
             fields:
-              dateTimeType: DateTime?, defaultDatabase=now, !persist
+              dateTimeType: DateTime?, defaultPersist=now, !persist
             ''',
           ).build()
         ];
@@ -336,7 +336,7 @@ void main() {
 
         var error = collector.errors.first as SourceSpanSeverityException;
         expect(error.message,
-            'The "defaultDatabase" property is mutually exclusive with the "!persist" property.');
+            'The "defaultPersist" property is mutually exclusive with the "!persist" property.');
       },
     );
 
@@ -349,16 +349,16 @@ void main() {
             class: Example
             table: example
             fields:
-              stingType: String, defaultDatabase=test
-              intType: int, defaultDatabase=test
-              doubleType: double, defaultDatabase=test
-              boolType: bool, defaultDatabase=test
-              durationType: Duration, defaultDatabase=test
-              byteDataType: ByteData, defaultDatabase=test
-              uuidValueType: UuidValue, defaultDatabase=test
-              mapType: Map<String, int>, defaultDatabase=test
-              listype: List<int>, defaultDatabase=test
-              classType: Example, defaultDatabase=test
+              stingType: String, defaultPersist=test
+              intType: int, defaultPersist=test
+              doubleType: double, defaultPersist=test
+              boolType: bool, defaultPersist=test
+              durationType: Duration, defaultPersist=test
+              byteDataType: ByteData, defaultPersist=test
+              uuidValueType: UuidValue, defaultPersist=test
+              mapType: Map<String, int>, defaultPersist=test
+              listype: List<int>, defaultPersist=test
+              classType: Example, defaultPersist=test
             ''',
           ).build()
         ];
@@ -370,16 +370,16 @@ void main() {
         var errors = List<SourceSpanSeverityException>.from(collector.errors);
 
         var errorMessages = [
-          'The "defaultDatabase" key is not supported for "String" types',
-          'The "defaultDatabase" key is not supported for "int" types',
-          'The "defaultDatabase" key is not supported for "double" types',
-          'The "defaultDatabase" key is not supported for "bool" types',
-          'The "defaultDatabase" key is not supported for "Duration" types',
-          'The "defaultDatabase" key is not supported for "ByteData" types',
-          'The "defaultDatabase" key is not supported for "UuidValue" types',
-          'The "defaultDatabase" key is not supported for "Map" types',
-          'The "defaultDatabase" key is not supported for "List" types',
-          'The "defaultDatabase" key is not supported for "Example" types',
+          'The "defaultPersist" key is not supported for "String" types',
+          'The "defaultPersist" key is not supported for "int" types',
+          'The "defaultPersist" key is not supported for "double" types',
+          'The "defaultPersist" key is not supported for "bool" types',
+          'The "defaultPersist" key is not supported for "Duration" types',
+          'The "defaultPersist" key is not supported for "ByteData" types',
+          'The "defaultPersist" key is not supported for "UuidValue" types',
+          'The "defaultPersist" key is not supported for "Map" types',
+          'The "defaultPersist" key is not supported for "List" types',
+          'The "defaultPersist" key is not supported for "Example" types',
         ];
 
         expect(errors.length, errorMessages.length);

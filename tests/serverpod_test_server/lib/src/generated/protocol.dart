@@ -15,9 +15,9 @@ import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i3;
 import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
     as _i4;
 import 'defaults/datetime_default.dart' as _i5;
-import 'defaults/datetime_default_database.dart' as _i6;
-import 'defaults/datetime_default_mix.dart' as _i7;
-import 'defaults/datetime_default_model.dart' as _i8;
+import 'defaults/datetime_default_mix.dart' as _i6;
+import 'defaults/datetime_default_model.dart' as _i7;
+import 'defaults/datetime_default_persist.dart' as _i8;
 import 'empty_model/empty_model_relation_item.dart' as _i9;
 import 'empty_model/empy_model.dart' as _i10;
 import 'exception_with_data.dart' as _i11;
@@ -104,9 +104,9 @@ import 'package:serverpod_test_server/src/custom_classes.dart' as _i83;
 import 'package:serverpod_test_server/src/protocol_custom_classes.dart' as _i84;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i85;
 export 'defaults/datetime_default.dart';
-export 'defaults/datetime_default_database.dart';
 export 'defaults/datetime_default_mix.dart';
 export 'defaults/datetime_default_model.dart';
+export 'defaults/datetime_default_persist.dart';
 export 'empty_model/empty_model_relation_item.dart';
 export 'empty_model/empy_model.dart';
 export 'exception_with_data.dart';
@@ -817,53 +817,6 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
-      name: 'datetime_default_database',
-      dartName: 'DateTimeDefaultDatabase',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault:
-              'nextval(\'datetime_default_database_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'dateTimeDefaultDatabaseNow',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: true,
-          dartType: 'DateTime?',
-          columnDefault: 'CURRENT_TIMESTAMP',
-        ),
-        _i2.ColumnDefinition(
-          name: 'dateTimeDefaultDatabaseStr',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: true,
-          dartType: 'DateTime?',
-          columnDefault: '\'2024-05-10 22:00:00\'::timestamp without time zone',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'datetime_default_database_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
       name: 'datetime_default_mix',
       dartName: 'DateTimeDefaultMix',
       schema: 'public',
@@ -884,14 +837,14 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: '\'2024-05-01 22:00:00\'::timestamp without time zone',
         ),
         _i2.ColumnDefinition(
-          name: 'dateTimeDefaultAndDefaultDatabase',
+          name: 'dateTimeDefaultAndDefaultPersist',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
           columnDefault: '\'2024-05-10 22:00:00\'::timestamp without time zone',
         ),
         _i2.ColumnDefinition(
-          name: 'dateTimeDefaultModelAndDefaultDatabase',
+          name: 'dateTimeDefaultModelAndDefaultPersist',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
@@ -952,6 +905,53 @@ class Protocol extends _i1.SerializationManagerServer {
       indexes: [
         _i2.IndexDefinition(
           indexName: 'datetime_default_model_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'datetime_default_persist',
+      dartName: 'DateTimeDefaultPersist',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'datetime_default_persist_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'dateTimeDefaultPersistNow',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+        _i2.ColumnDefinition(
+          name: 'dateTimeDefaultPersistStr',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+          columnDefault: '\'2024-05-10 22:00:00\'::timestamp without time zone',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'datetime_default_persist_pkey',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
@@ -3104,14 +3104,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i5.DateTimeDefault) {
       return _i5.DateTimeDefault.fromJson(data) as T;
     }
-    if (t == _i6.DateTimeDefaultDatabase) {
-      return _i6.DateTimeDefaultDatabase.fromJson(data) as T;
+    if (t == _i6.DateTimeDefaultMix) {
+      return _i6.DateTimeDefaultMix.fromJson(data) as T;
     }
-    if (t == _i7.DateTimeDefaultMix) {
-      return _i7.DateTimeDefaultMix.fromJson(data) as T;
+    if (t == _i7.DateTimeDefaultModel) {
+      return _i7.DateTimeDefaultModel.fromJson(data) as T;
     }
-    if (t == _i8.DateTimeDefaultModel) {
-      return _i8.DateTimeDefaultModel.fromJson(data) as T;
+    if (t == _i8.DateTimeDefaultPersist) {
+      return _i8.DateTimeDefaultPersist.fromJson(data) as T;
     }
     if (t == _i9.EmptyModelRelationItem) {
       return _i9.EmptyModelRelationItem.fromJson(data) as T;
@@ -3326,15 +3326,15 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i5.DateTimeDefault?>()) {
       return (data != null ? _i5.DateTimeDefault.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i6.DateTimeDefaultDatabase?>()) {
-      return (data != null ? _i6.DateTimeDefaultDatabase.fromJson(data) : null)
+    if (t == _i1.getType<_i6.DateTimeDefaultMix?>()) {
+      return (data != null ? _i6.DateTimeDefaultMix.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i7.DateTimeDefaultModel?>()) {
+      return (data != null ? _i7.DateTimeDefaultModel.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i7.DateTimeDefaultMix?>()) {
-      return (data != null ? _i7.DateTimeDefaultMix.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i8.DateTimeDefaultModel?>()) {
-      return (data != null ? _i8.DateTimeDefaultModel.fromJson(data) : null)
+    if (t == _i1.getType<_i8.DateTimeDefaultPersist?>()) {
+      return (data != null ? _i8.DateTimeDefaultPersist.fromJson(data) : null)
           as T;
     }
     if (t == _i1.getType<_i9.EmptyModelRelationItem?>()) {
@@ -4518,14 +4518,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i5.DateTimeDefault) {
       return 'DateTimeDefault';
     }
-    if (data is _i6.DateTimeDefaultDatabase) {
-      return 'DateTimeDefaultDatabase';
-    }
-    if (data is _i7.DateTimeDefaultMix) {
+    if (data is _i6.DateTimeDefaultMix) {
       return 'DateTimeDefaultMix';
     }
-    if (data is _i8.DateTimeDefaultModel) {
+    if (data is _i7.DateTimeDefaultModel) {
       return 'DateTimeDefaultModel';
+    }
+    if (data is _i8.DateTimeDefaultPersist) {
+      return 'DateTimeDefaultPersist';
     }
     if (data is _i9.EmptyModelRelationItem) {
       return 'EmptyModelRelationItem';
@@ -4768,14 +4768,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data['className'] == 'DateTimeDefault') {
       return deserialize<_i5.DateTimeDefault>(data['data']);
     }
-    if (data['className'] == 'DateTimeDefaultDatabase') {
-      return deserialize<_i6.DateTimeDefaultDatabase>(data['data']);
-    }
     if (data['className'] == 'DateTimeDefaultMix') {
-      return deserialize<_i7.DateTimeDefaultMix>(data['data']);
+      return deserialize<_i6.DateTimeDefaultMix>(data['data']);
     }
     if (data['className'] == 'DateTimeDefaultModel') {
-      return deserialize<_i8.DateTimeDefaultModel>(data['data']);
+      return deserialize<_i7.DateTimeDefaultModel>(data['data']);
+    }
+    if (data['className'] == 'DateTimeDefaultPersist') {
+      return deserialize<_i8.DateTimeDefaultPersist>(data['data']);
     }
     if (data['className'] == 'EmptyModelRelationItem') {
       return deserialize<_i9.EmptyModelRelationItem>(data['data']);
@@ -5013,12 +5013,12 @@ class Protocol extends _i1.SerializationManagerServer {
     switch (t) {
       case _i5.DateTimeDefault:
         return _i5.DateTimeDefault.t;
-      case _i6.DateTimeDefaultDatabase:
-        return _i6.DateTimeDefaultDatabase.t;
-      case _i7.DateTimeDefaultMix:
-        return _i7.DateTimeDefaultMix.t;
-      case _i8.DateTimeDefaultModel:
-        return _i8.DateTimeDefaultModel.t;
+      case _i6.DateTimeDefaultMix:
+        return _i6.DateTimeDefaultMix.t;
+      case _i7.DateTimeDefaultModel:
+        return _i7.DateTimeDefaultModel.t;
+      case _i8.DateTimeDefaultPersist:
+        return _i8.DateTimeDefaultPersist.t;
       case _i9.EmptyModelRelationItem:
         return _i9.EmptyModelRelationItem.t;
       case _i10.EmptyModel:

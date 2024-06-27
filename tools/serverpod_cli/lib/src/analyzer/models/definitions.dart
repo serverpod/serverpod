@@ -200,7 +200,7 @@ class SerializableModelFieldDefinition {
   bool get isAllowedToHaveDefaultModel => defaultValueType != null;
 
   /// Returns true, if this field is allowed to have [defaultDatabase] key
-  bool get isAllowedToHaveDefaultDatabase => defaultValueType != null;
+  bool get isAllowedToHaveDefaultPersist=> defaultValueType != null;
 }
 
 /// The scope of a field.

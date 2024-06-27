@@ -1165,7 +1165,7 @@ class Restrictions {
     return [];
   }
 
-  List<SourceSpanSeverityException> validateDefaultDatabaseKey(
+  List<SourceSpanSeverityException> validateDefaultPersistKey(
     String parentNodeName,
     String relation,
     SourceSpan? span,
@@ -1174,10 +1174,10 @@ class Restrictions {
     if (definition is! ClassDefinition) return [];
 
     var field = definition.findField(parentNodeName);
-    if (field?.isAllowedToHaveDefaultDatabase == false) {
+    if (field?.isAllowedToHaveDefaultPersist == false) {
       return [
         SourceSpanSeverityException(
-          'The "defaultDatabase" key is not supported for "${field?.type.className}" types',
+          'The "defaultPesist" key is not supported for "${field?.type.className}" types',
           span,
         )
       ];
@@ -1187,7 +1187,7 @@ class Restrictions {
         field?.type.nullable == false) {
       return [
         SourceSpanSeverityException(
-          'When setting only the "defaultDatabase" key, its type should be nullable',
+          'When setting only the "defaultPesist" key, its type should be nullable',
           span,
         )
       ];
@@ -1199,7 +1199,7 @@ class Restrictions {
     if (field?.shouldPersist == false) {
       return [
         SourceSpanSeverityException(
-          'The "defaultDatabase" property is mutually exclusive with the "!persist" property.',
+          'The "defaultPesist" property is mutually exclusive with the "!persist" property.',
           span,
         )
       ];

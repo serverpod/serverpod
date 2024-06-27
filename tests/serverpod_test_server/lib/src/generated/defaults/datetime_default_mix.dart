@@ -16,22 +16,22 @@ abstract class DateTimeDefaultMix extends _i1.TableRow
   DateTimeDefaultMix._({
     int? id,
     DateTime? dateTimeDefaultAndDefaultModel,
-    DateTime? dateTimeDefaultAndDefaultDatabase,
-    DateTime? dateTimeDefaultModelAndDefaultDatabase,
+    DateTime? dateTimeDefaultAndDefaultPersist,
+    DateTime? dateTimeDefaultModelAndDefaultPersist,
   })  : dateTimeDefaultAndDefaultModel = dateTimeDefaultAndDefaultModel ??
             DateTime.parse('2024-05-10T22:00:00.000Z'),
-        dateTimeDefaultAndDefaultDatabase = dateTimeDefaultAndDefaultDatabase ??
+        dateTimeDefaultAndDefaultPersist = dateTimeDefaultAndDefaultPersist ??
             DateTime.parse('2024-05-01T22:00:00.000Z'),
-        dateTimeDefaultModelAndDefaultDatabase =
-            dateTimeDefaultModelAndDefaultDatabase ??
+        dateTimeDefaultModelAndDefaultPersist =
+            dateTimeDefaultModelAndDefaultPersist ??
                 DateTime.parse('2024-05-01T22:00:00.000Z'),
         super(id);
 
   factory DateTimeDefaultMix({
     int? id,
     DateTime? dateTimeDefaultAndDefaultModel,
-    DateTime? dateTimeDefaultAndDefaultDatabase,
-    DateTime? dateTimeDefaultModelAndDefaultDatabase,
+    DateTime? dateTimeDefaultAndDefaultPersist,
+    DateTime? dateTimeDefaultModelAndDefaultPersist,
   }) = _DateTimeDefaultMixImpl;
 
   factory DateTimeDefaultMix.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -39,11 +39,10 @@ abstract class DateTimeDefaultMix extends _i1.TableRow
       id: jsonSerialization['id'] as int?,
       dateTimeDefaultAndDefaultModel: _i1.DateTimeJsonExtension.fromJson(
           jsonSerialization['dateTimeDefaultAndDefaultModel']),
-      dateTimeDefaultAndDefaultDatabase: _i1.DateTimeJsonExtension.fromJson(
-          jsonSerialization['dateTimeDefaultAndDefaultDatabase']),
-      dateTimeDefaultModelAndDefaultDatabase:
-          _i1.DateTimeJsonExtension.fromJson(
-              jsonSerialization['dateTimeDefaultModelAndDefaultDatabase']),
+      dateTimeDefaultAndDefaultPersist: _i1.DateTimeJsonExtension.fromJson(
+          jsonSerialization['dateTimeDefaultAndDefaultPersist']),
+      dateTimeDefaultModelAndDefaultPersist: _i1.DateTimeJsonExtension.fromJson(
+          jsonSerialization['dateTimeDefaultModelAndDefaultPersist']),
     );
   }
 
@@ -53,9 +52,9 @@ abstract class DateTimeDefaultMix extends _i1.TableRow
 
   DateTime dateTimeDefaultAndDefaultModel;
 
-  DateTime dateTimeDefaultAndDefaultDatabase;
+  DateTime dateTimeDefaultAndDefaultPersist;
 
-  DateTime dateTimeDefaultModelAndDefaultDatabase;
+  DateTime dateTimeDefaultModelAndDefaultPersist;
 
   @override
   _i1.Table get table => t;
@@ -63,18 +62,18 @@ abstract class DateTimeDefaultMix extends _i1.TableRow
   DateTimeDefaultMix copyWith({
     int? id,
     DateTime? dateTimeDefaultAndDefaultModel,
-    DateTime? dateTimeDefaultAndDefaultDatabase,
-    DateTime? dateTimeDefaultModelAndDefaultDatabase,
+    DateTime? dateTimeDefaultAndDefaultPersist,
+    DateTime? dateTimeDefaultModelAndDefaultPersist,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
       'dateTimeDefaultAndDefaultModel': dateTimeDefaultAndDefaultModel.toJson(),
-      'dateTimeDefaultAndDefaultDatabase':
-          dateTimeDefaultAndDefaultDatabase.toJson(),
-      'dateTimeDefaultModelAndDefaultDatabase':
-          dateTimeDefaultModelAndDefaultDatabase.toJson(),
+      'dateTimeDefaultAndDefaultPersist':
+          dateTimeDefaultAndDefaultPersist.toJson(),
+      'dateTimeDefaultModelAndDefaultPersist':
+          dateTimeDefaultModelAndDefaultPersist.toJson(),
     };
   }
 
@@ -83,10 +82,10 @@ abstract class DateTimeDefaultMix extends _i1.TableRow
     return {
       if (id != null) 'id': id,
       'dateTimeDefaultAndDefaultModel': dateTimeDefaultAndDefaultModel.toJson(),
-      'dateTimeDefaultAndDefaultDatabase':
-          dateTimeDefaultAndDefaultDatabase.toJson(),
-      'dateTimeDefaultModelAndDefaultDatabase':
-          dateTimeDefaultModelAndDefaultDatabase.toJson(),
+      'dateTimeDefaultAndDefaultPersist':
+          dateTimeDefaultAndDefaultPersist.toJson(),
+      'dateTimeDefaultModelAndDefaultPersist':
+          dateTimeDefaultModelAndDefaultPersist.toJson(),
     };
   }
 
@@ -126,32 +125,32 @@ class _DateTimeDefaultMixImpl extends DateTimeDefaultMix {
   _DateTimeDefaultMixImpl({
     int? id,
     DateTime? dateTimeDefaultAndDefaultModel,
-    DateTime? dateTimeDefaultAndDefaultDatabase,
-    DateTime? dateTimeDefaultModelAndDefaultDatabase,
+    DateTime? dateTimeDefaultAndDefaultPersist,
+    DateTime? dateTimeDefaultModelAndDefaultPersist,
   }) : super._(
           id: id,
           dateTimeDefaultAndDefaultModel: dateTimeDefaultAndDefaultModel,
-          dateTimeDefaultAndDefaultDatabase: dateTimeDefaultAndDefaultDatabase,
-          dateTimeDefaultModelAndDefaultDatabase:
-              dateTimeDefaultModelAndDefaultDatabase,
+          dateTimeDefaultAndDefaultPersist: dateTimeDefaultAndDefaultPersist,
+          dateTimeDefaultModelAndDefaultPersist:
+              dateTimeDefaultModelAndDefaultPersist,
         );
 
   @override
   DateTimeDefaultMix copyWith({
     Object? id = _Undefined,
     DateTime? dateTimeDefaultAndDefaultModel,
-    DateTime? dateTimeDefaultAndDefaultDatabase,
-    DateTime? dateTimeDefaultModelAndDefaultDatabase,
+    DateTime? dateTimeDefaultAndDefaultPersist,
+    DateTime? dateTimeDefaultModelAndDefaultPersist,
   }) {
     return DateTimeDefaultMix(
       id: id is int? ? id : this.id,
       dateTimeDefaultAndDefaultModel:
           dateTimeDefaultAndDefaultModel ?? this.dateTimeDefaultAndDefaultModel,
-      dateTimeDefaultAndDefaultDatabase: dateTimeDefaultAndDefaultDatabase ??
-          this.dateTimeDefaultAndDefaultDatabase,
-      dateTimeDefaultModelAndDefaultDatabase:
-          dateTimeDefaultModelAndDefaultDatabase ??
-              this.dateTimeDefaultModelAndDefaultDatabase,
+      dateTimeDefaultAndDefaultPersist: dateTimeDefaultAndDefaultPersist ??
+          this.dateTimeDefaultAndDefaultPersist,
+      dateTimeDefaultModelAndDefaultPersist:
+          dateTimeDefaultModelAndDefaultPersist ??
+              this.dateTimeDefaultModelAndDefaultPersist,
     );
   }
 }
@@ -164,13 +163,13 @@ class DateTimeDefaultMixTable extends _i1.Table {
       this,
       hasDefaults: true,
     );
-    dateTimeDefaultAndDefaultDatabase = _i1.ColumnDateTime(
-      'dateTimeDefaultAndDefaultDatabase',
+    dateTimeDefaultAndDefaultPersist = _i1.ColumnDateTime(
+      'dateTimeDefaultAndDefaultPersist',
       this,
       hasDefaults: true,
     );
-    dateTimeDefaultModelAndDefaultDatabase = _i1.ColumnDateTime(
-      'dateTimeDefaultModelAndDefaultDatabase',
+    dateTimeDefaultModelAndDefaultPersist = _i1.ColumnDateTime(
+      'dateTimeDefaultModelAndDefaultPersist',
       this,
       hasDefaults: true,
     );
@@ -178,16 +177,16 @@ class DateTimeDefaultMixTable extends _i1.Table {
 
   late final _i1.ColumnDateTime dateTimeDefaultAndDefaultModel;
 
-  late final _i1.ColumnDateTime dateTimeDefaultAndDefaultDatabase;
+  late final _i1.ColumnDateTime dateTimeDefaultAndDefaultPersist;
 
-  late final _i1.ColumnDateTime dateTimeDefaultModelAndDefaultDatabase;
+  late final _i1.ColumnDateTime dateTimeDefaultModelAndDefaultPersist;
 
   @override
   List<_i1.Column> get columns => [
         id,
         dateTimeDefaultAndDefaultModel,
-        dateTimeDefaultAndDefaultDatabase,
-        dateTimeDefaultModelAndDefaultDatabase,
+        dateTimeDefaultAndDefaultPersist,
+        dateTimeDefaultModelAndDefaultPersist,
       ];
 }
 

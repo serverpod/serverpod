@@ -106,18 +106,18 @@ void main() async {
     });
   });
 
-  group('Given a class with "defaultDatabase" fields,', () {
-    tearDownAll(() async => DateTimeDefaultDatabase.db.deleteWhere(
+  group('Given a class with "defaultPersist" fields,', () {
+    tearDownAll(() async => DateTimeDefaultPersist.db.deleteWhere(
           session,
           where: (_) => Constant.bool(true),
         ));
 
     group('when creating a record in the database,', () {
-      var object = DateTimeDefaultDatabase();
-      late DateTimeDefaultDatabase databaseObject;
+      var object = DateTimeDefaultPersist();
+      late DateTimeDefaultPersist databaseObject;
 
       setUpAll(() async {
-        databaseObject = await DateTimeDefaultDatabase.db.insertRow(
+        databaseObject = await DateTimeDefaultPersist.db.insertRow(
           session,
           object,
         );
@@ -126,8 +126,8 @@ void main() async {
       test(
         'then all fields should be in UTC',
         () {
-          expect(databaseObject.dateTimeDefaultDatabaseNow?.isUtc, true);
-          expect(databaseObject.dateTimeDefaultDatabaseStr?.isUtc, true);
+          expect(databaseObject.dateTimeDefaultPersistNow?.isUtc, true);
+          expect(databaseObject.dateTimeDefaultPersistStr?.isUtc, true);
         },
       );
 
@@ -135,14 +135,14 @@ void main() async {
         'then all fields value should match the defaults',
         () {
           expect(
-            databaseObject.dateTimeDefaultDatabaseNow!
+            databaseObject.dateTimeDefaultPersistNow!
                 .difference(DateTime.now())
                 .inSeconds,
             0,
           );
 
           expect(
-            databaseObject.dateTimeDefaultDatabaseStr,
+            databaseObject.dateTimeDefaultPersistStr,
             DateTime.parse("2024-05-10T22:00:00.000Z"),
           );
         },
@@ -150,23 +150,23 @@ void main() async {
     });
 
     group('when creating a record in the database with an unsafe query,', () {
-      late DateTimeDefaultDatabase? databaseObject;
+      late DateTimeDefaultPersist? databaseObject;
 
       setUpAll(() async {
         await session.db.unsafeQuery(
           '''
-          INSERT INTO ${DateTimeDefaultDatabase.t.tableName}
+          INSERT INTO ${DateTimeDefaultPersist.t.tableName}
           VALUES (DEFAULT, DEFAULT);
           ''',
         );
-        databaseObject = await DateTimeDefaultDatabase.db.findFirstRow(session);
+        databaseObject = await DateTimeDefaultPersist.db.findFirstRow(session);
       });
 
       test(
         'then all fields should be in UTC',
         () {
-          expect(databaseObject?.dateTimeDefaultDatabaseNow?.isUtc, true);
-          expect(databaseObject?.dateTimeDefaultDatabaseStr?.isUtc, true);
+          expect(databaseObject?.dateTimeDefaultPersistNow?.isUtc, true);
+          expect(databaseObject?.dateTimeDefaultPersistStr?.isUtc, true);
         },
       );
 
@@ -174,14 +174,14 @@ void main() async {
         'then all fields value should match the defaults',
         () {
           expect(
-            databaseObject!.dateTimeDefaultDatabaseNow!
+            databaseObject!.dateTimeDefaultPersistNow!
                 .difference(DateTime.now())
                 .inSeconds,
             0,
           );
 
           expect(
-            databaseObject!.dateTimeDefaultDatabaseStr,
+            databaseObject!.dateTimeDefaultPersistStr,
             DateTime.parse("2024-05-10T22:00:00.000Z"),
           );
         },
@@ -190,7 +190,7 @@ void main() async {
   });
 
   group('Given a class with mixed default fields,', () {
-    tearDownAll(() async => DateTimeDefaultDatabase.db.deleteWhere(
+    tearDownAll(() async => DateTimeDefaultMix.db.deleteWhere(
           session,
           where: (_) => Constant.bool(true),
         ));
@@ -201,7 +201,7 @@ void main() async {
       setUpAll(() async {
         await session.db.unsafeQuery(
           '''
-          INSERT INTO "${DateTimeDefaultMix.t.tableName}" ("dateTimeDefaultAndDefaultModel", "dateTimeDefaultAndDefaultDatabase", "dateTimeDefaultModelAndDefaultDatabase")
+          INSERT INTO "${DateTimeDefaultMix.t.tableName}" ("dateTimeDefaultAndDefaultModel", "dateTimeDefaultAndDefaultPersist", "dateTimeDefaultModelAndDefaultPersist")
           VALUES ('2024-05-10T22:00:00.000Z', DEFAULT, DEFAULT);
           ''',
         );
@@ -209,14 +209,14 @@ void main() async {
       });
 
       test(
-          'then all fields with "defaultDatabase" value should have "defaultDatabase" values and not other defaults',
+          'then all fields with "defaultPersist" value should have "defaultPersist" values and not other defaults',
           () {
         expect(
-          databaseObject?.dateTimeDefaultAndDefaultDatabase,
+          databaseObject?.dateTimeDefaultAndDefaultPersist,
           DateTime.tryParse('2024-05-10T22:00:00.000Z'),
         );
         expect(
-          databaseObject?.dateTimeDefaultModelAndDefaultDatabase,
+          databaseObject?.dateTimeDefaultModelAndDefaultPersist,
           DateTime.tryParse('2024-05-10T22:00:00.000Z'),
         );
       });

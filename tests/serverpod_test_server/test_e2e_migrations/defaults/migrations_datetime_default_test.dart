@@ -179,7 +179,7 @@ void main() {
   });
 
   group(
-      'Given new protocol model with table and fields with "defaultDatabase" value',
+      'Given new protocol model with table and fields with "defaultPersist" value',
       () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
@@ -189,7 +189,7 @@ void main() {
     });
 
     test(
-        'when creating and applying migration then the database contains the new table with the correct "defaultDatabase" values.',
+        'when creating and applying migration then the database contains the new table with the correct "defaultPersist" values.',
         () async {
       var tableName = 'migrated_table';
       var tag = 'add-table';
@@ -198,8 +198,8 @@ void main() {
         class: MigratedTable
         table: $tableName 
         fields:
-          dateTimeDefaultNow: DateTime?, defaultDatabase=now
-          dateTimeDefaultStr: DateTime?, defaultDatabase=2024-05-24T22:00:00.000Z
+          dateTimeDefaultNow: DateTime?, defaultPersist=now
+          dateTimeDefaultStr: DateTime?, defaultPersist=2024-05-24T22:00:00.000Z
         '''
       };
 
@@ -261,7 +261,7 @@ void main() {
   });
 
   group(
-      'Given new protocol model with table and fields with "defaultModel" and "defaultDatabase" value',
+      'Given new protocol model with table and fields with "defaultModel" and "defaultPersist" value',
       () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
@@ -271,7 +271,7 @@ void main() {
     });
 
     test(
-        'when creating and applying migration then the database contains the new table with the correct "defaultDatabase" values.',
+        'when creating and applying migration then the database contains the new table with the correct "defaultPersist" values.',
         () async {
       var tableName = 'migrated_table';
       var tag = 'add-table';
@@ -280,8 +280,8 @@ void main() {
         class: MigratedTable
         table: $tableName 
         fields:
-          dateTimeDefaultNow: DateTime, defaultModel=now, defaultDatabase=now
-          dateTimeDefaultStr: DateTime, defaultModel=2024-05-01T22:00:00.000Z, defaultDatabase=2024-05-24T22:00:00.000Z
+          dateTimeDefaultNow: DateTime, defaultModel=now, defaultPersist=now
+          dateTimeDefaultStr: DateTime, defaultModel=2024-05-01T22:00:00.000Z, defaultPersist=2024-05-24T22:00:00.000Z
         '''
       };
 

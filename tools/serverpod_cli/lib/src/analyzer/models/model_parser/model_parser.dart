@@ -346,7 +346,7 @@ class ModelParser {
   }
 
   static dynamic _parseDefaultPersistValue(YamlMap node) {
-    return node.nodes[Keyword.defaultDatabaseKey]?.value ??
+    return node.nodes[Keyword.defaultPersistKey]?.value ??
         node.nodes[Keyword.defaultKey]?.value;
   }
 

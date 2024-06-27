@@ -70,7 +70,7 @@ class ClassYamlDefinition {
                 mutuallyExclusiveKeys: {
                   Keyword.defaultKey,
                   Keyword.defaultModelKey,
-                  Keyword.defaultDatabaseKey,
+                  Keyword.defaultPersistKey,
                 },
                 nested: {
                   ValidateNode(
@@ -160,10 +160,10 @@ class ClassYamlDefinition {
                 },
               ),
               ValidateNode(
-                Keyword.defaultDatabaseKey,
-                keyRestriction: restrictions.validateDefaultDatabaseKey,
+                Keyword.defaultPersistKey,
+                keyRestriction: restrictions.validateDefaultPersistKey,
                 valueRestriction: DefaultValueRestriction(
-                  Keyword.defaultDatabaseKey,
+                  Keyword.defaultPersistKey,
                   restrictions.documentDefinition,
                 ).validate,
                 mutuallyExclusiveKeys: {
