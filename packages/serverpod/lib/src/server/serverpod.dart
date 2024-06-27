@@ -297,7 +297,12 @@ class Serverpod {
     _passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
 
     // Load config
-    this.config = _loadConfig(config, _passwords);
+    this.config = config ??
+        ServerpodConfig.load(
+          _runMode,
+          serverId,
+          _passwords,
+        );
     Features(this.config);
 
     _logWriter = Features.enablePersistentLogging
@@ -390,24 +395,6 @@ class Serverpod {
     );
     stdout.writeln(commandLineArgs.toString());
     logVerbose(this.config.toString());
-  }
-
-  ServerpodConfig _loadConfig(
-    ServerpodConfig? config,
-    Map<String, String> passwords,
-  ) {
-    if (config != null) return config;
-
-    if (ServerpodConfig.isConfigAvailable(runMode)) {
-      try {
-        return ServerpodConfig.load(_runMode, serverId, passwords);
-      } catch (error) {
-        stderr.writeln('Failed to load config: $error');
-        rethrow;
-      }
-    }
-
-    return ServerpodConfig.defaultConfig();
   }
 
   int _exitCode = 0;
