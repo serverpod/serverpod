@@ -145,7 +145,7 @@ class MethodWebsocketRequestHandler {
         AuthenticationFailureReason.insufficientAccess =>
           OpenMethodStreamResponse.buildMessage(
             connectionId: message.connectionId,
-            responseType: OpenMethodStreamResponseType.insufficientScopes,
+            responseType: OpenMethodStreamResponseType.authorizationDeclined,
           ),
         AuthenticationFailureReason.unauthenticated =>
           OpenMethodStreamResponse.buildMessage(

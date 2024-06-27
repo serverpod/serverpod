@@ -57,8 +57,8 @@ enum OpenMethodStreamResponseType {
   /// The user is not authenticated.
   authenticationFailed,
 
-  /// The user does not have the required scopes.
-  insufficientScopes,
+  /// The user is not authorized.
+  authorizationDeclined,
 
   /// The arguments were invalid.
   invalidArguments;

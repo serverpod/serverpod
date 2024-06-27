@@ -199,7 +199,7 @@ void main() {
       });
 
       test(
-          'then OpenMethodStreamResponse type "insufficientScopes" is received.',
+          'then OpenMethodStreamResponse type "authorizationDeclined" is received.',
           () async {
         webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
           endpoint: 'authenticatedMethodStreaming',
@@ -217,7 +217,7 @@ void main() {
           isA<OpenMethodStreamResponse>().having(
             (m) => m.responseType,
             'responseType',
-            OpenMethodStreamResponseType.insufficientScopes,
+            OpenMethodStreamResponseType.authorizationDeclined,
           ),
         );
       });
