@@ -157,17 +157,17 @@ class DateTimeDefaultTable extends _i1.Table {
     dateTimeDefaultNow = _i1.ColumnDateTime(
       'dateTimeDefaultNow',
       this,
-      hasDefaults: true,
+      hasDefault: true,
     );
     dateTimeDefaultStr = _i1.ColumnDateTime(
       'dateTimeDefaultStr',
       this,
-      hasDefaults: true,
+      hasDefault: true,
     );
     dateTimeDefaultStrNull = _i1.ColumnDateTime(
       'dateTimeDefaultStrNull',
       this,
-      hasDefaults: true,
+      hasDefault: true,
     );
   }
 

@@ -23,13 +23,13 @@ abstract class Column<T> {
   String get queryAlias => '${table.queryPrefix}.$_columnName';
 
   /// flag to tell if this [Column] has any [default] value
-  final bool hasDefaults;
+  final bool hasDefault;
 
   /// Creates a new [Column], this is typically done in generated code only.
   Column(
     this._columnName,
     this.table, {
-    this.hasDefaults = false,
+    this.hasDefault = false,
   }) : type = T;
 
   @override
@@ -44,7 +44,7 @@ class ColumnByteData extends Column<ByteData> {
   ColumnByteData(
     super.columnName,
     super.table, {
-    super.hasDefaults,
+    super.hasDefault,
   });
 }
 
@@ -55,7 +55,7 @@ class ColumnSerializable extends Column<String> {
   ColumnSerializable(
     super.columnName,
     super.table, {
-    super.hasDefaults,
+    super.hasDefault,
   });
 
 // TODO: Add comparisons and possibly other operations
@@ -65,7 +65,7 @@ abstract class _ValueOperatorColumn<T> extends Column<T> {
   _ValueOperatorColumn(
     super.columnName,
     super.table, {
-    super.hasDefaults,
+    super.hasDefault,
   });
 
   /// Applies encoding to value before it is sent to the database.
@@ -81,7 +81,7 @@ class ColumnEnum<E extends Enum> extends _ValueOperatorColumn<E>
     super.columnName,
     super.table,
     this._serialized, {
-    super.hasDefaults,
+    super.hasDefault,
   });
 
   /// Creates a new [Column], this is typically done in generated code only.
@@ -89,7 +89,7 @@ class ColumnEnum<E extends Enum> extends _ValueOperatorColumn<E>
     String columnName,
     Table table,
     EnumSerialization serialized, {
-    bool hasDefaults,
+    bool hasDefault,
   }) = ColumnEnumExtended<E>;
 
   @override
@@ -110,7 +110,7 @@ class ColumnEnumExtended<E extends Enum> extends ColumnEnum<E> {
     super.columnName,
     super.table,
     super.serialized, {
-    super.hasDefaults,
+    super.hasDefault,
   }) : super._();
 
   /// Data type for serialization of the enum.
@@ -128,7 +128,7 @@ class ColumnString extends _ValueOperatorColumn<String>
     super.columnName,
     super.table, {
     this.varcharLength,
-    super.hasDefaults,
+    super.hasDefault,
   });
 
   /// Creates an [Expression] checking if the value in the column is LIKE the
@@ -170,7 +170,7 @@ class ColumnBool extends _ValueOperatorColumn<bool>
   ColumnBool(
     super.columnName,
     super.table, {
-    super.hasDefaults,
+    super.hasDefault,
   });
 
   @override
@@ -187,7 +187,7 @@ class ColumnDateTime extends _ValueOperatorColumn<DateTime>
   ColumnDateTime(
     super.columnName,
     super.table, {
-    super.hasDefaults,
+    super.hasDefault,
   });
 
   @override
@@ -203,7 +203,7 @@ class ColumnDuration extends _ValueOperatorColumn<Duration>
   ColumnDuration(
     super.columnName,
     super.table, {
-    super.hasDefaults,
+    super.hasDefault,
   });
 
   @override
@@ -217,7 +217,7 @@ class ColumnUuid extends _ValueOperatorColumn<UuidValue>
   ColumnUuid(
     super.columnName,
     super.table, {
-    super.hasDefaults,
+    super.hasDefault,
   });
 
   @override
@@ -231,7 +231,7 @@ class ColumnInt extends _ValueOperatorColumn<int>
   ColumnInt(
     super.columnName,
     super.table, {
-    super.hasDefaults,
+    super.hasDefault,
   });
 
   @override
@@ -247,7 +247,7 @@ class ColumnDouble extends _ValueOperatorColumn<double>
   ColumnDouble(
     super.columnName,
     super.table, {
-    super.hasDefaults,
+    super.hasDefault,
   });
 
   @override

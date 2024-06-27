@@ -335,7 +335,7 @@ class InsertQueryBuilder {
         var unformattedValue = row[column.columnName];
         return DatabasePoolManager.encoder.convert(
           unformattedValue,
-          hasDefaults: column.hasDefaults,
+          hasDefaults: column.hasDefault,
         );
       }).join(', ');
       return '($values)';

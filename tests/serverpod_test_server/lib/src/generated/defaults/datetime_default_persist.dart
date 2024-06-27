@@ -147,12 +147,12 @@ class DateTimeDefaultPersistTable extends _i1.Table {
     dateTimeDefaultPersistNow = _i1.ColumnDateTime(
       'dateTimeDefaultPersistNow',
       this,
-      hasDefaults: true,
+      hasDefault: true,
     );
     dateTimeDefaultPersistStr = _i1.ColumnDateTime(
       'dateTimeDefaultPersistStr',
       this,
-      hasDefaults: true,
+      hasDefault: true,
     );
   }
 

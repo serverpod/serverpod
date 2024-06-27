@@ -161,17 +161,17 @@ class DateTimeDefaultMixTable extends _i1.Table {
     dateTimeDefaultAndDefaultModel = _i1.ColumnDateTime(
       'dateTimeDefaultAndDefaultModel',
       this,
-      hasDefaults: true,
+      hasDefault: true,
     );
     dateTimeDefaultAndDefaultPersist = _i1.ColumnDateTime(
       'dateTimeDefaultAndDefaultPersist',
       this,
-      hasDefaults: true,
+      hasDefault: true,
     );
     dateTimeDefaultModelAndDefaultPersist = _i1.ColumnDateTime(
       'dateTimeDefaultModelAndDefaultPersist',
       this,
-      hasDefaults: true,
+      hasDefault: true,
     );
   }
 
