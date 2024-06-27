@@ -371,7 +371,8 @@ class LibraryGenerator {
                   'package:serverpod_client/serverpod_client.dart')))
             ..initializers.add(refer('super').call([refer('caller')]).code)));
 
-          for (var methodDef in endpointDef.methods) {
+          for (var methodDef
+              in endpointDef.methods.where((method) => !method.isStream)) {
             var requiredParams = methodDef.parameters;
             var optionalParams = methodDef.parametersPositional;
             var namedParameters = methodDef.parametersNamed;
@@ -660,7 +661,16 @@ class LibraryGenerator {
                   .index(literalString(endpoint.name))
                   .nullChecked,
               'methodConnectors': literalMap(
-                {..._buildMethodConnectors(endpoint, endpoint.methods)},
+                {
+                  ..._buildMethodConnectors(
+                    endpoint,
+                    endpoint.methods.where((method) => !method.isStream),
+                  ),
+                  ..._buildMethodStreamConnectors(
+                    endpoint,
+                    endpoint.methods.where((method) => method.isStream),
+                  )
+                },
               )
             }))
             .statement
@@ -728,6 +738,79 @@ class LibraryGenerator {
       });
     }
     return methodConnectors;
+  }
+
+  Map<Object, Object> _buildMethodStreamConnectors(
+    EndpointDefinition endpoint,
+    Iterable<MethodDefinition> methods,
+  ) {
+    var methodStreamConnectors = <Object, Object>{};
+    for (var method in methods) {
+      methodStreamConnectors[literalString(method.name)] =
+          refer('MethodStreamConnector', serverpodUrl(true)).call([], {
+        'name': literalString(method.name),
+        'params': literalMap({
+          for (var param in [
+            ...method.parameters,
+            ...method.parametersPositional,
+            ...method.parametersNamed,
+          ])
+            literalString(param.name):
+                refer('ParameterDescription', serverpodUrl(true)).call([], {
+              'name': literalString(param.name),
+              'type': refer('getType', serverpodUrl(true))
+                  .call([], {}, [param.type.reference(true, config: config)]),
+              'nullable': literalBool(param.type.nullable),
+            })
+        }),
+        'returnType': _buildMethodStreamReturnType(method.returnType),
+        'call': Method(
+          (m) => m
+            ..requiredParameters.addAll([
+              Parameter((p) => p
+                ..name = 'session'
+                ..type = refer('Session', serverpodUrl(true))),
+              Parameter((p) => p
+                ..name = 'params'
+                ..type = TypeReference((t) => t
+                  ..symbol = 'Map'
+                  ..types.addAll([
+                    refer('String'),
+                    refer('dynamic'),
+                  ])))
+            ])
+            ..body = refer('endpoints')
+                .index(literalString(endpoint.name))
+                .asA(refer(endpoint.className, _endpointPath(endpoint)))
+                .property(method.name)
+                .call([
+              refer('session'),
+              for (var param in [
+                ...method.parameters,
+                ...method.parametersPositional
+              ])
+                refer('params').index(literalString(param.name)),
+            ], {
+              for (var param in [...method.parametersNamed])
+                param.name: refer('params').index(literalString(param.name)),
+            }).code,
+        ).closure,
+      });
+    }
+    return methodStreamConnectors;
+  }
+
+  Expression _buildMethodStreamReturnType(TypeDefinition returnType) {
+    var returnEnum = refer('MethodStreamReturnType', serverpodUrl(true));
+    if (returnType.generics.first.isVoidType) {
+      return returnEnum.property('voidType');
+    } else if (returnType.isStreamType) {
+      return returnEnum.property('streamType');
+    } else if (returnType.isFutureType) {
+      return returnEnum.property('singleType');
+    }
+
+    throw Exception('Unrecognized return type for endpoint method stream.');
   }
 }
 
