@@ -944,7 +944,7 @@ class SerializableModelLibraryGenerator {
     switch (field.type.valueType) {
       case ValueType.dateTime:
         if (defaultValue == 'now') {
-          return Code('${field.type.className}.$defaultValue()');
+          return refer(field.type.className).property('now').call([]).code;
         }
         return refer(field.type.className)
             .property('parse')
