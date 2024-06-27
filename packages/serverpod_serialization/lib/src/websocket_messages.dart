@@ -126,7 +126,7 @@ class OpenMethodStreamCommand extends WebSocketMessage {
   final String uuid;
 
   /// The authentication token.
-  final String? auth;
+  final String? authentication;
 
   /// Creates a new [OpenMethodStreamCommand] message.
   OpenMethodStreamCommand(Map data)
@@ -134,7 +134,7 @@ class OpenMethodStreamCommand extends WebSocketMessage {
         method = data['method'],
         args = data['args'],
         uuid = data['uuid'],
-        auth = data['auth'];
+        authentication = data['authentication'];
 
   /// Creates a new [OpenMethodStreamCommand].
   static String buildMessage({
@@ -142,7 +142,7 @@ class OpenMethodStreamCommand extends WebSocketMessage {
     required String method,
     required Map<String, dynamic> args,
     required String uuid,
-    String? auth,
+    String? authentication,
   }) {
     return jsonEncode({
       'messageType': _messageType,
@@ -150,7 +150,7 @@ class OpenMethodStreamCommand extends WebSocketMessage {
       'method': method,
       'uuid': uuid,
       'args': SerializationManager.encodeForProtocol(args),
-      if (auth != null) 'auth': auth,
+      if (authentication != null) 'authentication': authentication,
     });
   }
 
@@ -161,7 +161,7 @@ class OpenMethodStreamCommand extends WebSocketMessage {
         'method': method,
         'uuid': uuid,
         'args': args,
-        if (auth != null) 'auth': auth,
+        if (authentication != null) 'authentication': authentication,
       }.toString();
 }
 

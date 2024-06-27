@@ -91,7 +91,7 @@ void main() {
       method: 'method',
       args: {'arg1': 'value1', 'arg2': 2},
       uuid: 'uuid',
-      auth: 'auth',
+      authentication: 'auth',
     );
     var result = WebSocketMessage.fromJsonString(message);
     expect(result, isA<OpenMethodStreamCommand>());
@@ -106,7 +106,7 @@ void main() {
       "method": "method',
       "args": {"arg1": "value1", "arg2": 2},
       "uuid": "uuid",
-      "auth": "auth",
+      "authentication": "auth",
     }''';
 
     expect(

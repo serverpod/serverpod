@@ -165,7 +165,7 @@ void main() {
         method: 'simpleEndpoint',
         args: {},
         uuid: 'uuid',
-        auth: 'invalid token',
+        authentication: 'invalid token',
       ));
 
       var response = await webSocket.stream.first as String;
@@ -206,7 +206,7 @@ void main() {
           method: 'simpleEndpoint',
           args: {},
           uuid: 'uuid',
-          auth: token,
+          authentication: token,
         ));
 
         var response = await webSocket.stream.first as String;
@@ -252,7 +252,7 @@ void main() {
           method: 'simpleEndpoint',
           args: {},
           uuid: 'uuid',
-          auth: token,
+          authentication: token,
         ));
 
         var response = await webSocket.stream.first as String;

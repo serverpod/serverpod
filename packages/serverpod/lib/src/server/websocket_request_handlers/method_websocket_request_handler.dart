@@ -123,7 +123,7 @@ class MethodWebsocketRequestHandler {
     var session = StreamingMethodCallSession(
       server: server,
       enableLogging: endpointConnector.endpoint.logSessions,
-      authenticationKey: message.auth,
+      authenticationKey: message.authentication,
       endpointName: endpointConnector.name,
       methodName: methodConnector.name,
       uuid: message.uuid,
