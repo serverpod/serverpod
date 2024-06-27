@@ -97,7 +97,7 @@ class MethodWebsocketRequestHandler {
       );
       return OpenMethodStreamResponse.buildMessage(
         connectionId: message.connectionId,
-        responseType: OpenMethodStreamResponseType.methodNotFound,
+        responseType: OpenMethodStreamResponseType.endpointNotFound,
       );
     }
 

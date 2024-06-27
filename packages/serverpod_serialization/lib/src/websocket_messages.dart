@@ -51,9 +51,6 @@ enum OpenMethodStreamResponseType {
   /// The endpoint was not found.
   endpointNotFound,
 
-  /// The method was not found.
-  methodNotFound,
-
   /// The user is not authenticated.
   authenticationFailed,
 

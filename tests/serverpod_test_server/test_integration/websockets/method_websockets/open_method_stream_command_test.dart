@@ -47,7 +47,7 @@ void main() {
     });
 
     test(
-        'when a open method stream command with an invalid endpoint method is sent then OpenMethodStreamResponse type "methodNotFound" is received.',
+        'when a open method stream command with an invalid endpoint method is sent then OpenMethodStreamResponse type "endpointNotFound" is received.',
         () async {
       webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
         endpoint: 'methodStreaming',
@@ -64,7 +64,7 @@ void main() {
           isA<OpenMethodStreamResponse>().having(
             (m) => m.responseType,
             'responseType',
-            OpenMethodStreamResponseType.methodNotFound,
+            OpenMethodStreamResponseType.endpointNotFound,
           ));
     });
 
