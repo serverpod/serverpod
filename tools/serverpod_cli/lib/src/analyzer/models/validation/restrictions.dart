@@ -1177,7 +1177,7 @@ class Restrictions {
     if (field?.isAllowedToHaveDefaultPersist == false) {
       return [
         SourceSpanSeverityException(
-          'The "defaultPesist" key is not supported for "${field?.type.className}" types',
+          'The "defaultPersist" key is not supported for "${field?.type.className}" types',
           span,
         )
       ];
@@ -1187,7 +1187,7 @@ class Restrictions {
         field?.type.nullable == false) {
       return [
         SourceSpanSeverityException(
-          'When setting only the "defaultPesist" key, its type should be nullable',
+          'When setting only the "defaultPersist" key, its type should be nullable',
           span,
         )
       ];
@@ -1199,7 +1199,7 @@ class Restrictions {
     if (field?.shouldPersist == false) {
       return [
         SourceSpanSeverityException(
-          'The "defaultPesist" property is mutually exclusive with the "!persist" property.',
+          'The "defaultPersist" property is mutually exclusive with the "!persist" property.',
           span,
         )
       ];
