@@ -212,10 +212,7 @@ abstract class EndpointDispatch {
           serializedParam,
           description.type,
         );
-
-        continue;
-      }
-      if (!description.nullable) {
+      } else if (!description.nullable) {
         throw Exception('Missing required query parameter: $name');
       }
     }
