@@ -44,10 +44,16 @@ class PasswordManager {
     var extracted = data[key];
     if (extracted is! Map) return {};
 
-    if (extracted.entries.any(
-      (entry) => entry.value is! String || entry.key is! String,
-    )) {
-      return {};
+    var invalidPasswordKeys = extracted.entries
+        .where(
+          (entry) => entry.key is! String || entry.value is! String,
+        )
+        .map((entry) => entry.key);
+
+    if (invalidPasswordKeys.isNotEmpty) {
+      throw StateError(
+        'Invalid password entries in $key: ${invalidPasswordKeys.join(', ')}',
+      );
     }
 
     return extracted.cast<String, String>();

@@ -96,9 +96,8 @@ void main() {
     });
   });
 
-  group('Given a config file with invalid nested data', () {
-    var passwords = PasswordManager(runMode: 'development')
-        .loadPasswordsFromMap(loadYaml('''
+  test('Given a config file with invalid nested data', () {
+    var passwordsContent = '''
 shared:
   mySharedPassword: 'my password'
 
@@ -106,15 +105,17 @@ development:
   database:
     host: 'localhost'
     password: 'development db pass'
-'''), {});
+''';
 
-    test('then the shared password is set.', () {
-      expect(passwords['mySharedPassword'], 'my password');
-    });
+    var passwordManager = PasswordManager(runMode: 'development');
 
-    test('then the database password is null.', () {
-      expect(passwords['database'], isNull);
-    });
+    expect(
+      () => passwordManager.loadPasswordsFromMap(
+        loadYaml(passwordsContent),
+        {},
+      ),
+      throwsA(isA<StateError>()),
+    );
   });
 
   group('Given an empty config file with all env passwords defined', () {
