@@ -131,7 +131,7 @@ class LibraryGenerator {
                   for (var endPoint in protocolDefinition.endpoints)
                     for (var method in endPoint.methods) ...[
                       ...method.returnType
-                          .stripFuture()
+                          .stripFutureOrStream()
                           .generateDeserialization(serverCode, config: config),
                       for (var parameter in method.parameters)
                         ...parameter.type.generateDeserialization(serverCode,

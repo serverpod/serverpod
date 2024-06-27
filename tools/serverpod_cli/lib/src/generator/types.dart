@@ -266,15 +266,18 @@ class TypeDefinition {
     return 'ColumnSerializable';
   }
 
-  /// Strip the outer most future of this type.
-  /// Throws, if this type is not a future.
-  TypeDefinition stripFuture() {
+  /// Strip the outer most Future or Stream of this type.
+  /// Throws, if this type is not a Future or Stream.
+  TypeDefinition stripFutureOrStream() {
     if (dartType?.isDartAsyncFuture ?? className == 'Future') {
       return generics.first;
-    } else {
-      throw FormatException(
-          '$this is not a Future, so Future cant be stripped.');
     }
+    if (dartType?.isDartAsyncStream ?? className == 'Stream') {
+      return generics.first;
+    }
+
+    throw FormatException(
+        '$this is not a Future or Stream, so Future or Stream cant be stripped.');
   }
 
   /// Generates the constructors for List and Map types
