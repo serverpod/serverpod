@@ -57,6 +57,10 @@ class TypeDefinition {
 
   bool get isVoidType => className == 'void';
 
+  bool get isStreamType => className == 'Stream';
+
+  bool get isFutureType => className == 'Future';
+
   bool get isModuleType =>
       url == 'serverpod' || (url?.startsWith(_moduleRef) ?? false);
 
