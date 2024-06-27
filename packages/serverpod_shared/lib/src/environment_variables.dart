@@ -100,11 +100,8 @@ enum ServerpodEnv {
   webPublicScheme,
 
   /// The maximum request size for the server.
-  maxRequestSize,
-}
+  maxRequestSize;
 
-/// The environment variable name for the key.
-extension ServerpodEnvExt on ServerpodEnv {
   /// The key used in the environment configuration file.
   String get key {
     return switch (this) {
@@ -178,11 +175,8 @@ enum ServerpodPassword {
   serviceSecret,
 
   /// The password for the redis broker.
-  redisPassword,
-}
+  redisPassword;
 
-/// The key and variable name for the password.
-extension ServerpodPasswordExt on ServerpodPassword {
   /// The key used in the password configuration file.
   String get key {
     return switch (this) {
