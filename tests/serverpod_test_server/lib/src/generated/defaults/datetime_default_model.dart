@@ -20,9 +20,9 @@ abstract class DateTimeDefaultModel extends _i1.TableRow
     DateTime? dateTimeDefaultModelStrNull,
   })  : dateTimeDefaultModelNow = dateTimeDefaultModelNow ?? DateTime.now(),
         dateTimeDefaultModelStr = dateTimeDefaultModelStr ??
-            DateTime.parse('2024-05-34T22:00:00.000Z'),
+            DateTime.parse('2024-05-24T22:00:00.000Z'),
         dateTimeDefaultModelStrNull = dateTimeDefaultModelStrNull ??
-            DateTime.parse('2024-05-34T22:00:00.000Z'),
+            DateTime.parse('2024-05-24T22:00:00.000Z'),
         super(id);
 
   factory DateTimeDefaultModel({

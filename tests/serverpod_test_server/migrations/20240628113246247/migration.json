@@ -26,14 +26,14 @@
             "name": "dateTimeDefaultStr",
             "columnType": 4,
             "isNullable": false,
-            "columnDefault": "'2024-06-03 22:00:00'::timestamp without time zone",
+            "columnDefault": "'2024-05-24 22:00:00'::timestamp without time zone",
             "dartType": "DateTime"
           },
           {
             "name": "dateTimeDefaultStrNull",
             "columnType": 4,
             "isNullable": true,
-            "columnDefault": "'2024-06-03 22:00:00'::timestamp without time zone",
+            "columnDefault": "'2024-05-24 22:00:00'::timestamp without time zone",
             "dartType": "DateTime?"
           }
         ],

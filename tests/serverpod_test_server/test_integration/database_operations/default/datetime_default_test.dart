@@ -44,12 +44,12 @@ void main() async {
 
           expect(
             databaseObject.dateTimeDefaultStr,
-            DateTime.parse('2024-05-34T22:00:00.000Z'),
+            DateTime.parse('2024-05-24T22:00:00.000Z'),
           );
 
           expect(
             databaseObject.dateTimeDefaultStrNull,
-            DateTime.parse('2024-05-34T22:00:00.000Z'),
+            DateTime.parse('2024-05-24T22:00:00.000Z'),
           );
         },
       );
@@ -94,12 +94,12 @@ void main() async {
 
           expect(
             databaseObject.dateTimeDefaultModelStr,
-            DateTime.parse("2024-05-34T22:00:00.000Z"),
+            DateTime.parse("2024-05-24T22:00:00.000Z"),
           );
 
           expect(
             databaseObject.dateTimeDefaultModelStrNull,
-            DateTime.parse("2024-05-34T22:00:00.000Z"),
+            DateTime.parse("2024-05-24T22:00:00.000Z"),
           );
         },
       );

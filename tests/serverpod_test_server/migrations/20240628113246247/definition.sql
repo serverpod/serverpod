@@ -107,8 +107,8 @@ CREATE TABLE "customer" (
 CREATE TABLE "datetime_default" (
     "id" bigserial PRIMARY KEY,
     "dateTimeDefaultNow" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "dateTimeDefaultStr" timestamp without time zone NOT NULL DEFAULT '2024-06-03 22:00:00'::timestamp without time zone,
-    "dateTimeDefaultStrNull" timestamp without time zone DEFAULT '2024-06-03 22:00:00'::timestamp without time zone
+    "dateTimeDefaultStr" timestamp without time zone NOT NULL DEFAULT '2024-05-24 22:00:00'::timestamp without time zone,
+    "dateTimeDefaultStrNull" timestamp without time zone DEFAULT '2024-05-24 22:00:00'::timestamp without time zone
 );
 
 --
@@ -1160,9 +1160,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20240627090628987', now())
+    VALUES ('serverpod_test', '20240628113246247', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240627090628987', "timestamp" = now();
+    DO UPDATE SET "version" = '20240628113246247', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth

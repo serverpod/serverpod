@@ -18,9 +18,9 @@ abstract class DateTimeDefault implements _i1.SerializableModel {
     DateTime? dateTimeDefaultStrNull,
   })  : dateTimeDefaultNow = dateTimeDefaultNow ?? DateTime.now(),
         dateTimeDefaultStr =
-            dateTimeDefaultStr ?? DateTime.parse('2024-05-34T22:00:00.000Z'),
+            dateTimeDefaultStr ?? DateTime.parse('2024-05-24T22:00:00.000Z'),
         dateTimeDefaultStrNull = dateTimeDefaultStrNull ??
-            DateTime.parse('2024-05-34T22:00:00.000Z');
+            DateTime.parse('2024-05-24T22:00:00.000Z');
 
   factory DateTimeDefault({
     int? id,
