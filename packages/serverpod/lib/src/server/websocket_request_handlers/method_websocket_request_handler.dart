@@ -90,8 +90,9 @@ class MethodWebsocketRequestHandler {
       );
     }
 
-    var methodConnector = endpointConnector.methodConnectors[message.method];
-    if (methodConnector == null) {
+    var endpointMethodConnector =
+        endpointConnector.methodConnectors[message.method];
+    if (endpointMethodConnector == null) {
       server.serverpod.logVerbose(
         'Endpoint method not found for open stream request: $message',
       );
@@ -106,7 +107,7 @@ class MethodWebsocketRequestHandler {
     try {
       args = EndpointDispatch.parseParameters(
         message.args,
-        methodConnector.params,
+        endpointMethodConnector.params,
         server.serializationManager,
       );
     } catch (e) {
@@ -125,7 +126,7 @@ class MethodWebsocketRequestHandler {
       enableLogging: endpointConnector.endpoint.logSessions,
       authenticationKey: message.authentication,
       endpointName: endpointConnector.name,
-      methodName: methodConnector.name,
+      methodName: endpointMethodConnector.name,
       connectionId: message.connectionId,
     );
 
@@ -156,7 +157,7 @@ class MethodWebsocketRequestHandler {
     }
 
     _methodStreamManager.createStream(
-      methodConnector: methodConnector,
+      endpointMethodConnector: endpointMethodConnector,
       session: session,
       args: args,
       message: message,
@@ -202,7 +203,7 @@ class _MethodStreamManager {
   }
 
   void createStream({
-    required MethodConnector methodConnector,
+    required EndpointMethodConnector endpointMethodConnector,
     required Session session,
     required Map<String, dynamic> args,
     required OpenMethodStreamCommand message,
@@ -210,7 +211,23 @@ class _MethodStreamManager {
     required WebSocket webSocket,
   }) {
     var controller = StreamController<String>();
-    _handleStream(methodConnector, session, args, message, server);
+    if (endpointMethodConnector is MethodStreamConnector) {
+      _handleMethodStreamEndpoint(
+        endpointMethodConnector,
+        session,
+        args,
+        message,
+        server,
+      );
+    } else if (endpointMethodConnector is MethodConnector) {
+      _handleMethodCallEndpoint(
+        endpointMethodConnector,
+        session,
+        args,
+        message,
+        server,
+      );
+    }
 
     controller.stream.listen((event) {
       webSocket.add(event);
@@ -234,7 +251,7 @@ class _MethodStreamManager {
   }) =>
       '$connectionId:$endpoint:$method';
 
-  Future<void> _handleStream(
+  Future<void> _handleMethodCallEndpoint(
     MethodConnector methodConnector,
     Session session,
     Map<String, dynamic> args,
@@ -313,6 +330,88 @@ class _MethodStreamManager {
       endpoint: message.endpoint,
       method: message.method,
       connectionId: message.connectionId,
+    );
+  }
+
+  void _handleMethodStreamEndpoint(
+    MethodStreamConnector methodConnector,
+    Session session,
+    Map<String, dynamic> args,
+    OpenMethodStreamCommand message,
+    Server server,
+  ) {
+    methodConnector.call(session, args).listen(
+      (value) {
+        _postMessage(
+          endpoint: message.endpoint,
+          method: message.method,
+          connectionId: message.connectionId,
+          message: MethodStreamMessage.buildMessage(
+            endpoint: message.endpoint,
+            method: message.method,
+            connectionId: message.connectionId,
+            object: server.serializationManager.encodeWithType(value),
+          ),
+        );
+      },
+      onDone: () async {
+        _postMessage(
+          endpoint: message.endpoint,
+          method: message.method,
+          connectionId: message.connectionId,
+          message: CloseMethodStreamCommand.buildMessage(
+            endpoint: message.endpoint,
+            connectionId: message.connectionId,
+            method: message.method,
+            reason: CloseReason.done,
+          ),
+        );
+        await session.close();
+        await closeStream(
+          endpoint: message.endpoint,
+          method: message.method,
+          connectionId: message.connectionId,
+        );
+      },
+      onError: (e, stackTrace) async {
+        if (e is SerializableException) {
+          _postMessage(
+            endpoint: message.endpoint,
+            method: message.method,
+            connectionId: message.connectionId,
+            message: MethodStreamSerializableException.buildMessage(
+              endpoint: message.endpoint,
+              method: message.method,
+              connectionId: message.connectionId,
+              object: server.serializationManager.encodeWithType(e),
+            ),
+          );
+        }
+
+        _postMessage(
+          endpoint: message.endpoint,
+          method: message.method,
+          connectionId: message.connectionId,
+          message: CloseMethodStreamCommand.buildMessage(
+            endpoint: message.endpoint,
+            connectionId: message.connectionId,
+            method: message.method,
+            reason: CloseReason.error,
+          ),
+        );
+
+        await session.close(error: e, stackTrace: stackTrace);
+        await closeStream(
+          endpoint: message.endpoint,
+          method: message.method,
+          connectionId: message.connectionId,
+        );
+      },
+      // Cancel on error prevents the stream from continuing after an exception
+      // has been thrown. This is important since we want to close the stream
+      // when an exception is thrown and handle the complete shutdown in the
+      // onError callback.
+      cancelOnError: true,
     );
   }
 

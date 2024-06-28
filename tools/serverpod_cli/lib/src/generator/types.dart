@@ -57,6 +57,10 @@ class TypeDefinition {
 
   bool get isVoidType => className == 'void';
 
+  bool get isStreamType => className == 'Stream';
+
+  bool get isFutureType => className == 'Future';
+
   bool get isModuleType =>
       url == 'serverpod' || (url?.startsWith(_moduleRef) ?? false);
 
@@ -266,15 +270,15 @@ class TypeDefinition {
     return 'ColumnSerializable';
   }
 
-  /// Strip the outer most future of this type.
-  /// Throws, if this type is not a future.
-  TypeDefinition stripFuture() {
-    if (dartType?.isDartAsyncFuture ?? className == 'Future') {
-      return generics.first;
-    } else {
-      throw FormatException(
-          '$this is not a Future, so Future cant be stripped.');
+  /// Retrieves the generic from this type.
+  /// Throws a [FormatException] if no generic is found.
+  TypeDefinition retrieveGenericType() {
+    var genericType = generics.firstOrNull;
+    if (genericType == null) {
+      throw FormatException('$this does not have a generic type to retrieve.');
     }
+
+    return genericType;
   }
 
   /// Generates the constructors for List and Map types

@@ -73,7 +73,7 @@ void main() {
         () async {
       webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
         endpoint: 'methodStreaming',
-        method: 'simpleEndpoint',
+        method: 'simpleStream',
         args: {},
         connectionId: const Uuid().v4obj(),
       ));
@@ -95,7 +95,7 @@ void main() {
         () async {
       webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
         endpoint: 'methodStreaming',
-        method: 'intParameter',
+        method: 'simpleStreamWithParameter',
         args: {},
         connectionId: const Uuid().v4obj(),
       ));
@@ -117,7 +117,7 @@ void main() {
         () async {
       webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
         endpoint: 'methodStreaming',
-        method: 'intParameter',
+        method: 'simpleStreamWithParameter',
         args: {'value': 42},
         connectionId: const Uuid().v4obj(),
       ));
@@ -139,7 +139,7 @@ void main() {
         () async {
       webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
         endpoint: 'authenticatedMethodStreaming',
-        method: 'simpleEndpoint',
+        method: 'simpleStream',
         args: {},
         connectionId: const Uuid().v4obj(),
         // No authentication token is provided
@@ -162,7 +162,7 @@ void main() {
         () async {
       webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
         endpoint: 'authenticatedMethodStreaming',
-        method: 'simpleEndpoint',
+        method: 'simpleStream',
         args: {},
         connectionId: const Uuid().v4obj(),
         authentication: 'invalid token',
@@ -203,7 +203,7 @@ void main() {
           () async {
         webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
           endpoint: 'authenticatedMethodStreaming',
-          method: 'simpleEndpoint',
+          method: 'simpleStream',
           args: {},
           connectionId: const Uuid().v4obj(),
           authentication: token,
@@ -249,7 +249,7 @@ void main() {
           () async {
         webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
           endpoint: 'authenticatedMethodStreaming',
-          method: 'simpleEndpoint',
+          method: 'simpleStream',
           args: {},
           connectionId: const Uuid().v4obj(),
           authentication: token,

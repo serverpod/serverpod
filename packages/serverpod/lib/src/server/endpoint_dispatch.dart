@@ -108,7 +108,7 @@ abstract class EndpointDispatch {
       }
 
       var method = connector.methodConnectors[methodName];
-      if (method == null) {
+      if (method is! MethodConnector) {
         await session.close();
         return ResultInvalidParams(
             'Method $methodName not found in call: $uri');
@@ -222,7 +222,7 @@ abstract class EndpointDispatch {
 }
 
 /// The [EndpointConnector] associates a name with and endpoint and its
-/// [MethodConnector]s.
+/// [EndpointMethodConnector]s.
 class EndpointConnector {
   /// Name of the [Endpoint].
   final String name;
@@ -230,29 +230,37 @@ class EndpointConnector {
   /// Reference to the [Endpoint].
   final Endpoint endpoint;
 
-  /// All [MethodConnector]s associated with the [Endpoint].
-  final Map<String, MethodConnector> methodConnectors;
+  /// All [EndpointMethodConnector]s associated with the [Endpoint].
+  final Map<String, EndpointMethodConnector> methodConnectors;
 
   /// Creates a new [EndpointConnector].
-  EndpointConnector(
-      {required this.name,
-      required this.endpoint,
-      required this.methodConnectors});
+  EndpointConnector({
+    required this.name,
+    required this.endpoint,
+    required this.methodConnectors,
+  });
 }
 
 /// Calls a named method referenced in a [MethodConnector].
 typedef MethodCall = Future Function(
     Session session, Map<String, dynamic> params);
 
-/// The [MethodConnector] hooks up a method with its name and the actual call
-/// to the method.
-class MethodConnector {
+/// The [EndpointMethodConnector] is a base class for connectors that connect
+/// methods their implementation.
+abstract class EndpointMethodConnector {
   /// The name of the method.
   final String name;
 
   /// List of parameters used by the method.
   final Map<String, ParameterDescription> params;
 
+  /// Creates a new [EndpointMethodConnector].
+  EndpointMethodConnector({required this.name, required this.params});
+}
+
+/// The [MethodConnector] hooks up a method with its name and the actual call
+/// to the method.
+class MethodConnector extends EndpointMethodConnector {
   /// A function that performs a call to the named method.
   final MethodCall call;
 
@@ -262,10 +270,45 @@ class MethodConnector {
 
   /// Creates a new [MethodConnector].
   MethodConnector({
-    required this.name,
-    required this.params,
+    required super.name,
+    required super.params,
     required this.call,
     this.returnsVoid,
+  });
+}
+
+/// Calls a named method referenced in a [MethodStreamConnector].
+typedef MethodStream = Stream Function(
+    Session session, Map<String, dynamic> params);
+
+/// The type of return value from a [MethodStreamConnector].
+enum MethodStreamReturnType {
+  /// The method returns a single value.
+  singleType,
+
+  /// The method returns a stream of values.
+  streamType,
+
+  /// The method returns void.
+  voidType,
+}
+
+/// The [MethodStreamConnector] hooks up a method with its name and
+/// implementation. The method communicates with the client using a websocket
+/// connection. Enabling support for streaming return values or parameters.
+class MethodStreamConnector extends EndpointMethodConnector {
+  /// The type of return value from the method.
+  final MethodStreamReturnType returnType;
+
+  /// A function that performs a call to the named method.
+  final MethodStream call;
+
+  /// Creates a new [MethodStreamConnector].
+  MethodStreamConnector({
+    required super.name,
+    required super.params,
+    required this.returnType,
+    required this.call,
   });
 }
 

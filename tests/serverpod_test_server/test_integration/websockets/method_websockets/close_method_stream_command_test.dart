@@ -25,7 +25,7 @@ void main() {
       await webSocket.sink.close();
     });
 
-    group('with a connected method stream ', () {
+    group('with a connected method stream that has a future response', () {
       late Completer<void> webSocketCompleter;
       late Completer<void> delayedResponseClosed;
 
@@ -58,10 +58,11 @@ void main() {
           connectionId: connectionId,
         ));
 
-        await expectLater(
-          delayedResponseOpen.future.timeout(Duration(seconds: 5)),
-          completes,
-          reason: 'Failed to open all method streams with server.',
+        await delayedResponseOpen.future.timeout(
+          Duration(seconds: 5),
+          onTimeout: () => throw AssertionError(
+            'Failed to open method stream with server.',
+          ),
         );
       });
 
@@ -69,9 +70,83 @@ void main() {
         var tempSession = await server.createSession();
 
         /// Close any open delayed response streams.
-        await server.endpoints
-            .getConnectorByName(endpoint)
-            ?.methodConnectors['completeAllDelayedResponses']
+        await (server.endpoints
+                    .getConnectorByName(endpoint)
+                    ?.methodConnectors['completeAllDelayedResponses']
+                as MethodConnector?)
+            ?.call(tempSession, {});
+
+        await tempSession.close();
+      });
+
+      test(
+          'when stream is closed by a CloseMethodStreamCommand then websocket connection is closed.',
+          () async {
+        webSocket.sink.add(CloseMethodStreamCommand.buildMessage(
+          endpoint: endpoint,
+          method: method,
+          connectionId: connectionId,
+          reason: CloseReason.done,
+        ));
+
+        await expectLater(
+          webSocketCompleter.future.timeout(Duration(seconds: 5)),
+          completes,
+          reason:
+              'Websocket connection was not closed when only stream was closed.',
+        );
+      });
+    });
+
+    group('with a connected method stream that has a stream response', () {
+      late Completer<void> webSocketCompleter;
+      late Completer<void> delayedResponseClosed;
+
+      var endpoint = 'methodStreaming';
+      var method = 'delayedStreamResponse';
+      var connectionId = const Uuid().v4obj();
+
+      setUp(() async {
+        var delayedResponseOpen = Completer<void>();
+        delayedResponseClosed = Completer<void>();
+        webSocketCompleter = Completer<void>();
+
+        webSocket.stream.listen((event) {
+          var message = WebSocketMessage.fromJsonString(event);
+          if (message is OpenMethodStreamResponse) {
+            if (message.connectionId == connectionId)
+              delayedResponseOpen.complete();
+          } else if (message is CloseMethodStreamCommand) {
+            if (message.connectionId == connectionId)
+              delayedResponseClosed.complete();
+          }
+        }, onDone: () {
+          webSocketCompleter.complete();
+        });
+
+        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+          endpoint: endpoint,
+          method: method,
+          args: {'delay': 10},
+          connectionId: connectionId,
+        ));
+
+        await delayedResponseOpen.future.timeout(
+          Duration(seconds: 5),
+          onTimeout: () => throw AssertionError(
+            'Failed to open method stream with server.',
+          ),
+        );
+      });
+
+      tearDown(() async {
+        var tempSession = await server.createSession();
+
+        /// Close any open delayed response streams.
+        await (server.endpoints
+                    .getConnectorByName(endpoint)
+                    ?.methodConnectors['completeAllDelayedResponses']
+                as MethodConnector?)
             ?.call(tempSession, {});
 
         await tempSession.close();
