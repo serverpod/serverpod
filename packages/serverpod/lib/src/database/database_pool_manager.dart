@@ -52,7 +52,7 @@ class DatabasePoolManager {
   /// Starts the database connection pool.
   void start() {
     // Setup database connection pool
-    _pgPool = pg.Pool.withEndpoints(
+    _pgPool ??= pg.Pool.withEndpoints(
       [
         pg.Endpoint(
           host: config.host,
