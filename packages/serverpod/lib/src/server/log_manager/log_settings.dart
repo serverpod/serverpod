@@ -62,6 +62,7 @@ class LogSettingsManager {
         session.sessionLogs.currentEndpoint != null,
         'currentEndpoint for the StreamingSession must be set.',
       );
+
       return _getLogSettingsForStreamingSession(
         endpoint: session.sessionLogs.currentEndpoint!,
       );
