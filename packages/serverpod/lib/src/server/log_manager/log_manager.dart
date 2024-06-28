@@ -15,6 +15,7 @@ class LogManager {
   final LogSettingsManager settings;
 
   /// The [RuntimeSettings] the log manager retrieves its settings from.
+  @Deprecated('Will be removed in 3.0.0')
   final RuntimeSettings runtimeSettings;
 
   final LogWriter _logWriter;
