@@ -336,17 +336,6 @@ class LogManager {
     return null;
   }
 
-  String? _methodForSession(Session session) {
-    if (session is MethodCallSession) {
-      // Method calls
-      return session.methodName;
-    } else if (session is FutureCallSession) {
-      // Future calls
-      return session.futureCallName;
-    }
-    return null;
-  }
-
   /// Returns a list of logs for all open sessions.
   List<SessionLogInfo> getOpenSessionLogs(
       int numEntries, SessionLogFilter? filter) {
@@ -400,23 +389,22 @@ class LogManager {
   }
 }
 
-String _endpointForSession(Session session) {
-  if (session is MethodCallSession) {
-    // Method calls
-    return session.endpointName;
-  } else if (session is FutureCallSession) {
-    // Future calls
-    return 'FutureCallSession';
-  } else if (session is StreamingSession) {
-    // Streaming session was closed
-    return 'StreamingSession';
-  } else if (session is InternalSession) {
-    // Internal session
-    return 'InternalSession';
-  } else if (session is MethodStreamSession) {
-    // Streaming method call
-    return session.endpointName;
-  }
+String? _methodForSession(Session session) {
+  return switch (session) {
+    MethodCallSession session => session.methodName,
+    FutureCallSession session => session.futureCallName,
+    MethodStreamSession session => session.methodName,
+    InternalSession _ => null,
+    StreamingSession _ => null,
+  };
+}
 
-  throw (UnimplementedError('Unknown Session type'));
+String _endpointForSession(Session session) {
+  return switch (session) {
+    MethodCallSession session => session.endpointName,
+    MethodStreamSession session => session.endpointName,
+    FutureCallSession _ => 'FutureCallSession',
+    InternalSession _ => 'InternalSession',
+    StreamingSession _ => 'StreamingSession',
+  };
 }
