@@ -1132,16 +1132,20 @@ class Restrictions {
     if (definition is! ClassDefinition) return [];
 
     var field = definition.findField(parentNodeName);
-    if (field?.defaultValueType == null) {
-      return [
+    if (field == null) return [];
+
+    var errors = <SourceSpanSeverityException>[];
+
+    if (field.defaultValueType == null) {
+      errors.add(
         SourceSpanSeverityException(
-          'The "default" key is not supported for "${field?.type.className}" types',
+          'The "default" key is not supported for "${field.type.className}" types',
           span,
-        )
-      ];
+        ),
+      );
     }
 
-    return [];
+    return errors;
   }
 
   List<SourceSpanSeverityException> validateDefaultModelKey(
@@ -1152,13 +1156,15 @@ class Restrictions {
     var definition = documentDefinition;
     if (definition is! ClassDefinition) return [];
 
+    var field = definition.findField(parentNodeName);
+    if (field == null) return [];
+
     var errors = <SourceSpanSeverityException>[];
 
-    var field = definition.findField(parentNodeName);
-    if (field?.defaultValueType == null) {
+    if (field.defaultValueType == null) {
       errors.add(
         SourceSpanSeverityException(
-          'The "defaultModel" key is not supported for "${field?.type.className}" types',
+          'The "defaultModel" key is not supported for "${field.type.className}" types',
           span,
         ),
       );
@@ -1175,15 +1181,15 @@ class Restrictions {
     var definition = documentDefinition;
     if (definition is! ClassDefinition) return [];
 
-    var errors = <SourceSpanSeverityException>[];
-
     var field = definition.findField(parentNodeName);
     if (field == null) return [];
+
+    var errors = <SourceSpanSeverityException>[];
 
     if (field.defaultValueType == null) {
       errors.add(
         SourceSpanSeverityException(
-          'The "defaultPersist" key is not supported for "${field?.type.className}" types',
+          'The "defaultPersist" key is not supported for "${field.type.className}" types',
           span,
         ),
       );
