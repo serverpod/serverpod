@@ -341,6 +341,7 @@ class LogManager {
     while (i < _openSessionLogs.length && numFoundEntries < numEntries) {
       var entry = _openSessionLogs[i];
       i += 1;
+      numFoundEntries += 1;
 
       // Check filter (ignore slow and errors as session is still open)
       if (filter != null) {
