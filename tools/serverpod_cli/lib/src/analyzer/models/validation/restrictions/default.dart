@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
@@ -37,36 +38,32 @@ class DefaultValueRestriction extends ValueRestriction {
   ) {
     if (value is DateTime) return [];
 
+    var errors = <SourceSpanSeverityException>[];
+
     if (value is! String) {
-      return [
+      errors.add(
         SourceSpanSeverityException(
           'The "$key" value must be a valid UTC DateTime String or "now"',
           span,
-        )
-      ];
+        ),
+      );
     }
 
     if (value == 'now') return [];
 
-    DateTime? dateTime = DateTime.tryParse(value);
+    var format = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+
+    DateTime? dateTime = DateFormat(format).tryParseStrict(value);
+
     if (dateTime == null) {
-      return [
+      errors.add(
         SourceSpanSeverityException(
-          'The "$key" value must be a valid UTC DateTime String or "now"',
+          'The "$key" value must be a valid UTC ($format) DateTime String or "now"',
           span,
-        )
-      ];
+        ),
+      );
     }
 
-    if (!dateTime.isUtc) {
-      return [
-        SourceSpanSeverityException(
-          'The "$key" value should be a valid UTC DateTime.',
-          span,
-        )
-      ];
-    }
-
-    return [];
+    return errors;
   }
 }
