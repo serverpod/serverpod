@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
-import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:source_span/source_span.dart';
@@ -21,14 +21,14 @@ class DefaultValueRestriction extends ValueRestriction {
     if (definition is! ClassDefinition) return [];
 
     var field = definition.findField(parentNodeName);
-    switch (field?.type.valueType) {
-      case ValueType.dateTime:
-        return _dateDateValidation(value, span);
-      default:
+    if (field == null) return [];
 
-        /// Currently, we only provide defaults for DateTime types.
-        /// No errors are returned for other types due to existing key restrictions.
-        return [];
+    var defaultValueType = field.type.defaultValueType;
+    if (defaultValueType == null) return [];
+
+    switch (defaultValueType) {
+      case DefaultValueAllowedType.dateTime:
+        return _dateDateValidation(value, span);
     }
   }
 

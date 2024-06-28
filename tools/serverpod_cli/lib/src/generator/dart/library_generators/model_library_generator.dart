@@ -941,16 +941,17 @@ class SerializableModelLibraryGenerator {
 
     if (defaultValue == null) return null;
 
-    switch (field.type.valueType) {
-      case ValueType.dateTime:
+    var defaultValueType = field.type.defaultValueType;
+    if (defaultValueType == null) return null;
+
+    switch (defaultValueType) {
+      case DefaultValueAllowedType.dateTime:
         if (defaultValue == 'now') {
           return refer(field.type.className).property('now').call([]).code;
         }
         return refer(field.type.className)
             .property('parse')
             .call([CodeExpression(Code("'$defaultValue'"))]).code;
-      default:
-        return null;
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -118,12 +119,14 @@ String? _getColumnDefault(
   ClassDefinition classDefinition,
   ColumnType type,
 ) {
-  var defaultValue = column.defaultValueType;
+  if (column.name == 'id') {
+    return "nextval('${classDefinition.tableName!}_id_seq'::regclass)";
+  }
+
+  var defaultValue = column.type.defaultValueType;
   if (defaultValue == null) return null;
 
   switch (defaultValue) {
-    case DefaultValueAllowedType.id:
-      return "nextval('${classDefinition.tableName!}_id_seq'::regclass)";
     case DefaultValueAllowedType.dateTime:
       var defaultValue = column.defaultPersistValue;
       if (defaultValue == 'now') {

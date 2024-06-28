@@ -181,18 +181,6 @@ class SerializableModelFieldDefinition {
         shouldPersist &&
         scope == ModelFieldScopeDefinition.none;
   }
-
-  /// Returns DefaultValueAllowedType only for fields that are allowed to have defaults
-  DefaultValueAllowedType? get defaultValueType {
-    if (name == 'id') return DefaultValueAllowedType.id;
-
-    switch (type.valueType) {
-      case ValueType.dateTime:
-        return DefaultValueAllowedType.dateTime;
-      default:
-        return null;
-    }
-  }
 }
 
 /// The scope of a field.
@@ -452,8 +440,3 @@ const ForeignKeyAction onDeleteDefaultOld = ForeignKeyAction.cascade;
 const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;
 
 const String defaultPrimaryKeyName = 'id';
-
-enum DefaultValueAllowedType {
-  id,
-  dateTime,
-}

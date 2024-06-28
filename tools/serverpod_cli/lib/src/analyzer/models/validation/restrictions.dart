@@ -1136,7 +1136,7 @@ class Restrictions {
 
     var errors = <SourceSpanSeverityException>[];
 
-    if (field.defaultValueType == null) {
+    if (field.type.defaultValueType == null) {
       errors.add(
         SourceSpanSeverityException(
           'The "default" key is not supported for "${field.type.className}" types',
@@ -1161,7 +1161,7 @@ class Restrictions {
 
     var errors = <SourceSpanSeverityException>[];
 
-    if (field.defaultValueType == null) {
+    if (field.type.defaultValueType == null) {
       errors.add(
         SourceSpanSeverityException(
           'The "defaultModel" key is not supported for "${field.type.className}" types',
@@ -1186,7 +1186,7 @@ class Restrictions {
 
     var errors = <SourceSpanSeverityException>[];
 
-    if (field.defaultValueType == null) {
+    if (field.type.defaultValueType == null) {
       errors.add(
         SourceSpanSeverityException(
           'The "defaultPersist" key is not supported for "${field.type.className}" types',
