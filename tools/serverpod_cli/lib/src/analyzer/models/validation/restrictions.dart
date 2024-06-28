@@ -1178,7 +1178,9 @@ class Restrictions {
     var errors = <SourceSpanSeverityException>[];
 
     var field = definition.findField(parentNodeName);
-    if (field?.defaultValueType == null) {
+    if (field == null) return [];
+
+    if (field.defaultValueType == null) {
       errors.add(
         SourceSpanSeverityException(
           'The "defaultPersist" key is not supported for "${field?.type.className}" types',
@@ -1187,8 +1189,7 @@ class Restrictions {
       );
     }
 
-    if (field?.hasOnlyDatabaseDefauls == true &&
-        field?.type.nullable == false) {
+    if (field.hasOnlyDatabaseDefauls && !field.type.nullable) {
       errors.add(
         SourceSpanSeverityException(
           'When setting only the "defaultPersist" key, its type should be nullable',
@@ -1200,7 +1201,7 @@ class Restrictions {
     /// We perform this check here instead of using [mutuallyExclusiveKeys] because our
     /// concern is specifically whether the field should be persisted in the database.
     /// Using "persist" is allowed, while using "!persist" is not allowed.
-    if (field?.shouldPersist == false) {
+    if (!field.shouldPersist) {
       errors.add(
         SourceSpanSeverityException(
           'The "defaultPersist" property is mutually exclusive with the "!persist" property.',
