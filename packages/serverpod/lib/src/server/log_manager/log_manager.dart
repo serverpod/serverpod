@@ -233,7 +233,6 @@ class LogManager {
     String? exception,
     StackTrace? stackTrace,
   }) async {
-    // Remove from open sessions
     _openSessionLogs.removeWhere((logEntry) => logEntry.session == session);
 
     // If verbose logging is enabled, output otherwise unlogged exceptions to
@@ -245,10 +244,8 @@ class LogManager {
       }
     }
 
-    // Check if we should log to database
     if (!session.enableLogging) return null;
 
-    // Log session to database
     var duration = session.duration;
     var cachedEntry = session.sessionLogs;
     LogSettings? logSettings;
@@ -256,7 +253,6 @@ class LogManager {
       logSettings = settings.getLogSettingsForSession(session);
     }
 
-    // Output to console in development mode.
     if (session.serverpod.runMode == ServerpodRunMode.development) {
       if (session is MethodCallSession) {
         stdout.writeln(
@@ -306,7 +302,6 @@ class LogManager {
 
       try {
         if (_continuouslyLogging(session)) {
-          // Close open session.
           session as StreamingSession;
           sessionLogId = session.sessionLogId!;
           sessionLogEntry.id = sessionLogId;
@@ -367,7 +362,6 @@ class LogManager {
         }
       }
 
-      // Add to list
       sessionLog.add(
         SessionLogInfo(
           sessionLogEntry: SessionLogEntry(
