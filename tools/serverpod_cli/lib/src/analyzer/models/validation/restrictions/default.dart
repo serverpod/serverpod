@@ -49,7 +49,7 @@ class DefaultValueRestriction extends ValueRestriction {
       );
     }
 
-    if (value == 'now') return [];
+    if (value == defaultDateTimeValueNow) return [];
 
     var format = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 

@@ -129,7 +129,7 @@ String? _getColumnDefault(
   switch (defaultValue) {
     case DefaultValueAllowedType.dateTime:
       var defaultValue = column.defaultPersistValue;
-      if (defaultValue == 'now') {
+      if (defaultValue == defaultDateTimeValueNow) {
         return 'CURRENT_TIMESTAMP';
       }
 

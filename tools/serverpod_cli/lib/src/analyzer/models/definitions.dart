@@ -440,3 +440,5 @@ const ForeignKeyAction onDeleteDefaultOld = ForeignKeyAction.cascade;
 const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;
 
 const String defaultPrimaryKeyName = 'id';
+
+const String defaultDateTimeValueNow = 'now';
