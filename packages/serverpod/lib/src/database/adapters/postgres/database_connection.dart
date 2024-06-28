@@ -507,7 +507,8 @@ class DatabaseConnection {
     StackTrace? trace,
   }) {
     // Check if this query should be logged.
-    var logSettings = session.serverpod.logManager.getLogSettingsForSession(
+    var logSettings =
+        session.serverpod.logManager.settings.getLogSettingsForSession(
       session,
     );
     var duration =

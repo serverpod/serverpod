@@ -109,7 +109,7 @@ abstract class EndpointWebsocketRequestHandler {
             var logManager = session.serverpod.logManager;
 
             var slow = duration >=
-                logManager
+                logManager.settings
                     .getLogSettingsForStreamingSession(
                       endpoint: endpointName,
                     )

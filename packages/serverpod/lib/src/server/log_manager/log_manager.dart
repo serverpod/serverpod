@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
+import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod/src/server/log_manager/log_writer.dart';
 import 'package:synchronized/synchronized.dart';
 
@@ -10,13 +11,13 @@ import '../../generated/protocol.dart';
 /// The [LogManager] handles logging and logging settings. Typically only used
 /// internally by Serverpod.
 class LogManager {
+  /// The [LogSettingsManager] the log manager retrieves its settings from.
+  final LogSettingsManager settings;
+
   /// The [RuntimeSettings] the log manager retrieves its settings from.
   final RuntimeSettings runtimeSettings;
 
   final LogWriter _logWriter;
-
-  final Map<String, LogSettings> _endpointOverrides = {};
-  final Map<String, LogSettings> _methodOverrides = {};
 
   final List<SessionLogEntryCache> _openSessionLogs = [];
 
@@ -32,72 +33,8 @@ class LogManager {
 
   /// Creates a new [LogManager] from [RuntimeSettings].
   LogManager(this.runtimeSettings, LogWriter logWriter)
-      : _logWriter = logWriter {
-    for (var override in runtimeSettings.logSettingsOverrides) {
-      if (override.method != null && override.endpoint != null) {
-        _methodOverrides['${override.endpoint}.${override.method}'] =
-            override.logSettings;
-      } else if (override.endpoint != null) {
-        _endpointOverrides['${override.endpoint}'] = override.logSettings;
-      }
-    }
-  }
-
-  /// Gets the log settings for a [MethodCallSession].
-  LogSettings _getLogSettingsForMethodCallSession(
-    String endpoint,
-    String method,
-  ) {
-    var settings = _methodOverrides['$endpoint.$method'];
-    if (settings != null) return settings;
-
-    settings = _endpointOverrides[endpoint];
-    if (settings != null) return settings;
-
-    return runtimeSettings.logSettings;
-  }
-
-  /// Gets the log settings for a [InternalSession].
-  LogSettings _getLogSettingsForInternalSession() {
-    return runtimeSettings.logSettings;
-  }
-
-  /// Gets the log settings for a [StreamingSession].
-  LogSettings getLogSettingsForStreamingSession({required String endpoint}) {
-    var settings = _endpointOverrides[endpoint];
-    if (settings != null) return settings;
-
-    return runtimeSettings.logSettings;
-  }
-
-  /// Gets the log settings for a [FutureCallSession].
-  LogSettings _getLogSettingsForFutureCallSession(String call) {
-    return runtimeSettings.logSettings;
-  }
-
-  /// Returns the [LogSettings] for a specific session.
-  LogSettings getLogSettingsForSession(Session session) {
-    if (session is MethodCallSession) {
-      return _getLogSettingsForMethodCallSession(
-          session.endpointName, session.methodName);
-    } else if (session is StreamingSession) {
-      assert(
-        session.sessionLogs.currentEndpoint != null,
-        'currentEndpoint for the StreamingSession must be set.',
-      );
-      return getLogSettingsForStreamingSession(
-        endpoint: session.sessionLogs.currentEndpoint!,
-      );
-    } else if (session is InternalSession) {
-      return _getLogSettingsForInternalSession();
-    } else if (session is FutureCallSession) {
-      return _getLogSettingsForFutureCallSession(session.futureCallName);
-    } else if (session is MethodStreamSession) {
-      return _getLogSettingsForMethodCallSession(
-          session.endpointName, session.methodName);
-    }
-    throw UnimplementedError('Unknown session type');
-  }
+      : _logWriter = logWriter,
+        settings = LogSettingsManager(runtimeSettings);
 
   /// Initializes the logging for a session, automatically called when a session
   /// is created. Each call to this method should have a corresponding
@@ -116,7 +53,7 @@ class LogManager {
     required bool slow,
     required bool failed,
   }) {
-    var logSettings = getLogSettingsForSession(session);
+    var logSettings = settings.getLogSettingsForSession(session);
     if (logSettings.logAllQueries) {
       return true;
     }
@@ -135,7 +72,7 @@ class LogManager {
     required Session session,
     required LogEntry entry,
   }) {
-    var logSettings = getLogSettingsForSession(session);
+    var logSettings = settings.getLogSettingsForSession(session);
     var serverLogLevel = (logSettings.logLevel);
 
     return entry.logLevel.index >= serverLogLevel.index;
@@ -149,7 +86,8 @@ class LogManager {
     required bool slow,
     required bool failed,
   }) {
-    var logSettings = getLogSettingsForStreamingSession(endpoint: endpoint);
+    var logSettings =
+        settings.getLogSettingsForStreamingSession(endpoint: endpoint);
     if (logSettings.logAllSessions) {
       return true;
     }
@@ -261,7 +199,7 @@ class LogManager {
 
       assert(session.sessionLogs.currentEndpoint != null);
 
-      var logSettings = getLogSettingsForStreamingSession(
+      var logSettings = settings.getLogSettingsForStreamingSession(
         endpoint: session.sessionLogs.currentEndpoint!,
       );
       if (!logSettings.logStreamingSessionsContinuously) {
@@ -318,7 +256,7 @@ class LogManager {
     var cachedEntry = session.sessionLogs;
     LogSettings? logSettings;
     if (session is! StreamingSession) {
-      logSettings = getLogSettingsForSession(session);
+      logSettings = settings.getLogSettingsForSession(session);
     }
 
     // Output to console in development mode.
