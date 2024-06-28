@@ -110,9 +110,7 @@ abstract class EndpointWebsocketRequestHandler {
 
             var slow = duration >=
                 logManager.settings
-                    .getLogSettingsForStreamingSession(
-                      endpoint: endpointName,
-                    )
+                    .getLogSettingsForSession(session)
                     .slowSessionDuration;
 
             var shouldLog = logManager.shouldLogMessage(

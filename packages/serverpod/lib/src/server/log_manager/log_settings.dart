@@ -40,7 +40,7 @@ class LogSettingsManager {
   }
 
   /// Gets the log settings for a [StreamingSession].
-  LogSettings getLogSettingsForStreamingSession({required String endpoint}) {
+  LogSettings _getLogSettingsForStreamingSession({required String endpoint}) {
     var settings = _endpointOverrides[endpoint];
     if (settings != null) return settings;
 
@@ -62,7 +62,7 @@ class LogSettingsManager {
         session.sessionLogs.currentEndpoint != null,
         'currentEndpoint for the StreamingSession must be set.',
       );
-      return getLogSettingsForStreamingSession(
+      return _getLogSettingsForStreamingSession(
         endpoint: session.sessionLogs.currentEndpoint!,
       );
     } else if (session is InternalSession) {

@@ -86,8 +86,7 @@ class LogManager {
     required bool slow,
     required bool failed,
   }) {
-    var logSettings =
-        settings.getLogSettingsForStreamingSession(endpoint: endpoint);
+    var logSettings = settings.getLogSettingsForSession(session);
     if (logSettings.logAllSessions) {
       return true;
     }
@@ -199,9 +198,7 @@ class LogManager {
 
       assert(session.sessionLogs.currentEndpoint != null);
 
-      var logSettings = settings.getLogSettingsForStreamingSession(
-        endpoint: session.sessionLogs.currentEndpoint!,
-      );
+      var logSettings = settings.getLogSettingsForSession(session);
       if (!logSettings.logStreamingSessionsContinuously) {
         // This call should not stream continuously.
         return;
