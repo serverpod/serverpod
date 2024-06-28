@@ -68,7 +68,7 @@ abstract class EndpointParameterAnalyzer {
         var innerType = typeArguments[0];
         if (innerType is VoidType || innerType is DynamicType) {
           errors.add(SourceSpanSeverityException(
-            'The type "Stream" must have a type defined. E.g. Stream<String>.',
+            'The type "Stream" must have a concrete type defined. E.g. Stream<String>.',
             parameter.span,
           ));
           continue;

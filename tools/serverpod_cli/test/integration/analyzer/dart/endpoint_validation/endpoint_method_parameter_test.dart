@@ -601,7 +601,7 @@ class ExampleEndpoint extends Endpoint {
       expect(collector.errors, hasLength(1));
       expect(
         collector.errors.firstOrNull?.message,
-        'The type "Stream" must have a type defined. E.g. Stream<String>.',
+        'The type "Stream" must have a concrete type defined. E.g. Stream<String>.',
       );
     });
 
@@ -645,7 +645,7 @@ class ExampleEndpoint extends Endpoint {
       expect(collector.errors, hasLength(1));
       expect(
         collector.errors.firstOrNull?.message,
-        'The type "Stream" must have a type defined. E.g. Stream<String>.',
+        'The type "Stream" must have a concrete type defined. E.g. Stream<String>.',
       );
     });
 
@@ -689,7 +689,7 @@ class ExampleEndpoint extends Endpoint {
       expect(collector.errors, hasLength(1));
       expect(
         collector.errors.firstOrNull?.message,
-        'The type "Stream" must have a type defined. E.g. Stream<String>.',
+        'The type "Stream" must have a concrete type defined. E.g. Stream<String>.',
       );
     });
 
