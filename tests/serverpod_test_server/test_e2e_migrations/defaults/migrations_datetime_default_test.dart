@@ -15,7 +15,8 @@ void main() {
     ),
   );
 
-  group('Given new protocol model with table and fields with "default" value',
+  group(
+      'Given an empty database and new protocol model with table and fields with "default" value',
       () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
@@ -97,7 +98,7 @@ void main() {
   });
 
   group(
-      'Given new protocol model with table and fields with "defaultModel" value',
+      'Given an empty database and new protocol model with table and fields with "defaultModel" value',
       () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
@@ -179,7 +180,7 @@ void main() {
   });
 
   group(
-      'Given new protocol model with table and fields with "defaultPersist" value',
+      'Given an empty database and new protocol model with table and fields with "defaultPersist" value',
       () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
@@ -261,7 +262,7 @@ void main() {
   });
 
   group(
-      'Given new protocol model with table and fields with "defaultModel" and "defaultPersist" value',
+      'Given an empty database and new protocol model with table and fields with "defaultModel" and "defaultPersist" value',
       () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
