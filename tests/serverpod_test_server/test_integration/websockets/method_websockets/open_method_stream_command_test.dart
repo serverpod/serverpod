@@ -135,6 +135,33 @@ void main() {
     });
 
     test(
+        'when a open method stream command is sent to a method with a streaming argument then OpenMethodStreamResponse type "success" is received.',
+        () async {
+      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        endpoint: 'methodStreaming',
+        method: 'simpleInputReturnStream',
+        args: {},
+        connectionId: const Uuid().v4obj(),
+      ));
+
+      var response = webSocket.stream.first;
+      await expectLater(
+        response.timeout(Duration(seconds: 5)),
+        completion(isA<String>()),
+        reason: 'Expected a response from the server.',
+      );
+
+      var message = WebSocketMessage.fromJsonString(await response as String);
+      expect(
+          message,
+          isA<OpenMethodStreamResponse>().having(
+            (m) => m.responseType,
+            'responseType',
+            OpenMethodStreamResponseType.success,
+          ));
+    });
+
+    test(
         'when a open method stream command is sent to an authenticated endpoint without an authentication token then OpenMethodStreamResponse type "authenticationFailed" is received.',
         () async {
       webSocket.sink.add(OpenMethodStreamCommand.buildMessage(

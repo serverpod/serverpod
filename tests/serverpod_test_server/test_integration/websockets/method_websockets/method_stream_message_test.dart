@@ -27,16 +27,13 @@ void main() {
     });
 
     test(
-        'when a MethodStreamMessage and a ping message is sent to the server then MethodStreamMessage is ignored and the server only responds with a pong message.',
-        () {
-      var pongReceived = Completer<void>();
-      var otherMessageReceived = Completer<void>();
+        'when a MethodStreamMessage is sent to the server without an open stream then response is a CloseMethodStreamCommand with error reason.',
+        () async {
+      var closeMethodCommand = Completer<CloseMethodStreamCommand>();
       webSocket.stream.listen((event) {
         var message = WebSocketMessage.fromJsonString(event);
-        if (message is PongCommand) {
-          pongReceived.complete();
-        } else {
-          otherMessageReceived.complete();
+        if (message is CloseMethodStreamCommand) {
+          closeMethodCommand.complete(message);
         }
       });
 
@@ -48,16 +45,14 @@ void main() {
       ));
       webSocket.sink.add(PingCommand.buildMessage());
 
-      expect(
-        otherMessageReceived.future,
-        doesNotComplete,
-        reason: 'OpenMethodStreamResponse not generate any messages.',
-      );
-      expect(
-        pongReceived.future.timeout(Duration(seconds: 5)),
+      await expectLater(
+        closeMethodCommand.future.timeout(Duration(seconds: 5)),
         completes,
-        reason: 'Failed to receive pong message from server.',
+        reason: 'Failed to receive close method command message from server.',
       );
+
+      var closeMethodStreamCommand = await closeMethodCommand.future;
+      expect(closeMethodStreamCommand.reason, CloseReason.error);
     });
 
     group(
