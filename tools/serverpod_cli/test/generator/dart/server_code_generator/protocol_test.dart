@@ -40,7 +40,7 @@ void main() {
                   .withStreamOf(modelName.pascalCase)
                   .build(),
             )
-            .build()
+            .buildMethodCallDefinition()
       ]).build()
     ];
 

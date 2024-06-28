@@ -372,7 +372,7 @@ class LibraryGenerator {
             ..initializers.add(refer('super').call([refer('caller')]).code)));
 
           for (var methodDef
-              in endpointDef.methods.where((method) => !method.isStream)) {
+              in endpointDef.methods.whereType<MethodCallDefinition>()) {
             var requiredParams = methodDef.parameters;
             var optionalParams = methodDef.parametersPositional;
             var namedParameters = methodDef.parametersNamed;
@@ -664,11 +664,11 @@ class LibraryGenerator {
                 {
                   ..._buildMethodConnectors(
                     endpoint,
-                    endpoint.methods.where((method) => !method.isStream),
+                    endpoint.methods.whereType<MethodCallDefinition>(),
                   ),
                   ..._buildMethodStreamConnectors(
                     endpoint,
-                    endpoint.methods.where((method) => method.isStream),
+                    endpoint.methods.whereType<MethodStreamDefinition>(),
                   )
                 },
               )
@@ -679,7 +679,7 @@ class LibraryGenerator {
 
   Map<Object, Object> _buildMethodConnectors(
     EndpointDefinition endpoint,
-    Iterable<MethodDefinition> methods,
+    Iterable<MethodCallDefinition> methods,
   ) {
     var methodConnectors = <Object, Object>{};
     for (var method in methods) {
@@ -742,7 +742,7 @@ class LibraryGenerator {
 
   Map<Object, Object> _buildMethodStreamConnectors(
     EndpointDefinition endpoint,
-    Iterable<MethodDefinition> methods,
+    Iterable<MethodStreamDefinition> methods,
   ) {
     var methodStreamConnectors = <Object, Object>{};
     for (var method in methods) {

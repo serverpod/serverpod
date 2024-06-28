@@ -191,10 +191,10 @@ class ExampleEndpoint extends Endpoint {
     });
 
     group('then endpoint method definition', () {
-      test('is a streaming method.', () {
-        var isStream =
-            endpointDefinitions.firstOrNull?.methods.firstOrNull?.isStream;
-        expect(isStream, isTrue);
+      test('is a method stream definition.', () {
+        var methodDefinition =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull;
+        expect(methodDefinition, isA<MethodStreamDefinition>());
       });
 
       test('has stream return type.', () {
@@ -240,9 +240,9 @@ class ExampleEndpoint extends Endpoint {
     });
 
     test('then endpoint method definition is a streaming method.', () {
-      var isStream =
-          endpointDefinitions.firstOrNull?.methods.firstOrNull?.isStream;
-      expect(isStream, isTrue);
+      var methodDefinition =
+          endpointDefinitions.firstOrNull?.methods.firstOrNull;
+      expect(methodDefinition, isA<MethodStreamDefinition>());
     });
   });
 

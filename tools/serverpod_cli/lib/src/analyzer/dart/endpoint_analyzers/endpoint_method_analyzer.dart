@@ -24,7 +24,22 @@ abstract class EndpointMethodAnalyzer {
     MethodElement method,
     Parameters parameters,
   ) {
-    var definition = MethodDefinition(
+    var isStream =
+        method.returnType.isDartAsyncStream || parameters._hasStream();
+
+    if (isStream) {
+      return MethodStreamDefinition(
+        name: method.name,
+        documentationComment: method.documentationComment,
+        // TODO: Move removal of session parameter to Parameter analyzer
+        parameters: parameters.required.sublist(1), // Skip session parameter,
+        parametersNamed: parameters.named,
+        parametersPositional: parameters.positional,
+        returnType: TypeDefinition.fromDartType(method.returnType),
+      );
+    }
+
+    return MethodCallDefinition(
       name: method.name,
       documentationComment: method.documentationComment,
       // TODO: Move removal of session parameter to Parameter analyzer
@@ -32,10 +47,7 @@ abstract class EndpointMethodAnalyzer {
       parametersNamed: parameters.named,
       parametersPositional: parameters.positional,
       returnType: TypeDefinition.fromDartType(method.returnType),
-      isStream: method.returnType.isDartAsyncStream || parameters._hasStream(),
     );
-
-    return definition;
   }
 
   /// Creates a namespace for the [MethodElement] based on the [ClassElement]

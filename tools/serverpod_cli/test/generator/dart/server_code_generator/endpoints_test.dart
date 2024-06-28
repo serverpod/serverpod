@@ -150,10 +150,9 @@ void main() {
             .withMethods([
           MethodDefinitionBuilder()
               .withName(methodName)
-              .withIsStream(true)
               .withReturnType(
                   TypeDefinitionBuilder().withStreamOf('String').build())
-              .build(),
+              .buildMethodStreamDefinition(),
         ]).build(),
       ],
       models: [],
