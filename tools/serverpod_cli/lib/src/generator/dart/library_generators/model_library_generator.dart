@@ -906,15 +906,10 @@ class SerializableModelLibraryGenerator {
       bool hasPrimaryKey =
           field.name == 'id' && tableName != null && serverCode;
 
+      bool shouldIncludeType =
+          hasPrimaryKey || !setAsToThis || field.defaultModelValue != null;
+
       bool hasDefaults = field.hasDefauls;
-
-      bool shouldIncludeType = hasPrimaryKey || !setAsToThis;
-      bool shouldUseThis = !shouldIncludeType;
-
-      if (hasDefaults && setAsToThis) {
-        shouldIncludeType = !field.hasOnlyDatabaseDefauls;
-        shouldUseThis = !shouldIncludeType;
-      }
 
       var type = field.type.reference(
         serverCode,
@@ -928,7 +923,7 @@ class SerializableModelLibraryGenerator {
           ..named = true
           ..required = !(field.type.nullable || hasDefaults)
           ..type = shouldIncludeType ? type : null
-          ..toThis = shouldUseThis
+          ..toThis = !shouldIncludeType
           ..name = field.name,
       );
     }).toList();
