@@ -36,7 +36,7 @@ jobs:
           aws-region: us-west-2
 
       - name: Create passwords file
-        working-directory: projectname_server
+        working-directory: auth_example_server
         shell: bash
         env:
           SERVERPOD_PASSWORDS: ${{ secrets.SERVERPOD_PASSWORDS }}
