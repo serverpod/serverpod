@@ -13,7 +13,7 @@ import '../generated/protocol.dart';
 /// When a call is made to the [Server] a [Session] object is created. It
 /// contains all data associated with the current connection and provides
 /// easy access to the database.
-abstract class Session {
+sealed class Session {
   /// The [Server] that created the session.
   final Server server;
 
