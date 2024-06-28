@@ -44,9 +44,9 @@ CREATE TABLE "datetime_default_persist" (
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20240628113246247', now())
+    VALUES ('serverpod_test', '20240628142846424', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240628113246247', "timestamp" = now();
+    DO UPDATE SET "version" = '20240628142846424', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth
