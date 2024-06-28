@@ -1,4 +1,5 @@
 import 'package:recase/recase.dart';
+import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:serverpod_cli/src/test_util/builders/endpoint_definition_builder.dart';
@@ -171,6 +172,72 @@ void main() {
     test('then endpoints file contains MethodStreamConnector for method.', () {
       expect(
           endpointsFile, contains("'$methodName': _i1.MethodStreamConnector("));
+    });
+
+    test('then endpoint file contains empty streamParams.', () {
+      expect(endpointsFile, contains('streamParams: {}'));
+    });
+
+    test('then endpoint file contains streamParams map in method call', () {
+      expect(endpointsFile, contains('Map<String, Stream> streamParams'));
+    });
+  });
+
+  group(
+      'Given a protocol definition with a method with only a Stream parameter when generating endpoints file',
+      () {
+    var endpointName = 'testing';
+    var methodName = 'streamMethod';
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [
+        EndpointDefinitionBuilder()
+            .withClassName('${endpointName.pascalCase}Endpoint')
+            .withName(endpointName)
+            .withMethods([
+          MethodDefinitionBuilder().withName(methodName).withParameters([
+            ParameterDefinition(
+              name: 'streamParam',
+              type: TypeDefinitionBuilder().withStreamOf('String').build(),
+              required: false,
+            ),
+          ]).buildMethodStreamDefinition(),
+        ]).build(),
+      ],
+      models: [],
+    );
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test('then endpoints file is created.', () {
+      expect(codeMap, contains(expectedFileName));
+    });
+    var endpointsFile = codeMap[expectedFileName];
+
+    test('then endpoints file contains MethodStreamConnector for method.', () {
+      expect(
+          endpointsFile, contains("'$methodName': _i1.MethodStreamConnector("));
+    });
+
+    test('then endpoint file contains empty params for method.', () {
+      expect(endpointsFile, contains('params: {}'));
+    });
+
+    test('then endpoint file contains streamParams with streaming parameter.',
+        () {
+      expect(
+          endpointsFile,
+          contains(' streamParams: {\n'
+              '            \'streamParam\': _i1.StreamParameterDescription<String>(\n '));
+    });
+
+    test(
+        'then endpoint file contains parameter passing from streamParams in method call',
+        () {
+      expect(endpointsFile,
+          contains('streamParams[\'streamParam\']!.cast<String>()'));
     });
   });
 }
