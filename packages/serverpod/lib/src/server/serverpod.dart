@@ -12,7 +12,8 @@ import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
-import 'package:serverpod/src/server/log_manager.dart';
+import 'package:serverpod/src/server/log_manager/log_manager.dart';
+import 'package:serverpod/src/server/log_manager/log_writer.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../authentication/default_authentication_handler.dart';
