@@ -320,6 +320,13 @@ class Serverpod {
         serializationManager,
         databaseConfiguration,
       );
+
+      // TODO: Remove this when we have a better way to handle this.
+      // Tracked by issue: https://github.com/serverpod/serverpod/issues/2421
+      // This is required because other operations in Serverpod assumes that the
+      // database is connected when the Serverpod is created
+      // (such as createSession(...)).
+      _databasePoolManager?.start();
     }
 
     if (Features.enableDatabase) {
@@ -402,9 +409,6 @@ class Serverpod {
   /// Starts the Serverpod and all [Server]s that it manages.
   Future<void> start() async {
     _startedTime = DateTime.now().toUtc();
-    // It is important that we start the database pool manager before
-    // attempting to connect to the database.
-    _databasePoolManager?.start();
 
     await runZonedGuarded(() async {
       // Register cloud store endpoint if we're using the database cloud store
@@ -412,6 +416,10 @@ class Serverpod {
           storage['private'] is DatabaseCloudStorage) {
         CloudStoragePublicEndpoint().register(this);
       }
+
+      // It is important that we start the database pool manager before
+      // attempting to connect to the database.
+      _databasePoolManager?.start();
 
       if (_databasePoolManager == null) {
         _runtimeSettings = _defaultRuntimeSettings;
