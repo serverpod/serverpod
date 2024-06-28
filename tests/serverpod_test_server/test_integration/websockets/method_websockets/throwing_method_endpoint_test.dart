@@ -53,10 +53,11 @@ void main() {
           connectionId: connectionId,
         ));
 
-        expect(
-          streamOpened.future.timeout(Duration(seconds: 5)),
-          completes,
-          reason: 'Failed to open method stream with server.',
+        await streamOpened.future.timeout(
+          Duration(seconds: 5),
+          onTimeout: () => throw AssertionError(
+            'Failed to open method stream with server.',
+          ),
         );
       });
 
@@ -106,10 +107,11 @@ void main() {
           connectionId: connectionId,
         ));
 
-        await expectLater(
-          streamOpened.future.timeout(Duration(seconds: 5)),
-          completes,
-          reason: 'Failed to open method stream with server.',
+        await streamOpened.future.timeout(
+          Duration(seconds: 5),
+          onTimeout: () => throw AssertionError(
+            'Failed to open method stream with server.',
+          ),
         );
       });
 
@@ -166,10 +168,11 @@ void main() {
           connectionId: connectionId,
         ));
 
-        expect(
-          streamOpened.future.timeout(Duration(seconds: 5)),
-          completes,
-          reason: 'Failed to open method stream with server.',
+        await streamOpened.future.timeout(
+          Duration(seconds: 5),
+          onTimeout: () => throw AssertionError(
+            'Failed to open method stream with server.',
+          ),
         );
       });
 
@@ -245,10 +248,11 @@ void main() {
           connectionId: connectionId,
         ));
 
-        await expectLater(
-          streamOpened.future.timeout(Duration(seconds: 5)),
-          completes,
-          reason: 'Failed to open method stream with server.',
+        await streamOpened.future.timeout(
+          Duration(seconds: 5),
+          onTimeout: () => throw AssertionError(
+            'Failed to open method stream with server.',
+          ),
         );
       });
 

@@ -72,7 +72,7 @@ void main() {
       var method = 'doubleInputValue';
       var connectionId = const Uuid().v4obj();
 
-      setUp(() {
+      setUp(() async {
         endpointResponse = Completer<int>();
         closeMethodStreamCommand = Completer<CloseMethodStreamCommand>();
         webSocketCompleter = Completer<void>();
@@ -99,10 +99,11 @@ void main() {
           connectionId: connectionId,
         ));
 
-        expect(
-          streamOpened.future.timeout(Duration(seconds: 5)),
-          completes,
-          reason: 'Failed to open method stream with server.',
+        await streamOpened.future.timeout(
+          Duration(seconds: 5),
+          onTimeout: () => throw AssertionError(
+            'Failed to open method stream with server.',
+          ),
         );
       });
 
@@ -178,10 +179,11 @@ void main() {
           connectionId: connectionId,
         ));
 
-        await expectLater(
-          streamOpened.future.timeout(Duration(seconds: 5)),
-          completes,
-          reason: 'Failed to open method stream with server.',
+        await streamOpened.future.timeout(
+          Duration(seconds: 5),
+          onTimeout: () => throw AssertionError(
+            'Failed to open method stream with server.',
+          ),
         );
       });
 
@@ -265,10 +267,11 @@ void main() {
           connectionId: connectionId,
         ));
 
-        await expectLater(
-          streamOpened.future.timeout(Duration(seconds: 5)),
-          completes,
-          reason: 'Failed to open method stream with server.',
+        await streamOpened.future.timeout(
+          Duration(seconds: 5),
+          onTimeout: () => throw AssertionError(
+            'Failed to open method stream with server.',
+          ),
         );
       });
 
@@ -340,10 +343,11 @@ void main() {
           connectionId: connectionId,
         ));
 
-        await expectLater(
-          streamOpened.future.timeout(Duration(seconds: 5)),
-          completes,
-          reason: 'Failed to open method stream with server.',
+        await streamOpened.future.timeout(
+          Duration(seconds: 5),
+          onTimeout: () => throw AssertionError(
+            'Failed to open method stream with server.',
+          ),
         );
       });
 
@@ -367,7 +371,7 @@ void main() {
       late Completer<void> delayedResponseClosed;
       var endpoint = 'methodStreaming';
 
-      setUp(() {
+      setUp(() async {
         var returningStreamOpen = Completer<void>();
         var delayedResponseOpen = Completer<void>();
         returningStreamClosed = Completer<void>();
@@ -407,13 +411,14 @@ void main() {
           connectionId: returningStreamConnectionId,
         ));
 
-        expect(
-          Future.wait([
-            returningStreamOpen.future,
-            delayedResponseOpen.future,
-          ]).timeout(Duration(seconds: 5)),
-          completes,
-          reason: 'Failed to open all method streams with server.',
+        await Future.wait([
+          returningStreamOpen.future,
+          delayedResponseOpen.future,
+        ]).timeout(
+          Duration(seconds: 5),
+          onTimeout: () => throw AssertionError(
+            'Failed to open all method stream with server.',
+          ),
         );
       });
 
@@ -449,7 +454,7 @@ void main() {
       late Completer<void> delayedResponseClosed;
       var endpoint = 'methodStreaming';
 
-      setUp(() {
+      setUp(() async {
         var returningStreamOpen = Completer<void>();
         var delayedResponseOpen = Completer<void>();
         returningStreamClosed = Completer<void>();
@@ -489,13 +494,14 @@ void main() {
           connectionId: returningStreamConnectionId,
         ));
 
-        expect(
-          Future.wait([
-            returningStreamOpen.future,
-            delayedResponseOpen.future,
-          ]).timeout(Duration(seconds: 5)),
-          completes,
-          reason: 'Failed to open all method streams with server.',
+        await Future.wait([
+          returningStreamOpen.future,
+          delayedResponseOpen.future,
+        ]).timeout(
+          Duration(seconds: 5),
+          onTimeout: () => throw AssertionError(
+            'Failed to open method stream with server.',
+          ),
         );
       });
 

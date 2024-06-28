@@ -58,10 +58,11 @@ void main() {
           connectionId: connectionId,
         ));
 
-        await expectLater(
-          delayedResponseOpen.future.timeout(Duration(seconds: 5)),
-          completes,
-          reason: 'Failed to open all method streams with server.',
+        await delayedResponseOpen.future.timeout(
+          Duration(seconds: 5),
+          onTimeout: () => throw AssertionError(
+            'Failed to open method stream with server.',
+          ),
         );
       });
 
@@ -130,10 +131,11 @@ void main() {
           connectionId: connectionId,
         ));
 
-        await expectLater(
-          delayedResponseOpen.future.timeout(Duration(seconds: 5)),
-          completes,
-          reason: 'Failed to open all method streams with server.',
+        await delayedResponseOpen.future.timeout(
+          Duration(seconds: 5),
+          onTimeout: () => throw AssertionError(
+            'Failed to open method stream with server.',
+          ),
         );
       });
 
