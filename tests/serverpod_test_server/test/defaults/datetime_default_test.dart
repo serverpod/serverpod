@@ -6,121 +6,97 @@ void main() async {
     "Given a class with 'default' fields",
     () {
       test(
-        'when an object of the class is created, then, except for "default=now", all fields should be in UTC',
+        'when an object of the class is created, then the "default=now" field should not be in UTC',
         () {
           var object = DateTimeDefault();
           expect(object.dateTimeDefaultNow.isUtc, false);
+        },
+      );
+
+      test(
+        'when an object of the class is created, then the "default" field with UTC string should be in UTC',
+        () {
+          var object = DateTimeDefault();
           expect(object.dateTimeDefaultStr.isUtc, true);
+        },
+      );
+
+      test(
+        'when an object of the class is created, then the nullable "default" field with UTC string should be in UTC',
+        () {
+          var object = DateTimeDefault();
           expect(object.dateTimeDefaultStrNull?.isUtc, true);
         },
       );
 
       test(
-        'when an object of the class is created, then all fields value should match the defaults',
+        'when an object of the class is created, then the "default=now" field value should match the current time',
         () {
           var object = DateTimeDefault();
-
           expect(
             object.dateTimeDefaultNow.difference(DateTime.now()).inSeconds,
             0,
           );
+        },
+      );
 
+      test(
+        'when an object of the class is created, then the "default" field value should match the default',
+        () {
+          var object = DateTimeDefault();
           expect(
             object.dateTimeDefaultStr,
             DateTime.parse('2024-05-24T22:00:00.000Z'),
           );
+        },
+      );
 
+      test(
+        'when an object of the class is created, then the nullable "default" field value should match the default',
+        () {
+          var object = DateTimeDefault();
           expect(
             object.dateTimeDefaultStrNull,
             DateTime.parse('2024-05-24T22:00:00.000Z'),
           );
         },
       );
-    },
-  );
-
-  group(
-    "Given a class with 'defaultModel' fields",
-    () {
-      test(
-        'when an object of the class is created, then, except for "defaultModel=now", all fields should be in UTC',
-        () {
-          var object = DateTimeDefaultModel();
-          expect(object.dateTimeDefaultModelNow.isUtc, false);
-          expect(object.dateTimeDefaultModelStr.isUtc, true);
-          expect(object.dateTimeDefaultModelStrNull?.isUtc, true);
-        },
-      );
 
       test(
-        'when an object of the class is created, then all fields value should match the defaults',
+        'when an object of the class is created with a value for "dateTimeDefaultNow", then the field value should not match the default',
         () {
-          var object = DateTimeDefaultModel();
-          expect(
-            object.dateTimeDefaultModelNow.difference(DateTime.now()).inSeconds,
-            0,
+          var object = DateTimeDefault(
+            dateTimeDefaultNow: DateTime.parse('2024-05-05T22:00:00.000Z'),
           );
-
           expect(
-            object.dateTimeDefaultModelStr,
-            DateTime.parse("2024-05-24T22:00:00.000Z"),
-          );
-
-          expect(
-            object.dateTimeDefaultModelStrNull,
-            DateTime.parse("2024-05-24T22:00:00.000Z"),
-          );
-        },
-      );
-    },
-  );
-
-  group(
-    "Given a class with 'defaultPersist' fields",
-    () {
-      test(
-        'when an object of the class is created, then all fields should be null',
-        () {
-          var object = DateTimeDefaultPersist();
-          expect(object.dateTimeDefaultPersistNow, isNull);
-          expect(object.dateTimeDefaultPersistStr, isNull);
-        },
-      );
-    },
-  );
-
-  group(
-    "Given a class with mix fields defaults",
-    () {
-      test(
-        'when the field has "default" and "defaultModel", then the field value should be the "defaultModel" value',
-        () {
-          var object = DateTimeDefaultMix();
-          expect(
-            object.dateTimeDefaultAndDefaultModel,
-            DateTime.parse('2024-05-10T22:00:00.000Z'),
+            object.dateTimeDefaultNow,
+            isNot(DateTime.parse('2024-05-01T22:00:00.000Z')),
           );
         },
       );
 
       test(
-        'when the field has "default" and "defaultPersist", then the field value should be the "default" value',
+        'when an object of the class is created with a value for "dateTimeDefaultStr", then the field value should not match the default',
         () {
-          var object = DateTimeDefaultMix();
+          var object = DateTimeDefault(
+            dateTimeDefaultStr: DateTime.parse('2024-05-05T22:00:00.000Z'),
+          );
           expect(
-            object.dateTimeDefaultAndDefaultPersist,
-            DateTime.parse('2024-05-01T22:00:00.000Z'),
+            object.dateTimeDefaultStr,
+            isNot(DateTime.parse('2024-05-24T22:00:00.000Z')),
           );
         },
       );
 
       test(
-        'when the field has "defaultModel" and "defaultPersist", then the field value should be the "defaultModel" value',
+        'when an object of the class is created with a value for "dateTimeDefaultStrNull", then the field value should not match the default',
         () {
-          var object = DateTimeDefaultMix();
+          var object = DateTimeDefault(
+            dateTimeDefaultStrNull: DateTime.parse('2024-05-05T22:00:00.000Z'),
+          );
           expect(
-            object.dateTimeDefaultModelAndDefaultPersist,
-            DateTime.parse('2024-05-01T22:00:00.000Z'),
+            object.dateTimeDefaultStrNull,
+            isNot(DateTime.parse('2024-05-24T22:00:00.000Z')),
           );
         },
       );
