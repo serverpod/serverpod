@@ -102,6 +102,18 @@ class MethodWebsocketRequestHandler {
       );
     }
 
+    if (endpointMethodConnector is MethodStreamConnector &&
+        endpointMethodConnector.returnType !=
+            MethodStreamReturnType.streamType) {
+      server.serverpod.logVerbose(
+        'Endpoint method does not have supported return type: $message',
+      );
+      return OpenMethodStreamResponse.buildMessage(
+        connectionId: message.connectionId,
+        responseType: OpenMethodStreamResponseType.endpointNotFound,
+      );
+    }
+
     // Parse arguments
     Map<String, dynamic> args;
     try {
@@ -340,7 +352,7 @@ class _MethodStreamManager {
     OpenMethodStreamCommand message,
     Server server,
   ) {
-    methodConnector.call(session, args).listen(
+    methodConnector.call(session, args, {}).listen(
       (value) {
         _postMessage(
           endpoint: message.endpoint,

@@ -278,8 +278,11 @@ class MethodConnector extends EndpointMethodConnector {
 }
 
 /// Calls a named method referenced in a [MethodStreamConnector].
-typedef MethodStream = Stream Function(
-    Session session, Map<String, dynamic> params);
+typedef MethodStream = dynamic Function(
+  Session session,
+  Map<String, dynamic> params,
+  Map<String, Stream<dynamic>> streamParams,
+);
 
 /// The type of return value from a [MethodStreamConnector].
 enum MethodStreamReturnType {
