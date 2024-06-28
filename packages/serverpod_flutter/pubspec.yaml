@@ -9,8 +9,8 @@ homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: '>=3.2.0 <4.0.0'
-  flutter: '>=3.16.0'
+  sdk: '>=3.3.0 <4.0.0'
+  flutter: '>=3.22.0'
 
 dependencies:
   connectivity_plus: ^6.0.3
