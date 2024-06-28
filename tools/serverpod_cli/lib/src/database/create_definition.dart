@@ -129,23 +129,17 @@ String? _getColumnDefault(
   switch (defaultValue) {
     case DefaultValueAllowedType.dateTime:
       var defaultValue = column.defaultPersistValue;
+      if (defaultValue == null) return null;
+
+      if (defaultValue is! String) {
+        throw StateError('Invalid DateTime default value: $defaultValue');
+      }
+
       if (defaultValue == defaultDateTimeValueNow) {
         return 'CURRENT_TIMESTAMP';
       }
 
-      if (defaultValue is String) {
-        DateTime? dateTime = DateTime.tryParse(defaultValue);
-        if (dateTime != null) {
-          var defaultValue =
-              '\'${DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime)}\'';
-          if (type == ColumnType.timestampWithoutTimeZone) {
-            defaultValue += '::timestamp without time zone';
-          }
-          return defaultValue;
-        }
-      }
-      break;
+      DateTime? dateTime = DateTime.parse(defaultValue);
+      return '\'${DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime)}\'::timestamp without time zone';
   }
-
-  return null;
 }
