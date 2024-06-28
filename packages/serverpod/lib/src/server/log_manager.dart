@@ -10,26 +10,26 @@ import '../generated/protocol.dart';
 /// are written.
 abstract class LogWriter {
   /// Logs a query from a stream.
-  Future<void> logStreamQuery(StreamingSession session, QueryLogEntry entry);
+  Future<void> logStreamQuery(Session session, QueryLogEntry entry);
 
   /// Logs an entry from a stream.
-  Future<void> logStreamEntry(StreamingSession session, LogEntry entry);
+  Future<void> logStreamEntry(Session session, LogEntry entry);
 
   /// Logs a message from a stream.
   Future<void> logStreamMessage(
-    StreamingSession session,
+    Session session,
     MessageLogEntry entry,
   );
 
   /// Opens a new streaming log and returns the id of the log.
   /// The id is used to identify the log when writing log entries so that
   /// they can be identified to  a single session.
-  Future<int> openStreamingLog(StreamingSession session, SessionLogEntry entry);
+  Future<int> openStreamingLog(Session session, SessionLogEntry entry);
 
   /// Closes a streaming log.
   /// This marks the end of all logs from this session.
   Future<void> closeStreamingLog(
-    StreamingSession session,
+    Session session,
     SessionLogEntry entry,
   );
 
@@ -44,19 +44,18 @@ abstract class LogWriter {
 /// Logs all output to the database
 class DatabaseLogWriter extends LogWriter {
   @override
-  Future<void> logStreamEntry(StreamingSession session, LogEntry entry) async {
+  Future<void> logStreamEntry(Session session, LogEntry entry) async {
     await _databaseLog(session, entry);
   }
 
   @override
-  Future<void> logStreamMessage(
-      StreamingSession session, MessageLogEntry entry) async {
+  Future<void> logStreamMessage(Session session, MessageLogEntry entry) async {
     await _databaseLog(session, entry);
   }
 
   @override
   Future<void> logStreamQuery(
-    StreamingSession session,
+    Session session,
     QueryLogEntry entry,
   ) async {
     await _databaseLog<QueryLogEntry>(session, entry);
@@ -64,7 +63,7 @@ class DatabaseLogWriter extends LogWriter {
 
   @override
   Future<int> openStreamingLog(
-    StreamingSession session,
+    Session session,
     SessionLogEntry entry,
   ) async {
     var sessionLog = await _databaseLog(session, entry);
@@ -73,7 +72,7 @@ class DatabaseLogWriter extends LogWriter {
 
   @override
   Future<void> closeStreamingLog(
-    StreamingSession session,
+    Session session,
     SessionLogEntry entry,
   ) async {
     var tempSession = await session.serverpod.createSession(
@@ -86,7 +85,7 @@ class DatabaseLogWriter extends LogWriter {
   }
 
   Future<T> _databaseLog<T extends TableRow>(
-    StreamingSession session,
+    Session session,
     T entry,
   ) async {
     var tempSession = await session.serverpod.createSession(
@@ -144,19 +143,17 @@ class StdOutLogWriter extends LogWriter {
   }
 
   @override
-  Future<void> logStreamEntry(StreamingSession session, LogEntry entry) async {
+  Future<void> logStreamEntry(Session session, LogEntry entry) async {
     stdout.writeln(entry);
   }
 
   @override
-  Future<void> logStreamMessage(
-      StreamingSession session, MessageLogEntry entry) async {
+  Future<void> logStreamMessage(Session session, MessageLogEntry entry) async {
     stdout.writeln(entry);
   }
 
   @override
-  Future<void> logStreamQuery(
-      StreamingSession session, QueryLogEntry entry) async {
+  Future<void> logStreamQuery(Session session, QueryLogEntry entry) async {
     stdout.writeln(entry);
   }
 
@@ -171,10 +168,7 @@ class StdOutLogWriter extends LogWriter {
   }
 
   @override
-  Future<void> closeStreamingLog(
-    StreamingSession session,
-    SessionLogEntry entry,
-  ) async {
+  Future<void> closeStreamingLog(Session session, SessionLogEntry entry) async {
     stdout.writeln(entry);
   }
 
