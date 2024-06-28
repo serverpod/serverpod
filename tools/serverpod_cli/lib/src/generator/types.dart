@@ -270,18 +270,15 @@ class TypeDefinition {
     return 'ColumnSerializable';
   }
 
-  /// Strip the outer most Future or Stream of this type.
-  /// Throws, if this type is not a Future or Stream.
-  TypeDefinition stripFutureOrStream() {
-    if (dartType?.isDartAsyncFuture ?? className == 'Future') {
-      return generics.first;
-    }
-    if (dartType?.isDartAsyncStream ?? className == 'Stream') {
-      return generics.first;
+  /// Retrieves the generic from this type.
+  /// Throws a [FormatException] if no generic is found.
+  TypeDefinition retrieveGenericType() {
+    var genericType = generics.firstOrNull;
+    if (genericType == null) {
+      throw FormatException('$this does not have a generic type to retrieve.');
     }
 
-    throw FormatException(
-        '$this is not a Future or Stream, so Future or Stream cant be stripped.');
+    return genericType;
   }
 
   /// Generates the constructors for List and Map types
