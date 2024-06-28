@@ -36,13 +36,13 @@ jobs:
           aws-region: us-west-2
 
       - name: Create passwords file
-        working-directory: auth_example_server
+        working-directory: projectname_server
         shell: bash
         env:
           SERVERPOD_PASSWORDS: ${{ secrets.SERVERPOD_PASSWORDS }}
         run: |
           pwd
-          echo "$SERVERPOD_PASSWORDS" > config/passwords.yaml
+          printenv SERVERPOD_PASSWORDS > config/passwords.yaml
           ls config/
 
       - name: Create Firebase service account key file
@@ -52,7 +52,7 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
         run: |
           pwd
-          echo "$FIREBASE_SERVICE_ACCOUNT_KEY" > config/firebase_service_account_key.json
+          printenv FIREBASE_SERVICE_ACCOUNT_KEY > config/firebase_service_account_key.json
           ls config/
 
       - name: Get Dart packages
