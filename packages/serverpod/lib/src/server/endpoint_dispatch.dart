@@ -108,7 +108,7 @@ abstract class EndpointDispatch {
       }
 
       var method = connector.methodConnectors[methodName];
-      if (method == null || method is! MethodConnector) {
+      if (method is! MethodConnector) {
         await session.close();
         return ResultInvalidParams(
             'Method $methodName not found in call: $uri');
