@@ -118,8 +118,6 @@ class AuthenticatedMethodStreaming extends Endpoint {
   @override
   Set<Scope> get requiredScopes => {Scope.admin};
 
-  Future<void> simpleEndpoint(Session session) async {}
-
   Stream<int> simpleStream(Session session) async* {
     for (var i = 0; i < 10; i++) {
       yield i;
