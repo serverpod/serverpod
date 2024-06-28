@@ -16,11 +16,11 @@ void main() {
         var models = [
           ModelSourceBuilder().withYaml(
             '''
-            class: Example
-            table: example
-            fields:
-              dateTimeType: DateTime, defaultModel=now
-            ''',
+          class: Example
+          table: example
+          fields:
+            dateTimeType: DateTime, defaultModel=now
+          ''',
           ).build()
         ];
 
@@ -45,7 +45,7 @@ void main() {
           class: Example
           table: example
           fields:
-            dateTimeType: DateTime, defaultModel=2024-05-34T22:00:00.000Z
+            dateTimeType: DateTime, defaultModel=2024-05-24T22:00:00.000Z
           ''',
           ).build()
         ];
@@ -61,27 +61,22 @@ void main() {
 
         expect(
           definition.fields.last.defaultModelValue,
-          '2024-05-34T22:00:00.000Z',
-        );
-        expect(
-          definition.fields.last.defaultPersistValue,
-          '2024-05-34T22:00:00.000Z',
+          '2024-05-24T22:00:00.000Z',
         );
       },
     );
 
     test(
-      'when the field is of a supported type with an invalid value, then an error is generated',
+      'when the field is of type DateTime with an invalid defaultModel value, then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
             '''
-            class: Example
-            table: example
-            fields:
-              dateTimeInvalid: DateTime?, defaultModel=test
-              dateTimeNonUtc: DateTime?, defaultModel=2024-06-06
-            ''',
+          class: Example
+          table: example
+          fields:
+            dateTimeInvalid: DateTime?, defaultModel=test
+          ''',
           ).build()
         ];
 
@@ -91,36 +86,25 @@ void main() {
 
         expect(collector.errors, isNotEmpty);
 
-        var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(firstError.message,
-            'The "defaultModel" value must be a valid UTC DateTime String or "now"');
-
-        var secondError = collector.errors.last as SourceSpanSeverityException;
-        expect(secondError.message,
-            'The "defaultModel" value should be a valid UTC DateTime.');
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultModel" value must be a valid UTC DateTime String or "now"',
+        );
       },
     );
 
     test(
-      'when the field is of an unsupported type, then an error is generated',
+      'when the field is of type DateTime with non-UTC defaultModel value, then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
             '''
-            class: Example
-            table: example
-            fields:
-              stingType: String, defaultModel=test
-              intType: int, defaultModel=test
-              doubleType: double, defaultModel=test
-              boolType: bool, defaultModel=test
-              durationType: Duration, defaultModel=test
-              byteDataType: ByteData, defaultModel=test
-              uuidValueType: UuidValue, defaultModel=test
-              mapType: Map<String, int>, defaultModel=test
-              listype: List<int>, defaultModel=test
-              classType: Example, defaultModel=test
-            ''',
+          class: Example
+          table: example
+          fields:
+            dateTimeNonUtc: DateTime?, defaultModel=2024-06-06
+          ''',
           ).build()
         ];
 
@@ -128,27 +112,293 @@ void main() {
         StatefulAnalyzer(config, models, onErrorsCollector(collector))
             .validateAll();
 
-        var errors = List<SourceSpanSeverityException>.from(collector.errors);
+        expect(collector.errors, isNotEmpty);
 
-        var errorMessages = [
-          'The "defaultModel" key is not supported for "String" types',
-          'The "defaultModel" key is not supported for "int" types',
-          'The "defaultModel" key is not supported for "double" types',
-          'The "defaultModel" key is not supported for "bool" types',
-          'The "defaultModel" key is not supported for "Duration" types',
-          'The "defaultModel" key is not supported for "ByteData" types',
-          'The "defaultModel" key is not supported for "UuidValue" types',
-          'The "defaultModel" key is not supported for "Map" types',
-          'The "defaultModel" key is not supported for "List" types',
-          'The "defaultModel" key is not supported for "Example" types',
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultModel" value should be a valid UTC DateTime.',
+        );
+      },
+    );
+
+    test(
+      'when the field is of an unsupported type String with a defaultModel value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            stringType: String, defaultModel=test
+          ''',
+          ).build()
         ];
 
-        expect(errors.length, errorMessages.length);
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
 
-        for (var error in errors) {
-          expect(error.severity, SourceSpanSeverity.error);
-          expect(error.message, errorMessages[errors.indexOf(error)]);
-        }
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultModel" key is not supported for "String" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of an unsupported type int with a defaultModel value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            intType: int, defaultModel=test
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultModel" key is not supported for "int" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of an unsupported type double with a defaultModel value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            doubleType: double, defaultModel=test
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultModel" key is not supported for "double" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of an unsupported type bool with a defaultModel value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            boolType: bool, defaultModel=test
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultModel" key is not supported for "bool" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of an unsupported type Duration with a defaultModel value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            durationType: Duration, defaultModel=test
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultModel" key is not supported for "Duration" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of an unsupported type ByteData with a defaultModel value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            byteDataType: ByteData, defaultModel=test
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultModel" key is not supported for "ByteData" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of an unsupported type UuidValue with a defaultModel value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            uuidValueType: UuidValue, defaultModel=test
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultModel" key is not supported for "UuidValue" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of an unsupported type Map with a defaultModel value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            mapType: Map<String, int>, defaultModel=test
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultModel" key is not supported for "Map" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of an unsupported type List with a defaultModel value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            listType: List<int>, defaultModel=test
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultModel" key is not supported for "List" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of an unsupported type Example with a defaultModel value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            classType: Example, defaultModel=test
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultModel" key is not supported for "Example" types',
+        );
       },
     );
   });

@@ -32,14 +32,8 @@ void main() {
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
-        expect(
-          definition.fields.last.defaultModelValue,
-          'now',
-        );
-        expect(
-          definition.fields.last.defaultPersistValue,
-          'now',
-        );
+        expect(definition.fields.last.defaultModelValue, 'now');
+        expect(definition.fields.last.defaultPersistValue, 'now');
       },
     );
 

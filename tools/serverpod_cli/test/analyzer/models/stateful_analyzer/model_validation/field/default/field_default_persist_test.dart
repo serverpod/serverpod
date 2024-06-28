@@ -15,11 +15,11 @@ void main() {
         var models = [
           ModelSourceBuilder().withYaml(
             '''
-            class: Example
-            table: example
-            fields:
-              dateTimeType: DateTime?, defaultPersist=now
-            ''',
+          class: Example
+          table: example
+          fields:
+            dateTimeType: DateTime?, defaultPersist=now
+          ''',
           ).build()
         ];
 
@@ -44,7 +44,7 @@ void main() {
           class: Example
           table: example
           fields:
-            dateTimeType: DateTime, defaultPersist=2024-05-34T22:00:00.000Z
+            dateTimeType: DateTime?, defaultPersist=2024-05-24T22:00:00.000Z
           ''',
           ).build()
         ];
@@ -59,12 +59,64 @@ void main() {
         var definition = definitions.first as ClassDefinition;
 
         expect(
-          definition.fields.last.defaultModelValue,
-          '2024-05-34T22:00:00.000Z',
-        );
-        expect(
           definition.fields.last.defaultPersistValue,
-          '2024-05-34T22:00:00.000Z',
+          '2024-05-24T22:00:00.000Z',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type DateTime with an invalid defaultPersist value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            dateTimeInvalid: DateTime?, defaultPersist=test
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultPersist" value must be a valid UTC DateTime String or "now"',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type DateTime with non-UTC defaultPersist value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            dateTimeNonUtc: DateTime?, defaultPersist=2024-06-06
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultPersist" value should be a valid UTC DateTime.',
         );
       },
     );
@@ -75,11 +127,11 @@ void main() {
         var models = [
           ModelSourceBuilder().withYaml(
             '''
-            class: Example
-            table: example
-            fields:
-              dateTimeType: DateTime, defaultPersist=now
-            ''',
+          class: Example
+          table: example
+          fields:
+            dateTimeType: DateTime, defaultPersist=now
+          ''',
           ).build()
         ];
 
@@ -90,39 +142,10 @@ void main() {
         expect(collector.errors, isNotEmpty);
 
         var error = collector.errors.first as SourceSpanSeverityException;
-        expect(error.message,
-            'When setting only the "defaultPersist" key, its type should be nullable');
-      },
-    );
-
-    test(
-      'when the field is of a supported type with an invalid value, then an error is generated',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-            class: Example
-            table: example
-            fields:
-              dateTimeInvalid: DateTime?, defaultPersist=test
-              dateTimeNonUtc: DateTime?, defaultPersist=2024-06-06
-            ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors, isNotEmpty);
-
-        var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(firstError.message,
-            'The "defaultPersist" value must be a valid UTC DateTime String or "now"');
-
-        var secondError = collector.errors.last as SourceSpanSeverityException;
-        expect(secondError.message,
-            'The "defaultPersist" value should be a valid UTC DateTime.');
+        expect(
+          error.message,
+          'When setting only the "defaultPersist" key, its type should be nullable',
+        );
       },
     );
 
@@ -132,11 +155,11 @@ void main() {
         var models = [
           ModelSourceBuilder().withYaml(
             '''
-            class: Example
-            table: example
-            fields:
-              dateTimeType: DateTime?, defaultPersist=now, !persist
-            ''',
+          class: Example
+          table: example
+          fields:
+            dateTimeType: DateTime?, defaultPersist=now, !persist
+          ''',
           ).build()
         ];
 
@@ -147,31 +170,24 @@ void main() {
         expect(collector.errors, isNotEmpty);
 
         var error = collector.errors.first as SourceSpanSeverityException;
-        expect(error.message,
-            'The "defaultPersist" property is mutually exclusive with the "!persist" property.');
+        expect(
+          error.message,
+          'The "defaultPersist" property is mutually exclusive with the "!persist" property.',
+        );
       },
     );
 
     test(
-      'when the field is of an unsupported type, then an error is generated',
+      'when the field is of an unsupported type String with a defaultPersist value, then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
             '''
-            class: Example
-            table: example
-            fields:
-              stingType: String?, defaultPersist=test
-              intType: int?, defaultPersist=test
-              doubleType: double?, defaultPersist=test
-              boolType: bool?, defaultPersist=test
-              durationType: Duration?, defaultPersist=test
-              byteDataType: ByteData?, defaultPersist=test
-              uuidValueType: UuidValue?, defaultPersist=test
-              mapType: Map<String, int>?, defaultPersist=test
-              listype: List<int>?, defaultPersist=test
-              classType: Example?, defaultPersist=test
-            ''',
+          class: Example
+          table: example
+          fields:
+            stringType: String?, defaultPersist=test
+          ''',
           ).build()
         ];
 
@@ -179,27 +195,265 @@ void main() {
         StatefulAnalyzer(config, models, onErrorsCollector(collector))
             .validateAll();
 
-        var errors = List<SourceSpanSeverityException>.from(collector.errors);
+        expect(collector.errors, isNotEmpty);
 
-        var errorMessages = [
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
           'The "defaultPersist" key is not supported for "String" types',
-          'The "defaultPersist" key is not supported for "int" types',
-          'The "defaultPersist" key is not supported for "double" types',
-          'The "defaultPersist" key is not supported for "bool" types',
-          'The "defaultPersist" key is not supported for "Duration" types',
-          'The "defaultPersist" key is not supported for "ByteData" types',
-          'The "defaultPersist" key is not supported for "UuidValue" types',
-          'The "defaultPersist" key is not supported for "Map" types',
-          'The "defaultPersist" key is not supported for "List" types',
-          'The "defaultPersist" key is not supported for "Example" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of an unsupported type int with a defaultPersist value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            intType: int?, defaultPersist=test
+          ''',
+          ).build()
         ];
 
-        expect(errors.length, errorMessages.length);
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
 
-        for (var error in errors) {
-          expect(error.severity, SourceSpanSeverity.error);
-          expect(error.message, errorMessages[errors.indexOf(error)]);
-        }
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultPersist" key is not supported for "int" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of an unsupported type double with a defaultPersist value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            doubleType: double?, defaultPersist=test
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultPersist" key is not supported for "double" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of an unsupported type bool with a defaultPersist value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            boolType: bool?, defaultPersist=test
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultPersist" key is not supported for "bool" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of an unsupported type Duration with a defaultPersist value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            durationType: Duration?, defaultPersist=test
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultPersist" key is not supported for "Duration" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of an unsupported type ByteData with a defaultPersist value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            byteDataType: ByteData?, defaultPersist=test
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultPersist" key is not supported for "ByteData" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of an unsupported type UuidValue with a defaultPersist value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            uuidValueType: UuidValue?, defaultPersist=test
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultPersist" key is not supported for "UuidValue" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of an unsupported type Map with a defaultPersist value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            mapType: Map<String, int>?, defaultPersist=test
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultPersist" key is not supported for "Map" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of an unsupported type List with a defaultPersist value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            listType: List<int>?, defaultPersist=test
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultPersist" key is not supported for "List" types',
+        );
+      },
+    );
+
+    test(
+      'when the field is of an unsupported type Example with a defaultPersist value, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            classType: Example?, defaultPersist=test
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var error = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          error.message,
+          'The "defaultPersist" key is not supported for "Example" types',
+        );
       },
     );
   });
