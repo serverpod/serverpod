@@ -82,7 +82,7 @@ class LogManager {
   /// Returns true if a message should be logged for the provided session.
   @internal
   bool shouldLogMessage({
-    required StreamingSession session,
+    required Session session,
     required String endpoint,
     required bool slow,
     required bool failed,
@@ -159,7 +159,7 @@ class LogManager {
     Session session,
     T entry,
     List<T> logCollector,
-    Future<void> Function(StreamingSession, T) writeLog,
+    Future<void> Function(Session, T) writeLog,
     Function(int, T) setSessionLogId,
   ) async {
     await _attemptOpenStreamingLog(session: session);
