@@ -164,7 +164,6 @@ methodStreaming:
   - throwsExceptionStream:
   - throwsSerializableExceptionStream:
 authenticatedMethodStreaming:
-  - simpleEndpoint:
   - simpleStream:
 moduleSerialization:
   - serializeModuleObject:

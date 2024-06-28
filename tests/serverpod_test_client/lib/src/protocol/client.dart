@@ -1273,12 +1273,6 @@ class EndpointAuthenticatedMethodStreaming extends _i1.EndpointRef {
 
   @override
   String get name => 'authenticatedMethodStreaming';
-
-  _i2.Future<void> simpleEndpoint() => caller.callServerEndpoint<void>(
-        'authenticatedMethodStreaming',
-        'simpleEndpoint',
-        {},
-      );
 }
 
 /// {@category Endpoint}
