@@ -196,19 +196,21 @@ class MethodWebsocketRequestHandler {
   }
 }
 
+class _InputStreamContext implements _StreamContext {
+  @override
+  final StreamController controller;
+
+  _InputStreamContext(this.controller);
+}
+
 class _MethodStreamManager {
-  final Map<String, StreamController<dynamic>> _streamControllers = {};
+  final Map<String, _StreamContext> _streamContexts = {};
 
   Future<void> closeAllStreams() async {
-    var controllers = _streamControllers.values.toList();
-    _streamControllers.clear();
+    var controllers = _streamContexts.values.map((c) => c.controller).toList();
+    _streamContexts.clear();
 
-    List<Future<void>> futures = [];
-    for (var controller in controllers) {
-      futures.add(controller.close());
-    }
-
-    await Future.wait(futures);
+    await _closeControllers(controllers);
   }
 
   Future<void> closeStream({
@@ -217,14 +219,27 @@ class _MethodStreamManager {
     String? parameter,
     required UuidValue connectionId,
   }) async {
-    var controller = _streamControllers.remove(_buildStreamKey(
+    if (parameter == null) {
+      return await _closeMethodStream(
+        endpoint: endpoint,
+        method: method,
+        connectionId: connectionId,
+        reason: CloseReason.done,
+      );
+    }
+
+    var paramStreamContext = _streamContexts.remove(_buildStreamKey(
       endpoint: endpoint,
       method: method,
       parameter: parameter,
       connectionId: connectionId,
     ));
 
-    return controller?.close();
+    if (paramStreamContext == null) {
+      return;
+    }
+
+    return _closeControllers([paramStreamContext.controller]);
   }
 
   void createStream({
@@ -235,7 +250,7 @@ class _MethodStreamManager {
     required Server server,
     required WebSocket webSocket,
   }) {
-    _registerOutputStream(webSocket, message);
+    _registerOutputStream(webSocket, message, methodConnector);
     var inputStreams = _createInputStreams(
       methodConnector,
       webSocket,
@@ -275,18 +290,19 @@ class _MethodStreamManager {
     MethodStreamMessage message,
     Server server,
   ) {
-    var controller = _streamControllers[_buildStreamKey(
+    var streamContext = _streamContexts[_buildStreamKey(
       endpoint: message.endpoint,
       method: message.method,
       parameter: message.parameter,
       connectionId: message.connectionId,
     )];
 
-    if (controller == null) {
+    if (streamContext == null) {
       return false;
     }
 
-    controller.add(server.serializationManager.decodeWithType(message.object));
+    streamContext.controller
+        .add(server.serializationManager.decodeWithType(message.object));
     return true;
   }
 
@@ -298,55 +314,85 @@ class _MethodStreamManager {
   }) =>
       '$connectionId:$endpoint:$method${parameter != null ? ':$parameter' : ''}';
 
+  Future<void> _closeControllers(Iterable<StreamController> controllers) async {
+    List<Future<void>> futures = [];
+    // Close all controllers that have listeners.
+    // If close is called on a controller that has no listeners, it will
+    // return a future that never completes.
+    var controllersToClose =
+        controllers.where((c) => c.hasListener && !c.isClosed);
+
+    for (var controller in controllersToClose) {
+      // Paused streams will never process the close event and
+      // will never complete. Therefore we need add a timeout to complete the
+      // future.
+      futures.add(controller.close().timeout(
+            const Duration(seconds: 6),
+            onTimeout: () async => await controller.onCancel?.call(),
+          ));
+    }
+
+    await Future.wait(futures);
+  }
+
   Future<void> _closeMethodStream({
     required String endpoint,
     required String method,
     required UuidValue connectionId,
     required CloseReason reason,
   }) async {
-    var message = CloseMethodStreamCommand.buildMessage(
-      endpoint: endpoint,
-      connectionId: connectionId,
-      method: method,
-      reason: reason,
-    );
-
-    var controller = _streamControllers.remove(_buildStreamKey(
+    var methodStreamContext = _streamContexts.remove(_buildStreamKey(
       endpoint: endpoint,
       method: method,
       connectionId: connectionId,
     ));
 
-    controller?.add(message);
-    return controller?.close();
-  }
+    if (methodStreamContext == null) {
+      return;
+    }
 
-  Future<void> _closeParameterStream({
-    required String endpoint,
-    required String method,
-    required String parameter,
-    required UuidValue connectionId,
-    required CloseReason reason,
-    required WebSocket webSocket,
-  }) async {
-    var controller = _streamControllers.remove(_buildStreamKey(
-      endpoint: endpoint,
-      method: method,
-      parameter: parameter,
-      connectionId: connectionId,
-    ));
-
-    await controller?.close();
-    if (webSocket.closeCode != null) return;
-
-    var message = CloseMethodStreamCommand.buildMessage(
-      endpoint: endpoint,
-      method: method,
-      parameter: parameter,
-      connectionId: connectionId,
-      reason: reason,
+    methodStreamContext.controller.add(
+      CloseMethodStreamCommand.buildMessage(
+        endpoint: endpoint,
+        connectionId: connectionId,
+        method: method,
+        reason: reason,
+      ),
     );
-    webSocket.add(message);
+
+    var controllers = <StreamController>[];
+    controllers.add(methodStreamContext.controller);
+
+    if (methodStreamContext is! _OutputStreamContext) {
+      return _closeControllers(controllers);
+    }
+
+    for (var streamParam in methodStreamContext.streamParams) {
+      var paramStreamContext = _streamContexts.remove(_buildStreamKey(
+        endpoint: endpoint,
+        method: method,
+        parameter: streamParam.name,
+        connectionId: connectionId,
+      ));
+
+      if (paramStreamContext == null) {
+        continue;
+      }
+
+      methodStreamContext.controller.add(
+        CloseMethodStreamCommand.buildMessage(
+          endpoint: endpoint,
+          method: method,
+          parameter: streamParam.name,
+          connectionId: connectionId,
+          reason: reason,
+        ),
+      );
+
+      controllers.add(paramStreamContext.controller);
+    }
+
+    return _closeControllers(controllers);
   }
 
   Map<String, StreamController> _createInputStreams(
@@ -360,29 +406,35 @@ class _MethodStreamManager {
     for (var streamParam in streamParamDescriptions) {
       var parameterName = streamParam.name;
       var controller = StreamController(onCancel: () async {
+        _streamContexts.remove(_buildStreamKey(
+          endpoint: message.endpoint,
+          method: message.method,
+          parameter: parameterName,
+          connectionId: message.connectionId,
+        ));
+
         if (webSocket.closeCode != null) return;
 
-        await _closeParameterStream(
+        webSocket.add(CloseMethodStreamCommand.buildMessage(
           endpoint: message.endpoint,
           method: message.method,
           parameter: parameterName,
           connectionId: message.connectionId,
           reason: CloseReason.done,
-          webSocket: webSocket,
-        );
+        ));
 
-        if (_streamControllers.isEmpty) {
+        if (_streamContexts.isEmpty) {
           await webSocket.close();
         }
       });
 
       inputStreams[parameterName] = controller;
-      _streamControllers[_buildStreamKey(
+      _streamContexts[_buildStreamKey(
         endpoint: message.endpoint,
         method: message.method,
         parameter: parameterName,
         connectionId: message.connectionId,
-      )] = controller;
+      )] = _InputStreamContext(controller);
     }
 
     return inputStreams;
@@ -520,33 +572,50 @@ class _MethodStreamManager {
     required UuidValue connectionId,
     required String message,
   }) {
-    var controller = _streamControllers[_buildStreamKey(
+    var methodStreamController = _streamContexts[_buildStreamKey(
       endpoint: endpoint,
       method: method,
       parameter: parameter,
       connectionId: connectionId,
     )];
 
-    controller?.add(message);
+    methodStreamController?.controller.add(message);
   }
 
   void _registerOutputStream(
     WebSocket webSocket,
     OpenMethodStreamCommand message,
+    MethodStreamConnector methodStreamConnector,
   ) {
     var controller = StreamController<String>();
     controller.stream.listen((event) {
       webSocket.add(event);
     }, onDone: () async {
-      if (_streamControllers.isEmpty) {
+      if (_streamContexts.isEmpty) {
         await webSocket.close();
       }
     });
 
-    _streamControllers[_buildStreamKey(
+    _streamContexts[_buildStreamKey(
       endpoint: message.endpoint,
       method: message.method,
       connectionId: message.connectionId,
-    )] = controller;
+    )] = _OutputStreamContext(
+      controller,
+      methodStreamConnector.streamParams.values,
+    );
   }
+}
+
+class _OutputStreamContext implements _StreamContext {
+  @override
+  final StreamController controller;
+
+  final Iterable<StreamParameterDescription> streamParams;
+
+  _OutputStreamContext(this.controller, this.streamParams);
+}
+
+abstract interface class _StreamContext {
+  StreamController get controller;
 }
