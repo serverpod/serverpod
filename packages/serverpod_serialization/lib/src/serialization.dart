@@ -222,11 +222,40 @@ abstract class SerializationManager {
     Object? object, {
     bool formatted = false,
   }) {
-    if (object is ProtocolSerialization) {
+    // detect List<? extends ProtocolSerialization>
+    if (object is List) {
+      object = _convertListForProtocol(object);
+    } else if (object is Map) {
+      // detect every ProtocolSerialization in map.values
+      object = _convertMapForProtocol(object);
+    } else if (object is ProtocolSerialization) {
       return encode(object.toJsonForProtocol(), formatted: formatted);
     }
-
     return encode(object, formatted: formatted);
+  }
+
+  static List _convertListForProtocol(List list) {
+    return list
+        .map((v) => v is ProtocolSerialization
+            ? v.toJsonForProtocol()
+            : v is List
+                ? _convertListForProtocol(v)
+                : v is Map
+                    ? _convertMapForProtocol(v)
+                    : v)
+        .toList();
+  }
+
+  static Map _convertMapForProtocol(Map map) {
+    return map.map((k, v) => MapEntry(
+        k,
+        v is ProtocolSerialization
+            ? v.toJsonForProtocol()
+            : v is List
+                ? _convertListForProtocol(v)
+                : v is Map
+                    ? _convertMapForProtocol(v)
+                    : v));
   }
 
   /// Encode the provided [object] to a json-formatted [String], include class
