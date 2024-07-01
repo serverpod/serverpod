@@ -9,6 +9,8 @@ class FieldDefinitionBuilder {
   RelationDefinition? _relation;
   bool _shouldPersist;
   List<String>? _documentation;
+  dynamic _defaultModelValue;
+  dynamic _defaultPersistValue;
 
   FieldDefinitionBuilder()
       : _name = 'name',
@@ -17,7 +19,9 @@ class FieldDefinitionBuilder {
           nullable: true,
         ),
         _scope = ModelFieldScopeDefinition.all,
-        _shouldPersist = true;
+        _shouldPersist = true,
+        _defaultModelValue = null,
+        _defaultPersistValue = null;
 
   FieldDefinitionBuilder withName(String name) {
     _name = name;
@@ -96,6 +100,15 @@ class FieldDefinitionBuilder {
     return this;
   }
 
+  FieldDefinitionBuilder withDefaults({
+    dynamic defaultModelValue,
+    dynamic defaultPersistValue,
+  }) {
+    _defaultModelValue = defaultModelValue ?? _defaultModelValue;
+    _defaultPersistValue = defaultPersistValue ?? _defaultPersistValue;
+    return this;
+  }
+
   SerializableModelFieldDefinition build() {
     return SerializableModelFieldDefinition(
       name: _name,
@@ -104,6 +117,8 @@ class FieldDefinitionBuilder {
       relation: _relation,
       shouldPersist: _shouldPersist,
       documentation: _documentation,
+      defaultModelValue: _defaultModelValue,
+      defaultPersistValue: _defaultPersistValue,
     );
   }
 }
