@@ -12,7 +12,7 @@ RUN apt-get update
 RUN apt-get install --fix-missing -y xvfb  
 
 RUN apt-get install -y --no-install-recommends firefox
-
+RUN apt-get install -y nodejs
 
 WORKDIR /app/tests/serverpod_test_server
 RUN dart pub get

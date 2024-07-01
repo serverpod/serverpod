@@ -166,6 +166,20 @@ jobs:
       - name: Run e2e tests
         run: util/run_tests_e2e firefox
 
+  e2e_node_tests:
+    name: Serverpod E2E web tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.16.0', '3.22.0']
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+      - name: Run e2e tests
+        run: util/run_tests_e2e node
+
   integration_tests:
     name: Serverpod integration tests
     runs-on: ubuntu-latest
