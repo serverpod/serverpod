@@ -56,23 +56,37 @@ class LogSettingsManager {
 
   /// Returns the [LogSettings] for a specific session.
   LogSettings getLogSettingsForSession(Session session) {
-    return switch (session) {
-      MethodCallSession session => _getLogSettingsForMethodCallSession(
-          session.endpointName,
-          session.methodName,
-        ),
-      StreamingSession session => _getLogSettingsForStreamingSession(
-          // TODO: fix type cast error
-          endpoint: session.sessionLogs.currentEndpoint!,
-        ),
-      InternalSession _ => _getLogSettingsForInternalSession(),
-      FutureCallSession session => _getLogSettingsForFutureCallSession(
-          session.futureCallName,
-        ),
-      MethodStreamSession session => _getLogSettingsForMethodCallSession(
-          session.endpointName,
-          session.methodName,
-        ),
-    };
+    var localSession = session;
+    if (localSession is MethodCallSession) {
+      return _getLogSettingsForMethodCallSession(
+        localSession.endpointName,
+        localSession.methodName,
+      );
+    }
+
+    if (localSession is StreamingSession) {
+      return _getLogSettingsForStreamingSession(
+        endpoint: localSession.sessionLogs.currentEndpoint!,
+      );
+    }
+
+    if (localSession is InternalSession) {
+      return _getLogSettingsForInternalSession();
+    }
+
+    if (localSession is FutureCallSession) {
+      return _getLogSettingsForFutureCallSession(
+        localSession.futureCallName,
+      );
+    }
+
+    if (localSession is MethodStreamSession) {
+      return _getLogSettingsForMethodCallSession(
+        localSession.endpointName,
+        localSession.methodName,
+      );
+    }
+
+    throw Exception('Unknown session type: $session');
   }
 }

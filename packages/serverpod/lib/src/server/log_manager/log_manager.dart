@@ -386,21 +386,24 @@ class LogManager {
 }
 
 String? _methodForSession(Session session) {
-  return switch (session) {
-    MethodCallSession session => session.methodName,
-    FutureCallSession session => session.futureCallName,
-    MethodStreamSession session => session.methodName,
-    InternalSession _ => null,
-    StreamingSession _ => null,
-  };
+  var localSession = session;
+
+  if (localSession is MethodCallSession) return localSession.methodName;
+  if (localSession is MethodStreamSession) return localSession.methodName;
+  if (localSession is FutureCallSession) return localSession.futureCallName;
+  if (localSession is InternalSession) return null;
+  if (localSession is StreamingSession) return null;
+
+  throw Exception('Unknown session type: $session');
 }
 
 String _endpointForSession(Session session) {
-  return switch (session) {
-    MethodCallSession session => session.endpointName,
-    MethodStreamSession session => session.endpointName,
-    FutureCallSession _ => 'FutureCallSession',
-    InternalSession _ => 'InternalSession',
-    StreamingSession _ => 'StreamingSession',
-  };
+  var localSession = session;
+  if (localSession is MethodCallSession) return localSession.endpointName;
+  if (localSession is MethodStreamSession) return localSession.endpointName;
+  if (localSession is FutureCallSession) return 'FutureCallSession';
+  if (localSession is InternalSession) return 'InternalSession';
+  if (localSession is StreamingSession) return 'StreamingSession';
+
+  throw Exception('Unknown session type: $session');
 }
