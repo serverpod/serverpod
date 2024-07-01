@@ -222,10 +222,6 @@ class SessionLogEntryCache {
   int _currentLogOrderId = 0;
 
   /// This is used internally by Serverpod to ensure the ordering of log entries
-  /// and log queries are correct.
-  int get currentLogOrderId => _currentLogOrderId;
-
-  /// This is used internally by Serverpod to ensure the ordering of log entries
   int get createLogOrderId {
     return ++_currentLogOrderId;
   }
