@@ -69,6 +69,28 @@ void main() {
     });
 
     test(
+        'when a open method stream command is sent to a method call endpoint then OpenMethodStreamResponse type "endpointNotFound" is received.',
+        () async {
+      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        endpoint: 'methodStreaming',
+        method: 'methodCallEndpoint',
+        args: {},
+        connectionId: const Uuid().v4obj(),
+      ));
+
+      var response = await webSocket.stream.first as String;
+      var message = WebSocketMessage.fromJsonString(response);
+
+      expect(
+          message,
+          isA<OpenMethodStreamResponse>().having(
+            (m) => m.responseType,
+            'responseType',
+            OpenMethodStreamResponseType.endpointNotFound,
+          ));
+    });
+
+    test(
         'when a valid open method stream command is sent then OpenMethodStreamResponse type "success" is received.',
         () async {
       webSocket.sink.add(OpenMethodStreamCommand.buildMessage(

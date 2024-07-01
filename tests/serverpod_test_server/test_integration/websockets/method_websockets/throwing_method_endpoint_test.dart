@@ -26,13 +26,13 @@ void main() {
     });
 
     group(
-        'when a stream is opened to an endpoint with a Future return that throws an exception then',
+        'when a stream is opened to an endpoint with a Future return that throws an exception',
         () {
       var streamOpened = Completer<void>();
       late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
 
       var endpoint = 'methodStreaming';
-      var method = 'throwsException';
+      var method = 'inStreamThrowsException';
       var connectionId = const Uuid().v4obj();
 
       setUp(() async {
@@ -86,7 +86,7 @@ void main() {
       late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
 
       var endpoint = 'methodStreaming';
-      var method = 'throwsExceptionStream';
+      var method = 'outStreamThrowsException';
       var connectionId = const Uuid().v4obj();
 
       setUp(() async {
@@ -141,7 +141,7 @@ void main() {
       late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
 
       var endpoint = 'methodStreaming';
-      var method = 'throwsSerializableException';
+      var method = 'inStreamThrowsSerializableException';
       var connectionId = const Uuid().v4obj();
 
       setUp(() async {
@@ -221,7 +221,7 @@ void main() {
       late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
 
       var endpoint = 'methodStreaming';
-      var method = 'throwsSerializableExceptionStream';
+      var method = 'outStreamThrowsSerializableException';
       var connectionId = const Uuid().v4obj();
 
       setUp(() async {

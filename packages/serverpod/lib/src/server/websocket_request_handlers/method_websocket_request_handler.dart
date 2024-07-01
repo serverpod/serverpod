@@ -116,6 +116,16 @@ class MethodWebsocketRequestHandler {
       );
     }
 
+    if (endpointMethodConnector is! MethodStreamConnector) {
+      server.serverpod.logVerbose(
+        'Endpoint method is not a valid stream method: $message',
+      );
+      return OpenMethodStreamResponse.buildMessage(
+        connectionId: message.connectionId,
+        responseType: OpenMethodStreamResponseType.endpointNotFound,
+      );
+    }
+
     // Parse arguments
     Map<String, dynamic> args;
     try {
@@ -171,7 +181,7 @@ class MethodWebsocketRequestHandler {
     }
 
     _methodStreamManager.createStream(
-      endpointMethodConnector: endpointMethodConnector,
+      methodConnector: endpointMethodConnector,
       session: session,
       args: args,
       message: message,
@@ -218,7 +228,7 @@ class _MethodStreamManager {
   }
 
   void createStream({
-    required EndpointMethodConnector endpointMethodConnector,
+    required MethodStreamConnector methodConnector,
     required Session session,
     required Map<String, dynamic> args,
     required OpenMethodStreamCommand message,
@@ -226,47 +236,37 @@ class _MethodStreamManager {
     required WebSocket webSocket,
   }) {
     _registerOutputStream(webSocket, message);
-    if (endpointMethodConnector is MethodStreamConnector) {
-      var inputStreams = _createInputStreams(
-        endpointMethodConnector,
-        webSocket,
-        message,
-      );
-      var streamParams = inputStreams.map(
-        (key, value) => MapEntry(key, value.stream),
-      );
+    var inputStreams = _createInputStreams(
+      methodConnector,
+      webSocket,
+      message,
+    );
+    var streamParams = inputStreams.map(
+      (key, value) => MapEntry(key, value.stream),
+    );
 
-      switch (endpointMethodConnector.returnType) {
-        case MethodStreamReturnType.streamType:
-          _handleMethodWithStreamReturn(
-            methodConnector: endpointMethodConnector,
-            session: session,
-            args: args,
-            streamParams: streamParams,
-            message: message,
-            server: server,
-          );
-          break;
-        case MethodStreamReturnType.singleType:
-        case MethodStreamReturnType.voidType:
-          _handleMethodWithFutureReturn(
-            methodConnector: endpointMethodConnector,
-            session: session,
-            args: args,
-            streamParams: streamParams,
-            message: message,
-            server: server,
-          );
-          break;
-      }
-    } else if (endpointMethodConnector is MethodConnector) {
-      _handleMethodCallEndpoint(
-        endpointMethodConnector,
-        session,
-        args,
-        message,
-        server,
-      );
+    switch (methodConnector.returnType) {
+      case MethodStreamReturnType.streamType:
+        _handleMethodWithStreamReturn(
+          methodConnector: methodConnector,
+          session: session,
+          args: args,
+          streamParams: streamParams,
+          message: message,
+          server: server,
+        );
+        break;
+      case MethodStreamReturnType.singleType:
+      case MethodStreamReturnType.voidType:
+        _handleMethodWithFutureReturn(
+          methodConnector: methodConnector,
+          session: session,
+          args: args,
+          streamParams: streamParams,
+          message: message,
+          server: server,
+        );
+        break;
     }
   }
 
@@ -386,67 +386,6 @@ class _MethodStreamManager {
     }
 
     return inputStreams;
-  }
-
-  Future<void> _handleMethodCallEndpoint(
-    MethodConnector methodConnector,
-    Session session,
-    Map<String, dynamic> args,
-    OpenMethodStreamCommand message,
-    Server server,
-  ) async {
-    dynamic result;
-    try {
-      result = await methodConnector.call(session, args);
-    } catch (e, stackTrace) {
-      if (e is SerializableException) {
-        _postMessage(
-          endpoint: message.endpoint,
-          method: message.method,
-          connectionId: message.connectionId,
-          message: MethodStreamSerializableException.buildMessage(
-            endpoint: message.endpoint,
-            method: message.method,
-            connectionId: message.connectionId,
-            object: server.serializationManager.encodeWithType(e),
-          ),
-        );
-      }
-
-      await session.close(error: e, stackTrace: stackTrace);
-      await _closeMethodStream(
-        endpoint: message.endpoint,
-        method: message.method,
-        connectionId: message.connectionId,
-        reason: CloseReason.error,
-      );
-      return;
-    }
-
-    // TODO: Support nullable return types.
-    // Becuase encodeWithType doens't support nullable we can't encode null
-    // values.
-    if (methodConnector.returnsVoid == false && result != null) {
-      _postMessage(
-        endpoint: message.endpoint,
-        method: message.method,
-        connectionId: message.connectionId,
-        message: MethodStreamMessage.buildMessage(
-          endpoint: message.endpoint,
-          method: message.method,
-          connectionId: message.connectionId,
-          object: server.serializationManager.encodeWithType(result),
-        ),
-      );
-    }
-
-    await session.close();
-    await _closeMethodStream(
-      endpoint: message.endpoint,
-      method: message.method,
-      connectionId: message.connectionId,
-      reason: CloseReason.done,
-    );
   }
 
   Future<void> _handleMethodWithFutureReturn({
