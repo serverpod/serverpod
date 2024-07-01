@@ -507,7 +507,8 @@ class DatabaseConnection {
     StackTrace? trace,
   }) {
     // Check if this query should be logged.
-    var logSettings = session.serverpod.logManager.getLogSettingsForSession(
+    var logSettings =
+        session.serverpod.logManager.settings.getLogSettingsForSession(
       session,
     );
     var duration =
@@ -536,11 +537,9 @@ class DatabaseConnection {
       error: exception?.toString(),
       stackTrace: trace.toString(),
       slow: slow,
-      order: session.sessionLogs.currentLogOrderId,
+      order: session.sessionLogs.createLogOrderId,
     );
     session.serverpod.logManager.logQuery(session, entry);
-    session.sessionLogs.currentLogOrderId += 1;
-    session.sessionLogs.numQueries += 1;
   }
 
   /// For most cases use the corresponding method in [Database] instead.

@@ -1,219 +1,24 @@
 import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
+import 'package:serverpod/src/server/log_manager/log_settings.dart';
+import 'package:serverpod/src/server/log_manager/log_writer.dart';
 import 'package:synchronized/synchronized.dart';
 
-import '../../server.dart';
-import '../generated/protocol.dart';
-
-/// The interface for writing logs. The implementation will decide where the logs
-/// are written.
-abstract class LogWriter {
-  /// Logs a query from a stream.
-  Future<void> logStreamQuery(StreamingSession session, QueryLogEntry entry);
-
-  /// Logs an entry from a stream.
-  Future<void> logStreamEntry(StreamingSession session, LogEntry entry);
-
-  /// Logs a message from a stream.
-  Future<void> logStreamMessage(
-    StreamingSession session,
-    MessageLogEntry entry,
-  );
-
-  /// Opens a new streaming log and returns the id of the log.
-  /// The id is used to identify the log when writing log entries so that
-  /// they can be identified to  a single session.
-  Future<int> openStreamingLog(StreamingSession session, SessionLogEntry entry);
-
-  /// Closes a streaming log.
-  /// This marks the end of all logs from this session.
-  Future<void> closeStreamingLog(
-    StreamingSession session,
-    SessionLogEntry entry,
-  );
-
-  ///
-  Future<void> logAllCached(
-    Session session,
-    SessionLogEntry sessionLogEntry,
-    SessionLogEntryCache cache,
-  );
-}
-
-/// Logs all output to the database
-class DatabaseLogWriter extends LogWriter {
-  @override
-  Future<void> logStreamEntry(StreamingSession session, LogEntry entry) async {
-    await _databaseLog(session, entry);
-  }
-
-  @override
-  Future<void> logStreamMessage(
-      StreamingSession session, MessageLogEntry entry) async {
-    await _databaseLog(session, entry);
-  }
-
-  @override
-  Future<void> logStreamQuery(
-    StreamingSession session,
-    QueryLogEntry entry,
-  ) async {
-    await _databaseLog<QueryLogEntry>(session, entry);
-  }
-
-  @override
-  Future<int> openStreamingLog(
-    StreamingSession session,
-    SessionLogEntry entry,
-  ) async {
-    var sessionLog = await _databaseLog(session, entry);
-    return sessionLog.id!;
-  }
-
-  @override
-  Future<void> closeStreamingLog(
-    StreamingSession session,
-    SessionLogEntry entry,
-  ) async {
-    var tempSession = await session.serverpod.createSession(
-      enableLogging: false,
-    );
-
-    await SessionLogEntry.db.updateRow(tempSession, entry);
-
-    await tempSession.close();
-  }
-
-  Future<T> _databaseLog<T extends TableRow>(
-    StreamingSession session,
-    T entry,
-  ) async {
-    var tempSession = await session.serverpod.createSession(
-      enableLogging: false,
-    );
-
-    var result = await tempSession.db.insertRow<T>(entry);
-
-    await tempSession.close();
-
-    return result;
-  }
-
-  @override
-  Future<void> logAllCached(
-    Session session,
-    SessionLogEntry sessionLogEntry,
-    SessionLogEntryCache cache,
-  ) async {
-    var tempSession = await session.serverpod.createSession(
-      enableLogging: false,
-    );
-
-    var sessionLog =
-        await tempSession.db.insertRow<SessionLogEntry>(sessionLogEntry);
-    var sessionLogId = sessionLog.id!;
-
-    // Write log entries
-    for (var logInfo in cache.logEntries) {
-      logInfo.sessionLogId = sessionLogId;
-      await tempSession.db.insertRow<LogEntry>(logInfo);
-    }
-    // Write queries
-    for (var queryInfo in cache.queries) {
-      queryInfo.sessionLogId = sessionLogId;
-      await tempSession.db.insertRow<QueryLogEntry>(queryInfo);
-    }
-    // Write streaming messages
-    for (var messageInfo in cache.messages) {
-      messageInfo.sessionLogId = sessionLogId;
-      await tempSession.db.insertRow<MessageLogEntry>(messageInfo);
-    }
-
-    await tempSession.close();
-  }
-}
-
-/// Logs all output to standard out.
-class StdOutLogWriter extends LogWriter {
-  int _sessionLogId = 0;
-
-  int _nextSessionId() {
-    _sessionLogId += 1;
-    return _sessionLogId;
-  }
-
-  @override
-  Future<void> logStreamEntry(StreamingSession session, LogEntry entry) async {
-    stdout.writeln(entry);
-  }
-
-  @override
-  Future<void> logStreamMessage(
-      StreamingSession session, MessageLogEntry entry) async {
-    stdout.writeln(entry);
-  }
-
-  @override
-  Future<void> logStreamQuery(
-      StreamingSession session, QueryLogEntry entry) async {
-    stdout.writeln(entry);
-  }
-
-  @override
-  Future<int> openStreamingLog(
-    Session session,
-    SessionLogEntry entry,
-  ) async {
-    entry.id = _nextSessionId();
-    stdout.writeln(entry.toString());
-    return entry.id!;
-  }
-
-  @override
-  Future<void> closeStreamingLog(
-    StreamingSession session,
-    SessionLogEntry entry,
-  ) async {
-    stdout.writeln(entry);
-  }
-
-  @override
-  Future<void> logAllCached(
-    Session session,
-    SessionLogEntry sessionLogEntry,
-    SessionLogEntryCache cache,
-  ) async {
-    var sessionLogId = await openStreamingLog(session, sessionLogEntry);
-
-    // Write log entries
-    for (var logInfo in cache.logEntries) {
-      logInfo.sessionLogId = sessionLogId;
-      stdout.writeln(logInfo);
-    }
-    // Write queries
-    for (var queryInfo in cache.queries) {
-      queryInfo.sessionLogId = sessionLogId;
-      stdout.writeln(queryInfo);
-    }
-    // Write streaming messages
-    for (var messageInfo in cache.messages) {
-      messageInfo.sessionLogId = sessionLogId;
-      stdout.writeln(messageInfo);
-    }
-  }
-}
+import '../../../server.dart';
+import '../../generated/protocol.dart';
 
 /// The [LogManager] handles logging and logging settings. Typically only used
 /// internally by Serverpod.
 class LogManager {
+  /// The [LogSettingsManager] the log manager retrieves its settings from.
+  final LogSettingsManager settings;
+
   /// The [RuntimeSettings] the log manager retrieves its settings from.
+  @Deprecated('Will be removed in 3.0.0')
   final RuntimeSettings runtimeSettings;
 
   final LogWriter _logWriter;
-
-  final Map<String, LogSettings> _endpointOverrides = {};
-  final Map<String, LogSettings> _methodOverrides = {};
 
   final List<SessionLogEntryCache> _openSessionLogs = [];
 
@@ -229,72 +34,8 @@ class LogManager {
 
   /// Creates a new [LogManager] from [RuntimeSettings].
   LogManager(this.runtimeSettings, LogWriter logWriter)
-      : _logWriter = logWriter {
-    for (var override in runtimeSettings.logSettingsOverrides) {
-      if (override.method != null && override.endpoint != null) {
-        _methodOverrides['${override.endpoint}.${override.method}'] =
-            override.logSettings;
-      } else if (override.endpoint != null) {
-        _endpointOverrides['${override.endpoint}'] = override.logSettings;
-      }
-    }
-  }
-
-  /// Gets the log settings for a [MethodCallSession].
-  LogSettings _getLogSettingsForMethodCallSession(
-    String endpoint,
-    String method,
-  ) {
-    var settings = _methodOverrides['$endpoint.$method'];
-    if (settings != null) return settings;
-
-    settings = _endpointOverrides[endpoint];
-    if (settings != null) return settings;
-
-    return runtimeSettings.logSettings;
-  }
-
-  /// Gets the log settings for a [InternalSession].
-  LogSettings _getLogSettingsForInternalSession() {
-    return runtimeSettings.logSettings;
-  }
-
-  /// Gets the log settings for a [StreamingSession].
-  LogSettings getLogSettingsForStreamingSession({required String endpoint}) {
-    var settings = _endpointOverrides[endpoint];
-    if (settings != null) return settings;
-
-    return runtimeSettings.logSettings;
-  }
-
-  /// Gets the log settings for a [FutureCallSession].
-  LogSettings _getLogSettingsForFutureCallSession(String call) {
-    return runtimeSettings.logSettings;
-  }
-
-  /// Returns the [LogSettings] for a specific session.
-  LogSettings getLogSettingsForSession(Session session) {
-    if (session is MethodCallSession) {
-      return _getLogSettingsForMethodCallSession(
-          session.endpointName, session.methodName);
-    } else if (session is StreamingSession) {
-      assert(
-        session.sessionLogs.currentEndpoint != null,
-        'currentEndpoint for the StreamingSession must be set.',
-      );
-      return getLogSettingsForStreamingSession(
-        endpoint: session.sessionLogs.currentEndpoint!,
-      );
-    } else if (session is InternalSession) {
-      return _getLogSettingsForInternalSession();
-    } else if (session is FutureCallSession) {
-      return _getLogSettingsForFutureCallSession(session.futureCallName);
-    } else if (session is MethodStreamSession) {
-      return _getLogSettingsForMethodCallSession(
-          session.endpointName, session.methodName);
-    }
-    throw UnimplementedError('Unknown session type');
-  }
+      : _logWriter = logWriter,
+        settings = LogSettingsManager(runtimeSettings);
 
   /// Initializes the logging for a session, automatically called when a session
   /// is created. Each call to this method should have a corresponding
@@ -313,7 +54,7 @@ class LogManager {
     required bool slow,
     required bool failed,
   }) {
-    var logSettings = getLogSettingsForSession(session);
+    var logSettings = settings.getLogSettingsForSession(session);
     if (logSettings.logAllQueries) {
       return true;
     }
@@ -332,7 +73,7 @@ class LogManager {
     required Session session,
     required LogEntry entry,
   }) {
-    var logSettings = getLogSettingsForSession(session);
+    var logSettings = settings.getLogSettingsForSession(session);
     var serverLogLevel = (logSettings.logLevel);
 
     return entry.logLevel.index >= serverLogLevel.index;
@@ -341,12 +82,12 @@ class LogManager {
   /// Returns true if a message should be logged for the provided session.
   @internal
   bool shouldLogMessage({
-    required StreamingSession session,
+    required Session session,
     required String endpoint,
     required bool slow,
     required bool failed,
   }) {
-    var logSettings = getLogSettingsForStreamingSession(endpoint: endpoint);
+    var logSettings = settings.getLogSettingsForSession(session);
     if (logSettings.logAllSessions) {
       return true;
     }
@@ -418,7 +159,7 @@ class LogManager {
     Session session,
     T entry,
     List<T> logCollector,
-    Future<void> Function(StreamingSession, T) writeLog,
+    Future<void> Function(Session, T) writeLog,
     Function(int, T) setSessionLogId,
   ) async {
     await _attemptOpenStreamingLog(session: session);
@@ -458,9 +199,7 @@ class LogManager {
 
       assert(session.sessionLogs.currentEndpoint != null);
 
-      var logSettings = getLogSettingsForStreamingSession(
-        endpoint: session.sessionLogs.currentEndpoint!,
-      );
+      var logSettings = settings.getLogSettingsForSession(session);
       if (!logSettings.logStreamingSessionsContinuously) {
         // This call should not stream continuously.
         return;
@@ -495,7 +234,6 @@ class LogManager {
     String? exception,
     StackTrace? stackTrace,
   }) async {
-    // Remove from open sessions
     _openSessionLogs.removeWhere((logEntry) => logEntry.session == session);
 
     // If verbose logging is enabled, output otherwise unlogged exceptions to
@@ -507,18 +245,15 @@ class LogManager {
       }
     }
 
-    // Check if we should log to database
     if (!session.enableLogging) return null;
 
-    // Log session to database
     var duration = session.duration;
     var cachedEntry = session.sessionLogs;
     LogSettings? logSettings;
     if (session is! StreamingSession) {
-      logSettings = getLogSettingsForSession(session);
+      logSettings = settings.getLogSettingsForSession(session);
     }
 
-    // Output to console in development mode.
     if (session.serverpod.runMode == ServerpodRunMode.development) {
       if (session is MethodCallSession) {
         stdout.writeln(
@@ -568,7 +303,6 @@ class LogManager {
 
       try {
         if (_continuouslyLogging(session)) {
-          // Close open session.
           session as StreamingSession;
           sessionLogId = session.sessionLogId!;
           sessionLogEntry.id = sessionLogId;
@@ -598,17 +332,6 @@ class LogManager {
     return null;
   }
 
-  String? _methodForSession(Session session) {
-    if (session is MethodCallSession) {
-      // Method calls
-      return session.methodName;
-    } else if (session is FutureCallSession) {
-      // Future calls
-      return session.futureCallName;
-    }
-    return null;
-  }
-
   /// Returns a list of logs for all open sessions.
   List<SessionLogInfo> getOpenSessionLogs(
       int numEntries, SessionLogFilter? filter) {
@@ -619,6 +342,7 @@ class LogManager {
     while (i < _openSessionLogs.length && numFoundEntries < numEntries) {
       var entry = _openSessionLogs[i];
       i += 1;
+      numFoundEntries += 1;
 
       // Check filter (ignore slow and errors as session is still open)
       if (filter != null) {
@@ -640,7 +364,6 @@ class LogManager {
         }
       }
 
-      // Add to list
       sessionLog.add(
         SessionLogInfo(
           sessionLogEntry: SessionLogEntry(
@@ -662,55 +385,25 @@ class LogManager {
   }
 }
 
-/// The [SessionLogEntryCache] holds all logging information for a session before
-/// it's written to the database.
-class SessionLogEntryCache {
-  /// A reference to the [Session].
-  final Session session;
+String? _methodForSession(Session session) {
+  var localSession = session;
 
-  /// Queries made during the session.
-  final List<QueryLogEntry> queries = [];
+  if (localSession is MethodCallSession) return localSession.methodName;
+  if (localSession is MethodStreamSession) return localSession.methodName;
+  if (localSession is FutureCallSession) return localSession.futureCallName;
+  if (localSession is InternalSession) return null;
+  if (localSession is StreamingSession) return null;
 
-  /// Number of queries made during this session.
-  int numQueries = 0;
-
-  /// Log entries made during the session.
-  final List<LogEntry> logEntries = [];
-
-  /// Streaming messages handled during the session.
-  final List<MessageLogEntry> messages = [];
-
-  /// A temporary session id used internally by the server.
-  late int temporarySessionId;
-
-  /// Name of streaming message currently being processed.
-  String? currentEndpoint;
-
-  /// This is used internally by Serverpod to ensure the ordering of log entries
-  /// and log queries are correct.
-  int currentLogOrderId = 0;
-
-  /// Creates a new [SessionLogEntryCache].
-  SessionLogEntryCache(this.session);
+  throw Exception('Unknown session type: $session');
 }
 
 String _endpointForSession(Session session) {
-  if (session is MethodCallSession) {
-    // Method calls
-    return session.endpointName;
-  } else if (session is FutureCallSession) {
-    // Future calls
-    return 'FutureCallSession';
-  } else if (session is StreamingSession) {
-    // Streaming session was closed
-    return 'StreamingSession';
-  } else if (session is InternalSession) {
-    // Internal session
-    return 'InternalSession';
-  } else if (session is MethodStreamSession) {
-    // Streaming method call
-    return session.endpointName;
-  }
+  var localSession = session;
+  if (localSession is MethodCallSession) return localSession.endpointName;
+  if (localSession is MethodStreamSession) return localSession.endpointName;
+  if (localSession is FutureCallSession) return 'FutureCallSession';
+  if (localSession is InternalSession) return 'InternalSession';
+  if (localSession is StreamingSession) return 'StreamingSession';
 
-  throw (UnimplementedError('Unknown Session type'));
+  throw Exception('Unknown session type: $session');
 }

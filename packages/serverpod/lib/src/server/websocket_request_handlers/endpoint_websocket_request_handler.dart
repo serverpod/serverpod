@@ -109,10 +109,8 @@ abstract class EndpointWebsocketRequestHandler {
             var logManager = session.serverpod.logManager;
 
             var slow = duration >=
-                logManager
-                    .getLogSettingsForStreamingSession(
-                      endpoint: endpointName,
-                    )
+                logManager.settings
+                    .getLogSettingsForSession(session)
                     .slowSessionDuration;
 
             var shouldLog = logManager.shouldLogMessage(
@@ -130,14 +128,12 @@ abstract class EndpointWebsocketRequestHandler {
                 endpoint: endpointName,
                 messageName: serialization['className'],
                 duration: duration,
-                order: session.sessionLogs.currentLogOrderId,
+                order: session.sessionLogs.createLogOrderId,
                 error: messageError?.toString(),
                 stackTrace: messageStackTrace?.toString(),
                 slow: slow,
               );
               unawaited(logManager.logMessage(session, logEntry));
-
-              session.sessionLogs.currentLogOrderId += 1;
             }
 
             session.currentMessageId += 1;
