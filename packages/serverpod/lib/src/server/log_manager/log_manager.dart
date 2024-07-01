@@ -22,6 +22,8 @@ class LogManager {
 
   final List<SessionLogEntryCache> _openSessionLogs = [];
 
+  final String _serverId;
+
   int _nextTemporarySessionId = -1;
 
   /// Returns a new unique temporary session id. The id will be negative, and
@@ -33,8 +35,12 @@ class LogManager {
   }
 
   /// Creates a new [LogManager] from [RuntimeSettings].
-  LogManager(this.runtimeSettings, LogWriter logWriter)
-      : _logWriter = logWriter,
+  LogManager(
+    this.runtimeSettings,
+    LogWriter logWriter, {
+    required String serverId,
+  })  : _logWriter = logWriter,
+        _serverId = serverId,
         settings = LogSettingsManager(runtimeSettings);
 
   /// Initializes the logging for a session, automatically called when a session
@@ -150,7 +156,7 @@ class LogManager {
 
     var entry = QueryLogEntry(
       sessionLogId: session.sessionLogs.temporarySessionId,
-      serverId: session.server.serverId,
+      serverId: _serverId,
       query: query,
       duration: executionTime,
       numRows: numRowsAffected,
@@ -241,7 +247,7 @@ class LogManager {
       var now = DateTime.now();
 
       var sessionLogEntry = SessionLogEntry(
-        serverId: session.server.serverId,
+        serverId: _serverId,
         time: now,
         touched: now,
         endpoint: _endpointForSession(session),
@@ -321,7 +327,7 @@ class LogManager {
       var now = DateTime.now();
 
       var sessionLogEntry = SessionLogEntry(
-        serverId: session.server.serverId,
+        serverId: _serverId,
         time: now,
         touched: now,
         endpoint: _endpointForSession(session),
