@@ -26,7 +26,7 @@ void main() {
     });
 
     test(
-        'when creating and applying migration then the database contains the new table with the correct "default" values.',
+        'when creating and applying migration, then the database contains the new table with the correct "default" value for "dateTimeDefaultNow".',
         () async {
       var tableName = 'migrated_table';
       var tag = 'add-table';
@@ -36,6 +36,68 @@ void main() {
         table: $tableName 
         fields:
           dateTimeDefaultNow: DateTime, default=now
+        '''
+      };
+
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
+      );
+
+      expect(
+        createMigrationExitCode,
+        0,
+        reason: 'Failed to create migration, exit code was not 0.',
+      );
+
+      var applyMigrationExitCode =
+          await MigrationTestUtils.runApplyMigrations();
+
+      expect(
+        applyMigrationExitCode,
+        0,
+        reason: 'Failed to apply migration, exit code was not 0.',
+      );
+
+      var liveDefinition =
+          await serviceClient.insights.getLiveDatabaseDefinition();
+
+      var databaseTable = liveDefinition.tables.firstWhereOrNull(
+        (t) => t.name == tableName,
+      );
+
+      expect(
+        databaseTable,
+        isNotNull,
+        reason: 'Could not find migration table in live table definitions.',
+      );
+
+      var columns = databaseTable!.columns;
+      expect(
+        columns.length,
+        2,
+        reason: 'Invalid Table Columns',
+      );
+
+      var dateTimeDefaultNow = columns[1];
+      expect(
+        dateTimeDefaultNow.columnDefault,
+        'CURRENT_TIMESTAMP',
+        reason: 'Could not find "columnDefault" for "dateTimeDefaultNow"',
+      );
+    });
+
+    test(
+        'when creating and applying migration, then the database contains the new table with the correct "default" value for "dateTimeDefaultStr".',
+        () async {
+      var tableName = 'migrated_table';
+      var tag = 'add-table';
+      var targetStateProtocols = {
+        'migrated_table': '''
+        class: MigratedTable
+        table: $tableName 
+        fields:
           dateTimeDefaultStr: DateTime, default=2024-05-24T22:00:00.000Z
         '''
       };
@@ -77,18 +139,11 @@ void main() {
       var columns = databaseTable!.columns;
       expect(
         columns.length,
-        3,
+        2,
         reason: 'Invalid Table Columns',
       );
 
-      var dateTimeDefaultNow = columns[1];
-      expect(
-        dateTimeDefaultNow.columnDefault,
-        'CURRENT_TIMESTAMP',
-        reason: 'Could not find "columnDefault" for "dateTimeDefaultNow"',
-      );
-
-      var dateTimeDefaultStr = columns[2];
+      var dateTimeDefaultStr = columns[1];
       expect(
         dateTimeDefaultStr.columnDefault,
         "'2024-05-24 22:00:00'::timestamp without time zone",
@@ -108,7 +163,7 @@ void main() {
     });
 
     test(
-        'when creating and applying migration then the database contains the new table with the correct "defaultModel" values.',
+        'when creating and applying migration, then the database does not contain default values for "dateTimeDefaultNow" with "defaultModel".',
         () async {
       var tableName = 'migrated_table';
       var tag = 'add-table';
@@ -118,6 +173,68 @@ void main() {
         table: $tableName 
         fields:
           dateTimeDefaultNow: DateTime, defaultModel=now
+        '''
+      };
+
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
+      );
+
+      expect(
+        createMigrationExitCode,
+        0,
+        reason: 'Failed to create migration, exit code was not 0.',
+      );
+
+      var applyMigrationExitCode =
+          await MigrationTestUtils.runApplyMigrations();
+
+      expect(
+        applyMigrationExitCode,
+        0,
+        reason: 'Failed to apply migration, exit code was not 0.',
+      );
+
+      var liveDefinition =
+          await serviceClient.insights.getLiveDatabaseDefinition();
+
+      var databaseTable = liveDefinition.tables.firstWhereOrNull(
+        (t) => t.name == tableName,
+      );
+
+      expect(
+        databaseTable,
+        isNotNull,
+        reason: 'Could not find migration table in live table definitions.',
+      );
+
+      var columns = databaseTable!.columns;
+      expect(
+        columns.length,
+        2,
+        reason: 'Invalid Table Columns',
+      );
+
+      var dateTimeDefaultNow = columns[1];
+      expect(
+        dateTimeDefaultNow.columnDefault,
+        isNull,
+        reason: '"dateTimeDefaultNow" column should not have "columnDefault"',
+      );
+    });
+
+    test(
+        'when creating and applying migration, then the database does not contain default values for "dateTimeDefaultStr" with "defaultModel".',
+        () async {
+      var tableName = 'migrated_table';
+      var tag = 'add-table';
+      var targetStateProtocols = {
+        'migrated_table': '''
+        class: MigratedTable
+        table: $tableName 
+        fields:
           dateTimeDefaultStr: DateTime, defaultModel=2024-05-24T22:00:00.000Z
         '''
       };
@@ -159,18 +276,11 @@ void main() {
       var columns = databaseTable!.columns;
       expect(
         columns.length,
-        3,
+        2,
         reason: 'Invalid Table Columns',
       );
 
-      var dateTimeDefaultNow = columns[1];
-      expect(
-        dateTimeDefaultNow.columnDefault,
-        isNull,
-        reason: '"dateTimeDefaultNow" column should not have "columnDefault"',
-      );
-
-      var dateTimeDefaultStr = columns[2];
+      var dateTimeDefaultStr = columns[1];
       expect(
         dateTimeDefaultStr.columnDefault,
         isNull,
@@ -190,7 +300,7 @@ void main() {
     });
 
     test(
-        'when creating and applying migration then the database contains the new table with the correct "defaultPersist" values.',
+        'when creating and applying migration, then the database contains the new table with the correct "defaultPersist" value for "dateTimeDefaultNow".',
         () async {
       var tableName = 'migrated_table';
       var tag = 'add-table';
@@ -200,6 +310,68 @@ void main() {
         table: $tableName 
         fields:
           dateTimeDefaultNow: DateTime?, defaultPersist=now
+        '''
+      };
+
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
+      );
+
+      expect(
+        createMigrationExitCode,
+        0,
+        reason: 'Failed to create migration, exit code was not 0.',
+      );
+
+      var applyMigrationExitCode =
+          await MigrationTestUtils.runApplyMigrations();
+
+      expect(
+        applyMigrationExitCode,
+        0,
+        reason: 'Failed to apply migration, exit code was not 0.',
+      );
+
+      var liveDefinition =
+          await serviceClient.insights.getLiveDatabaseDefinition();
+
+      var databaseTable = liveDefinition.tables.firstWhereOrNull(
+        (t) => t.name == tableName,
+      );
+
+      expect(
+        databaseTable,
+        isNotNull,
+        reason: 'Could not find migration table in live table definitions.',
+      );
+
+      var columns = databaseTable!.columns;
+      expect(
+        columns.length,
+        2,
+        reason: 'Invalid Table Columns',
+      );
+
+      var dateTimeDefaultNow = columns[1];
+      expect(
+        dateTimeDefaultNow.columnDefault,
+        'CURRENT_TIMESTAMP',
+        reason: 'Could not find "columnDefault" for "dateTimeDefaultNow"',
+      );
+    });
+
+    test(
+        'when creating and applying migration, then the database contains the new table with the correct "defaultPersist" value for "dateTimeDefaultStr".',
+        () async {
+      var tableName = 'migrated_table';
+      var tag = 'add-table';
+      var targetStateProtocols = {
+        'migrated_table': '''
+        class: MigratedTable
+        table: $tableName 
+        fields:
           dateTimeDefaultStr: DateTime?, defaultPersist=2024-05-24T22:00:00.000Z
         '''
       };
@@ -241,18 +413,11 @@ void main() {
       var columns = databaseTable!.columns;
       expect(
         columns.length,
-        3,
+        2,
         reason: 'Invalid Table Columns',
       );
 
-      var dateTimeDefaultNow = columns[1];
-      expect(
-        dateTimeDefaultNow.columnDefault,
-        'CURRENT_TIMESTAMP',
-        reason: 'Could not find "columnDefault" for "dateTimeDefaultNow"',
-      );
-
-      var dateTimeDefaultStr = columns[2];
+      var dateTimeDefaultStr = columns[1];
       expect(
         dateTimeDefaultStr.columnDefault,
         "'2024-05-24 22:00:00'::timestamp without time zone",
@@ -272,7 +437,7 @@ void main() {
     });
 
     test(
-        'when creating and applying migration then the database contains the new table with the correct "defaultPersist" values.',
+        'when creating and applying migration, then the database contains the new table with the correct "defaultModel" and "defaultPersist" values for "dateTimeDefaultNow".',
         () async {
       var tableName = 'migrated_table';
       var tag = 'add-table';
@@ -282,6 +447,68 @@ void main() {
         table: $tableName 
         fields:
           dateTimeDefaultNow: DateTime, defaultModel=now, defaultPersist=now
+        '''
+      };
+
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
+      );
+
+      expect(
+        createMigrationExitCode,
+        0,
+        reason: 'Failed to create migration, exit code was not 0.',
+      );
+
+      var applyMigrationExitCode =
+          await MigrationTestUtils.runApplyMigrations();
+
+      expect(
+        applyMigrationExitCode,
+        0,
+        reason: 'Failed to apply migration, exit code was not 0.',
+      );
+
+      var liveDefinition =
+          await serviceClient.insights.getLiveDatabaseDefinition();
+
+      var databaseTable = liveDefinition.tables.firstWhereOrNull(
+        (t) => t.name == tableName,
+      );
+
+      expect(
+        databaseTable,
+        isNotNull,
+        reason: 'Could not find migration table in live table definitions.',
+      );
+
+      var columns = databaseTable!.columns;
+      expect(
+        columns.length,
+        2,
+        reason: 'Invalid Table Columns',
+      );
+
+      var dateTimeDefaultNow = columns[1];
+      expect(
+        dateTimeDefaultNow.columnDefault,
+        'CURRENT_TIMESTAMP',
+        reason: 'Could not find "columnDefault" for "dateTimeDefaultNow"',
+      );
+    });
+
+    test(
+        'when creating and applying migration, then the database contains the new table with the correct "defaultModel" and "defaultPersist" values for "dateTimeDefaultStr".',
+        () async {
+      var tableName = 'migrated_table';
+      var tag = 'add-table';
+      var targetStateProtocols = {
+        'migrated_table': '''
+        class: MigratedTable
+        table: $tableName 
+        fields:
           dateTimeDefaultStr: DateTime, defaultModel=2024-05-01T22:00:00.000Z, defaultPersist=2024-05-24T22:00:00.000Z
         '''
       };
@@ -323,18 +550,11 @@ void main() {
       var columns = databaseTable!.columns;
       expect(
         columns.length,
-        3,
+        2,
         reason: 'Invalid Table Columns',
       );
 
-      var dateTimeDefaultNow = columns[1];
-      expect(
-        dateTimeDefaultNow.columnDefault,
-        'CURRENT_TIMESTAMP',
-        reason: 'Could not find "columnDefault" for "dateTimeDefaultNow"',
-      );
-
-      var dateTimeDefaultStr = columns[2];
+      var dateTimeDefaultStr = columns[1];
       expect(
         dateTimeDefaultStr.columnDefault,
         "'2024-05-24 22:00:00'::timestamp without time zone",
