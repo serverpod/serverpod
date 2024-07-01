@@ -128,14 +128,12 @@ abstract class EndpointWebsocketRequestHandler {
                 endpoint: endpointName,
                 messageName: serialization['className'],
                 duration: duration,
-                order: session.sessionLogs.currentLogOrderId,
+                order: session.sessionLogs.nextLogOrderId,
                 error: messageError?.toString(),
                 stackTrace: messageStackTrace?.toString(),
                 slow: slow,
               );
               unawaited(logManager.logMessage(session, logEntry));
-
-              session.sessionLogs.currentLogOrderId += 1;
             }
 
             session.currentMessageId += 1;

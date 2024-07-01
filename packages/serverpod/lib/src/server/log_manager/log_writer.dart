@@ -219,9 +219,17 @@ class SessionLogEntryCache {
   /// Name of streaming message currently being processed.
   String? currentEndpoint;
 
+  int _currentLogOrderId = 0;
+
   /// This is used internally by Serverpod to ensure the ordering of log entries
   /// and log queries are correct.
-  int currentLogOrderId = 0;
+  int get currentLogOrderId => _currentLogOrderId;
+
+  /// This is used internally by Serverpod to ensure the ordering of log entries
+  int get nextLogOrderId {
+    _currentLogOrderId += 1;
+    return currentLogOrderId;
+  }
 
   /// Creates a new [SessionLogEntryCache].
   SessionLogEntryCache(this.session);

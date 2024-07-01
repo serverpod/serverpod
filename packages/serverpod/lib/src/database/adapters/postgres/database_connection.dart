@@ -537,10 +537,9 @@ class DatabaseConnection {
       error: exception?.toString(),
       stackTrace: trace.toString(),
       slow: slow,
-      order: session.sessionLogs.currentLogOrderId,
+      order: session.sessionLogs.nextLogOrderId,
     );
     session.serverpod.logManager.logQuery(session, entry);
-    session.sessionLogs.currentLogOrderId += 1;
   }
 
   /// For most cases use the corresponding method in [Database] instead.

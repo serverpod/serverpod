@@ -191,10 +191,8 @@ sealed class Session {
       time: DateTime.now(),
       error: exception != null ? '$exception' : null,
       stackTrace: stackTrace != null ? '$stackTrace' : null,
-      order: sessionLogs.currentLogOrderId,
+      order: sessionLogs.nextLogOrderId,
     );
-
-    sessionLogs.currentLogOrderId += 1;
 
     if (serverpod.runMode == ServerpodRunMode.development) {
       stdout.writeln('${entry.logLevel.name.toUpperCase()}: ${entry.message}');
