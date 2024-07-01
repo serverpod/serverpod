@@ -72,9 +72,7 @@ class LogManager {
     return false;
   }
 
-  /// Returns true if a log entry should be stored for the provided session.
-  @internal
-  bool shouldLogEntry({
+  bool _shouldLogEntry({
     required Session session,
     required LogEntry entry,
   }) {
@@ -115,7 +113,36 @@ class LogManager {
   /// closed. Call [shouldLogEntry] to check if the entry should be logged
   /// before calling this method. This method can be called asynchronously.
   @internal
-  Future<void> logEntry(Session session, LogEntry entry) async {
+  Future<void> logEntry(
+    Session session, {
+    int? messageId,
+    LogLevel? level,
+    required String message,
+    String? error,
+    StackTrace? stackTrace,
+  }) async {
+    var entry = LogEntry(
+      sessionLogId: session.sessionLogs.temporarySessionId,
+      serverId: _serverId,
+      messageId: messageId,
+      logLevel: level ?? LogLevel.info,
+      message: message,
+      time: DateTime.now(),
+      error: error,
+      stackTrace: stackTrace?.toString(),
+      order: session.sessionLogs.createLogOrderId,
+    );
+
+    if (session.serverpod.runMode == ServerpodRunMode.development) {
+      stdout.writeln('${entry.logLevel.name.toUpperCase()}: ${entry.message}');
+      if (entry.error != null) stdout.writeln(entry.error);
+      if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);
+    }
+
+    if (!_shouldLogEntry(session: session, entry: entry)) {
+      return;
+    }
+
     await _internalLogger(
       'ENTRY',
       session,
