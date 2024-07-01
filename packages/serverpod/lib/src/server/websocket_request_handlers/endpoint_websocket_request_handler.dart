@@ -128,7 +128,7 @@ abstract class EndpointWebsocketRequestHandler {
                 endpoint: endpointName,
                 messageName: serialization['className'],
                 duration: duration,
-                order: session.sessionLogs.nextLogOrderId,
+                order: session.sessionLogs.createLogOrderId,
                 error: messageError?.toString(),
                 stackTrace: messageStackTrace?.toString(),
                 slow: slow,

@@ -226,9 +226,8 @@ class SessionLogEntryCache {
   int get currentLogOrderId => _currentLogOrderId;
 
   /// This is used internally by Serverpod to ensure the ordering of log entries
-  int get nextLogOrderId {
-    _currentLogOrderId += 1;
-    return currentLogOrderId;
+  int get createLogOrderId {
+    return ++_currentLogOrderId;
   }
 
   /// Creates a new [SessionLogEntryCache].

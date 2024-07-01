@@ -191,7 +191,7 @@ sealed class Session {
       time: DateTime.now(),
       error: exception != null ? '$exception' : null,
       stackTrace: stackTrace != null ? '$stackTrace' : null,
-      order: sessionLogs.nextLogOrderId,
+      order: sessionLogs.createLogOrderId,
     );
 
     if (serverpod.runMode == ServerpodRunMode.development) {
