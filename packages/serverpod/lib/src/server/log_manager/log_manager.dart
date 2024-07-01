@@ -48,8 +48,7 @@ class LogManager {
 
   /// Returns true if a query should be logged based on the current session and
   /// its duration and if it failed.
-  @internal
-  bool shouldLogQuery({
+  bool _shouldLogQuery({
     required Session session,
     required bool slow,
     required bool failed,
@@ -123,10 +122,44 @@ class LogManager {
 
   /// Logs a query, depending on the session type it will be logged directly
   /// to the database or stored in the temporary cache until the session is
-  /// closed. Call [shouldLogQuery] to check if the entry should be logged
+  /// closed. Call [_shouldLogQuery] to check if the entry should be logged
   /// before calling this method. This method can be called asynchronously.
   @internal
-  Future<void> logQuery(Session session, QueryLogEntry entry) async {
+  Future<void> logQuery(
+    Session session, {
+    required String query,
+    required Duration duration,
+    required int? numRowsAffected,
+    required String? error,
+    required StackTrace stackTrace,
+  }) async {
+    var executionTime = duration.inMicroseconds / (1000 * 1000.0);
+
+    var logSettings = settings.getLogSettingsForSession(session);
+
+    var slow = executionTime >= logSettings.slowQueryDuration;
+    var shouldLog = _shouldLogQuery(
+      session: session,
+      slow: slow,
+      failed: error != null,
+    );
+
+    if (!shouldLog) {
+      return;
+    }
+
+    var entry = QueryLogEntry(
+      sessionLogId: session.sessionLogs.temporarySessionId,
+      serverId: session.server.serverId,
+      query: query,
+      duration: executionTime,
+      numRows: numRowsAffected,
+      error: error,
+      stackTrace: stackTrace.toString(),
+      slow: slow,
+      order: session.sessionLogs.createLogOrderId,
+    );
+
     await _internalLogger(
       'QUERY',
       session,
