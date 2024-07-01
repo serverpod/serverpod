@@ -14,6 +14,9 @@ import '../generated/protocol.dart';
 /// contains all data associated with the current connection and provides
 /// easy access to the database.
 abstract class Session {
+  /// The id of the session.
+  final UuidValue sessionId;
+
   /// The [Server] that created the session.
   final Server server;
 
@@ -93,12 +96,14 @@ abstract class Session {
 
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
+    UuidValue? sessionId,
     required this.server,
     String? authenticationKey,
     HttpRequest? httpRequest,
     WebSocket? webSocket,
     required this.enableLogging,
-  }) : _authenticationKey = authenticationKey {
+  })  : _authenticationKey = authenticationKey,
+        sessionId = sessionId ?? const Uuid().v4obj() {
     _startTime = DateTime.now();
 
     storage = StorageAccess._(this);
