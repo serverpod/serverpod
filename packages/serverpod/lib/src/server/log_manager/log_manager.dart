@@ -22,6 +22,8 @@ class LogManager {
 
   final List<SessionLogEntryCache> _openSessionLogs = [];
 
+  final String _serverId;
+
   int _nextTemporarySessionId = -1;
 
   /// Returns a new unique temporary session id. The id will be negative, and
@@ -33,8 +35,12 @@ class LogManager {
   }
 
   /// Creates a new [LogManager] from [RuntimeSettings].
-  LogManager(this.runtimeSettings, LogWriter logWriter)
-      : _logWriter = logWriter,
+  LogManager(
+    this.runtimeSettings,
+    LogWriter logWriter, {
+    required String serverId,
+  })  : _logWriter = logWriter,
+        _serverId = serverId,
         settings = LogSettingsManager(runtimeSettings);
 
   /// Initializes the logging for a session, automatically called when a session
@@ -46,10 +52,7 @@ class LogManager {
     return logEntry;
   }
 
-  /// Returns true if a query should be logged based on the current session and
-  /// its duration and if it failed.
-  @internal
-  bool shouldLogQuery({
+  bool _shouldLogQuery({
     required Session session,
     required bool slow,
     required bool failed,
@@ -67,9 +70,7 @@ class LogManager {
     return false;
   }
 
-  /// Returns true if a log entry should be stored for the provided session.
-  @internal
-  bool shouldLogEntry({
+  bool _shouldLogEntry({
     required Session session,
     required LogEntry entry,
   }) {
@@ -79,9 +80,7 @@ class LogManager {
     return entry.logLevel.index >= serverLogLevel.index;
   }
 
-  /// Returns true if a message should be logged for the provided session.
-  @internal
-  bool shouldLogMessage({
+  bool _shouldLogMessage({
     required Session session,
     required String endpoint,
     required bool slow,
@@ -110,7 +109,36 @@ class LogManager {
   /// closed. Call [shouldLogEntry] to check if the entry should be logged
   /// before calling this method. This method can be called asynchronously.
   @internal
-  Future<void> logEntry(Session session, LogEntry entry) async {
+  Future<void> logEntry(
+    Session session, {
+    int? messageId,
+    LogLevel? level,
+    required String message,
+    String? error,
+    StackTrace? stackTrace,
+  }) async {
+    var entry = LogEntry(
+      sessionLogId: session.sessionLogs.temporarySessionId,
+      serverId: _serverId,
+      messageId: messageId,
+      logLevel: level ?? LogLevel.info,
+      message: message,
+      time: DateTime.now(),
+      error: error,
+      stackTrace: stackTrace?.toString(),
+      order: session.sessionLogs.createLogOrderId,
+    );
+
+    if (session.serverpod.runMode == ServerpodRunMode.development) {
+      stdout.writeln('${entry.logLevel.name.toUpperCase()}: ${entry.message}');
+      if (entry.error != null) stdout.writeln(entry.error);
+      if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);
+    }
+
+    if (_shouldLogEntry(session: session, entry: entry)) {
+      return;
+    }
+
     await _internalLogger(
       'ENTRY',
       session,
@@ -123,10 +151,42 @@ class LogManager {
 
   /// Logs a query, depending on the session type it will be logged directly
   /// to the database or stored in the temporary cache until the session is
-  /// closed. Call [shouldLogQuery] to check if the entry should be logged
+  /// closed. Call [_shouldLogQuery] to check if the entry should be logged
   /// before calling this method. This method can be called asynchronously.
   @internal
-  Future<void> logQuery(Session session, QueryLogEntry entry) async {
+  Future<void> logQuery(
+    Session session, {
+    required String query,
+    required Duration duration,
+    required int? numRowsAffected,
+    required String? error,
+    required StackTrace stackTrace,
+  }) async {
+    var executionTime = duration.inMicroseconds / (1000 * 1000.0);
+
+    var logSettings = settings.getLogSettingsForSession(session);
+
+    var slow = executionTime >= logSettings.slowQueryDuration;
+    var shouldLog = _shouldLogQuery(
+      session: session,
+      slow: slow,
+      failed: error != null,
+    );
+
+    if (!shouldLog) return;
+
+    var entry = QueryLogEntry(
+      sessionLogId: session.sessionLogs.temporarySessionId,
+      serverId: _serverId,
+      query: query,
+      duration: executionTime,
+      numRows: numRowsAffected,
+      error: error,
+      stackTrace: stackTrace.toString(),
+      slow: slow,
+      order: session.sessionLogs.createLogOrderId,
+    );
+
     await _internalLogger(
       'QUERY',
       session,
@@ -143,7 +203,42 @@ class LogManager {
   /// logged before calling this method. This method can be called
   /// asynchronously.
   @internal
-  Future<void> logMessage(Session session, MessageLogEntry entry) async {
+  Future<void> logMessage(
+    Session session, {
+    required String endpointName,
+    required String messageName,
+    required int messageId,
+    required Duration duration,
+    required String? error,
+    required StackTrace? stackTrace,
+  }) async {
+    var executionTime = duration.inMicroseconds / (1000 * 1000.0);
+
+    var slow = executionTime >=
+        settings.getLogSettingsForSession(session).slowSessionDuration;
+
+    var shouldLog = _shouldLogMessage(
+      session: session,
+      endpoint: endpointName,
+      slow: slow,
+      failed: error != null,
+    );
+
+    if (!shouldLog) return;
+
+    var entry = MessageLogEntry(
+      sessionLogId: session.sessionLogs.temporarySessionId,
+      serverId: _serverId,
+      messageId: messageId,
+      endpoint: endpointName,
+      messageName: messageName,
+      duration: executionTime,
+      order: session.sessionLogs.createLogOrderId,
+      error: error,
+      stackTrace: stackTrace?.toString(),
+      slow: slow,
+    );
+
     await _internalLogger(
       'MESSAGE',
       session,
@@ -208,7 +303,7 @@ class LogManager {
       var now = DateTime.now();
 
       var sessionLogEntry = SessionLogEntry(
-        serverId: session.server.serverId,
+        serverId: _serverId,
         time: now,
         touched: now,
         endpoint: _endpointForSession(session),
@@ -288,7 +383,7 @@ class LogManager {
       var now = DateTime.now();
 
       var sessionLogEntry = SessionLogEntry(
-        serverId: session.server.serverId,
+        serverId: _serverId,
         time: now,
         touched: now,
         endpoint: _endpointForSession(session),
