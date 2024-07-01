@@ -52,8 +52,6 @@ class LogManager {
     return logEntry;
   }
 
-  /// Returns true if a query should be logged based on the current session and
-  /// its duration and if it failed.
   bool _shouldLogQuery({
     required Session session,
     required bool slow,
@@ -82,9 +80,7 @@ class LogManager {
     return entry.logLevel.index >= serverLogLevel.index;
   }
 
-  /// Returns true if a message should be logged for the provided session.
-  @internal
-  bool shouldLogMessage({
+  bool _shouldLogMessage({
     required Session session,
     required String endpoint,
     required bool slow,
@@ -177,9 +173,7 @@ class LogManager {
       failed: error != null,
     );
 
-    if (!shouldLog) {
-      return;
-    }
+    if (!shouldLog) return;
 
     var entry = QueryLogEntry(
       sessionLogId: session.sessionLogs.temporarySessionId,
@@ -209,7 +203,42 @@ class LogManager {
   /// logged before calling this method. This method can be called
   /// asynchronously.
   @internal
-  Future<void> logMessage(Session session, MessageLogEntry entry) async {
+  Future<void> logMessage(
+    Session session, {
+    required String endpointName,
+    required String messageName,
+    required int messageId,
+    required Duration duration,
+    required String? error,
+    required StackTrace? stackTrace,
+  }) async {
+    var executionTime = duration.inMicroseconds / (1000 * 1000.0);
+
+    var slow = executionTime >=
+        settings.getLogSettingsForSession(session).slowSessionDuration;
+
+    var shouldLog = _shouldLogMessage(
+      session: session,
+      endpoint: endpointName,
+      slow: slow,
+      failed: error != null,
+    );
+
+    if (!shouldLog) return;
+
+    var entry = MessageLogEntry(
+      sessionLogId: session.sessionLogs.temporarySessionId,
+      serverId: _serverId,
+      messageId: messageId,
+      endpoint: endpointName,
+      messageName: messageName,
+      duration: executionTime,
+      order: session.sessionLogs.createLogOrderId,
+      error: error,
+      stackTrace: stackTrace?.toString(),
+      slow: slow,
+    );
+
     await _internalLogger(
       'MESSAGE',
       session,

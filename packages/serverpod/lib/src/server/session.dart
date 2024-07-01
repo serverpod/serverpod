@@ -8,7 +8,6 @@ import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/log_manager/log_writer.dart';
 import '../cache/caches.dart';
 import '../database/database.dart';
-import '../generated/protocol.dart';
 
 /// When a call is made to the [Server] a [Session] object is created. It
 /// contains all data associated with the current connection and provides
