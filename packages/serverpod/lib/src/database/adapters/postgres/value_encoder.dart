@@ -7,17 +7,25 @@ import 'package:serverpod/serverpod.dart';
 /// Overrides the [PostgresTextEncoder] to add support for [ByteData].
 class ValueEncoder extends PostgresTextEncoder {
   @override
-  String convert(dynamic input, {bool escapeStrings = true}) {
+  String convert(
+    dynamic input, {
+    bool escapeStrings = true,
+    bool hasDefaults = false,
+  }) {
     if (input == null) {
-      return 'NULL';
+      return hasDefaults ? 'DEFAULT' : 'NULL';
     } else if (input is ByteData) {
       return input.base64encodedString();
     } else if (input is DateTime) {
-      return super.convert(SerializationManager.encode(input),
-          escapeStrings: escapeStrings);
+      return super.convert(
+        SerializationManager.encode(input),
+        escapeStrings: escapeStrings,
+      );
     } else if (input is Duration) {
-      return super.convert(SerializationManager.encode(input),
-          escapeStrings: escapeStrings);
+      return super.convert(
+        SerializationManager.encode(input),
+        escapeStrings: escapeStrings,
+      );
     } else if (input is UuidValue) {
       return "'${input.uuid}'";
     } else if (input is String &&
@@ -30,10 +38,15 @@ class ValueEncoder extends PostgresTextEncoder {
       // are trying to store a ByteData.
       return input;
     } else if (input is SerializableModel && input is Enum) {
-      return super.convert(input.toJson(), escapeStrings: escapeStrings);
+      return super.convert(
+        input.toJson(),
+        escapeStrings: escapeStrings,
+      );
     } else if (input is List || input is Map || input is Set) {
-      return super.convert(SerializationManager.encode(input),
-          escapeStrings: escapeStrings);
+      return super.convert(
+        SerializationManager.encode(input),
+        escapeStrings: escapeStrings,
+      );
     }
 
     try {

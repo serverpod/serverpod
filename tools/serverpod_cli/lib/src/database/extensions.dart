@@ -306,7 +306,6 @@ extension TableDefinitionPgSqlGeneration on TableDefinition {
 extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
   String toPgSqlFragment() {
     String out = '';
-
     // The id column is special.
     if (name == 'id') {
       if (isNullable != false) {
@@ -322,7 +321,6 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
       return '"id" bigserial PRIMARY KEY';
     }
 
-    var nullable = isNullable ? '' : ' NOT NULL';
     String type;
     switch (columnType) {
       case ColumnType.bigint:
@@ -356,7 +354,10 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
         throw (const FormatException('Unknown column type'));
     }
 
-    out += '"$name" $type$nullable';
+    var nullable = isNullable ? '' : ' NOT NULL';
+    var defaultValue = columnDefault != null ? ' DEFAULT $columnDefault' : '';
+
+    out += '"$name" $type$nullable$defaultValue';
     return out;
   }
 }

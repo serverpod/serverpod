@@ -1,0 +1,6 @@
+class: DateTimeDefault
+table: datetime_default
+fields:
+  dateTimeDefaultNow: DateTime, default=now
+  dateTimeDefaultStr: DateTime, default=2024-05-24T22:00:00.000Z
+  dateTimeDefaultStrNull: DateTime?, default=2024-05-24T22:00:00.000Z

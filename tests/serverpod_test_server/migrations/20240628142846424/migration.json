@@ -1,0 +1,216 @@
+{
+  "actions": [
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "datetime_default",
+        "dartName": "DateTimeDefault",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('datetime_default_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "dateTimeDefaultNow",
+            "columnType": 4,
+            "isNullable": false,
+            "columnDefault": "CURRENT_TIMESTAMP",
+            "dartType": "DateTime"
+          },
+          {
+            "name": "dateTimeDefaultStr",
+            "columnType": 4,
+            "isNullable": false,
+            "columnDefault": "'2024-05-24 22:00:00'::timestamp without time zone",
+            "dartType": "DateTime"
+          },
+          {
+            "name": "dateTimeDefaultStrNull",
+            "columnType": 4,
+            "isNullable": true,
+            "columnDefault": "'2024-05-24 22:00:00'::timestamp without time zone",
+            "dartType": "DateTime?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "datetime_default_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "datetime_default_mix",
+        "dartName": "DateTimeDefaultMix",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('datetime_default_mix_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "dateTimeDefaultAndDefaultModel",
+            "columnType": 4,
+            "isNullable": false,
+            "columnDefault": "'2024-05-01 22:00:00'::timestamp without time zone",
+            "dartType": "DateTime"
+          },
+          {
+            "name": "dateTimeDefaultAndDefaultPersist",
+            "columnType": 4,
+            "isNullable": false,
+            "columnDefault": "'2024-05-10 22:00:00'::timestamp without time zone",
+            "dartType": "DateTime"
+          },
+          {
+            "name": "dateTimeDefaultModelAndDefaultPersist",
+            "columnType": 4,
+            "isNullable": false,
+            "columnDefault": "'2024-05-10 22:00:00'::timestamp without time zone",
+            "dartType": "DateTime"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "datetime_default_mix_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "datetime_default_model",
+        "dartName": "DateTimeDefaultModel",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('datetime_default_model_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "dateTimeDefaultModelNow",
+            "columnType": 4,
+            "isNullable": false,
+            "dartType": "DateTime"
+          },
+          {
+            "name": "dateTimeDefaultModelStr",
+            "columnType": 4,
+            "isNullable": false,
+            "dartType": "DateTime"
+          },
+          {
+            "name": "dateTimeDefaultModelStrNull",
+            "columnType": 4,
+            "isNullable": true,
+            "dartType": "DateTime?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "datetime_default_model_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "datetime_default_persist",
+        "dartName": "DateTimeDefaultPersist",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('datetime_default_persist_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "dateTimeDefaultPersistNow",
+            "columnType": 4,
+            "isNullable": true,
+            "columnDefault": "CURRENT_TIMESTAMP",
+            "dartType": "DateTime?"
+          },
+          {
+            "name": "dateTimeDefaultPersistStr",
+            "columnType": 4,
+            "isNullable": true,
+            "columnDefault": "'2024-05-10 22:00:00'::timestamp without time zone",
+            "dartType": "DateTime?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "datetime_default_persist_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}
