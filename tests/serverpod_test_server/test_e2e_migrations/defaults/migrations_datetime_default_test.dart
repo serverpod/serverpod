@@ -572,7 +572,7 @@ void main() {
         class: ExistingTable
         table: existing_table
         fields:
-          id: int, primary=true
+          number: int
         '''
       };
 
@@ -599,7 +599,7 @@ void main() {
         class: ExistingTable
         table: existing_table
         fields:
-          id: int, primary=true
+          number: int
           newColumn: DateTime, default=now
         '''
       };
@@ -661,7 +661,7 @@ void main() {
         class: ExistingTable
         table: existing_table
         fields:
-          id: int, primary=true
+          number: int
           existingColumn: DateTime?
         '''
       };
@@ -690,7 +690,7 @@ void main() {
         class: ExistingTable
         table: existing_table
         fields:
-          id: int, primary=true
+          number: int
           existingColumn: DateTime, default=now
         '''
         };
@@ -755,7 +755,7 @@ void main() {
         class: ExistingTable
         table: existing_table
         fields:
-          id: int, primary=true
+          number: int
           existingColumn: DateTime, default=now
         '''
       };
@@ -782,7 +782,7 @@ void main() {
         class: ExistingTable
         table: existing_table
         fields:
-          id: int, primary=true
+          number: int
           existingColumn: DateTime
         '''
         };
@@ -848,7 +848,7 @@ void main() {
         class: ExistingTable
         table: existing_table
         fields:
-          id: int, primary=true
+          number: int
           existingColumn: DateTime, default=now
         '''
       };
@@ -877,7 +877,7 @@ void main() {
         class: ExistingTable
         table: existing_table
         fields:
-          id: int, primary=true
+          number: int
           existingColumn: DateTime?
         '''
         };
@@ -947,7 +947,7 @@ void main() {
         class: ExistingTable
         table: existing_table
         fields:
-          id: int, primary=true
+          number: int
           columnToRemove: DateTime, default=now
         '''
       };
@@ -974,7 +974,7 @@ void main() {
         class: ExistingTable
         table: existing_table
         fields:
-          id: int, primary=true
+          number: int
         '''
         };
 
