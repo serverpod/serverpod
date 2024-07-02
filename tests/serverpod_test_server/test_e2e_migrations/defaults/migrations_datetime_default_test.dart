@@ -562,6 +562,465 @@ void main() {
       );
     });
   });
+
+  group(
+      'Given an existing table, when adding a non-nullable column with a default value,',
+      () {
+    setUpAll(() async {
+      var createTableProtocol = {
+        'existing_table': '''
+        class: ExistingTable
+        table: existing_table
+        fields:
+          id: int, primary=true
+        '''
+      };
+
+      await MigrationTestUtils.createMigrationFromProtocols(
+        protocols: createTableProtocol,
+        tag: 'create-existing-table',
+      );
+
+      await MigrationTestUtils.runApplyMigrations();
+    });
+
+    tearDown(() async {
+      await MigrationTestUtils.migrationTestCleanup(
+        resetSql: 'DROP TABLE IF EXISTS existing_table;',
+        serviceClient: serviceClient,
+      );
+    });
+
+    test(
+        'then the table contains the new non-nullable column with the correct default value.',
+        () async {
+      var targetStateProtocols = {
+        'existing_table': '''
+        class: ExistingTable
+        table: existing_table
+        fields:
+          id: int, primary=true
+          newColumn: DateTime, default=now
+        '''
+      };
+
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: 'add-new-column',
+      );
+
+      expect(
+        createMigrationExitCode,
+        0,
+        reason: 'Failed to create migration, exit code was not 0.',
+      );
+
+      var applyMigrationExitCode =
+          await MigrationTestUtils.runApplyMigrations();
+
+      expect(
+        applyMigrationExitCode,
+        0,
+        reason: 'Failed to apply migration, exit code was not 0.',
+      );
+
+      var liveDefinition =
+          await serviceClient.insights.getLiveDatabaseDefinition();
+
+      var databaseTable = liveDefinition.tables.firstWhereOrNull(
+        (t) => t.name == 'existing_table',
+      );
+
+      expect(
+        databaseTable,
+        isNotNull,
+        reason: 'Could not find existing table in live table definitions.',
+      );
+
+      var columns = databaseTable!.columns;
+      expect(
+        columns.length,
+        2,
+        reason: 'Invalid Table Columns',
+      );
+
+      var newColumn = columns[1];
+      expect(
+        newColumn.columnDefault,
+        'CURRENT_TIMESTAMP',
+        reason: 'Could not find "columnDefault" for "newColumn"',
+      );
+    });
+  });
+
+  group('Given an existing table with a nullable column,', () {
+    setUpAll(() async {
+      var createTableProtocol = {
+        'existing_table': '''
+        class: ExistingTable
+        table: existing_table
+        fields:
+          id: int, primary=true
+          existingColumn: DateTime?
+        '''
+      };
+
+      await MigrationTestUtils.createMigrationFromProtocols(
+        protocols: createTableProtocol,
+        tag: 'create-existing-table',
+      );
+
+      await MigrationTestUtils.runApplyMigrations();
+    });
+
+    tearDown(() async {
+      await MigrationTestUtils.migrationTestCleanup(
+        resetSql: 'DROP TABLE IF EXISTS existing_table;',
+        serviceClient: serviceClient,
+      );
+    });
+
+    group('when modifying it to be non-nullable with a default value,', () {
+      test(
+          'then the column is modified to be non-nullable with the correct default value.',
+          () async {
+        var targetStateProtocols = {
+          'existing_table': '''
+        class: ExistingTable
+        table: existing_table
+        fields:
+          id: int, primary=true
+          existingColumn: DateTime, default=now
+        '''
+        };
+
+        var createMigrationExitCode =
+            await MigrationTestUtils.createMigrationFromProtocols(
+          protocols: targetStateProtocols,
+          tag: 'modify-existing-column',
+        );
+
+        expect(
+          createMigrationExitCode,
+          0,
+          reason: 'Failed to create migration, exit code was not 0.',
+        );
+
+        var applyMigrationExitCode =
+            await MigrationTestUtils.runApplyMigrations();
+
+        expect(
+          applyMigrationExitCode,
+          0,
+          reason: 'Failed to apply migration, exit code was not 0.',
+        );
+
+        var liveDefinition =
+            await serviceClient.insights.getLiveDatabaseDefinition();
+
+        var databaseTable = liveDefinition.tables.firstWhereOrNull(
+          (t) => t.name == 'existing_table',
+        );
+
+        expect(
+          databaseTable,
+          isNotNull,
+          reason: 'Could not find existing table in live table definitions.',
+        );
+
+        var columns = databaseTable!.columns;
+        expect(
+          columns.length,
+          2,
+          reason: 'Invalid Table Columns',
+        );
+
+        var existingColumn = columns[1];
+        expect(
+          existingColumn.columnDefault,
+          'CURRENT_TIMESTAMP',
+          reason: 'Could not find "columnDefault" for "existingColumn"',
+        );
+      });
+    });
+  });
+
+  group(
+      'Given an existing table with a non-nullable column having a default value,',
+      () {
+    setUpAll(() async {
+      var createTableProtocol = {
+        'existing_table': '''
+        class: ExistingTable
+        table: existing_table
+        fields:
+          id: int, primary=true
+          existingColumn: DateTime, default=now
+        '''
+      };
+
+      await MigrationTestUtils.createMigrationFromProtocols(
+        protocols: createTableProtocol,
+        tag: 'create-existing-table',
+      );
+
+      await MigrationTestUtils.runApplyMigrations();
+    });
+
+    tearDown(() async {
+      await MigrationTestUtils.migrationTestCleanup(
+        resetSql: 'DROP TABLE IF EXISTS existing_table;',
+        serviceClient: serviceClient,
+      );
+    });
+
+    group('when removing the default value,', () {
+      test('then the default value is removed from the column.', () async {
+        var targetStateProtocols = {
+          'existing_table': '''
+        class: ExistingTable
+        table: existing_table
+        fields:
+          id: int, primary=true
+          existingColumn: DateTime
+        '''
+        };
+
+        var createMigrationExitCode =
+            await MigrationTestUtils.createMigrationFromProtocols(
+          protocols: targetStateProtocols,
+          force: true,
+          tag: 'remove-default-value',
+        );
+
+        expect(
+          createMigrationExitCode,
+          0,
+          reason: 'Failed to create migration, exit code was not 0.',
+        );
+
+        var applyMigrationExitCode =
+            await MigrationTestUtils.runApplyMigrations();
+
+        expect(
+          applyMigrationExitCode,
+          0,
+          reason: 'Failed to apply migration, exit code was not 0.',
+        );
+
+        var liveDefinition =
+            await serviceClient.insights.getLiveDatabaseDefinition();
+
+        var databaseTable = liveDefinition.tables.firstWhereOrNull(
+          (t) => t.name == 'existing_table',
+        );
+
+        expect(
+          databaseTable,
+          isNotNull,
+          reason: 'Could not find existing table in live table definitions.',
+        );
+
+        var columns = databaseTable!.columns;
+        expect(
+          columns.length,
+          2,
+          reason: 'Invalid Table Columns',
+        );
+
+        var existingColumn = columns[1];
+        expect(
+          existingColumn.columnDefault,
+          isNull,
+          reason: '"existingColumn" column should not have "columnDefault"',
+        );
+      });
+    });
+  });
+
+  group(
+      'Given an existing table with a non-nullable column having a default value,',
+      () {
+    setUpAll(() async {
+      var createTableProtocol = {
+        'existing_table': '''
+        class: ExistingTable
+        table: existing_table
+        fields:
+          id: int, primary=true
+          existingColumn: DateTime, default=now
+        '''
+      };
+
+      await MigrationTestUtils.createMigrationFromProtocols(
+        protocols: createTableProtocol,
+        tag: 'create-existing-table',
+      );
+
+      await MigrationTestUtils.runApplyMigrations();
+    });
+
+    tearDown(() async {
+      await MigrationTestUtils.migrationTestCleanup(
+        resetSql: 'DROP TABLE IF EXISTS existing_table;',
+        serviceClient: serviceClient,
+      );
+    });
+
+    group('when removing the default value and making the column nullable,',
+        () {
+      test('then the default value is removed and the column is made nullable.',
+          () async {
+        var targetStateProtocols = {
+          'existing_table': '''
+        class: ExistingTable
+        table: existing_table
+        fields:
+          id: int, primary=true
+          existingColumn: DateTime?
+        '''
+        };
+
+        var createMigrationExitCode =
+            await MigrationTestUtils.createMigrationFromProtocols(
+          protocols: targetStateProtocols,
+          force: true,
+          tag: 'remove-default-and-make-nullable',
+        );
+
+        expect(
+          createMigrationExitCode,
+          0,
+          reason: 'Failed to create migration, exit code was not 0.',
+        );
+
+        var applyMigrationExitCode =
+            await MigrationTestUtils.runApplyMigrations();
+
+        expect(
+          applyMigrationExitCode,
+          0,
+          reason: 'Failed to apply migration, exit code was not 0.',
+        );
+
+        var liveDefinition =
+            await serviceClient.insights.getLiveDatabaseDefinition();
+
+        var databaseTable = liveDefinition.tables.firstWhereOrNull(
+          (t) => t.name == 'existing_table',
+        );
+
+        expect(
+          databaseTable,
+          isNotNull,
+          reason: 'Could not find existing table in live table definitions.',
+        );
+
+        var columns = databaseTable!.columns;
+        expect(
+          columns.length,
+          2,
+          reason: 'Invalid Table Columns',
+        );
+
+        var existingColumn = columns[1];
+        expect(
+          existingColumn.columnDefault,
+          isNull,
+          reason: '"existingColumn" column should not have "columnDefault"',
+        );
+
+        expect(
+          existingColumn.isNullable,
+          isTrue,
+          reason: '"existingColumn" should be nullable',
+        );
+      });
+    });
+  });
+
+  group('Given an existing table with a column having a default value,', () {
+    setUpAll(() async {
+      var createTableProtocol = {
+        'existing_table': '''
+        class: ExistingTable
+        table: existing_table
+        fields:
+          id: int, primary=true
+          columnToRemove: DateTime, default=now
+        '''
+      };
+
+      await MigrationTestUtils.createMigrationFromProtocols(
+        protocols: createTableProtocol,
+        tag: 'create-existing-table',
+      );
+
+      await MigrationTestUtils.runApplyMigrations();
+    });
+
+    tearDown(() async {
+      await MigrationTestUtils.migrationTestCleanup(
+        resetSql: 'DROP TABLE IF EXISTS existing_table;',
+        serviceClient: serviceClient,
+      );
+    });
+
+    group('when removing the column,', () {
+      test('then the column is removed from the table.', () async {
+        var targetStateProtocols = {
+          'existing_table': '''
+        class: ExistingTable
+        table: existing_table
+        fields:
+          id: int, primary=true
+        '''
+        };
+
+        var createMigrationExitCode =
+            await MigrationTestUtils.createMigrationFromProtocols(
+          protocols: targetStateProtocols,
+          tag: 'remove-column',
+        );
+
+        expect(
+          createMigrationExitCode,
+          0,
+          reason: 'Failed to create migration, exit code was not 0.',
+        );
+
+        var applyMigrationExitCode =
+            await MigrationTestUtils.runApplyMigrations();
+
+        expect(
+          applyMigrationExitCode,
+          0,
+          reason: 'Failed to apply migration, exit code was not 0.',
+        );
+
+        var liveDefinition =
+            await serviceClient.insights.getLiveDatabaseDefinition();
+
+        var databaseTable = liveDefinition.tables.firstWhereOrNull(
+          (t) => t.name == 'existing_table',
+        );
+
+        expect(
+          databaseTable,
+          isNotNull,
+          reason: 'Could not find existing table in live table definitions.',
+        );
+
+        var columns = databaseTable!.columns;
+        expect(
+          columns.length,
+          1,
+          reason: 'Invalid Table Columns',
+        );
+      });
+    });
+  });
 }
 
 extension _ListExt<T> on List<T> {
