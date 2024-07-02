@@ -222,10 +222,26 @@ abstract class SerializationManager {
     Object? object, {
     bool formatted = false,
   }) {
+    if (object is List) {
+      return encode(object
+          .map((v) => encodeForProtocol(v, formatted: formatted))
+          .toList());
+    }
+
+    if (object is Map) {
+      return encode(
+        object.map(
+          (k, v) => MapEntry(
+            k,
+            encodeForProtocol(v, formatted: formatted),
+          ),
+        ),
+      );
+    }
+
     if (object is ProtocolSerialization) {
       return encode(object.toJsonForProtocol(), formatted: formatted);
     }
-
     return encode(object, formatted: formatted);
   }
 
