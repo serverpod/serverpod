@@ -641,11 +641,11 @@ void main() {
       var columns = databaseTable!.columns;
       expect(
         columns.length,
-        2,
+        3,
         reason: 'Invalid Table Columns',
       );
 
-      var newColumn = columns[1];
+      var newColumn = columns[2];
       expect(
         newColumn.columnDefault,
         'CURRENT_TIMESTAMP',
@@ -732,11 +732,11 @@ void main() {
         var columns = databaseTable!.columns;
         expect(
           columns.length,
-          2,
+          3,
           reason: 'Invalid Table Columns',
         );
 
-        var existingColumn = columns[1];
+        var existingColumn = columns[2];
         expect(
           existingColumn.columnDefault,
           'CURRENT_TIMESTAMP',
@@ -825,11 +825,11 @@ void main() {
         var columns = databaseTable!.columns;
         expect(
           columns.length,
-          2,
+          3,
           reason: 'Invalid Table Columns',
         );
 
-        var existingColumn = columns[1];
+        var existingColumn = columns[2];
         expect(
           existingColumn.columnDefault,
           isNull,
@@ -920,11 +920,11 @@ void main() {
         var columns = databaseTable!.columns;
         expect(
           columns.length,
-          2,
+          3,
           reason: 'Invalid Table Columns',
         );
 
-        var existingColumn = columns[1];
+        var existingColumn = columns[2];
         expect(
           existingColumn.columnDefault,
           isNull,
@@ -1015,7 +1015,7 @@ void main() {
         var columns = databaseTable!.columns;
         expect(
           columns.length,
-          1,
+          2,
           reason: 'Invalid Table Columns',
         );
       });
