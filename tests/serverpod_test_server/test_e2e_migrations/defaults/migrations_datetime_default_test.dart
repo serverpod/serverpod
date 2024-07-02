@@ -698,6 +698,7 @@ void main() {
         var createMigrationExitCode =
             await MigrationTestUtils.createMigrationFromProtocols(
           protocols: targetStateProtocols,
+          force: true,
           tag: 'modify-existing-column',
         );
 
@@ -981,6 +982,7 @@ void main() {
         var createMigrationExitCode =
             await MigrationTestUtils.createMigrationFromProtocols(
           protocols: targetStateProtocols,
+          force: true,
           tag: 'remove-column',
         );
 
