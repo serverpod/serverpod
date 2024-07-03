@@ -3,6 +3,8 @@ import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:serverpod_cli/src/test_util/builders/endpoint_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/method_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
 
@@ -133,5 +135,42 @@ void main() {
       },
       skip: endpointsFile == null,
     );
+  });
+
+  group(
+      'Given a protocol definition with a method with Stream return value when generating endpoints file',
+      () {
+    var endpointName = 'testing';
+    var methodName = 'streamMethod';
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [
+        EndpointDefinitionBuilder()
+            .withClassName('${endpointName.pascalCase}Endpoint')
+            .withName(endpointName)
+            .withMethods([
+          MethodDefinitionBuilder()
+              .withName(methodName)
+              .withReturnType(
+                  TypeDefinitionBuilder().withStreamOf('String').build())
+              .buildMethodStreamDefinition(),
+        ]).build(),
+      ],
+      models: [],
+    );
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test('then endpoints file is created.', () {
+      expect(codeMap, contains(expectedFileName));
+    });
+    var endpointsFile = codeMap[expectedFileName];
+
+    test('then endpoints file contains MethodStreamConnector for method.', () {
+      expect(
+          endpointsFile, contains("'$methodName': _i1.MethodStreamConnector("));
+    });
   });
 }

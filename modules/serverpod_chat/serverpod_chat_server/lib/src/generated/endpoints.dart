@@ -36,6 +36,7 @@ class Endpoints extends _i1.EndpointDispatch {
               nullable: false,
             )
           },
+          returnsVoid: false,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
@@ -60,6 +61,7 @@ class Endpoints extends _i1.EndpointDispatch {
               nullable: false,
             ),
           },
+          returnsVoid: false,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,

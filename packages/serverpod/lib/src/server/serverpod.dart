@@ -12,7 +12,8 @@ import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
-import 'package:serverpod/src/server/log_manager.dart';
+import 'package:serverpod/src/server/log_manager/log_manager.dart';
+import 'package:serverpod/src/server/log_manager/log_writer.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../authentication/default_authentication_handler.dart';
@@ -297,7 +298,12 @@ class Serverpod {
     _passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
 
     // Load config
-    this.config = _loadConfig(config, _passwords);
+    this.config = config ??
+        ServerpodConfig.load(
+          _runMode,
+          serverId,
+          _passwords,
+        );
     Features(this.config);
 
     _logWriter = Features.enablePersistentLogging
@@ -315,6 +321,13 @@ class Serverpod {
         serializationManager,
         databaseConfiguration,
       );
+
+      // TODO: Remove this when we have a better way to handle this.
+      // Tracked by issue: https://github.com/serverpod/serverpod/issues/2421
+      // This is required because other operations in Serverpod assumes that the
+      // database is connected when the Serverpod is created
+      // (such as createSession(...)).
+      _databasePoolManager?.start();
     }
 
     if (Features.enableDatabase) {
@@ -392,32 +405,11 @@ class Serverpod {
     logVerbose(this.config.toString());
   }
 
-  ServerpodConfig _loadConfig(
-    ServerpodConfig? config,
-    Map<String, String> passwords,
-  ) {
-    if (config != null) return config;
-
-    if (ServerpodConfig.isConfigAvailable(runMode)) {
-      try {
-        return ServerpodConfig.load(_runMode, serverId, passwords);
-      } catch (error) {
-        stderr.writeln('Failed to load config: $error');
-        rethrow;
-      }
-    }
-
-    return ServerpodConfig.defaultConfig();
-  }
-
   int _exitCode = 0;
 
   /// Starts the Serverpod and all [Server]s that it manages.
   Future<void> start() async {
     _startedTime = DateTime.now().toUtc();
-    // It is important that we start the database pool manager before
-    // attempting to connect to the database.
-    _databasePoolManager?.start();
 
     await runZonedGuarded(() async {
       // Register cloud store endpoint if we're using the database cloud store
@@ -425,6 +417,10 @@ class Serverpod {
           storage['private'] is DatabaseCloudStorage) {
         CloudStoragePublicEndpoint().register(this);
       }
+
+      // It is important that we start the database pool manager before
+      // attempting to connect to the database.
+      _databasePoolManager?.start();
 
       if (_databasePoolManager == null) {
         _runtimeSettings = _defaultRuntimeSettings;

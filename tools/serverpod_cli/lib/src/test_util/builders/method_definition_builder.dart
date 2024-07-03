@@ -44,8 +44,19 @@ class MethodDefinitionBuilder {
     return this;
   }
 
-  MethodDefinition build() {
-    return MethodDefinition(
+  MethodCallDefinition buildMethodCallDefinition() {
+    return MethodCallDefinition(
+      name: _name,
+      documentationComment: _documentationComment,
+      returnType: _returnType,
+      parameters: _parameters,
+      parametersPositional: _parametersPositional,
+      parametersNamed: _parametersNamed,
+    );
+  }
+
+  MethodStreamDefinition buildMethodStreamDefinition() {
+    return MethodStreamDefinition(
       name: _name,
       documentationComment: _documentationComment,
       returnType: _returnType,

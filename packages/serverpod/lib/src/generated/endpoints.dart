@@ -32,6 +32,7 @@ class Endpoints extends _i1.EndpointDispatch {
         'getRuntimeSettings': _i1.MethodConnector(
           name: 'getRuntimeSettings',
           params: {},
+          returnsVoid: false,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
@@ -48,6 +49,7 @@ class Endpoints extends _i1.EndpointDispatch {
               nullable: false,
             )
           },
+          returnsVoid: true,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
@@ -61,6 +63,7 @@ class Endpoints extends _i1.EndpointDispatch {
         'clearAllLogs': _i1.MethodConnector(
           name: 'clearAllLogs',
           params: {},
+          returnsVoid: true,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
@@ -82,6 +85,7 @@ class Endpoints extends _i1.EndpointDispatch {
               nullable: true,
             ),
           },
+          returnsVoid: false,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
@@ -106,6 +110,7 @@ class Endpoints extends _i1.EndpointDispatch {
               nullable: true,
             ),
           },
+          returnsVoid: false,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
@@ -125,6 +130,7 @@ class Endpoints extends _i1.EndpointDispatch {
               nullable: false,
             )
           },
+          returnsVoid: false,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
@@ -137,6 +143,7 @@ class Endpoints extends _i1.EndpointDispatch {
         'shutdown': _i1.MethodConnector(
           name: 'shutdown',
           params: {},
+          returnsVoid: true,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
@@ -146,6 +153,7 @@ class Endpoints extends _i1.EndpointDispatch {
         'checkHealth': _i1.MethodConnector(
           name: 'checkHealth',
           params: {},
+          returnsVoid: false,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
@@ -167,6 +175,7 @@ class Endpoints extends _i1.EndpointDispatch {
               nullable: false,
             ),
           },
+          returnsVoid: false,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
@@ -180,6 +189,7 @@ class Endpoints extends _i1.EndpointDispatch {
         'hotReload': _i1.MethodConnector(
           name: 'hotReload',
           params: {},
+          returnsVoid: false,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
@@ -190,6 +200,7 @@ class Endpoints extends _i1.EndpointDispatch {
         'getTargetTableDefinition': _i1.MethodConnector(
           name: 'getTargetTableDefinition',
           params: {},
+          returnsVoid: false,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
@@ -200,6 +211,7 @@ class Endpoints extends _i1.EndpointDispatch {
         'getLiveDatabaseDefinition': _i1.MethodConnector(
           name: 'getLiveDatabaseDefinition',
           params: {},
+          returnsVoid: false,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
@@ -210,6 +222,7 @@ class Endpoints extends _i1.EndpointDispatch {
         'getDatabaseDefinitions': _i1.MethodConnector(
           name: 'getDatabaseDefinitions',
           params: {},
+          returnsVoid: false,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
@@ -241,6 +254,7 @@ class Endpoints extends _i1.EndpointDispatch {
               nullable: true,
             ),
           },
+          returnsVoid: false,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
@@ -263,6 +277,7 @@ class Endpoints extends _i1.EndpointDispatch {
               nullable: false,
             )
           },
+          returnsVoid: false,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
@@ -281,6 +296,7 @@ class Endpoints extends _i1.EndpointDispatch {
               nullable: false,
             )
           },
+          returnsVoid: false,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
@@ -300,6 +316,7 @@ class Endpoints extends _i1.EndpointDispatch {
               nullable: false,
             )
           },
+          returnsVoid: false,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
@@ -318,6 +335,7 @@ class Endpoints extends _i1.EndpointDispatch {
               nullable: false,
             )
           },
+          returnsVoid: false,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,

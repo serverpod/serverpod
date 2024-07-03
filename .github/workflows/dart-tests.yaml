@@ -172,6 +172,22 @@ jobs:
     strategy:
       matrix:
         flutter-version: ['3.16.0', '3.22.0']
+        path: ["packages/serverpod_shared"]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+      - name: Run integration tests
+        run: dart test test_integration
+        working-directory: ${{ matrix.path }}
+
+  integration_test_server:
+    name: Serverpod integration tests (server)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.16.0', '3.22.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -179,6 +195,7 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
       - name: Run integration tests
         run: util/run_tests_integration
+        
 
   bootstrap_tests:
     name: Bootstrap tests

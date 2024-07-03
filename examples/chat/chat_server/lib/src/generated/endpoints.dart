@@ -31,6 +31,7 @@ class Endpoints extends _i1.EndpointDispatch {
         'getChannels': _i1.MethodConnector(
           name: 'getChannels',
           params: {},
+          returnsVoid: false,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
