@@ -190,7 +190,11 @@ abstract class SerializationManager {
   /// Encode the provided [object] to a Json-formatted [String].
   /// If [formatted] is true, the output will be formatted with two spaces
   /// indentation.
-  static String encode(Object? object, {bool formatted = false}) {
+  static String encode(
+    Object? object, {
+    bool formatted = false,
+    bool checkIfIsProtocol = false,
+  }) {
     // This is the only time [jsonEncode] should be used in the project.
     return JsonEncoder.withIndent(
       formatted ? '  ' : null,
@@ -209,6 +213,9 @@ abstract class SerializationManager {
               .map((e) => {'k': e.key, 'v': e.value})
               .toList();
         } else {
+          if (checkIfIsProtocol && nonEncodable is ProtocolSerialization) {
+            return nonEncodable.toJsonForProtocol();
+          }
           return (nonEncodable as dynamic)?.toJson();
         }
       },
@@ -222,22 +229,19 @@ abstract class SerializationManager {
     Object? object, {
     bool formatted = false,
   }) {
-    if (object is List) {
-      return encode(object.map((v) => encodeForProtocol(v)).toList());
-    }
-
-    if (object is Map) {
+    if (object is ProtocolSerialization) {
       return encode(
-        object.map(
-          (k, v) => MapEntry(encodeForProtocol(k), encodeForProtocol(v)),
-        ),
+        object.toJsonForProtocol(),
+        formatted: formatted,
+        checkIfIsProtocol: true,
       );
     }
 
-    if (object is ProtocolSerialization) {
-      return encode(object.toJsonForProtocol(), formatted: formatted);
-    }
-    return encode(object, formatted: formatted);
+    return encode(
+      object,
+      formatted: formatted,
+      checkIfIsProtocol: true,
+    );
   }
 
   /// Encode the provided [object] to a json-formatted [String], include class
