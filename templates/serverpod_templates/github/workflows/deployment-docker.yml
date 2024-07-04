@@ -15,7 +15,6 @@
 # SSH_PRIVATE_KEY: The private key for the SSH connection which you just 'cat'ed
 # SSH_HOST: The host for the SSH connection -> IP or domain
 # SSH_USER: The user for the SSH connection -> often root
-# DATABASE_PASSWORD_PRODUCTION: The password for the production database
 
 name: Deploy to docker
 on:
