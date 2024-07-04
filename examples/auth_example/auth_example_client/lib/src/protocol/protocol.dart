@@ -41,13 +41,13 @@ class Protocol extends _i1.SerializationManager {
   }
 
   @override
-  String? getClassNameForObject(Object data) {
+  String? getClassNameForObject(Object? data) {
     String? className;
     className = _i3.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
-    if (data is _i2.Example) {
+    if (data is _i2.Example?) {
       return 'Example';
     }
     return super.getClassNameForObject(data);

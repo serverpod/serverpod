@@ -50,7 +50,7 @@ class Protocol extends _i1.SerializationManager {
   }
 
   @override
-  String? getClassNameForObject(Object data) {
+  String? getClassNameForObject(Object? data) {
     String? className;
     className = _i4.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -60,7 +60,7 @@ class Protocol extends _i1.SerializationManager {
     if (className != null) {
       return 'serverpod_chat.$className';
     }
-    if (data is _i2.Channel) {
+    if (data is _i2.Channel?) {
       return 'Channel';
     }
     return super.getClassNameForObject(data);

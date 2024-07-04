@@ -37,8 +37,8 @@ class Protocol extends _i1.SerializationManager {
   }
 
   @override
-  String? getClassNameForObject(Object data) {
-    if (data is _i2.Example) {
+  String? getClassNameForObject(Object? data) {
+    if (data is _i2.Example?) {
       return 'Example';
     }
     return super.getClassNameForObject(data);

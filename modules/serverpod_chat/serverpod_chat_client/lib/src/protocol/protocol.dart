@@ -146,43 +146,43 @@ class Protocol extends _i1.SerializationManager {
   }
 
   @override
-  String? getClassNameForObject(Object data) {
+  String? getClassNameForObject(Object? data) {
     String? className;
     className = _i14.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
-    if (data is _i2.ChatJoinChannel) {
+    if (data is _i2.ChatJoinChannel?) {
       return 'ChatJoinChannel';
     }
-    if (data is _i3.ChatJoinChannelFailed) {
+    if (data is _i3.ChatJoinChannelFailed?) {
       return 'ChatJoinChannelFailed';
     }
-    if (data is _i4.ChatJoinedChannel) {
+    if (data is _i4.ChatJoinedChannel?) {
       return 'ChatJoinedChannel';
     }
-    if (data is _i5.ChatLeaveChannel) {
+    if (data is _i5.ChatLeaveChannel?) {
       return 'ChatLeaveChannel';
     }
-    if (data is _i6.ChatMessage) {
+    if (data is _i6.ChatMessage?) {
       return 'ChatMessage';
     }
-    if (data is _i7.ChatMessageAttachment) {
+    if (data is _i7.ChatMessageAttachment?) {
       return 'ChatMessageAttachment';
     }
-    if (data is _i8.ChatMessageAttachmentUploadDescription) {
+    if (data is _i8.ChatMessageAttachmentUploadDescription?) {
       return 'ChatMessageAttachmentUploadDescription';
     }
-    if (data is _i9.ChatMessageChunk) {
+    if (data is _i9.ChatMessageChunk?) {
       return 'ChatMessageChunk';
     }
-    if (data is _i10.ChatMessagePost) {
+    if (data is _i10.ChatMessagePost?) {
       return 'ChatMessagePost';
     }
-    if (data is _i11.ChatReadMessage) {
+    if (data is _i11.ChatReadMessage?) {
       return 'ChatReadMessage';
     }
-    if (data is _i12.ChatRequestMessageChunk) {
+    if (data is _i12.ChatRequestMessageChunk?) {
       return 'ChatRequestMessageChunk';
     }
     return super.getClassNameForObject(data);

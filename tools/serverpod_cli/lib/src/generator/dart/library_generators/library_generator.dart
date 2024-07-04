@@ -175,7 +175,7 @@ class LibraryGenerator {
         ..returns = refer('String?')
         ..requiredParameters.add(Parameter((p) => p
           ..name = 'data'
-          ..type = refer('Object')))
+          ..type = refer('Object?')))
         ..body = Block.of([
           if (config.modules.isNotEmpty) const Code('String? className;'),
           for (var module in config.modules)
@@ -187,10 +187,10 @@ class LibraryGenerator {
             ]),
           for (var extraClass in config.extraClasses)
             Code.scope((a) =>
-                'if(data is ${a(extraClass.reference(serverCode, config: config))}) {return \'${extraClass.className}\';}'),
+                'if(data is ${a(extraClass.reference(serverCode, config: config))}?) {return \'${extraClass.className}\';}'),
           for (var classInfo in models)
             Code.scope((a) =>
-                'if(data is ${a(refer(classInfo.className, classInfo.fileRef()))}) {return \'${classInfo.className}\';}'),
+                'if(data is ${a(refer(classInfo.className, classInfo.fileRef()))}?) {return \'${classInfo.className}\';}'),
           const Code('return super.getClassNameForObject(data);'),
         ])),
       Method((m) => m
