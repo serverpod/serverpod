@@ -35,5 +35,5 @@ EXPOSE 8080
 EXPOSE 8081
 EXPOSE 8082
 
-ENTRYPOINT ["/app/bin/main"]
+ENTRYPOINT ["/server"]
 CMD ["--mode", "production", "--server-id", "default", "--logging", "normal", "--role", "monolith"]

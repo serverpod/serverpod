@@ -50,16 +50,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Create passwords file
-        working-directory: projectname_server
-        shell: bash
-        env:
-          SERVERPOD_PASSWORDS: ${{ secrets.SERVERPOD_PASSWORDS }}
-        run: |
-          pwd
-          echo "$SERVERPOD_PASSWORDS" > config/passwords.yaml
-          ls config/
-
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
@@ -115,11 +105,54 @@ jobs:
 
       - name: Run docker-compose
         run: |
-          docker compose -f ./projectname_server/docker-compose-production.yaml pull
-          docker compose -f ./projectname_server/docker-compose-production.yaml up -d
+          docker compose -f ./projectname_server/docker-compose.production.yaml pull
+          docker compose -f ./projectname_server/docker-compose.production.yaml up -d
         env:
           DOCKER_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
-          DATABASE_PASSWORD_PRODUCTION: ${{ secrets.DATABASE_PASSWORD_PRODUCTION }}
+          # The database name
+          POSTGRES_DB: ${{ secrets.SERVERPOD_DATABASE_NAME }}
+          # The user name for the database
+          POSTGRES_USER: ${{ secrets.SERVERPOD_DATABASE_USER }}
+          # The password for the database
+          POSTGRES_PASSWORD: ${{ secrets.SERVERPOD_DATABASE_PASSWORD }}
+          # The port number for the API server
+          SERVERPOD_API_SERVER_PORT: ${{ secrets.SERVERPOD_API_SERVER_PORT }}
+          # The public host address of the API server
+          SERVERPOD_API_SERVER_PUBLIC_HOST: ${{ secrets.SERVERPOD_API_SERVER_PUBLIC_HOST }}
+          # The public port number for the API server
+          SERVERPOD_API_SERVER_PUBLIC_PORT: ${{ secrets.SERVERPOD_API_SERVER_PUBLIC_PORT }}
+          # The public scheme (http/https) for the API server
+          SERVERPOD_API_SERVER_PUBLIC_SCHEME: ${{ secrets.SERVERPOD_API_SERVER_PUBLIC_SCHEME }}
+          # The port number for the Insights server
+          SERVERPOD_INSIGHTS_SERVER_PORT: ${{ secrets.SERVERPOD_INSIGHTS_SERVER_PORT }}
+          # The public host address of the Insights server
+          SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST: ${{ secrets.SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST }}
+          # The public port number for the Insights server
+          SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT: ${{ secrets.SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT }}
+          # The public scheme (http/https) for the Insights server
+          SERVERPOD_INSIGHTS_SERVER_PUBLIC_SCHEME: ${{ secrets.SERVERPOD_INSIGHTS_SERVER_PUBLIC_SCHEME }}
+          # TODO hardcode  The port number for the Web server
+          SERVERPOD_WEB_SERVER_PORT: ${{ secrets.SERVERPOD_WEB_SERVER_PORT }}
+          # The public host address of the Web server
+          SERVERPOD_WEB_SERVER_PUBLIC_HOST: ${{ secrets.SERVERPOD_WEB_SERVER_PUBLIC_HOST }}
+          # The public port number for the Web server
+          SERVERPOD_WEB_SERVER_PUBLIC_PORT: ${{ secrets.SERVERPOD_WEB_SERVER_PUBLIC_PORT }}
+          # The public scheme (http/https) for the Web server
+          SERVERPOD_WEB_SERVER_PUBLIC_SCHEME: ${{ secrets.SERVERPOD_WEB_SERVER_PUBLIC_SCHEME }}
+          # The host address of the database
+          SERVERPOD_DATABASE_HOST: ${{ secrets.SERVERPOD_DATABASE_HOST }}
+          # TODO hardcode The port number for the database connection
+          SERVERPOD_DATABASE_PORT: ${{ secrets.SERVERPOD_DATABASE_PORT }}
+          # Indicates if SSL is required for the database
+          SERVERPOD_DATABASE_REQUIRE_SSL: ${{ secrets.SERVERPOD_DATABASE_REQUIRE_SSL }}
+          # Specifies if the database connection is a Unix socket
+          SERVERPOD_DATABASE_IS_UNIX_SOCKET: ${{ secrets.SERVERPOD_DATABASE_IS_UNIX_SOCKET }}
+          # Redis is not required for this setup
+          SERVERPOD_REDIS_ENABLED: false
+          # The maximum size of requests allowed in bytes
+          SERVERPOD_MAX_REQUEST_SIZE: ${{ secrets.SERVERPOD_MAX_REQUEST_SIZE }}
+          # The token used to connect with insights must be at least 20 chars
+          SERVERPOD_SERVICE_SECRET: ${{ secrets.SERVERPOD_SERVICE_SECRET }}
 
       - name: cleanup
         run: rm -rf ~/.ssh
