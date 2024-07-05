@@ -13,13 +13,13 @@ class Emails {
   /// Generates a password hash from a users password and email. This value
   /// can safely be stored in the database without the risk of exposing
   /// passwords.
-  static Future<String> generatePasswordHash(String password) async {
-    return PasswordHash.argon2id(
-      password,
-      pepper: EmailSecrets.pepper,
-      allowUnsecureRandom: AuthConfig.current.allowUnsecureRandom,
-    );
-  }
+  static Future<String> generatePasswordHash(String password) async =>
+      AuthConfig.current.generatePasswordHashCallback?.call(password) ??
+      PasswordHash.argon2id(
+        password,
+        pepper: EmailSecrets.pepper,
+        allowUnsecureRandom: AuthConfig.current.allowUnsecureRandom,
+      );
 
   /// Generates a password hash from the password using the provided hash
   /// algorithm and validates that they match.
@@ -38,6 +38,10 @@ class Emails {
         onValidationFailure,
     void Function(Object e)? onError,
   }) async {
+    if (AuthConfig.current.validatePasswordHashCallback != null) {
+      return AuthConfig.current.validatePasswordHashCallback!
+          .call(password, hash);
+    }
     try {
       return await PasswordHash(
         hash,

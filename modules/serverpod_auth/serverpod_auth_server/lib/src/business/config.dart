@@ -34,6 +34,13 @@ typedef SendPasswordResetEmailCallback = Future<bool> Function(
 typedef SendValidationEmailCallback = Future<bool> Function(
     Session session, String email, String validationCode);
 
+/// Callback for generation of the hash password
+typedef GeneratePasswordHashCallback = Future<String> Function(String password);
+
+/// Callback to validate the hash used by [GeneratePasswordHashCallback]
+typedef ValidatePasswordHashCallback = Future<bool> Function(
+    String password, String hash);
+
 /// Configuration options for the Auth module.
 class AuthConfig {
   static AuthConfig _config = AuthConfig();
@@ -138,6 +145,12 @@ class AuthConfig {
   /// generation.
   final bool allowUnsecureRandom;
 
+  /// Create a custom hash for the password
+  final GeneratePasswordHashCallback? generatePasswordHashCallback;
+
+  /// Create a custom validation for the password in combinaison with [GeneratePasswordHashCallback]
+  final ValidatePasswordHashCallback? validatePasswordHashCallback;
+
   /// Creates a new Auth configuration. Use the [set] method to replace the
   /// default settings. Defaults to `config/firebase_service_account_key.json`.
   AuthConfig({
@@ -168,6 +181,8 @@ class AuthConfig {
     this.maxPasswordLength = 128,
     this.minPasswordLength = 8,
     this.allowUnsecureRandom = false,
+    this.generatePasswordHashCallback,
+    this.validatePasswordHashCallback,
   }) {
     if (validationCodeLength < 8) {
       stderr.writeln(
