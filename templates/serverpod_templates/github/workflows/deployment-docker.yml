@@ -121,7 +121,7 @@ jobs:
           # The public port number for the API server
           SERVERPOD_API_SERVER_PUBLIC_PORT: ${{ secrets.SERVERPOD_API_SERVER_PUBLIC_PORT }}
           # The public scheme (http/https) for the API server
-          SERVERPOD_API_SERVER_PUBLIC_SCHEME: ${{ secrets.SERVERPOD_API_SERVER_PUBLIC_SCHEME }}
+          SERVERPOD_API_SERVER_PUBLIC_SCHEME: "https"
           # The port number for the Insights server
           SERVERPOD_INSIGHTS_SERVER_PORT: ${{ secrets.SERVERPOD_INSIGHTS_SERVER_PORT }}
           # The public host address of the Insights server
