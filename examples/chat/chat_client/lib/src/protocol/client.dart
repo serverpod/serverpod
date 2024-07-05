@@ -8,55 +8,38 @@
 // ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'dart:async' as _i2;
-import 'package:chat_client/src/protocol/channel.dart' as _i3;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i4;
-import 'package:serverpod_chat_client/serverpod_chat_client.dart' as _i5;
-import 'protocol.dart' as _i6;
-
-/// {@category Endpoint}
-class EndpointChannels extends _i1.EndpointRef {
-  EndpointChannels(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'channels';
-
-  _i2.Future<List<_i3.Channel>> getChannels() =>
-      caller.callServerEndpoint<List<_i3.Channel>>(
-        'channels',
-        'getChannels',
-        {},
-      );
-}
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i1;
+import 'package:serverpod_chat_client/serverpod_chat_client.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _i3;
+import 'protocol.dart' as _i4;
 
 class _Modules {
   _Modules(Client client) {
-    auth = _i4.Caller(client);
-    chat = _i5.Caller(client);
+    auth = _i1.Caller(client);
+    chat = _i2.Caller(client);
   }
 
-  late final _i4.Caller auth;
+  late final _i1.Caller auth;
 
-  late final _i5.Caller chat;
+  late final _i2.Caller chat;
 }
 
-class Client extends _i1.ServerpodClient {
+class Client extends _i3.ServerpodClient {
   Client(
     String host, {
     dynamic securityContext,
-    _i1.AuthenticationKeyManager? authenticationKeyManager,
+    _i3.AuthenticationKeyManager? authenticationKeyManager,
     Duration? streamingConnectionTimeout,
     Duration? connectionTimeout,
     Function(
-      _i1.MethodCallContext,
+      _i3.MethodCallContext,
       Object,
       StackTrace,
     )? onFailedCall,
-    Function(_i1.MethodCallContext)? onSucceededCall,
+    Function(_i3.MethodCallContext)? onSucceededCall,
   }) : super(
           host,
-          _i6.Protocol(),
+          _i4.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
@@ -64,19 +47,16 @@ class Client extends _i1.ServerpodClient {
           onFailedCall: onFailedCall,
           onSucceededCall: onSucceededCall,
         ) {
-    channels = EndpointChannels(this);
     modules = _Modules(this);
   }
-
-  late final EndpointChannels channels;
 
   late final _Modules modules;
 
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup => {'channels': channels};
+  Map<String, _i3.EndpointRef> get endpointRefLookup => {};
 
   @override
-  Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {
+  Map<String, _i3.ModuleEndpointCaller> get moduleLookup => {
         'auth': modules.auth,
         'chat': modules.chat,
       };

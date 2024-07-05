@@ -17,12 +17,14 @@ abstract class Channel extends _i1.TableRow
     int? id,
     required this.name,
     required this.channel,
+    required this.point,
   }) : super(id);
 
   factory Channel({
     int? id,
     required String name,
     required String channel,
+    required geographyPoint point,
   }) = _ChannelImpl;
 
   factory Channel.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -30,6 +32,8 @@ abstract class Channel extends _i1.TableRow
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       channel: jsonSerialization['channel'] as String,
+      point: geographyPoint
+          .fromJson((jsonSerialization['point'] as Map<String, dynamic>)),
     );
   }
 
@@ -43,6 +47,8 @@ abstract class Channel extends _i1.TableRow
   /// The id of the channel.
   String channel;
 
+  geographyPoint point;
+
   @override
   _i1.Table get table => t;
 
@@ -50,6 +56,7 @@ abstract class Channel extends _i1.TableRow
     int? id,
     String? name,
     String? channel,
+    geographyPoint? point,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -57,6 +64,7 @@ abstract class Channel extends _i1.TableRow
       if (id != null) 'id': id,
       'name': name,
       'channel': channel,
+      'point': point.toJson(),
     };
   }
 
@@ -66,6 +74,7 @@ abstract class Channel extends _i1.TableRow
       if (id != null) 'id': id,
       'name': name,
       'channel': channel,
+      'point': point.toJsonForProtocol(),
     };
   }
 
@@ -106,10 +115,12 @@ class _ChannelImpl extends Channel {
     int? id,
     required String name,
     required String channel,
+    required geographyPoint point,
   }) : super._(
           id: id,
           name: name,
           channel: channel,
+          point: point,
         );
 
   @override
@@ -117,11 +128,13 @@ class _ChannelImpl extends Channel {
     Object? id = _Undefined,
     String? name,
     String? channel,
+    geographyPoint? point,
   }) {
     return Channel(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       channel: channel ?? this.channel,
+      point: point ?? this.point.copyWith(),
     );
   }
 }
@@ -136,6 +149,10 @@ class ChannelTable extends _i1.Table {
       'channel',
       this,
     );
+    point = _i1.ColumnSerializable(
+      'point',
+      this,
+    );
   }
 
   /// The name of the channel.
@@ -144,11 +161,14 @@ class ChannelTable extends _i1.Table {
   /// The id of the channel.
   late final _i1.ColumnString channel;
 
+  late final _i1.ColumnSerializable point;
+
   @override
   List<_i1.Column> get columns => [
         id,
         name,
         channel,
+        point,
       ];
 }
 

@@ -689,6 +689,7 @@ class DatabaseConnection {
     if (column is ColumnDuration) return 'bigint';
     if (column is ColumnUuid) return 'uuid';
     if (column is ColumnSerializable) return 'json';
+    if (column is ColumnGeographyPoint) return 'geog geography(point,4269)';
     if (column is ColumnEnumExtended) {
       switch (column.serialized) {
         case EnumSerialization.byIndex:

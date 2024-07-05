@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
+import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/generated/database/geography_point.dart';
 
 /// A function that returns a [Column] for a [Table].
 typedef ColumnSelections<T extends Table> = List<Column> Function(T);
@@ -47,6 +49,27 @@ class ColumnSerializable extends Column<String> {
   ColumnSerializable(super.columnName, super.table);
 
 // TODO: Add comparisons and possibly other operations
+}
+
+/// A [Column] holding a [GeographyPoint]. In the database it is stored as a
+/// SRID 4326 geography point.
+class ColumnGeographyPoint extends _ValueOperatorColumn<GeographyPoint>
+    with _NullableColumnDefaultOperations<GeographyPoint> {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnGeographyPoint(super.columnName, super.table);
+
+  // Expression distanceFrom(GeographyPoint point,
+  //         [double? distanceWithinMeters]) =>
+  //     _GeographyDistanceColumnExpression(this, point, distanceWithinMeters);
+
+  Expression intersect(
+    GeographyPoint p1,
+  ) =>
+      _GeographyIntersectColumnExpression(this, p1);
+
+  @override
+  Expression _encodeValueForQuery(GeographyPoint value) => EscapedExpression(
+      'SRID=4326;POINT(${value.longitude} ${value.latitude})');
 }
 
 abstract class _ValueOperatorColumn<T> extends Column<T> {
@@ -653,4 +676,50 @@ class _NotInSetExpression extends _SetColumnExpression {
 
   @override
   String get operator => 'NOT IN';
+}
+
+class _GeographyDistanceColumnExpression<T> extends ColumnExpression<T> {
+  final GeographyPoint point;
+  final double? distanceWithinMeters;
+
+  _GeographyDistanceColumnExpression(super.column, this.point,
+      [this.distanceWithinMeters]);
+
+  @override
+  List<Column> get columns => [...super.columns];
+
+  @override
+  String get operator => '';
+
+  @override
+  String toString() {
+    return '${distanceWithinMeters == null ? 'ST_Distance' : 'ST_DWithin'}'
+        '($_getColumnName, '
+        '\'SRID=4326;POINT(${point.longitude} ${point.latitude})\'::geography'
+        '${distanceWithinMeters == null ? '' : ', $distanceWithinMeters'})';
+  }
+}
+
+class _GeographyIntersectColumnExpression<T> extends ColumnExpression<T> {
+  final GeographyPoint p1;
+
+  _GeographyIntersectColumnExpression(
+    super.column,
+    this.p1,
+  );
+
+  @override
+  List<Column> get columns => [...super.columns];
+
+  @override
+  String get operator => '';
+
+  String _geoPoint(double lng, double lat) {
+    return '\'SRID=4326;POINT($lng $lat)\'::geography';
+  }
+
+  @override
+  String toString() {
+    return 'FT_Intersect($_getColumnName, ${_geoPoint(p1.longitude, p1.latitude)})';
+  }
 }

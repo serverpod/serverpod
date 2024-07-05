@@ -20,6 +20,8 @@ values:
   - uuid
   ### Esp. for serializable objects.
   - json
+  ### Dart type: [GeographyPoint]
+  - geographyPoint
   ### Used for unknown types, that have never been
   ### used by Serverpod.
   - unknown

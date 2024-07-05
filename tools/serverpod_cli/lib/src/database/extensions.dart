@@ -352,6 +352,9 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
       case ColumnType.uuid:
         type = 'uuid';
         break;
+      case ColumnType.geographyPoint:
+        type = 'geog geography(point,4269)';
+        break;
       case ColumnType.unknown:
         throw (const FormatException('Unknown column type'));
     }

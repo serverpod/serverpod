@@ -776,7 +776,6 @@ class Restrictions {
       ));
       return errors;
     }
-
     if (!_isValidType(fieldType)) {
       var typeName = fieldType.className;
       errors.add(SourceSpanSeverityException(
@@ -1143,6 +1142,7 @@ class Restrictions {
     'ByteData',
     'List',
     'Map',
+    'geographyPoint'
   ];
 
   var blackListedTypes = [
@@ -1154,9 +1154,18 @@ class Restrictions {
   }
 
   bool _isValidType(TypeDefinition type) {
-    return whiteListedTypes.contains(type.className) ||
-        _isModelType(type) ||
-        _isCustomType(type);
+    var isWhiteListedTypesValid = whiteListedTypes.contains(type.className);
+    var isModelTypeValid = _isModelType(type);
+    var isCustomTypeValid = _isCustomType(type);
+
+    print('--------------------');
+    print(type.className);
+    print(type.valueType);
+    print(isWhiteListedTypesValid);
+    print(isModelTypeValid);
+    print(isCustomTypeValid);
+    print('--------------------');
+    return isWhiteListedTypesValid || isModelTypeValid || isCustomTypeValid;
   }
 
   bool _isUnsupportedType(TypeDefinition type) {

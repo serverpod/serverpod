@@ -238,6 +238,7 @@ class TypeDefinition {
     if (className == 'ByteData') return 'bytea';
     if (className == 'Duration') return 'bigint';
     if (className == 'UuidValue') return 'uuid';
+    if (className == 'GeographyPoint') return 'GeographyPoint';
 
     return 'json';
   }
@@ -260,6 +261,7 @@ class TypeDefinition {
     if (className == 'ByteData') return 'ColumnByteData';
     if (className == 'Duration') return 'ColumnDuration';
     if (className == 'UuidValue') return 'ColumnUuid';
+    if (className == 'GeographyPoint') return 'ColumnGeographyPoint';
 
     return 'ColumnSerializable';
   }

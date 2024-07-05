@@ -16,12 +16,14 @@ abstract class Channel implements _i1.SerializableModel {
     this.id,
     required this.name,
     required this.channel,
+    required this.point,
   });
 
   factory Channel({
     int? id,
     required String name,
     required String channel,
+    required geographyPoint point,
   }) = _ChannelImpl;
 
   factory Channel.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -29,6 +31,8 @@ abstract class Channel implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       channel: jsonSerialization['channel'] as String,
+      point: geographyPoint
+          .fromJson((jsonSerialization['point'] as Map<String, dynamic>)),
     );
   }
 
@@ -43,10 +47,13 @@ abstract class Channel implements _i1.SerializableModel {
   /// The id of the channel.
   String channel;
 
+  geographyPoint point;
+
   Channel copyWith({
     int? id,
     String? name,
     String? channel,
+    geographyPoint? point,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -54,6 +61,7 @@ abstract class Channel implements _i1.SerializableModel {
       if (id != null) 'id': id,
       'name': name,
       'channel': channel,
+      'point': point.toJson(),
     };
   }
 
@@ -70,10 +78,12 @@ class _ChannelImpl extends Channel {
     int? id,
     required String name,
     required String channel,
+    required geographyPoint point,
   }) : super._(
           id: id,
           name: name,
           channel: channel,
+          point: point,
         );
 
   @override
@@ -81,11 +91,13 @@ class _ChannelImpl extends Channel {
     Object? id = _Undefined,
     String? name,
     String? channel,
+    geographyPoint? point,
   }) {
     return Channel(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       channel: channel ?? this.channel,
+      point: point ?? this.point.copyWith(),
     );
   }
 }

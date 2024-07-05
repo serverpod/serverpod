@@ -40,6 +40,9 @@ enum ColumnType implements _i1.SerializableModel {
   /// Esp. for serializable objects.
   json,
 
+  /// Dart type: [GeographyPoint]
+  geographyPoint,
+
   /// Used for unknown types, that have never been
   /// used by Serverpod.
   unknown;
@@ -65,6 +68,8 @@ enum ColumnType implements _i1.SerializableModel {
       case 8:
         return json;
       case 9:
+        return geographyPoint;
+      case 10:
         return unknown;
       default:
         throw ArgumentError(
