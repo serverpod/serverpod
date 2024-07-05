@@ -55,17 +55,17 @@ services:
       ]
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`api.examplepod.com`)"
+      - "traefik.http.routers.api.rule=Host(`${SERVERPOD_API_SERVER_PUBLIC_HOST}`)"
       - "traefik.http.routers.api.entrypoints=websecure"
       - "traefik.http.routers.api.service=api-service"
       - "traefik.http.routers.api.tls.certresolver=myresolver"
-      - "traefik.http.services.api-service.loadbalancer.server.port=8080"
+      - "traefik.http.services.api-service.loadbalancer.server.port=${SERVERPOD_API_SERVER_PUBLIC_PORT}"
 
-      - "traefik.http.routers.insights.rule=Host(`insights.examplepod.com`)"
+      - "traefik.http.routers.insights.rule=Host(`${SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST}`)"
       - "traefik.http.routers.insights.entrypoints=websecure"
       - "traefik.http.routers.insights.service=insights-service"
       - "traefik.http.routers.insights.tls.certresolver=myresolver"
-      - "traefik.http.services.insights-service.loadbalancer.server.port=8081"
+      - "traefik.http.services.insights-service.loadbalancer.server.port=${SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT}"
 
       - "traefik.http.routers.web.rule=Host(`web.examplepod.com`)"
       - "traefik.http.routers.web.entrypoints=websecure"
