@@ -165,7 +165,7 @@ jobs:
           # only be accessed by utilizing the SSH tunnel
           SERVERPOD_DATABASE_REQUIRE_SSL: false
           # Specifies if the database connection is a Unix socket
-          SERVERPOD_DATABASE_IS_UNIX_SOCKET: ${{ secrets.SERVERPOD_DATABASE_IS_UNIX_SOCKET }}
+          SERVERPOD_DATABASE_IS_UNIX_SOCKET: false
           # Redis is not required for this setup
           SERVERPOD_REDIS_ENABLED: false
           # The maximum size of requests allowed in bytes
