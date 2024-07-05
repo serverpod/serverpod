@@ -170,7 +170,9 @@ jobs:
           # Specifies if the database connection is a Unix socket
           SERVERPOD_DATABASE_IS_UNIX_SOCKET: false
           # Redis is not required for this setup
-          SERVERPOD_REDIS_ENABLED: false
+          # Disabled since right if supplying any of the redis settings, you
+          # MUST supply all of them, otherwise serverpod will fail to start
+          # SERVERPOD_REDIS_ENABLED: false
           # The maximum size of requests allowed in bytes
           SERVERPOD_MAX_REQUEST_SIZE: ${{ secrets.SERVERPOD_MAX_REQUEST_SIZE }}
           # The token used to connect with insights must be at least 20 chars
