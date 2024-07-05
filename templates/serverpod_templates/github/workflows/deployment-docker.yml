@@ -74,6 +74,8 @@ jobs:
           context: ./projectname_server
           file: ./projectname_server/Dockerfile
           push: true
+          # TODO This same value is used in docker-compose.production.yaml too,
+          #  maybe it should be an environment variable
           tags: ghcr.io/${{ env.GHCR_ORG }}/projectname_server:latest
           labels: ${{ steps.meta.outputs.labels }}
           # This determines which hardware platforms the image will run on
@@ -116,36 +118,52 @@ jobs:
           POSTGRES_USER: ${{ secrets.SERVERPOD_DATABASE_USER }}
           # The password for the database
           POSTGRES_PASSWORD: ${{ secrets.SERVERPOD_DATABASE_PASSWORD }}
-          # The port number for the API server
-          SERVERPOD_API_SERVER_PORT: ${{ secrets.SERVERPOD_API_SERVER_PORT }}
           # The public host address of the API server
           SERVERPOD_API_SERVER_PUBLIC_HOST: ${{ secrets.SERVERPOD_API_SERVER_PUBLIC_HOST }}
           # The public port number for the API server
-          SERVERPOD_API_SERVER_PUBLIC_PORT: ${{ secrets.SERVERPOD_API_SERVER_PUBLIC_PORT }}
+          # This is hardcoded, since it is used only to map from docker image to
+          # traefik loadbalancer and this port is NOT used to access from the
+          # web. External access is done solely through the host. If you want to
+          # have access through a different port or have multiple services on
+          # the same host, you need to adjust the traefik configuration in the
+          # docker-compose.production.yaml file.
+          SERVERPOD_API_SERVER_PUBLIC_PORT: 8080
           # The public scheme (http/https) for the API server
           SERVERPOD_API_SERVER_PUBLIC_SCHEME: "https"
-          # The port number for the Insights server
-          SERVERPOD_INSIGHTS_SERVER_PORT: ${{ secrets.SERVERPOD_INSIGHTS_SERVER_PORT }}
           # The public host address of the Insights server
           SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST: ${{ secrets.SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST }}
           # The public port number for the Insights server
-          SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT: ${{ secrets.SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT }}
+          # This is hardcoded, since it is used only to map from docker image to
+          # traefik loadbalancer and this port is NOT used to access from the
+          # web. External access is done solely through the host. If you want to
+          # have access through a different port or have multiple services on
+          # the same host, you need to adjust the traefik configuration in the
+          # docker-compose.production.yaml file.
+          SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT: 8081
           # The public scheme (http/https) for the Insights server
           SERVERPOD_INSIGHTS_SERVER_PUBLIC_SCHEME: "https"
-          # TODO hardcode  The port number for the Web server
-          SERVERPOD_WEB_SERVER_PORT: ${{ secrets.SERVERPOD_WEB_SERVER_PORT }}
           # The public host address of the Web server
           SERVERPOD_WEB_SERVER_PUBLIC_HOST: ${{ secrets.SERVERPOD_WEB_SERVER_PUBLIC_HOST }}
           # The public port number for the Web server
-          SERVERPOD_WEB_SERVER_PUBLIC_PORT: ${{ secrets.SERVERPOD_WEB_SERVER_PUBLIC_PORT }}
+          # This is hardcoded, since it is used only to map from docker image to
+          # traefik loadbalancer and this port is NOT used to access from the
+          # web. External access is done solely through the host. If you want to
+          # have access through a different port or have multiple services on
+          # the same host, you need to adjust the traefik configuration in the
+          # docker-compose.production.yaml file.
+          SERVERPOD_WEB_SERVER_PUBLIC_PORT: 8082
           # The public scheme (http/https) for the Web server
           SERVERPOD_WEB_SERVER_PUBLIC_SCHEME: "https"
           # The host address of the database
           SERVERPOD_DATABASE_HOST: ${{ secrets.SERVERPOD_DATABASE_HOST }}
-          # TODO hardcode The port number for the database connection
-          SERVERPOD_DATABASE_PORT: ${{ secrets.SERVERPOD_DATABASE_PORT }}
+          # The port number for the database connection
+          # If you need to change this port, you will also have to adjust
+          # postgres configuration in the docker-compose.production.yaml file
+          SERVERPOD_DATABASE_PORT: 5432
           # Indicates if SSL is required for the database
-          SERVERPOD_DATABASE_REQUIRE_SSL: ${{ secrets.SERVERPOD_DATABASE_REQUIRE_SSL }}
+          # Set to false since it is behind the firewall and the database can
+          # only be accessed by utilizing the SSH tunnel
+          SERVERPOD_DATABASE_REQUIRE_SSL: false
           # Specifies if the database connection is a Unix socket
           SERVERPOD_DATABASE_IS_UNIX_SOCKET: ${{ secrets.SERVERPOD_DATABASE_IS_UNIX_SOCKET }}
           # Redis is not required for this setup
