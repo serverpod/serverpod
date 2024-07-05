@@ -76,6 +76,8 @@ jobs:
           push: true
           tags: ghcr.io/${{ env.GHCR_ORG }}/projectname_server:latest
           labels: ${{ steps.meta.outputs.labels }}
+          # This determines which hardware platforms the image will run on
+          # further details: https://docs.docker.com/build/building/multi-platform/
           platforms: linux/arm/v7, linux/arm64/v8
 
   deploy:
