@@ -28,7 +28,9 @@ services:
     labels:
       - "traefik.enable=false" # We typically don't expose databases externally via HTTP
     ports:
-      - "5432:5432" # You should have a firewall in place that DOES NOT allow acces from the internet on this port. However on the host machine, we need access to it.
+      # You should have a firewall in place that DOES NOT allow acces from the
+      # internet on this port. On the host machine, we need access to it.
+      - "5432:5432"
     environment:
       - POSTGRES_USER
       - POSTGRES_DB
@@ -67,11 +69,11 @@ services:
       - "traefik.http.routers.insights.tls.certresolver=myresolver"
       - "traefik.http.services.insights-service.loadbalancer.server.port=${SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT}"
 
-      - "traefik.http.routers.web.rule=Host(`web.examplepod.com`)"
+      - "traefik.http.routers.web.rule=Host=(`${SERVERPOD_WEB_SERVER_PUBLIC_HOST}`)"
       - "traefik.http.routers.web.entrypoints=websecure"
       - "traefik.http.routers.web.service=web-service"
       - "traefik.http.routers.web.tls.certresolver=myresolver"
-      - "traefik.http.services.web-service.loadbalancer.server.port=8082"
+      - "traefik.http.services.web-service.loadbalancer.server.port=${SERVERPOD_WEB_SERVER_PUBLIC_PORT}"
     depends_on:
       - postgres
     networks:
