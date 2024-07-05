@@ -23,6 +23,11 @@ services:
       - serverpod-network
 
   postgres:
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     restart: on-failure
     image: postgres:14.1
     labels:
@@ -75,7 +80,8 @@ services:
       - "traefik.http.routers.web.tls.certresolver=myresolver"
       - "traefik.http.services.web-service.loadbalancer.server.port=${SERVERPOD_WEB_SERVER_PUBLIC_PORT}"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - serverpod-network
 
