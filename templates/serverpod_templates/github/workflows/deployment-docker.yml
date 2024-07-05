@@ -155,7 +155,10 @@ jobs:
           # The public scheme (http/https) for the Web server
           SERVERPOD_WEB_SERVER_PUBLIC_SCHEME: "https"
           # The host address of the database
-          SERVERPOD_DATABASE_HOST: ${{ secrets.SERVERPOD_DATABASE_HOST }}
+          # This is hardcoded since the connection is done internally through
+          # the docker network. If you want to have access from the outside, you
+          # need to connect to your server with ssh
+          SERVERPOD_DATABASE_HOST: postgres
           # The port number for the database connection
           # If you need to change this port, you will also have to adjust
           # postgres configuration in the docker-compose.production.yaml file
