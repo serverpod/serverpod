@@ -1,0 +1,7 @@
+### A GeographyPoint is a point on the surface of the earth.
+class: GeographyPoint
+fields:
+  ### Longitude
+  longitude: double
+  ### Latitude
+  latitude: double
