@@ -147,6 +147,8 @@ class Protocol extends _i1.SerializationManager {
 
   @override
   String? getClassNameForObject(Object? data) {
+    String? dartTypeClassName = super.getClassNameForObject(data);
+    if (dartTypeClassName != null) return dartTypeClassName;
     String? className;
     className = _i14.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -185,7 +187,7 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i12.ChatRequestMessageChunk?) {
       return 'ChatRequestMessageChunk';
     }
-    return super.getClassNameForObject(data);
+    return null;
   }
 
   @override

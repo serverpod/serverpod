@@ -45,10 +45,12 @@ class Protocol extends _i1.SerializationManagerServer {
 
   @override
   String? getClassNameForObject(Object? data) {
+    String? dartTypeClassName = super.getClassNameForObject(data);
+    if (dartTypeClassName != null) return dartTypeClassName;
     if (data is _i3.Example?) {
       return 'Example';
     }
-    return super.getClassNameForObject(data);
+    return null;
   }
 
   @override
