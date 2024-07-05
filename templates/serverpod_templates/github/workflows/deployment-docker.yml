@@ -129,7 +129,7 @@ jobs:
           # The public port number for the Insights server
           SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT: ${{ secrets.SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT }}
           # The public scheme (http/https) for the Insights server
-          SERVERPOD_INSIGHTS_SERVER_PUBLIC_SCHEME: ${{ secrets.SERVERPOD_INSIGHTS_SERVER_PUBLIC_SCHEME }}
+          SERVERPOD_INSIGHTS_SERVER_PUBLIC_SCHEME: "https"
           # TODO hardcode  The port number for the Web server
           SERVERPOD_WEB_SERVER_PORT: ${{ secrets.SERVERPOD_WEB_SERVER_PORT }}
           # The public host address of the Web server
@@ -137,7 +137,7 @@ jobs:
           # The public port number for the Web server
           SERVERPOD_WEB_SERVER_PUBLIC_PORT: ${{ secrets.SERVERPOD_WEB_SERVER_PUBLIC_PORT }}
           # The public scheme (http/https) for the Web server
-          SERVERPOD_WEB_SERVER_PUBLIC_SCHEME: ${{ secrets.SERVERPOD_WEB_SERVER_PUBLIC_SCHEME }}
+          SERVERPOD_WEB_SERVER_PUBLIC_SCHEME: "https"
           # The host address of the database
           SERVERPOD_DATABASE_HOST: ${{ secrets.SERVERPOD_DATABASE_HOST }}
           # TODO hardcode The port number for the database connection
