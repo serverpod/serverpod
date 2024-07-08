@@ -26,6 +26,9 @@ class Keyword {
   static const String scope = 'scope';
   static const String persist = 'persist';
 
+  // POSTGIS extensions
+  static const String geographyPoint = 'geographyPoint';
+
   /// Special keyword to allow keys to be any string.
   static const String any = '#any';
 }

@@ -85,6 +85,15 @@ class SerializableModelAnalyzer {
           documentContents,
           docsExtractor,
         );
+      case Keyword.geographyPoint:
+        return ModelParser.serializeGeography(
+          Keyword.geographyPoint,
+          modelSource,
+          outFileName,
+          documentContents,
+          docsExtractor,
+          extraClasses,
+        );
       default:
         return null;
     }
