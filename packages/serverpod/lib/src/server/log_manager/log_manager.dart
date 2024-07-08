@@ -105,9 +105,8 @@ class LogManager {
       session.sessionLogId! >= 0;
 
   /// Logs an entry, depending on the session type it will be logged directly
-  /// to the database or stored in the temporary cache until the session is
-  /// closed. Call [shouldLogEntry] to check if the entry should be logged
-  /// before calling this method. This method can be called asynchronously.
+  /// or stored in the temporary cache until the session is closed.
+  /// This method can be called asynchronously.
   @internal
   Future<void> logEntry(
     Session session, {
@@ -150,9 +149,8 @@ class LogManager {
   }
 
   /// Logs a query, depending on the session type it will be logged directly
-  /// to the database or stored in the temporary cache until the session is
-  /// closed. Call [_shouldLogQuery] to check if the entry should be logged
-  /// before calling this method. This method can be called asynchronously.
+  /// or stored in the temporary cache until the session is closed.
+  /// This method can be called asynchronously.
   @internal
   Future<void> logQuery(
     Session session, {
@@ -198,10 +196,8 @@ class LogManager {
   }
 
   /// Logs a message from a stream, depending on the session type it will be
-  /// logged directly to the database or stored in the temporary cache until the
-  /// session is closed. Call [shouldLogMessage] to check if the entry should be
-  /// logged before calling this method. This method can be called
-  /// asynchronously.
+  /// logged directly or stored in the temporary cache until the session is
+  /// closed. This method can be called asynchronously.
   @internal
   Future<void> logMessage(
     Session session, {
