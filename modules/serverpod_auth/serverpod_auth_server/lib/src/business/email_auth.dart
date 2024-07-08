@@ -14,7 +14,6 @@ class Emails {
   /// can safely be stored in the database without the risk of exposing
   /// passwords.
   static Future<String> generatePasswordHash(String password) async =>
-      AuthConfig.current.generatePasswordHashCallback?.call(password) ??
       PasswordHash.argon2id(
         password,
         pepper: EmailSecrets.pepper,
@@ -38,10 +37,6 @@ class Emails {
         onValidationFailure,
     void Function(Object e)? onError,
   }) async {
-    if (AuthConfig.current.validatePasswordHashCallback != null) {
-      return AuthConfig.current.validatePasswordHashCallback!
-          .call(password, hash);
-    }
     try {
       return await PasswordHash(
         hash,

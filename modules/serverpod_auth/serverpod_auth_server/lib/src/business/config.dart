@@ -35,11 +35,14 @@ typedef SendValidationEmailCallback = Future<bool> Function(
     Session session, String email, String validationCode);
 
 /// Callback for generation of the hash password
-typedef GeneratePasswordHashCallback = Future<String> Function(String password);
+typedef PasswordHashGenerator = Future<String> Function(String password);
 
-/// Callback to validate the hash used by [GeneratePasswordHashCallback]
-typedef ValidatePasswordHashCallback = Future<bool> Function(
-    String password, String hash);
+/// Callback to validate the hash used by [PasswordHashGenerator]
+typedef PasswordHashValidator = Future<bool> Function(
+  String password,
+  String email,
+  String hash,
+);
 
 /// Configuration options for the Auth module.
 class AuthConfig {
@@ -146,10 +149,10 @@ class AuthConfig {
   final bool allowUnsecureRandom;
 
   /// Create a custom hash for the password
-  final GeneratePasswordHashCallback? generatePasswordHashCallback;
+  final PasswordHashGenerator passwordHashGenerator;
 
-  /// Create a custom validation for the password in combinaison with [GeneratePasswordHashCallback]
-  final ValidatePasswordHashCallback? validatePasswordHashCallback;
+  /// Create a custom validation for the password in combinaison with [PasswordHashGenerator]
+  final PasswordHashValidator passwordHashValidator;
 
   /// Creates a new Auth configuration. Use the [set] method to replace the
   /// default settings. Defaults to `config/firebase_service_account_key.json`.
@@ -181,8 +184,8 @@ class AuthConfig {
     this.maxPasswordLength = 128,
     this.minPasswordLength = 8,
     this.allowUnsecureRandom = false,
-    this.generatePasswordHashCallback,
-    this.validatePasswordHashCallback,
+    this.passwordHashGenerator = Emails.generatePasswordHash,
+    this.passwordHashValidator = Emails.validatePasswordHash,
   }) {
     if (validationCodeLength < 8) {
       stderr.writeln(
