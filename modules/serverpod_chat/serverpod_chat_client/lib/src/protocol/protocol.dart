@@ -147,6 +147,7 @@ class Protocol extends _i1.SerializationManager {
 
   @override
   String? getClassNameForObject(Object? data) {
+    if (data == null) return 'null';
     String? dartTypeClassName = super.getClassNameForObject(data);
     if (dartTypeClassName != null) return dartTypeClassName;
     String? className;
@@ -154,37 +155,37 @@ class Protocol extends _i1.SerializationManager {
     if (className != null) {
       return 'serverpod_auth.$className';
     }
-    if (data is _i2.ChatJoinChannel?) {
+    if (data is _i2.ChatJoinChannel) {
       return 'ChatJoinChannel';
     }
-    if (data is _i3.ChatJoinChannelFailed?) {
+    if (data is _i3.ChatJoinChannelFailed) {
       return 'ChatJoinChannelFailed';
     }
-    if (data is _i4.ChatJoinedChannel?) {
+    if (data is _i4.ChatJoinedChannel) {
       return 'ChatJoinedChannel';
     }
-    if (data is _i5.ChatLeaveChannel?) {
+    if (data is _i5.ChatLeaveChannel) {
       return 'ChatLeaveChannel';
     }
-    if (data is _i6.ChatMessage?) {
+    if (data is _i6.ChatMessage) {
       return 'ChatMessage';
     }
-    if (data is _i7.ChatMessageAttachment?) {
+    if (data is _i7.ChatMessageAttachment) {
       return 'ChatMessageAttachment';
     }
-    if (data is _i8.ChatMessageAttachmentUploadDescription?) {
+    if (data is _i8.ChatMessageAttachmentUploadDescription) {
       return 'ChatMessageAttachmentUploadDescription';
     }
-    if (data is _i9.ChatMessageChunk?) {
+    if (data is _i9.ChatMessageChunk) {
       return 'ChatMessageChunk';
     }
-    if (data is _i10.ChatMessagePost?) {
+    if (data is _i10.ChatMessagePost) {
       return 'ChatMessagePost';
     }
-    if (data is _i11.ChatReadMessage?) {
+    if (data is _i11.ChatReadMessage) {
       return 'ChatReadMessage';
     }
-    if (data is _i12.ChatRequestMessageChunk?) {
+    if (data is _i12.ChatRequestMessageChunk) {
       return 'ChatRequestMessageChunk';
     }
     return null;
@@ -192,6 +193,7 @@ class Protocol extends _i1.SerializationManager {
 
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
+    if (data['className'] == 'null') return null;
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
       return _i14.Protocol().deserializeByClassName(data);

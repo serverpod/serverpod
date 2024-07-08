@@ -1514,6 +1514,7 @@ class Protocol extends _i1.SerializationManager {
 
   @override
   String? getClassNameForObject(Object? data) {
+    if (data == null) return 'null';
     String? dartTypeClassName = super.getClassNameForObject(data);
     if (dartTypeClassName != null) return dartTypeClassName;
     String? className;
@@ -1525,223 +1526,223 @@ class Protocol extends _i1.SerializationManager {
     if (className != null) {
       return 'serverpod_test_module.$className';
     }
-    if (data is _i75.CustomClass?) {
+    if (data is _i75.CustomClass) {
       return 'CustomClass';
     }
-    if (data is _i75.CustomClass2?) {
+    if (data is _i75.CustomClass2) {
       return 'CustomClass2';
     }
-    if (data is _i76.ProtocolCustomClass?) {
+    if (data is _i76.ProtocolCustomClass) {
       return 'ProtocolCustomClass';
     }
-    if (data is _i77.ExternalCustomClass?) {
+    if (data is _i77.ExternalCustomClass) {
       return 'ExternalCustomClass';
     }
-    if (data is _i77.FreezedCustomClass?) {
+    if (data is _i77.FreezedCustomClass) {
       return 'FreezedCustomClass';
     }
-    if (data is _i2.EmptyModelRelationItem?) {
+    if (data is _i2.EmptyModelRelationItem) {
       return 'EmptyModelRelationItem';
     }
-    if (data is _i3.EmptyModel?) {
+    if (data is _i3.EmptyModel) {
       return 'EmptyModel';
     }
-    if (data is _i4.ExceptionWithData?) {
+    if (data is _i4.ExceptionWithData) {
       return 'ExceptionWithData';
     }
-    if (data is _i5.CityWithLongTableName?) {
+    if (data is _i5.CityWithLongTableName) {
       return 'CityWithLongTableName';
     }
-    if (data is _i6.OrganizationWithLongTableName?) {
+    if (data is _i6.OrganizationWithLongTableName) {
       return 'OrganizationWithLongTableName';
     }
-    if (data is _i7.PersonWithLongTableName?) {
+    if (data is _i7.PersonWithLongTableName) {
       return 'PersonWithLongTableName';
     }
-    if (data is _i8.MaxFieldName?) {
+    if (data is _i8.MaxFieldName) {
       return 'MaxFieldName';
     }
-    if (data is _i9.LongImplicitIdField?) {
+    if (data is _i9.LongImplicitIdField) {
       return 'LongImplicitIdField';
     }
-    if (data is _i10.LongImplicitIdFieldCollection?) {
+    if (data is _i10.LongImplicitIdFieldCollection) {
       return 'LongImplicitIdFieldCollection';
     }
-    if (data is _i11.RelationToMultipleMaxFieldName?) {
+    if (data is _i11.RelationToMultipleMaxFieldName) {
       return 'RelationToMultipleMaxFieldName';
     }
-    if (data is _i12.UserNote?) {
+    if (data is _i12.UserNote) {
       return 'UserNote';
     }
-    if (data is _i13.UserNoteCollection?) {
+    if (data is _i13.UserNoteCollection) {
       return 'UserNoteCollection';
     }
-    if (data is _i14.UserNoteCollectionWithALongName?) {
+    if (data is _i14.UserNoteCollectionWithALongName) {
       return 'UserNoteCollectionWithALongName';
     }
-    if (data is _i15.UserNoteWithALongName?) {
+    if (data is _i15.UserNoteWithALongName) {
       return 'UserNoteWithALongName';
     }
-    if (data is _i16.MultipleMaxFieldName?) {
+    if (data is _i16.MultipleMaxFieldName) {
       return 'MultipleMaxFieldName';
     }
-    if (data is _i17.City?) {
+    if (data is _i17.City) {
       return 'City';
     }
-    if (data is _i18.Organization?) {
+    if (data is _i18.Organization) {
       return 'Organization';
     }
-    if (data is _i19.Person?) {
+    if (data is _i19.Person) {
       return 'Person';
     }
-    if (data is _i20.Course?) {
+    if (data is _i20.Course) {
       return 'Course';
     }
-    if (data is _i21.Enrollment?) {
+    if (data is _i21.Enrollment) {
       return 'Enrollment';
     }
-    if (data is _i22.Student?) {
+    if (data is _i22.Student) {
       return 'Student';
     }
-    if (data is _i23.ObjectUser?) {
+    if (data is _i23.ObjectUser) {
       return 'ObjectUser';
     }
-    if (data is _i24.ParentUser?) {
+    if (data is _i24.ParentUser) {
       return 'ParentUser';
     }
-    if (data is _i25.Arena?) {
+    if (data is _i25.Arena) {
       return 'Arena';
     }
-    if (data is _i26.Player?) {
+    if (data is _i26.Player) {
       return 'Player';
     }
-    if (data is _i27.Team?) {
+    if (data is _i27.Team) {
       return 'Team';
     }
-    if (data is _i28.Comment?) {
+    if (data is _i28.Comment) {
       return 'Comment';
     }
-    if (data is _i29.Customer?) {
+    if (data is _i29.Customer) {
       return 'Customer';
     }
-    if (data is _i30.Order?) {
+    if (data is _i30.Order) {
       return 'Order';
     }
-    if (data is _i31.Address?) {
+    if (data is _i31.Address) {
       return 'Address';
     }
-    if (data is _i32.Citizen?) {
+    if (data is _i32.Citizen) {
       return 'Citizen';
     }
-    if (data is _i33.Company?) {
+    if (data is _i33.Company) {
       return 'Company';
     }
-    if (data is _i34.Town?) {
+    if (data is _i34.Town) {
       return 'Town';
     }
-    if (data is _i35.Blocking?) {
+    if (data is _i35.Blocking) {
       return 'Blocking';
     }
-    if (data is _i36.Member?) {
+    if (data is _i36.Member) {
       return 'Member';
     }
-    if (data is _i37.Cat?) {
+    if (data is _i37.Cat) {
       return 'Cat';
     }
-    if (data is _i38.Post?) {
+    if (data is _i38.Post) {
       return 'Post';
     }
-    if (data is _i39.ModuleDatatype?) {
+    if (data is _i39.ModuleDatatype) {
       return 'ModuleDatatype';
     }
-    if (data is _i40.Nullability?) {
+    if (data is _i40.Nullability) {
       return 'Nullability';
     }
-    if (data is _i41.ObjectFieldScopes?) {
+    if (data is _i41.ObjectFieldScopes) {
       return 'ObjectFieldScopes';
     }
-    if (data is _i42.ObjectWithByteData?) {
+    if (data is _i42.ObjectWithByteData) {
       return 'ObjectWithByteData';
     }
-    if (data is _i43.ObjectWithDuration?) {
+    if (data is _i43.ObjectWithDuration) {
       return 'ObjectWithDuration';
     }
-    if (data is _i44.ObjectWithEnum?) {
+    if (data is _i44.ObjectWithEnum) {
       return 'ObjectWithEnum';
     }
-    if (data is _i45.ObjectWithIndex?) {
+    if (data is _i45.ObjectWithIndex) {
       return 'ObjectWithIndex';
     }
-    if (data is _i46.ObjectWithMaps?) {
+    if (data is _i46.ObjectWithMaps) {
       return 'ObjectWithMaps';
     }
-    if (data is _i47.ObjectWithObject?) {
+    if (data is _i47.ObjectWithObject) {
       return 'ObjectWithObject';
     }
-    if (data is _i48.ObjectWithParent?) {
+    if (data is _i48.ObjectWithParent) {
       return 'ObjectWithParent';
     }
-    if (data is _i49.ObjectWithSelfParent?) {
+    if (data is _i49.ObjectWithSelfParent) {
       return 'ObjectWithSelfParent';
     }
-    if (data is _i50.ObjectWithUuid?) {
+    if (data is _i50.ObjectWithUuid) {
       return 'ObjectWithUuid';
     }
-    if (data is _i51.RelatedUniqueData?) {
+    if (data is _i51.RelatedUniqueData) {
       return 'RelatedUniqueData';
     }
-    if (data is _i52.ScopeNoneFields?) {
+    if (data is _i52.ScopeNoneFields) {
       return 'ScopeNoneFields';
     }
-    if (data is _i53.ScopeServerOnlyField?) {
+    if (data is _i53.ScopeServerOnlyField) {
       return 'ScopeServerOnlyField';
     }
-    if (data is _i54.DefaultServerOnlyClass?) {
+    if (data is _i54.DefaultServerOnlyClass) {
       return 'DefaultServerOnlyClass';
     }
-    if (data is _i55.DefaultServerOnlyEnum?) {
+    if (data is _i55.DefaultServerOnlyEnum) {
       return 'DefaultServerOnlyEnum';
     }
-    if (data is _i56.NotServerOnlyClass?) {
+    if (data is _i56.NotServerOnlyClass) {
       return 'NotServerOnlyClass';
     }
-    if (data is _i57.NotServerOnlyEnum?) {
+    if (data is _i57.NotServerOnlyEnum) {
       return 'NotServerOnlyEnum';
     }
-    if (data is _i58.ServerOnlyClassField?) {
+    if (data is _i58.ServerOnlyClassField) {
       return 'ServerOnlyClassField';
     }
-    if (data is _i59.SimpleData?) {
+    if (data is _i59.SimpleData) {
       return 'SimpleData';
     }
-    if (data is _i60.SimpleDataList?) {
+    if (data is _i60.SimpleDataList) {
       return 'SimpleDataList';
     }
-    if (data is _i61.SimpleDataMap?) {
+    if (data is _i61.SimpleDataMap) {
       return 'SimpleDataMap';
     }
-    if (data is _i62.SimpleDataObject?) {
+    if (data is _i62.SimpleDataObject) {
       return 'SimpleDataObject';
     }
-    if (data is _i63.SimpleDateTime?) {
+    if (data is _i63.SimpleDateTime) {
       return 'SimpleDateTime';
     }
-    if (data is _i64.TestEnum?) {
+    if (data is _i64.TestEnum) {
       return 'TestEnum';
     }
-    if (data is _i65.TestEnumStringified?) {
+    if (data is _i65.TestEnumStringified) {
       return 'TestEnumStringified';
     }
-    if (data is _i66.Types?) {
+    if (data is _i66.Types) {
       return 'Types';
     }
-    if (data is _i67.TypesList?) {
+    if (data is _i67.TypesList) {
       return 'TypesList';
     }
-    if (data is _i68.TypesMap?) {
+    if (data is _i68.TypesMap) {
       return 'TypesMap';
     }
-    if (data is _i69.UniqueData?) {
+    if (data is _i69.UniqueData) {
       return 'UniqueData';
     }
     return null;
@@ -1749,6 +1750,7 @@ class Protocol extends _i1.SerializationManager {
 
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
+    if (data['className'] == 'null') return null;
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
       return _i78.Protocol().deserializeByClassName(data);

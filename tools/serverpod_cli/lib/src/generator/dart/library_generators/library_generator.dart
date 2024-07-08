@@ -177,6 +177,7 @@ class LibraryGenerator {
           ..name = 'data'
           ..type = refer('Object?')))
         ..body = Block.of([
+          const Code('if(data == null) return \'null\';'),
           const Code(
             'String? dartTypeClassName = super.getClassNameForObject(data);'
             'if(dartTypeClassName != null) return dartTypeClassName;',
@@ -191,10 +192,10 @@ class LibraryGenerator {
             ]),
           for (var extraClass in config.extraClasses)
             Code.scope((a) =>
-                'if(data is ${a(extraClass.reference(serverCode, config: config))}?) {return \'${extraClass.className}\';}'),
+                'if(data is ${a(extraClass.reference(serverCode, config: config))}) {return \'${extraClass.className}\';}'),
           for (var classInfo in models)
             Code.scope((a) =>
-                'if(data is ${a(refer(classInfo.className, classInfo.fileRef()))}?) {return \'${classInfo.className}\';}'),
+                'if(data is ${a(refer(classInfo.className, classInfo.fileRef()))}) {return \'${classInfo.className}\';}'),
           const Code('return null;'),
         ])),
       Method((m) => m
@@ -205,6 +206,7 @@ class LibraryGenerator {
           ..name = 'data'
           ..type = refer('Map<String,dynamic>')))
         ..body = Block.of([
+          const Code('if(data[\'className\'] == \'null\') return null;'),
           for (var module in config.modules)
             Block.of([
               Code('if(data[\'className\'].startsWith(\'${module.name}.\')){'

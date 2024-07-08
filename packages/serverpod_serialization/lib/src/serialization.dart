@@ -128,21 +128,23 @@ abstract class SerializationManager {
 
   /// Get the className for the provided object.
   String? getClassNameForObject(Object? data) {
-    if (data is int?) {
+    if (data == null) return 'null';
+
+    if (data is int) {
       return 'int';
-    } else if (data is double?) {
+    } else if (data is double) {
       return 'double';
-    } else if (data is String?) {
+    } else if (data is String) {
       return 'String';
-    } else if (data is bool?) {
+    } else if (data is bool) {
       return 'bool';
-    } else if (data is DateTime?) {
+    } else if (data is DateTime) {
       return 'DateTime';
-    } else if (data is ByteData?) {
+    } else if (data is ByteData) {
       return 'ByteData';
-    } else if (data is Duration?) {
+    } else if (data is Duration) {
       return 'Duration';
-    } else if (data is UuidValue?) {
+    } else if (data is UuidValue) {
       return 'UuidValue';
     }
     return null;
@@ -151,6 +153,7 @@ abstract class SerializationManager {
   /// Deserialize the provided json [data] by using the className stored in the [data].
   dynamic deserializeByClassName(Map<String, dynamic> data) {
     var className = data['className'];
+    if (className == 'null') return null;
     switch (className) {
       case 'int':
         return deserialize<int>(data['data']);
