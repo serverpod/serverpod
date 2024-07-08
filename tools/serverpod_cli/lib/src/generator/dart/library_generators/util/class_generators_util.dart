@@ -130,6 +130,7 @@ Expression _buildFromJson(
     case ValueType.dateTime:
     case ValueType.duration:
     case ValueType.byteData:
+    case ValueType.geographyPoint:
     case ValueType.uuidValue:
       return _buildComplexTypeFromJson(
         type,

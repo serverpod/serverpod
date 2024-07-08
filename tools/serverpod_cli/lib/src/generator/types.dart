@@ -238,7 +238,7 @@ class TypeDefinition {
     if (className == 'ByteData') return 'bytea';
     if (className == 'Duration') return 'bigint';
     if (className == 'UuidValue') return 'uuid';
-    if (className == 'GeographyPoint') return 'GeographyPoint';
+    if (className == 'geograhyPoint') return 'point';
 
     return 'json';
   }
@@ -261,7 +261,7 @@ class TypeDefinition {
     if (className == 'ByteData') return 'ColumnByteData';
     if (className == 'Duration') return 'ColumnDuration';
     if (className == 'UuidValue') return 'ColumnUuid';
-    if (className == 'GeographyPoint') return 'ColumnGeographyPoint';
+    if (className == 'geograhyPoint') return 'ColumnGeographyPoint';
 
     return 'ColumnSerializable';
   }
@@ -433,6 +433,8 @@ class TypeDefinition {
     if (className == 'List') return ValueType.list;
     if (className == 'Set') return ValueType.set;
     if (className == 'Map') return ValueType.map;
+    if (className == 'GeographyPoint') return ValueType.geographyPoint;
+
     if (isEnumType) return ValueType.isEnum;
     return ValueType.classType;
   }
@@ -522,4 +524,5 @@ enum ValueType {
   map,
   isEnum,
   classType,
+  geographyPoint,
 }

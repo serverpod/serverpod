@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Represents a chat channel.
 abstract class Channel extends _i1.TableRow
@@ -74,7 +75,7 @@ abstract class Channel extends _i1.TableRow
       if (id != null) 'id': id,
       'name': name,
       'channel': channel,
-      'point': point.toJsonForProtocol(),
+      'point': point.toJson(),
     };
   }
 

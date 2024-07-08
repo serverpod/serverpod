@@ -7,4 +7,5 @@ fields:
 
   ### The id of the channel.
   channel: String
+
   point: geographyPoint

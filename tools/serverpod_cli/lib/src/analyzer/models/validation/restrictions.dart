@@ -1153,20 +1153,10 @@ class Restrictions {
     return type.startsWith('package:') || type.startsWith('project:');
   }
 
-  bool _isValidType(TypeDefinition type) {
-    var isWhiteListedTypesValid = whiteListedTypes.contains(type.className);
-    var isModelTypeValid = _isModelType(type);
-    var isCustomTypeValid = _isCustomType(type);
-
-    print('--------------------');
-    print(type.className);
-    print(type.valueType);
-    print(isWhiteListedTypesValid);
-    print(isModelTypeValid);
-    print(isCustomTypeValid);
-    print('--------------------');
-    return isWhiteListedTypesValid || isModelTypeValid || isCustomTypeValid;
-  }
+  bool _isValidType(TypeDefinition type) =>
+      whiteListedTypes.contains(type.className) ||
+      _isModelType(type) ||
+      _isCustomType(type);
 
   bool _isUnsupportedType(TypeDefinition type) {
     return blackListedTypes.contains(type.className);

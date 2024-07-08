@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/generated/database/geography_point.dart';
 
 /// A function that returns a [Column] for a [Table].
 typedef ColumnSelections<T extends Table> = List<Column> Function(T);
@@ -58,11 +57,19 @@ class ColumnGeographyPoint extends _ValueOperatorColumn<GeographyPoint>
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnGeographyPoint(super.columnName, super.table);
 
-  // Expression distanceFrom(GeographyPoint point,
-  //         [double? distanceWithinMeters]) =>
-  //     _GeographyDistanceColumnExpression(this, point, distanceWithinMeters);
+  /// If [distanceWithinMeters] it not null using ST_DWithin if not using ST_Distance
+  /// Using SRID 4326
+  /// Ref:
+  ///      - https://postgis.net/docs/ST_Distance.html
+  ///      - https://postgis.net/docs/ST_DWithin.html
+  Expression distanceFrom(
+    GeographyPoint p, [
+    double? distanceWithinMeters,
+  ]) =>
+      _GeographyDistanceColumnExpression(this, p, distanceWithinMeters);
 
-  Expression intersect(
+  /// Ref: https://postgis.net/docs/ST_Intersects.html
+  Expression intersects(
     GeographyPoint p1,
   ) =>
       _GeographyIntersectColumnExpression(this, p1);
@@ -682,8 +689,11 @@ class _GeographyDistanceColumnExpression<T> extends ColumnExpression<T> {
   final GeographyPoint point;
   final double? distanceWithinMeters;
 
-  _GeographyDistanceColumnExpression(super.column, this.point,
-      [this.distanceWithinMeters]);
+  _GeographyDistanceColumnExpression(
+    super.column,
+    this.point, [
+    this.distanceWithinMeters,
+  ]);
 
   @override
   List<Column> get columns => [...super.columns];
