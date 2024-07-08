@@ -55,18 +55,14 @@ void main() {
     },
   );
 
-  group('Given a user object,', () {
-    late _User user;
-
-    setUp(() {
-      user = _User(name: 'John', password: '123');
-    });
+  group('Given user object with server only password field,', () {
+    _User user = _User(name: 'John', password: '123');
 
     test(
       'when encoded using encodeForProtocol method, then password is excluded from the output',
       () {
         var stringifiedJson = SerializationManager.encodeForProtocol(user);
-        expect(stringifiedJson.contains('password'), isFalse);
+        expect(stringifiedJson, isNot(contains('password')));
       },
     );
 
@@ -75,19 +71,27 @@ void main() {
       () {
         var userList = [user];
         var stringifiedJson = SerializationManager.encodeForProtocol(userList);
-        expect(stringifiedJson.contains('password'), isFalse);
+        expect(stringifiedJson, isNot(contains('password')));
       },
     );
 
     test(
-      'when a map containing user objects is encoded using encodeForProtocol method, then passwords are excluded from the output',
+      'when a map containing a user object is encoded using encodeForProtocol method, then password is excluded from the output',
+      () {
+        var userMap = {'user': user};
+        var stringifiedJson = SerializationManager.encodeForProtocol(userMap);
+        expect(stringifiedJson, isNot(contains('password')));
+      },
+    );
+
+    test(
+      'when a map containing a list of user objects is encoded using encodeForProtocol method, then passwords are excluded from the output',
       () {
         var userMap = {
-          'user': user,
           'users': [user]
         };
         var stringifiedJson = SerializationManager.encodeForProtocol(userMap);
-        expect(stringifiedJson.contains('password'), isFalse);
+        expect(stringifiedJson, isNot(contains('password')));
       },
     );
   });
@@ -118,46 +122,8 @@ void main() {
     );
   });
 
-  group('Given a list of complex objects,', () {
-    late _User user;
-
-    setUp(() {
-      user = _User(name: 'John', password: '123');
-    });
-
-    test(
-      'when encoded using encodeForProtocol method, then passwords are excluded from the output',
-      () {
-        var list = [user, user];
-        var stringifiedJson = SerializationManager.encodeForProtocol(list);
-        expect(stringifiedJson.contains('password'), isFalse);
-      },
-    );
-  });
-
-  group('Given a map of complex objects,', () {
-    late _User user;
-
-    setUp(() {
-      user = _User(name: 'John', password: '123');
-    });
-
-    test(
-      'when encoded using encodeForProtocol method, then passwords are excluded from the output',
-      () {
-        var map = {'user1': user, 'user2': user};
-        var stringifiedJson = SerializationManager.encodeForProtocol(map);
-        expect(stringifiedJson.contains('password'), isFalse);
-      },
-    );
-  });
-
   group('Given a map with complex nested structures,', () {
-    late _User user;
-
-    setUp(() {
-      user = _User(name: 'John', password: '123');
-    });
+    _User user = _User(name: 'John', password: '123');
 
     test(
       'when encoded using encodeForProtocol method, then passwords are excluded from the output',
@@ -170,7 +136,28 @@ void main() {
           },
         };
         var stringifiedJson = SerializationManager.encodeForProtocol(map);
-        expect(stringifiedJson.contains('password'), isFalse);
+        expect(stringifiedJson, isNot(contains('password')));
+      },
+    );
+  });
+
+  group('Given a list with complex nested structures,', () {
+    _User user = _User(name: 'John', password: '123');
+
+    test(
+      'when a list is the base type and contains maps with user objects, then passwords are excluded from the output',
+      () {
+        var list = [
+          {'user': user},
+          {
+            'nestedMap': {
+              'innerUser': user,
+              'innerList': [user]
+            }
+          }
+        ];
+        var stringifiedJson = SerializationManager.encodeForProtocol(list);
+        expect(stringifiedJson, isNot(contains('password')));
       },
     );
   });
