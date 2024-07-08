@@ -22,9 +22,6 @@ import '../cache/caches.dart';
 import '../generated/endpoints.dart' as internal;
 import '../generated/protocol.dart' as internal;
 
-/// The default server id if none is specified on startup.
-const defaultServerId = 'default';
-
 /// Performs a set of custom health checks on a [Serverpod].
 typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
   Serverpod pod,
