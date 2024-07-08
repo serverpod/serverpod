@@ -195,7 +195,7 @@ class Serverpod {
   /// Updates the runtime settings and writes the new settings to the database.
   Future<void> updateRuntimeSettings(internal.RuntimeSettings settings) async {
     _runtimeSettings = settings;
-    _logManager = LogManager(settings, _logWriter);
+    _logManager = LogManager(settings, _logWriter, serverId: serverId);
     if (Features.enablePersistentLogging) {
       await _storeRuntimeSettings(settings);
     }
@@ -215,7 +215,7 @@ class Serverpod {
       var settings = await internal.RuntimeSettings.db.findFirstRow(session);
       if (settings != null) {
         _runtimeSettings = settings;
-        _logManager = LogManager(settings, _logWriter);
+        _logManager = LogManager(settings, _logWriter, serverId: serverId);
       }
       await session.close();
     } catch (e, stackTrace) {
@@ -312,7 +312,11 @@ class Serverpod {
 
     // Create a temporary log manager with default settings, until we have
     // loaded settings from the database.
-    _logManager = LogManager(_defaultRuntimeSettings, _logWriter);
+    _logManager = LogManager(
+      _defaultRuntimeSettings,
+      _logWriter,
+      serverId: serverId,
+    );
 
     // Setup database
     var databaseConfiguration = this.config.database;
@@ -440,6 +444,7 @@ class Serverpod {
       _logManager = LogManager(
         _runtimeSettings ?? _defaultRuntimeSettings,
         _logWriter,
+        serverId: serverId,
       );
 
       // Connect to Redis
