@@ -8,17 +8,43 @@ import 'package:serverpod_auth_server/src/business/password_hash.dart';
 import 'package:serverpod_auth_server/src/business/user_authentication.dart';
 import 'package:serverpod_auth_server/src/business/user_images.dart';
 
+/// The default generate password hash, using argon2id.
+Future<String> defaultGeneratePasswordHash(String password) =>
+    PasswordHash.argon2id(
+      password,
+      pepper: EmailSecrets.pepper,
+      allowUnsecureRandom: AuthConfig.current.allowUnsecureRandom,
+    );
+
+/// The default validation password hash.
+Future<bool> defaultValidatePasswordHash(
+  String password,
+  String email,
+  String hash, {
+  void Function({required String passwordHash, required String storedHash})?
+      onValidationFailure,
+  void Function(Object e)? onError,
+}) async {
+  try {
+    return await PasswordHash(
+      hash,
+      legacySalt: EmailSecrets.legacySalt,
+      legacyEmail: AuthConfig.current.extraSaltyHash ? email : null,
+      pepper: EmailSecrets.pepper,
+    ).validate(password, onValidationFailure: onValidationFailure);
+  } catch (e) {
+    onError?.call(e);
+    return false;
+  }
+}
+
 /// Collection of utility methods when working with email authentication.
 class Emails {
   /// Generates a password hash from a users password and email. This value
   /// can safely be stored in the database without the risk of exposing
   /// passwords.
   static Future<String> generatePasswordHash(String password) async =>
-      PasswordHash.argon2id(
-        password,
-        pepper: EmailSecrets.pepper,
-        allowUnsecureRandom: AuthConfig.current.allowUnsecureRandom,
-      );
+      AuthConfig.current.passwordHashGenerator(password);
 
   /// Generates a password hash from the password using the provided hash
   /// algorithm and validates that they match.
@@ -36,19 +62,8 @@ class Emails {
     void Function({required String passwordHash, required String storedHash})?
         onValidationFailure,
     void Function(Object e)? onError,
-  }) async {
-    try {
-      return await PasswordHash(
-        hash,
-        legacySalt: EmailSecrets.legacySalt,
-        legacyEmail: AuthConfig.current.extraSaltyHash ? email : null,
-        pepper: EmailSecrets.pepper,
-      ).validate(password, onValidationFailure: onValidationFailure);
-    } catch (e) {
-      onError?.call(e);
-      return false;
-    }
-  }
+  }) =>
+      AuthConfig.current.passwordHashValidator(password, email, hash);
 
   /// Migrates an EmailAuth entry if required.
   ///

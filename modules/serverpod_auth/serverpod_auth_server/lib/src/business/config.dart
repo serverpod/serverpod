@@ -41,8 +41,11 @@ typedef PasswordHashGenerator = Future<String> Function(String password);
 typedef PasswordHashValidator = Future<bool> Function(
   String password,
   String email,
-  String hash,
-);
+  String hash, {
+  void Function({required String passwordHash, required String storedHash})?
+      onValidationFailure,
+  void Function(Object e)? onError,
+});
 
 /// Configuration options for the Auth module.
 class AuthConfig {
@@ -184,8 +187,8 @@ class AuthConfig {
     this.maxPasswordLength = 128,
     this.minPasswordLength = 8,
     this.allowUnsecureRandom = false,
-    this.passwordHashGenerator = Emails.generatePasswordHash,
-    this.passwordHashValidator = Emails.validatePasswordHash,
+    this.passwordHashGenerator = defaultGeneratePasswordHash,
+    this.passwordHashValidator = defaultValidatePasswordHash,
   }) {
     if (validationCodeLength < 8) {
       stderr.writeln(
