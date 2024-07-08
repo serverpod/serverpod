@@ -8,6 +8,8 @@ import 'package:synchronized/synchronized.dart';
 import '../../../server.dart';
 import '../../generated/protocol.dart';
 
+const double _microNormalizer = 1000 * 1000;
+
 /// The [LogManager] handles logging and logging settings. Typically only used
 /// internally by Serverpod.
 class LogManager {
@@ -160,7 +162,7 @@ class LogManager {
     required String? error,
     required StackTrace stackTrace,
   }) async {
-    var executionTime = duration.inMicroseconds / (1000 * 1000.0);
+    var executionTime = duration.inMicroseconds / _microNormalizer;
 
     var logSettings = settings.getLogSettingsForSession(session);
 
@@ -208,7 +210,7 @@ class LogManager {
     required String? error,
     required StackTrace? stackTrace,
   }) async {
-    var executionTime = duration.inMicroseconds / (1000 * 1000.0);
+    var executionTime = duration.inMicroseconds / _microNormalizer;
 
     var slow = executionTime >=
         settings.getLogSettingsForSession(session).slowSessionDuration;
