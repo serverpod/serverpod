@@ -16,7 +16,7 @@ void main() {
   );
 
   group(
-      'Given an empty database and new protocol model with table and fields with "default" value',
+      'Given an empty database and new protocol model with table and fields with "defaultModel" value',
       () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
@@ -26,7 +26,7 @@ void main() {
     });
 
     test(
-        'when creating and applying migration, then the database contains the new table with the correct "default" value for "dateTimeDefaultNow".',
+        'when creating and applying migration, then the database does not contain default values for "dateTimeDefaultNow" with "defaultModel".',
         () async {
       var tableName = 'migrated_table';
       var tag = 'add-table';
@@ -35,7 +35,7 @@ void main() {
         class: MigratedTable
         table: $tableName 
         fields:
-          dateTimeDefaultNow: DateTime, default=now
+          dateTimeDefaultNow: DateTime, defaultModel=now
         '''
       };
 
@@ -83,13 +83,13 @@ void main() {
       var dateTimeDefaultNow = columns.last;
       expect(
         dateTimeDefaultNow.columnDefault,
-        'CURRENT_TIMESTAMP',
-        reason: 'Could not find "columnDefault" for "dateTimeDefaultNow"',
+        isNull,
+        reason: '"dateTimeDefaultNow" column should not have "columnDefault"',
       );
     });
 
     test(
-        'when creating and applying migration, then the database contains the new table with the correct "default" value for "dateTimeDefaultStr".',
+        'when creating and applying migration, then the database does not contain default values for "dateTimeDefaultStr" with "defaultModel".',
         () async {
       var tableName = 'migrated_table';
       var tag = 'add-table';
@@ -98,7 +98,7 @@ void main() {
         class: MigratedTable
         table: $tableName 
         fields:
-          dateTimeDefaultStr: DateTime, default=2024-05-24T22:00:00.000Z
+          dateTimeDefaultStr: DateTime, defaultModel=2024-05-24T22:00:00.000Z
         '''
       };
 
@@ -146,8 +146,8 @@ void main() {
       var dateTimeDefaultStr = columns.last;
       expect(
         dateTimeDefaultStr.columnDefault,
-        "'2024-05-24 22:00:00'::timestamp without time zone",
-        reason: 'Could not find "columnDefault" for "dateTimeDefaultStr"',
+        isNull,
+        reason: '"dateTimeDefaultStr" column should not have "columnDefault"',
       );
     });
   });

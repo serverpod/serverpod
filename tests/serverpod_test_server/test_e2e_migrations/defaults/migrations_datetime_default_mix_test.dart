@@ -16,7 +16,7 @@ void main() {
   );
 
   group(
-      'Given an empty database and new protocol model with table and fields with "default" value',
+      'Given an empty database and new protocol model with table and fields with "defaultModel" and "defaultPersist" value',
       () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
@@ -26,7 +26,7 @@ void main() {
     });
 
     test(
-        'when creating and applying migration, then the database contains the new table with the correct "default" value for "dateTimeDefaultNow".',
+        'when creating and applying migration, then the database contains the new table with the correct "defaultModel" and "defaultPersist" values for "dateTimeDefaultNow".',
         () async {
       var tableName = 'migrated_table';
       var tag = 'add-table';
@@ -35,7 +35,7 @@ void main() {
         class: MigratedTable
         table: $tableName 
         fields:
-          dateTimeDefaultNow: DateTime, default=now
+          dateTimeDefaultNow: DateTime, defaultModel=now, defaultPersist=now
         '''
       };
 
@@ -89,7 +89,7 @@ void main() {
     });
 
     test(
-        'when creating and applying migration, then the database contains the new table with the correct "default" value for "dateTimeDefaultStr".',
+        'when creating and applying migration, then the database contains the new table with the correct "defaultModel" and "defaultPersist" values for "dateTimeDefaultStr".',
         () async {
       var tableName = 'migrated_table';
       var tag = 'add-table';
@@ -98,7 +98,7 @@ void main() {
         class: MigratedTable
         table: $tableName 
         fields:
-          dateTimeDefaultStr: DateTime, default=2024-05-24T22:00:00.000Z
+          dateTimeDefaultStr: DateTime, defaultModel=2024-05-01T22:00:00.000Z, defaultPersist=2024-05-24T22:00:00.000Z
         '''
       };
 
