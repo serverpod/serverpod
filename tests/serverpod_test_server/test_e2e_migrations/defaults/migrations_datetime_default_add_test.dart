@@ -150,7 +150,6 @@ void main() {
         var createMigrationExitCode =
             await MigrationTestUtils.createMigrationFromProtocols(
           protocols: targetStateProtocols,
-          force: true,
           tag: 'modify-existing-column',
         );
 
