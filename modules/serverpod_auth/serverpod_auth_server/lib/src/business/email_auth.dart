@@ -9,6 +9,10 @@ import 'package:serverpod_auth_server/src/business/user_authentication.dart';
 import 'package:serverpod_auth_server/src/business/user_images.dart';
 
 /// The default generate password hash, using argon2id.
+///
+/// Warning: Using a custom hashing algorithm for passwords
+/// will permanently disrupt compatibility with Serverpod's
+/// validation and password hash migration.
 Future<String> defaultGeneratePasswordHash(String password) =>
     PasswordHash.argon2id(
       password,
@@ -17,12 +21,18 @@ Future<String> defaultGeneratePasswordHash(String password) =>
     );
 
 /// The default validation password hash.
+///
+/// Warning: Using a custom hashing algorithm for passwords
+/// will permanently disrupt compatibility with Serverpod's
+/// validation and password hash migration.
 Future<bool> defaultValidatePasswordHash(
   String password,
   String email,
   String hash, {
-  void Function({required String passwordHash, required String storedHash})?
-      onValidationFailure,
+  void Function({
+    required String passwordHash,
+    required String storedHash,
+  })? onValidationFailure,
   void Function(Object e)? onError,
 }) async {
   try {
@@ -44,7 +54,9 @@ class Emails {
   /// can safely be stored in the database without the risk of exposing
   /// passwords.
   static Future<String> generatePasswordHash(String password) async =>
-      AuthConfig.current.passwordHashGenerator(password);
+      AuthConfig.current.passwordHashGenerator(
+        password,
+      );
 
   /// Generates a password hash from the password using the provided hash
   /// algorithm and validates that they match.
@@ -59,11 +71,19 @@ class Emails {
     String password,
     String email,
     String hash, {
-    void Function({required String passwordHash, required String storedHash})?
-        onValidationFailure,
+    void Function({
+      required String passwordHash,
+      required String storedHash,
+    })? onValidationFailure,
     void Function(Object e)? onError,
   }) =>
-      AuthConfig.current.passwordHashValidator(password, email, hash);
+      AuthConfig.current.passwordHashValidator(
+        password,
+        email,
+        hash,
+        onError: onError,
+        onValidationFailure: onValidationFailure,
+      );
 
   /// Migrates an EmailAuth entry if required.
   ///
@@ -518,20 +538,24 @@ class Emails {
     session.log(' - password is correct, userId: ${entry.userId})',
         level: LogLevel.debug);
 
-    var migratedAuth = await Emails.tryMigrateAuthEntry(
-      password: password,
-      entry: entry,
-    );
-
-    if (migratedAuth != null) {
-      session.log(' - migrating authentication entry', level: LogLevel.debug);
-      try {
-        await EmailAuth.db.updateRow(session, migratedAuth);
-      } catch (e) {
-        session.log(
-          ' - failed to update migrated auth: $e',
-          level: LogLevel.error,
-        );
+    if (AuthConfig.current.passwordHashGenerator ==
+            defaultGeneratePasswordHash &&
+        AuthConfig.current.passwordHashValidator ==
+            defaultValidatePasswordHash) {
+      var migratedAuth = await Emails.tryMigrateAuthEntry(
+        password: password,
+        entry: entry,
+      );
+      if (migratedAuth != null) {
+        session.log(' - migrating authentication entry', level: LogLevel.debug);
+        try {
+          await EmailAuth.db.updateRow(session, migratedAuth);
+        } catch (e) {
+          session.log(
+            ' - failed to update migrated auth: $e',
+            level: LogLevel.error,
+          );
+        }
       }
     }
 
