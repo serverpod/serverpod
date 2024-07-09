@@ -148,6 +148,23 @@ mapParameters:
   - returnNullableSimpleDataMapNullableSimpleData:
   - returnDurationMap:
   - returnDurationMapNullableDurations:
+methodStreaming:
+  - simpleStream:
+  - simpleStreamWithParameter:
+  - simpleDataStream:
+  - simpleEndpoint:
+  - intParameter:
+  - nullableResponse:
+  - doubleInputValue:
+  - delayedResponse:
+  - delayedStreamResponse:
+  - completeAllDelayedResponses:
+  - throwsException:
+  - throwsSerializableException:
+  - throwsExceptionStream:
+  - throwsSerializableExceptionStream:
+authenticatedMethodStreaming:
+  - simpleStream:
 moduleSerialization:
   - serializeModuleObject:
   - modifyModuleObject:

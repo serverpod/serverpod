@@ -5,15 +5,17 @@ import 'dart:typed_data';
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/features.dart';
+import 'package:serverpod/src/server/log_manager/log_writer.dart';
 import '../cache/caches.dart';
 import '../database/database.dart';
-import '../generated/protocol.dart';
-import 'log_manager.dart';
 
 /// When a call is made to the [Server] a [Session] object is created. It
 /// contains all data associated with the current connection and provides
 /// easy access to the database.
 abstract class Session {
+  /// The id of the session.
+  final UuidValue sessionId;
+
   /// The [Server] that created the session.
   final Server server;
 
@@ -93,12 +95,14 @@ abstract class Session {
 
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
+    UuidValue? sessionId,
     required this.server,
     String? authenticationKey,
     HttpRequest? httpRequest,
     WebSocket? webSocket,
     required this.enableLogging,
-  }) {
+  })  : _authenticationKey = authenticationKey,
+        sessionId = sessionId ?? const Uuid().v4obj() {
     _startTime = DateTime.now();
 
     storage = StorageAccess._(this);
@@ -172,42 +176,25 @@ abstract class Session {
     dynamic exception,
     StackTrace? stackTrace,
   }) {
-    assert(
-      !_closed,
-      'Session is closed, and logging can no longer be performed.',
-    );
+    if (_closed) {
+      throw StateError(
+        'Session is closed, and logging can no longer be performed.',
+      );
+    }
 
     int? messageId;
     if (this is StreamingSession) {
       messageId = (this as StreamingSession).currentMessageId;
     }
 
-    var entry = LogEntry(
-      sessionLogId: sessionLogs.temporarySessionId,
-      serverId: server.serverId,
-      messageId: messageId,
-      logLevel: level ?? LogLevel.info,
+    serverpod.logManager.logEntry(
+      this,
       message: message,
-      time: DateTime.now(),
-      error: exception != null ? '$exception' : null,
-      stackTrace: stackTrace != null ? '$stackTrace' : null,
-      order: sessionLogs.currentLogOrderId,
+      messageId: messageId,
+      level: level ?? LogLevel.info,
+      error: exception?.toString(),
+      stackTrace: stackTrace,
     );
-
-    sessionLogs.currentLogOrderId += 1;
-
-    if (serverpod.runMode == ServerpodRunMode.development) {
-      stdout.writeln('${entry.logLevel.name.toUpperCase()}: ${entry.message}');
-      if (entry.error != null) stdout.writeln(entry.error);
-      if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);
-    }
-
-    if (!serverpod.logManager.shouldLogEntry(session: this, entry: entry)) {
-      return;
-    }
-
-    // Called asynchronously.
-    serverpod.logManager.logEntry(this, entry);
   }
 }
 
@@ -288,6 +275,31 @@ class MethodCallSession extends Session {
     // Get the the authentication key, if any
     _authenticationKey = authenticationKey ?? queryParameters['auth'];
   }
+}
+
+/// When a connection is made to the [Server] to an endpoint method that uses a
+/// stream [MethodStreamSession] object is created. It contains all data
+/// associated with the current connection and provides easy access to the
+/// database.
+class MethodStreamSession extends Session {
+  /// The name of the method that is being called.
+  final String methodName;
+
+  /// The name of the endpoint that is being called.
+  final String endpointName;
+
+  /// The connection id that uniquely identifies the stream.
+  final UuidValue connectionId;
+
+  /// Creates a new [MethodStreamSession].
+  MethodStreamSession({
+    required super.server,
+    required super.enableLogging,
+    required super.authenticationKey,
+    required this.endpointName,
+    required this.methodName,
+    required this.connectionId,
+  });
 }
 
 /// When a web socket connection is opened to the [Server] a [StreamingSession]

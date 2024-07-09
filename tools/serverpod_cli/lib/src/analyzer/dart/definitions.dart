@@ -35,7 +35,7 @@ class EndpointDefinition {
 }
 
 /// Describes a single method in a [EndpointDefinition].
-class MethodDefinition {
+abstract base class MethodDefinition {
   /// The name of the method.
   final String name;
 
@@ -55,18 +55,42 @@ class MethodDefinition {
   /// The named parameters of this method.
   final List<ParameterDefinition> parametersNamed;
 
-  /// Creates a new [MethodDefinition].
   const MethodDefinition({
     required this.name,
     required this.documentationComment,
+    required this.returnType,
     required this.parameters,
     required this.parametersPositional,
     required this.parametersNamed,
-    required this.returnType,
   });
 }
 
-/// Describes a single parameter of a [MethodDefinition].
+/// Describes a single callable method in a [EndpointDefinition].
+final class MethodCallDefinition extends MethodDefinition {
+  /// Creates a new [MethodCallDefinition].
+  const MethodCallDefinition({
+    required super.name,
+    required super.documentationComment,
+    required super.parameters,
+    required super.parametersPositional,
+    required super.parametersNamed,
+    required super.returnType,
+  });
+}
+
+/// Describes a single streaming method in a [EndpointDefinition].
+final class MethodStreamDefinition extends MethodDefinition {
+  MethodStreamDefinition({
+    required super.name,
+    required super.documentationComment,
+    required super.returnType,
+    required super.parameters,
+    required super.parametersPositional,
+    required super.parametersNamed,
+  });
+}
+
+/// Describes a single parameter of a [MethodCallDefinition].
 class ParameterDefinition {
   /// The variable name of the parameter.
   final String name;

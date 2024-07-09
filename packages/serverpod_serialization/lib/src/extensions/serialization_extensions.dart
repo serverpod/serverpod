@@ -34,7 +34,7 @@ extension UuidValueJsonExtension on UuidValue {
   /// Returns a deserialized version of the [UuidValue].
   static UuidValue fromJson(dynamic value) {
     if (value is UuidValue) return value;
-    return UuidValue.fromString(value as String);
+    return UuidValue.withValidation(value as String);
   }
 
   /// Returns a serialized version of the [UuidValue] as a [String].

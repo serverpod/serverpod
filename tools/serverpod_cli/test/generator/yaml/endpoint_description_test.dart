@@ -95,7 +95,9 @@ example2:
             .withClassName('ExampleEndpoint')
             .withName('example')
             .withMethods([
-          MethodDefinitionBuilder().withName('method').build(),
+          MethodDefinitionBuilder()
+              .withName('method')
+              .buildMethodCallDefinition(),
         ]).build(),
       ],
       models: [],
@@ -124,8 +126,12 @@ example:
             .withClassName('ExampleEndpoint')
             .withName('example')
             .withMethods([
-          MethodDefinitionBuilder().withName('method').build(),
-          MethodDefinitionBuilder().withName('method2').build(),
+          MethodDefinitionBuilder()
+              .withName('method')
+              .buildMethodCallDefinition(),
+          MethodDefinitionBuilder()
+              .withName('method2')
+              .buildMethodCallDefinition(),
         ]).build(),
       ],
       models: [],
@@ -155,8 +161,12 @@ example:
             .withClassName('ExampleEndpoint')
             .withName('example')
             .withMethods([
-          MethodDefinitionBuilder().withName('method').build(),
-          MethodDefinitionBuilder().withName('method2').build(),
+          MethodDefinitionBuilder()
+              .withName('method')
+              .buildMethodCallDefinition(),
+          MethodDefinitionBuilder()
+              .withName('method2')
+              .buildMethodCallDefinition(),
         ]).build(),
         EndpointDefinitionBuilder()
             .withClassName('ExampleEndpoint2')
@@ -166,7 +176,9 @@ example:
             .withClassName('ExampleEndpoint3')
             .withName('example3')
             .withMethods([
-          MethodDefinitionBuilder().withName('method').build(),
+          MethodDefinitionBuilder()
+              .withName('method')
+              .buildMethodCallDefinition(),
         ]).build(),
       ],
       models: [],

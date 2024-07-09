@@ -422,6 +422,69 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
+  group('Given an endpoint method with a Stream parameter when analyzed', () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, Stream<String> stream) async {
+    return stream.first;
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then endpoint method definition is created.', () {
+      var methods = endpointDefinitions.firstOrNull?.methods;
+      expect(methods, hasLength(1));
+    });
+
+    group('then endpoint method parameter', () {
+      test('is defined.', () {
+        var parameters =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull?.parameters;
+        expect(parameters, hasLength(1));
+      });
+
+      test('has expected name.', () {
+        var name = endpointDefinitions
+            .firstOrNull?.methods.firstOrNull?.parameters.firstOrNull?.name;
+        expect(name, 'stream');
+      });
+
+      test('has expected type.', () {
+        var type = endpointDefinitions
+            .firstOrNull?.methods.firstOrNull?.parameters.firstOrNull?.type;
+        expect(type?.className, 'Stream');
+      });
+
+      test('has expected generic,', () {
+        var generic = endpointDefinitions.firstOrNull?.methods.firstOrNull
+            ?.parameters.firstOrNull?.type.generics.firstOrNull;
+        expect(generic?.className, 'String');
+      });
+    });
+  });
+
   group('Given an endpoint method with a function parameter when analyzed', () {
     var collector = CodeGenerationCollector();
     var testDirectory =
@@ -453,6 +516,224 @@ class ExampleEndpoint extends Endpoint {
       expect(
         collector.errors.firstOrNull?.message,
         'The type "String Function()" is not a supported endpoint parameter type.',
+      );
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then endpoint definition method is not defined.', () {
+      var methods = endpointDefinitions.firstOrNull?.methods;
+      expect(methods, isEmpty);
+    });
+  });
+
+  group('Given an endpoint method with a Future parameter when analyzed', () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, Future<String> name) async {
+    return name;
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+    test(
+        'then a validation error is reported that informs the type is not supported.',
+        () {
+      expect(collector.errors, hasLength(1));
+      expect(
+        collector.errors.firstOrNull?.message,
+        'The type "Future" is not a supported endpoint parameter type.',
+      );
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then endpoint definition method is not defined.', () {
+      var methods = endpointDefinitions.firstOrNull?.methods;
+      expect(methods, isEmpty);
+    });
+  });
+
+  group(
+      'Given an endpoint method with a Stream parameter without generic type when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, Stream stream) async {
+    return stream.first as String;
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+    test(
+        'then a validation error is reported that informs the type is not supported.',
+        () {
+      expect(collector.errors, hasLength(1));
+      expect(
+        collector.errors.firstOrNull?.message,
+        'The type "Stream" must have a concrete type defined. E.g. Stream<String>.',
+      );
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then endpoint definition method is not defined.', () {
+      var methods = endpointDefinitions.firstOrNull?.methods;
+      expect(methods, isEmpty);
+    });
+  });
+
+  group(
+      'Given an endpoint method with a Stream parameter with void type when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, Stream<void> stream) async {
+    return 'hello';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+    test(
+        'then a validation error is reported that informs the type is not supported.',
+        () {
+      expect(collector.errors, hasLength(1));
+      expect(
+        collector.errors.firstOrNull?.message,
+        'The type "Stream" must have a concrete type defined. E.g. Stream<String>.',
+      );
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then endpoint definition method is not defined.', () {
+      var methods = endpointDefinitions.firstOrNull?.methods;
+      expect(methods, isEmpty);
+    });
+  });
+
+  group(
+      'Given an endpoint method with a Stream parameter with dynamic type when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, Stream<dynamic> stream) async {
+    return 'hello';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+    test(
+        'then a validation error is reported that informs the type is not supported.',
+        () {
+      expect(collector.errors, hasLength(1));
+      expect(
+        collector.errors.firstOrNull?.message,
+        'The type "Stream" must have a concrete type defined. E.g. Stream<String>.',
+      );
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then endpoint definition method is not defined.', () {
+      var methods = endpointDefinitions.firstOrNull?.methods;
+      expect(methods, isEmpty);
+    });
+  });
+
+  group(
+      'Given an endpoint method with a Stream parameter with nullable type when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, Stream<String?> stream) async {
+    return await stream.first ?? 'Hello';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+    test(
+        'then a validation error is reported that informs the type is not supported.',
+        () {
+      expect(collector.errors, hasLength(1));
+      expect(
+        collector.errors.firstOrNull?.message,
+        'Nullable types are not supported for "Stream" parameters.',
       );
     });
 

@@ -506,41 +506,19 @@ class DatabaseConnection {
     exception,
     StackTrace? trace,
   }) {
-    // Check if this query should be logged.
-    var logSettings = session.serverpod.logManager.getLogSettingsForSession(
-      session,
-    );
-    var duration =
-        DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
-    var slow = duration >= logSettings.slowQueryDuration;
-    var shouldLog = session.serverpod.logManager.shouldLogQuery(
-      session: session,
-      slow: slow,
-      failed: exception != null,
-    );
-
-    if (!shouldLog) {
-      return;
-    }
+    var duration = DateTime.now().difference(startTime);
 
     // Use the current stack trace if there is no exception.
     trace ??= StackTrace.current;
 
-    // Log the query.
-    var entry = QueryLogEntry(
-      sessionLogId: session.sessionLogs.temporarySessionId,
-      serverId: session.server.serverId,
+    session.serverpod.logManager.logQuery(
+      session,
       query: query,
       duration: duration,
-      numRows: numRowsAffected,
-      error: exception?.toString(),
-      stackTrace: trace.toString(),
-      slow: slow,
-      order: session.sessionLogs.currentLogOrderId,
+      numRowsAffected: numRowsAffected,
+      error: exception.toString(),
+      stackTrace: trace,
     );
-    session.serverpod.logManager.logQuery(session, entry);
-    session.sessionLogs.currentLogOrderId += 1;
-    session.sessionLogs.numQueries += 1;
   }
 
   /// For most cases use the corresponding method in [Database] instead.
