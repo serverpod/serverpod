@@ -8,7 +8,6 @@ import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/log_manager/log_writer.dart';
 import '../cache/caches.dart';
 import '../database/database.dart';
-import '../generated/protocol.dart';
 
 /// When a call is made to the [Server] a [Session] object is created. It
 /// contains all data associated with the current connection and provides
@@ -177,40 +176,25 @@ abstract class Session {
     dynamic exception,
     StackTrace? stackTrace,
   }) {
-    assert(
-      !_closed,
-      'Session is closed, and logging can no longer be performed.',
-    );
+    if (_closed) {
+      throw StateError(
+        'Session is closed, and logging can no longer be performed.',
+      );
+    }
 
     int? messageId;
     if (this is StreamingSession) {
       messageId = (this as StreamingSession).currentMessageId;
     }
 
-    var entry = LogEntry(
-      sessionLogId: sessionLogs.temporarySessionId,
-      serverId: server.serverId,
-      messageId: messageId,
-      logLevel: level ?? LogLevel.info,
+    serverpod.logManager.logEntry(
+      this,
       message: message,
-      time: DateTime.now(),
-      error: exception != null ? '$exception' : null,
-      stackTrace: stackTrace != null ? '$stackTrace' : null,
-      order: sessionLogs.createLogOrderId,
+      messageId: messageId,
+      level: level ?? LogLevel.info,
+      error: exception?.toString(),
+      stackTrace: stackTrace,
     );
-
-    if (serverpod.runMode == ServerpodRunMode.development) {
-      stdout.writeln('${entry.logLevel.name.toUpperCase()}: ${entry.message}');
-      if (entry.error != null) stdout.writeln(entry.error);
-      if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);
-    }
-
-    if (!serverpod.logManager.shouldLogEntry(session: this, entry: entry)) {
-      return;
-    }
-
-    // Called asynchronously.
-    serverpod.logManager.logEntry(this, entry);
   }
 }
 
