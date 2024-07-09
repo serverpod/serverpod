@@ -65,9 +65,9 @@ void main() async {
     test(
       'when creating a record in the database with specific values, then the "dateTimeDefaultAndDefaultModel" field value should match the provided value',
       () async {
+        var date = DateTime.parse('2024-05-10T22:00:00.000Z');
         var specificObject = DateTimeDefaultMix(
-          dateTimeDefaultAndDefaultModel:
-              DateTime.parse('2024-05-10T22:00:00.000Z'),
+          dateTimeDefaultAndDefaultModel: date,
         );
         var specificDatabaseObject = await DateTimeDefaultMix.db.insertRow(
           session,
@@ -75,7 +75,7 @@ void main() async {
         );
         expect(
           specificDatabaseObject.dateTimeDefaultAndDefaultModel,
-          DateTime.parse('2024-05-10T22:00:00.000Z'),
+          date,
         );
       },
     );
@@ -83,9 +83,9 @@ void main() async {
     test(
       'when creating a record in the database with specific values, then the "dateTimeDefaultAndDefaultPersist" field value should match the provided value',
       () async {
+        var date = DateTime.parse('2024-05-10T22:00:00.000Z');
         var specificObject = DateTimeDefaultMix(
-          dateTimeDefaultAndDefaultPersist:
-              DateTime.parse('2024-05-10T22:00:00.000Z'),
+          dateTimeDefaultAndDefaultPersist: date,
         );
         var specificDatabaseObject = await DateTimeDefaultMix.db.insertRow(
           session,
@@ -93,7 +93,7 @@ void main() async {
         );
         expect(
           specificDatabaseObject.dateTimeDefaultAndDefaultPersist,
-          DateTime.parse('2024-05-10T22:00:00.000Z'),
+          date,
         );
       },
     );
@@ -101,9 +101,9 @@ void main() async {
     test(
       'when creating a record in the database with specific values, then the "dateTimeDefaultModelAndDefaultPersist" field value should match the provided value',
       () async {
+        var date = DateTime.parse('2024-05-10T22:00:00.000Z');
         var specificObject = DateTimeDefaultMix(
-          dateTimeDefaultModelAndDefaultPersist:
-              DateTime.parse('2024-05-10T22:00:00.000Z'),
+          dateTimeDefaultModelAndDefaultPersist: date,
         );
         var specificDatabaseObject = await DateTimeDefaultMix.db.insertRow(
           session,
@@ -111,7 +111,7 @@ void main() async {
         );
         expect(
           specificDatabaseObject.dateTimeDefaultModelAndDefaultPersist,
-          DateTime.parse('2024-05-10T22:00:00.000Z'),
+          date,
         );
       },
     );

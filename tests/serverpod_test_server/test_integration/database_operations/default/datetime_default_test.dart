@@ -20,7 +20,7 @@ void main() async {
           session,
           object,
         );
-        expect(databaseObject.dateTimeDefaultNow.isUtc, true);
+        expect(databaseObject.dateTimeDefaultNow.isUtc, isTrue);
       },
     );
 
@@ -32,7 +32,7 @@ void main() async {
           session,
           object,
         );
-        expect(databaseObject.dateTimeDefaultStr.isUtc, true);
+        expect(databaseObject.dateTimeDefaultStr.isUtc, isTrue);
       },
     );
 
@@ -44,7 +44,7 @@ void main() async {
           session,
           object,
         );
-        expect(databaseObject.dateTimeDefaultStrNull?.isUtc, true);
+        expect(databaseObject.dateTimeDefaultStrNull?.isUtc, isTrue);
       },
     );
 
@@ -98,8 +98,9 @@ void main() async {
     test(
       'when creating a record in the database with a specific value, then the "dateTimeDefaultNow" field value should match the provided value',
       () async {
+        var date = DateTime.parse('2024-05-01T22:00:00.000Z');
         var specificObject = DateTimeDefault(
-          dateTimeDefaultNow: DateTime.parse('2024-05-01T22:00:00.000Z'),
+          dateTimeDefaultNow: date,
         );
         var specificDatabaseObject = await DateTimeDefault.db.insertRow(
           session,
@@ -107,7 +108,7 @@ void main() async {
         );
         expect(
           specificDatabaseObject.dateTimeDefaultNow,
-          DateTime.parse('2024-05-01T22:00:00.000Z'),
+          date,
         );
       },
     );
@@ -115,8 +116,9 @@ void main() async {
     test(
       'when creating a record in the database with a specific value, then the "dateTimeDefaultStr" field value should match the provided value',
       () async {
+        var date = DateTime.parse('2024-05-01T22:00:00.000Z');
         var specificObject = DateTimeDefault(
-          dateTimeDefaultStr: DateTime.parse('2024-05-01T22:00:00.000Z'),
+          dateTimeDefaultStr: date,
         );
         var specificDatabaseObject = await DateTimeDefault.db.insertRow(
           session,
@@ -124,7 +126,7 @@ void main() async {
         );
         expect(
           specificDatabaseObject.dateTimeDefaultStr,
-          DateTime.parse('2024-05-01T22:00:00.000Z'),
+          date,
         );
       },
     );
@@ -132,8 +134,9 @@ void main() async {
     test(
       'when creating a record in the database with a specific value, then the "dateTimeDefaultStrNull" field value should match the provided value',
       () async {
+        var date = DateTime.parse('2024-05-01T22:00:00.000Z');
         var specificObject = DateTimeDefault(
-          dateTimeDefaultStrNull: DateTime.parse('2024-05-01T22:00:00.000Z'),
+          dateTimeDefaultStrNull: date,
         );
         var specificDatabaseObject = await DateTimeDefault.db.insertRow(
           session,
@@ -141,7 +144,7 @@ void main() async {
         );
         expect(
           specificDatabaseObject.dateTimeDefaultStrNull,
-          DateTime.parse('2024-05-01T22:00:00.000Z'),
+          date,
         );
       },
     );

@@ -19,7 +19,7 @@ void main() async {
           session,
           object,
         );
-        expect(databaseObject.dateTimeDefaultPersistNow?.isUtc, true);
+        expect(databaseObject.dateTimeDefaultPersistNow?.isUtc, isTrue);
       },
     );
 
@@ -31,7 +31,7 @@ void main() async {
           session,
           object,
         );
-        expect(databaseObject.dateTimeDefaultPersistStr?.isUtc, true);
+        expect(databaseObject.dateTimeDefaultPersistStr?.isUtc, isTrue);
       },
     );
 
@@ -78,7 +78,7 @@ void main() async {
         );
         var databaseObject =
             await DateTimeDefaultPersist.db.findFirstRow(session);
-        expect(databaseObject?.dateTimeDefaultPersistNow?.isUtc, true);
+        expect(databaseObject?.dateTimeDefaultPersistNow?.isUtc, isTrue);
       },
     );
 
@@ -93,7 +93,7 @@ void main() async {
         );
         var databaseObject =
             await DateTimeDefaultPersist.db.findFirstRow(session);
-        expect(databaseObject?.dateTimeDefaultPersistStr?.isUtc, true);
+        expect(databaseObject?.dateTimeDefaultPersistStr?.isUtc, isTrue);
       },
     );
 
@@ -138,8 +138,9 @@ void main() async {
     test(
       'when creating a record in the database with a specific value, then the "dateTimeDefaultPersistNow" field value should match the provided value',
       () async {
+        var date = DateTime.parse('2024-05-05T22:00:00.000Z');
         var specificObject = DateTimeDefaultPersist(
-          dateTimeDefaultPersistNow: DateTime.parse('2024-05-05T22:00:00.000Z'),
+          dateTimeDefaultPersistNow: date,
         );
         var specificDatabaseObject = await DateTimeDefaultPersist.db.insertRow(
           session,
@@ -147,7 +148,7 @@ void main() async {
         );
         expect(
           specificDatabaseObject.dateTimeDefaultPersistNow,
-          DateTime.parse('2024-05-05T22:00:00.000Z'),
+          date,
         );
       },
     );
@@ -155,8 +156,9 @@ void main() async {
     test(
       'when creating a record in the database with a specific value, then the "dateTimeDefaultPersistStr" field value should match the provided value',
       () async {
+        var date = DateTime.parse('2024-05-05T22:00:00.000Z');
         var specificObject = DateTimeDefaultPersist(
-          dateTimeDefaultPersistStr: DateTime.parse('2024-05-05T22:00:00.000Z'),
+          dateTimeDefaultPersistStr: date,
         );
         var specificDatabaseObject = await DateTimeDefaultPersist.db.insertRow(
           session,
@@ -164,7 +166,7 @@ void main() async {
         );
         expect(
           specificDatabaseObject.dateTimeDefaultPersistStr,
-          DateTime.parse('2024-05-05T22:00:00.000Z'),
+          date,
         );
       },
     );
