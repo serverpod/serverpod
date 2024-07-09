@@ -9,7 +9,7 @@ void main() async {
         'when an object of the class is created, then the "default=now" field should not be in UTC',
         () {
           var object = DateTimeDefault();
-          expect(object.dateTimeDefaultNow.isUtc, false);
+          expect(object.dateTimeDefaultNow.isUtc, isFalse);
         },
       );
 
@@ -17,7 +17,7 @@ void main() async {
         'when an object of the class is created, then the "default" field with UTC string should be in UTC',
         () {
           var object = DateTimeDefault();
-          expect(object.dateTimeDefaultStr.isUtc, true);
+          expect(object.dateTimeDefaultStr.isUtc, isTrue);
         },
       );
 
@@ -25,7 +25,7 @@ void main() async {
         'when an object of the class is created, then the nullable "default" field with UTC string should be in UTC',
         () {
           var object = DateTimeDefault();
-          expect(object.dateTimeDefaultStrNull?.isUtc, true);
+          expect(object.dateTimeDefaultStrNull?.isUtc, isTrue);
         },
       );
 
@@ -63,40 +63,43 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a value for "dateTimeDefaultNow", then the field value should not match the default',
+        'when an object of the class is created with a value for "dateTimeDefaultNow", then the field value should match the provided value',
         () {
+          var date = DateTime.parse('2024-05-05T22:00:00.000Z');
           var object = DateTimeDefault(
-            dateTimeDefaultNow: DateTime.parse('2024-05-05T22:00:00.000Z'),
+            dateTimeDefaultNow: date,
           );
           expect(
             object.dateTimeDefaultNow,
-            isNot(DateTime.parse('2024-05-01T22:00:00.000Z')),
+            date,
           );
         },
       );
 
       test(
-        'when an object of the class is created with a value for "dateTimeDefaultStr", then the field value should not match the default',
+        'when an object of the class is created with a value for "dateTimeDefaultStr", then the field value should match the provided value',
         () {
+          var date = DateTime.parse('2024-05-05T22:00:00.000Z');
           var object = DateTimeDefault(
-            dateTimeDefaultStr: DateTime.parse('2024-05-05T22:00:00.000Z'),
+            dateTimeDefaultStr: date,
           );
           expect(
             object.dateTimeDefaultStr,
-            isNot(DateTime.parse('2024-05-24T22:00:00.000Z')),
+            date,
           );
         },
       );
 
       test(
-        'when an object of the class is created with a value for "dateTimeDefaultStrNull", then the field value should not match the default',
+        'when an object of the class is created with a value for "dateTimeDefaultStrNull", then the field value should match the provided value',
         () {
+          var date = DateTime.parse('2024-05-05T22:00:00.000Z');
           var object = DateTimeDefault(
-            dateTimeDefaultStrNull: DateTime.parse('2024-05-05T22:00:00.000Z'),
+            dateTimeDefaultStrNull: date,
           );
           expect(
             object.dateTimeDefaultStrNull,
-            isNot(DateTime.parse('2024-05-24T22:00:00.000Z')),
+            date,
           );
         },
       );

@@ -39,43 +39,43 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a value for "dateTimeDefaultAndDefaultModel", then the field value should not match the defaultModel value',
+        'when an object of the class is created with a value for "dateTimeDefaultAndDefaultModel", then the field value should match the provided value',
         () {
+          var date = DateTime.parse('2024-05-05T22:00:00.000Z');
           var object = DateTimeDefaultMix(
-            dateTimeDefaultAndDefaultModel:
-                DateTime.parse('2024-05-05T22:00:00.000Z'),
+            dateTimeDefaultAndDefaultModel: date,
           );
           expect(
             object.dateTimeDefaultAndDefaultModel,
-            isNot(DateTime.parse('2024-05-10T22:00:00.000Z')),
+            date,
           );
         },
       );
 
       test(
-        'when an object of the class is created with a value for "dateTimeDefaultAndDefaultPersist", then the field value should not match the default value',
+        'when an object of the class is created with a value for "dateTimeDefaultAndDefaultPersist", then the field value should match the provided value',
         () {
+          var date = DateTime.parse('2024-05-05T22:00:00.000Z');
           var object = DateTimeDefaultMix(
-            dateTimeDefaultAndDefaultPersist:
-                DateTime.parse('2024-05-05T22:00:00.000Z'),
+            dateTimeDefaultAndDefaultPersist: date,
           );
           expect(
             object.dateTimeDefaultAndDefaultPersist,
-            isNot(DateTime.parse('2024-05-01T22:00:00.000Z')),
+            date,
           );
         },
       );
 
       test(
-        'when an object of the class is created with a value for "dateTimeDefaultModelAndDefaultPersist", then the field value should not match the defaultModel value',
+        'when an object of the class is created with a value for "dateTimeDefaultModelAndDefaultPersist", then the field value should match the provided value',
         () {
+          var date = DateTime.parse('2024-05-05T22:00:00.000Z');
           var object = DateTimeDefaultMix(
-            dateTimeDefaultModelAndDefaultPersist:
-                DateTime.parse('2024-05-05T22:00:00.000Z'),
+            dateTimeDefaultModelAndDefaultPersist: date,
           );
           expect(
             object.dateTimeDefaultModelAndDefaultPersist,
-            isNot(DateTime.parse('2024-05-10T22:00:00.000Z')),
+            date,
           );
         },
       );

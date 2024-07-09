@@ -22,29 +22,29 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created with a specific value for dateTimeDefaultPersistNow, then the field value should not be null',
+        'when an object of the class is created with a specific value for "dateTimeDefaultPersistNow", then the field value should match the provided value',
         () {
+          var date = DateTime.parse('2024-05-01T22:00:00.000Z');
           var object = DateTimeDefaultPersist(
-            dateTimeDefaultPersistNow:
-                DateTime.parse('2024-05-01T22:00:00.000Z'),
+            dateTimeDefaultPersistNow: date,
           );
           expect(
             object.dateTimeDefaultPersistNow,
-            DateTime.parse('2024-05-01T22:00:00.000Z'),
+            date,
           );
         },
       );
 
       test(
-        'when an object of the class is created with a specific value for dateTimeDefaultPersistStr, then the field value should not be null',
+        'when an object of the class is created with a specific value for "dateTimeDefaultPersistStr", then the field value should match the provided value',
         () {
+          var date = DateTime.parse('2024-05-01T22:00:00.000Z');
           var object = DateTimeDefaultPersist(
-            dateTimeDefaultPersistStr:
-                DateTime.parse('2024-05-01T22:00:00.000Z'),
+            dateTimeDefaultPersistStr: date,
           );
           expect(
             object.dateTimeDefaultPersistStr,
-            DateTime.parse('2024-05-01T22:00:00.000Z'),
+            date,
           );
         },
       );
