@@ -266,7 +266,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
         TextField(
           enabled: _enabled,
           controller: _validationCodeController,
-          keyboardType: TextInputType.number,
+          keyboardType: TextInputType.text,
           decoration: InputDecoration(
             hintText: 'Validation code',
             helperText: ' ',
@@ -307,7 +307,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
         TextField(
           enabled: _enabled,
           controller: _validationCodeController,
-          keyboardType: TextInputType.number,
+          keyboardType: TextInputType.text,
           decoration: InputDecoration(
             hintText: 'Validation code',
             helperText: ' ',
