@@ -51,6 +51,7 @@ class MethodWebsocketRequestHandler {
               method: message.method,
               parameter: message.parameter,
               connectionId: message.connectionId,
+              // TODO: Should reason here be not found instead of error?
               reason: CloseReason.error,
             ));
             break;
@@ -60,8 +61,13 @@ class MethodWebsocketRequestHandler {
               method: message.method,
               parameter: message.parameter,
               connectionId: message.connectionId,
+              reason: message.reason,
             );
           case MethodStreamSerializableException():
+            _methodStreamManager.dispatchSerializableException(
+              message,
+              server,
+            );
             break;
           case PingCommand():
             webSocket.add(PongCommand.buildMessage());
@@ -218,13 +224,14 @@ class _MethodStreamManager {
     required String method,
     String? parameter,
     required UuidValue connectionId,
+    required CloseReason reason,
   }) async {
     if (parameter == null) {
       return await _closeMethodStream(
         endpoint: endpoint,
         method: method,
         connectionId: connectionId,
-        reason: CloseReason.done,
+        reason: reason,
       );
     }
 
@@ -235,8 +242,15 @@ class _MethodStreamManager {
       connectionId: connectionId,
     ));
 
-    if (paramStreamContext == null) {
+    if (paramStreamContext == null ||
+        paramStreamContext is! _InputStreamContext) {
       return;
+    }
+
+    if (reason == CloseReason.error) {
+      paramStreamContext.controller.addError(
+        const StreamClosedWithErrorException(),
+      );
     }
 
     return _closeControllers([paramStreamContext.controller]);
@@ -304,6 +318,33 @@ class _MethodStreamManager {
     streamContext.controller
         .add(server.serializationManager.decodeWithType(message.object));
     return true;
+  }
+
+  void dispatchSerializableException(
+    MethodStreamSerializableException message,
+    Server server,
+  ) {
+    var streamContext = _streamContexts[_buildStreamKey(
+      endpoint: message.endpoint,
+      method: message.method,
+      parameter: message.parameter,
+      connectionId: message.connectionId,
+    )];
+
+    if (streamContext == null || streamContext is! _InputStreamContext) {
+      return;
+    }
+
+    var serializableException =
+        server.serializationManager.decodeWithType(message.object);
+
+    if (serializableException is! SerializableException) {
+      throw Exception(
+        'Expected SerializableException, but got ${serializableException.runtimeType}',
+      );
+    }
+
+    streamContext.controller.addError(serializableException);
   }
 
   String _buildStreamKey({
