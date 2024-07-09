@@ -122,7 +122,9 @@ void main() {
     );
   });
 
-  group('Given a map with complex nested structures,', () {
+  group(
+      'Given a map with complex nested structure containing object with server only password field,',
+      () {
     _User user = _User(name: 'John', password: '123');
 
     test(
@@ -141,11 +143,13 @@ void main() {
     );
   });
 
-  group('Given a list with complex nested structures,', () {
+  group(
+      'Given a list with complex nested structure containing object with server only password field,',
+      () {
     _User user = _User(name: 'John', password: '123');
 
     test(
-      'when a list is the base type and contains maps with user objects, then passwords are excluded from the output',
+      'when encoded using encodeForProtocol method, then passwords are excluded from the output',
       () {
         var list = [
           {'user': user},
