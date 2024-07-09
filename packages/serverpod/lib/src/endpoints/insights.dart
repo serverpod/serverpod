@@ -77,13 +77,12 @@ class InsightsEndpoint extends Endpoint {
       where = where & (SessionLogEntry.t.id < filter.lastSessionLogId);
     }
 
-    var rows = (await session.db.find<SessionLogEntry>(
+    var rows = await session.db.find<SessionLogEntry>(
       where: where,
       limit: numEntries,
       orderBy: SessionLogEntry.t.id,
       orderDescending: true,
-    ))
-        .cast<SessionLogEntry>();
+    );
 
     var sessionLogInfo = <SessionLogInfo>[];
     for (var logEntry in rows) {
@@ -105,8 +104,8 @@ class InsightsEndpoint extends Endpoint {
       sessionLogInfo.add(
         SessionLogInfo(
           sessionLogEntry: logEntry,
-          logs: logRows.cast<LogEntry>(),
-          queries: queryRows.cast<QueryLogEntry>(),
+          logs: logRows,
+          queries: queryRows,
           messages: messageRows,
         ),
       );
