@@ -539,7 +539,7 @@ class Emails {
         level: LogLevel.debug);
 
     if (AuthConfig.current.passwordHashGenerator ==
-            defaultGeneratePasswordHash &&
+            defaultGeneratePasswordHash ||
         AuthConfig.current.passwordHashValidator ==
             defaultValidatePasswordHash) {
       var migratedAuth = await Emails.tryMigrateAuthEntry(
