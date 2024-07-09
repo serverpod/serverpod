@@ -89,14 +89,17 @@ class InsightsEndpoint extends Endpoint {
     for (var logEntry in rows) {
       var logRows = await session.db.find<LogEntry>(
         where: LogEntry.t.sessionLogId.equals(logEntry.id),
+        orderBy: LogEntry.t.order,
       );
 
       var queryRows = await session.db.find<QueryLogEntry>(
         where: QueryLogEntry.t.sessionLogId.equals(logEntry.id),
+        orderBy: QueryLogEntry.t.order,
       );
 
       var messageRows = await session.db.find<MessageLogEntry>(
         where: MessageLogEntry.t.sessionLogId.equals(logEntry.id),
+        orderBy: MessageLogEntry.t.order,
       );
 
       sessionLogInfo.add(
