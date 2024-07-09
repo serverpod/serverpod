@@ -452,4 +452,71 @@ void main() {
       expect(copyWithMethod?.parameters?.toSource(), '({List<String>? names})');
     });
   });
+
+  group('Given a class named $testClassName with a field GeographyPoint', () {
+    var models = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withSimpleField('point', 'GeographyPoint')
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+
+    var implClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '_${testClassName}Impl',
+    );
+
+    var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: testClassName,
+    );
+
+    test('then the base class has a constructor with the point geographyPoint',
+        () {
+      var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
+        implClass!,
+        name: null,
+      );
+
+      expect(
+        constructor?.parameters.toSource(),
+        '({required GeographyPoint point})',
+      );
+    });
+
+    test(
+        'then the implemented class has a private constructor with the full List type',
+        () {
+      var privateConstructor =
+          CompilationUnitHelpers.tryFindConstructorDeclaration(
+        implClass!,
+        name: null,
+      );
+
+      expect(
+        privateConstructor?.parameters.toSource(),
+        '({required GeographyPoint point})',
+      );
+    });
+
+    test(
+        'then the copyWith method has the full List type in the params in the base class',
+        () {
+      var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        baseClass!,
+        name: 'copyWith',
+      );
+
+      expect(
+          copyWithMethod?.parameters?.toSource(), '({GeographyPoint? point})');
+    });
+  });
 }

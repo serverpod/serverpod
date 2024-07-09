@@ -251,7 +251,7 @@ const extensionSerializedTypes = [
   'UuidValue',
   'Map',
   'List',
-  'geographyPoint'
+  'GeographyPoint'
 ];
 
 extension<K, V> on Map<K, V> {

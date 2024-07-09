@@ -1142,6 +1142,7 @@ class Restrictions {
     'ByteData',
     'List',
     'Map',
+    'geographyPoint'
   ];
 
   var blackListedTypes = [

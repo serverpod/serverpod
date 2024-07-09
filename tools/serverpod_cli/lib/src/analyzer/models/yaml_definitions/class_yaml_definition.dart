@@ -50,9 +50,6 @@ class ClassYamlDefinition {
             isContextualParentNode: true,
             nested: {
               ValidateNode(
-                Keyword.geographyPoint,
-              ),
-              ValidateNode(
                 Keyword.type,
                 isRequired: true,
                 valueRestriction: restrictions.validateFieldType,

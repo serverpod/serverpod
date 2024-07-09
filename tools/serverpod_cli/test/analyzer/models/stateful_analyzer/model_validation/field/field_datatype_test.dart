@@ -27,6 +27,7 @@ void main() {
       'Map<String,List<int>>',
       'Map<String,Map<String,int>>',
       'Map<String,Map<String,List<List<Map<String,int>>>>>',
+      'GeographyPoint'
     ];
 
     for (var datatype in datatypes) {
@@ -1348,6 +1349,40 @@ void main() {
     test('then a definition column type is set to bigint.', () {
       var definition = definitions.first as ClassDefinition;
       expect(definition.fields.first.type.databaseType, 'bigint');
+    });
+  });
+
+  group('Given a class with a field with the type geographyPoint', () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+          class: Example
+          fields:
+            name: GeographyPoint
+          ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
+
+    test('then no errors was generated', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test(
+        'then a class with that field type set to GeographyPoint is generated.',
+        () {
+      var definition = definitions.first as ClassDefinition;
+      expect(
+        definition.fields.first.type.toString(),
+        'GeographyPoint',
+      );
     });
   });
 }
