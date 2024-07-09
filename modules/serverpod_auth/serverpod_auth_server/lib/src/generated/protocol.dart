@@ -732,7 +732,6 @@ class Protocol extends _i1.SerializationManagerServer {
 
   @override
   String? getClassNameForObject(Object? data) {
-    if (data == null) return 'null';
     String? dartTypeClassName = super.getClassNameForObject(data);
     if (dartTypeClassName != null) return dartTypeClassName;
     if (data is _i3.AppleAuthInfo) {
@@ -782,7 +781,6 @@ class Protocol extends _i1.SerializationManagerServer {
 
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
-    if (data['className'] == 'null') return null;
     if (data['className'] == 'AppleAuthInfo') {
       return deserialize<_i3.AppleAuthInfo>(data['data']);
     }

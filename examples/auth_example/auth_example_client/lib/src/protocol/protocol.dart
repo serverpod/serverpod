@@ -42,29 +42,27 @@ class Protocol extends _i1.SerializationManager {
 
   @override
   String? getClassNameForObject(Object? data) {
-    if (data == null) return 'null';
     String? dartTypeClassName = super.getClassNameForObject(data);
     if (dartTypeClassName != null) return dartTypeClassName;
+    if (data is _i2.Example) {
+      return 'Example';
+    }
     String? className;
     className = _i3.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
-    }
-    if (data is _i2.Example) {
-      return 'Example';
     }
     return null;
   }
 
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
-    if (data['className'] == 'null') return null;
+    if (data['className'] == 'Example') {
+      return deserialize<_i2.Example>(data['data']);
+    }
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
       return _i3.Protocol().deserializeByClassName(data);
-    }
-    if (data['className'] == 'Example') {
-      return deserialize<_i2.Example>(data['data']);
     }
     return super.deserializeByClassName(data);
   }

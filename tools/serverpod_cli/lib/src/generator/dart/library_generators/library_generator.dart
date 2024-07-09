@@ -177,11 +177,16 @@ class LibraryGenerator {
           ..name = 'data'
           ..type = refer('Object?')))
         ..body = Block.of([
-          const Code('if(data == null) return \'null\';'),
           const Code(
             'String? dartTypeClassName = super.getClassNameForObject(data);'
             'if(dartTypeClassName != null) return dartTypeClassName;',
           ),
+          for (var extraClass in config.extraClasses)
+            Code.scope((a) =>
+                'if(data is ${a(extraClass.reference(serverCode, config: config))}) {return \'${extraClass.className}\';}'),
+          for (var classInfo in models)
+            Code.scope((a) =>
+                'if(data is ${a(refer(classInfo.className, classInfo.fileRef()))}) {return \'${classInfo.className}\';}'),
           if (config.modules.isNotEmpty) const Code('String? className;'),
           for (var module in config.modules)
             Block.of([
@@ -190,12 +195,6 @@ class LibraryGenerator {
               Code(
                   'if(className != null){return \'${module.name}.\$className\';}'),
             ]),
-          for (var extraClass in config.extraClasses)
-            Code.scope((a) =>
-                'if(data is ${a(extraClass.reference(serverCode, config: config))}) {return \'${extraClass.className}\';}'),
-          for (var classInfo in models)
-            Code.scope((a) =>
-                'if(data is ${a(refer(classInfo.className, classInfo.fileRef()))}) {return \'${classInfo.className}\';}'),
           const Code('return null;'),
         ])),
       Method((m) => m
@@ -206,15 +205,6 @@ class LibraryGenerator {
           ..name = 'data'
           ..type = refer('Map<String,dynamic>')))
         ..body = Block.of([
-          const Code('if(data[\'className\'] == \'null\') return null;'),
-          for (var module in config.modules)
-            Block.of([
-              Code('if(data[\'className\'].startsWith(\'${module.name}.\')){'
-                  'data[\'className\'] = data[\'className\'].substring(${module.name.length + 1});'),
-              Code.scope((a) =>
-                  'return ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().deserializeByClassName(data);'),
-              const Code('}'),
-            ]),
           for (var extraClass in config.extraClasses)
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${extraClass.className}\'){'
@@ -223,6 +213,14 @@ class LibraryGenerator {
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${classInfo.className}\'){'
                 'return deserialize<${a(refer(classInfo.className, classInfo.fileRef()))}>(data[\'data\']);}'),
+          for (var module in config.modules)
+            Block.of([
+              Code('if(data[\'className\'].startsWith(\'${module.name}.\')){'
+                  'data[\'className\'] = data[\'className\'].substring(${module.name.length + 1});'),
+              Code.scope((a) =>
+                  'return ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().deserializeByClassName(data);'),
+              const Code('}'),
+            ]),
           const Code('return super.deserializeByClassName(data);'),
         ])),
       if (serverCode)
