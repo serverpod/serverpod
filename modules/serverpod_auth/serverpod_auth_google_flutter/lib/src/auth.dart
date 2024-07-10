@@ -43,6 +43,7 @@ Future<UserInfo?> signInWithGoogle(
   String? serverClientId,
   List<String> additionalScopes = const [],
   required Uri redirectUri,
+  void Function(Object error, StackTrace stackTrace)? onError,
 }) async {
   var scopes = [
     'email',
@@ -103,6 +104,7 @@ Future<UserInfo?> signInWithGoogle(
   } catch (e, stackTrace) {
     if (kDebugMode) print('serverpod_auth_google: $e');
     if (kDebugMode) print('$stackTrace');
-    rethrow;
+    onError?.call(e, stackTrace);
+    return null;
   }
 }
