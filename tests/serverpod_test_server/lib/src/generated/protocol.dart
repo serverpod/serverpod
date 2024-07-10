@@ -95,10 +95,11 @@ import 'unique_data.dart' as _i74;
 import 'protocol.dart' as _i75;
 import 'dart:typed_data' as _i76;
 import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i77;
-import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i78;
-import 'package:serverpod_test_server/src/custom_classes.dart' as _i79;
-import 'package:serverpod_test_server/src/protocol_custom_classes.dart' as _i80;
-import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i81;
+import 'package:serverpod/src/generated/log_level.dart' as _i78;
+import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i79;
+import 'package:serverpod_test_server/src/custom_classes.dart' as _i80;
+import 'package:serverpod_test_server/src/protocol_custom_classes.dart' as _i81;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i82;
 export 'empty_model/empty_model_relation_item.dart';
 export 'empty_model/empy_model.dart';
 export 'exception_with_data.dart';
@@ -4065,6 +4066,10 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data as List).map((e) => deserialize<Duration?>(e)).toList()
           as dynamic;
     }
+    if (t == List<_i78.LogLevel>) {
+      return (data as List).map((e) => deserialize<_i78.LogLevel>(e)).toList()
+          as dynamic;
+    }
     if (t == Map<String, int>) {
       return (data as Map).map(
               (k, v) => MapEntry(deserialize<String>(k), deserialize<int>(v)))
@@ -4108,14 +4113,14 @@ class Protocol extends _i1.SerializationManagerServer {
               MapEntry(deserialize<int>(e['k']), deserialize<int>(e['v']))))
           as dynamic;
     }
-    if (t == Map<_i78.TestEnum, int>) {
+    if (t == Map<_i79.TestEnum, int>) {
       return Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<_i78.TestEnum>(e['k']), deserialize<int>(e['v']))))
+              deserialize<_i79.TestEnum>(e['k']), deserialize<int>(e['v']))))
           as dynamic;
     }
-    if (t == Map<String, _i78.TestEnum>) {
+    if (t == Map<String, _i79.TestEnum>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i78.TestEnum>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i79.TestEnum>(v)))
           as dynamic;
     }
     if (t == Map<String, double>) {
@@ -4207,37 +4212,37 @@ class Protocol extends _i1.SerializationManagerServer {
               MapEntry(deserialize<String>(k), deserialize<Duration?>(v)))
           as dynamic;
     }
-    if (t == _i79.CustomClass) {
-      return _i79.CustomClass.fromJson(data) as T;
+    if (t == _i80.CustomClass) {
+      return _i80.CustomClass.fromJson(data) as T;
     }
-    if (t == _i79.CustomClass2) {
-      return _i79.CustomClass2.fromJson(data) as T;
+    if (t == _i80.CustomClass2) {
+      return _i80.CustomClass2.fromJson(data) as T;
     }
-    if (t == _i80.ProtocolCustomClass) {
-      return _i80.ProtocolCustomClass.fromJson(data) as T;
+    if (t == _i81.ProtocolCustomClass) {
+      return _i81.ProtocolCustomClass.fromJson(data) as T;
     }
-    if (t == _i81.ExternalCustomClass) {
-      return _i81.ExternalCustomClass.fromJson(data) as T;
+    if (t == _i82.ExternalCustomClass) {
+      return _i82.ExternalCustomClass.fromJson(data) as T;
     }
-    if (t == _i81.FreezedCustomClass) {
-      return _i81.FreezedCustomClass.fromJson(data) as T;
+    if (t == _i82.FreezedCustomClass) {
+      return _i82.FreezedCustomClass.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i79.CustomClass?>()) {
-      return (data != null ? _i79.CustomClass.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i80.CustomClass?>()) {
+      return (data != null ? _i80.CustomClass.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i79.CustomClass2?>()) {
-      return (data != null ? _i79.CustomClass2.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i80.CustomClass2?>()) {
+      return (data != null ? _i80.CustomClass2.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i80.ProtocolCustomClass?>()) {
-      return (data != null ? _i80.ProtocolCustomClass.fromJson(data) : null)
+    if (t == _i1.getType<_i81.ProtocolCustomClass?>()) {
+      return (data != null ? _i81.ProtocolCustomClass.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i81.ExternalCustomClass?>()) {
-      return (data != null ? _i81.ExternalCustomClass.fromJson(data) : null)
+    if (t == _i1.getType<_i82.ExternalCustomClass?>()) {
+      return (data != null ? _i82.ExternalCustomClass.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i81.FreezedCustomClass?>()) {
-      return (data != null ? _i81.FreezedCustomClass.fromJson(data) : null)
+    if (t == _i1.getType<_i82.FreezedCustomClass?>()) {
+      return (data != null ? _i82.FreezedCustomClass.fromJson(data) : null)
           as T;
     }
     try {
@@ -4256,19 +4261,19 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i79.CustomClass) {
+    if (data is _i80.CustomClass) {
       return 'CustomClass';
     }
-    if (data is _i79.CustomClass2) {
+    if (data is _i80.CustomClass2) {
       return 'CustomClass2';
     }
-    if (data is _i80.ProtocolCustomClass) {
+    if (data is _i81.ProtocolCustomClass) {
       return 'ProtocolCustomClass';
     }
-    if (data is _i81.ExternalCustomClass) {
+    if (data is _i82.ExternalCustomClass) {
       return 'ExternalCustomClass';
     }
-    if (data is _i81.FreezedCustomClass) {
+    if (data is _i82.FreezedCustomClass) {
       return 'FreezedCustomClass';
     }
     if (data is _i5.EmptyModelRelationItem) {
@@ -4495,19 +4500,19 @@ class Protocol extends _i1.SerializationManagerServer {
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
     if (data['className'] == 'CustomClass') {
-      return deserialize<_i79.CustomClass>(data['data']);
+      return deserialize<_i80.CustomClass>(data['data']);
     }
     if (data['className'] == 'CustomClass2') {
-      return deserialize<_i79.CustomClass2>(data['data']);
+      return deserialize<_i80.CustomClass2>(data['data']);
     }
     if (data['className'] == 'ProtocolCustomClass') {
-      return deserialize<_i80.ProtocolCustomClass>(data['data']);
+      return deserialize<_i81.ProtocolCustomClass>(data['data']);
     }
     if (data['className'] == 'ExternalCustomClass') {
-      return deserialize<_i81.ExternalCustomClass>(data['data']);
+      return deserialize<_i82.ExternalCustomClass>(data['data']);
     }
     if (data['className'] == 'FreezedCustomClass') {
-      return deserialize<_i81.FreezedCustomClass>(data['data']);
+      return deserialize<_i82.FreezedCustomClass>(data['data']);
     }
     if (data['className'] == 'EmptyModelRelationItem') {
       return deserialize<_i5.EmptyModelRelationItem>(data['data']);

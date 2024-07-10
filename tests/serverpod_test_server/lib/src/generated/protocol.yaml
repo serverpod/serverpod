@@ -118,7 +118,10 @@ listParameters:
   - returnDurationList:
   - returnDurationListNullableDurations:
 logging:
+  - slowMethod:
+  - failingMethod:
   - emptyMethod:
+  - log:
   - logInfo:
   - logDebugAndInfoAndError:
   - twoQueries:

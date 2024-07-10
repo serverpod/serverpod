@@ -27,14 +27,15 @@ import 'package:serverpod_test_client/src/protocol/object_with_object.dart'
     as _i14;
 import 'package:serverpod_test_client/src/protocol/object_field_scopes.dart'
     as _i15;
-import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i16;
+import 'package:serverpod/src/generated/log_level.dart' as _i16;
+import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i17;
 import 'package:serverpod_test_module_client/serverpod_test_module_client.dart'
-    as _i17;
-import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
     as _i18;
-import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field.dart'
+import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
     as _i19;
-import 'protocol.dart' as _i20;
+import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field.dart'
+    as _i20;
+import 'protocol.dart' as _i21;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -963,10 +964,36 @@ class EndpointLogging extends _i1.EndpointRef {
   @override
   String get name => 'logging';
 
+  _i2.Future<void> slowMethod(int delayMillis) =>
+      caller.callServerEndpoint<void>(
+        'logging',
+        'slowMethod',
+        {'delayMillis': delayMillis},
+      );
+
+  _i2.Future<void> failingMethod() => caller.callServerEndpoint<void>(
+        'logging',
+        'failingMethod',
+        {},
+      );
+
   _i2.Future<void> emptyMethod() => caller.callServerEndpoint<void>(
         'logging',
         'emptyMethod',
         {},
+      );
+
+  _i2.Future<void> log(
+    String message,
+    List<_i16.LogLevel> logLevels,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'logging',
+        'log',
+        {
+          'message': message,
+          'logLevels': logLevels,
+        },
       );
 
   _i2.Future<void> logInfo(String message) => caller.callServerEndpoint<void>(
@@ -1063,17 +1090,17 @@ class EndpointMapParameters extends _i1.EndpointRef {
         {'map': map},
       );
 
-  _i2.Future<Map<_i16.TestEnum, int>> returnEnumIntMap(
-          Map<_i16.TestEnum, int> map) =>
-      caller.callServerEndpoint<Map<_i16.TestEnum, int>>(
+  _i2.Future<Map<_i17.TestEnum, int>> returnEnumIntMap(
+          Map<_i17.TestEnum, int> map) =>
+      caller.callServerEndpoint<Map<_i17.TestEnum, int>>(
         'mapParameters',
         'returnEnumIntMap',
         {'map': map},
       );
 
-  _i2.Future<Map<String, _i16.TestEnum>> returnEnumMap(
-          Map<String, _i16.TestEnum> map) =>
-      caller.callServerEndpoint<Map<String, _i16.TestEnum>>(
+  _i2.Future<Map<String, _i17.TestEnum>> returnEnumMap(
+          Map<String, _i17.TestEnum> map) =>
+      caller.callServerEndpoint<Map<String, _i17.TestEnum>>(
         'mapParameters',
         'returnEnumMap',
         {'map': map},
@@ -1294,15 +1321,15 @@ class EndpointModuleSerialization extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<_i17.ModuleClass> modifyModuleObject(_i17.ModuleClass object) =>
-      caller.callServerEndpoint<_i17.ModuleClass>(
+  _i2.Future<_i18.ModuleClass> modifyModuleObject(_i18.ModuleClass object) =>
+      caller.callServerEndpoint<_i18.ModuleClass>(
         'moduleSerialization',
         'modifyModuleObject',
         {'object': object},
       );
 
-  _i2.Future<_i18.ModuleDatatype> serializeNestedModuleObject() =>
-      caller.callServerEndpoint<_i18.ModuleDatatype>(
+  _i2.Future<_i19.ModuleDatatype> serializeNestedModuleObject() =>
+      caller.callServerEndpoint<_i19.ModuleDatatype>(
         'moduleSerialization',
         'serializeNestedModuleObject',
         {},
@@ -1449,8 +1476,8 @@ class EndpointServerOnlyScopedFieldModel extends _i1.EndpointRef {
   @override
   String get name => 'serverOnlyScopedFieldModel';
 
-  _i2.Future<_i19.ScopeServerOnlyField> getScopeServerOnlyField() =>
-      caller.callServerEndpoint<_i19.ScopeServerOnlyField>(
+  _i2.Future<_i20.ScopeServerOnlyField> getScopeServerOnlyField() =>
+      caller.callServerEndpoint<_i20.ScopeServerOnlyField>(
         'serverOnlyScopedFieldModel',
         'getScopeServerOnlyField',
         {},
@@ -1576,12 +1603,12 @@ class EndpointSubDirTest extends _i1.EndpointRef {
 class _Modules {
   _Modules(Client client) {
     auth = _i3.Caller(client);
-    module = _i17.Caller(client);
+    module = _i18.Caller(client);
   }
 
   late final _i3.Caller auth;
 
-  late final _i17.Caller module;
+  late final _i18.Caller module;
 }
 
 class Client extends _i1.ServerpodClient {
@@ -1599,7 +1626,7 @@ class Client extends _i1.ServerpodClient {
     Function(_i1.MethodCallContext)? onSucceededCall,
   }) : super(
           host,
-          _i20.Protocol(),
+          _i21.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,

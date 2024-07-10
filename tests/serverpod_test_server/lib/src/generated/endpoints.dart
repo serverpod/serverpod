@@ -52,10 +52,11 @@ import 'package:serverpod_test_server/src/generated/object_with_object.dart'
     as _i40;
 import 'package:serverpod_test_server/src/generated/object_field_scopes.dart'
     as _i41;
-import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i42;
+import 'package:serverpod/src/generated/log_level.dart' as _i42;
+import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i43;
 import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
-    as _i43;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i44;
+    as _i44;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i45;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -2311,6 +2312,36 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'logging',
       endpoint: endpoints['logging']!,
       methodConnectors: {
+        'slowMethod': _i1.MethodConnector(
+          name: 'slowMethod',
+          params: {
+            'delayMillis': _i1.ParameterDescription(
+              name: 'delayMillis',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          returnsVoid: true,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['logging'] as _i17.LoggingEndpoint).slowMethod(
+            session,
+            params['delayMillis'],
+          ),
+        ),
+        'failingMethod': _i1.MethodConnector(
+          name: 'failingMethod',
+          params: {},
+          returnsVoid: true,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['logging'] as _i17.LoggingEndpoint)
+                  .failingMethod(session),
+        ),
         'emptyMethod': _i1.MethodConnector(
           name: 'emptyMethod',
           params: {},
@@ -2321,6 +2352,31 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['logging'] as _i17.LoggingEndpoint)
                   .emptyMethod(session),
+        ),
+        'log': _i1.MethodConnector(
+          name: 'log',
+          params: {
+            'message': _i1.ParameterDescription(
+              name: 'message',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'logLevels': _i1.ParameterDescription(
+              name: 'logLevels',
+              type: _i1.getType<List<_i42.LogLevel>>(),
+              nullable: false,
+            ),
+          },
+          returnsVoid: true,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['logging'] as _i17.LoggingEndpoint).log(
+            session,
+            params['message'],
+            params['logLevels'],
+          ),
         ),
         'logInfo': _i1.MethodConnector(
           name: 'logInfo',
@@ -2541,7 +2597,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<_i42.TestEnum, int>>(),
+              type: _i1.getType<Map<_i43.TestEnum, int>>(),
               nullable: false,
             )
           },
@@ -2561,7 +2617,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i42.TestEnum>>(),
+              type: _i1.getType<Map<String, _i43.TestEnum>>(),
               nullable: false,
             )
           },
@@ -3160,7 +3216,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'object': _i1.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i43.ModuleClass>(),
+              type: _i1.getType<_i44.ModuleClass>(),
               nullable: false,
             )
           },
@@ -3617,8 +3673,8 @@ class Endpoints extends _i1.EndpointDispatch {
         )
       },
     );
-    modules['serverpod_auth'] = _i44.Endpoints()..initializeEndpoints(server);
-    modules['serverpod_test_module'] = _i43.Endpoints()
+    modules['serverpod_auth'] = _i45.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_test_module'] = _i44.Endpoints()
       ..initializeEndpoints(server);
   }
 }
