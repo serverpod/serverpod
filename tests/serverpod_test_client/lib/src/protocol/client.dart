@@ -963,6 +963,12 @@ class EndpointLogging extends _i1.EndpointRef {
   @override
   String get name => 'logging';
 
+  _i2.Future<void> emptyMethod() => caller.callServerEndpoint<void>(
+        'logging',
+        'emptyMethod',
+        {},
+      );
+
   _i2.Future<void> logInfo(String message) => caller.callServerEndpoint<void>(
         'logging',
         'logInfo',

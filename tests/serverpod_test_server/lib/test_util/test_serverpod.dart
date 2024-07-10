@@ -1,3 +1,4 @@
+import 'package:serverpod/protocol.dart' as serverpod;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
@@ -47,6 +48,10 @@ class TestServerpod {
     );
 
     _serverpodFinalizer.attach(this, _serverpod, detach: this);
+  }
+
+  Future<void> updateRuntimeSettings(serverpod.RuntimeSettings settings) async {
+    await _serverpod.updateRuntimeSettings(settings);
   }
 
   Future<Session> session() async {

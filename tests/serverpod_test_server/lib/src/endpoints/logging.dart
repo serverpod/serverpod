@@ -2,6 +2,10 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 
 class LoggingEndpoint extends Endpoint {
+  Future<void> emptyMethod(Session session) async {
+    // do nothing
+  }
+
   Future<void> logInfo(Session session, String message) async {
     session.log(message);
   }
