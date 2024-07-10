@@ -127,8 +127,10 @@ abstract class SerializationManager {
   }
 
   /// Get the className for the provided object.
-  String? getClassNameForObject(Object data) {
-    if (data is int) {
+  String? getClassNameForObject(Object? data) {
+    if (data == null) {
+      return 'null';
+    } else if (data is int) {
       return 'int';
     } else if (data is double) {
       return 'double';
@@ -152,6 +154,8 @@ abstract class SerializationManager {
   dynamic deserializeByClassName(Map<String, dynamic> data) {
     var className = data['className'];
     switch (className) {
+      case 'null':
+        return null;
       case 'int':
         return deserialize<int>(data['data']);
       case 'double':
@@ -174,7 +178,7 @@ abstract class SerializationManager {
 
   /// Wraps serialized data with its class name so that it can be deserialized
   /// with [deserializeByClassName].
-  Map<String, dynamic> wrapWithClassName(Object data) {
+  Map<String, dynamic> wrapWithClassName(Object? data) {
     var className = getClassNameForObject(data);
     assert(
       className != null,
@@ -249,7 +253,7 @@ abstract class SerializationManager {
   /// name so that it can be decoded even if th class is unknown.
   /// If [formatted] is true, the output will be formatted with two spaces
   /// indentation.
-  String encodeWithType(Object object, {bool formatted = false}) {
+  String encodeWithType(Object? object, {bool formatted = false}) {
     return encode(wrapWithClassName(object), formatted: formatted);
   }
 }

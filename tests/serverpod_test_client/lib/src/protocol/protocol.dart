@@ -1513,16 +1513,9 @@ class Protocol extends _i1.SerializationManager {
   }
 
   @override
-  String? getClassNameForObject(Object data) {
-    String? className;
-    className = _i78.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return 'serverpod_auth.$className';
-    }
-    className = _i71.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return 'serverpod_test_module.$className';
-    }
+  String? getClassNameForObject(Object? data) {
+    String? className = super.getClassNameForObject(data);
+    if (className != null) return className;
     if (data is _i75.CustomClass) {
       return 'CustomClass';
     }
@@ -1742,19 +1735,19 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i69.UniqueData) {
       return 'UniqueData';
     }
-    return super.getClassNameForObject(data);
+    className = _i78.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth.$className';
+    }
+    className = _i71.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_test_module.$className';
+    }
+    return null;
   }
 
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
-    if (data['className'].startsWith('serverpod_auth.')) {
-      data['className'] = data['className'].substring(15);
-      return _i78.Protocol().deserializeByClassName(data);
-    }
-    if (data['className'].startsWith('serverpod_test_module.')) {
-      data['className'] = data['className'].substring(22);
-      return _i71.Protocol().deserializeByClassName(data);
-    }
     if (data['className'] == 'CustomClass') {
       return deserialize<_i75.CustomClass>(data['data']);
     }
@@ -1973,6 +1966,14 @@ class Protocol extends _i1.SerializationManager {
     }
     if (data['className'] == 'UniqueData') {
       return deserialize<_i69.UniqueData>(data['data']);
+    }
+    if (data['className'].startsWith('serverpod_auth.')) {
+      data['className'] = data['className'].substring(15);
+      return _i78.Protocol().deserializeByClassName(data);
+    }
+    if (data['className'].startsWith('serverpod_test_module.')) {
+      data['className'] = data['className'].substring(22);
+      return _i71.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
