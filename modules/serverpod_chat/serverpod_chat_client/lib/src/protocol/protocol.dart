@@ -146,12 +146,9 @@ class Protocol extends _i1.SerializationManager {
   }
 
   @override
-  String? getClassNameForObject(Object data) {
-    String? className;
-    className = _i14.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return 'serverpod_auth.$className';
-    }
+  String? getClassNameForObject(Object? data) {
+    String? className = super.getClassNameForObject(data);
+    if (className != null) return className;
     if (data is _i2.ChatJoinChannel) {
       return 'ChatJoinChannel';
     }
@@ -185,15 +182,15 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i12.ChatRequestMessageChunk) {
       return 'ChatRequestMessageChunk';
     }
-    return super.getClassNameForObject(data);
+    className = _i14.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth.$className';
+    }
+    return null;
   }
 
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
-    if (data['className'].startsWith('serverpod_auth.')) {
-      data['className'] = data['className'].substring(15);
-      return _i14.Protocol().deserializeByClassName(data);
-    }
     if (data['className'] == 'ChatJoinChannel') {
       return deserialize<_i2.ChatJoinChannel>(data['data']);
     }
@@ -227,6 +224,10 @@ class Protocol extends _i1.SerializationManager {
     }
     if (data['className'] == 'ChatRequestMessageChunk') {
       return deserialize<_i12.ChatRequestMessageChunk>(data['data']);
+    }
+    if (data['className'].startsWith('serverpod_auth.')) {
+      data['className'] = data['className'].substring(15);
+      return _i14.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }

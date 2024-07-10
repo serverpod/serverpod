@@ -50,8 +50,12 @@ class Protocol extends _i1.SerializationManager {
   }
 
   @override
-  String? getClassNameForObject(Object data) {
-    String? className;
+  String? getClassNameForObject(Object? data) {
+    String? className = super.getClassNameForObject(data);
+    if (className != null) return className;
+    if (data is _i2.Channel) {
+      return 'Channel';
+    }
     className = _i4.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
@@ -60,14 +64,14 @@ class Protocol extends _i1.SerializationManager {
     if (className != null) {
       return 'serverpod_chat.$className';
     }
-    if (data is _i2.Channel) {
-      return 'Channel';
-    }
-    return super.getClassNameForObject(data);
+    return null;
   }
 
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
+    if (data['className'] == 'Channel') {
+      return deserialize<_i2.Channel>(data['data']);
+    }
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
       return _i4.Protocol().deserializeByClassName(data);
@@ -75,9 +79,6 @@ class Protocol extends _i1.SerializationManager {
     if (data['className'].startsWith('serverpod_chat.')) {
       data['className'] = data['className'].substring(15);
       return _i5.Protocol().deserializeByClassName(data);
-    }
-    if (data['className'] == 'Channel') {
-      return deserialize<_i2.Channel>(data['data']);
     }
     return super.deserializeByClassName(data);
   }

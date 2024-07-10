@@ -134,7 +134,7 @@ achievements:
             action: issue
             condition: count(labels in ['bug', 'enhancement']) >= 250
   
-  # Comments with 2 or more upvotes
+  # Answered questions
   - achievement:
       name: Comet Commenter
       icon: https://serverpod.dev/badges/answer-1.webp
@@ -180,3 +180,64 @@ achievements:
             actor: resolved_by
             action: discussion
             condition: count() >= 250
+
+webhooks:
+  - webhook:
+      name: achievements
+      type: github
+      metadata:
+        discussion:
+          repository: serverpod/serverpod
+          title: Serverpod Achievements
+      events:
+
+        # Merged PRs
+        - event:
+            type: achievement
+            value: Nebula Novice
+        - event:
+            type: achievement
+            value: Quantum Queller
+        - event:
+            type: achievement
+            value: Galactic Guardian
+        - event:
+            type: achievement
+            value: Supernova Strategist
+        - event:
+            type: achievement
+            value: Universal Unifier
+        
+        # Opened issues
+        - event:
+            type: achievement
+            value: Asteroid Identifier
+        - event:
+            type: achievement
+            value: Cosmic Curator
+        - event:
+            type: achievement
+            value: Nebula Navigator
+        - event:
+            type: achievement
+            value: Quantum Questioner
+        - event:
+            type: achievement
+            value: Interstellar Protector
+
+        # Answered questions
+        - event:
+            type: achievement
+            value: Comet Commenter
+        - event:
+            type: achievement
+            value: Meteoric Mentor
+        - event:
+            type: achievement
+            value: Orbital Oracle
+        - event:
+            type: achievement
+            value: Celestial Sage
+        - event:
+            type: achievement
+            value: Infinite Informer
