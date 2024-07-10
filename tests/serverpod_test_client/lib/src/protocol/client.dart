@@ -964,6 +964,19 @@ class EndpointLogging extends _i1.EndpointRef {
   @override
   String get name => 'logging';
 
+  _i2.Future<void> slowQueryMethod(int seconds) =>
+      caller.callServerEndpoint<void>(
+        'logging',
+        'slowQueryMethod',
+        {'seconds': seconds},
+      );
+
+  _i2.Future<void> failedQueryMethod() => caller.callServerEndpoint<void>(
+        'logging',
+        'failedQueryMethod',
+        {},
+      );
+
   _i2.Future<void> slowMethod(int delayMillis) =>
       caller.callServerEndpoint<void>(
         'logging',

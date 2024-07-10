@@ -118,6 +118,8 @@ listParameters:
   - returnDurationList:
   - returnDurationListNullableDurations:
 logging:
+  - slowQueryMethod:
+  - failedQueryMethod:
   - slowMethod:
   - failingMethod:
   - emptyMethod:

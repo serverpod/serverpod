@@ -2312,6 +2312,36 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'logging',
       endpoint: endpoints['logging']!,
       methodConnectors: {
+        'slowQueryMethod': _i1.MethodConnector(
+          name: 'slowQueryMethod',
+          params: {
+            'seconds': _i1.ParameterDescription(
+              name: 'seconds',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          returnsVoid: true,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['logging'] as _i17.LoggingEndpoint).slowQueryMethod(
+            session,
+            params['seconds'],
+          ),
+        ),
+        'failedQueryMethod': _i1.MethodConnector(
+          name: 'failedQueryMethod',
+          params: {},
+          returnsVoid: true,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['logging'] as _i17.LoggingEndpoint)
+                  .failedQueryMethod(session),
+        ),
         'slowMethod': _i1.MethodConnector(
           name: 'slowMethod',
           params: {
