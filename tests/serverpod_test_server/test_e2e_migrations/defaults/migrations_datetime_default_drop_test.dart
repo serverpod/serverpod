@@ -59,7 +59,6 @@ void main() {
         var createMigrationExitCode =
             await MigrationTestUtils.createMigrationFromProtocols(
           protocols: targetStateProtocols,
-          force: true,
           tag: 'remove-default-value',
         );
 

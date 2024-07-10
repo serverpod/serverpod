@@ -15,9 +15,7 @@ void main() {
     ),
   );
 
-  group(
-      'Given an existing table with a non-nullable column having a default value,',
-      () {
+  group('Given an existing table with a nullable column,', () {
     setUpAll(() async {
       var createTableProtocol = {
         'existing_table': '''
@@ -25,64 +23,7 @@ void main() {
         table: existing_table
         fields:
           number: int
-          existingColumn: DateTime, default=now
-        '''
-      };
-
-      await MigrationTestUtils.createMigrationFromProtocols(
-        protocols: createTableProtocol,
-        tag: 'create-existing-table',
-      );
-
-      await MigrationTestUtils.runApplyMigrations();
-    });
-
-    tearDown(() async {
-      await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS existing_table;',
-        serviceClient: serviceClient,
-      );
-    });
-
-    group('when attempting to remove the default value without force,', () {
-      test('then the migration should fail and throw an error.', () async {
-        var targetStateProtocols = {
-          'existing_table': '''
-        class: ExistingTable
-        table: existing_table
-        fields:
-          number: int
-          existingColumn: DateTime
-        '''
-        };
-
-        var createMigrationExitCode =
-            await MigrationTestUtils.createMigrationFromProtocols(
-          protocols: targetStateProtocols,
-          tag: 'remove-default-value',
-        );
-
-        expect(
-          createMigrationExitCode,
-          isNot(0),
-          reason:
-              'Expected an error when creating the migration without force, but exit code was 0.',
-        );
-      });
-    });
-  });
-
-  group(
-      'Given an existing table with a non-nullable column having a default value,',
-      () {
-    setUpAll(() async {
-      var createTableProtocol = {
-        'existing_table': '''
-        class: ExistingTable
-        table: existing_table
-        fields:
-          number: int
-          existingColumn: DateTime, default=now
+          existingColumn: DateTime?
         '''
       };
 
@@ -102,7 +43,7 @@ void main() {
     });
 
     group(
-        'when removing the default value and making the column nullable without force,',
+        'when attempting to modify it to be non-nullable with a default value without force,',
         () {
       test('then the migration should fail and throw an error.', () async {
         var targetStateProtocols = {
@@ -111,8 +52,67 @@ void main() {
         table: existing_table
         fields:
           number: int
-          existingColumn: DateTime?
+          existingColumn: DateTime, default=now
         '''
+        };
+
+        var createMigrationExitCode =
+            await MigrationTestUtils.createMigrationFromProtocols(
+          protocols: targetStateProtocols,
+          tag: 'modify-existing-column',
+        );
+
+        expect(
+          createMigrationExitCode,
+          isNot(0),
+          reason:
+              'Expected an error when creating the migration without force, but exit code was 0.',
+        );
+      });
+    });
+  });
+
+  group(
+      'Given an existing table with a non-nullable column having a default value,',
+      () {
+    setUpAll(() async {
+      var createTableProtocol = {
+        'existing_table': '''
+      class: ExistingTable
+      table: existing_table
+      fields:
+        number: int
+        existingColumn: DateTime, default=now
+      '''
+      };
+
+      await MigrationTestUtils.createMigrationFromProtocols(
+        protocols: createTableProtocol,
+        tag: 'create-existing-table',
+      );
+
+      await MigrationTestUtils.runApplyMigrations();
+    });
+
+    tearDown(() async {
+      await MigrationTestUtils.migrationTestCleanup(
+        resetSql: 'DROP TABLE IF EXISTS existing_table;',
+        serviceClient: serviceClient,
+      );
+    });
+
+    group(
+        'when attempting to remove the default value and make the column nullable without force,',
+        () {
+      test('then the migration should fail and throw an error.', () async {
+        var targetStateProtocols = {
+          'existing_table': '''
+      class: ExistingTable
+      table: existing_table
+      fields:
+        number: int
+        existingColumn: DateTime?
+      '''
         };
 
         var createMigrationExitCode =
@@ -135,12 +135,12 @@ void main() {
     setUpAll(() async {
       var createTableProtocol = {
         'existing_table': '''
-        class: ExistingTable
-        table: existing_table
-        fields:
-          number: int
-          columnToRemove: DateTime, default=now
-        '''
+      class: ExistingTable
+      table: existing_table
+      fields:
+        number: int
+        columnToRemove: DateTime, default=now
+      '''
       };
 
       await MigrationTestUtils.createMigrationFromProtocols(
@@ -162,11 +162,11 @@ void main() {
       test('then the migration should fail and throw an error.', () async {
         var targetStateProtocols = {
           'existing_table': '''
-        class: ExistingTable
-        table: existing_table
-        fields:
-          number: int
-        '''
+      class: ExistingTable
+      table: existing_table
+      fields:
+        number: int
+      '''
         };
 
         var createMigrationExitCode =
