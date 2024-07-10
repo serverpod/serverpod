@@ -178,8 +178,8 @@ class LibraryGenerator {
           ..type = refer('Object?')))
         ..body = Block.of([
           const Code(
-            'String? dartTypeClassName = super.getClassNameForObject(data);'
-            'if(dartTypeClassName != null) return dartTypeClassName;',
+            'String? className = super.getClassNameForObject(data);'
+            'if(className != null) return className;',
           ),
           for (var extraClass in config.extraClasses)
             Code.scope((a) =>
@@ -187,7 +187,6 @@ class LibraryGenerator {
           for (var classInfo in models)
             Code.scope((a) =>
                 'if(data is ${a(refer(classInfo.className, classInfo.fileRef()))}) {return \'${classInfo.className}\';}'),
-          if (config.modules.isNotEmpty) const Code('String? className;'),
           for (var module in config.modules)
             Block.of([
               Code.scope((a) =>

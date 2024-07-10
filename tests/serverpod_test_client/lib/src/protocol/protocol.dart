@@ -1514,8 +1514,8 @@ class Protocol extends _i1.SerializationManager {
 
   @override
   String? getClassNameForObject(Object? data) {
-    String? dartTypeClassName = super.getClassNameForObject(data);
-    if (dartTypeClassName != null) return dartTypeClassName;
+    String? className = super.getClassNameForObject(data);
+    if (className != null) return className;
     if (data is _i75.CustomClass) {
       return 'CustomClass';
     }
@@ -1735,7 +1735,6 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i69.UniqueData) {
       return 'UniqueData';
     }
-    String? className;
     className = _i78.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';

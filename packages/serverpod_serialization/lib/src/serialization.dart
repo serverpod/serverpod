@@ -128,9 +128,9 @@ abstract class SerializationManager {
 
   /// Get the className for the provided object.
   String? getClassNameForObject(Object? data) {
-    if (data == null) return 'null';
-
-    if (data is int) {
+    if (data == null) {
+      return 'null';
+    } else if (data is int) {
       return 'int';
     } else if (data is double) {
       return 'double';
@@ -153,8 +153,9 @@ abstract class SerializationManager {
   /// Deserialize the provided json [data] by using the className stored in the [data].
   dynamic deserializeByClassName(Map<String, dynamic> data) {
     var className = data['className'];
-    if (className == 'null') return null;
     switch (className) {
+      case 'null':
+        return null;
       case 'int':
         return deserialize<int>(data['data']);
       case 'double':

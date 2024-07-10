@@ -104,12 +104,11 @@ class Protocol extends _i1.SerializationManagerServer {
 
   @override
   String? getClassNameForObject(Object? data) {
-    String? dartTypeClassName = super.getClassNameForObject(data);
-    if (dartTypeClassName != null) return dartTypeClassName;
+    String? className = super.getClassNameForObject(data);
+    if (className != null) return className;
     if (data is _i5.Channel) {
       return 'Channel';
     }
-    String? className;
     className = _i3.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';

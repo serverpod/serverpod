@@ -616,8 +616,8 @@ class Protocol extends _i1.SerializationManager {
 
   @override
   String? getClassNameForObject(Object? data) {
-    String? dartTypeClassName = super.getClassNameForObject(data);
-    if (dartTypeClassName != null) return dartTypeClassName;
+    String? className = super.getClassNameForObject(data);
+    if (className != null) return className;
     if (data is _i2.CacheInfo) {
       return 'CacheInfo';
     }
