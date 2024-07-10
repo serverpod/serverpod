@@ -27,7 +27,6 @@ void main() {
       'Map<String,List<int>>',
       'Map<String,Map<String,int>>',
       'Map<String,Map<String,List<List<Map<String,int>>>>>',
-      'GeographyPoint'
     ];
 
     for (var datatype in datatypes) {
@@ -66,18 +65,18 @@ void main() {
       var models = [
         ModelSourceBuilder().withModuleAlias('auth').withYaml(
           '''
-          class: UserInfo
-          table: serverpod_user_info
-          fields:
-            nickname: String
-          ''',
+              class: UserInfo
+              table: serverpod_user_info
+              fields:
+                nickname: String
+              ''',
         ).build(),
         ModelSourceBuilder().withYaml(
           '''
-          class: Example
-          fields:
-            name: module:auth:UserInfo
-          ''',
+              class: Example
+              fields:
+                name: module:auth:UserInfo
+              ''',
         ).build()
       ];
 
@@ -107,18 +106,18 @@ void main() {
       var models = [
         ModelSourceBuilder().withModuleAlias('serverpod').withYaml(
           '''
-          class: ServerpodClass
-          table: serverpod_table
-          fields:
-            nickname: String
-          ''',
+              class: ServerpodClass
+              table: serverpod_table
+              fields:
+                nickname: String
+              ''',
         ).build(),
         ModelSourceBuilder().withYaml(
           '''
-          class: Example
-          fields:
-            name: module:serverpod:ServerpodClass
-          ''',
+              class: Example
+              fields:
+                name: module:serverpod:ServerpodClass
+              ''',
         ).build()
       ];
 
@@ -146,18 +145,18 @@ void main() {
       var models = [
         ModelSourceBuilder().withModuleAlias('serverpod').withYaml(
           '''
-          class: ServerpodClass
-          table: serverpod_table
-          fields:
-            nickname: String
-          ''',
+              class: ServerpodClass
+              table: serverpod_table
+              fields:
+                nickname: String
+              ''',
         ).build(),
         ModelSourceBuilder().withYaml(
           '''
-          class: Example
-          fields:
-            name: serverpod:ServerpodClass
-          ''',
+              class: Example
+              fields:
+                name: serverpod:ServerpodClass
+              ''',
         ).build()
       ];
 
@@ -185,18 +184,18 @@ void main() {
       var models = [
         ModelSourceBuilder().withModuleAlias('auth').withYaml(
           '''
-          class: UserInfo
-          table: serverpod_user_info
-          fields:
-            nickname: String
-          ''',
+              class: UserInfo
+              table: serverpod_user_info
+              fields:
+                nickname: String
+              ''',
         ).build(),
         ModelSourceBuilder().withYaml(
           '''
-          class: Example
-          fields:
-            name: UserInfo
-          ''',
+              class: Example
+              fields:
+                name: UserInfo
+              ''',
         ).build()
       ];
 
@@ -221,32 +220,32 @@ void main() {
       var models = [
         ModelSourceBuilder().withYaml(
           '''
-          class: Example
-          fields:
-            name: module:auth:UserInfo
-          ''',
+              class: Example
+              fields:
+                name: module:auth:UserInfo
+              ''',
         ).build(),
         ModelSourceBuilder()
             .withModuleAlias('auth')
             .withFileName('user_profile')
             .withYaml(
           '''
-          class: UserProfile
-          fields:
-            email: String
-          ''',
+              class: UserProfile
+              fields:
+                email: String
+              ''',
         ).build(),
         ModelSourceBuilder()
             .withModuleAlias('auth')
             .withFileName('user_info')
             .withYaml(
           '''
-          class: UserInfo
-          table: serverpod_user_info
-          fields:
-            nickname: String
-            profile: UserProfile
-          ''',
+              class: UserInfo
+              table: serverpod_user_info
+              fields:
+                nickname: String
+                profile: UserProfile
+              ''',
         ).build(),
       ];
 
@@ -265,10 +264,10 @@ void main() {
       var models = [
         ModelSourceBuilder().withYaml(
           '''
-          class: Example
-          fields:
-            name: ByteData
-          ''',
+              class: Example
+              fields:
+                name: ByteData
+              ''',
         ).build()
       ];
 
@@ -299,18 +298,18 @@ void main() {
       var models = [
         ModelSourceBuilder().withFileName('example').withYaml(
           '''
-          class: Example
-          fields:
-            myEnum: MyEnum
-          ''',
+              class: Example
+              fields:
+                myEnum: MyEnum
+              ''',
         ).build(),
         ModelSourceBuilder().withFileName('my_enum').withYaml(
           '''
-          enum: MyEnum
-          values:
-            - first
-            - second
-          ''',
+              enum: MyEnum
+              values:
+                - first
+                - second
+              ''',
         ).build()
       ];
 
@@ -343,18 +342,18 @@ void main() {
       var models = [
         ModelSourceBuilder().withFileName('example').withYaml(
           '''
-          class: Example
-          fields:
-            myEnum: List<MyEnum>
-          ''',
+              class: Example
+              fields:
+                myEnum: List<MyEnum>
+              ''',
         ).build(),
         ModelSourceBuilder().withFileName('my_enum').withYaml(
           '''
-          enum: MyEnum
-          values:
-            - first
-            - second
-          ''',
+              enum: MyEnum
+              values:
+                - first
+                - second
+              ''',
         ).build()
       ];
 
@@ -379,18 +378,18 @@ void main() {
       var models = [
         ModelSourceBuilder().withFileName('example').withYaml(
           '''
-          class: Example
-          fields:
-            myEnum: Map<MyEnum, MyEnum>
-          ''',
+              class: Example
+              fields:
+                myEnum: Map<MyEnum, MyEnum>
+              ''',
         ).build(),
         ModelSourceBuilder().withFileName('my_enum').withYaml(
           '''
-          enum: MyEnum
-          values:
-            - first
-            - second
-          ''',
+              enum: MyEnum
+              values:
+                - first
+                - second
+              ''',
         ).build()
       ];
 
@@ -418,21 +417,21 @@ void main() {
       var models = [
         ModelSourceBuilder().withFileName('example').withYaml(
           '''
-          class: Example
-          fields:
-            myEnum: module:auth:MyEnum
-          ''',
+              class: Example
+              fields:
+                myEnum: module:auth:MyEnum
+              ''',
         ).build(),
         ModelSourceBuilder()
             .withModuleAlias('auth')
             .withFileName('my_enum')
             .withYaml(
           '''
-          enum: MyEnum
-          values:
-            - first
-            - second
-          ''',
+              enum: MyEnum
+              values:
+                - first
+                - second
+              ''',
         ).build()
       ];
 
@@ -465,17 +464,17 @@ void main() {
       var models = [
         ModelSourceBuilder().withYaml(
           '''
-          class: Example
-          fields:
-            customField: Map<  String  , CustomClass  ? > ?   
-          ''',
+              class: Example
+              fields:
+                customField: Map<  String  , CustomClass  ? > ?
+              ''',
         ).build(),
         ModelSourceBuilder().withFileName('custom_class').withYaml(
           '''
-          class: CustomClass
-          fields:
-            name: String
-          ''',
+              class: CustomClass
+              fields:
+                name: String
+              ''',
         ).build(),
       ];
 
@@ -530,17 +529,17 @@ void main() {
         var models = [
           ModelSourceBuilder().withYaml(
             '''
-            class: Example
-            fields:
-              customField: Map<String, CustomClass>
-            ''',
+                class: Example
+                fields:
+                  customField: Map<String, CustomClass>
+                ''',
           ).build(),
           ModelSourceBuilder().withFileName('custom_class').withYaml(
             '''
-            class: CustomClass
-            fields:
-              name: String
-            ''',
+                class: CustomClass
+                fields:
+                  name: String
+                ''',
           ).build(),
         ];
 
@@ -601,10 +600,10 @@ void main() {
         var models = [
           ModelSourceBuilder().withYaml(
             '''
-            class: Example
-            fields:
-              name: $datatype
-            ''',
+                class: Example
+                fields:
+                  name: $datatype
+                ''',
           ).build()
         ];
 
@@ -637,10 +636,10 @@ void main() {
       var models = [
         ModelSourceBuilder().withYaml(
           '''
-            class: Example
-            fields:
-              name: List<InvalidClass>
-            ''',
+                class: Example
+                fields:
+                  name: List<InvalidClass>
+                ''',
         ).build()
       ];
 
@@ -685,10 +684,10 @@ void main() {
       var models = [
         ModelSourceBuilder().withYaml(
           '''
-          class: Example
-          fields:
-            name:
-          ''',
+              class: Example
+              fields:
+                name:
+              ''',
         ).build()
       ];
 
@@ -720,10 +719,10 @@ void main() {
       var models = [
         ModelSourceBuilder().withYaml(
           '''
-          class: Example
-          fields:
-            name: List
-          ''',
+              class: Example
+              fields:
+                name: List
+              ''',
         ).build()
       ];
 
@@ -755,10 +754,10 @@ void main() {
       var models = [
         ModelSourceBuilder().withYaml(
           '''
-          class: Example
-          fields:
-            name: List<String, String>
-          ''',
+              class: Example
+              fields:
+                name: List<String, String>
+              ''',
         ).build()
       ];
 
@@ -790,10 +789,10 @@ void main() {
       var models = [
         ModelSourceBuilder().withYaml(
           '''
-          class: Example
-          fields:
-            name: Map
-          ''',
+              class: Example
+              fields:
+                name: Map
+              ''',
         ).build()
       ];
 
@@ -825,10 +824,10 @@ void main() {
       var models = [
         ModelSourceBuilder().withYaml(
           '''
-          class: Example
-          fields:
-            name: Map<String, String, String>
-          ''',
+              class: Example
+              fields:
+                name: Map<String, String, String>
+              ''',
         ).build()
       ];
 
@@ -859,10 +858,10 @@ void main() {
       var models = [
         ModelSourceBuilder().withYaml(
           '''
-          class: Example
-          fields:
-            name: Map<String, String>
-          ''',
+              class: Example
+              fields:
+                name: Map<String, String>
+              ''',
         ).build()
       ];
 
@@ -885,10 +884,10 @@ void main() {
       var models = [
         ModelSourceBuilder().withYaml(
           '''
-          class: Example
-          fields:
-            name: Map<int, String>
-          ''',
+              class: Example
+              fields:
+                name: Map<int, String>
+              ''',
         ).build()
       ];
 
@@ -913,10 +912,10 @@ void main() {
       var models = [
         ModelSourceBuilder().withYaml(
           '''
-          class: Example
-          fields:
-            name: Example<String>
-          ''',
+              class: Example
+              fields:
+                name: Example<String>
+              ''',
         ).build()
       ];
 
@@ -949,10 +948,10 @@ void main() {
     var models = [
       ModelSourceBuilder().withYaml(
         '''
-          class: Example
-          fields:
-            name: dynamic
-          ''',
+              class: Example
+              fields:
+                name: dynamic
+              ''',
       ).build()
     ];
 
@@ -984,10 +983,10 @@ void main() {
     var models = [
       ModelSourceBuilder().withYaml(
         '''
-          class: Example
-          fields:
-            name: package:serverpod_cli/src/lib/example.dart:Example
-          ''',
+              class: Example
+              fields:
+                name: package:serverpod_cli/src/lib/example.dart:Example
+              ''',
       ).build()
     ];
 
@@ -1012,10 +1011,10 @@ void main() {
     var models = [
       ModelSourceBuilder().withYaml(
         '''
-          class: Example
-          fields:
-            name: project:src/lib/example.dart:Example
-          ''',
+              class: Example
+              fields:
+                name: project:src/lib/example.dart:Example
+              ''',
       ).build()
     ];
 
@@ -1047,10 +1046,10 @@ void main() {
     var models = [
       ModelSourceBuilder().withYaml(
         '''
-          class: Example
-          fields:
-            name: CustomExample
-          ''',
+              class: Example
+              fields:
+                name: CustomExample
+              ''',
       ).build()
     ];
 
@@ -1104,10 +1103,10 @@ void main() {
     var models = [
       ModelSourceBuilder().withYaml(
         '''
-          class: Example
-          fields:
-            name: CustomExample?
-          ''',
+              class: Example
+              fields:
+                name: CustomExample?
+              ''',
       ).build()
     ];
 
@@ -1146,10 +1145,10 @@ void main() {
     var models = [
       ModelSourceBuilder().withYaml(
         '''
-          class: Example
-          fields:
-            name: List<CustomExample>
-          ''',
+              class: Example
+              fields:
+                name: List<CustomExample>
+              ''',
       ).build()
     ];
 
@@ -1199,10 +1198,10 @@ void main() {
     var models = [
       ModelSourceBuilder().withYaml(
         '''
-          class: Example
-          fields:
-            name: Map<CustomExample, CustomExample>
-          ''',
+              class: Example
+              fields:
+                name: Map<CustomExample, CustomExample>
+              ''',
       ).build()
     ];
 
@@ -1253,10 +1252,10 @@ void main() {
     var models = [
       ModelSourceBuilder().withYaml(
         '''
-          class: Example
-          fields:
-            user: module:auth:UserInfo
-          ''',
+              class: Example
+              fields:
+                user: module:auth:UserInfo
+              ''',
       ).build()
     ];
 
@@ -1297,10 +1296,10 @@ void main() {
     var models = [
       ModelSourceBuilder().withYaml(
         '''
-          class: Example
-          fields:
-            user: serverpod:LogLevel
-          ''',
+              class: Example
+              fields:
+                user: serverpod:LogLevel
+              ''',
       ).build()
     ];
 
@@ -1327,10 +1326,10 @@ void main() {
     var models = [
       ModelSourceBuilder().withYaml(
         '''
-            class: Example
-            fields:
-              name: int 
-            ''',
+                class: Example
+                fields:
+                  name: int
+                ''',
       ).build()
     ];
 
@@ -1356,10 +1355,10 @@ void main() {
     var models = [
       ModelSourceBuilder().withYaml(
         '''
-          class: Example
-          fields:
-            name: GeographyPoint
-          ''',
+              class: Example
+              fields:
+                name: geographyPoint
+              ''',
       ).build()
     ];
 

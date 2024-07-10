@@ -261,7 +261,7 @@ class TypeDefinition {
     if (className == 'ByteData') return 'ColumnByteData';
     if (className == 'Duration') return 'ColumnDuration';
     if (className == 'UuidValue') return 'ColumnUuid';
-    if (className == 'geograhyPoint') return 'ColumnGeographyPoint';
+    if (className == 'geographyPoint') return 'ColumnGeographyPoint';
 
     return 'ColumnSerializable';
   }
@@ -433,7 +433,6 @@ class TypeDefinition {
     if (className == 'List') return ValueType.list;
     if (className == 'Set') return ValueType.set;
     if (className == 'Map') return ValueType.map;
-    if (className == 'GeographyPoint') return ValueType.geographyPoint;
 
     if (isEnumType) return ValueType.isEnum;
     return ValueType.classType;
@@ -484,6 +483,10 @@ TypeDefinition parseType(
     return isNullable ? extraClass.asNullable : extraClass;
   }
 
+  // if (className == 'geographyPoint') {
+  //   className = 'GeographyPoint';
+  // }
+
   return TypeDefinition.mixedUrlAndClassName(
     mixed: className,
     nullable: isNullable,
@@ -524,5 +527,4 @@ enum ValueType {
   map,
   isEnum,
   classType,
-  geographyPoint,
 }
