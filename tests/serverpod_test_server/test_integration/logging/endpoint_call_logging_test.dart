@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/builders/log_settings_builder.dart';
 import 'package:serverpod_test_server/test_util/builders/runtime_settings_builder.dart';
+import 'package:serverpod_test_server/test_util/custom_matcher.dart';
 import 'package:serverpod_test_server/test_util/logging_utils.dart';
+import 'package:serverpod_test_server/test_util/mock_stdout.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
@@ -241,6 +244,45 @@ void main() async {
 
       expect(logs.first.logs, hasLength(1));
       expect(logs.first.logs.first.logLevel, LogLevel.fatal);
+    });
+  });
+
+  group('Stdout logger -', () {
+    late MockStdout record;
+
+    setUp(() async {
+      record = MockStdout();
+
+      server = IntegrationTestServer.create(
+          config: ServerpodConfig(
+              apiServer: ServerConfig(
+        port: 8080,
+        publicHost: 'localhost',
+        publicPort: 8080,
+        publicScheme: 'http',
+      )));
+
+      await IOOverrides.runZoned(() async {
+        await server.start();
+      }, stdout: () => record);
+    });
+
+    tearDown(() async {
+      await server.shutdown(exitProcess: false);
+    });
+
+    test(
+        'Given a log settings that enable all logging and the serverpod config does not have a database config when calling a noop method then a single log entry is pushed to stdout.',
+        () async {
+      var settings = RuntimeSettingsBuilder().build();
+      await server.updateRuntimeSettings(settings);
+
+      await client.logging.emptyMethod();
+
+      expect(record.output, containsCount('"id"', 1));
+
+      expect(record.output, contains('"endpoint":"logging"'));
+      expect(record.output, contains('"method":"emptyMethod"'));
     });
   });
 }
