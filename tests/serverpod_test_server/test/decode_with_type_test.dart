@@ -5,7 +5,7 @@ void main() {
   var protocol = Protocol();
 
   test(
-    'Given a non-null integer when encoding and decoding with type then output matches input',
+    'Given a integer when encoding and decoding with type then output matches input',
     () {
       int number = 1;
       var encoded = protocol.encodeWithType(number);
