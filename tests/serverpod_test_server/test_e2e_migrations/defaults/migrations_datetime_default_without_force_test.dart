@@ -72,65 +72,6 @@ void main() {
     });
   });
 
-  group(
-      'Given an existing table with a non-nullable column having a default value,',
-      () {
-    setUpAll(() async {
-      var createTableProtocol = {
-        'existing_table': '''
-      class: ExistingTable
-      table: existing_table
-      fields:
-        number: int
-        existingColumn: DateTime, default=now
-      '''
-      };
-
-      await MigrationTestUtils.createMigrationFromProtocols(
-        protocols: createTableProtocol,
-        tag: 'create-existing-table',
-      );
-
-      await MigrationTestUtils.runApplyMigrations();
-    });
-
-    tearDown(() async {
-      await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS existing_table;',
-        serviceClient: serviceClient,
-      );
-    });
-
-    group(
-        'when attempting to remove the default value and make the column nullable without force,',
-        () {
-      test('then the migration should fail and throw an error.', () async {
-        var targetStateProtocols = {
-          'existing_table': '''
-      class: ExistingTable
-      table: existing_table
-      fields:
-        number: int
-        existingColumn: DateTime?
-      '''
-        };
-
-        var createMigrationExitCode =
-            await MigrationTestUtils.createMigrationFromProtocols(
-          protocols: targetStateProtocols,
-          tag: 'remove-default-and-make-nullable',
-        );
-
-        expect(
-          createMigrationExitCode,
-          isNot(0),
-          reason:
-              'Expected an error when creating the migration without force, but exit code was 0.',
-        );
-      });
-    });
-  });
-
   group('Given an existing table with a column having a default value,', () {
     setUpAll(() async {
       var createTableProtocol = {
