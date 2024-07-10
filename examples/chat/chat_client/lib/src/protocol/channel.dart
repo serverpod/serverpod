@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'protocol.dart' as _i2;
 
 /// Represents a chat channel.
 abstract class Channel implements _i1.SerializableModel {
@@ -23,7 +24,7 @@ abstract class Channel implements _i1.SerializableModel {
     int? id,
     required String name,
     required String channel,
-    required geographyPoint point,
+    required _i2.GeographyPoint point,
   }) = _ChannelImpl;
 
   factory Channel.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -31,8 +32,8 @@ abstract class Channel implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       channel: jsonSerialization['channel'] as String,
-      point: geographyPoint
-          .fromJson((jsonSerialization['point'] as Map<String, dynamic>)),
+      point: _i2.GeographyPoint.fromJson(
+          (jsonSerialization['point'] as Map<String, dynamic>)),
     );
   }
 
@@ -47,13 +48,13 @@ abstract class Channel implements _i1.SerializableModel {
   /// The id of the channel.
   String channel;
 
-  geographyPoint point;
+  _i2.GeographyPoint point;
 
   Channel copyWith({
     int? id,
     String? name,
     String? channel,
-    geographyPoint? point,
+    _i2.GeographyPoint? point,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -78,7 +79,7 @@ class _ChannelImpl extends Channel {
     int? id,
     required String name,
     required String channel,
-    required geographyPoint point,
+    required _i2.GeographyPoint point,
   }) : super._(
           id: id,
           name: name,
@@ -91,7 +92,7 @@ class _ChannelImpl extends Channel {
     Object? id = _Undefined,
     String? name,
     String? channel,
-    geographyPoint? point,
+    _i2.GeographyPoint? point,
   }) {
     return Channel(
       id: id is int? ? id : this.id,

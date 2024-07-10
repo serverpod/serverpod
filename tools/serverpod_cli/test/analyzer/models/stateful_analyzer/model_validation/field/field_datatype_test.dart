@@ -665,7 +665,7 @@ void main() {
       );
       expect(
         error.span?.start.column,
-        25,
+        29,
       );
 
       expect(
@@ -674,7 +674,7 @@ void main() {
       );
       expect(
         error.span?.end.column,
-        37,
+        41,
       );
     });
 
@@ -1283,10 +1283,10 @@ void main() {
       var error = collector.errors.first;
 
       expect(error.span?.start.line, 2);
-      expect(error.span?.start.column, 25);
+      expect(error.span?.start.column, 29);
 
       expect(error.span?.end.line, 2);
-      expect(error.span?.end.column, 29);
+      expect(error.span?.end.column, 33);
     });
   });
 

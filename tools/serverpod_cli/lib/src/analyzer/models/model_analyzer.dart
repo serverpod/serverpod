@@ -212,10 +212,6 @@ class SerializableModelAnalyzer {
       return Keyword.enumType;
     }
 
-    if (documentContents.nodes[Keyword.geographyPoint] != null) {
-      return Keyword.geographyPoint;
-    }
-
     return null;
   }
 }

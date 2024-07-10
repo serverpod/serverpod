@@ -9,6 +9,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Represents a chat channel.
 abstract class Channel extends _i1.TableRow
@@ -24,7 +26,7 @@ abstract class Channel extends _i1.TableRow
     int? id,
     required String name,
     required String channel,
-    required geographyPoint point,
+    required _i2.GeographyPoint point,
   }) = _ChannelImpl;
 
   factory Channel.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -32,8 +34,8 @@ abstract class Channel extends _i1.TableRow
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       channel: jsonSerialization['channel'] as String,
-      point: geographyPoint
-          .fromJson((jsonSerialization['point'] as Map<String, dynamic>)),
+      point: _i2.GeographyPoint.fromJson(
+          (jsonSerialization['point'] as Map<String, dynamic>)),
     );
   }
 
@@ -47,7 +49,7 @@ abstract class Channel extends _i1.TableRow
   /// The id of the channel.
   String channel;
 
-  geographyPoint point;
+  _i2.GeographyPoint point;
 
   @override
   _i1.Table get table => t;
@@ -56,7 +58,7 @@ abstract class Channel extends _i1.TableRow
     int? id,
     String? name,
     String? channel,
-    geographyPoint? point,
+    _i2.GeographyPoint? point,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -74,7 +76,7 @@ abstract class Channel extends _i1.TableRow
       if (id != null) 'id': id,
       'name': name,
       'channel': channel,
-      'point': point.toJsonForProtocol(),
+      'point': point.toJson(),
     };
   }
 
@@ -115,7 +117,7 @@ class _ChannelImpl extends Channel {
     int? id,
     required String name,
     required String channel,
-    required geographyPoint point,
+    required _i2.GeographyPoint point,
   }) : super._(
           id: id,
           name: name,
@@ -128,7 +130,7 @@ class _ChannelImpl extends Channel {
     Object? id = _Undefined,
     String? name,
     String? channel,
-    geographyPoint? point,
+    _i2.GeographyPoint? point,
   }) {
     return Channel(
       id: id is int? ? id : this.id,
@@ -149,7 +151,7 @@ class ChannelTable extends _i1.Table {
       'channel',
       this,
     );
-    point = _i1.ColumnSerializable(
+    point = _i1.ColumnGeographyPoint(
       'point',
       this,
     );
@@ -161,7 +163,7 @@ class ChannelTable extends _i1.Table {
   /// The id of the channel.
   late final _i1.ColumnString channel;
 
-  late final _i1.ColumnSerializable point;
+  late final _i1.ColumnGeographyPoint point;
 
   @override
   List<_i1.Column> get columns => [

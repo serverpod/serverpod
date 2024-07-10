@@ -53,7 +53,7 @@ class Protocol extends _i1.SerializationManagerServer {
           name: 'point',
           columnType: _i2.ColumnType.json,
           isNullable: false,
-          dartType: 'geographyPoint',
+          dartType: 'protocol:GeographyPoint',
         ),
       ],
       foreignKeys: [],

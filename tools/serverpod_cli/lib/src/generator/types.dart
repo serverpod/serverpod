@@ -238,7 +238,7 @@ class TypeDefinition {
     if (className == 'ByteData') return 'bytea';
     if (className == 'Duration') return 'bigint';
     if (className == 'UuidValue') return 'uuid';
-    if (className == 'geograhyPoint') return 'point';
+    if (className == 'geographyPoint') return 'point';
 
     return 'json';
   }
@@ -261,7 +261,7 @@ class TypeDefinition {
     if (className == 'ByteData') return 'ColumnByteData';
     if (className == 'Duration') return 'ColumnDuration';
     if (className == 'UuidValue') return 'ColumnUuid';
-    if (className == 'geographyPoint') return 'ColumnGeographyPoint';
+    if (className == 'GeographyPoint') return 'ColumnGeographyPoint';
 
     return 'ColumnSerializable';
   }
@@ -483,9 +483,9 @@ TypeDefinition parseType(
     return isNullable ? extraClass.asNullable : extraClass;
   }
 
-  // if (className == 'geographyPoint') {
-  //   className = 'GeographyPoint';
-  // }
+  if (className == 'geographyPoint') {
+    className = 'GeographyPoint';
+  }
 
   return TypeDefinition.mixedUrlAndClassName(
     mixed: className,

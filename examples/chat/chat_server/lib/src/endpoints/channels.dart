@@ -8,7 +8,7 @@ class ChannelsEndpoint extends Endpoint {
     return await Channel.db.find(
       session,
       where: (p0) =>
-          p0.point.intersect(GeographyPoint(longitude: 2.55, latitude: 48.55)),
+          p0.point.intersects(GeographyPoint(longitude: 2.55, latitude: 48.55)),
     );
   }
 }
