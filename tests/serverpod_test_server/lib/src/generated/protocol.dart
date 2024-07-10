@@ -4493,7 +4493,7 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i79.CustomClass) {
+    if (data is _i83.CustomClass) {
       return 'CustomClass';
     }
     if (data is _i83.CustomClass2) {
