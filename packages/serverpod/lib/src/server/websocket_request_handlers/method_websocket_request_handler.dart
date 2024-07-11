@@ -40,6 +40,15 @@ class MethodWebsocketRequestHandler {
           case OpenMethodStreamResponse():
             break;
           case MethodStreamMessage():
+            if (message.parameter == null) {
+              // Assume message is intended for method streams return stream.
+              webSocket.add(BadRequestMessage.buildMessage(
+                  'Server does not accept messages targeting the return stream.'));
+              throw Exception(
+                'Message targeting return stream received: $message',
+              );
+            }
+
             var success = _methodStreamManager.dispatchMessage(message, server);
             if (success) break;
 
