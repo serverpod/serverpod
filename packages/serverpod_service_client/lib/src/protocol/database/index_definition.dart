@@ -45,7 +45,7 @@ abstract class IndexDefinition implements _i1.SerializableModel {
           .toList(),
       type: jsonSerialization['type'] as String,
       isUnique: jsonSerialization['isUnique'] as bool,
-      isNotNull: jsonSerialization['isNotNull'] as bool,
+      isNotNull: jsonSerialization['isNotNull'] as bool? ?? false,
       isPrimary: jsonSerialization['isPrimary'] as bool,
       predicate: jsonSerialization['predicate'] as String?,
     );
