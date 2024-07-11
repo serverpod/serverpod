@@ -25,7 +25,7 @@ class MethodWebsocketRequestHandler {
         try {
           message = WebSocketMessage.fromJsonString(jsonData);
         } on UnknownMessageException catch (_) {
-          webSocket.add(BadRequestMessage.buildMessage(jsonData));
+          webSocket.tryAdd(BadRequestMessage.buildMessage(jsonData));
           throw Exception(
             'Unknown message received on websocket connection: $jsonData',
           );
@@ -33,7 +33,7 @@ class MethodWebsocketRequestHandler {
 
         switch (message) {
           case OpenMethodStreamCommand():
-            webSocket.add(
+            webSocket.tryAdd(
               await _handleOpenMethodStreamCommand(server, webSocket, message),
             );
             break;
@@ -42,7 +42,7 @@ class MethodWebsocketRequestHandler {
           case MethodStreamMessage():
             if (message.parameter == null) {
               // Assume message is intended for method streams return stream.
-              webSocket.add(BadRequestMessage.buildMessage(
+              webSocket.tryAdd(BadRequestMessage.buildMessage(
                   'Server does not accept messages targeting the return stream.'));
               throw Exception(
                 'Message targeting return stream received: $message',
@@ -55,7 +55,8 @@ class MethodWebsocketRequestHandler {
             server.serverpod.logVerbose(
               'Failed to dispatch message: $message',
             );
-            webSocket.add(CloseMethodStreamCommand.buildMessage(
+
+            webSocket.tryAdd(CloseMethodStreamCommand.buildMessage(
               endpoint: message.endpoint,
               method: message.method,
               parameter: message.parameter,
@@ -79,7 +80,7 @@ class MethodWebsocketRequestHandler {
             );
             break;
           case PingCommand():
-            webSocket.add(PongCommand.buildMessage());
+            webSocket.tryAdd(PongCommand.buildMessage());
             break;
           case PongCommand():
             break;
@@ -463,9 +464,7 @@ class _MethodStreamManager {
           connectionId: message.connectionId,
         ));
 
-        if (webSocket.closeCode != null) return;
-
-        webSocket.add(CloseMethodStreamCommand.buildMessage(
+        webSocket.tryAdd(CloseMethodStreamCommand.buildMessage(
           endpoint: message.endpoint,
           method: message.method,
           parameter: parameterName,
@@ -639,7 +638,7 @@ class _MethodStreamManager {
   ) {
     var controller = StreamController<String>();
     controller.stream.listen((event) {
-      webSocket.add(event);
+      webSocket.tryAdd(event);
     }, onDone: () async {
       if (_streamContexts.isEmpty) {
         await webSocket.close();
@@ -654,6 +653,17 @@ class _MethodStreamManager {
       controller,
       methodStreamConnector.streamParams.values,
     );
+  }
+}
+
+extension on WebSocket {
+  void tryAdd(dynamic data) {
+    try {
+      add(data);
+    } catch (e) {
+      stderr.writeln(
+          'Error "$e", when trying to send data over websocket: $data');
+    }
   }
 }
 
