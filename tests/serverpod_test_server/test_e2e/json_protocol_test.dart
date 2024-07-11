@@ -61,7 +61,12 @@ void main() {
       WebSocketChannel websocket = WebSocketChannel.connect(
         Uri.parse(serverEndpointWebsocketUrl),
       );
-      message = await websocket.stream.asBroadcastStream().first;
+      await for (final event in websocket.stream) {
+        if (event is String && event.contains('serverOnlyScopedFieldModel')) {
+          message = event;
+          break;
+        }
+      }
       await websocket.sink.close();
     });
 
@@ -116,7 +121,12 @@ void main() {
         WebSocketChannel websocket = WebSocketChannel.connect(
           Uri.parse(serverEndpointWebsocketUrl),
         );
-        message = await websocket.stream.asBroadcastStream().first;
+        await for (final event in websocket.stream) {
+          if (event is String && event.contains('serverOnlyScopedFieldModel')) {
+            message = event;
+            break;
+          }
+        }
         await websocket.sink.close();
       });
 
@@ -165,7 +175,12 @@ void main() {
         WebSocketChannel websocket = WebSocketChannel.connect(
           Uri.parse(serverEndpointWebsocketUrl),
         );
-        message = await websocket.stream.asBroadcastStream().first;
+        await for (final event in websocket.stream) {
+          if (event is String && event.contains('serverOnlyScopedFieldModel')) {
+            message = event;
+            break;
+          }
+        }
         await websocket.sink.close();
       });
 
