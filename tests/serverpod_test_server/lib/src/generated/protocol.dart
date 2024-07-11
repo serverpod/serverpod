@@ -228,6 +228,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         ),
         _i2.IndexDefinition(
@@ -241,6 +242,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: false,
         ),
       ],
@@ -279,6 +281,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -344,6 +347,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         ),
         _i2.IndexDefinition(
@@ -361,6 +365,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: false,
         ),
       ],
@@ -416,6 +421,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -487,6 +493,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -525,6 +532,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -564,6 +572,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -619,6 +628,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -674,6 +684,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -712,6 +723,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -750,6 +762,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -782,6 +795,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -838,6 +852,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -903,6 +918,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         ),
         _i2.IndexDefinition(
@@ -920,6 +936,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: false,
         ),
       ],
@@ -978,6 +995,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -1017,6 +1035,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -1055,6 +1074,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -1093,6 +1113,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -1158,6 +1179,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -1202,6 +1224,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -1257,6 +1280,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -1295,6 +1319,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -1333,6 +1358,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -1395,6 +1421,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -1439,6 +1466,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         ),
         _i2.IndexDefinition(
@@ -1456,6 +1484,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'brin',
           isUnique: false,
+          isNotNull: false,
           isPrimary: false,
         ),
       ],
@@ -1524,6 +1553,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -1573,6 +1603,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -1623,6 +1654,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -1667,6 +1699,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -1722,6 +1755,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -1777,6 +1811,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -1835,6 +1870,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -1890,6 +1926,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -1961,6 +1998,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -2039,6 +2077,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -2094,6 +2133,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -2149,6 +2189,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         ),
         _i2.IndexDefinition(
@@ -2162,6 +2203,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: false,
         ),
       ],
@@ -2217,6 +2259,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -2256,6 +2299,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -2294,6 +2338,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -2332,6 +2377,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -2370,6 +2416,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -2408,6 +2455,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -2463,6 +2511,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         ),
         _i2.IndexDefinition(
@@ -2476,6 +2525,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: false,
         ),
       ],
@@ -2531,6 +2581,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -2623,6 +2674,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -2667,6 +2719,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         ),
         _i2.IndexDefinition(
@@ -2680,6 +2733,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: false,
         ),
       ],
@@ -2738,6 +2792,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -2777,6 +2832,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -2815,6 +2871,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
@@ -2874,6 +2931,7 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isNotNull: false,
           isPrimary: true,
         )
       ],
