@@ -52,11 +52,10 @@ import 'package:serverpod_test_server/src/generated/object_with_object.dart'
     as _i40;
 import 'package:serverpod_test_server/src/generated/object_field_scopes.dart'
     as _i41;
-import 'package:serverpod/src/generated/log_level.dart' as _i42;
-import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i43;
+import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i42;
 import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
-    as _i44;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i45;
+    as _i43;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i44;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -2393,7 +2392,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'logLevels': _i1.ParameterDescription(
               name: 'logLevels',
-              type: _i1.getType<List<_i42.LogLevel>>(),
+              type: _i1.getType<List<int>>(),
               nullable: false,
             ),
           },
@@ -2627,7 +2626,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<_i43.TestEnum, int>>(),
+              type: _i1.getType<Map<_i42.TestEnum, int>>(),
               nullable: false,
             )
           },
@@ -2647,7 +2646,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i43.TestEnum>>(),
+              type: _i1.getType<Map<String, _i42.TestEnum>>(),
               nullable: false,
             )
           },
@@ -3246,7 +3245,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'object': _i1.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i44.ModuleClass>(),
+              type: _i1.getType<_i43.ModuleClass>(),
               nullable: false,
             )
           },
@@ -3703,8 +3702,8 @@ class Endpoints extends _i1.EndpointDispatch {
         )
       },
     );
-    modules['serverpod_auth'] = _i45.Endpoints()..initializeEndpoints(server);
-    modules['serverpod_test_module'] = _i44.Endpoints()
+    modules['serverpod_auth'] = _i44.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_test_module'] = _i43.Endpoints()
       ..initializeEndpoints(server);
   }
 }
