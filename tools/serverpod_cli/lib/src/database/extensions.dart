@@ -376,12 +376,16 @@ extension IndexDefinitionPgSqlGeneration on IndexDefinition {
     var ifNotExistsStr = ifNotExists ? ' IF NOT EXISTS' : '';
     var elementIsNotNullStrs =
         elements.map((e) => '("${e.definition}" IS NOT NULL)');
-    var isNotNullExpr = (isNotNull ?? false)
-        ? ' WHERE (${elementIsNotNullStrs.join(' AND ')})'
-        : '';
+    var isNotNullExpr =
+        (isNotNull ?? false) ? '${elementIsNotNullStrs.join(' AND ')}' : null;
+    var isNotNullWhereExpr = isNotNullExpr == null
+        ? ''
+        : elements.length > 1
+            ? ' WHERE ($isNotNullExpr)'
+            : ' WHERE $isNotNullExpr';
 
     out += 'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" '
-        'USING $type$elementsExpr$isNotNullExpr;\n';
+        'USING $type$elementsExpr$isNotNullWhereExpr;\n';
 
     return out;
   }
