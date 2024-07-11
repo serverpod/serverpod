@@ -115,11 +115,22 @@ class Emails {
   /// migrated. If null, all entries in the database will be migrated.
   ///
   /// Returns the number of migrated entries.
+  ///
+  /// Warning: This migration method is designed for password hashes generated
+  /// by the framework's default algorithm. Hashes stored with a custom
+  /// generator or different algorithm may produce unexpected results.
   static Future<int> migrateLegacyPasswordHashes(
     Session session, {
     int batchSize = 100,
     int? maxMigratedEntries,
   }) async {
+    if (AuthConfig.current.passwordHashGenerator.hashCode !=
+            defaultGeneratePasswordHash.hashCode ||
+        AuthConfig.current.passwordHashValidator.hashCode !=
+            defaultValidatePasswordHash.hashCode) {
+      throw Exception(
+          'Can\'t migrate legacy password with another password hash algorithm');
+    }
     var updatedEntries = 0;
     int lastEntryId = 0;
 
@@ -538,10 +549,10 @@ class Emails {
     session.log(' - password is correct, userId: ${entry.userId})',
         level: LogLevel.debug);
 
-    if (AuthConfig.current.passwordHashGenerator ==
-            defaultGeneratePasswordHash ||
-        AuthConfig.current.passwordHashValidator ==
-            defaultValidatePasswordHash) {
+    if (AuthConfig.current.passwordHashGenerator.hashCode ==
+            defaultGeneratePasswordHash.hashCode &&
+        AuthConfig.current.passwordHashValidator.hashCode ==
+            defaultValidatePasswordHash.hashCode) {
       var migratedAuth = await Emails.tryMigrateAuthEntry(
         password: password,
         entry: entry,
