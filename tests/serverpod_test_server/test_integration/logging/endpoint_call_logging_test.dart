@@ -9,6 +9,10 @@ import 'package:serverpod_test_server/test_util/mock_stdout.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
+List<int> toLogLevelInts(List<LogLevel> levels) {
+  return levels.map((e) => e.toJson()).toList();
+}
+
 void main() async {
   var client = Client('http://localhost:8080/');
   late Serverpod server;
@@ -20,10 +24,10 @@ void main() async {
       await server.start();
 
       session = await server.createSession(enableLogging: false);
-      await LoggingUtil.clearAllLogs(session);
     });
 
     tearDown(() async {
+      await LoggingUtil.clearAllLogs(session);
       await await session.close();
       await server.shutdown(exitProcess: false);
     });
@@ -123,7 +127,7 @@ void main() async {
 
       await server.updateRuntimeSettings(settings);
 
-      await client.logging.log('message', [LogLevel.debug]);
+      await client.logging.log('message', [LogLevel.debug.toJson()]);
 
       var logs = await LoggingUtil.findAllLogs(session);
 
@@ -146,7 +150,8 @@ void main() async {
 
       await server.updateRuntimeSettings(settings);
 
-      await client.logging.log('message', [LogLevel.debug, LogLevel.info]);
+      await client.logging
+          .log('message', toLogLevelInts([LogLevel.debug, LogLevel.info]));
 
       var logs = await LoggingUtil.findAllLogs(session);
 
@@ -170,11 +175,14 @@ void main() async {
 
       await server.updateRuntimeSettings(settings);
 
-      await client.logging.log('message', [
-        LogLevel.debug,
-        LogLevel.info,
-        LogLevel.warning,
-      ]);
+      await client.logging.log(
+        'message',
+        toLogLevelInts([
+          LogLevel.debug,
+          LogLevel.info,
+          LogLevel.warning,
+        ]),
+      );
 
       var logs = await LoggingUtil.findAllLogs(session);
 
@@ -198,12 +206,15 @@ void main() async {
 
       await server.updateRuntimeSettings(settings);
 
-      await client.logging.log('message', [
-        LogLevel.debug,
-        LogLevel.info,
-        LogLevel.warning,
-        LogLevel.error,
-      ]);
+      await client.logging.log(
+        'message',
+        toLogLevelInts([
+          LogLevel.debug,
+          LogLevel.info,
+          LogLevel.warning,
+          LogLevel.error,
+        ]),
+      );
 
       var logs = await LoggingUtil.findAllLogs(session);
 
@@ -227,13 +238,16 @@ void main() async {
 
       await server.updateRuntimeSettings(settings);
 
-      await client.logging.log('message', [
-        LogLevel.debug,
-        LogLevel.info,
-        LogLevel.warning,
-        LogLevel.error,
-        LogLevel.fatal,
-      ]);
+      await client.logging.log(
+        'message',
+        toLogLevelInts([
+          LogLevel.debug,
+          LogLevel.info,
+          LogLevel.warning,
+          LogLevel.error,
+          LogLevel.fatal,
+        ]),
+      );
 
       var logs = await LoggingUtil.findAllLogs(session);
 
