@@ -166,7 +166,8 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
       // needed unless Postgres changes.
       var nameExprs = List.generate(
           namesList.length, (i) => '(${namesList[i]} IS NOT NULL)');
-      var isNotNullExpr = '(${nameExprs.join(' AND ')})';
+      var andExpr = '${nameExprs.join(' AND ')}';
+      var isNotNullExpr = namesList.length > 1 ? '($andExpr)' : andExpr;
       var isNotNull = predicate == isNotNullExpr;
       return IndexDefinition(
         indexName: indexName,
