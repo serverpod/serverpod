@@ -441,6 +441,16 @@ class TypeDefinition {
     return ValueType.classType;
   }
 
+  /// Returns DefaultValueAllowedType only for fields that are allowed to have defaults
+  DefaultValueAllowedType? get defaultValueType {
+    switch (valueType) {
+      case ValueType.dateTime:
+        return DefaultValueAllowedType.dateTime;
+      default:
+        return null;
+    }
+  }
+
   @override
   String toString() {
     var genericsString = generics.isNotEmpty ? '<${generics.join(',')}>' : '';
@@ -525,5 +535,9 @@ enum ValueType {
   set,
   map,
   isEnum,
-  classType,
+  classType;
+}
+
+enum DefaultValueAllowedType {
+  dateTime,
 }

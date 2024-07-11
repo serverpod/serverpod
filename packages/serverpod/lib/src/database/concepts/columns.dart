@@ -22,11 +22,15 @@ abstract class Column<T> {
   /// Query alias for the [Column].
   String get queryAlias => '${table.queryPrefix}.$_columnName';
 
+  /// flag to tell if this [Column] has any [default] value
+  final bool hasDefault;
+
   /// Creates a new [Column], this is typically done in generated code only.
   Column(
     this._columnName,
-    this.table,
-  ) : type = T;
+    this.table, {
+    this.hasDefault = false,
+  }) : type = T;
 
   @override
   String toString() {
@@ -37,20 +41,32 @@ abstract class Column<T> {
 /// A [Column] holding [ByteData].
 class ColumnByteData extends Column<ByteData> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnByteData(super.columnName, super.table);
+  ColumnByteData(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+  });
 }
 
 /// A [Column] holding an [SerializableModel]. The entity will be stored in the
 /// database as a json column.
 class ColumnSerializable extends Column<String> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnSerializable(super.columnName, super.table);
+  ColumnSerializable(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+  });
 
 // TODO: Add comparisons and possibly other operations
 }
 
 abstract class _ValueOperatorColumn<T> extends Column<T> {
-  _ValueOperatorColumn(super.columnName, super.table);
+  _ValueOperatorColumn(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+  });
 
   /// Applies encoding to value before it is sent to the database.
   Expression _encodeValueForQuery(T value);
@@ -61,14 +77,20 @@ class ColumnEnum<E extends Enum> extends _ValueOperatorColumn<E>
     with _NullableColumnDefaultOperations<E> {
   final EnumSerialization _serialized;
 
-  ColumnEnum._(super.columnName, super.table, this._serialized);
+  ColumnEnum._(
+    super.columnName,
+    super.table,
+    this._serialized, {
+    super.hasDefault,
+  });
 
   /// Creates a new [Column], this is typically done in generated code only.
   factory ColumnEnum(
     String columnName,
     Table table,
-    EnumSerialization serialized,
-  ) = ColumnEnumExtended<E>;
+    EnumSerialization serialized, {
+    bool hasDefault,
+  }) = ColumnEnumExtended<E>;
 
   @override
   Expression _encodeValueForQuery(value) {
@@ -84,8 +106,12 @@ class ColumnEnum<E extends Enum> extends _ValueOperatorColumn<E>
 /// Intended for internal use only
 class ColumnEnumExtended<E extends Enum> extends ColumnEnum<E> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnEnumExtended(super.columnName, super.table, super.serialized)
-      : super._();
+  ColumnEnumExtended(
+    super.columnName,
+    super.table,
+    super.serialized, {
+    super.hasDefault,
+  }) : super._();
 
   /// Data type for serialization of the enum.
   EnumSerialization get serialized => _serialized;
@@ -102,6 +128,7 @@ class ColumnString extends _ValueOperatorColumn<String>
     super.columnName,
     super.table, {
     this.varcharLength,
+    super.hasDefault,
   });
 
   /// Creates an [Expression] checking if the value in the column is LIKE the
@@ -140,7 +167,11 @@ class ColumnString extends _ValueOperatorColumn<String>
 class ColumnBool extends _ValueOperatorColumn<bool>
     with _NullableColumnDefaultOperations<bool> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnBool(super.columnName, super.table);
+  ColumnBool(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+  });
 
   @override
   Expression _encodeValueForQuery(bool value) => Expression(value);
@@ -153,7 +184,11 @@ class ColumnDateTime extends _ValueOperatorColumn<DateTime>
         _NullableColumnDefaultOperations<DateTime>,
         _ColumnNumberOperations<DateTime> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnDateTime(super.columnName, super.table);
+  ColumnDateTime(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+  });
 
   @override
   Expression _encodeValueForQuery(DateTime value) => EscapedExpression(value);
@@ -165,7 +200,11 @@ class ColumnDuration extends _ValueOperatorColumn<Duration>
         _NullableColumnDefaultOperations<Duration>,
         _ColumnNumberOperations<Duration> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnDuration(super.columnName, super.table);
+  ColumnDuration(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+  });
 
   @override
   Expression _encodeValueForQuery(Duration value) => EscapedExpression(value);
@@ -175,7 +214,11 @@ class ColumnDuration extends _ValueOperatorColumn<Duration>
 class ColumnUuid extends _ValueOperatorColumn<UuidValue>
     with _NullableColumnDefaultOperations<UuidValue> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnUuid(super.columnName, super.table);
+  ColumnUuid(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+  });
 
   @override
   Expression _encodeValueForQuery(UuidValue value) => EscapedExpression(value);
@@ -185,7 +228,11 @@ class ColumnUuid extends _ValueOperatorColumn<UuidValue>
 class ColumnInt extends _ValueOperatorColumn<int>
     with _NullableColumnDefaultOperations<int>, _ColumnNumberOperations<int> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnInt(super.columnName, super.table);
+  ColumnInt(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+  });
 
   @override
   Expression _encodeValueForQuery(int value) => Expression(value);
@@ -197,7 +244,11 @@ class ColumnDouble extends _ValueOperatorColumn<double>
         _NullableColumnDefaultOperations<double>,
         _ColumnNumberOperations<double> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnDouble(super.columnName, super.table);
+  ColumnDouble(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+  });
 
   @override
   Expression _encodeValueForQuery(double value) => Expression(value);
