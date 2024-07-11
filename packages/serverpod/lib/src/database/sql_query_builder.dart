@@ -323,8 +323,9 @@ class InsertQueryBuilder {
 
   /// Builds the insert SQL query.
   String build() {
-    var selectedColumns =
-        _table.columns.where((column) => column.columnName != 'id');
+    var selectedColumns = _table.columns.where(
+      (column) => column.columnName != 'id',
+    );
 
     var columnNames =
         selectedColumns.map((e) => '"${e.columnName}"').join(', ');
@@ -332,7 +333,10 @@ class InsertQueryBuilder {
     var values = _rows.map((row) => row.toJson()).map((row) {
       var values = selectedColumns.map((column) {
         var unformattedValue = row[column.columnName];
-        return DatabasePoolManager.encoder.convert(unformattedValue);
+        return DatabasePoolManager.encoder.convert(
+          unformattedValue,
+          hasDefaults: column.hasDefault,
+        );
       }).join(', ');
       return '($values)';
     }).join(', ');

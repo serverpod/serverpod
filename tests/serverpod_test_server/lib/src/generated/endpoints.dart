@@ -2311,6 +2311,17 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'logging',
       endpoint: endpoints['logging']!,
       methodConnectors: {
+        'emptyMethod': _i1.MethodConnector(
+          name: 'emptyMethod',
+          params: {},
+          returnsVoid: true,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['logging'] as _i17.LoggingEndpoint)
+                  .emptyMethod(session),
+        ),
         'logInfo': _i1.MethodConnector(
           name: 'logInfo',
           params: {

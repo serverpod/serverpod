@@ -1,5 +1,7 @@
+import 'package:intl/intl.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -28,9 +30,11 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                   // The id column is not null, since it is auto incrementing.
                   isNullable: column.name != 'id' && column.type.nullable,
                   dartType: column.type.toString(),
-                  columnDefault: column.name == 'id'
-                      ? "nextval('${classDefinition.tableName!}_id_seq'::regclass)"
-                      : null,
+                  columnDefault: _getColumnDefault(
+                    column,
+                    classDefinition,
+                    ColumnType.values.byName(column.type.databaseTypeEnum),
+                  ),
                 )
           ],
           foreignKeys: _createForeignKeys(classDefinition),
@@ -108,4 +112,34 @@ List<ForeignKeyDefinition> _createForeignKeys(ClassDefinition classDefinition) {
 void _sortTableDefinitions(List<TableDefinition> tables) {
   // Sort by name to make sure that we get consistent output
   tables.sort((a, b) => a.name.compareTo(b.name));
+}
+
+String? _getColumnDefault(
+  SerializableModelFieldDefinition column,
+  ClassDefinition classDefinition,
+  ColumnType type,
+) {
+  if (column.name == 'id') {
+    return "nextval('${classDefinition.tableName!}_id_seq'::regclass)";
+  }
+
+  var defaultValue = column.type.defaultValueType;
+  if (defaultValue == null) return null;
+
+  switch (defaultValue) {
+    case DefaultValueAllowedType.dateTime:
+      var defaultValue = column.defaultPersistValue;
+      if (defaultValue == null) return null;
+
+      if (defaultValue is! String) {
+        throw StateError('Invalid DateTime default value: $defaultValue');
+      }
+
+      if (defaultValue == defaultDateTimeValueNow) {
+        return 'CURRENT_TIMESTAMP';
+      }
+
+      DateTime? dateTime = DateTime.parse(defaultValue);
+      return '\'${DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime)}\'::timestamp without time zone';
+  }
 }
