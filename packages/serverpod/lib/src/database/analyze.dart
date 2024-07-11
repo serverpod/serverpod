@@ -164,11 +164,16 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
       // appears it doesn't do currently). A better solution would be to
       // properly parse out the predicate expression, but that may not be
       // needed unless Postgres changes.
-      var nameExprs = List.generate(
-          namesList.length, (i) => '(${namesList[i]} IS NOT NULL)');
-      var andExpr = '${nameExprs.join(' AND ')}';
-      var isNotNullExpr = namesList.length > 1 ? '($andExpr)' : andExpr;
-      var isNotNull = predicate == isNotNullExpr;
+      bool isNotNull;
+      if (predicate == null) {
+        isNotNull = false;
+      } else {
+        var nameExprs = List.generate(
+            namesList.length, (i) => '(${namesList[i]} IS NOT NULL)');
+        var andExpr = '${nameExprs.join(' AND ')}';
+        var isNotNullExpr = namesList.length > 1 ? '($andExpr)' : andExpr;
+        isNotNull = predicate == isNotNullExpr;
+      }
       return IndexDefinition(
         indexName: indexName,
         tableSpace: tableSpace,
