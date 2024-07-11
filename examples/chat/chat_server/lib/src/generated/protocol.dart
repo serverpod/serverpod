@@ -66,6 +66,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,

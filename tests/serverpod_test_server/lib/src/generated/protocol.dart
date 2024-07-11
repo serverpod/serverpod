@@ -230,6 +230,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'inhabitant_index_idx',
@@ -244,6 +245,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -283,6 +285,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -349,6 +352,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'blocking_blocked_unique_idx',
@@ -367,6 +371,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -423,6 +428,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -495,6 +501,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -534,6 +541,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -574,6 +582,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -630,6 +639,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -686,6 +696,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -725,6 +736,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -764,6 +776,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -797,6 +810,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -854,6 +868,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -920,6 +935,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'enrollment_index_idx',
@@ -938,6 +954,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -997,6 +1014,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -1037,6 +1055,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -1076,6 +1095,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -1115,6 +1135,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -1181,6 +1202,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -1226,6 +1248,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -1282,6 +1305,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -1321,6 +1345,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -1360,6 +1385,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -1423,6 +1449,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -1468,6 +1495,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'object_with_index_test_index',
@@ -1486,6 +1514,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: false,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -1555,6 +1584,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -1605,6 +1635,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -1656,6 +1687,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -1701,6 +1733,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -1757,6 +1790,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -1813,6 +1847,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -1872,6 +1907,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -1928,6 +1964,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -2000,6 +2037,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -2079,6 +2117,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -2135,6 +2174,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -2191,6 +2231,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'next_unique_idx',
@@ -2205,6 +2246,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -2261,6 +2303,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -2301,6 +2344,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -2340,6 +2384,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -2379,6 +2424,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -2418,6 +2464,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -2457,6 +2504,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -2513,6 +2561,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'arena_index_idx',
@@ -2527,6 +2576,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -2583,6 +2633,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -2676,6 +2727,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -2721,6 +2773,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'email_index_idx',
@@ -2735,6 +2788,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -2794,6 +2848,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -2834,6 +2889,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -2873,6 +2929,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -2933,6 +2990,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,

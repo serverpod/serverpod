@@ -198,6 +198,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_cloud_storage_path_idx',
@@ -216,6 +217,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_cloud_storage_expiration',
@@ -230,6 +232,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: false,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -288,6 +291,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_cloud_storage_direct_upload_storage_path',
@@ -306,6 +310,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -369,6 +374,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_future_call_time_idx',
@@ -383,6 +389,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: false,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_future_call_serverId_idx',
@@ -397,6 +404,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: false,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_future_call_identifier_idx',
@@ -411,6 +419,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: false,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -481,6 +490,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_health_connection_info_timestamp_idx',
@@ -503,6 +513,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -573,6 +584,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_health_metric_timestamp_idx',
@@ -599,6 +611,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -703,6 +716,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_log_sessionLogId_idx',
@@ -717,6 +731,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: false,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -821,6 +836,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -866,6 +882,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_method_endpoint_method_idx',
@@ -884,6 +901,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -935,6 +953,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_migrations_ids',
@@ -949,6 +968,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -1053,6 +1073,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_query_log_sessionLogId_idx',
@@ -1067,6 +1088,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: false,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -1107,6 +1129,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -1165,6 +1188,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         )
       ],
       managed: true,
@@ -1276,6 +1300,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_session_log_serverid_idx',
@@ -1290,6 +1315,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: false,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_session_log_touched_idx',
@@ -1304,6 +1330,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: false,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_session_log_isopen_idx',
@@ -1318,6 +1345,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: false,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,

@@ -101,6 +101,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_auth_key_userId_idx',
@@ -115,6 +116,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: false,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -166,6 +168,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_email_auth_email',
@@ -180,6 +183,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -238,6 +242,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_email_auth_create_account_request_idx',
@@ -252,6 +257,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -304,6 +310,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_email_failed_sign_in_email_idx',
@@ -318,6 +325,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: false,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_email_failed_sign_in_time_idx',
@@ -332,6 +340,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: false,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -383,6 +392,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_email_reset_verification_idx',
@@ -397,6 +407,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -443,6 +454,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_google_refresh_token_userId_idx',
@@ -457,6 +469,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -508,6 +521,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_user_image_user_id',
@@ -526,6 +540,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: false,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -607,6 +622,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_user_info_user_identifier',
@@ -621,6 +637,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_user_info_email',
@@ -635,6 +652,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: false,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,

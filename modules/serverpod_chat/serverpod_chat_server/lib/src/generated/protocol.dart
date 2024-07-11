@@ -109,6 +109,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_chat_message_channel_idx',
@@ -123,6 +124,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: false,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
@@ -175,6 +177,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: true,
+          predicate: null,
         ),
         _i2.IndexDefinition(
           indexName: 'serverpod_chat_read_message_channel_user_idx',
@@ -193,6 +196,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: true,
           isNotNull: false,
           isPrimary: false,
+          predicate: null,
         ),
       ],
       managed: true,
