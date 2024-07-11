@@ -187,7 +187,7 @@ abstract class SerializationManager {
 
     return {
       'className': className,
-      'data': data is ProtocolSerialization ? data.toJsonForProtocol() : data,
+      'data': data,
     };
   }
 
@@ -253,8 +253,30 @@ abstract class SerializationManager {
   /// name so that it can be decoded even if th class is unknown.
   /// If [formatted] is true, the output will be formatted with two spaces
   /// indentation.
-  String encodeWithType(Object? object, {bool formatted = false}) {
-    return encode(wrapWithClassName(object), formatted: formatted);
+  String encodeWithType(
+    Object? object, {
+    bool formatted = false,
+  }) {
+    return encode(
+      wrapWithClassName(object),
+      formatted: formatted,
+    );
+  }
+
+  /// Encode the provided [object] to a Json-formatted [String], including the
+  /// class name so that it can be decoded even if the class is unknown.
+  /// If [formatted] is true, the output will be formatted with two spaces
+  /// indentation. If [object] implements [ProtocolSerialization] interface, then
+  /// [toJsonForProtocol] will be used instead of the [toJson] method.
+  String encodeForProtocolWithType(
+    Object? object, {
+    bool formatted = false,
+  }) {
+    return encode(
+      wrapWithClassName(object),
+      formatted: formatted,
+      encodeForProtocol: true,
+    );
   }
 }
 
