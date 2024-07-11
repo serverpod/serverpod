@@ -220,13 +220,18 @@ class _InputStreamContext implements _StreamContext {
 }
 
 class _MethodStreamManager {
-  final Map<String, _StreamContext> _streamContexts = {};
+  final Map<String, _InputStreamContext> _inputStreamContexts = {};
+  final Map<String, _OutputStreamContext> _outputStreamContexts = {};
 
   Future<void> closeAllStreams() async {
-    var controllers = _streamContexts.values.map((c) => c.controller).toList();
-    _streamContexts.clear();
+    var inputControllers =
+        _inputStreamContexts.values.map((c) => c.controller).toList();
+    inputControllers.clear();
+    var outputControllers =
+        _outputStreamContexts.values.map((c) => c.controller).toList();
+    outputControllers.clear();
 
-    await _closeControllers(controllers);
+    await _closeControllers([...inputControllers, ...outputControllers]);
   }
 
   Future<void> closeStream({
@@ -245,15 +250,14 @@ class _MethodStreamManager {
       );
     }
 
-    var paramStreamContext = _streamContexts.remove(_buildStreamKey(
+    var paramStreamContext = _inputStreamContexts.remove(_buildStreamKey(
       endpoint: endpoint,
       method: method,
       parameter: parameter,
       connectionId: connectionId,
     ));
 
-    if (paramStreamContext == null ||
-        paramStreamContext is! _InputStreamContext) {
+    if (paramStreamContext == null) {
       return;
     }
 
@@ -314,7 +318,7 @@ class _MethodStreamManager {
     MethodStreamMessage message,
     Server server,
   ) {
-    var streamContext = _streamContexts[_buildStreamKey(
+    var streamContext = _inputStreamContexts[_buildStreamKey(
       endpoint: message.endpoint,
       method: message.method,
       parameter: message.parameter,
@@ -334,14 +338,14 @@ class _MethodStreamManager {
     MethodStreamSerializableException message,
     Server server,
   ) {
-    var streamContext = _streamContexts[_buildStreamKey(
+    var streamContext = _inputStreamContexts[_buildStreamKey(
       endpoint: message.endpoint,
       method: message.method,
       parameter: message.parameter,
       connectionId: message.connectionId,
     )];
 
-    if (streamContext == null || streamContext is! _InputStreamContext) {
+    if (streamContext == null) {
       return;
     }
 
@@ -392,7 +396,7 @@ class _MethodStreamManager {
     required UuidValue connectionId,
     required CloseReason reason,
   }) async {
-    var methodStreamContext = _streamContexts.remove(_buildStreamKey(
+    var methodStreamContext = _outputStreamContexts.remove(_buildStreamKey(
       endpoint: endpoint,
       method: method,
       connectionId: connectionId,
@@ -414,12 +418,8 @@ class _MethodStreamManager {
     var controllers = <StreamController>[];
     controllers.add(methodStreamContext.controller);
 
-    if (methodStreamContext is! _OutputStreamContext) {
-      return _closeControllers(controllers);
-    }
-
     for (var streamParam in methodStreamContext.streamParams) {
-      var paramStreamContext = _streamContexts.remove(_buildStreamKey(
+      var paramStreamContext = _inputStreamContexts.remove(_buildStreamKey(
         endpoint: endpoint,
         method: method,
         parameter: streamParam.name,
@@ -457,7 +457,7 @@ class _MethodStreamManager {
     for (var streamParam in streamParamDescriptions) {
       var parameterName = streamParam.name;
       var controller = StreamController(onCancel: () async {
-        _streamContexts.remove(_buildStreamKey(
+        _inputStreamContexts.remove(_buildStreamKey(
           endpoint: message.endpoint,
           method: message.method,
           parameter: parameterName,
@@ -472,13 +472,11 @@ class _MethodStreamManager {
           reason: CloseReason.done,
         ));
 
-        if (_streamContexts.isEmpty) {
-          await webSocket.close();
-        }
+        await tryCloseWebsocket(webSocket);
       });
 
       inputStreams[parameterName] = controller;
-      _streamContexts[_buildStreamKey(
+      _inputStreamContexts[_buildStreamKey(
         endpoint: message.endpoint,
         method: message.method,
         parameter: parameterName,
@@ -621,7 +619,7 @@ class _MethodStreamManager {
     required UuidValue connectionId,
     required String message,
   }) {
-    var methodStreamController = _streamContexts[_buildStreamKey(
+    var methodStreamController = _outputStreamContexts[_buildStreamKey(
       endpoint: endpoint,
       method: method,
       parameter: parameter,
@@ -640,12 +638,10 @@ class _MethodStreamManager {
     controller.stream.listen((event) {
       webSocket.tryAdd(event);
     }, onDone: () async {
-      if (_streamContexts.isEmpty) {
-        await webSocket.close();
-      }
+      await tryCloseWebsocket(webSocket);
     });
 
-    _streamContexts[_buildStreamKey(
+    _outputStreamContexts[_buildStreamKey(
       endpoint: message.endpoint,
       method: message.method,
       connectionId: message.connectionId,
@@ -653,6 +649,12 @@ class _MethodStreamManager {
       controller,
       methodStreamConnector.streamParams.values,
     );
+  }
+
+  Future<void> tryCloseWebsocket(webSocket) async {
+    if (_inputStreamContexts.isEmpty && _outputStreamContexts.isEmpty) {
+      await webSocket.close();
+    }
   }
 }
 
