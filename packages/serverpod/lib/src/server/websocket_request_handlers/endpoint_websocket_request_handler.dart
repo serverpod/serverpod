@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 
 /// This class is used by the [Server] to handle incoming websocket requests
@@ -104,37 +103,16 @@ abstract class EndpointWebsocketRequestHandler {
               stderr.writeln('$s');
             }
 
-            var duration =
-                DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
-            var logManager = session.serverpod.logManager;
-
-            var slow = duration >=
-                logManager.settings
-                    .getLogSettingsForSession(session)
-                    .slowSessionDuration;
-
-            var shouldLog = logManager.shouldLogMessage(
-              session: session,
-              endpoint: endpointName,
-              slow: slow,
-              failed: messageError != null,
-            );
-
-            if (shouldLog) {
-              var logEntry = MessageLogEntry(
-                sessionLogId: session.sessionLogs.temporarySessionId,
-                serverId: server.serverId,
-                messageId: session.currentMessageId,
-                endpoint: endpointName,
-                messageName: serialization['className'],
-                duration: duration,
-                order: session.sessionLogs.createLogOrderId,
-                error: messageError?.toString(),
-                stackTrace: messageStackTrace?.toString(),
-                slow: slow,
-              );
-              unawaited(logManager.logMessage(session, logEntry));
-            }
+            var duration = DateTime.now().difference(startTime);
+            unawaited(session.serverpod.logManager.logMessage(
+              session,
+              messageId: session.currentMessageId,
+              endpointName: endpointName,
+              messageName: serialization['className'],
+              duration: duration,
+              error: messageError?.toString(),
+              stackTrace: messageStackTrace,
+            ));
 
             session.currentMessageId += 1;
           }

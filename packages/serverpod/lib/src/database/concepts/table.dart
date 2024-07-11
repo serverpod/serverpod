@@ -44,6 +44,7 @@ class Table {
     id = ColumnInt(
       'id',
       this,
+      hasDefault: true,
     );
   }
 

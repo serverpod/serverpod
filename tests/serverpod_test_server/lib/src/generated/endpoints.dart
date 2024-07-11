@@ -2311,6 +2311,102 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'logging',
       endpoint: endpoints['logging']!,
       methodConnectors: {
+        'slowQueryMethod': _i1.MethodConnector(
+          name: 'slowQueryMethod',
+          params: {
+            'seconds': _i1.ParameterDescription(
+              name: 'seconds',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          returnsVoid: true,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['logging'] as _i17.LoggingEndpoint).slowQueryMethod(
+            session,
+            params['seconds'],
+          ),
+        ),
+        'failedQueryMethod': _i1.MethodConnector(
+          name: 'failedQueryMethod',
+          params: {},
+          returnsVoid: true,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['logging'] as _i17.LoggingEndpoint)
+                  .failedQueryMethod(session),
+        ),
+        'slowMethod': _i1.MethodConnector(
+          name: 'slowMethod',
+          params: {
+            'delayMillis': _i1.ParameterDescription(
+              name: 'delayMillis',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          returnsVoid: true,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['logging'] as _i17.LoggingEndpoint).slowMethod(
+            session,
+            params['delayMillis'],
+          ),
+        ),
+        'failingMethod': _i1.MethodConnector(
+          name: 'failingMethod',
+          params: {},
+          returnsVoid: true,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['logging'] as _i17.LoggingEndpoint)
+                  .failingMethod(session),
+        ),
+        'emptyMethod': _i1.MethodConnector(
+          name: 'emptyMethod',
+          params: {},
+          returnsVoid: true,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['logging'] as _i17.LoggingEndpoint)
+                  .emptyMethod(session),
+        ),
+        'log': _i1.MethodConnector(
+          name: 'log',
+          params: {
+            'message': _i1.ParameterDescription(
+              name: 'message',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'logLevels': _i1.ParameterDescription(
+              name: 'logLevels',
+              type: _i1.getType<List<int>>(),
+              nullable: false,
+            ),
+          },
+          returnsVoid: true,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['logging'] as _i17.LoggingEndpoint).log(
+            session,
+            params['message'],
+            params['logLevels'],
+          ),
+        ),
         'logInfo': _i1.MethodConnector(
           name: 'logInfo',
           params: {

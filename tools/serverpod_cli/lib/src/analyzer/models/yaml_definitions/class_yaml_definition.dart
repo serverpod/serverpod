@@ -2,6 +2,7 @@ import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/default.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/validate_node.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
@@ -67,6 +68,11 @@ class ClassYamlDefinition {
                 valueRestriction:
                     restrictions.validateRelationInterdependencies,
                 allowEmptyNestedValue: true,
+                mutuallyExclusiveKeys: {
+                  Keyword.defaultKey,
+                  Keyword.defaultModelKey,
+                  Keyword.defaultPersistKey,
+                },
                 nested: {
                   ValidateNode(
                     Keyword.parent,
@@ -131,6 +137,39 @@ class ClassYamlDefinition {
                 isDeprecated: true,
                 isRemoved: true,
                 alternativeUsageMessage: 'Use "!persist" instead.',
+              ),
+              ValidateNode(
+                Keyword.defaultKey,
+                keyRestriction: restrictions.validateDefaultKey,
+                valueRestriction: DefaultValueRestriction(
+                  Keyword.defaultKey,
+                  restrictions.documentDefinition,
+                ).validate,
+                mutuallyExclusiveKeys: {
+                  Keyword.relation,
+                },
+              ),
+              ValidateNode(
+                Keyword.defaultModelKey,
+                keyRestriction: restrictions.validateDefaultModelKey,
+                valueRestriction: DefaultValueRestriction(
+                  Keyword.defaultModelKey,
+                  restrictions.documentDefinition,
+                ).validate,
+                mutuallyExclusiveKeys: {
+                  Keyword.relation,
+                },
+              ),
+              ValidateNode(
+                Keyword.defaultPersistKey,
+                keyRestriction: restrictions.validateDefaultPersistKey,
+                valueRestriction: DefaultValueRestriction(
+                  Keyword.defaultPersistKey,
+                  restrictions.documentDefinition,
+                ).validate,
+                mutuallyExclusiveKeys: {
+                  Keyword.relation,
+                },
               ),
             },
           ),

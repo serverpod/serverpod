@@ -77,33 +77,39 @@ class InsightsEndpoint extends Endpoint {
       where = where & (SessionLogEntry.t.id < filter.lastSessionLogId);
     }
 
-    var rows = (await session.db.find<SessionLogEntry>(
+    var rows = await session.db.find<SessionLogEntry>(
       where: where,
       limit: numEntries,
       orderBy: SessionLogEntry.t.id,
       orderDescending: true,
-    ))
-        .cast<SessionLogEntry>();
+    );
 
     var sessionLogInfo = <SessionLogInfo>[];
     for (var logEntry in rows) {
-      var logRows = await session.db.find<LogEntry>(
+      var futureLogRows = session.db.find<LogEntry>(
         where: LogEntry.t.sessionLogId.equals(logEntry.id),
+        orderBy: LogEntry.t.order,
       );
 
-      var queryRows = await session.db.find<QueryLogEntry>(
+      var futureQueryRows = session.db.find<QueryLogEntry>(
         where: QueryLogEntry.t.sessionLogId.equals(logEntry.id),
+        orderBy: QueryLogEntry.t.order,
       );
 
-      var messageRows = await session.db.find<MessageLogEntry>(
+      var futureMessageRows = session.db.find<MessageLogEntry>(
         where: MessageLogEntry.t.sessionLogId.equals(logEntry.id),
+        orderBy: MessageLogEntry.t.order,
       );
+
+      var logRows = await futureLogRows;
+      var queryRows = await futureQueryRows;
+      var messageRows = await futureMessageRows;
 
       sessionLogInfo.add(
         SessionLogInfo(
           sessionLogEntry: logEntry,
-          logs: logRows.cast<LogEntry>(),
-          queries: queryRows.cast<QueryLogEntry>(),
+          logs: logRows,
+          queries: queryRows,
           messages: messageRows,
         ),
       );

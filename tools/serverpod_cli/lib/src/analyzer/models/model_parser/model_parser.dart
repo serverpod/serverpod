@@ -194,6 +194,8 @@ class ModelParser {
 
     var scope = _parseClassFieldScope(node, serverOnlyClass);
     var shouldPersist = _parseShouldPersist(node);
+    var defaultModelValue = _parseDefaultModelValue(node);
+    var defaultPersistValue = _parseDefaultPersistValue(node);
 
     RelationDefinition? relation = _parseRelation(
       fieldName,
@@ -209,6 +211,8 @@ class ModelParser {
         scope: scope,
         type: typeResult,
         documentation: fieldDocumentation,
+        defaultModelValue: defaultModelValue,
+        defaultPersistValue: defaultPersistValue,
       )
     ];
   }
@@ -334,6 +338,16 @@ class ModelParser {
     if (!node.containsKey(Keyword.persist)) return true;
 
     return _parseBooleanKey(node, Keyword.persist);
+  }
+
+  static dynamic _parseDefaultModelValue(YamlMap node) {
+    return node.nodes[Keyword.defaultModelKey]?.value ??
+        node.nodes[Keyword.defaultKey]?.value;
+  }
+
+  static dynamic _parseDefaultPersistValue(YamlMap node) {
+    return node.nodes[Keyword.defaultPersistKey]?.value ??
+        node.nodes[Keyword.defaultKey]?.value;
   }
 
   static bool _parseBooleanKey(YamlMap node, String key) {

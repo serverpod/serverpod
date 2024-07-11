@@ -1,5 +1,4 @@
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -98,6 +97,20 @@ class SerializableModelFieldDefinition {
 
   final bool shouldPersist;
 
+  // default model value
+  final dynamic defaultModelValue;
+
+  // default valdatabase
+  final dynamic defaultPersistValue;
+
+  /// returns true if one of the defauls its not null
+  bool get hasDefauls =>
+      defaultModelValue != null || defaultPersistValue != null;
+
+  /// returns true if only has database default
+  bool get hasOnlyDatabaseDefauls =>
+      defaultModelValue == null && defaultPersistValue != null;
+
   /// If set the field is a relation to another table. The type of the relation
   /// [ForeignRelationDefinition], [ObjectRelationDefinition] or [ListRelationDefinition]
   /// determines where and how the relation is stored.
@@ -122,6 +135,8 @@ class SerializableModelFieldDefinition {
     required this.type,
     required this.scope,
     required this.shouldPersist,
+    this.defaultModelValue,
+    this.defaultPersistValue,
     this.relation,
     this.documentation,
   });
@@ -429,3 +444,5 @@ const ForeignKeyAction onDeleteDefaultOld = ForeignKeyAction.cascade;
 const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;
 
 const String defaultPrimaryKeyName = 'id';
+
+const String defaultDateTimeValueNow = 'now';

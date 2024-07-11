@@ -127,8 +127,10 @@ abstract class SerializationManager {
   }
 
   /// Get the className for the provided object.
-  String? getClassNameForObject(Object data) {
-    if (data is int) {
+  String? getClassNameForObject(Object? data) {
+    if (data == null) {
+      return 'null';
+    } else if (data is int) {
       return 'int';
     } else if (data is double) {
       return 'double';
@@ -152,6 +154,8 @@ abstract class SerializationManager {
   dynamic deserializeByClassName(Map<String, dynamic> data) {
     var className = data['className'];
     switch (className) {
+      case 'null':
+        return null;
       case 'int':
         return deserialize<int>(data['data']);
       case 'double':
@@ -174,7 +178,7 @@ abstract class SerializationManager {
 
   /// Wraps serialized data with its class name so that it can be deserialized
   /// with [deserializeByClassName].
-  Map<String, dynamic> wrapWithClassName(Object data) {
+  Map<String, dynamic> wrapWithClassName(Object? data) {
     var className = getClassNameForObject(data);
     assert(
       className != null,
@@ -190,7 +194,11 @@ abstract class SerializationManager {
   /// Encode the provided [object] to a Json-formatted [String].
   /// If [formatted] is true, the output will be formatted with two spaces
   /// indentation.
-  static String encode(Object? object, {bool formatted = false}) {
+  static String encode(
+    Object? object, {
+    bool formatted = false,
+    bool encodeForProtocol = false,
+  }) {
     // This is the only time [jsonEncode] should be used in the project.
     return JsonEncoder.withIndent(
       formatted ? '  ' : null,
@@ -208,6 +216,8 @@ abstract class SerializationManager {
           return nonEncodable.entries
               .map((e) => {'k': e.key, 'v': e.value})
               .toList();
+        } else if (encodeForProtocol && nonEncodable is ProtocolSerialization) {
+          return nonEncodable.toJsonForProtocol();
         } else {
           return (nonEncodable as dynamic)?.toJson();
         }
@@ -222,18 +232,28 @@ abstract class SerializationManager {
     Object? object, {
     bool formatted = false,
   }) {
+    /// Added this check to avoid the multiple if-else conditions inside the encode method
+    /// If the object implements ProtocolSerialization, directly use toJsonForProtocol.
     if (object is ProtocolSerialization) {
-      return encode(object.toJsonForProtocol(), formatted: formatted);
+      return encode(
+        object.toJsonForProtocol(),
+        formatted: formatted,
+        encodeForProtocol: true,
+      );
     }
 
-    return encode(object, formatted: formatted);
+    return encode(
+      object,
+      formatted: formatted,
+      encodeForProtocol: true,
+    );
   }
 
   /// Encode the provided [object] to a json-formatted [String], include class
   /// name so that it can be decoded even if th class is unknown.
   /// If [formatted] is true, the output will be formatted with two spaces
   /// indentation.
-  String encodeWithType(Object object, {bool formatted = false}) {
+  String encodeWithType(Object? object, {bool formatted = false}) {
     return encode(wrapWithClassName(object), formatted: formatted);
   }
 }

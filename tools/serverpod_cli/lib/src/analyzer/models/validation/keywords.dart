@@ -27,6 +27,10 @@ class Keyword {
   static const String scope = 'scope';
   static const String persist = 'persist';
 
+  static const String defaultKey = 'default';
+  static const String defaultModelKey = 'defaultModel';
+  static const String defaultPersistKey = 'defaultPersist';
+
   /// Special keyword to allow keys to be any string.
   static const String any = '#any';
 }
