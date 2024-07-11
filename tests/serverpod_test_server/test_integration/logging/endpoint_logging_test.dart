@@ -15,10 +15,11 @@ void main() async {
     server = IntegrationTestServer.create();
     await server.start();
     session = await server.createSession(enableLogging: false);
+
+    await LoggingUtil.clearAllLogs(session);
   });
 
   tearDown(() async {
-    await LoggingUtil.clearAllLogs(session);
     await await session.close();
     await server.shutdown(exitProcess: false);
   });
