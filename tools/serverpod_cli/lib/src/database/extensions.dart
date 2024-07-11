@@ -124,7 +124,7 @@ extension IndexComparisons on IndexDefinition {
   bool like(IndexDefinition other) {
     return other.isPrimary == isPrimary &&
         other.isUnique == isUnique &&
-        other.isNotNull == isNotNull &&
+        (other.isNotNull ?? false) == (isNotNull ?? false) &&
         other.indexName == indexName &&
         other.predicate == predicate &&
         other.tableSpace == tableSpace &&
