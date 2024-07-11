@@ -1,7 +1,7 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/config/config.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Create the target [DatabaseDefinition] based on the [serializableModel].
 DatabaseDefinition createDatabaseDefinitionFromModels(
@@ -43,6 +43,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
               ],
               type: 'btree',
               isUnique: true,
+              isNotNull: false,
               isPrimary: true,
             ),
             for (var index in classDefinition.indexes)
@@ -56,6 +57,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                 ],
                 type: index.type,
                 isUnique: index.unique,
+                isNotNull: index.nonNulls,
                 isPrimary: false,
               ),
           ],

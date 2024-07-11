@@ -124,6 +124,7 @@ extension IndexComparisons on IndexDefinition {
   bool like(IndexDefinition other) {
     return other.isPrimary == isPrimary &&
         other.isUnique == isUnique &&
+        other.isNotNull == isNotNull &&
         other.indexName == indexName &&
         other.predicate == predicate &&
         other.tableSpace == tableSpace &&
@@ -370,11 +371,15 @@ extension IndexDefinitionPgSqlGeneration on IndexDefinition {
 
     var uniqueStr = isUnique ? ' UNIQUE' : '';
     var elementStrs = elements.map((e) => '"${e.definition}"');
+    var elementsExpr = ' (${elementStrs.join(', ')})';
     var ifNotExistsStr = ifNotExists ? ' IF NOT EXISTS' : '';
+    var elementIsNotNullStrs =
+        elements.map((e) => '"(${e.definition}" IS NOT NULL)');
+    var isNotNullExpr =
+        isNotNull ? ' WHERE (${elementIsNotNullStrs.join(' AND ')})' : '';
 
-    out +=
-        'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" USING $type'
-        ' (${elementStrs.join(', ')});\n';
+    out += 'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" '
+        'USING $type$elementsExpr$isNotNullExpr;\n';
 
     return out;
   }

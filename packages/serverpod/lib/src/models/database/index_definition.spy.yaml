@@ -12,6 +12,8 @@ fields:
   type: String
   ### Whether the index is unique.
   isUnique: bool
+  ### Whether the index is a partial index on non-null values.
+  isNotNull: bool
   ### Whether this index is the one for the primary key.
   isPrimary: bool
   ### The predicate of this partial index, if it is one.

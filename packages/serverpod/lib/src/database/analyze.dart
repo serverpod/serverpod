@@ -1,8 +1,9 @@
 import 'dart:io';
-import 'package:serverpod/src/server/session.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
+
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/src/database/database.dart';
+import 'package:serverpod/src/server/session.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../util/column_type_extension.dart';
 
@@ -141,21 +142,41 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
 ''');
 
     return queryResult.map((index) {
+      var indexName = index[0] as String;
+      var tableSpace = index[1] as String?;
+      var isUnique = index[2] as bool;
+      var isPrimary = index[3] as bool;
+      var namesList = index[4] as List<dynamic>;
+      var isColumnList = index[5] as List<bool>;
+      var predicate = index[6] as String?;
+      var type = index[7] as String;
+      var elements = List.generate(
+          namesList.length,
+          (i) => IndexElementDefinition(
+              type: isColumnList[i]
+                  ? IndexElementDefinitionType.column
+                  : IndexElementDefinitionType.expression,
+              definition: (namesList[i] as String).removeSurroundingQuotes));
+      // The simplest way to check if the predicate is in the correct format
+      // for `isNotNull == true` is to re-generate the predicate expression
+      // from the index column names. This relies on Postgres not reordering
+      // either the column names or the predicate expression (which it
+      // appears it doesn't do currently). A better solution would be to
+      // properly parse out the predicate expression, but that may not be
+      // needed unless Postgres changes.
+      var nameExprs = List.generate(
+          namesList.length, (i) => '(${namesList[i]} IS NOT NULL)');
+      var isNotNullExpr = '(${nameExprs.join(' AND ')})';
+      var isNotNull = predicate == isNotNullExpr;
       return IndexDefinition(
-        indexName: index[0],
-        tableSpace: index[1],
-        elements: List.generate(
-            index[4].length,
-            (i) => IndexElementDefinition(
-                type: index[5][i]
-                    ? IndexElementDefinitionType.column
-                    : IndexElementDefinitionType.expression,
-                definition: (index[4][i] as String).removeSurroundingQuotes)),
-        type: index[7],
-        isUnique: index[2],
-        isPrimary: index[3],
-        //TODO: Maybe unquote in the future. Should be considered when Serverpod introduces partial indexes.
-        predicate: index[6],
+        indexName: indexName,
+        tableSpace: tableSpace,
+        elements: elements,
+        type: type,
+        isUnique: isUnique,
+        isNotNull: isNotNull,
+        isPrimary: isPrimary,
+        predicate: predicate,
       );
     }).toList();
   }
@@ -276,10 +297,20 @@ extension on String {
 /// Utility tools used by the [DatabaseAnalyzer].
 extension on String {
   /// Removes the surrounding quotes if the string
-  /// starts and ends with ".
+  /// starts and ends with `"`.
   String get removeSurroundingQuotes {
     //TODO: Handle " that are inside an expression.
     if (startsWith('"') && endsWith('"')) {
+      return substring(1, length - 1);
+    } else {
+      return this;
+    }
+  }
+
+  /// Removes the surrounding parentheses if the string
+  /// starts with `(` and ends with `)`.
+  String get removeSurroundingParens {
+    if (startsWith('(') && endsWith(')')) {
       return substring(1, length - 1);
     } else {
       return this;

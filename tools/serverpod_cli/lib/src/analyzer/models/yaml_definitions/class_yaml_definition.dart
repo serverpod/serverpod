@@ -156,6 +156,10 @@ class ClassYamlDefinition {
                 Keyword.unique,
                 valueRestriction: BooleanValueRestriction().validate,
               ),
+              ValidateNode(
+                Keyword.nonNulls,
+                valueRestriction: BooleanValueRestriction().validate,
+              ),
             },
           )
         },

@@ -415,11 +415,13 @@ class ModelParser {
       var indexFields = _parseIndexFields(nodeDocument, fields);
       var type = _parseIndexType(nodeDocument);
       var unique = _parseUniqueKey(nodeDocument);
+      var nonNulls = _parseNonNullsKey(nodeDocument);
 
       return SerializableModelIndexDefinition(
         name: indexName,
         type: type,
         unique: unique,
+        nonNulls: nonNulls,
         fields: indexFields,
       );
     });
@@ -458,6 +460,12 @@ class ModelParser {
 
   static bool _parseUniqueKey(YamlMap documentContents) {
     var node = documentContents.nodes[Keyword.unique];
+    var nodeValue = node?.value;
+    return nodeValue is bool ? nodeValue : false;
+  }
+
+  static bool _parseNonNullsKey(YamlMap documentContents) {
+    var node = documentContents.nodes[Keyword.nonNulls];
     var nodeValue = node?.value;
     return nodeValue is bool ? nodeValue : false;
   }

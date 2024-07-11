@@ -3,7 +3,8 @@ import 'package:serverpod_service_client/serverpod_service_client.dart'
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_service_key_manager.dart';
-import 'package:test/test.dart';
+import 'package:test/test.dart' as matcher;
+import 'package:test/test.dart' hide isNotNull;
 
 void main() {
   var client = Client(serverUrl);
@@ -249,8 +250,8 @@ void main() {
 
       expect(logResult.sessionLog.length, equals(1));
       expect(logResult.sessionLog[0].logs.length, equals(3));
-      expect(logResult.sessionLog[0].logs[0].error, isNotNull);
-      expect(logResult.sessionLog[0].logs[0].stackTrace, isNotNull);
+      expect(logResult.sessionLog[0].logs[0].error, matcher.isNotNull);
+      expect(logResult.sessionLog[0].logs[0].stackTrace, matcher.isNotNull);
       expect(logResult.sessionLog[0].logs[2].error, isNull);
       expect(logResult.sessionLog[0].logs[2].stackTrace, isNull);
     });
@@ -307,7 +308,7 @@ void main() {
       logResult.sessionLog[0].messages.sort((a, b) => a.order - b.order);
 
       // Expect us to find an exception in the 6th logged message
-      expect(logResult.sessionLog[0].messages[5].error, isNotNull);
+      expect(logResult.sessionLog[0].messages[5].error, matcher.isNotNull);
     });
   });
 
@@ -468,7 +469,7 @@ void main() {
     test('Fetch lib/src/generated/protocol.yaml file', () async {
       var file = await serviceClient.insights
           .fetchFile('lib/src/generated/protocol.yaml');
-      expect(file, isNotNull);
+      expect(file, matcher.isNotNull);
       expect(file.length, greaterThan(0));
     });
     test('Fetch file outside whitelist', () async {
@@ -574,6 +575,7 @@ extension on service.IndexDefinition {
     expect(tableSpace, definition.tableSpace);
     expect(isPrimary, definition.isPrimary);
     expect(isUnique, definition.isUnique);
+    expect(isNotNull, definition.isNotNull);
     expect(this.predicate, definition.predicate);
     expect(type, definition.type);
     expect(elements, hasLength(definition.elements.length));

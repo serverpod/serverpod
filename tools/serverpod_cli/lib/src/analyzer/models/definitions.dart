@@ -191,11 +191,15 @@ class SerializableModelIndexDefinition {
   /// Whether the [fields] of this index should be unique.
   final bool unique;
 
+  /// Whether the index is a partial index on only non-null values.
+  final bool nonNulls;
+
   /// Create a new [SerializableModelIndexDefinition].
   SerializableModelIndexDefinition({
     required this.name,
     required this.type,
     required this.unique,
+    required this.nonNulls,
     required this.fields,
   });
 }
