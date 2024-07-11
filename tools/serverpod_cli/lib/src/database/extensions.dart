@@ -122,11 +122,11 @@ String removeNullability(String type) {
 
 extension IndexComparisons on IndexDefinition {
   bool like(IndexDefinition other) {
-    return other.isPrimary == isPrimary &&
+    return other.indexName == indexName &&
+        other.isPrimary == isPrimary &&
         other.isUnique == isUnique &&
         (other.isNotNull ?? false) == (isNotNull ?? false) &&
-        other.indexName == indexName &&
-        other.predicate == predicate &&
+        (other.predicate ?? '') == (predicate ?? '') &&
         other.tableSpace == tableSpace &&
         other.type == type;
   }

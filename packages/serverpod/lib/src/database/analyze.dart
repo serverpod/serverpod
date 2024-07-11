@@ -165,7 +165,7 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
       // properly parse out the predicate expression, but that may not be
       // needed unless Postgres changes.
       bool isNotNull;
-      if (predicate == null) {
+      if ((predicate ?? '').isEmpty) {
         isNotNull = false;
       } else {
         var nameExprs = List.generate(

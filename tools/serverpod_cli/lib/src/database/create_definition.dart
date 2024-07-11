@@ -89,9 +89,20 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
   );
 }
 
-String _predicate(List<String> fields) {
-  var expr = fields.map((field) => '$field IS NOT NULL').join(' AND ');
-  return fields.length > 1 ? '($expr)' : expr;
+String _predicate(List<String> fieldNames) {
+  var expr = fieldNames
+      .map((fieldName) => '(${_quoteIfNeeded(fieldName)} IS NOT NULL)')
+      .join(' AND ');
+  return fieldNames.length > 1 ? '($expr)' : expr;
+}
+
+/// Try to match Postgres' quoting rules for column names.
+String _quoteIfNeeded(String fieldName) {
+  final regex = RegExp(r'^[a-z_]+[a-z0-9_]*$');
+  if (!regex.hasMatch(fieldName)) {
+    return '"$fieldName"';
+  }
+  return fieldName;
 }
 
 List<ForeignKeyDefinition> _createForeignKeys(ClassDefinition classDefinition) {
