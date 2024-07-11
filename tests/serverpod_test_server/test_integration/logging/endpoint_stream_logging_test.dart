@@ -22,7 +22,6 @@ void main() async {
 
     tearDown(() async {
       await client.closeStreamingConnection();
-      await LoggingUtil.clearAllLogs(session);
       await await session.close();
       await server.shutdown(exitProcess: false);
     });
