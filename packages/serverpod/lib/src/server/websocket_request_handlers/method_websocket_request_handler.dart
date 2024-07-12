@@ -299,7 +299,7 @@ class _MethodStreamManager {
           server: server,
         );
         break;
-      case MethodStreamReturnType.singleType:
+      case MethodStreamReturnType.futureType:
       case MethodStreamReturnType.voidType:
         _handleMethodWithFutureReturn(
           methodConnector: methodConnector,

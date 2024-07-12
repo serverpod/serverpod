@@ -286,13 +286,13 @@ typedef MethodStream = dynamic Function(
 
 /// The type of return value from a [MethodStreamConnector].
 enum MethodStreamReturnType {
-  /// The method returns a single value.
-  singleType,
+  /// The method returns a single value as a future.
+  futureType,
 
   /// The method returns a stream of values.
   streamType,
 
-  /// The method returns void.
+  /// The method has future void return value.
   voidType,
 }
 

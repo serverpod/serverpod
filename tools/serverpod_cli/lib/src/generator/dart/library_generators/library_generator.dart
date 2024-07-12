@@ -831,7 +831,7 @@ class LibraryGenerator {
     } else if (returnType.isStreamType) {
       return returnEnum.property('streamType');
     } else if (returnType.isFutureType) {
-      return returnEnum.property('singleType');
+      return returnEnum.property('futureType');
     }
 
     throw Exception('Unrecognized return type for endpoint method stream.');
