@@ -180,10 +180,11 @@ abstract class SerializationManager {
   /// with [deserializeByClassName].
   Map<String, dynamic> wrapWithClassName(Object? data) {
     var className = getClassNameForObject(data);
-    assert(
-      className != null,
-      'Could not find class name for ${data.runtimeType} in serialization.',
-    );
+    if (className == null) {
+      throw ArgumentError(
+        'Could not find class name for ${data.runtimeType} in serialization.',
+      );
+    }
 
     return {
       'className': className,
