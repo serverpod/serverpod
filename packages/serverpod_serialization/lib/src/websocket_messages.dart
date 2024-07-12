@@ -92,7 +92,7 @@ class OpenMethodStreamResponse extends WebSocketMessage {
     required UuidValue connectionId,
     required OpenMethodStreamResponseType responseType,
   }) {
-    return SerializationManager.encode({
+    return SerializationManager.encodeForProtocol({
       'messageType': _messageType,
       'connectionId': connectionId,
       'responseType': responseType.name,
@@ -142,7 +142,7 @@ class OpenMethodStreamCommand extends WebSocketMessage {
     required UuidValue connectionId,
     String? authentication,
   }) {
-    return SerializationManager.encode({
+    return SerializationManager.encodeForProtocol({
       'messageType': _messageType,
       'endpoint': endpoint,
       'method': method,
@@ -157,7 +157,7 @@ class OpenMethodStreamCommand extends WebSocketMessage {
         'messageType': _messageType,
         'endpoint': endpoint,
         'method': method,
-        'connectionId': SerializationManager.encode(connectionId),
+        'connectionId': SerializationManager.encodeForProtocol(connectionId),
         'args': args,
         if (authentication != null) 'authentication': authentication,
       }.toString();
@@ -217,7 +217,7 @@ class CloseMethodStreamCommand extends WebSocketMessage {
     required String method,
     required CloseReason reason,
   }) {
-    return SerializationManager.encode({
+    return SerializationManager.encodeForProtocol({
       'messageType': _messageType,
       'endpoint': endpoint,
       'method': method,
@@ -244,7 +244,8 @@ class PingCommand extends WebSocketMessage {
 
   /// Builds a [PingCommand] message.
   static String buildMessage() {
-    return SerializationManager.encode({'messageType': _messageType});
+    return SerializationManager.encodeForProtocol(
+        {'messageType': _messageType});
   }
 
   @override
@@ -257,7 +258,8 @@ class PongCommand extends WebSocketMessage {
 
   /// Builds a [PongCommand] message.
   static String buildMessage() {
-    return SerializationManager.encode({'messageType': _messageType});
+    return SerializationManager.encodeForProtocol(
+        {'messageType': _messageType});
   }
 
   @override
@@ -300,7 +302,7 @@ class MethodStreamSerializableException extends WebSocketMessage {
     String? parameter,
     required String object,
   }) {
-    return SerializationManager.encode({
+    return SerializationManager.encodeForProtocol({
       'messageType': _messageType,
       'endpoint': endpoint,
       'method': method,
@@ -356,7 +358,7 @@ class MethodStreamMessage extends WebSocketMessage {
     String? parameter,
     required String object,
   }) {
-    return SerializationManager.encode({
+    return SerializationManager.encodeForProtocol({
       'messageType': _messageType,
       'endpoint': endpoint,
       'method': method,
@@ -388,7 +390,7 @@ class BadRequestMessage extends WebSocketMessage {
 
   /// Builds a [BadRequestMessage] message.
   static String buildMessage(String request) {
-    return SerializationManager.encode({
+    return SerializationManager.encodeForProtocol({
       'messageType': _messageType,
       'request': request,
     });
