@@ -121,9 +121,7 @@ class InsightsEndpoint extends Endpoint {
   /// Get the latest [numEntries] from the session log.
   Future<SessionLogResult> getOpenSessionLog(
       Session session, int? numEntries, SessionLogFilter? filter) async {
-    var logs = session.serverpod.logManager
-        .getOpenSessionLogs(numEntries ?? 100, filter);
-    return SessionLogResult(sessionLog: logs);
+    return SessionLogResult(sessionLog: []);
   }
 
   /// Retrieve information about the state of the caches on this server.

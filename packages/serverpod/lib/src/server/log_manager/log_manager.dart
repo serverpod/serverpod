@@ -424,58 +424,6 @@ class LogManager {
     }
     return null;
   }
-
-  /// Returns a list of logs for all open sessions.
-  List<SessionLogInfo> getOpenSessionLogs(
-      int numEntries, SessionLogFilter? filter) {
-    var sessionLog = <SessionLogInfo>[];
-
-    var numFoundEntries = 0;
-    var i = 0;
-    while (i < _openSessionLogs.length && numFoundEntries < numEntries) {
-      var entry = _openSessionLogs[i];
-      i += 1;
-      numFoundEntries += 1;
-
-      // Check filter (ignore slow and errors as session is still open)
-      if (filter != null) {
-        var session = entry.session;
-        if (session is MethodCallSession) {
-          if (filter.endpoint != null &&
-              filter.endpoint != '' &&
-              session.endpointName != filter.endpoint) {
-            continue;
-          }
-          if (filter.endpoint != null &&
-              filter.endpoint != '' &&
-              filter.method != null &&
-              filter.method != '' &&
-              session.endpointName != filter.endpoint &&
-              session.methodName != filter.method) {
-            continue;
-          }
-        }
-      }
-
-      sessionLog.add(
-        SessionLogInfo(
-          sessionLogEntry: SessionLogEntry(
-            serverId: Serverpod.instance.serverId,
-            time: entry.session.startTime,
-            touched: DateTime.now(),
-            endpoint: _endpointForSession(entry.session),
-            method: _methodForSession(entry.session),
-            numQueries: entry.numQueries,
-          ),
-          queries: entry.queries,
-          logs: entry.logEntries,
-          messages: entry.messages,
-        ),
-      );
-    }
-
-    return sessionLog;
-  }
 }
 
 String? _methodForSession(Session session) {
