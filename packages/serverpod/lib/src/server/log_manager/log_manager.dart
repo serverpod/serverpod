@@ -20,13 +20,18 @@ class SessionLogManager {
 
   final LogSettings Function(Session) _settingsForSession;
 
+  int _logOrderId;
+
+  int get _nextLogOrderId => ++_logOrderId;
+
   /// Creates a new [LogManager] from [RuntimeSettings].
   @internal
   SessionLogManager(
     LogWriter logWriter, {
     required LogSettings Function(Session) settingsForSession,
     required String serverId,
-  })  : _logWriter = logWriter,
+  })  : _logOrderId = 0,
+        _logWriter = logWriter,
         _settingsForSession = settingsForSession,
         _serverId = serverId;
 
@@ -103,7 +108,7 @@ class SessionLogManager {
       time: DateTime.now(),
       error: error,
       stackTrace: stackTrace?.toString(),
-      order: session.sessionLogs.createLogOrderId,
+      order: _nextLogOrderId,
     );
 
     if (session.serverpod.runMode == ServerpodRunMode.development) {
@@ -160,7 +165,7 @@ class SessionLogManager {
       error: error,
       stackTrace: stackTrace.toString(),
       slow: slow,
-      order: session.sessionLogs.createLogOrderId,
+      order: _nextLogOrderId,
     );
 
     await _internalLogger(
@@ -207,7 +212,7 @@ class SessionLogManager {
       endpoint: endpointName,
       messageName: messageName,
       duration: executionTime,
-      order: session.sessionLogs.createLogOrderId,
+      order: _nextLogOrderId,
       error: error,
       stackTrace: stackTrace?.toString(),
       slow: slow,
