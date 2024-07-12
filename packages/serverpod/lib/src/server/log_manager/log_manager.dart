@@ -264,7 +264,7 @@ class SessionLogManager {
         return;
       }
 
-      assert(session.sessionLogs.currentEndpoint != null);
+      assert(session.endpoint != null);
 
       var logSettings = _settingsForSession(session);
       if (!logSettings.logStreamingSessionsContinuously) {
