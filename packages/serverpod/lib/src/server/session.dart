@@ -116,8 +116,12 @@ abstract class Session {
       _db = server.createDatabase(this);
     }
 
+    var logWriter = Features.enablePersistentLogging
+        ? DatabaseLogWriter()
+        : StdOutLogWriter();
+
     _logManager = SessionLogManager(
-      server.serverpod.logWriter,
+      logWriter,
       settingsForSession: (Session session) =>
           server.serverpod.logSettingsManager.getLogSettingsForSession(session),
       serverId: server.serverId,

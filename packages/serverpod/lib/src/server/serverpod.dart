@@ -14,7 +14,6 @@ import 'package:serverpod/src/server/future_call_manager.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
-import 'package:serverpod/src/server/log_manager/log_writer.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../authentication/default_authentication_handler.dart';
@@ -143,8 +142,6 @@ class Serverpod {
   }
 
   late LogManager _logManager;
-
-  late LogWriter _logWriter;
 
   /// The [LogManager] of the Serverpod, its typically only used internally
   /// by the Serverpod. Instead of using this object directly, call the log
@@ -312,10 +309,6 @@ class Serverpod {
           _passwords,
         );
     Features(this.config);
-
-    _logWriter = Features.enablePersistentLogging
-        ? DatabaseLogWriter()
-        : StdOutLogWriter();
 
     // Create a temporary log manager with default settings, until we have
     // loaded settings from the database.
@@ -824,7 +817,4 @@ class Serverpod {
 extension ServerpodInternalMethods on Serverpod {
   /// Retrieve the log settings manager
   LogSettingsManager get logSettingsManager => _logSettingsManager!;
-
-  /// Retrieve the active logWriter
-  LogWriter get logWriter => _logWriter;
 }
