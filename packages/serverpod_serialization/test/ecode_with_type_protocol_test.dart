@@ -46,7 +46,7 @@ void main() {
     _User user = _User(name: 'John', password: '123');
 
     test(
-      'when encoded using encodeForProtocolWithType method, then the password field is excluded from the output',
+      'when encoded using encodeWithTypeForProtocol method, then the password field is excluded from the output',
       () {
         var stringifiedJson = protocol.encodeWithTypeForProtocol(user);
         expect(stringifiedJson, isNot(contains('password')));
@@ -54,7 +54,7 @@ void main() {
     );
 
     test(
-      'when a list of user objects is encoded using encodeForProtocolWithType method, then the password fields are excluded from the output',
+      'when a list of user objects is encoded using encodeWithTypeForProtocol method, then the password fields are excluded from the output',
       () {
         var userList = [user];
         var stringifiedJson = protocol.encodeWithTypeForProtocol(userList);
@@ -63,7 +63,7 @@ void main() {
     );
 
     test(
-      'when a map containing a user object is encoded using encodeForProtocolWithType method, then the password field is excluded from the output',
+      'when a map containing a user object is encoded using encodeWithTypeForProtocol method, then the password field is excluded from the output',
       () {
         var userMap = {'user': user};
         var stringifiedJson = protocol.encodeWithTypeForProtocol(userMap);
@@ -72,7 +72,7 @@ void main() {
     );
 
     test(
-      'when a map containing a list of user objects is encoded using encodeForProtocolWithType method, then the password fields are excluded from the output',
+      'when a map containing a list of user objects is encoded using encodeWithTypeForProtocol method, then the password fields are excluded from the output',
       () {
         var userMap = {
           'users': [user]
@@ -89,7 +89,7 @@ void main() {
     _User user = _User(name: 'John', password: '123');
 
     test(
-      'when encoded using encodeForProtocolWithType method, then the password fields are excluded from the output',
+      'when encoded using encodeWithTypeForProtocol method, then the password fields are excluded from the output',
       () {
         var map = {
           'list': [user],
@@ -110,7 +110,7 @@ void main() {
     _User user = _User(name: 'John', password: '123');
 
     test(
-      'when encoded using encodeForProtocolWithType method, then the password fields are excluded from the output',
+      'when encoded using encodeWithTypeForProtocol method, then the password fields are excluded from the output',
       () {
         var list = [
           {'user': user},

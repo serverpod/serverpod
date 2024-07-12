@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -5,6 +6,26 @@ import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+
+Future<dynamic> _getWebsocketMessage(
+  WebSocketChannel websocket,
+) async {
+  try {
+    return await websocket.stream.timeout(Duration(seconds: 5)).firstWhere(
+          (event) =>
+              event is String && event.contains('serverOnlyScopedFieldModel'),
+          orElse: () => throw TimeoutException(
+            'Message was not received within the timeout period.',
+          ),
+        );
+  } catch (e) {
+    if (e is TimeoutException) {
+      return null;
+    } else {
+      rethrow;
+    }
+  }
+}
 
 void main() {
   group("Given a Serverpod server when fetching an object, ", () {
@@ -61,12 +82,8 @@ void main() {
       WebSocketChannel websocket = WebSocketChannel.connect(
         Uri.parse(serverEndpointWebsocketUrl),
       );
-      await for (final event in websocket.stream) {
-        if (event is String && event.contains('serverOnlyScopedFieldModel')) {
-          message = event;
-          break;
-        }
-      }
+
+      message = await _getWebsocketMessage(websocket);
       await websocket.sink.close();
     });
 
@@ -121,12 +138,8 @@ void main() {
         WebSocketChannel websocket = WebSocketChannel.connect(
           Uri.parse(serverEndpointWebsocketUrl),
         );
-        await for (final event in websocket.stream) {
-          if (event is String && event.contains('serverOnlyScopedFieldModel')) {
-            message = event;
-            break;
-          }
-        }
+
+        message = await _getWebsocketMessage(websocket);
         await websocket.sink.close();
       });
 
@@ -175,12 +188,8 @@ void main() {
         WebSocketChannel websocket = WebSocketChannel.connect(
           Uri.parse(serverEndpointWebsocketUrl),
         );
-        await for (final event in websocket.stream) {
-          if (event is String && event.contains('serverOnlyScopedFieldModel')) {
-            message = event;
-            break;
-          }
-        }
+
+        message = await _getWebsocketMessage(websocket);
         await websocket.sink.close();
       });
 
