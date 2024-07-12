@@ -431,9 +431,16 @@ abstract class EndpointRef {
   /// Stream of messages sent from an endpoint that supports streaming.
   Stream<SerializableModel> get stream => _streamController.stream;
 
-  /// Sends a message to the endpoint's stream.
-  Future<void> sendStreamMessage(SerializableModel message) async {
-    return client._sendSerializableObjectToStream(name, message);
+  /// Sends a message to the endpoint's stream. The default [timeout] is 15
+  /// seconds. If the message is not sent within the timeout period, a
+  /// [TimeoutException] is thrown. If [timeout] is null, the message will be
+  /// sent without a timeout.
+  Future<void> sendStreamMessage(
+    SerializableModel message, {
+    Duration? timeout = const Duration(seconds: 15),
+  }) async {
+    var future = client._sendSerializableObjectToStream(name, message);
+    return timeout == null ? future : future.timeout(timeout);
   }
 
   /// Resets web socket stream, so it's possible to re-listen to endpoint
