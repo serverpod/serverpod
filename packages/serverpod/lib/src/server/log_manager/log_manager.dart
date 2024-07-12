@@ -2,12 +2,15 @@ import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/server/log_manager/log_writer.dart';
+import 'package:serverpod/src/server/log_manager/session_log_cache.dart';
 import 'package:synchronized/synchronized.dart';
 
 import '../../../server.dart';
 import '../../generated/protocol.dart';
 
 const double _microNormalizer = 1000 * 1000;
+
+const int _temporarySessionId = -1;
 
 @internal
 class SessionLogManager {
@@ -17,13 +20,18 @@ class SessionLogManager {
 
   final LogSettings Function(Session) _settingsForSession;
 
+  int _logOrderId;
+
+  int get _nextLogOrderId => ++_logOrderId;
+
   /// Creates a new [LogManager] from [RuntimeSettings].
   @internal
   SessionLogManager(
     LogWriter logWriter, {
     required LogSettings Function(Session) settingsForSession,
     required String serverId,
-  })  : _logWriter = logWriter,
+  })  : _logOrderId = 0,
+        _logWriter = logWriter,
         _settingsForSession = settingsForSession,
         _serverId = serverId;
 
@@ -92,7 +100,7 @@ class SessionLogManager {
     StackTrace? stackTrace,
   }) async {
     var entry = LogEntry(
-      sessionLogId: session.sessionLogs.temporarySessionId,
+      sessionLogId: _temporarySessionId,
       serverId: _serverId,
       messageId: messageId,
       logLevel: level ?? LogLevel.info,
@@ -100,7 +108,7 @@ class SessionLogManager {
       time: DateTime.now(),
       error: error,
       stackTrace: stackTrace?.toString(),
-      order: session.sessionLogs.createLogOrderId,
+      order: _nextLogOrderId,
     );
 
     if (session.serverpod.runMode == ServerpodRunMode.development) {
@@ -149,7 +157,7 @@ class SessionLogManager {
     if (!shouldLog) return;
 
     var entry = QueryLogEntry(
-      sessionLogId: session.sessionLogs.temporarySessionId,
+      sessionLogId: _temporarySessionId,
       serverId: _serverId,
       query: query,
       duration: executionTime,
@@ -157,7 +165,7 @@ class SessionLogManager {
       error: error,
       stackTrace: stackTrace.toString(),
       slow: slow,
-      order: session.sessionLogs.createLogOrderId,
+      order: _nextLogOrderId,
     );
 
     await _internalLogger(
@@ -198,13 +206,13 @@ class SessionLogManager {
     if (!shouldLog) return;
 
     var entry = MessageLogEntry(
-      sessionLogId: session.sessionLogs.temporarySessionId,
+      sessionLogId: _temporarySessionId,
       serverId: _serverId,
       messageId: messageId,
       endpoint: endpointName,
       messageName: messageName,
       duration: executionTime,
-      order: session.sessionLogs.createLogOrderId,
+      order: _nextLogOrderId,
       error: error,
       stackTrace: stackTrace?.toString(),
       slow: slow,
@@ -263,8 +271,6 @@ class SessionLogManager {
         return;
       }
 
-      assert(session.sessionLogs.currentEndpoint != null);
-
       var logSettings = _settingsForSession(session);
       if (!logSettings.logStreamingSessionsContinuously) {
         // This call should not stream continuously.
@@ -300,23 +306,9 @@ class SessionLogManager {
     String? exception,
     StackTrace? stackTrace,
   }) async {
-    // If verbose logging is enabled, output otherwise unlogged exceptions to
-    // console.
-    if (exception != null && !session.enableLogging) {
-      session.serverpod.logVerbose(exception);
-      if (stackTrace != null) {
-        session.serverpod.logVerbose(stackTrace.toString());
-      }
-    }
-
-    if (!session.enableLogging) return null;
-
     var duration = session.duration;
     var cachedEntry = session.sessionLogs;
-    LogSettings? logSettings;
-    if (session is! StreamingSession) {
-      logSettings = _settingsForSession(session);
-    }
+    LogSettings logSettings = _settingsForSession(session);
 
     if (session.serverpod.runMode == ServerpodRunMode.development) {
       if (session is MethodCallSession) {
@@ -332,17 +324,13 @@ class SessionLogManager {
       }
     }
 
-    var isSlow = false;
+    var slowMicros = (logSettings.slowSessionDuration * 1000000.0).toInt();
+    var isSlow = duration > Duration(microseconds: slowMicros) &&
+        session is! StreamingSession;
 
-    if (logSettings != null) {
-      var slowMicros = (logSettings.slowSessionDuration * 1000000.0).toInt();
-      isSlow = duration > Duration(microseconds: slowMicros) &&
-          session is! StreamingSession;
-    }
-
-    if ((logSettings?.logAllSessions ?? false) ||
-        (logSettings?.logSlowSessions ?? false) && isSlow ||
-        (logSettings?.logFailedSessions ?? false) && exception != null ||
+    if (logSettings.logAllSessions ||
+        (logSettings.logSlowSessions && isSlow) ||
+        (logSettings.logFailedSessions && exception != null) ||
         cachedEntry.queries.isNotEmpty ||
         cachedEntry.logEntries.isNotEmpty ||
         cachedEntry.messages.isNotEmpty ||

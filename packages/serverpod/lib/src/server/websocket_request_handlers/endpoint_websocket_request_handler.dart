@@ -86,7 +86,7 @@ abstract class EndpointWebsocketRequestHandler {
 
             SerializableModel? message;
             try {
-              session.sessionLogs.currentEndpoint = endpointName;
+              session.endpointName = endpointName;
 
               message = server.serializationManager
                   .deserializeByClassName(serialization);
@@ -105,7 +105,7 @@ abstract class EndpointWebsocketRequestHandler {
             }
 
             var duration = DateTime.now().difference(startTime);
-            unawaited(session.logManager.logMessage(
+            unawaited(session.logManager?.logMessage(
               session,
               messageId: session.currentMessageId,
               endpointName: endpointName,
@@ -147,7 +147,7 @@ abstract class EndpointWebsocketRequestHandler {
     Endpoint endpoint,
   ) async {
     try {
-      session.sessionLogs.currentEndpoint = endpoint.name;
+      session.endpointName = endpoint.name;
       var authFailed = await EndpointDispatch.canUserAccessEndpoint(
         () => session.authenticated,
         endpoint.requireLogin,
@@ -164,7 +164,7 @@ abstract class EndpointWebsocketRequestHandler {
     Endpoint endpoint,
   ) async {
     try {
-      session.sessionLogs.currentEndpoint = endpoint.name;
+      session.endpointName = endpoint.name;
       var authFailed = await EndpointDispatch.canUserAccessEndpoint(
         () => session.authenticated,
         endpoint.requireLogin,
