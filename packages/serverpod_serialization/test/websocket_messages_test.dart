@@ -45,28 +45,45 @@ class _TestSerializationManager extends SerializationManager {
   }
 }
 
-class _SimpleData implements SerializableModel {
+class _SimpleData implements SerializableModel, ProtocolSerialization {
   final String data;
+  final String? serverOnlyField;
 
-  _SimpleData(this.data);
+  _SimpleData(this.data, {this.serverOnlyField});
 
   @override
   Map<String, dynamic> toJson() {
     return {
       'data': data,
+      'serverOnlyField': serverOnlyField,
     };
   }
 
   @override
   factory _SimpleData.fromJson(Map<String, dynamic> json) {
-    return _SimpleData(json['data']);
+    return _SimpleData(json['data'], serverOnlyField: json['serverOnlyField']);
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      'data': data,
+    };
   }
 }
 
-class _TestSerializableException implements SerializableException {
+class _TestSerializableException
+    implements SerializableException, ProtocolSerialization {
   @override
-  toJson() {
-    return 'Test serializable exception';
+  Map<String, dynamic> toJson() {
+    return {
+      'serverOnlyField': 'serverOnly',
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {};
   }
 }
 
@@ -328,6 +345,21 @@ void main() {
   });
 
   test(
+      'Given serializable model with server only field when building MethodStreamMessage then server only field is not included in serialization.',
+      () {
+    var serializationManager = _TestSerializationManager();
+    var message = MethodStreamMessage.buildMessage(
+      endpoint: 'endpoint',
+      method: 'method',
+      connectionId: const Uuid().v4obj(),
+      object: serializationManager.wrapWithClassName(
+          _SimpleData('hello world', serverOnlyField: 'this is awesome')),
+    );
+
+    expect(message, isNot(contains('serverOnlyField')));
+  });
+
+  test(
       'Given an invalid method stream message json String that is missing mandatory endpoint field when building websocket message from string then UnknownMessageException is thrown.',
       () {
     // This message is missing the mandatory endpoint field.
@@ -367,6 +399,22 @@ void main() {
       _TestSerializationManager(),
     );
     expect(result, isA<MethodStreamSerializableException>());
+  });
+
+  test(
+      'Given serializable exception with server only field when building MethodStreamSerializableException message then server only field is not included in serialization',
+      () {
+    var serializationManager = _TestSerializationManager();
+    var message = MethodStreamSerializableException.buildMessage(
+      endpoint: 'endpoint',
+      method: 'method',
+      connectionId: const Uuid().v4obj(),
+      object: serializationManager.wrapWithClassName(
+        _TestSerializableException(),
+      ),
+    );
+
+    expect(message, isNot(contains('serverOnlyField')));
   });
 
   test(
