@@ -5,6 +5,9 @@ class _TestSerializationManager extends SerializationManager {
   _TestSerializationManager();
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
+    if (data['className'] == '_SimpleData') {
+      return deserialize<_SimpleData>(data['data']);
+    }
     if (data['className'] == '_TestSerializableException') {
       return deserialize<_TestSerializableException>(data['data']);
     }
@@ -16,6 +19,9 @@ class _TestSerializationManager extends SerializationManager {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
+    if (data is _SimpleData) {
+      return '_SimpleData';
+    }
     if (data is _TestSerializableException) {
       return '_TestSerializableException';
     }
@@ -28,11 +34,32 @@ class _TestSerializationManager extends SerializationManager {
     Type? t,
   ]) {
     t ??= T;
+    if (t == _SimpleData) {
+      return _SimpleData.fromJson(data) as T;
+    }
     if (t == _TestSerializableException) {
       return _TestSerializableException() as T;
     }
 
     return super.deserialize<T>(data, t);
+  }
+}
+
+class _SimpleData implements SerializableModel {
+  final String data;
+
+  _SimpleData(this.data);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'data': data,
+    };
+  }
+
+  @override
+  factory _SimpleData.fromJson(Map<String, dynamic> json) {
+    return _SimpleData(json['data']);
   }
 }
 
@@ -285,11 +312,13 @@ void main() {
   test(
       'Given a method stream message when building websocket message from string then MethodStreamMessage is returned.',
       () {
+    var serializationManager = _TestSerializationManager();
     var message = MethodStreamMessage.buildMessage(
       endpoint: 'endpoint',
       method: 'method',
       connectionId: const Uuid().v4obj(),
-      object: '{"className": "bamboo", "data": {"number": 2}}',
+      object:
+          serializationManager.wrapWithClassName(_SimpleData('hello world')),
     );
     var result = WebSocketMessage.fromJsonString(
       message,

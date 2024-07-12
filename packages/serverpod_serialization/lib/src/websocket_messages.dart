@@ -30,7 +30,7 @@ sealed class WebSocketMessage {
         case CloseMethodStreamCommand._messageType:
           return CloseMethodStreamCommand(data);
         case MethodStreamMessage._messageType:
-          return MethodStreamMessage(data);
+          return MethodStreamMessage(data, serializationManager);
         case MethodStreamSerializableException._messageType:
           return MethodStreamSerializableException(data, serializationManager);
       }
@@ -350,24 +350,28 @@ class MethodStreamMessage extends WebSocketMessage {
   /// If this is null the message is sent to the return stream of the method.
   final String? parameter;
 
-  /// The object to send.
-  final String object;
+  /// The object that was sent.
+  final dynamic object;
 
   /// Creates a new [MethodStreamMessage].
-  MethodStreamMessage(Map data)
+  /// The [object] must be an object processed by the
+  /// [SerializationManager.wrapWithClassName] method.
+  MethodStreamMessage(Map data, SerializationManager serializationManager)
       : endpoint = data['endpoint'],
         method = data['method'],
         connectionId = UuidValueJsonExtension.fromJson(data['connectionId']),
         parameter = data['parameter'],
-        object = data['object'];
+        object = serializationManager.deserializeByClassName(data['object']);
 
   /// Builds a [MethodStreamMessage] message.
+  /// The [object] must be an object processed by the
+  /// [SerializationManager.wrapWithClassName] method.
   static String buildMessage({
     required String endpoint,
     required String method,
     required UuidValue connectionId,
     String? parameter,
-    required String object,
+    required Map<String, dynamic> object,
   }) {
     return SerializationManager.encodeForProtocol({
       'messageType': _messageType,
@@ -380,13 +384,14 @@ class MethodStreamMessage extends WebSocketMessage {
   }
 
   @override
-  String toString() => buildMessage(
-        endpoint: endpoint,
-        method: method,
-        connectionId: connectionId,
-        parameter: parameter,
-        object: object,
-      );
+  String toString() => {
+        'messageType': _messageType,
+        'endpoint': endpoint,
+        'method': method,
+        'connectionId': connectionId,
+        if (parameter != null) 'parameter': parameter,
+        'object': object,
+      }.toString();
 }
 
 /// A message sent when a bad request is received.
