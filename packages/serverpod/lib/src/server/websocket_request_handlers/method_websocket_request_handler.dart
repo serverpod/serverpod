@@ -62,7 +62,6 @@ class MethodWebsocketRequestHandler {
               method: message.method,
               parameter: message.parameter,
               connectionId: message.connectionId,
-              // TODO: Should reason here be not found instead of error?
               reason: CloseReason.error,
             ));
             break;
