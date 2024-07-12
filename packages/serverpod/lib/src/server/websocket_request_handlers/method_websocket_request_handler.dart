@@ -24,7 +24,10 @@ class MethodWebsocketRequestHandler {
       await for (String jsonData in webSocket) {
         WebSocketMessage message;
         try {
-          message = WebSocketMessage.fromJsonString(jsonData);
+          message = WebSocketMessage.fromJsonString(
+            jsonData,
+            server.serializationManager,
+          );
         } on UnknownMessageException catch (_) {
           webSocket.tryAdd(BadRequestMessage.buildMessage(jsonData));
           throw Exception(
@@ -349,14 +352,7 @@ class _MethodStreamManager {
       return;
     }
 
-    var serializableException =
-        server.serializationManager.decodeWithType(message.object);
-
-    if (serializableException is! SerializableException) {
-      throw Exception(
-        'Expected SerializableException, but got ${serializableException.runtimeType}',
-      );
-    }
+    var serializableException = message.exception;
 
     streamContext.controller.addError(serializableException);
   }
@@ -508,7 +504,7 @@ class _MethodStreamManager {
             endpoint: message.endpoint,
             method: message.method,
             connectionId: message.connectionId,
-            object: server.serializationManager.encodeWithType(e),
+            object: server.serializationManager.wrapWithClassName(e),
           ),
         );
       }
@@ -591,7 +587,7 @@ class _MethodStreamManager {
               endpoint: message.endpoint,
               method: message.method,
               connectionId: message.connectionId,
-              object: server.serializationManager.encodeWithType(e),
+              object: server.serializationManager.wrapWithClassName(e),
             ),
           );
         }

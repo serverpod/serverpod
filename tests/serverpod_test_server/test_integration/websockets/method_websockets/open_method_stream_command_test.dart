@@ -35,7 +35,11 @@ void main() {
       ));
 
       var response = await webSocket.stream.first as String;
-      var message = WebSocketMessage.fromJsonString(response);
+      var message = WebSocketMessage.fromJsonString(
+        response,
+        server.serializationManager,
+      );
+      ;
 
       expect(
           message,
@@ -57,7 +61,11 @@ void main() {
       ));
 
       var response = await webSocket.stream.first as String;
-      var message = WebSocketMessage.fromJsonString(response);
+      var message = WebSocketMessage.fromJsonString(
+        response,
+        server.serializationManager,
+      );
+      ;
 
       expect(
           message,
@@ -79,7 +87,11 @@ void main() {
       ));
 
       var response = await webSocket.stream.first as String;
-      var message = WebSocketMessage.fromJsonString(response);
+      var message = WebSocketMessage.fromJsonString(
+        response,
+        server.serializationManager,
+      );
+      ;
 
       expect(
           message,
@@ -101,7 +113,11 @@ void main() {
       ));
 
       var response = await webSocket.stream.first as String;
-      var message = WebSocketMessage.fromJsonString(response);
+      var message = WebSocketMessage.fromJsonString(
+        response,
+        server.serializationManager,
+      );
+      ;
 
       expect(
           message,
@@ -123,7 +139,11 @@ void main() {
       ));
 
       var response = await webSocket.stream.first as String;
-      var message = WebSocketMessage.fromJsonString(response);
+      var message = WebSocketMessage.fromJsonString(
+        response,
+        server.serializationManager,
+      );
+      ;
 
       expect(
           message,
@@ -145,7 +165,11 @@ void main() {
       ));
 
       var response = await webSocket.stream.first as String;
-      var message = WebSocketMessage.fromJsonString(response);
+      var message = WebSocketMessage.fromJsonString(
+        response,
+        server.serializationManager,
+      );
+      ;
 
       expect(
           message,
@@ -173,7 +197,10 @@ void main() {
         reason: 'Expected a response from the server.',
       );
 
-      var message = WebSocketMessage.fromJsonString(await response as String);
+      var message = WebSocketMessage.fromJsonString(
+        await response as String,
+        server.serializationManager,
+      );
       expect(
           message,
           isA<OpenMethodStreamResponse>().having(
@@ -195,7 +222,11 @@ void main() {
       ));
 
       var response = await webSocket.stream.first as String;
-      var message = WebSocketMessage.fromJsonString(response);
+      var message = WebSocketMessage.fromJsonString(
+        response,
+        server.serializationManager,
+      );
+      ;
 
       expect(
           message,
@@ -218,7 +249,11 @@ void main() {
       ));
 
       var response = await webSocket.stream.first as String;
-      var message = WebSocketMessage.fromJsonString(response);
+      var message = WebSocketMessage.fromJsonString(
+        response,
+        server.serializationManager,
+      );
+      ;
 
       expect(
           message,
@@ -259,7 +294,11 @@ void main() {
         ));
 
         var response = await webSocket.stream.first as String;
-        var message = WebSocketMessage.fromJsonString(response);
+        var message = WebSocketMessage.fromJsonString(
+          response,
+          server.serializationManager,
+        );
+        ;
 
         expect(
           message,
@@ -305,7 +344,11 @@ void main() {
         ));
 
         var response = await webSocket.stream.first as String;
-        var message = WebSocketMessage.fromJsonString(response);
+        var message = WebSocketMessage.fromJsonString(
+          response,
+          server.serializationManager,
+        );
+        ;
 
         expect(
           message,

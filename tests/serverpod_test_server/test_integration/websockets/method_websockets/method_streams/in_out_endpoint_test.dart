@@ -58,7 +58,11 @@ void main() {
         });
 
         webSocket.stream.listen((event) {
-          var message = WebSocketMessage.fromJsonString(event);
+          var message = WebSocketMessage.fromJsonString(
+            event,
+            server.serializationManager,
+          );
+          ;
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();
           } else if (message is CloseMethodStreamCommand) {
@@ -185,7 +189,11 @@ void main() {
         });
 
         webSocket.stream.listen((event) {
-          var message = WebSocketMessage.fromJsonString(event);
+          var message = WebSocketMessage.fromJsonString(
+            event,
+            server.serializationManager,
+          );
+          ;
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();
           } else if (message is CloseMethodStreamCommand) {
@@ -287,7 +295,11 @@ void main() {
         });
 
         webSocket.stream.listen((event) {
-          var message = WebSocketMessage.fromJsonString(event);
+          var message = WebSocketMessage.fromJsonString(
+            event,
+            server.serializationManager,
+          );
+          ;
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();
           } else if (message is CloseMethodStreamCommand) {

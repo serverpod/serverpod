@@ -1,12 +1,12 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
 
-class TestSerializationManager extends SerializationManager {
-  TestSerializationManager();
+class _TestSerializationManager extends SerializationManager {
+  _TestSerializationManager();
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
-    if (data['className'] == 'TestSerializableException') {
-      return deserialize<TestSerializableException>(data['data']);
+    if (data['className'] == '_TestSerializableException') {
+      return deserialize<_TestSerializableException>(data['data']);
     }
 
     return super.deserializeByClassName(data);
@@ -16,8 +16,8 @@ class TestSerializationManager extends SerializationManager {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is TestSerializableException) {
-      return 'TestSerializableException';
+    if (data is _TestSerializableException) {
+      return '_TestSerializableException';
     }
     return null;
   }
@@ -28,15 +28,15 @@ class TestSerializationManager extends SerializationManager {
     Type? t,
   ]) {
     t ??= T;
-    if (t == TestSerializableException) {
-      return TestSerializableException() as T;
+    if (t == _TestSerializableException) {
+      return _TestSerializableException() as T;
     }
 
     return super.deserialize<T>(data, t);
   }
 }
 
-class TestSerializableException implements SerializableException {
+class _TestSerializableException implements SerializableException {
   @override
   toJson() {
     return 'Test serializable exception';
@@ -50,7 +50,7 @@ void main() {
     var message = PingCommand.buildMessage();
     var result = WebSocketMessage.fromJsonString(
       message,
-      TestSerializationManager(),
+      _TestSerializationManager(),
     );
     expect(result, isA<PingCommand>());
   });
@@ -61,7 +61,7 @@ void main() {
     var message = PongCommand.buildMessage();
     var result = WebSocketMessage.fromJsonString(
       message,
-      TestSerializationManager(),
+      _TestSerializationManager(),
     );
     expect(result, isA<PongCommand>());
   });
@@ -72,7 +72,7 @@ void main() {
     var message = BadRequestMessage.buildMessage('This is a bad request');
     var result = WebSocketMessage.fromJsonString(
       message,
-      TestSerializationManager(),
+      _TestSerializationManager(),
     );
     expect(result, isA<BadRequestMessage>());
   });
@@ -85,7 +85,7 @@ void main() {
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
-        TestSerializationManager(),
+        _TestSerializationManager(),
       ),
       throwsA(
         isA<UnknownMessageException>()
@@ -101,7 +101,7 @@ void main() {
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
-        TestSerializationManager(),
+        _TestSerializationManager(),
       ),
       throwsA(isA<UnknownMessageException>()),
     );
@@ -114,7 +114,7 @@ void main() {
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
-        TestSerializationManager(),
+        _TestSerializationManager(),
       ),
       throwsA(isA<UnknownMessageException>()),
     );
@@ -127,7 +127,7 @@ void main() {
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
-        TestSerializationManager(),
+        _TestSerializationManager(),
       ),
       throwsA(
         isA<UnknownMessageException>()
@@ -143,7 +143,7 @@ void main() {
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
-        TestSerializationManager(),
+        _TestSerializationManager(),
       ),
       throwsA(isA<UnknownMessageException>()),
     );
@@ -161,7 +161,7 @@ void main() {
     );
     var result = WebSocketMessage.fromJsonString(
       message,
-      TestSerializationManager(),
+      _TestSerializationManager(),
     );
     expect(result, isA<OpenMethodStreamCommand>());
   });
@@ -181,7 +181,7 @@ void main() {
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
-        TestSerializationManager(),
+        _TestSerializationManager(),
       ),
       throwsA(
         isA<UnknownMessageException>()
@@ -199,7 +199,7 @@ void main() {
     );
     var result = WebSocketMessage.fromJsonString(
       message,
-      TestSerializationManager(),
+      _TestSerializationManager(),
     );
     expect(result, isA<OpenMethodStreamResponse>());
   });
@@ -216,7 +216,7 @@ void main() {
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
-        TestSerializationManager(),
+        _TestSerializationManager(),
       ),
       throwsA(isA<UnknownMessageException>()),
     );
@@ -234,7 +234,7 @@ void main() {
     );
     var result = WebSocketMessage.fromJsonString(
       message,
-      TestSerializationManager(),
+      _TestSerializationManager(),
     );
     expect(result, isA<CloseMethodStreamCommand>());
   });
@@ -253,7 +253,7 @@ void main() {
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
-        TestSerializationManager(),
+        _TestSerializationManager(),
       ),
       throwsA(
         isA<UnknownMessageException>()
@@ -276,7 +276,7 @@ void main() {
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
-        TestSerializationManager(),
+        _TestSerializationManager(),
       ),
       throwsA(isA<UnknownMessageException>()),
     );
@@ -293,7 +293,7 @@ void main() {
     );
     var result = WebSocketMessage.fromJsonString(
       message,
-      TestSerializationManager(),
+      _TestSerializationManager(),
     );
     expect(result, isA<MethodStreamMessage>());
   });
@@ -312,7 +312,7 @@ void main() {
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
-        TestSerializationManager(),
+        _TestSerializationManager(),
       ),
       throwsA(
         isA<UnknownMessageException>()
@@ -324,18 +324,18 @@ void main() {
   test(
       'Given method stream serializable exception when building websocket message from string then MethodStreamSerializableException is returned.',
       () {
-    var serializationManager = TestSerializationManager();
+    var serializationManager = _TestSerializationManager();
     var message = MethodStreamSerializableException.buildMessage(
       endpoint: 'endpoint',
       method: 'method',
       connectionId: const Uuid().v4obj(),
       object: serializationManager.wrapWithClassName(
-        TestSerializableException(),
+        _TestSerializableException(),
       ),
     );
     var result = WebSocketMessage.fromJsonString(
       message,
-      TestSerializationManager(),
+      _TestSerializationManager(),
     );
     expect(result, isA<MethodStreamSerializableException>());
   });
@@ -354,7 +354,7 @@ void main() {
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
-        TestSerializationManager(),
+        _TestSerializationManager(),
       ),
       throwsA(
         isA<UnknownMessageException>()

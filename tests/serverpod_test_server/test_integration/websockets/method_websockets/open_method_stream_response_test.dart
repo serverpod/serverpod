@@ -31,7 +31,11 @@ void main() {
       var pongReceived = Completer<void>();
       var otherMessageReceived = Completer<void>();
       webSocket.stream.listen((event) {
-        var message = WebSocketMessage.fromJsonString(event);
+        var message = WebSocketMessage.fromJsonString(
+          event,
+          server.serializationManager,
+        );
+        ;
         if (message is PongCommand) {
           pongReceived.complete();
         } else {

@@ -303,7 +303,7 @@ class MethodStreamSerializableException extends WebSocketMessage {
             serializationManager.deserializeByClassName(data['exception']);
 
   /// Builds a [MethodStreamSerializableException] message.
-  /// The [object] must be a serializable exception processed by the
+  /// The [exception] must be a serializable exception processed by the
   /// [SerializationManager.wrapWithClassName] method.
   static String buildMessage({
     required String endpoint,

@@ -52,7 +52,11 @@ void main() {
         });
 
         webSocket.stream.listen((event) {
-          var message = WebSocketMessage.fromJsonString(event);
+          var message = WebSocketMessage.fromJsonString(
+            event,
+            server.serializationManager,
+          );
+          ;
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();
           } else if (message is CloseMethodStreamCommand &&
@@ -75,7 +79,7 @@ void main() {
         assert(streamOpened.isCompleted == true,
             'Failed to open method stream with server');
 
-        var serializedException = server.serializationManager.encodeWithType(
+        var serializedException = server.serializationManager.wrapWithClassName(
           ExceptionWithData(
             message: 'Throwing an exception',
             creationDate: DateTime.now(),

@@ -29,7 +29,10 @@ void main() {
       webSocket.sink.add(PingCommand.buildMessage());
 
       var response = await webSocket.stream.first as String;
-      var message = WebSocketMessage.fromJsonString(response);
+      var message = WebSocketMessage.fromJsonString(
+        response,
+        server.serializationManager,
+      );
 
       expect(message, isA<PongCommand>());
     });
