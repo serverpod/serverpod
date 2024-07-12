@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
-import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod/src/server/log_manager/log_writer.dart';
 import 'package:serverpod/src/server/session.dart';
 import 'package:synchronized/synchronized.dart';
@@ -402,9 +401,6 @@ class SessionLogManager {
 /// The [LogManager] handles logging and logging settings. Typically only used
 /// internally by Serverpod.
 class LogManager {
-  /// The [LogSettingsManager] the log manager retrieves its settings from.
-  final LogSettingsManager settings;
-
   /// The [RuntimeSettings] the log manager retrieves its settings from.
   @Deprecated('Will be removed in 3.0.0')
   final RuntimeSettings runtimeSettings;
@@ -426,7 +422,7 @@ class LogManager {
     this.runtimeSettings,
     LogWriter logWriter, {
     required String serverId,
-  }) : settings = LogSettingsManager(runtimeSettings);
+  });
 
   /// Initializes the logging for a session, automatically called when a session
   /// is created. Each call to this method should have a corresponding
