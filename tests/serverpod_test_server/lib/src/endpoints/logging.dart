@@ -63,3 +63,25 @@ class LoggingEndpoint extends Endpoint {
     // do nothing
   }
 }
+
+class DelayedLoggingEndpoint extends Endpoint {
+  @override
+  Future<void> handleStreamMessage(
+    StreamingSession session,
+    SerializableModel message,
+  ) async {
+    await Future.delayed(Duration(milliseconds: 500));
+    session.log('Delayed log message', level: LogLevel.debug);
+  }
+}
+
+class DelayedLoggingQueryEndpoint extends Endpoint {
+  @override
+  Future<void> handleStreamMessage(
+    StreamingSession session,
+    SerializableModel message,
+  ) async {
+    await Future.delayed(Duration(milliseconds: 500));
+    await session.db.findFirstRow<SimpleData>();
+  }
+}

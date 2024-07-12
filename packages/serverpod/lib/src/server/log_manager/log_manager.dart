@@ -1,8 +1,7 @@
 import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
-import 'package:serverpod/src/server/log_manager/log_writer.dart';
-import 'package:serverpod/src/server/log_manager/session_log_cache.dart';
+import 'package:serverpod/src/server/log_manager/log_writers.dart';
 import 'package:synchronized/synchronized.dart';
 
 import '../../../server.dart';
@@ -19,6 +18,8 @@ class SessionLogManager {
   final LogWriter _logWriter;
 
   final LogSettings Function(Session) _settingsForSession;
+
+  int _numberOfQueries = 0;
 
   int _logOrderId;
 
@@ -125,8 +126,7 @@ class SessionLogManager {
       'ENTRY',
       session,
       entry,
-      session.sessionLogs.logEntries,
-      _logWriter.logStreamEntry,
+      _logWriter.logEntry,
       (sessionLogId, entry) => entry.sessionLogId = sessionLogId,
     );
   }
@@ -172,10 +172,11 @@ class SessionLogManager {
       'QUERY',
       session,
       entry,
-      session.sessionLogs.queries,
-      _logWriter.logStreamQuery,
+      _logWriter.logQuery,
       (sessionLogId, entry) => entry.sessionLogId = sessionLogId,
     );
+
+    _numberOfQueries++;
   }
 
   /// Logs a message from a stream, depending on the session type it will be
@@ -222,8 +223,7 @@ class SessionLogManager {
       'MESSAGE',
       session,
       entry,
-      session.sessionLogs.messages,
-      _logWriter.logStreamMessage,
+      _logWriter.logMessage,
       (sessionLogId, entry) => entry.sessionLogId = sessionLogId,
     );
   }
@@ -232,15 +232,14 @@ class SessionLogManager {
     String type,
     Session session,
     T entry,
-    List<T> logCollector,
-    Future<void> Function(Session, T) writeLog,
+    Future<void> Function(T) writeLog,
     Function(int, T) setSessionLogId,
   ) async {
     await _attemptOpenStreamingLog(session: session);
     if (_continuouslyLogging(session) && session is StreamingSession) {
       try {
         setSessionLogId(session.sessionLogId!, entry);
-        await writeLog(session, entry);
+        await writeLog(entry);
       } catch (exception, stackTrace) {
         stderr
             .writeln('${DateTime.now().toUtc()} FAILED TO LOG STREAMING $type');
@@ -249,7 +248,7 @@ class SessionLogManager {
         stderr.writeln('$stackTrace');
       }
     } else {
-      logCollector.add(entry);
+      await writeLog(entry);
     }
   }
 
@@ -260,6 +259,10 @@ class SessionLogManager {
   Future<void> _attemptOpenStreamingLog({
     required Session session,
   }) async {
+    // TODO: This method along with finialize session logs are crusial to refactor and simplify.
+    // These are the main methods causing issues right now.
+    // They should be called for all sessions not only streaming sessions. Then the writer decides if the logging will be cached or not.
+
     await _openStreamLogLock.synchronized(() async {
       if (session is! StreamingSession) {
         // Only open streaming logs for streaming sessions.
@@ -288,8 +291,7 @@ class SessionLogManager {
         isOpen: true,
       );
 
-      var sessionLogId = await _logWriter.openStreamingLog(
-        session,
+      var sessionLogId = await _logWriter.openLog(
         sessionLogEntry,
       );
 
@@ -306,17 +308,20 @@ class SessionLogManager {
     String? exception,
     StackTrace? stackTrace,
   }) async {
+    // TODO: This method is way to complex and should be refactored.
+    // Again do not split streamed sessions and other session
+    // consolidate the logic here.
+
     var duration = session.duration;
-    var cachedEntry = session.sessionLogs;
     LogSettings logSettings = _settingsForSession(session);
 
     if (session.serverpod.runMode == ServerpodRunMode.development) {
       if (session is MethodCallSession) {
         stdout.writeln(
-            'METHOD CALL: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
+            'METHOD CALL: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: $_numberOfQueries authenticatedUser: $authenticatedUserId');
       } else if (session is FutureCallSession) {
         stdout.writeln(
-            'FUTURE CALL: ${session.futureCallName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length}');
+            'FUTURE CALL: ${session.futureCallName} duration: ${duration.inMilliseconds}ms numQueries: $_numberOfQueries');
       }
       if (exception != null) {
         stdout.writeln(exception);
@@ -331,9 +336,6 @@ class SessionLogManager {
     if (logSettings.logAllSessions ||
         (logSettings.logSlowSessions && isSlow) ||
         (logSettings.logFailedSessions && exception != null) ||
-        cachedEntry.queries.isNotEmpty ||
-        cachedEntry.logEntries.isNotEmpty ||
-        cachedEntry.messages.isNotEmpty ||
         _continuouslyLogging(session)) {
       int? sessionLogId;
 
@@ -346,7 +348,7 @@ class SessionLogManager {
         endpoint: session.endpointName,
         method: session.methodName,
         duration: duration.inMicroseconds / 1000000.0,
-        numQueries: cachedEntry.numQueries,
+        numQueries: _numberOfQueries,
         slow: isSlow,
         error: exception,
         stackTrace: stackTrace?.toString(),
@@ -359,15 +361,16 @@ class SessionLogManager {
           sessionLogId = session.sessionLogId!;
           sessionLogEntry.id = sessionLogId;
           sessionLogEntry.isOpen = false;
-          await _logWriter.closeStreamingLog(session, sessionLogEntry);
+          await _logWriter.closeLog(sessionLogEntry);
         } else {
-          await _logWriter.logAllCached(session, sessionLogEntry, cachedEntry);
+          await _logWriter.closeLog(sessionLogEntry);
+          //await _logWriter.logAllCached(session, sessionLogEntry, cachedEntry);
         }
       } catch (e, logStackTrace) {
         stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');
         if (session.methodName != null) {
           stderr.writeln(
-              'CALL: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
+              'CALL: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: $_numberOfQueries authenticatedUser: $authenticatedUserId');
         }
         stderr.writeln('CALL error: $exception');
         stderr.writeln('$logStackTrace');
@@ -392,8 +395,6 @@ class LogManager {
   @Deprecated('Will be removed in 3.0.0')
   final RuntimeSettings runtimeSettings;
 
-  final List<SessionLogEntryCache> _openSessionLogs = [];
-
   int _nextTemporarySessionId = -1;
 
   /// Returns a new unique temporary session id. The id will be negative, and
@@ -409,13 +410,4 @@ class LogManager {
     this.runtimeSettings, {
     required String serverId,
   });
-
-  /// Initializes the logging for a session, automatically called when a session
-  /// is created. Each call to this method should have a corresponding
-  /// [finalizeSessionLog] call.
-  SessionLogEntryCache initializeSessionLog(Session session) {
-    var logEntry = SessionLogEntryCache(session);
-    _openSessionLogs.add(logEntry);
-    return logEntry;
-  }
 }
