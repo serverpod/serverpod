@@ -308,17 +308,6 @@ class SessionLogManager {
     String? exception,
     StackTrace? stackTrace,
   }) async {
-    // If verbose logging is enabled, output otherwise unlogged exceptions to
-    // console.
-    if (exception != null && !session.enableLogging) {
-      session.serverpod.logVerbose(exception);
-      if (stackTrace != null) {
-        session.serverpod.logVerbose(stackTrace.toString());
-      }
-    }
-
-    if (!session.enableLogging) return null;
-
     var duration = session.duration;
     var cachedEntry = session.sessionLogs;
     LogSettings? logSettings;

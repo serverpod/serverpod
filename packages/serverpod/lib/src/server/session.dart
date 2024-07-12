@@ -172,6 +172,13 @@ abstract class Session {
     _closed = true;
 
     try {
+      if (_logManager == null && error != null) {
+        serverpod.logVerbose(error);
+        if (stackTrace != null) {
+          serverpod.logVerbose(stackTrace.toString());
+        }
+      }
+
       server.messageCentral.removeListenersForSession(this);
       return await _logManager?.finalizeSessionLog(
         this,
