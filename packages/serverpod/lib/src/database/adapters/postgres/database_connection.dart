@@ -503,7 +503,7 @@ class DatabaseConnection {
     String query,
     DateTime startTime, {
     int? numRowsAffected,
-    exception,
+    dynamic exception,
     StackTrace? trace,
   }) {
     var duration = DateTime.now().difference(startTime);
@@ -516,7 +516,7 @@ class DatabaseConnection {
       query: query,
       duration: duration,
       numRowsAffected: numRowsAffected,
-      error: exception.toString(),
+      error: exception?.toString(),
       stackTrace: trace,
     );
   }

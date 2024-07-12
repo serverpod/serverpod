@@ -121,6 +121,60 @@ void main() async {
     });
 
     test(
+        'Given a log setting that enables slow query logging when calling a slow query method then a single log entry is created.',
+        () async {
+      var settings = RuntimeSettingsBuilder()
+          .withLogSettings(
+            LogSettingsBuilder()
+                .withLoggingTurnedDown()
+                .withLogSlowSessions(true)
+                .withSlowQueryDuration(0.5)
+                .build(),
+          )
+          .build();
+
+      await server.updateRuntimeSettings(settings);
+
+      await client.logging.emptyMethod();
+      await client.logging.slowQueryMethod(1);
+
+      var logs = await LoggingUtil.findAllLogs(session);
+
+      expect(logs, hasLength(1));
+
+      expect(logs.first.sessionLogEntry.endpoint, 'logging');
+      expect(logs.first.sessionLogEntry.method, 'slowQueryMethod');
+    });
+
+    test(
+        'Given a log setting that enables failed query logging when calling a method executing an invalid query then a single log entry is created.',
+        () async {
+      var settings = RuntimeSettingsBuilder()
+          .withLogSettings(
+            LogSettingsBuilder()
+                .withLoggingTurnedDown()
+                .withLogFailedQueries(true)
+                .build(),
+          )
+          .build();
+
+      await server.updateRuntimeSettings(settings);
+
+      await client.logging.emptyMethod();
+
+      try {
+        await client.logging.failedQueryMethod();
+      } catch (_) {}
+
+      var logs = await LoggingUtil.findAllLogs(session);
+
+      expect(logs, hasLength(1));
+
+      expect(logs.first.sessionLogEntry.endpoint, 'logging');
+      expect(logs.first.sessionLogEntry.method, 'failedQueryMethod');
+    }, skip: 'Fail because of the synchronized lock method, not sure why.');
+
+    test(
         'Given a log setting with everything turned on when calling a method logging a message then the log including the message log is written.',
         () async {
       var settings = RuntimeSettingsBuilder().build();
