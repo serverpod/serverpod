@@ -7,7 +7,10 @@ sealed class WebSocketMessage {
   /// Converts a JSON string to a [WebSocketMessage] object.
   ///
   /// Throws an [UnknownMessageException] if the message is not recognized.
-  static WebSocketMessage fromJsonString(String jsonString) {
+  static WebSocketMessage fromJsonString(
+    String jsonString,
+    SerializationManager serializationManager,
+  ) {
     try {
       Map data = jsonDecode(jsonString) as Map;
 
@@ -29,7 +32,7 @@ sealed class WebSocketMessage {
         case MethodStreamMessage._messageType:
           return MethodStreamMessage(data);
         case MethodStreamSerializableException._messageType:
-          return MethodStreamSerializableException(data);
+          return MethodStreamSerializableException(data, serializationManager);
       }
 
       throw UnknownMessageException(jsonString);
@@ -283,24 +286,31 @@ class MethodStreamSerializableException extends WebSocketMessage {
   /// If this is null the message is sent to the return stream of the method.
   final String? parameter;
 
-  /// The object to send.
-  final String object;
+  /// The serializable exception sent.
+  final SerializableException exception;
 
   /// Creates a new [MethodStreamSerializableException].
-  MethodStreamSerializableException(Map data)
-      : endpoint = data['endpoint'],
+  /// The [exception] must be a serializable exception processed by the
+  /// [SerializationManager.wrapWithClassName] method.
+  MethodStreamSerializableException(
+    Map data,
+    SerializationManager serializationManager,
+  )   : endpoint = data['endpoint'],
         method = data['method'],
         connectionId = UuidValueJsonExtension.fromJson(data['connectionId']),
         parameter = data['parameter'],
-        object = data['object'];
+        exception =
+            serializationManager.deserializeByClassName(data['exception']);
 
   /// Builds a [MethodStreamSerializableException] message.
+  /// The [object] must be a serializable exception processed by the
+  /// [SerializationManager.wrapWithClassName] method.
   static String buildMessage({
     required String endpoint,
     required String method,
     required UuidValue connectionId,
     String? parameter,
-    required String object,
+    required Map<String, dynamic> object,
   }) {
     return SerializationManager.encodeForProtocol({
       'messageType': _messageType,
@@ -308,18 +318,19 @@ class MethodStreamSerializableException extends WebSocketMessage {
       'method': method,
       'connectionId': connectionId,
       if (parameter != null) 'parameter': parameter,
-      'object': object,
+      'exception': object,
     });
   }
 
   @override
-  String toString() => buildMessage(
-        endpoint: endpoint,
-        method: method,
-        connectionId: connectionId,
-        parameter: parameter,
-        object: object,
-      );
+  String toString() => {
+        'messageType': _messageType,
+        'endpoint': endpoint,
+        'method': method,
+        'connectionId': connectionId,
+        if (parameter != null) 'parameter': parameter,
+        'exception': exception,
+      }.toString();
 }
 
 /// A message sent to a method stream.
