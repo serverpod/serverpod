@@ -415,4 +415,9 @@ class UnknownMessageException implements Exception {
     this.error,
     this.stackTrace,
   });
+
+  @override
+  String toString() {
+    return 'UnknownMessageException: $jsonString\n$error\n$stackTrace';
+  }
 }
