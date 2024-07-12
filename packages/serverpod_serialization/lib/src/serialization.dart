@@ -180,14 +180,15 @@ abstract class SerializationManager {
   /// with [deserializeByClassName].
   Map<String, dynamic> wrapWithClassName(Object? data) {
     var className = getClassNameForObject(data);
-    assert(
-      className != null,
-      'Could not find class name for ${data.runtimeType} in serialization.',
-    );
+    if (className == null) {
+      throw ArgumentError(
+        'Could not find class name for ${data.runtimeType} in serialization.',
+      );
+    }
 
     return {
       'className': className,
-      'data': data is ProtocolSerialization ? data.toJsonForProtocol() : data,
+      'data': data,
     };
   }
 
@@ -253,8 +254,30 @@ abstract class SerializationManager {
   /// name so that it can be decoded even if th class is unknown.
   /// If [formatted] is true, the output will be formatted with two spaces
   /// indentation.
-  String encodeWithType(Object? object, {bool formatted = false}) {
-    return encode(wrapWithClassName(object), formatted: formatted);
+  String encodeWithType(
+    Object? object, {
+    bool formatted = false,
+  }) {
+    return encode(
+      wrapWithClassName(object),
+      formatted: formatted,
+    );
+  }
+
+  /// Encode the provided [object] to a Json-formatted [String], including the
+  /// class name so that it can be decoded even if the class is unknown.
+  /// If [formatted] is true, the output will be formatted with two spaces
+  /// indentation. If [object] implements [ProtocolSerialization] interface, then
+  /// [toJsonForProtocol] will be used instead of the [toJson] method.
+  String encodeWithTypeForProtocol(
+    Object? object, {
+    bool formatted = false,
+  }) {
+    return encode(
+      wrapWithClassName(object),
+      formatted: formatted,
+      encodeForProtocol: true,
+    );
   }
 }
 
