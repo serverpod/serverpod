@@ -3,7 +3,11 @@ import 'package:serverpod_test_server/src/generated/protocol.dart';
 
 class LoggingEndpoint extends Endpoint {
   Future<void> slowQueryMethod(Session session, int seconds) async {
-    await session.db.unsafeQuery('PERFORM pg_sleep($seconds);');
+    try {
+      await session.db.unsafeQuery('SELECT pg_sleep($seconds);');
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> failedQueryMethod(Session session) async {
