@@ -62,8 +62,7 @@ void main() {
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();
           } else if (message is MethodStreamMessage) {
-            endpointResponses.add(server.serializationManager
-                .decodeWithType(message.object) as int);
+            endpointResponses.add(message.object as int);
 
             if (++responsesReceived ==
                 inputValuesStream1.length + inputValuesStream2.length) {
@@ -89,7 +88,7 @@ void main() {
             method: method,
             parameter: inputStreamParameter1,
             connectionId: connectionId,
-            object: server.serializationManager.encodeWithType(value),
+            object: server.serializationManager.wrapWithClassName(value),
           ));
         }
 
@@ -99,7 +98,7 @@ void main() {
             method: method,
             parameter: inputStreamParameter2,
             connectionId: connectionId,
-            object: server.serializationManager.encodeWithType(value),
+            object: server.serializationManager.wrapWithClassName(value),
           ));
         }
       });
@@ -167,8 +166,7 @@ void main() {
               message.parameter == closedStreamParameter) {
             closeMethodStreamParameterCommand.complete(message);
           } else if (message is MethodStreamMessage) {
-            endpointResponse.complete(server.serializationManager
-                .decodeWithType(message.object) as int);
+            endpointResponse.complete(message.object as int);
           }
         });
 
@@ -224,7 +222,7 @@ void main() {
           method: method,
           parameter: openStreamParameter,
           connectionId: connectionId,
-          object: server.serializationManager.encodeWithType(inputValue),
+          object: server.serializationManager.wrapWithClassName(inputValue),
         ));
 
         await expectLater(

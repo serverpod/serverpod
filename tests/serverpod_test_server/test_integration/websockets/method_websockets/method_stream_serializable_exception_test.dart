@@ -63,8 +63,7 @@ void main() {
               message.parameter == null) {
             closeMethodStreamCommand.complete(message);
           } else if (message is MethodStreamMessage) {
-            endpointResponse.complete(server.serializationManager
-                .decodeWithType(message.object) as bool);
+            endpointResponse.complete(message.object as bool);
           }
         });
 

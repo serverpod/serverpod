@@ -176,7 +176,7 @@ void main() {
         endpoint: endpoint,
         method: keepAliveMethod,
         parameter: 'stream',
-        object: server.serializationManager.encodeWithType(4),
+        object: server.serializationManager.wrapWithClassName(4),
         connectionId: keepAliveConnectionId,
       ));
 
@@ -428,7 +428,7 @@ void main() {
         endpoint: endpoint,
         method: keepAliveMethod,
         parameter: 'stream',
-        object: server.serializationManager.encodeWithType(4),
+        object: server.serializationManager.wrapWithClassName(4),
         connectionId: keepAliveConnectionId,
       ));
 
@@ -534,7 +534,7 @@ void main() {
         endpoint: endpoint,
         method: keepAliveMethod,
         parameter: 'stream',
-        object: server.serializationManager.encodeWithType(4),
+        object: server.serializationManager.wrapWithClassName(4),
         connectionId: keepAliveConnectionId,
       ));
 

@@ -72,8 +72,7 @@ void main() {
               closeMethodStreamCommand.complete(message);
             }
           } else if (message is MethodStreamMessage) {
-            endpointResponse.complete(server.serializationManager
-                .decodeWithType(message.object) as int);
+            endpointResponse.complete(message.object as int);
           }
         });
 
@@ -93,7 +92,7 @@ void main() {
           method: method,
           parameter: inputParameter,
           connectionId: connectionId,
-          object: server.serializationManager.encodeWithType(inputValue),
+          object: server.serializationManager.wrapWithClassName(inputValue),
         ));
       });
 
@@ -199,8 +198,7 @@ void main() {
           } else if (message is CloseMethodStreamCommand) {
             closeMethodStreamCommand.complete(message);
           } else if (message is MethodStreamMessage) {
-            endpointResponses.add(server.serializationManager
-                .decodeWithType(message.object) as int);
+            endpointResponses.add(message.object as int);
           }
         });
 
@@ -309,8 +307,7 @@ void main() {
               closeMethodStreamCommand.complete(message);
             }
           } else if (message is MethodStreamMessage) {
-            endpointResponses.add(server.serializationManager
-                .decodeWithType(message.object) as int);
+            endpointResponses.add(message.object as int);
           }
         });
 
@@ -331,7 +328,7 @@ void main() {
             method: method,
             parameter: inputParameter,
             connectionId: connectionId,
-            object: server.serializationManager.encodeWithType(inputValue),
+            object: server.serializationManager.wrapWithClassName(inputValue),
           ));
 
         webSocket.sink.add(CloseMethodStreamCommand.buildMessage(

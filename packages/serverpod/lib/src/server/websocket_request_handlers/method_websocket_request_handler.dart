@@ -332,8 +332,7 @@ class _MethodStreamManager {
       return false;
     }
 
-    streamContext.controller
-        .add(server.serializationManager.decodeWithType(message.object));
+    streamContext.controller.add(message.object);
     return true;
   }
 
@@ -532,7 +531,7 @@ class _MethodStreamManager {
           endpoint: message.endpoint,
           method: message.method,
           connectionId: message.connectionId,
-          object: server.serializationManager.encodeWithType(result),
+          object: server.serializationManager.wrapWithClassName(result),
         ),
       );
     }
@@ -564,7 +563,7 @@ class _MethodStreamManager {
             endpoint: message.endpoint,
             method: message.method,
             connectionId: message.connectionId,
-            object: server.serializationManager.encodeWithType(value),
+            object: server.serializationManager.wrapWithClassName(value),
           ),
         );
       },

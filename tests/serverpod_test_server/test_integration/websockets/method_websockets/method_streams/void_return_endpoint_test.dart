@@ -71,8 +71,7 @@ void main() {
               closeMethodStreamCommand.complete(message);
             }
           } else if (message is MethodStreamMessage) {
-            endpointResponse.complete(server.serializationManager
-                .decodeWithType(message.object) as int);
+            endpointResponse.complete(message.object as int);
           }
         });
 
