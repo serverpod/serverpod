@@ -5,7 +5,9 @@ import 'dart:typed_data';
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/features.dart';
+import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_writer.dart';
+import 'package:serverpod/src/server/serverpod.dart';
 import '../cache/caches.dart';
 import '../database/database.dart';
 
@@ -93,6 +95,8 @@ abstract class Session {
   /// enabled but it will be disabled for internal sessions used by Serverpod.
   final bool enableLogging;
 
+  late final SessionLogManager _logManager;
+
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
     UuidValue? sessionId,
@@ -111,6 +115,17 @@ abstract class Session {
     if (Features.enableDatabase) {
       _db = server.createDatabase(this);
     }
+
+    var logWriter = Features.enablePersistentLogging
+        ? DatabaseLogWriter()
+        : StdOutLogWriter();
+
+    _logManager = SessionLogManager(
+      logWriter,
+      settingsForSession: (Session session) =>
+          server.serverpod.logSettingsManager.getLogSettingsForSession(session),
+      serverId: server.serverId,
+    );
 
     sessionLogs = server.serverpod.logManager.initializeSessionLog(this);
     sessionLogs.temporarySessionId =
@@ -155,7 +170,7 @@ abstract class Session {
 
     try {
       server.messageCentral.removeListenersForSession(this);
-      return await server.serverpod.logManager.finalizeSessionLog(
+      return await _logManager.finalizeSessionLog(
         this,
         exception: error == null ? null : '$error',
         stackTrace: stackTrace,
@@ -187,7 +202,7 @@ abstract class Session {
       messageId = (this as StreamingSession).currentMessageId;
     }
 
-    serverpod.logManager.logEntry(
+    _logManager.logEntry(
       this,
       message: message,
       messageId: messageId,
@@ -528,4 +543,12 @@ class MessageCentralAccess {
         message,
         global: global,
       );
+}
+
+/// Internal methods for [Session].
+/// This is used to provide access to internal methods that should not be
+/// accessed from outside the library.
+extension SessionInternalMethods on Session {
+  /// Returns the [LogManager] for the session.
+  SessionLogManager get logManager => _logManager;
 }

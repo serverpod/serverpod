@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
-import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod/src/server/log_manager/log_writer.dart';
 import 'package:synchronized/synchronized.dart';
 
@@ -10,56 +9,30 @@ import '../../generated/protocol.dart';
 
 const double _microNormalizer = 1000 * 1000;
 
-/// The [LogManager] handles logging and logging settings. Typically only used
-/// internally by Serverpod.
-class LogManager {
-  /// The [LogSettingsManager] the log manager retrieves its settings from.
-  final LogSettingsManager settings;
-
-  /// The [RuntimeSettings] the log manager retrieves its settings from.
-  @Deprecated('Will be removed in 3.0.0')
-  final RuntimeSettings runtimeSettings;
+@internal
+class SessionLogManager {
+  final String _serverId;
 
   final LogWriter _logWriter;
 
-  final List<SessionLogEntryCache> _openSessionLogs = [];
-
-  final String _serverId;
-
-  int _nextTemporarySessionId = -1;
-
-  /// Returns a new unique temporary session id. The id will be negative, and
-  /// ids are only unique to this running instance.
-  int nextTemporarySessionId() {
-    var id = _nextTemporarySessionId;
-    _nextTemporarySessionId -= 1;
-    return id;
-  }
+  final LogSettings Function(Session) _settingsForSession;
 
   /// Creates a new [LogManager] from [RuntimeSettings].
-  LogManager(
-    this.runtimeSettings,
+  @internal
+  SessionLogManager(
     LogWriter logWriter, {
+    required LogSettings Function(Session) settingsForSession,
     required String serverId,
   })  : _logWriter = logWriter,
-        _serverId = serverId,
-        settings = LogSettingsManager(runtimeSettings);
-
-  /// Initializes the logging for a session, automatically called when a session
-  /// is created. Each call to this method should have a corresponding
-  /// [finalizeSessionLog] call.
-  SessionLogEntryCache initializeSessionLog(Session session) {
-    var logEntry = SessionLogEntryCache(session);
-    _openSessionLogs.add(logEntry);
-    return logEntry;
-  }
+        _settingsForSession = settingsForSession,
+        _serverId = serverId;
 
   bool _shouldLogQuery({
     required Session session,
     required bool slow,
     required bool failed,
   }) {
-    var logSettings = settings.getLogSettingsForSession(session);
+    var logSettings = _settingsForSession(session);
     if (logSettings.logAllQueries) {
       return true;
     }
@@ -76,7 +49,7 @@ class LogManager {
     required Session session,
     required LogEntry entry,
   }) {
-    var logSettings = settings.getLogSettingsForSession(session);
+    var logSettings = _settingsForSession(session);
     var serverLogLevel = (logSettings.logLevel);
 
     return entry.logLevel.index >= serverLogLevel.index;
@@ -88,7 +61,7 @@ class LogManager {
     required bool slow,
     required bool failed,
   }) {
-    var logSettings = settings.getLogSettingsForSession(session);
+    var logSettings = _settingsForSession(session);
     if (logSettings.logAllSessions) {
       return true;
     }
@@ -164,7 +137,7 @@ class LogManager {
   }) async {
     var executionTime = duration.inMicroseconds / _microNormalizer;
 
-    var logSettings = settings.getLogSettingsForSession(session);
+    var logSettings = _settingsForSession(session);
 
     var slow = executionTime >= logSettings.slowQueryDuration;
     var shouldLog = _shouldLogQuery(
@@ -212,8 +185,8 @@ class LogManager {
   }) async {
     var executionTime = duration.inMicroseconds / _microNormalizer;
 
-    var slow = executionTime >=
-        settings.getLogSettingsForSession(session).slowSessionDuration;
+    var slow =
+        executionTime >= _settingsForSession(session).slowSessionDuration;
 
     var shouldLog = _shouldLogMessage(
       session: session,
@@ -292,7 +265,7 @@ class LogManager {
 
       assert(session.sessionLogs.currentEndpoint != null);
 
-      var logSettings = settings.getLogSettingsForSession(session);
+      var logSettings = _settingsForSession(session);
       if (!logSettings.logStreamingSessionsContinuously) {
         // This call should not stream continuously.
         return;
@@ -327,8 +300,6 @@ class LogManager {
     String? exception,
     StackTrace? stackTrace,
   }) async {
-    _openSessionLogs.removeWhere((logEntry) => logEntry.session == session);
-
     // If verbose logging is enabled, output otherwise unlogged exceptions to
     // console.
     if (exception != null && !session.enableLogging) {
@@ -344,7 +315,7 @@ class LogManager {
     var cachedEntry = session.sessionLogs;
     LogSettings? logSettings;
     if (session is! StreamingSession) {
-      logSettings = settings.getLogSettingsForSession(session);
+      logSettings = _settingsForSession(session);
     }
 
     if (session.serverpod.runMode == ServerpodRunMode.development) {
@@ -424,57 +395,40 @@ class LogManager {
     }
     return null;
   }
+}
 
-  /// Returns a list of logs for all open sessions.
-  List<SessionLogInfo> getOpenSessionLogs(
-      int numEntries, SessionLogFilter? filter) {
-    var sessionLog = <SessionLogInfo>[];
+/// The [LogManager] handles logging and logging settings. Typically only used
+/// internally by Serverpod.
+class LogManager {
+  /// The [RuntimeSettings] the log manager retrieves its settings from.
+  @Deprecated('Will be removed in 3.0.0')
+  final RuntimeSettings runtimeSettings;
 
-    var numFoundEntries = 0;
-    var i = 0;
-    while (i < _openSessionLogs.length && numFoundEntries < numEntries) {
-      var entry = _openSessionLogs[i];
-      i += 1;
-      numFoundEntries += 1;
+  final List<SessionLogEntryCache> _openSessionLogs = [];
 
-      // Check filter (ignore slow and errors as session is still open)
-      if (filter != null) {
-        var session = entry.session;
-        if (session is MethodCallSession) {
-          if (filter.endpoint != null &&
-              filter.endpoint != '' &&
-              session.endpointName != filter.endpoint) {
-            continue;
-          }
-          if (filter.endpoint != null &&
-              filter.endpoint != '' &&
-              filter.method != null &&
-              filter.method != '' &&
-              session.endpointName != filter.endpoint &&
-              session.methodName != filter.method) {
-            continue;
-          }
-        }
-      }
+  int _nextTemporarySessionId = -1;
 
-      sessionLog.add(
-        SessionLogInfo(
-          sessionLogEntry: SessionLogEntry(
-            serverId: Serverpod.instance.serverId,
-            time: entry.session.startTime,
-            touched: DateTime.now(),
-            endpoint: _endpointForSession(entry.session),
-            method: _methodForSession(entry.session),
-            numQueries: entry.numQueries,
-          ),
-          queries: entry.queries,
-          logs: entry.logEntries,
-          messages: entry.messages,
-        ),
-      );
-    }
+  /// Returns a new unique temporary session id. The id will be negative, and
+  /// ids are only unique to this running instance.
+  int nextTemporarySessionId() {
+    var id = _nextTemporarySessionId;
+    _nextTemporarySessionId -= 1;
+    return id;
+  }
 
-    return sessionLog;
+  /// Creates a new [LogManager] from [RuntimeSettings].
+  LogManager(
+    this.runtimeSettings, {
+    required String serverId,
+  });
+
+  /// Initializes the logging for a session, automatically called when a session
+  /// is created. Each call to this method should have a corresponding
+  /// [finalizeSessionLog] call.
+  SessionLogEntryCache initializeSessionLog(Session session) {
+    var logEntry = SessionLogEntryCache(session);
+    _openSessionLogs.add(logEntry);
+    return logEntry;
   }
 }
 
