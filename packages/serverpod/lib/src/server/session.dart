@@ -166,7 +166,7 @@ abstract class Session {
 
     try {
       server.messageCentral.removeListenersForSession(this);
-      return await server.serverpod.logManager.finalizeSessionLog(
+      return await _logManager.finalizeSessionLog(
         this,
         exception: error == null ? null : '$error',
         stackTrace: stackTrace,
@@ -198,7 +198,7 @@ abstract class Session {
       messageId = (this as StreamingSession).currentMessageId;
     }
 
-    serverpod.logManager.logEntry(
+    _logManager.logEntry(
       this,
       message: message,
       messageId: messageId,
