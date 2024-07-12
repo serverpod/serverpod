@@ -310,10 +310,7 @@ class SessionLogManager {
   }) async {
     var duration = session.duration;
     var cachedEntry = session.sessionLogs;
-    LogSettings? logSettings;
-    if (session is! StreamingSession) {
-      logSettings = _settingsForSession(session);
-    }
+    LogSettings logSettings = _settingsForSession(session);
 
     if (session.serverpod.runMode == ServerpodRunMode.development) {
       if (session is MethodCallSession) {
@@ -329,17 +326,13 @@ class SessionLogManager {
       }
     }
 
-    var isSlow = false;
+    var slowMicros = (logSettings.slowSessionDuration * 1000000.0).toInt();
+    var isSlow = duration > Duration(microseconds: slowMicros) &&
+        session is! StreamingSession;
 
-    if (logSettings != null) {
-      var slowMicros = (logSettings.slowSessionDuration * 1000000.0).toInt();
-      isSlow = duration > Duration(microseconds: slowMicros) &&
-          session is! StreamingSession;
-    }
-
-    if ((logSettings?.logAllSessions ?? false) ||
-        (logSettings?.logSlowSessions ?? false) && isSlow ||
-        (logSettings?.logFailedSessions ?? false) && exception != null ||
+    if (logSettings.logAllSessions ||
+        (logSettings.logSlowSessions && isSlow) ||
+        (logSettings.logFailedSessions && exception != null) ||
         cachedEntry.queries.isNotEmpty ||
         cachedEntry.logEntries.isNotEmpty ||
         cachedEntry.messages.isNotEmpty ||
