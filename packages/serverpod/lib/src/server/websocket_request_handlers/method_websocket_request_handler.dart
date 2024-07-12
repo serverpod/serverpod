@@ -95,8 +95,10 @@ class MethodWebsocketRequestHandler {
         }
       }
     } catch (e, stackTrace) {
-      var session = await server.serverpod.createSession();
-      await session.close(error: e, stackTrace: stackTrace);
+      stderr
+          .writeln('${DateTime.now().toUtc()} Method stream websocket error.');
+      stderr.writeln('$e');
+      stderr.writeln('$stackTrace');
     } finally {
       await _methodStreamManager.closeAllStreams();
       // Send a close message to the client.
