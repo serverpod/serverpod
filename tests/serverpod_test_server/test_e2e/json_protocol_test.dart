@@ -11,7 +11,14 @@ Future<dynamic> _getWebsocketMessage(
   WebSocketChannel websocket,
 ) async {
   try {
-    return await websocket.stream.timeout(Duration(seconds: 5)).firstWhere(
+    return await websocket.stream
+        .timeout(
+          Duration(seconds: 5),
+          onTimeout: (sink) => throw TimeoutException(
+            'Message was not received within the timeout period.',
+          ),
+        )
+        .firstWhere(
           (event) =>
               event is String && event.contains('serverOnlyScopedFieldModel'),
           orElse: () => throw TimeoutException(
@@ -19,11 +26,7 @@ Future<dynamic> _getWebsocketMessage(
           ),
         );
   } catch (e) {
-    if (e is TimeoutException) {
-      return null;
-    } else {
-      rethrow;
-    }
+    return e;
   }
 }
 
@@ -85,6 +88,7 @@ void main() {
 
       message = await _getWebsocketMessage(websocket);
       await websocket.sink.close();
+      if (message is Exception) throw message;
     });
 
     test(
@@ -141,6 +145,7 @@ void main() {
 
         message = await _getWebsocketMessage(websocket);
         await websocket.sink.close();
+        if (message is Exception) throw message;
       });
 
       test(
@@ -191,6 +196,7 @@ void main() {
 
         message = await _getWebsocketMessage(websocket);
         await websocket.sink.close();
+        if (message is Exception) throw message;
       });
 
       test(
