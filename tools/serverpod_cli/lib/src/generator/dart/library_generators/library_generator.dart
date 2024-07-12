@@ -703,9 +703,6 @@ class LibraryGenerator {
               'nullable': literalBool(param.type.nullable),
             })
         }),
-        'returnsVoid': literalBool(
-          method.returnType.generics.first.isVoidType,
-        ),
         'call': Method(
           (m) => m
             ..requiredParameters.addAll([
