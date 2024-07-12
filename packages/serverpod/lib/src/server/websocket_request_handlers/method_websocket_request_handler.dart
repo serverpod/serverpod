@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// This class is used by the [Server] to handle incoming websocket requests
 /// to a method. It is not intended to be used directly by the user.
