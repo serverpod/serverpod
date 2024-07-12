@@ -88,7 +88,8 @@ void main() {
             method: method,
             parameter: inputStreamParameter1,
             connectionId: connectionId,
-            object: server.serializationManager.wrapWithClassName(value),
+            object: value,
+            serializationManager: server.serializationManager,
           ));
         }
 
@@ -98,7 +99,8 @@ void main() {
             method: method,
             parameter: inputStreamParameter2,
             connectionId: connectionId,
-            object: server.serializationManager.wrapWithClassName(value),
+            object: value,
+            serializationManager: server.serializationManager,
           ));
         }
       });
@@ -222,7 +224,8 @@ void main() {
           method: method,
           parameter: openStreamParameter,
           connectionId: connectionId,
-          object: server.serializationManager.wrapWithClassName(inputValue),
+          object: inputValue,
+          serializationManager: server.serializationManager,
         ));
 
         await expectLater(

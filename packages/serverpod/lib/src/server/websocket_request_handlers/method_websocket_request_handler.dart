@@ -505,7 +505,8 @@ class _MethodStreamManager {
             endpoint: message.endpoint,
             method: message.method,
             connectionId: message.connectionId,
-            object: server.serializationManager.wrapWithClassName(e),
+            object: e,
+            serializationManager: server.serializationManager,
           ),
         );
       }
@@ -533,7 +534,8 @@ class _MethodStreamManager {
           endpoint: message.endpoint,
           method: message.method,
           connectionId: message.connectionId,
-          object: server.serializationManager.wrapWithClassName(result),
+          object: result,
+          serializationManager: server.serializationManager,
         ),
       );
     }
@@ -565,7 +567,8 @@ class _MethodStreamManager {
             endpoint: message.endpoint,
             method: message.method,
             connectionId: message.connectionId,
-            object: server.serializationManager.wrapWithClassName(value),
+            object: value,
+            serializationManager: server.serializationManager,
           ),
         );
       },
@@ -588,7 +591,8 @@ class _MethodStreamManager {
               endpoint: message.endpoint,
               method: message.method,
               connectionId: message.connectionId,
-              object: server.serializationManager.wrapWithClassName(e),
+              object: e,
+              serializationManager: server.serializationManager,
             ),
           );
         }

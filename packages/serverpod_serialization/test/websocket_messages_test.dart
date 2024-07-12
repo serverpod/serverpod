@@ -334,8 +334,7 @@ void main() {
       endpoint: 'endpoint',
       method: 'method',
       connectionId: const Uuid().v4obj(),
-      object:
-          serializationManager.wrapWithClassName(_SimpleData('hello world')),
+      object: _SimpleData('hello world'),
       serializationManager: serializationManager,
     );
     var result = WebSocketMessage.fromJsonString(
@@ -353,8 +352,7 @@ void main() {
       endpoint: 'endpoint',
       method: 'method',
       connectionId: const Uuid().v4obj(),
-      object: serializationManager.wrapWithClassName(
-          _SimpleData('hello world', serverOnlyField: 'this is awesome')),
+      object: _SimpleData('hello world', serverOnlyField: 'this is awesome'),
       serializationManager: serializationManager,
     );
 
@@ -392,9 +390,7 @@ void main() {
       endpoint: 'endpoint',
       method: 'method',
       connectionId: const Uuid().v4obj(),
-      object: serializationManager.wrapWithClassName(
-        _TestSerializableException(),
-      ),
+      object: _TestSerializableException(),
       serializationManager: serializationManager,
     );
     var result = WebSocketMessage.fromJsonString(
@@ -412,9 +408,7 @@ void main() {
       endpoint: 'endpoint',
       method: 'method',
       connectionId: const Uuid().v4obj(),
-      object: serializationManager.wrapWithClassName(
-        _TestSerializableException(),
-      ),
+      object: _TestSerializableException(),
       serializationManager: serializationManager,
     );
 

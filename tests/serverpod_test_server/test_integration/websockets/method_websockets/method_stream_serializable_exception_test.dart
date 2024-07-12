@@ -78,23 +78,22 @@ void main() {
         assert(streamOpened.isCompleted == true,
             'Failed to open method stream with server');
 
-        var serializedException = server.serializationManager.wrapWithClassName(
-          ExceptionWithData(
-            message: 'Throwing an exception',
-            creationDate: DateTime.now(),
-            errorFields: [
-              'first line error',
-              'second line error',
-            ],
-            someNullableField: 1,
-          ),
+        var serializableException = ExceptionWithData(
+          message: 'Throwing an exception',
+          creationDate: DateTime.now(),
+          errorFields: [
+            'first line error',
+            'second line error',
+          ],
+          someNullableField: 1,
         );
         webSocket.sink.add(MethodStreamSerializableException.buildMessage(
           endpoint: endpoint,
           method: method,
           parameter: inputParameter,
           connectionId: connectionId,
-          object: serializedException,
+          object: serializableException,
+          serializationManager: server.serializationManager,
         ));
       });
 

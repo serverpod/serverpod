@@ -46,7 +46,8 @@ void main() {
         method: 'simpleStream',
         parameter: 'stream',
         connectionId: const Uuid().v4obj(),
-        object: server.serializationManager.wrapWithClassName(1),
+        object: 1,
+        serializationManager: server.serializationManager,
       ));
 
       await expectLater(
@@ -605,7 +606,8 @@ void main() {
           endpoint: endpoint,
           method: method,
           connectionId: connectionId,
-          object: server.serializationManager.wrapWithClassName(1),
+          object: 1,
+          serializationManager: server.serializationManager,
         ));
       });
 

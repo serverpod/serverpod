@@ -92,7 +92,8 @@ void main() {
           method: method,
           parameter: inputParameter,
           connectionId: connectionId,
-          object: server.serializationManager.wrapWithClassName(inputValue),
+          object: inputValue,
+          serializationManager: server.serializationManager,
         ));
       });
 
@@ -328,7 +329,8 @@ void main() {
             method: method,
             parameter: inputParameter,
             connectionId: connectionId,
-            object: server.serializationManager.wrapWithClassName(inputValue),
+            object: inputValue,
+            serializationManager: server.serializationManager,
           ));
 
         webSocket.sink.add(CloseMethodStreamCommand.buildMessage(
