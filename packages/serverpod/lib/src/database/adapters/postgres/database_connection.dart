@@ -511,7 +511,7 @@ class DatabaseConnection {
     // Use the current stack trace if there is no exception.
     trace ??= StackTrace.current;
 
-    session.logManager.logQuery(
+    session.logManager?.logQuery(
       session,
       query: query,
       duration: duration,

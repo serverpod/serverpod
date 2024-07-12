@@ -95,7 +95,7 @@ abstract class Session {
   /// enabled but it will be disabled for internal sessions used by Serverpod.
   final bool enableLogging;
 
-  late final SessionLogManager _logManager;
+  late final SessionLogManager? _logManager;
 
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
@@ -116,16 +116,20 @@ abstract class Session {
       _db = server.createDatabase(this);
     }
 
-    var logWriter = Features.enablePersistentLogging
-        ? DatabaseLogWriter()
-        : StdOutLogWriter();
-
-    _logManager = SessionLogManager(
-      logWriter,
-      settingsForSession: (Session session) =>
-          server.serverpod.logSettingsManager.getLogSettingsForSession(session),
-      serverId: server.serverId,
-    );
+    if (enableLogging) {
+      var logWriter = Features.enablePersistentLogging
+          ? DatabaseLogWriter()
+          : StdOutLogWriter();
+      _logManager = SessionLogManager(
+        logWriter,
+        settingsForSession: (Session session) => server
+            .serverpod.logSettingsManager
+            .getLogSettingsForSession(session),
+        serverId: server.serverId,
+      );
+    } else {
+      _logManager = null;
+    }
 
     sessionLogs = server.serverpod.logManager.initializeSessionLog(this);
     sessionLogs.temporarySessionId =
@@ -170,7 +174,7 @@ abstract class Session {
 
     try {
       server.messageCentral.removeListenersForSession(this);
-      return await _logManager.finalizeSessionLog(
+      return await _logManager?.finalizeSessionLog(
         this,
         exception: error == null ? null : '$error',
         stackTrace: stackTrace,
@@ -202,7 +206,7 @@ abstract class Session {
       messageId = (this as StreamingSession).currentMessageId;
     }
 
-    _logManager.logEntry(
+    _logManager?.logEntry(
       this,
       message: message,
       messageId: messageId,
@@ -550,5 +554,5 @@ class MessageCentralAccess {
 /// accessed from outside the library.
 extension SessionInternalMethods on Session {
   /// Returns the [LogManager] for the session.
-  SessionLogManager get logManager => _logManager;
+  SessionLogManager? get logManager => _logManager;
 }
