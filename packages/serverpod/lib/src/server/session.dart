@@ -347,7 +347,7 @@ class StreamingSession extends Session {
   int? sessionLogId;
 
   /// The endpoint that is currently being processed.
-  String? endpoint;
+  String endpointName;
 
   /// The id of the current incoming message being processed. Increments by 1
   /// for each message passed to an endpoint for processing.
@@ -359,7 +359,7 @@ class StreamingSession extends Session {
     required this.uri,
     required this.httpRequest,
     required this.webSocket,
-    this.endpoint,
+    this.endpointName = 'StreamingSession',
     super.enableLogging = true,
   }) {
     // Read query parameters

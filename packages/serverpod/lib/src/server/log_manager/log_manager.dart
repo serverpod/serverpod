@@ -271,8 +271,6 @@ class SessionLogManager {
         return;
       }
 
-      assert(session.endpoint != null);
-
       var logSettings = _settingsForSession(session);
       if (!logSettings.logStreamingSessionsContinuously) {
         // This call should not stream continuously.

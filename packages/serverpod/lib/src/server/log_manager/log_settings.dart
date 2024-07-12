@@ -66,7 +66,7 @@ class LogSettingsManager {
 
     if (localSession is StreamingSession) {
       return _getLogSettingsForStreamingSession(
-        endpoint: localSession.endpoint!,
+        endpoint: localSession.endpointName,
       );
     }
 
