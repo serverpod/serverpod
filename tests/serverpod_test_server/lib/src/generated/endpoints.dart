@@ -2987,6 +2987,17 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'methodStreaming',
       endpoint: endpoints['methodStreaming']!,
       methodConnectors: {
+        'methodCallEndpoint': _i1.MethodConnector(
+          name: 'methodCallEndpoint',
+          params: {},
+          returnsVoid: true,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .methodCallEndpoint(session),
+        ),
         'simpleEndpoint': _i1.MethodConnector(
           name: 'simpleEndpoint',
           params: {},
@@ -3114,13 +3125,189 @@ class Endpoints extends _i1.EndpointDispatch {
         'simpleStream': _i1.MethodStreamConnector(
           name: 'simpleStream',
           params: {},
+          streamParams: {},
           returnType: _i1.MethodStreamReturnType.streamType,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
           ) =>
               (endpoints['methodStreaming'] as _i20.MethodStreaming)
                   .simpleStream(session),
+        ),
+        'intReturnFromStream': _i1.MethodStreamConnector(
+          name: 'intReturnFromStream',
+          params: {},
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<int>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.futureType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .intReturnFromStream(
+            session,
+            streamParams['stream']!.cast<int>(),
+          ),
+        ),
+        'intStreamFromValue': _i1.MethodStreamConnector(
+          name: 'intStreamFromValue',
+          params: {
+            'value': _i1.ParameterDescription(
+              name: 'value',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .intStreamFromValue(
+            session,
+            params['value'],
+          ),
+        ),
+        'intEchoStream': _i1.MethodStreamConnector(
+          name: 'intEchoStream',
+          params: {},
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<int>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .intEchoStream(
+            session,
+            streamParams['stream']!.cast<int>(),
+          ),
+        ),
+        'voidReturnAfterStream': _i1.MethodStreamConnector(
+          name: 'voidReturnAfterStream',
+          params: {},
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<int>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.voidType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .voidReturnAfterStream(
+            session,
+            streamParams['stream']!.cast<int>(),
+          ),
+        ),
+        'multipleIntEchoStreams': _i1.MethodStreamConnector(
+          name: 'multipleIntEchoStreams',
+          params: {},
+          streamParams: {
+            'stream1': _i1.StreamParameterDescription<int>(
+              name: 'stream1',
+              nullable: false,
+            ),
+            'stream2': _i1.StreamParameterDescription<int>(
+              name: 'stream2',
+              nullable: false,
+            ),
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .multipleIntEchoStreams(
+            session,
+            streamParams['stream1']!.cast<int>(),
+            streamParams['stream2']!.cast<int>(),
+          ),
+        ),
+        'directVoidReturnWithStreamInput': _i1.MethodStreamConnector(
+          name: 'directVoidReturnWithStreamInput',
+          params: {},
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<int>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.voidType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .directVoidReturnWithStreamInput(
+            session,
+            streamParams['stream']!.cast<int>(),
+          ),
+        ),
+        'directOneIntReturnWithStreamInput': _i1.MethodStreamConnector(
+          name: 'directOneIntReturnWithStreamInput',
+          params: {},
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<int>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.futureType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .directOneIntReturnWithStreamInput(
+            session,
+            streamParams['stream']!.cast<int>(),
+          ),
+        ),
+        'simpleInputReturnStream': _i1.MethodStreamConnector(
+          name: 'simpleInputReturnStream',
+          params: {},
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<int>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.futureType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .simpleInputReturnStream(
+            session,
+            streamParams['stream']!.cast<int>(),
+          ),
         ),
         'simpleStreamWithParameter': _i1.MethodStreamConnector(
           name: 'simpleStreamWithParameter',
@@ -3131,10 +3318,12 @@ class Endpoints extends _i1.EndpointDispatch {
               nullable: false,
             )
           },
+          streamParams: {},
           returnType: _i1.MethodStreamReturnType.streamType,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
           ) =>
               (endpoints['methodStreaming'] as _i20.MethodStreaming)
                   .simpleStreamWithParameter(
@@ -3151,15 +3340,38 @@ class Endpoints extends _i1.EndpointDispatch {
               nullable: false,
             )
           },
+          streamParams: {},
           returnType: _i1.MethodStreamReturnType.streamType,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
           ) =>
               (endpoints['methodStreaming'] as _i20.MethodStreaming)
                   .simpleDataStream(
             session,
             params['value'],
+          ),
+        ),
+        'simpleInOutDataStream': _i1.MethodStreamConnector(
+          name: 'simpleInOutDataStream',
+          params: {},
+          streamParams: {
+            'simpleDataStream': _i1.StreamParameterDescription<_i37.SimpleData>(
+              name: 'simpleDataStream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .simpleInOutDataStream(
+            session,
+            streamParams['simpleDataStream']!.cast<_i37.SimpleData>(),
           ),
         ),
         'delayedStreamResponse': _i1.MethodStreamConnector(
@@ -3171,10 +3383,12 @@ class Endpoints extends _i1.EndpointDispatch {
               nullable: false,
             )
           },
+          streamParams: {},
           returnType: _i1.MethodStreamReturnType.streamType,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
           ) =>
               (endpoints['methodStreaming'] as _i20.MethodStreaming)
                   .delayedStreamResponse(
@@ -3182,13 +3396,139 @@ class Endpoints extends _i1.EndpointDispatch {
             params['delay'],
           ),
         ),
-        'throwsExceptionStream': _i1.MethodStreamConnector(
-          name: 'throwsExceptionStream',
+        'delayedNeverListenedInputStream': _i1.MethodStreamConnector(
+          name: 'delayedNeverListenedInputStream',
+          params: {
+            'delay': _i1.ParameterDescription(
+              name: 'delay',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<int>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.voidType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .delayedNeverListenedInputStream(
+            session,
+            params['delay'],
+            streamParams['stream']!.cast<int>(),
+          ),
+        ),
+        'delayedPausedInputStream': _i1.MethodStreamConnector(
+          name: 'delayedPausedInputStream',
+          params: {
+            'delay': _i1.ParameterDescription(
+              name: 'delay',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<int>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.voidType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .delayedPausedInputStream(
+            session,
+            params['delay'],
+            streamParams['stream']!.cast<int>(),
+          ),
+        ),
+        'inStreamThrowsException': _i1.MethodStreamConnector(
+          name: 'inStreamThrowsException',
           params: {},
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<int>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.voidType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .inStreamThrowsException(
+            session,
+            streamParams['stream']!.cast<int>(),
+          ),
+        ),
+        'inStreamThrowsSerializableException': _i1.MethodStreamConnector(
+          name: 'inStreamThrowsSerializableException',
+          params: {},
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<int>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.voidType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .inStreamThrowsSerializableException(
+            session,
+            streamParams['stream']!.cast<int>(),
+          ),
+        ),
+        'outStreamThrowsException': _i1.MethodStreamConnector(
+          name: 'outStreamThrowsException',
+          params: {},
+          streamParams: {},
           returnType: _i1.MethodStreamReturnType.streamType,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .outStreamThrowsException(session),
+        ),
+        'outStreamThrowsSerializableException': _i1.MethodStreamConnector(
+          name: 'outStreamThrowsSerializableException',
+          params: {},
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .outStreamThrowsSerializableException(session),
+        ),
+        'throwsExceptionStream': _i1.MethodStreamConnector(
+          name: 'throwsExceptionStream',
+          params: {},
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
           ) =>
               (endpoints['methodStreaming'] as _i20.MethodStreaming)
                   .throwsExceptionStream(session),
@@ -3196,13 +3536,58 @@ class Endpoints extends _i1.EndpointDispatch {
         'throwsSerializableExceptionStream': _i1.MethodStreamConnector(
           name: 'throwsSerializableExceptionStream',
           params: {},
+          streamParams: {},
           returnType: _i1.MethodStreamReturnType.streamType,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
           ) =>
               (endpoints['methodStreaming'] as _i20.MethodStreaming)
                   .throwsSerializableExceptionStream(session),
+        ),
+        'didInputStreamHaveError': _i1.MethodStreamConnector(
+          name: 'didInputStreamHaveError',
+          params: {},
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<int>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.futureType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .didInputStreamHaveError(
+            session,
+            streamParams['stream']!.cast<int>(),
+          ),
+        ),
+        'didInputStreamHaveSerializableExceptionError':
+            _i1.MethodStreamConnector(
+          name: 'didInputStreamHaveSerializableExceptionError',
+          params: {},
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<int>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.futureType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .didInputStreamHaveSerializableExceptionError(
+            session,
+            streamParams['stream']!.cast<int>(),
+          ),
         ),
       },
     );
@@ -3213,10 +3598,12 @@ class Endpoints extends _i1.EndpointDispatch {
         'simpleStream': _i1.MethodStreamConnector(
           name: 'simpleStream',
           params: {},
+          streamParams: {},
           returnType: _i1.MethodStreamReturnType.streamType,
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
           ) =>
               (endpoints['authenticatedMethodStreaming']
                       as _i20.AuthenticatedMethodStreaming)

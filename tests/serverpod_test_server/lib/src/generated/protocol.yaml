@@ -156,19 +156,37 @@ mapParameters:
   - returnDurationMapNullableDurations:
 methodStreaming:
   - simpleStream:
+  - methodCallEndpoint:
+  - intReturnFromStream:
+  - intStreamFromValue:
+  - intEchoStream:
+  - voidReturnAfterStream:
+  - multipleIntEchoStreams:
+  - directVoidReturnWithStreamInput:
+  - directOneIntReturnWithStreamInput:
+  - simpleInputReturnStream:
   - simpleStreamWithParameter:
   - simpleDataStream:
+  - simpleInOutDataStream:
   - simpleEndpoint:
   - intParameter:
   - nullableResponse:
   - doubleInputValue:
   - delayedResponse:
   - delayedStreamResponse:
+  - delayedNeverListenedInputStream:
+  - delayedPausedInputStream:
   - completeAllDelayedResponses:
+  - inStreamThrowsException:
+  - inStreamThrowsSerializableException:
+  - outStreamThrowsException:
+  - outStreamThrowsSerializableException:
   - throwsException:
   - throwsSerializableException:
   - throwsExceptionStream:
   - throwsSerializableExceptionStream:
+  - didInputStreamHaveError:
+  - didInputStreamHaveSerializableExceptionError:
 authenticatedMethodStreaming:
   - simpleStream:
 moduleSerialization:
