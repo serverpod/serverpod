@@ -19,9 +19,6 @@ class SessionLogEntryCache {
   /// Streaming messages handled during the session.
   final List<MessageLogEntry> messages = [];
 
-  /// A temporary session id used internally by the server.
-  late int temporarySessionId;
-
   int _currentLogOrderId = 0;
 
   /// This is used internally by Serverpod to ensure the ordering of log entries

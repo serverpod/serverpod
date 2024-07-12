@@ -10,6 +10,8 @@ import '../../generated/protocol.dart';
 
 const double _microNormalizer = 1000 * 1000;
 
+const int _temporarySessionId = -1;
+
 @internal
 class SessionLogManager {
   final String _serverId;
@@ -93,7 +95,7 @@ class SessionLogManager {
     StackTrace? stackTrace,
   }) async {
     var entry = LogEntry(
-      sessionLogId: session.sessionLogs.temporarySessionId,
+      sessionLogId: _temporarySessionId,
       serverId: _serverId,
       messageId: messageId,
       logLevel: level ?? LogLevel.info,
@@ -150,7 +152,7 @@ class SessionLogManager {
     if (!shouldLog) return;
 
     var entry = QueryLogEntry(
-      sessionLogId: session.sessionLogs.temporarySessionId,
+      sessionLogId: _temporarySessionId,
       serverId: _serverId,
       query: query,
       duration: executionTime,
@@ -199,7 +201,7 @@ class SessionLogManager {
     if (!shouldLog) return;
 
     var entry = MessageLogEntry(
-      sessionLogId: session.sessionLogs.temporarySessionId,
+      sessionLogId: _temporarySessionId,
       serverId: _serverId,
       messageId: messageId,
       endpoint: endpointName,

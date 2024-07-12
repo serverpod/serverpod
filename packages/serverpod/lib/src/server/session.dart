@@ -133,8 +133,6 @@ abstract class Session {
     }
 
     sessionLogs = server.serverpod.logManager.initializeSessionLog(this);
-    sessionLogs.temporarySessionId =
-        serverpod.logManager.nextTemporarySessionId();
   }
 
   bool _initialized = false;
