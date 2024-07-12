@@ -419,8 +419,7 @@ class LogManager {
 
   /// Creates a new [LogManager] from [RuntimeSettings].
   LogManager(
-    this.runtimeSettings,
-    LogWriter logWriter, {
+    this.runtimeSettings, {
     required String serverId,
   });
 

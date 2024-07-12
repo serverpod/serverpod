@@ -198,7 +198,7 @@ class Serverpod {
   void _updateLogSettings(internal.RuntimeSettings settings) {
     _runtimeSettings = settings;
     _logSettingsManager = LogSettingsManager(settings);
-    _logManager = LogManager(settings, _logWriter, serverId: serverId);
+    _logManager = LogManager(settings, serverId: serverId);
   }
 
   /// Updates the runtime settings and writes the new settings to the database.
