@@ -28,6 +28,15 @@ achievements:
             actor: author
             action: pull_request
             condition: merged = true & created_at >= 05-24-2023 & created_at <= 01-15-2024
+  - achievement:
+      name: Dreamscape
+      icon: https://serverpod.dev/badges/release-dreamscape.webp
+      description: For contributing to our fourth release, Serverpod 2.0.
+      triggers:
+        - trigger:
+            actor: author
+            action: pull_request
+            condition: merged = true & created_at >= 01-15-2024 & created_at <= 05-28-2024
 
   # Starred the repo
   - achievement:

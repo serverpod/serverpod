@@ -1,0 +1,5 @@
+class: DateTimeDefaultPersist
+table: datetime_default_persist
+fields:
+  dateTimeDefaultPersistNow: DateTime?, defaultPersist=now
+  dateTimeDefaultPersistStr: DateTime?, defaultPersist=2024-05-10T22:00:00.000Z
