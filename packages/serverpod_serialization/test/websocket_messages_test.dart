@@ -336,6 +336,7 @@ void main() {
       connectionId: const Uuid().v4obj(),
       object:
           serializationManager.wrapWithClassName(_SimpleData('hello world')),
+      serializationManager: serializationManager,
     );
     var result = WebSocketMessage.fromJsonString(
       message,
@@ -354,6 +355,7 @@ void main() {
       connectionId: const Uuid().v4obj(),
       object: serializationManager.wrapWithClassName(
           _SimpleData('hello world', serverOnlyField: 'this is awesome')),
+      serializationManager: serializationManager,
     );
 
     expect(message, isNot(contains('serverOnlyField')));
@@ -393,6 +395,7 @@ void main() {
       object: serializationManager.wrapWithClassName(
         _TestSerializableException(),
       ),
+      serializationManager: serializationManager,
     );
     var result = WebSocketMessage.fromJsonString(
       message,
@@ -412,6 +415,7 @@ void main() {
       object: serializationManager.wrapWithClassName(
         _TestSerializableException(),
       ),
+      serializationManager: serializationManager,
     );
 
     expect(message, isNot(contains('serverOnlyField')));

@@ -310,7 +310,8 @@ class MethodStreamSerializableException extends WebSocketMessage {
     required String method,
     required UuidValue connectionId,
     String? parameter,
-    required Map<String, dynamic> object,
+    required dynamic object,
+    required SerializationManager serializationManager,
   }) {
     return SerializationManager.encodeForProtocol({
       'messageType': _messageType,
@@ -318,7 +319,7 @@ class MethodStreamSerializableException extends WebSocketMessage {
       'method': method,
       'connectionId': connectionId,
       if (parameter != null) 'parameter': parameter,
-      'exception': object,
+      'exception': serializationManager.wrapWithClassName(object),
     });
   }
 
@@ -364,14 +365,13 @@ class MethodStreamMessage extends WebSocketMessage {
         object = serializationManager.deserializeByClassName(data['object']);
 
   /// Builds a [MethodStreamMessage] message.
-  /// The [object] must be an object processed by the
-  /// [SerializationManager.wrapWithClassName] method.
   static String buildMessage({
     required String endpoint,
     required String method,
     required UuidValue connectionId,
     String? parameter,
-    required Map<String, dynamic> object,
+    required dynamic object,
+    required SerializationManager serializationManager,
   }) {
     return SerializationManager.encodeForProtocol({
       'messageType': _messageType,
@@ -379,7 +379,7 @@ class MethodStreamMessage extends WebSocketMessage {
       'method': method,
       'connectionId': connectionId,
       if (parameter != null) 'parameter': parameter,
-      'object': object,
+      'object': serializationManager.wrapWithClassName(object),
     });
   }
 
