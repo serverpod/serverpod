@@ -48,7 +48,7 @@ void main() {
     test(
       'when encoded using encodeForProtocolWithType method, then the password field is excluded from the output',
       () {
-        var stringifiedJson = protocol.encodeForProtocolWithType(user);
+        var stringifiedJson = protocol.encodeWithTypeForProtocol(user);
         expect(stringifiedJson, isNot(contains('password')));
       },
     );
@@ -57,7 +57,7 @@ void main() {
       'when a list of user objects is encoded using encodeForProtocolWithType method, then the password fields are excluded from the output',
       () {
         var userList = [user];
-        var stringifiedJson = protocol.encodeForProtocolWithType(userList);
+        var stringifiedJson = protocol.encodeWithTypeForProtocol(userList);
         expect(stringifiedJson, isNot(contains('password')));
       },
     );
@@ -66,7 +66,7 @@ void main() {
       'when a map containing a user object is encoded using encodeForProtocolWithType method, then the password field is excluded from the output',
       () {
         var userMap = {'user': user};
-        var stringifiedJson = protocol.encodeForProtocolWithType(userMap);
+        var stringifiedJson = protocol.encodeWithTypeForProtocol(userMap);
         expect(stringifiedJson, isNot(contains('password')));
       },
     );
@@ -77,7 +77,7 @@ void main() {
         var userMap = {
           'users': [user]
         };
-        var stringifiedJson = protocol.encodeForProtocolWithType(userMap);
+        var stringifiedJson = protocol.encodeWithTypeForProtocol(userMap);
         expect(stringifiedJson, isNot(contains('password')));
       },
     );
@@ -98,7 +98,7 @@ void main() {
             'innerList': [user]
           },
         };
-        var stringifiedJson = protocol.encodeForProtocolWithType(map);
+        var stringifiedJson = protocol.encodeWithTypeForProtocol(map);
         expect(stringifiedJson, isNot(contains('password')));
       },
     );
@@ -121,7 +121,7 @@ void main() {
             }
           }
         ];
-        var stringifiedJson = protocol.encodeForProtocolWithType(list);
+        var stringifiedJson = protocol.encodeWithTypeForProtocol(list);
         expect(stringifiedJson, isNot(contains('password')));
       },
     );

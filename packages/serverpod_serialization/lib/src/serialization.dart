@@ -268,7 +268,7 @@ abstract class SerializationManager {
   /// If [formatted] is true, the output will be formatted with two spaces
   /// indentation. If [object] implements [ProtocolSerialization] interface, then
   /// [toJsonForProtocol] will be used instead of the [toJson] method.
-  String encodeForProtocolWithType(
+  String encodeWithTypeForProtocol(
     Object? object, {
     bool formatted = false,
   }) {

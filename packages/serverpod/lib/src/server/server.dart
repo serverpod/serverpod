@@ -338,7 +338,7 @@ class Server {
       request.response.statusCode = HttpStatus.internalServerError;
 
       var serializedModel =
-          serializationManager.encodeForProtocolWithType(result.model);
+          serializationManager.encodeWithTypeForProtocol(result.model);
       request.response.write(serializedModel);
       await request.response.close();
     } else if (result is ResultSuccess) {
