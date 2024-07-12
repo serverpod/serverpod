@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/server/log_manager/log_writer.dart';
+import 'package:serverpod/src/server/log_manager/session_log_cache.dart';
 import 'package:synchronized/synchronized.dart';
 
 import '../../../server.dart';
