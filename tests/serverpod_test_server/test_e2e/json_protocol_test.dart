@@ -21,9 +21,7 @@ Future<dynamic> _getWebsocketMessage(
         .firstWhere(
           (event) =>
               event is String && event.contains('serverOnlyScopedFieldModel'),
-          orElse: () => throw TimeoutException(
-            'Message was not received within the timeout period.',
-          ),
+          orElse: () => null,
         );
   } catch (e) {
     return e;
