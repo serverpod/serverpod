@@ -29,6 +29,8 @@ class DefaultValueRestriction extends ValueRestriction {
     switch (defaultValueType) {
       case DefaultValueAllowedType.dateTime:
         return _dateDateValidation(value, span);
+      case DefaultValueAllowedType.bool:
+        return _booleanValidation(value, span);
     }
   }
 
@@ -59,6 +61,28 @@ class DefaultValueRestriction extends ValueRestriction {
       errors.add(
         SourceSpanSeverityException(
           'The "$key" value must be a valid UTC ($format) DateTime String or "now"',
+          span,
+        ),
+      );
+    }
+
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> _booleanValidation(
+    dynamic value,
+    SourceSpan? span,
+  ) {
+    if (value is bool) return [];
+
+    var errors = <SourceSpanSeverityException>[];
+
+    if (value is! String &&
+        value != defaultBooleanTrue &&
+        value != defaultBooleanFalse) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "$key" value must be a valid  boolean: "true" or "false"',
           span,
         ),
       );
