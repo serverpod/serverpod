@@ -30,7 +30,7 @@ void main() {
       expect(
         sql,
         contains(
-          '"boolDefault" boolean NOT NULL DEFAULT TRUE',
+          '"boolDefault" boolean NOT NULL DEFAULT true',
         ),
       );
     });
@@ -58,7 +58,7 @@ void main() {
       expect(
         sql,
         contains(
-          '"boolDefault" boolean NOT NULL DEFAULT FALSE',
+          '"boolDefault" boolean NOT NULL DEFAULT false',
         ),
       );
     });
