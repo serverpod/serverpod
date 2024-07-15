@@ -9,7 +9,7 @@ void main() {
         name: 'boolDefault',
         columnType: ColumnType.boolean,
         isNullable: false,
-        columnDefault: 'TRUE',
+        columnDefault: 'true',
         dartType: 'bool',
       );
 
@@ -28,7 +28,7 @@ void main() {
         name: 'boolDefault',
         columnType: ColumnType.boolean,
         isNullable: false,
-        columnDefault: 'FALSE',
+        columnDefault: 'false',
         dartType: 'bool',
       );
 
@@ -83,7 +83,7 @@ void main() {
         name: 'boolDefault',
         columnType: ColumnType.boolean,
         isNullable: true,
-        columnDefault: 'TRUE',
+        columnDefault: 'true',
         dartType: 'bool',
       );
 
@@ -102,7 +102,7 @@ void main() {
         name: 'boolDefault',
         columnType: ColumnType.boolean,
         isNullable: true,
-        columnDefault: 'FALSE',
+        columnDefault: 'false',
         dartType: 'bool',
       );
 

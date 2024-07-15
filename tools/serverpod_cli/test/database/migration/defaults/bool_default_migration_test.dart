@@ -18,7 +18,7 @@ void main() {
                   ColumnDefinitionBuilder()
                       .withName('boolDefault')
                       .withColumnType(ColumnType.boolean)
-                      .withColumnDefault('TRUE')
+                      .withColumnDefault('true')
                       .build(),
                 )
                 .build(),
@@ -46,7 +46,7 @@ void main() {
                   ColumnDefinitionBuilder()
                       .withName('boolDefault')
                       .withColumnType(ColumnType.boolean)
-                      .withColumnDefault('FALSE')
+                      .withColumnDefault('false')
                       .build(),
                 )
                 .build(),
@@ -106,7 +106,7 @@ void main() {
                       .withName('boolDefault')
                       .withColumnType(ColumnType.boolean)
                       .withIsNullable(true)
-                      .withColumnDefault('TRUE')
+                      .withColumnDefault('true')
                       .build(),
                 )
                 .build(),

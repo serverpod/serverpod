@@ -19,21 +19,21 @@
             "name": "boolDefaultTrue",
             "columnType": 1,
             "isNullable": false,
-            "columnDefault": "TRUE",
+            "columnDefault": "true",
             "dartType": "bool"
           },
           {
             "name": "boolDefaultFalse",
             "columnType": 1,
             "isNullable": false,
-            "columnDefault": "FALSE",
+            "columnDefault": "false",
             "dartType": "bool"
           },
           {
             "name": "boolDefaultNullFalse",
             "columnType": 1,
             "isNullable": true,
-            "columnDefault": "FALSE",
+            "columnDefault": "false",
             "dartType": "bool?"
           }
         ],
@@ -74,21 +74,21 @@
             "name": "boolDefaultAndDefaultModel",
             "columnType": 1,
             "isNullable": false,
-            "columnDefault": "TRUE",
+            "columnDefault": "true",
             "dartType": "bool"
           },
           {
             "name": "boolDefaultAndDefaultPersist",
             "columnType": 1,
             "isNullable": false,
-            "columnDefault": "FALSE",
+            "columnDefault": "false",
             "dartType": "bool"
           },
           {
             "name": "boolDefaultModelAndDefaultPersist",
             "columnType": 1,
             "isNullable": false,
-            "columnDefault": "FALSE",
+            "columnDefault": "false",
             "dartType": "bool"
           }
         ],
@@ -181,14 +181,14 @@
             "name": "boolDefaultPersistTrue",
             "columnType": 1,
             "isNullable": true,
-            "columnDefault": "TRUE",
+            "columnDefault": "true",
             "dartType": "bool?"
           },
           {
             "name": "boolDefaultPersistFalse",
             "columnType": 1,
             "isNullable": true,
-            "columnDefault": "FALSE",
+            "columnDefault": "false",
             "dartType": "bool?"
           }
         ],

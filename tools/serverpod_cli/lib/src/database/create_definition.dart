@@ -145,9 +145,9 @@ String? _getColumnDefault(
       var defaultValue = column.defaultPersistValue;
       switch (defaultValue) {
         case defaultBooleanTrue:
-          return 'TRUE';
+          return 'true';
         case defaultBooleanFalse:
-          return 'FALSE';
+          return 'false';
         default:
           return null;
       }

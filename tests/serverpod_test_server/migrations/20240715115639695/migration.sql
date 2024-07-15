@@ -5,9 +5,9 @@ BEGIN;
 --
 CREATE TABLE "bool_default" (
     "id" bigserial PRIMARY KEY,
-    "boolDefaultTrue" boolean NOT NULL DEFAULT TRUE,
-    "boolDefaultFalse" boolean NOT NULL DEFAULT FALSE,
-    "boolDefaultNullFalse" boolean DEFAULT FALSE
+    "boolDefaultTrue" boolean NOT NULL DEFAULT true,
+    "boolDefaultFalse" boolean NOT NULL DEFAULT false,
+    "boolDefaultNullFalse" boolean DEFAULT false
 );
 
 --
@@ -15,9 +15,9 @@ CREATE TABLE "bool_default" (
 --
 CREATE TABLE "bool_default_mix" (
     "id" bigserial PRIMARY KEY,
-    "boolDefaultAndDefaultModel" boolean NOT NULL DEFAULT TRUE,
-    "boolDefaultAndDefaultPersist" boolean NOT NULL DEFAULT FALSE,
-    "boolDefaultModelAndDefaultPersist" boolean NOT NULL DEFAULT FALSE
+    "boolDefaultAndDefaultModel" boolean NOT NULL DEFAULT true,
+    "boolDefaultAndDefaultPersist" boolean NOT NULL DEFAULT false,
+    "boolDefaultModelAndDefaultPersist" boolean NOT NULL DEFAULT false
 );
 
 --
@@ -35,8 +35,8 @@ CREATE TABLE "bool_default_model" (
 --
 CREATE TABLE "bool_default_persist" (
     "id" bigserial PRIMARY KEY,
-    "boolDefaultPersistTrue" boolean DEFAULT TRUE,
-    "boolDefaultPersistFalse" boolean DEFAULT FALSE
+    "boolDefaultPersistTrue" boolean DEFAULT true,
+    "boolDefaultPersistFalse" boolean DEFAULT false
 );
 
 
@@ -44,9 +44,9 @@ CREATE TABLE "bool_default_persist" (
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20240715111417981', now())
+    VALUES ('serverpod_test', '20240715115639695', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240715111417981', "timestamp" = now();
+    DO UPDATE SET "version" = '20240715115639695', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth
