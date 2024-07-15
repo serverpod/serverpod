@@ -14,11 +14,12 @@ class IntegrationTestServer extends TestServerpod {
           Endpoints(),
         );
 
-  static Serverpod create() {
+  static Serverpod create({ServerpodConfig? config}) {
     return Serverpod(
       _integrationTestFlags,
       Protocol(),
       Endpoints(),
+      config: config,
       authenticationHandler: auth.authenticationHandler,
     );
   }
