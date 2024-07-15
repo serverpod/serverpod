@@ -92,7 +92,7 @@ void main() {
           () {
         expect(
           defaultColumn.toPgSqlFragment(),
-          '"boolDefault" boolean DEFAULT TRUE',
+          '"boolDefault" boolean DEFAULT true',
         );
       });
     });
@@ -111,7 +111,7 @@ void main() {
           () {
         expect(
           defaultColumn.toPgSqlFragment(),
-          '"boolDefault" boolean DEFAULT FALSE',
+          '"boolDefault" boolean DEFAULT false',
         );
       });
     });

@@ -118,7 +118,7 @@ void main() {
       expect(
         sql,
         contains(
-          '"boolDefault" boolean DEFAULT TRUE',
+          '"boolDefault" boolean DEFAULT true',
         ),
       );
     });
