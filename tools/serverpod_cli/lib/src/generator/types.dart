@@ -446,6 +446,8 @@ class TypeDefinition {
     switch (valueType) {
       case ValueType.dateTime:
         return DefaultValueAllowedType.dateTime;
+      case ValueType.bool:
+        return DefaultValueAllowedType.bool;
       default:
         return null;
     }
@@ -540,4 +542,5 @@ enum ValueType {
 
 enum DefaultValueAllowedType {
   dateTime,
+  bool,
 }
