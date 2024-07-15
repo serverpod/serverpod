@@ -1,0 +1,6 @@
+class: BoolDefaultModel
+table: bool_default_model
+fields:
+  boolDefaultModelTrue: bool, defaultModel=true
+  boolDefaultModelFalse: bool, defaultModel=false
+  boolDefaultModelNullFalse: bool, defaultModel=false
