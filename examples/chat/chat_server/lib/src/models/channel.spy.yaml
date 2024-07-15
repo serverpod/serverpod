@@ -8,4 +8,4 @@ fields:
   ### The id of the channel.
   channel: String
 
-  point: geographyPoint
+  point: serverpod:GeographyPoint?, scope=serverOnly

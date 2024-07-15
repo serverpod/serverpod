@@ -9,7 +9,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'protocol.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Represents a chat channel.
@@ -19,14 +18,14 @@ abstract class Channel extends _i1.TableRow
     int? id,
     required this.name,
     required this.channel,
-    required this.point,
+    this.point,
   }) : super(id);
 
   factory Channel({
     int? id,
     required String name,
     required String channel,
-    required _i2.GeographyPoint point,
+    _i1.GeographyPoint? point,
   }) = _ChannelImpl;
 
   factory Channel.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -34,8 +33,10 @@ abstract class Channel extends _i1.TableRow
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       channel: jsonSerialization['channel'] as String,
-      point: _i2.GeographyPoint.fromJson(
-          (jsonSerialization['point'] as Map<String, dynamic>)),
+      point: jsonSerialization['point'] == null
+          ? null
+          : _i1.GeographyPoint.fromJson(
+              (jsonSerialization['point'] as Map<String, dynamic>)),
     );
   }
 
@@ -49,7 +50,7 @@ abstract class Channel extends _i1.TableRow
   /// The id of the channel.
   String channel;
 
-  _i2.GeographyPoint point;
+  _i1.GeographyPoint? point;
 
   @override
   _i1.Table get table => t;
@@ -58,7 +59,7 @@ abstract class Channel extends _i1.TableRow
     int? id,
     String? name,
     String? channel,
-    _i2.GeographyPoint? point,
+    _i1.GeographyPoint? point,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -66,7 +67,7 @@ abstract class Channel extends _i1.TableRow
       if (id != null) 'id': id,
       'name': name,
       'channel': channel,
-      'point': point.toJson(),
+      if (point != null) 'point': point?.toJson(),
     };
   }
 
@@ -76,7 +77,6 @@ abstract class Channel extends _i1.TableRow
       if (id != null) 'id': id,
       'name': name,
       'channel': channel,
-      'point': point.toJson(),
     };
   }
 
@@ -117,7 +117,7 @@ class _ChannelImpl extends Channel {
     int? id,
     required String name,
     required String channel,
-    required _i2.GeographyPoint point,
+    _i1.GeographyPoint? point,
   }) : super._(
           id: id,
           name: name,
@@ -130,13 +130,13 @@ class _ChannelImpl extends Channel {
     Object? id = _Undefined,
     String? name,
     String? channel,
-    _i2.GeographyPoint? point,
+    Object? point = _Undefined,
   }) {
     return Channel(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       channel: channel ?? this.channel,
-      point: point ?? this.point.copyWith(),
+      point: point is _i1.GeographyPoint? ? point : this.point?.copyWith(),
     );
   }
 }

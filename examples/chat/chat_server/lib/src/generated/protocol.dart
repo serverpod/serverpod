@@ -14,6 +14,7 @@ import 'package:serverpod/protocol.dart' as _i2;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i3;
 import 'package:serverpod_chat_server/serverpod_chat_server.dart' as _i4;
 import 'channel.dart' as _i5;
+import 'package:chat_server/src/generated/channel.dart' as _i6;
 export 'channel.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
@@ -52,8 +53,8 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ColumnDefinition(
           name: 'point',
           columnType: _i2.ColumnType.json,
-          isNullable: false,
-          dartType: 'protocol:GeographyPoint',
+          isNullable: true,
+          dartType: 'serverpod:GeographyPoint?',
         ),
       ],
       foreignKeys: [],
@@ -90,6 +91,10 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i5.Channel?>()) {
       return (data != null ? _i5.Channel.fromJson(data) : null) as T;
+    }
+    if (t == List<_i6.Channel>) {
+      return (data as List).map((e) => deserialize<_i6.Channel>(e)).toList()
+          as dynamic;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
