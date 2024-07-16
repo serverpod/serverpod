@@ -123,10 +123,10 @@ String? _getColumnDefault(
     return "nextval('${classDefinition.tableName!}_id_seq'::regclass)";
   }
 
-  var defaultValue = column.type.defaultValueType;
-  if (defaultValue == null) return null;
+  var defaultValueType = column.type.defaultValueType;
+  if (defaultValueType == null) return null;
 
-  switch (defaultValue) {
+  switch (defaultValueType) {
     case DefaultValueAllowedType.dateTime:
       var defaultValue = column.defaultPersistValue;
       if (defaultValue == null) return null;
@@ -151,5 +151,9 @@ String? _getColumnDefault(
         default:
           return null;
       }
+    case DefaultValueAllowedType.int:
+      var defaultValue = column.defaultPersistValue;
+      if (defaultValue == null) return null;
+      return '$defaultValue';
   }
 }
