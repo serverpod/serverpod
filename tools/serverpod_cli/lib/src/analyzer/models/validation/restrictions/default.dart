@@ -31,6 +31,8 @@ class DefaultValueRestriction extends ValueRestriction {
         return _dateDateValidation(value, span);
       case DefaultValueAllowedType.bool:
         return _booleanValidation(value, span);
+      case DefaultValueAllowedType.int:
+        return _integerValidation(value, span);
     }
   }
 
@@ -87,6 +89,35 @@ class DefaultValueRestriction extends ValueRestriction {
       );
     }
 
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> _integerValidation(
+    dynamic value,
+    SourceSpan? span,
+  ) {
+    if (value is int) return [];
+
+    var errors = <SourceSpanSeverityException>[];
+
+    if (value is! String) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "$key" value must be a valid integer.',
+          span,
+        ),
+      );
+    }
+
+    int? parsedValue = int.tryParse(value);
+    if (parsedValue == null) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "$key" value must be a valid integer.',
+          span,
+        ),
+      );
+    }
     return errors;
   }
 }
