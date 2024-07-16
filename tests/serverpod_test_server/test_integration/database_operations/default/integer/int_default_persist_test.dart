@@ -13,14 +13,14 @@ void main() async {
         ));
 
     test(
-      'when creating a record in the database, then the "defaultPersist=10" field should be null',
+      'when creating a record in the database, then the "defaultPersist=10" field should be 10',
       () async {
         var object = IntDefaultPersist();
         var databaseObject = await IntDefaultPersist.db.insertRow(
           session,
           object,
         );
-        expect(databaseObject.intDefaultPersist, isNull);
+        expect(databaseObject.intDefaultPersist, equals(10));
       },
     );
 
