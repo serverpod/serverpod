@@ -77,12 +77,11 @@ class DefaultValueRestriction extends ValueRestriction {
 
     var errors = <SourceSpanSeverityException>[];
 
-    if (value is! String &&
-        value != defaultBooleanTrue &&
-        value != defaultBooleanFalse) {
+    if (value is! String ||
+        (value != defaultBooleanTrue && value != defaultBooleanFalse)) {
       errors.add(
         SourceSpanSeverityException(
-          'The "$key" value must be a valid  boolean: "true" or "false"',
+          'The "$key" value must be a valid boolean: "true" or "false"',
           span,
         ),
       );
