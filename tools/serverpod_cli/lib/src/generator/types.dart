@@ -448,6 +448,8 @@ class TypeDefinition {
         return DefaultValueAllowedType.dateTime;
       case ValueType.bool:
         return DefaultValueAllowedType.bool;
+      case ValueType.int:
+        return DefaultValueAllowedType.int;
       default:
         return null;
     }
@@ -543,4 +545,5 @@ enum ValueType {
 enum DefaultValueAllowedType {
   dateTime,
   bool,
+  int,
 }

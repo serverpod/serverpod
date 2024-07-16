@@ -956,6 +956,8 @@ class SerializableModelLibraryGenerator {
           default:
             return null;
         }
+      case DefaultValueAllowedType.int:
+        return literalNum(int.parse(defaultValue)).code;
     }
   }
 
