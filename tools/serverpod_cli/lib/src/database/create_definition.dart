@@ -155,5 +155,9 @@ String? _getColumnDefault(
       var defaultValue = column.defaultPersistValue;
       if (defaultValue == null) return null;
       return '$defaultValue';
+    case DefaultValueAllowedType.double:
+      var defaultValue = column.defaultPersistValue;
+      if (defaultValue == null) return null;
+      return '$defaultValue';
   }
 }
