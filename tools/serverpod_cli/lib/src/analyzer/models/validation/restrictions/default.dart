@@ -33,6 +33,8 @@ class DefaultValueRestriction extends ValueRestriction {
         return _booleanValidation(value, span);
       case DefaultValueAllowedType.int:
         return _integerValidation(value, span);
+      case DefaultValueAllowedType.double:
+        return _doubleValidation(value, span);
     }
   }
 
@@ -114,6 +116,35 @@ class DefaultValueRestriction extends ValueRestriction {
       errors.add(
         SourceSpanSeverityException(
           'The "$key" value must be a valid integer.',
+          span,
+        ),
+      );
+    }
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> _doubleValidation(
+    dynamic value,
+    SourceSpan? span,
+  ) {
+    if (value is double) return [];
+
+    var errors = <SourceSpanSeverityException>[];
+
+    if (value is! String) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "$key" value must be a valid double.',
+          span,
+        ),
+      );
+    }
+
+    double? parsedValue = double.tryParse(value);
+    if (parsedValue == null) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "$key" value must be a valid double.',
           span,
         ),
       );

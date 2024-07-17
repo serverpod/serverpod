@@ -958,6 +958,8 @@ class SerializableModelLibraryGenerator {
         }
       case DefaultValueAllowedType.int:
         return literalNum(int.parse(defaultValue)).code;
+      case DefaultValueAllowedType.double:
+        return literalNum(double.parse(defaultValue)).code;
     }
   }
 
