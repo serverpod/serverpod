@@ -35,6 +35,8 @@ class DefaultValueRestriction extends ValueRestriction {
         return _integerValidation(value, span);
       case DefaultValueAllowedType.double:
         return _doubleValidation(value, span);
+      case DefaultValueAllowedType.string:
+        return _stringValidation(value, span);
     }
   }
 
@@ -151,4 +153,29 @@ class DefaultValueRestriction extends ValueRestriction {
     }
     return errors;
   }
+
+  List<SourceSpanSeverityException> _stringValidation(
+    dynamic value,
+    SourceSpan? span,
+  ) {
+    var errors = <SourceSpanSeverityException>[];
+
+    if (value is! String) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "$key" value must be a valid string.',
+          span,
+        ),
+      );
+    }
+    String cleanedValue = value.replaceAll(r'\\', '').replaceAll('\'', '');
+
+    return errors;
+  }
+}
+
+void main() {
+  String value = 'This is a default value';
+  String cleanedString = value.replaceAll(r'\\', '').replaceAll('\'', '');
+  print(cleanedString); // Output: This is a default value
 }
