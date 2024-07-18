@@ -170,7 +170,7 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
       } else {
         var nameExprs = List.generate(
             namesList.length, (i) => '(${namesList[i]} IS NOT NULL)');
-        var andExpr = '${nameExprs.join(' AND ')}';
+        var andExpr = nameExprs.join(' AND ');
         var isNotNullExpr = namesList.length > 1 ? '($andExpr)' : andExpr;
         isNotNull = predicate == isNotNullExpr;
       }
@@ -307,16 +307,6 @@ extension on String {
   String get removeSurroundingQuotes {
     //TODO: Handle " that are inside an expression.
     if (startsWith('"') && endsWith('"')) {
-      return substring(1, length - 1);
-    } else {
-      return this;
-    }
-  }
-
-  /// Removes the surrounding parentheses if the string
-  /// starts with `(` and ends with `)`.
-  String get removeSurroundingParens {
-    if (startsWith('(') && endsWith(')')) {
       return substring(1, length - 1);
     } else {
       return this;
