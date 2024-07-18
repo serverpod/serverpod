@@ -377,7 +377,7 @@ extension IndexDefinitionPgSqlGeneration on IndexDefinition {
     var elementIsNotNullStrs =
         elements.map((e) => '("${e.definition}" IS NOT NULL)');
     var isNotNullExpr =
-        (isNotNull ?? false) ? '${elementIsNotNullStrs.join(' AND ')}' : null;
+        (isNotNull ?? false) ? elementIsNotNullStrs.join(' AND ') : null;
     var isNotNullWhereExpr = isNotNullExpr == null
         ? ''
         : elements.length > 1

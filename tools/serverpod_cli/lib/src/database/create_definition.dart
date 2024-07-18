@@ -98,7 +98,7 @@ String _predicate(List<String> fieldNames) {
 
 /// Try to match Postgres' quoting rules for column names.
 String _quoteIfNeeded(String fieldName) {
-  final regex = RegExp(r'^[a-z_]+[a-z0-9_]*$');
+  var regex = RegExp(r'^[a-z_]+[a-z0-9_]*$');
   if (!regex.hasMatch(fieldName)) {
     return '"$fieldName"';
   }
