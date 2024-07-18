@@ -10,34 +10,6 @@ void main() {
 
   group('Given a class with fields with a "defaultModel" keyword', () {
     test(
-      'when the field is of an unsupported type String with a defaultModel value, then an error is generated',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-          class: Example
-          table: example
-          fields:
-            stringType: String, defaultModel=test
-          ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors, isNotEmpty);
-
-        var error = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          error.message,
-          'The "defaultModel" key is not supported for "String" types',
-        );
-      },
-    );
-
-    test(
       'when the field is of an unsupported type Duration with a defaultModel value, then an error is generated',
       () {
         var models = [
