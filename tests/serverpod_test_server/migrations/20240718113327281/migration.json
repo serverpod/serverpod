@@ -1,0 +1,196 @@
+{
+  "actions": [
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "string_default",
+        "dartName": "StringDefault",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('string_default_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "stringDefault",
+            "columnType": 0,
+            "isNullable": false,
+            "columnDefault": "'This is a default value'",
+            "dartType": "String"
+          },
+          {
+            "name": "stringDefaultNull",
+            "columnType": 0,
+            "isNullable": true,
+            "columnDefault": "'This is a default null value'",
+            "dartType": "String?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "string_default_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "string_default_mix",
+        "dartName": "StringDefaultMix",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('string_default_mix_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "stringDefaultAndDefaultModel",
+            "columnType": 0,
+            "isNullable": false,
+            "columnDefault": "'This is a default value'",
+            "dartType": "String"
+          },
+          {
+            "name": "stringDefaultAndDefaultPersist",
+            "columnType": 0,
+            "isNullable": false,
+            "columnDefault": "'This is a default persist value'",
+            "dartType": "String"
+          },
+          {
+            "name": "stringDefaultModelAndDefaultPersist",
+            "columnType": 0,
+            "isNullable": false,
+            "columnDefault": "'This is a default persist value'",
+            "dartType": "String"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "string_default_mix_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "string_default_model",
+        "dartName": "StringDefaultModel",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('string_default_model_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "stringDefaultModel",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "stringDefaultModelNull",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "string_default_model_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "string_default_persist",
+        "dartName": "StringDefaultPersist",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('string_default_persist_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "stringDefaultPersist",
+            "columnType": 0,
+            "isNullable": true,
+            "columnDefault": "'This is a default persist value'",
+            "dartType": "String?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "string_default_persist_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}
