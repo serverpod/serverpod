@@ -168,7 +168,16 @@ class DefaultValueRestriction extends ValueRestriction {
         ),
       );
     }
-    String cleanedValue = value.replaceAll(r'\\', '').replaceAll('\'', '');
+
+    bool validStringValue = RegExp(r"^'.*'$").hasMatch(value);
+    if (!validStringValue) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "$key" value must be a valid string.',
+          span,
+        ),
+      );
+    }
 
     return errors;
   }
