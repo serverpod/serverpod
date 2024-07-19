@@ -162,6 +162,6 @@ String? _getColumnDefault(
     case DefaultValueAllowedType.string:
       var defaultValue = column.defaultPersistValue;
       if (defaultValue == null) return null;
-      return defaultValue;
+      return '$defaultValue::text';
   }
 }
