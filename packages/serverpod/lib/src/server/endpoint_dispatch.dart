@@ -278,18 +278,21 @@ class MethodConnector extends EndpointMethodConnector {
 }
 
 /// Calls a named method referenced in a [MethodStreamConnector].
-typedef MethodStream = Stream Function(
-    Session session, Map<String, dynamic> params);
+typedef MethodStream = dynamic Function(
+  Session session,
+  Map<String, dynamic> params,
+  Map<String, Stream<dynamic>> streamParams,
+);
 
 /// The type of return value from a [MethodStreamConnector].
 enum MethodStreamReturnType {
-  /// The method returns a single value.
-  singleType,
+  /// The method returns a single value as a future.
+  futureType,
 
   /// The method returns a stream of values.
   streamType,
 
-  /// The method returns void.
+  /// The method has future void return value.
   voidType,
 }
 
@@ -300,6 +303,9 @@ class MethodStreamConnector extends EndpointMethodConnector {
   /// The type of return value from the method.
   final MethodStreamReturnType returnType;
 
+  /// List of parameter streams used by the method.
+  final Map<String, StreamParameterDescription> streamParams;
+
   /// A function that performs a call to the named method.
   final MethodStream call;
 
@@ -308,6 +314,7 @@ class MethodStreamConnector extends EndpointMethodConnector {
     required super.name,
     required super.params,
     required this.returnType,
+    required this.streamParams,
     required this.call,
   });
 }
@@ -326,6 +333,21 @@ class ParameterDescription {
   /// Creates a new [ParameterDescription].
   ParameterDescription(
       {required this.name, required this.type, required this.nullable});
+}
+
+/// Description of a stream parameter.
+class StreamParameterDescription<T> {
+  /// The name of the parameter.
+  final String name;
+
+  /// The type of the parameter.
+  final Type type = T;
+
+  /// True if the parameter can be nullable.
+  final bool nullable;
+
+  /// Creates a new [StreamParameterDescription].
+  StreamParameterDescription({required this.name, required this.nullable});
 }
 
 /// The [Result] of an [Endpoint] method call.

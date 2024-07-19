@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
+
 import 'google/sign_in_with_google.dart';
 
 /// Attempts to Sign in with Google. If successful, a [UserInfo] is returned.
@@ -42,6 +43,7 @@ Future<UserInfo?> signInWithGoogle(
   String? serverClientId,
   List<String> additionalScopes = const [],
   required Uri redirectUri,
+  void Function(Object error, StackTrace stackTrace)? onError,
 }) async {
   var scopes = [
     'email',
@@ -102,6 +104,7 @@ Future<UserInfo?> signInWithGoogle(
   } catch (e, stackTrace) {
     if (kDebugMode) print('serverpod_auth_google: $e');
     if (kDebugMode) print('$stackTrace');
+    onError?.call(e, stackTrace);
     return null;
   }
 }

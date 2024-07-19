@@ -49,26 +49,27 @@ class Protocol extends _i1.SerializationManagerServer {
   }
 
   @override
-  String? getClassNameForObject(Object data) {
-    String? className;
+  String? getClassNameForObject(Object? data) {
+    String? className = super.getClassNameForObject(data);
+    if (className != null) return className;
+    if (data is _i4.Example) {
+      return 'Example';
+    }
     className = _i3.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
-    if (data is _i4.Example) {
-      return 'Example';
-    }
-    return super.getClassNameForObject(data);
+    return null;
   }
 
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
+    if (data['className'] == 'Example') {
+      return deserialize<_i4.Example>(data['data']);
+    }
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
       return _i3.Protocol().deserializeByClassName(data);
-    }
-    if (data['className'] == 'Example') {
-      return deserialize<_i4.Example>(data['data']);
     }
     return super.deserializeByClassName(data);
   }

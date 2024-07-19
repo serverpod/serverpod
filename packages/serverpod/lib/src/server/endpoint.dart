@@ -91,7 +91,7 @@ abstract class Endpoint {
       'object': server.serializationManager.wrapWithClassName(message),
     };
 
-    var payload = SerializationManager.encode(data);
+    var payload = SerializationManager.encodeForProtocol(data);
     session.webSocket.add(payload);
   }
 }

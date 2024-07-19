@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -5,6 +6,27 @@ import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+
+Future<dynamic> _getWebsocketMessage(
+  WebSocketChannel websocket,
+) async {
+  try {
+    return await websocket.stream
+        .timeout(
+          Duration(seconds: 5),
+          onTimeout: (sink) => throw TimeoutException(
+            'Message was not received within the timeout period.',
+          ),
+        )
+        .firstWhere(
+          (event) =>
+              event is String && event.contains('serverOnlyScopedFieldModel'),
+          orElse: () => null,
+        );
+  } catch (e) {
+    return e;
+  }
+}
 
 void main() {
   group("Given a Serverpod server when fetching an object, ", () {
@@ -61,8 +83,10 @@ void main() {
       WebSocketChannel websocket = WebSocketChannel.connect(
         Uri.parse(serverEndpointWebsocketUrl),
       );
-      message = await websocket.stream.asBroadcastStream().first;
+
+      message = await _getWebsocketMessage(websocket);
       await websocket.sink.close();
+      if (message is Exception) throw message;
     });
 
     test(
@@ -116,8 +140,10 @@ void main() {
         WebSocketChannel websocket = WebSocketChannel.connect(
           Uri.parse(serverEndpointWebsocketUrl),
         );
-        message = await websocket.stream.asBroadcastStream().first;
+
+        message = await _getWebsocketMessage(websocket);
         await websocket.sink.close();
+        if (message is Exception) throw message;
       });
 
       test(
@@ -165,8 +191,10 @@ void main() {
         WebSocketChannel websocket = WebSocketChannel.connect(
           Uri.parse(serverEndpointWebsocketUrl),
         );
-        message = await websocket.stream.asBroadcastStream().first;
+
+        message = await _getWebsocketMessage(websocket);
         await websocket.sink.close();
+        if (message is Exception) throw message;
       });
 
       test(

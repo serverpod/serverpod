@@ -731,7 +731,9 @@ class Protocol extends _i1.SerializationManagerServer {
   }
 
   @override
-  String? getClassNameForObject(Object data) {
+  String? getClassNameForObject(Object? data) {
+    String? className = super.getClassNameForObject(data);
+    if (className != null) return className;
     if (data is _i3.AppleAuthInfo) {
       return 'AppleAuthInfo';
     }
@@ -774,7 +776,7 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i16.UserSettingsConfig) {
       return 'UserSettingsConfig';
     }
-    return super.getClassNameForObject(data);
+    return null;
   }
 
   @override

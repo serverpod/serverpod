@@ -5,10 +5,12 @@ import 'dart:typed_data';
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/features.dart';
+import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_writer.dart';
+import 'package:serverpod/src/server/log_manager/session_log_cache.dart';
+import 'package:serverpod/src/server/serverpod.dart';
 import '../cache/caches.dart';
 import '../database/database.dart';
-import '../generated/protocol.dart';
 
 /// When a call is made to the [Server] a [Session] object is created. It
 /// contains all data associated with the current connection and provides
@@ -94,6 +96,8 @@ abstract class Session {
   /// enabled but it will be disabled for internal sessions used by Serverpod.
   final bool enableLogging;
 
+  late final SessionLogManager? _logManager;
+
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
     UuidValue? sessionId,
@@ -113,9 +117,22 @@ abstract class Session {
       _db = server.createDatabase(this);
     }
 
+    if (enableLogging) {
+      var logWriter = Features.enablePersistentLogging
+          ? DatabaseLogWriter()
+          : StdOutLogWriter();
+      _logManager = SessionLogManager(
+        logWriter,
+        settingsForSession: (Session session) => server
+            .serverpod.logSettingsManager
+            .getLogSettingsForSession(session),
+        serverId: server.serverId,
+      );
+    } else {
+      _logManager = null;
+    }
+
     sessionLogs = server.serverpod.logManager.initializeSessionLog(this);
-    sessionLogs.temporarySessionId =
-        serverpod.logManager.nextTemporarySessionId();
   }
 
   bool _initialized = false;
@@ -155,8 +172,15 @@ abstract class Session {
     _closed = true;
 
     try {
+      if (_logManager == null && error != null) {
+        serverpod.logVerbose(error);
+        if (stackTrace != null) {
+          serverpod.logVerbose(stackTrace.toString());
+        }
+      }
+
       server.messageCentral.removeListenersForSession(this);
-      return await server.serverpod.logManager.finalizeSessionLog(
+      return await _logManager?.finalizeSessionLog(
         this,
         exception: error == null ? null : '$error',
         stackTrace: stackTrace,
@@ -177,40 +201,25 @@ abstract class Session {
     dynamic exception,
     StackTrace? stackTrace,
   }) {
-    assert(
-      !_closed,
-      'Session is closed, and logging can no longer be performed.',
-    );
+    if (_closed) {
+      throw StateError(
+        'Session is closed, and logging can no longer be performed.',
+      );
+    }
 
     int? messageId;
     if (this is StreamingSession) {
       messageId = (this as StreamingSession).currentMessageId;
     }
 
-    var entry = LogEntry(
-      sessionLogId: sessionLogs.temporarySessionId,
-      serverId: server.serverId,
-      messageId: messageId,
-      logLevel: level ?? LogLevel.info,
+    _logManager?.logEntry(
+      this,
       message: message,
-      time: DateTime.now(),
-      error: exception != null ? '$exception' : null,
-      stackTrace: stackTrace != null ? '$stackTrace' : null,
-      order: sessionLogs.createLogOrderId,
+      messageId: messageId,
+      level: level ?? LogLevel.info,
+      error: exception?.toString(),
+      stackTrace: stackTrace,
     );
-
-    if (serverpod.runMode == ServerpodRunMode.development) {
-      stdout.writeln('${entry.logLevel.name.toUpperCase()}: ${entry.message}');
-      if (entry.error != null) stdout.writeln(entry.error);
-      if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);
-    }
-
-    if (!serverpod.logManager.shouldLogEntry(session: this, entry: entry)) {
-      return;
-    }
-
-    // Called asynchronously.
-    serverpod.logManager.logEntry(this, entry);
   }
 }
 
@@ -337,6 +346,9 @@ class StreamingSession extends Session {
   /// Set if there is an open session log.
   int? sessionLogId;
 
+  /// The endpoint that is currently being processed.
+  String endpointName;
+
   /// The id of the current incoming message being processed. Increments by 1
   /// for each message passed to an endpoint for processing.
   int currentMessageId = 0;
@@ -347,6 +359,7 @@ class StreamingSession extends Session {
     required this.uri,
     required this.httpRequest,
     required this.webSocket,
+    this.endpointName = 'StreamingSession',
     super.enableLogging = true,
   }) {
     // Read query parameters
@@ -544,4 +557,12 @@ class MessageCentralAccess {
         message,
         global: global,
       );
+}
+
+/// Internal methods for [Session].
+/// This is used to provide access to internal methods that should not be
+/// accessed from outside the library.
+extension SessionInternalMethods on Session {
+  /// Returns the [LogManager] for the session.
+  SessionLogManager? get logManager => _logManager;
 }

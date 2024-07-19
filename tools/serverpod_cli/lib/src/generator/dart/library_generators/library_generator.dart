@@ -175,9 +175,18 @@ class LibraryGenerator {
         ..returns = refer('String?')
         ..requiredParameters.add(Parameter((p) => p
           ..name = 'data'
-          ..type = refer('Object')))
+          ..type = refer('Object?')))
         ..body = Block.of([
-          if (config.modules.isNotEmpty) const Code('String? className;'),
+          const Code(
+            'String? className = super.getClassNameForObject(data);'
+            'if(className != null) return className;',
+          ),
+          for (var extraClass in config.extraClasses)
+            Code.scope((a) =>
+                'if(data is ${a(extraClass.reference(serverCode, config: config))}) {return \'${extraClass.className}\';}'),
+          for (var classInfo in models)
+            Code.scope((a) =>
+                'if(data is ${a(refer(classInfo.className, classInfo.fileRef()))}) {return \'${classInfo.className}\';}'),
           for (var module in config.modules)
             Block.of([
               Code.scope((a) =>
@@ -185,13 +194,7 @@ class LibraryGenerator {
               Code(
                   'if(className != null){return \'${module.name}.\$className\';}'),
             ]),
-          for (var extraClass in config.extraClasses)
-            Code.scope((a) =>
-                'if(data is ${a(extraClass.reference(serverCode, config: config))}) {return \'${extraClass.className}\';}'),
-          for (var classInfo in models)
-            Code.scope((a) =>
-                'if(data is ${a(refer(classInfo.className, classInfo.fileRef()))}) {return \'${classInfo.className}\';}'),
-          const Code('return super.getClassNameForObject(data);'),
+          const Code('return null;'),
         ])),
       Method((m) => m
         ..annotations.add(refer('override'))
@@ -201,14 +204,6 @@ class LibraryGenerator {
           ..name = 'data'
           ..type = refer('Map<String,dynamic>')))
         ..body = Block.of([
-          for (var module in config.modules)
-            Block.of([
-              Code('if(data[\'className\'].startsWith(\'${module.name}.\')){'
-                  'data[\'className\'] = data[\'className\'].substring(${module.name.length + 1});'),
-              Code.scope((a) =>
-                  'return ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().deserializeByClassName(data);'),
-              const Code('}'),
-            ]),
           for (var extraClass in config.extraClasses)
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${extraClass.className}\'){'
@@ -217,6 +212,14 @@ class LibraryGenerator {
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${classInfo.className}\'){'
                 'return deserialize<${a(refer(classInfo.className, classInfo.fileRef()))}>(data[\'data\']);}'),
+          for (var module in config.modules)
+            Block.of([
+              Code('if(data[\'className\'].startsWith(\'${module.name}.\')){'
+                  'data[\'className\'] = data[\'className\'].substring(${module.name.length + 1});'),
+              Code.scope((a) =>
+                  'return ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().deserializeByClassName(data);'),
+              const Code('}'),
+            ]),
           const Code('return super.deserializeByClassName(data);'),
         ])),
       if (serverCode)
@@ -700,9 +703,6 @@ class LibraryGenerator {
               'nullable': literalBool(param.type.nullable),
             })
         }),
-        'returnsVoid': literalBool(
-          method.returnType.generics.first.isVoidType,
-        ),
         'call': Method(
           (m) => m
             ..requiredParameters.addAll([
@@ -746,15 +746,17 @@ class LibraryGenerator {
   ) {
     var methodStreamConnectors = <Object, Object>{};
     for (var method in methods) {
+      var (streamingParams, nonStreamingParams) =
+          separateStreamParametersFromParameters([
+        ...method.parameters,
+        ...method.parametersPositional,
+        ...method.parametersNamed,
+      ]);
       methodStreamConnectors[literalString(method.name)] =
           refer('MethodStreamConnector', serverpodUrl(true)).call([], {
         'name': literalString(method.name),
         'params': literalMap({
-          for (var param in [
-            ...method.parameters,
-            ...method.parametersPositional,
-            ...method.parametersNamed,
-          ])
+          for (var param in nonStreamingParams)
             literalString(param.name):
                 refer('ParameterDescription', serverpodUrl(true)).call([], {
               'name': literalString(param.name),
@@ -762,6 +764,17 @@ class LibraryGenerator {
                   .call([], {}, [param.type.reference(true, config: config)]),
               'nullable': literalBool(param.type.nullable),
             })
+        }),
+        'streamParams': literalMap({
+          for (var param in streamingParams)
+            literalString(param.name):
+                refer('StreamParameterDescription', serverpodUrl(true))
+                    .call([], {
+              'name': literalString(param.name),
+              'nullable': literalBool(param.type.nullable),
+            }, [
+              param.type.generics.first.reference(true, config: config)
+            ])
         }),
         'returnType': _buildMethodStreamReturnType(method.returnType),
         'call': Method(
@@ -777,7 +790,15 @@ class LibraryGenerator {
                   ..types.addAll([
                     refer('String'),
                     refer('dynamic'),
-                  ])))
+                  ]))),
+              Parameter((p) => p
+                ..name = 'streamParams'
+                ..type = TypeReference((t) => t
+                  ..symbol = 'Map'
+                  ..types.addAll([
+                    refer('String'),
+                    refer('Stream'),
+                  ]))),
             ])
             ..body = refer('endpoints')
                 .index(literalString(endpoint.name))
@@ -789,10 +810,10 @@ class LibraryGenerator {
                 ...method.parameters,
                 ...method.parametersPositional
               ])
-                refer('params').index(literalString(param.name)),
+                _referMethodStreamParam(param),
             ], {
               for (var param in [...method.parametersNamed])
-                param.name: refer('params').index(literalString(param.name)),
+                param.name: _referMethodStreamParam(param),
             }).code,
         ).closure,
       });
@@ -807,10 +828,46 @@ class LibraryGenerator {
     } else if (returnType.isStreamType) {
       return returnEnum.property('streamType');
     } else if (returnType.isFutureType) {
-      return returnEnum.property('singleType');
+      return returnEnum.property('futureType');
     }
 
     throw Exception('Unrecognized return type for endpoint method stream.');
+  }
+
+  (
+    List<ParameterDefinition> streamingParams,
+    List<ParameterDefinition> nonStreamingParams
+  ) separateStreamParametersFromParameters(
+    Iterable<ParameterDefinition> params,
+  ) {
+    List<ParameterDefinition> streamingParams = [];
+    List<ParameterDefinition> nonStreamingParams = [];
+
+    for (var param in params) {
+      if (param.type.isStreamType) {
+        streamingParams.add(param);
+      } else {
+        nonStreamingParams.add(param);
+      }
+    }
+
+    return (streamingParams, nonStreamingParams);
+  }
+
+  Expression _referMethodStreamParam(ParameterDefinition param) {
+    if (param.type.isStreamType) {
+      return refer('streamParams')
+          .index(literalString(param.name))
+          .nullChecked
+          .property('cast')
+          .call(
+        [],
+        {},
+        [param.type.generics.first.reference(true, config: config)],
+      );
+    } else {
+      return refer('params').index(literalString(param.name));
+    }
   }
 }
 

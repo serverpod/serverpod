@@ -1,3 +1,4 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
@@ -17,16 +18,140 @@ void main() {
     });
 
     tearDown(() async {
-      await server.shutdown(exitProcess: false);
       await webSocket.sink.close();
+      await server.shutdown(exitProcess: false);
     });
 
     test('when server is stopped then socket is closed.', () async {
       webSocket.stream.listen((event) {
-        // Listen to the to keep it open.
+        // Listen to keep it open.
       });
 
       await server.shutdown(exitProcess: false);
+      expect(webSocket.closeCode, isNotNull);
+    });
+  });
+
+  group('Given method websocket connection with connected method stream', () {
+    var server = IntegrationTestServer.create();
+    late WebSocketChannel webSocket;
+    var endpoint = 'methodStreaming';
+
+    setUp(() async {
+      await server.start();
+      webSocket = WebSocketChannel.connect(
+        Uri.parse(serverMethodWebsocketUrl),
+      );
+      await webSocket.ready;
+
+      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        endpoint: endpoint,
+        method: 'intEchoStream',
+        args: {},
+        connectionId: const Uuid().v4obj(),
+      ));
+    });
+
+    tearDown(() async {
+      await webSocket.sink.close();
+      await server.shutdown(exitProcess: false);
+    });
+
+    test('when server is shut down then socket is closed.', () async {
+      webSocket.stream.listen((event) {
+        // Listen to keep it open.
+      });
+
+      await expectLater(
+          server
+              .shutdown(exitProcess: false)
+              .timeout(Duration(seconds: 10))
+              .catchError((error) => fail('Failed to shut down server.')),
+          completes);
+      expect(webSocket.closeCode, isNotNull);
+    });
+  });
+
+  group(
+      'Given method websocket connection with connected method stream with never listened input stream',
+      () {
+    var server = IntegrationTestServer.create();
+    late WebSocketChannel webSocket;
+    var endpoint = 'methodStreaming';
+
+    setUp(() async {
+      await server.start();
+      webSocket = WebSocketChannel.connect(
+        Uri.parse(serverMethodWebsocketUrl),
+      );
+      await webSocket.ready;
+
+      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        endpoint: endpoint,
+        method: 'delayedStreamResponse',
+        args: {'delay': 20},
+        connectionId: const Uuid().v4obj(),
+      ));
+    });
+
+    tearDown(() async {
+      await webSocket.sink.close();
+      await server.shutdown(exitProcess: false);
+    });
+
+    test('when server is shut down then socket is closed.', () async {
+      webSocket.stream.listen((event) {
+        // Listen to keep it open.
+      });
+
+      await expectLater(
+          server
+              .shutdown(exitProcess: false)
+              .timeout(Duration(seconds: 10))
+              .catchError((error) => fail('Failed to shut down server.')),
+          completes);
+      expect(webSocket.closeCode, isNotNull);
+    });
+  });
+
+  group(
+      'Given method websocket connection with connected method stream with paused input stream',
+      () {
+    var server = IntegrationTestServer.create();
+    late WebSocketChannel webSocket;
+    var endpoint = 'methodStreaming';
+
+    setUp(() async {
+      await server.start();
+      webSocket = WebSocketChannel.connect(
+        Uri.parse(serverMethodWebsocketUrl),
+      );
+      await webSocket.ready;
+
+      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        endpoint: endpoint,
+        method: 'delayedPausedInputStream',
+        args: {'delay': 20},
+        connectionId: const Uuid().v4obj(),
+      ));
+    });
+
+    tearDown(() async {
+      await webSocket.sink.close();
+      await server.shutdown(exitProcess: false);
+    });
+
+    test('when server is shut down then socket is closed.', () async {
+      webSocket.stream.listen((event) {
+        // Listen to keep it open.
+      });
+
+      await expectLater(
+          server
+              .shutdown(exitProcess: false)
+              .timeout(Duration(seconds: 10))
+              .catchError((error) => fail('Failed to shut down server.')),
+          completes);
       expect(webSocket.closeCode, isNotNull);
     });
   });
@@ -49,17 +174,17 @@ void main() {
     });
 
     tearDown(() async {
-      await server.shutdown(exitProcess: false);
       await webSocket1.sink.close();
       await webSocket2.sink.close();
+      await server.shutdown(exitProcess: false);
     });
 
     test('when server is stopped then sockets are closed.', () async {
       webSocket1.stream.listen((event) {
-        // Listen to the to keep it open.
+        // Listen to keep it open.
       });
       webSocket2.stream.listen((event) {
-        // Listen to the to keep it open.
+        // Listen to keep it open.
       });
 
       await server.shutdown(exitProcess: false);

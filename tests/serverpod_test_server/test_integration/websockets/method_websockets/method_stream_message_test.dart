@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
+import 'package:serverpod_test_server/test_util/test_completer_timeout.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -27,115 +28,94 @@ void main() {
     });
 
     test(
-        'when a MethodStreamMessage and a ping message is sent to the server then MethodStreamMessage is ignored and the server only responds with a pong message.',
-        () {
-      var pongReceived = Completer<void>();
-      var otherMessageReceived = Completer<void>();
+        'when a MethodStreamMessage is sent to the server without an open stream then response is a CloseMethodStreamCommand with error reason.',
+        () async {
+      var closeMethodCommand = Completer<CloseMethodStreamCommand>();
       webSocket.stream.listen((event) {
         var message = WebSocketMessage.fromJsonString(event);
-        if (message is PongCommand) {
-          pongReceived.complete();
-        } else {
-          otherMessageReceived.complete();
+        if (message is CloseMethodStreamCommand) {
+          closeMethodCommand.complete(message);
         }
       });
 
       webSocket.sink.add(MethodStreamMessage.buildMessage(
         endpoint: 'methodStreaming',
         method: 'simpleStream',
+        parameter: 'stream',
         connectionId: const Uuid().v4obj(),
         object: server.serializationManager.encodeWithType(1),
       ));
-      webSocket.sink.add(PingCommand.buildMessage());
 
-      expect(
-        otherMessageReceived.future,
-        doesNotComplete,
-        reason: 'OpenMethodStreamResponse not generate any messages.',
-      );
-      expect(
-        pongReceived.future.timeout(Duration(seconds: 5)),
+      await expectLater(
+        closeMethodCommand.future.timeout(Duration(seconds: 5)),
         completes,
-        reason: 'Failed to receive pong message from server.',
+        reason: 'Failed to receive close method command message from server.',
       );
+
+      var closeMethodStreamCommand = await closeMethodCommand.future;
+      expect(closeMethodStreamCommand.reason, CloseReason.error);
     });
 
     group(
-        'when a stream is opened to an endpoint that returns a Future with a value based on the input ',
+        'when a stream is opened to an endpoint that returns a Future with a value',
         () {
-      late Completer<int> endpointResponse;
-      late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
-      late Completer<void> webSocketCompleter;
-      var inputValue = 2;
+      late Completer<MethodStreamMessage> endpointResponse;
+      TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
 
       var endpoint = 'methodStreaming';
-      var method = 'doubleInputValue';
+      var method = 'directOneIntReturnWithStreamInput';
       var connectionId = const Uuid().v4obj();
 
       setUp(() async {
-        endpointResponse = Completer<int>();
-        closeMethodStreamCommand = Completer<CloseMethodStreamCommand>();
-        webSocketCompleter = Completer<void>();
+        endpointResponse = Completer<MethodStreamMessage>();
         var streamOpened = Completer<void>();
+
+        testCompleterTimeout.start({
+          'endpointResponse': endpointResponse,
+          'streamOpened': streamOpened,
+        });
 
         webSocket.stream.listen((event) {
           var message = WebSocketMessage.fromJsonString(event);
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();
-          } else if (message is CloseMethodStreamCommand) {
-            closeMethodStreamCommand.complete(message);
           } else if (message is MethodStreamMessage) {
-            endpointResponse.complete(server.serializationManager
-                .decodeWithType(message.object) as int);
+            endpointResponse.complete(message);
           }
-        }, onDone: () {
-          webSocketCompleter.complete();
         });
 
         webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: method,
-          args: {'value': inputValue},
+          args: {},
           connectionId: connectionId,
         ));
 
-        await streamOpened.future.timeout(
-          Duration(seconds: 5),
-          onTimeout: () => throw AssertionError(
-            'Failed to open method stream with server.',
-          ),
-        );
+        await streamOpened.future;
+        assert(streamOpened.isCompleted == true,
+            'Failed to open method stream with server.');
       });
 
-      test('then MethodStreamMessage with modified input is received.', () {
-        expect(
-          endpointResponse.future.timeout(Duration(seconds: 5)),
-          completion(inputValue * 2),
-          reason: 'Return value from endpoint.',
-        );
-      });
-
-      test('then CloseMethodStreamCommand matching the endpoint is received.',
+      test('then MethodStreamMessage matching endpoint return is received.',
           () async {
-        var message =
-            closeMethodStreamCommand.future.timeout(Duration(seconds: 5));
-        expect(
-          message,
-          completes,
-          reason: 'Failed to receive CloseMethodStreamCommand from server.',
-        );
+        endpointResponse.future.catchError((error) {
+          fail('Failed to receive MethodStreamMessage from server.');
+        }).then((message) {
+          expect(message.endpoint, endpoint);
+          expect(message.method, method);
+          expect(message.connectionId, connectionId);
 
-        var closeMethodStreamCommandMessage = await message;
-        expect(closeMethodStreamCommandMessage.endpoint, endpoint);
-        expect(closeMethodStreamCommandMessage.method, method);
-        expect(closeMethodStreamCommandMessage.connectionId, connectionId);
-        expect(closeMethodStreamCommandMessage.reason, CloseReason.done);
-      });
+          expect(
+            server.serializationManager.decodeWithType(message.object),
+            1,
+            reason: 'Failed to receive expected value from endpoint.',
+          );
+        });
 
-      test('then the stream is closed.', () async {
-        expect(
-          webSocketCompleter.future.timeout(Duration(seconds: 5)),
+        await expectLater(
+          endpointResponse.future.timeout(Duration(seconds: 5)),
           completes,
+          reason: 'Failed to receive MethodStreamMessage from server.',
         );
       });
     });
@@ -149,7 +129,7 @@ void main() {
       var inputValue = 4;
 
       var endpoint = 'methodStreaming';
-      var method = 'simpleStreamWithParameter';
+      var method = 'intStreamFromValue';
       var connectionId = const Uuid().v4obj();
 
       setUp(() async {
@@ -388,8 +368,8 @@ void main() {
             else if (message.connectionId == delayedResponseConnectionId)
               delayedResponseOpen.complete();
           } else if (message is CloseMethodStreamCommand) {
-            if (message.connectionId == returningStreamConnectionId)
-              returningStreamClosed.complete();
+            if (message.connectionId == returningStreamConnectionId &&
+                message.parameter == null) returningStreamClosed.complete();
             if (message.connectionId == delayedResponseConnectionId)
               delayedResponseClosed.complete();
           }
@@ -406,7 +386,7 @@ void main() {
 
         webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
           endpoint: endpoint,
-          method: 'simpleEndpoint',
+          method: 'directVoidReturnWithStreamInput',
           args: {},
           connectionId: returningStreamConnectionId,
         ));
@@ -526,6 +506,97 @@ void main() {
           webSocketCompleter.future.timeout(Duration(seconds: 1)),
           throwsA(isA<TimeoutException>()),
         );
+      });
+    });
+  });
+
+  group('Given method stream connection to an endpoint with a stream return',
+      () {
+    var endpoint = 'methodStreaming';
+    var method = 'intEchoStream';
+
+    late Serverpod server;
+    late WebSocketChannel webSocket;
+
+    setUp(() async {
+      server = IntegrationTestServer.create();
+      await server.start();
+      webSocket = WebSocketChannel.connect(
+        Uri.parse(serverMethodWebsocketUrl),
+      );
+      await webSocket.ready;
+    });
+
+    tearDown(() async {
+      await server.shutdown(exitProcess: false);
+      await webSocket.sink.close();
+    });
+
+    group('when MethodStreamMessage is passed targeting the endpoint method',
+        () {
+      late Completer<BadRequestMessage> badRequestMessage;
+      late Completer<void> webSocketCompleter;
+      TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
+
+      var connectionId = const Uuid().v4obj();
+
+      setUp(() async {
+        badRequestMessage = Completer<BadRequestMessage>();
+        webSocketCompleter = Completer<void>();
+        var streamOpened = Completer<void>();
+
+        testCompleterTimeout.start({
+          'badRequestMessage': badRequestMessage,
+          'webSocketCompleter': webSocketCompleter,
+          'streamOpened': streamOpened,
+        });
+
+        webSocket.stream.listen((event) {
+          var message = WebSocketMessage.fromJsonString(event);
+          if (message is OpenMethodStreamResponse) {
+            streamOpened.complete();
+          } else if (message is BadRequestMessage) {
+            badRequestMessage.complete(message);
+          }
+        }, onDone: () {
+          webSocketCompleter.complete();
+        });
+
+        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+          endpoint: endpoint,
+          method: method,
+          args: {},
+          connectionId: connectionId,
+        ));
+
+        await streamOpened.future;
+        assert(streamOpened.isCompleted == true,
+            'Failed to open method stream with server');
+
+        webSocket.sink.add(MethodStreamMessage.buildMessage(
+          endpoint: endpoint,
+          method: method,
+          connectionId: connectionId,
+          object: server.serializationManager.encodeWithType(1),
+        ));
+      });
+
+      tearDown(() => testCompleterTimeout.cancel());
+
+      test('then bad request is received.', () async {
+        badRequestMessage.future.catchError((error) {
+          fail('Failed to receive bad request message from server.');
+        });
+
+        await expectLater(badRequestMessage.future, completes);
+      });
+
+      test('then websocket connection is closed.', () async {
+        webSocketCompleter.future.catchError((error) {
+          fail('Failed to close websocket.');
+        });
+
+        await expectLater(webSocketCompleter.future, completes);
       });
     });
   });

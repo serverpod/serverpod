@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/server/session.dart';
 
 /// This class is used by the [Server] to handle incoming websocket requests
 /// to an endpoint. It is not intended to be used directly by the user.
@@ -86,7 +86,7 @@ abstract class EndpointWebsocketRequestHandler {
 
             SerializableModel? message;
             try {
-              session.sessionLogs.currentEndpoint = endpointName;
+              session.endpointName = endpointName;
 
               message = server.serializationManager
                   .deserializeByClassName(serialization);
@@ -104,37 +104,16 @@ abstract class EndpointWebsocketRequestHandler {
               stderr.writeln('$s');
             }
 
-            var duration =
-                DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
-            var logManager = session.serverpod.logManager;
-
-            var slow = duration >=
-                logManager.settings
-                    .getLogSettingsForSession(session)
-                    .slowSessionDuration;
-
-            var shouldLog = logManager.shouldLogMessage(
-              session: session,
-              endpoint: endpointName,
-              slow: slow,
-              failed: messageError != null,
-            );
-
-            if (shouldLog) {
-              var logEntry = MessageLogEntry(
-                sessionLogId: session.sessionLogs.temporarySessionId,
-                serverId: server.serverId,
-                messageId: session.currentMessageId,
-                endpoint: endpointName,
-                messageName: serialization['className'],
-                duration: duration,
-                order: session.sessionLogs.createLogOrderId,
-                error: messageError?.toString(),
-                stackTrace: messageStackTrace?.toString(),
-                slow: slow,
-              );
-              unawaited(logManager.logMessage(session, logEntry));
-            }
+            var duration = DateTime.now().difference(startTime);
+            unawaited(session.logManager?.logMessage(
+              session,
+              messageId: session.currentMessageId,
+              endpointName: endpointName,
+              messageName: serialization['className'],
+              duration: duration,
+              error: messageError?.toString(),
+              stackTrace: messageStackTrace,
+            ));
 
             session.currentMessageId += 1;
           }
@@ -168,7 +147,7 @@ abstract class EndpointWebsocketRequestHandler {
     Endpoint endpoint,
   ) async {
     try {
-      session.sessionLogs.currentEndpoint = endpoint.name;
+      session.endpointName = endpoint.name;
       var authFailed = await EndpointDispatch.canUserAccessEndpoint(
         () => session.authenticated,
         endpoint.requireLogin,
@@ -185,7 +164,7 @@ abstract class EndpointWebsocketRequestHandler {
     Endpoint endpoint,
   ) async {
     try {
-      session.sessionLogs.currentEndpoint = endpoint.name;
+      session.endpointName = endpoint.name;
       var authFailed = await EndpointDispatch.canUserAccessEndpoint(
         () => session.authenticated,
         endpoint.requireLogin,

@@ -10,5 +10,5 @@ export 'src/server/future_call.dart';
 export 'src/server/message_central.dart';
 export 'src/server/run_mode.dart';
 export 'src/server/server.dart';
-export 'src/server/serverpod.dart';
-export 'src/server/session.dart';
+export 'src/server/serverpod.dart' hide ServerpodInternalMethods;
+export 'src/server/session.dart' hide SessionInternalMethods;

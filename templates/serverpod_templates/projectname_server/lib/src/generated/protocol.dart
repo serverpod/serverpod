@@ -44,11 +44,13 @@ class Protocol extends _i1.SerializationManagerServer {
   }
 
   @override
-  String? getClassNameForObject(Object data) {
+  String? getClassNameForObject(Object? data) {
+    String? className = super.getClassNameForObject(data);
+    if (className != null) return className;
     if (data is _i3.Example) {
       return 'Example';
     }
-    return super.getClassNameForObject(data);
+    return null;
   }
 
   @override
