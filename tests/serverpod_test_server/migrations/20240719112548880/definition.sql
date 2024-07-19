@@ -541,8 +541,8 @@ CREATE TABLE "simple_date_time" (
 --
 CREATE TABLE "string_default" (
     "id" bigserial PRIMARY KEY,
-    "stringDefault" text NOT NULL DEFAULT 'This is a default value',
-    "stringDefaultNull" text DEFAULT 'This is a default null value'
+    "stringDefault" text NOT NULL DEFAULT 'This is a default value'::text,
+    "stringDefaultNull" text DEFAULT 'This is a default null value'::text
 );
 
 --
@@ -550,9 +550,9 @@ CREATE TABLE "string_default" (
 --
 CREATE TABLE "string_default_mix" (
     "id" bigserial PRIMARY KEY,
-    "stringDefaultAndDefaultModel" text NOT NULL DEFAULT 'This is a default value',
-    "stringDefaultAndDefaultPersist" text NOT NULL DEFAULT 'This is a default persist value',
-    "stringDefaultModelAndDefaultPersist" text NOT NULL DEFAULT 'This is a default persist value'
+    "stringDefaultAndDefaultModel" text NOT NULL DEFAULT 'This is a default value'::text,
+    "stringDefaultAndDefaultPersist" text NOT NULL DEFAULT 'This is a default persist value'::text,
+    "stringDefaultModelAndDefaultPersist" text NOT NULL DEFAULT 'This is a default persist value'::text
 );
 
 --
@@ -569,7 +569,7 @@ CREATE TABLE "string_default_model" (
 --
 CREATE TABLE "string_default_persist" (
     "id" bigserial PRIMARY KEY,
-    "stringDefaultPersist" text DEFAULT 'This is a default persist value'
+    "stringDefaultPersist" text DEFAULT 'This is a default persist value'::text
 );
 
 --
@@ -1307,9 +1307,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20240718113327281', now())
+    VALUES ('serverpod_test', '20240719112548880', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240718113327281', "timestamp" = now();
+    DO UPDATE SET "version" = '20240719112548880', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth

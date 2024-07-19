@@ -19,14 +19,14 @@
             "name": "stringDefault",
             "columnType": 0,
             "isNullable": false,
-            "columnDefault": "'This is a default value'",
+            "columnDefault": "'This is a default value'::text",
             "dartType": "String"
           },
           {
             "name": "stringDefaultNull",
             "columnType": 0,
             "isNullable": true,
-            "columnDefault": "'This is a default null value'",
+            "columnDefault": "'This is a default null value'::text",
             "dartType": "String?"
           }
         ],
@@ -67,21 +67,21 @@
             "name": "stringDefaultAndDefaultModel",
             "columnType": 0,
             "isNullable": false,
-            "columnDefault": "'This is a default value'",
+            "columnDefault": "'This is a default value'::text",
             "dartType": "String"
           },
           {
             "name": "stringDefaultAndDefaultPersist",
             "columnType": 0,
             "isNullable": false,
-            "columnDefault": "'This is a default persist value'",
+            "columnDefault": "'This is a default persist value'::text",
             "dartType": "String"
           },
           {
             "name": "stringDefaultModelAndDefaultPersist",
             "columnType": 0,
             "isNullable": false,
-            "columnDefault": "'This is a default persist value'",
+            "columnDefault": "'This is a default persist value'::text",
             "dartType": "String"
           }
         ],
@@ -168,7 +168,7 @@
             "name": "stringDefaultPersist",
             "columnType": 0,
             "isNullable": true,
-            "columnDefault": "'This is a default persist value'",
+            "columnDefault": "'This is a default persist value'::text",
             "dartType": "String?"
           }
         ],
