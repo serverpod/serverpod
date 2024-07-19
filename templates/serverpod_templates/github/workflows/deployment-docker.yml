@@ -118,6 +118,12 @@ jobs:
           POSTGRES_USER: ${{ secrets.SERVERPOD_DATABASE_USER }}
           # The password for the database
           POSTGRES_PASSWORD: ${{ secrets.SERVERPOD_DATABASE_PASSWORD }}
+          # The database name
+          SERVERPOD_DATABASE_NAME: ${{ secrets.SERVERPOD_DATABASE_NAME }}
+          # The user name for the database
+          SERVERPOD_DATABASE_USER: ${{ secrets.SERVERPOD_DATABASE_USER }}
+          # The password for the database
+          SERVERPOD_DATABASE_PASSWORD: ${{ secrets.SERVERPOD_DATABASE_PASSWORD }}
           # The public host address of the API server
           SERVERPOD_API_SERVER_PUBLIC_HOST: ${{ secrets.SERVERPOD_API_SERVER_PUBLIC_HOST }}
           # The public port number for the API server
