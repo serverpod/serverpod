@@ -33,9 +33,9 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultModelValue,
-            'This is a default value');
+            '\'This is a default value\'');
         expect(definition.fields.last.defaultPersistValue,
-            'This is a default value');
+            '\'This is a default value\'');
       },
     );
 
@@ -63,9 +63,9 @@ void main() {
         var definition = definitions.first as ClassDefinition;
 
         expect(definition.fields.last.defaultModelValue,
-            'This is a default null value');
+            '\'This is a default null value\'');
         expect(definition.fields.last.defaultPersistValue,
-            'This is a default null value');
+            '\'This is a default null value\'');
       },
     );
 
@@ -91,9 +91,7 @@ void main() {
 
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
-          firstError.message,
-          'The "default" value must be a valid string enclosed in single quotes.',
-        );
+            firstError.message, 'The "default" value must be a valid string.');
       },
     );
 
@@ -119,9 +117,7 @@ void main() {
 
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
-          firstError.message,
-          'The "default" value must be a valid string enclosed in single quotes.',
-        );
+            firstError.message, 'The "default" value must be a valid string.');
       },
     );
   });

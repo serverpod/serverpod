@@ -33,7 +33,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultPersistValue,
-            'This is a default persist value');
+            '\'This is a default persist value\'');
       },
     );
 
@@ -62,7 +62,7 @@ void main() {
 
         expect(
           definition.fields.last.defaultPersistValue,
-          'Another default persist value',
+          '\'Another default persist value\'',
         );
       },
     );
@@ -90,7 +90,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultPersist" value must be a valid string enclosed in single quotes.',
+          'The "defaultPersist" value must be a valid string.',
         );
       },
     );
@@ -116,10 +116,8 @@ void main() {
         expect(collector.errors, isNotEmpty);
 
         var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          firstError.message,
-          'The "defaultPersist" value must be a valid string enclosed in single quotes.',
-        );
+        expect(firstError.message,
+            'The "defaultPersist" value must be a valid string.');
       },
     );
 
@@ -144,10 +142,8 @@ void main() {
         expect(collector.errors, isNotEmpty);
 
         var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          firstError.message,
-          'The "defaultPersist" value must be a valid string enclosed in single quotes.',
-        );
+        expect(firstError.message,
+            'The "defaultPersist" value must be a valid string.');
       },
     );
 
