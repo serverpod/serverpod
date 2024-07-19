@@ -143,14 +143,8 @@ String? _getColumnDefault(
       return '\'${DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime)}\'::timestamp without time zone';
     case DefaultValueAllowedType.bool:
       var defaultValue = column.defaultPersistValue;
-      switch (defaultValue) {
-        case defaultBooleanTrue:
-          return 'true';
-        case defaultBooleanFalse:
-          return 'false';
-        default:
-          return null;
-      }
+      if (defaultValue == null) return null;
+      return defaultValue;
     case DefaultValueAllowedType.int:
       var defaultValue = column.defaultPersistValue;
       if (defaultValue == null) return null;
