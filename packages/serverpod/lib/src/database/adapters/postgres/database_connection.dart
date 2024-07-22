@@ -503,7 +503,7 @@ class DatabaseConnection {
     String query,
     DateTime startTime, {
     int? numRowsAffected,
-    exception,
+    dynamic exception,
     StackTrace? trace,
   }) {
     var duration = DateTime.now().difference(startTime);
@@ -511,12 +511,12 @@ class DatabaseConnection {
     // Use the current stack trace if there is no exception.
     trace ??= StackTrace.current;
 
-    session.serverpod.logManager.logQuery(
+    session.logManager?.logQuery(
       session,
       query: query,
       duration: duration,
       numRowsAffected: numRowsAffected,
-      error: exception.toString(),
+      error: exception?.toString(),
       stackTrace: trace,
     );
   }
