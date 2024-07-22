@@ -140,7 +140,7 @@ class WebServer {
     } catch (e) {
       // Triggered if the URI query parameters are malformed
       if (serverpod.runtimeSettings.logMalformedCalls) {
-        logDebug('Malformed call: $e');
+        logError('Malformed call: $e');
       }
       request.response.statusCode = HttpStatus.badRequest;
       await request.response.close();
