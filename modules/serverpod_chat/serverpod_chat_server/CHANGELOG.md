@@ -1,3 +1,7 @@
+## 2.0.2
+- fix: Conditionally imports `HttpStatus` to improve compatibility.
+- fix: Improve `encodeForProtocol` method for `List` and `Map` input object types.
+
 ## 2.0.1
 - fix: Writes websocket errors to stderr.
 - fix: Adds missing web socket connection notification on stream closed.
