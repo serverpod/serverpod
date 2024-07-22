@@ -95,10 +95,12 @@ class MethodWebsocketRequestHandler {
         }
       }
     } catch (e, stackTrace) {
-      stderr
-          .writeln('${DateTime.now().toUtc()} Method stream websocket error.');
-      stderr.writeln('$e');
-      stderr.writeln('$stackTrace');
+      if (server.serverpod.runtimeSettings.logMalformedCalls) {
+        stderr.writeln(
+            '${DateTime.now().toUtc()} Method stream websocket error.');
+        stderr.writeln('$e');
+        stderr.writeln('$stackTrace');
+      }
     } finally {
       await _methodStreamManager.closeAllStreams();
       // Send a close message to the client.
