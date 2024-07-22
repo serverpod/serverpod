@@ -123,7 +123,7 @@ $payload''';
   }) async {
     final SignedRequestParams params =
         buildSignedParams(key: key, queryParams: queryParams);
-    return _client.get(params.uri, headers: params.headers);
+    return await _client.get(params.uri, headers: params.headers);
   }
 
   Future<Response> _doGetRequest({
@@ -132,7 +132,7 @@ $payload''';
   }) async {
     final unencodedPath = "$_bucketId/$key";
     final uri = Uri.https(_host, unencodedPath, queryParams);
-    return _client.get(uri);
+    return await _client.get(uri);
   }
 
   Future<Response> _doHeadRequest({
@@ -141,7 +141,7 @@ $payload''';
   }) async {
     final unencodedPath = "$_bucketId/$key";
     final uri = Uri.https(_host, unencodedPath, queryParams);
-    return _client.head(uri);
+    return await _client.head(uri);
   }
 
   Future<Response> _doSignedDeleteRequest({
@@ -150,7 +150,7 @@ $payload''';
   }) async {
     final SignedRequestParams params =
         buildSignedParams(key: key, queryParams: queryParams, method: 'DELETE');
-    return _client.delete(params.uri, headers: params.headers);
+    return await _client.delete(params.uri, headers: params.headers);
   }
 
   void _checkResponseError(Response response) {
