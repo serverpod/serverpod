@@ -39,7 +39,11 @@ void main() {
       });
 
       webSocket.stream.listen((event) {
-        var message = WebSocketMessage.fromJsonString(event);
+        var message = WebSocketMessage.fromJsonString(
+          event,
+          server.serializationManager,
+        );
+        ;
         if (message is OpenMethodStreamResponse) {
           streamOpened.complete();
         } else if (message is CloseMethodStreamCommand) {
@@ -117,7 +121,11 @@ void main() {
       });
 
       webSocket.stream.listen((event) {
-        var message = WebSocketMessage.fromJsonString(event);
+        var message = WebSocketMessage.fromJsonString(
+          event,
+          server.serializationManager,
+        );
+        ;
         if (message is OpenMethodStreamResponse &&
             message.connectionId == keepAliveConnectionId) {
           streamOpened.complete();
@@ -168,7 +176,8 @@ void main() {
         endpoint: endpoint,
         method: keepAliveMethod,
         parameter: 'stream',
-        object: server.serializationManager.encodeWithType(4),
+        object: 4,
+        serializationManager: server.serializationManager,
         connectionId: keepAliveConnectionId,
       ));
 
@@ -210,7 +219,11 @@ void main() {
       });
 
       webSocket.stream.listen((event) {
-        var message = WebSocketMessage.fromJsonString(event);
+        var message = WebSocketMessage.fromJsonString(
+          event,
+          server.serializationManager,
+        );
+        ;
         if (message is OpenMethodStreamResponse) {
           streamOpened.complete();
         } else if (message is CloseMethodStreamCommand) {
@@ -280,7 +293,11 @@ void main() {
       });
 
       webSocket.stream.listen((event) {
-        var message = WebSocketMessage.fromJsonString(event);
+        var message = WebSocketMessage.fromJsonString(
+          event,
+          server.serializationManager,
+        );
+        ;
         if (message is OpenMethodStreamResponse) {
           streamOpened.complete();
         } else if (message is CloseMethodStreamCommand) {
@@ -357,7 +374,11 @@ void main() {
       });
 
       webSocket.stream.listen((event) {
-        var message = WebSocketMessage.fromJsonString(event);
+        var message = WebSocketMessage.fromJsonString(
+          event,
+          server.serializationManager,
+        );
+        ;
         if (message is OpenMethodStreamResponse &&
             message.connectionId == keepAliveConnectionId) {
           streamOpened.complete();
@@ -408,7 +429,8 @@ void main() {
         endpoint: endpoint,
         method: keepAliveMethod,
         parameter: 'stream',
-        object: server.serializationManager.encodeWithType(4),
+        object: 4,
+        serializationManager: server.serializationManager,
         connectionId: keepAliveConnectionId,
       ));
 
@@ -459,7 +481,11 @@ void main() {
       });
 
       webSocket.stream.listen((event) {
-        var message = WebSocketMessage.fromJsonString(event);
+        var message = WebSocketMessage.fromJsonString(
+          event,
+          server.serializationManager,
+        );
+        ;
         if (message is OpenMethodStreamResponse &&
             message.connectionId == keepAliveConnectionId) {
           streamOpened.complete();
@@ -510,7 +536,8 @@ void main() {
         endpoint: endpoint,
         method: keepAliveMethod,
         parameter: 'stream',
-        object: server.serializationManager.encodeWithType(4),
+        object: 4,
+        serializationManager: server.serializationManager,
         connectionId: keepAliveConnectionId,
       ));
 

@@ -32,7 +32,10 @@ void main() {
         () async {
       var closeMethodCommand = Completer<CloseMethodStreamCommand>();
       webSocket.stream.listen((event) {
-        var message = WebSocketMessage.fromJsonString(event);
+        var message = WebSocketMessage.fromJsonString(
+          event,
+          server.serializationManager,
+        );
         if (message is CloseMethodStreamCommand) {
           closeMethodCommand.complete(message);
         }
@@ -43,7 +46,8 @@ void main() {
         method: 'simpleStream',
         parameter: 'stream',
         connectionId: const Uuid().v4obj(),
-        object: server.serializationManager.encodeWithType(1),
+        object: 1,
+        serializationManager: server.serializationManager,
       ));
 
       await expectLater(
@@ -76,7 +80,11 @@ void main() {
         });
 
         webSocket.stream.listen((event) {
-          var message = WebSocketMessage.fromJsonString(event);
+          var message = WebSocketMessage.fromJsonString(
+            event,
+            server.serializationManager,
+          );
+          ;
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();
           } else if (message is MethodStreamMessage) {
@@ -106,7 +114,7 @@ void main() {
           expect(message.connectionId, connectionId);
 
           expect(
-            server.serializationManager.decodeWithType(message.object),
+            message.object,
             1,
             reason: 'Failed to receive expected value from endpoint.',
           );
@@ -139,14 +147,17 @@ void main() {
         var streamOpened = Completer<void>();
 
         webSocket.stream.listen((event) {
-          var message = WebSocketMessage.fromJsonString(event);
+          var message = WebSocketMessage.fromJsonString(
+            event,
+            server.serializationManager,
+          );
+          ;
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();
           } else if (message is CloseMethodStreamCommand) {
             closeMethodStreamCommand.complete(message);
           } else if (message is MethodStreamMessage) {
-            endpointResponses.add(server.serializationManager
-                .decodeWithType(message.object) as int);
+            endpointResponses.add(message.object as int);
           }
         }, onDone: () {
           webSocketCompleter.complete();
@@ -227,14 +238,17 @@ void main() {
         var streamOpened = Completer<void>();
 
         webSocket.stream.listen((event) {
-          var message = WebSocketMessage.fromJsonString(event);
+          var message = WebSocketMessage.fromJsonString(
+            event,
+            server.serializationManager,
+          );
+          ;
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();
           } else if (message is CloseMethodStreamCommand) {
             closeMethodStreamCommand.complete(message);
           } else if (message is MethodStreamMessage) {
-            endpointResponses.add(server.serializationManager
-                .decodeWithType(message.object) as SimpleData);
+            endpointResponses.add(message.object as SimpleData);
           }
         }, onDone: () {
           webSocketCompleter.complete();
@@ -307,12 +321,15 @@ void main() {
         var streamOpened = Completer<void>();
 
         webSocket.stream.listen((event) {
-          var message = WebSocketMessage.fromJsonString(event);
+          var message = WebSocketMessage.fromJsonString(
+            event,
+            server.serializationManager,
+          );
+          ;
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();
           } else if (message is MethodStreamMessage) {
-            endpointResponse.complete(server.serializationManager
-                .decodeWithType(message.object) as int?);
+            endpointResponse.complete(message.object as int?);
           }
         });
 
@@ -361,7 +378,11 @@ void main() {
         var delayedResponseConnectionId = const Uuid().v4obj();
 
         webSocket.stream.listen((event) {
-          var message = WebSocketMessage.fromJsonString(event);
+          var message = WebSocketMessage.fromJsonString(
+            event,
+            server.serializationManager,
+          );
+          ;
           if (message is OpenMethodStreamResponse) {
             if (message.connectionId == returningStreamConnectionId)
               returningStreamOpen.complete();
@@ -444,7 +465,11 @@ void main() {
         var delayedResponseConnectionId = const Uuid().v4obj();
 
         webSocket.stream.listen((event) {
-          var message = WebSocketMessage.fromJsonString(event);
+          var message = WebSocketMessage.fromJsonString(
+            event,
+            server.serializationManager,
+          );
+          ;
           if (message is OpenMethodStreamResponse) {
             if (message.connectionId == returningStreamConnectionId)
               returningStreamOpen.complete();
@@ -552,7 +577,11 @@ void main() {
         });
 
         webSocket.stream.listen((event) {
-          var message = WebSocketMessage.fromJsonString(event);
+          var message = WebSocketMessage.fromJsonString(
+            event,
+            server.serializationManager,
+          );
+          ;
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();
           } else if (message is BadRequestMessage) {
@@ -577,7 +606,8 @@ void main() {
           endpoint: endpoint,
           method: method,
           connectionId: connectionId,
-          object: server.serializationManager.encodeWithType(1),
+          object: 1,
+          serializationManager: server.serializationManager,
         ));
       });
 

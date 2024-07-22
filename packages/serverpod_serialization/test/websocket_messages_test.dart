@@ -1,13 +1,101 @@
-import 'package:serverpod_serialization/src/websocket_messages.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
-import 'package:uuid/uuid.dart';
+
+class _TestSerializationManager extends SerializationManager {
+  _TestSerializationManager();
+  @override
+  dynamic deserializeByClassName(Map<String, dynamic> data) {
+    if (data['className'] == '_SimpleData') {
+      return deserialize<_SimpleData>(data['data']);
+    }
+    if (data['className'] == '_TestSerializableException') {
+      return deserialize<_TestSerializableException>(data['data']);
+    }
+
+    return super.deserializeByClassName(data);
+  }
+
+  @override
+  String? getClassNameForObject(Object? data) {
+    String? className = super.getClassNameForObject(data);
+    if (className != null) return className;
+    if (data is _SimpleData) {
+      return '_SimpleData';
+    }
+    if (data is _TestSerializableException) {
+      return '_TestSerializableException';
+    }
+    return null;
+  }
+
+  @override
+  T deserialize<T>(
+    dynamic data, [
+    Type? t,
+  ]) {
+    t ??= T;
+    if (t == _SimpleData) {
+      return _SimpleData.fromJson(data) as T;
+    }
+    if (t == _TestSerializableException) {
+      return _TestSerializableException() as T;
+    }
+
+    return super.deserialize<T>(data, t);
+  }
+}
+
+class _SimpleData implements SerializableModel, ProtocolSerialization {
+  final String data;
+  final String? serverOnlyField;
+
+  _SimpleData(this.data, {this.serverOnlyField});
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'data': data,
+      'serverOnlyField': serverOnlyField,
+    };
+  }
+
+  @override
+  factory _SimpleData.fromJson(Map<String, dynamic> json) {
+    return _SimpleData(json['data'], serverOnlyField: json['serverOnlyField']);
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      'data': data,
+    };
+  }
+}
+
+class _TestSerializableException
+    implements SerializableException, ProtocolSerialization {
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'serverOnlyField': 'serverOnly',
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {};
+  }
+}
 
 void main() {
   test(
       'Given a Ping command message when building websocket message from string then PingCommand is returned.',
       () {
     var message = PingCommand.buildMessage();
-    var result = WebSocketMessage.fromJsonString(message);
+    var result = WebSocketMessage.fromJsonString(
+      message,
+      _TestSerializationManager(),
+    );
     expect(result, isA<PingCommand>());
   });
 
@@ -15,7 +103,10 @@ void main() {
       'Given a Pong command message when building websocket message from string then PongCommand is returned.',
       () {
     var message = PongCommand.buildMessage();
-    var result = WebSocketMessage.fromJsonString(message);
+    var result = WebSocketMessage.fromJsonString(
+      message,
+      _TestSerializationManager(),
+    );
     expect(result, isA<PongCommand>());
   });
 
@@ -23,7 +114,10 @@ void main() {
       'Given a bad request message when building websocket message from string then BadRequestMessage is returned.',
       () {
     var message = BadRequestMessage.buildMessage('This is a bad request');
-    var result = WebSocketMessage.fromJsonString(message);
+    var result = WebSocketMessage.fromJsonString(
+      message,
+      _TestSerializationManager(),
+    );
     expect(result, isA<BadRequestMessage>());
   });
 
@@ -33,7 +127,10 @@ void main() {
     /// Missing mandatory field 'request'
     var message = '{"messageType": "bad_request_message"}';
     expect(
-      () => WebSocketMessage.fromJsonString(message),
+      () => WebSocketMessage.fromJsonString(
+        message,
+        _TestSerializationManager(),
+      ),
       throwsA(
         isA<UnknownMessageException>()
             .having((e) => e.error, 'error', isA<TypeError>()),
@@ -46,7 +143,10 @@ void main() {
       () {
     var message = PingCommand.buildMessage().toUpperCase();
     expect(
-      () => WebSocketMessage.fromJsonString(message),
+      () => WebSocketMessage.fromJsonString(
+        message,
+        _TestSerializationManager(),
+      ),
       throwsA(isA<UnknownMessageException>()),
     );
   });
@@ -56,7 +156,10 @@ void main() {
       () {
     var message = '{"messageType": "this is not a known message type"}';
     expect(
-      () => WebSocketMessage.fromJsonString(message),
+      () => WebSocketMessage.fromJsonString(
+        message,
+        _TestSerializationManager(),
+      ),
       throwsA(isA<UnknownMessageException>()),
     );
   });
@@ -66,7 +169,10 @@ void main() {
       () {
     var message = 'This is not a valid json string';
     expect(
-      () => WebSocketMessage.fromJsonString(message),
+      () => WebSocketMessage.fromJsonString(
+        message,
+        _TestSerializationManager(),
+      ),
       throwsA(
         isA<UnknownMessageException>()
             .having((e) => e.error, 'error', isA<FormatException>()),
@@ -79,7 +185,10 @@ void main() {
       () {
     var message = '{"messageType": null}';
     expect(
-      () => WebSocketMessage.fromJsonString(message),
+      () => WebSocketMessage.fromJsonString(
+        message,
+        _TestSerializationManager(),
+      ),
       throwsA(isA<UnknownMessageException>()),
     );
   });
@@ -94,7 +203,10 @@ void main() {
       connectionId: const Uuid().v4obj(),
       authentication: 'auth',
     );
-    var result = WebSocketMessage.fromJsonString(message);
+    var result = WebSocketMessage.fromJsonString(
+      message,
+      _TestSerializationManager(),
+    );
     expect(result, isA<OpenMethodStreamCommand>());
   });
 
@@ -111,7 +223,10 @@ void main() {
     }''';
 
     expect(
-      () => WebSocketMessage.fromJsonString(message),
+      () => WebSocketMessage.fromJsonString(
+        message,
+        _TestSerializationManager(),
+      ),
       throwsA(
         isA<UnknownMessageException>()
             .having((e) => e.error, 'error', isA<FormatException>()),
@@ -126,7 +241,10 @@ void main() {
       connectionId: const Uuid().v4obj(),
       responseType: OpenMethodStreamResponseType.success,
     );
-    var result = WebSocketMessage.fromJsonString(message);
+    var result = WebSocketMessage.fromJsonString(
+      message,
+      _TestSerializationManager(),
+    );
     expect(result, isA<OpenMethodStreamResponse>());
   });
 
@@ -140,7 +258,10 @@ void main() {
     }''';
 
     expect(
-      () => WebSocketMessage.fromJsonString(message),
+      () => WebSocketMessage.fromJsonString(
+        message,
+        _TestSerializationManager(),
+      ),
       throwsA(isA<UnknownMessageException>()),
     );
   });
@@ -155,7 +276,10 @@ void main() {
       method: 'method',
       reason: CloseReason.done,
     );
-    var result = WebSocketMessage.fromJsonString(message);
+    var result = WebSocketMessage.fromJsonString(
+      message,
+      _TestSerializationManager(),
+    );
     expect(result, isA<CloseMethodStreamCommand>());
   });
 
@@ -171,7 +295,10 @@ void main() {
       "reason": "done",
     }''';
     expect(
-      () => WebSocketMessage.fromJsonString(message),
+      () => WebSocketMessage.fromJsonString(
+        message,
+        _TestSerializationManager(),
+      ),
       throwsA(
         isA<UnknownMessageException>()
             .having((e) => e.error, 'error', isA<FormatException>()),
@@ -191,7 +318,10 @@ void main() {
       "reason": "this reason does not exist"
     }''';
     expect(
-      () => WebSocketMessage.fromJsonString(message),
+      () => WebSocketMessage.fromJsonString(
+        message,
+        _TestSerializationManager(),
+      ),
       throwsA(isA<UnknownMessageException>()),
     );
   });
@@ -199,14 +329,34 @@ void main() {
   test(
       'Given a method stream message when building websocket message from string then MethodStreamMessage is returned.',
       () {
+    var serializationManager = _TestSerializationManager();
     var message = MethodStreamMessage.buildMessage(
       endpoint: 'endpoint',
       method: 'method',
       connectionId: const Uuid().v4obj(),
-      object: '{"className": "bamboo", "data": {"number": 2}}',
+      object: _SimpleData('hello world'),
+      serializationManager: serializationManager,
     );
-    var result = WebSocketMessage.fromJsonString(message);
+    var result = WebSocketMessage.fromJsonString(
+      message,
+      _TestSerializationManager(),
+    );
     expect(result, isA<MethodStreamMessage>());
+  });
+
+  test(
+      'Given serializable model with server only field when building MethodStreamMessage then server only field is not included in serialization.',
+      () {
+    var serializationManager = _TestSerializationManager();
+    var message = MethodStreamMessage.buildMessage(
+      endpoint: 'endpoint',
+      method: 'method',
+      connectionId: const Uuid().v4obj(),
+      object: _SimpleData('hello world', serverOnlyField: 'this is awesome'),
+      serializationManager: serializationManager,
+    );
+
+    expect(message, isNot(contains('serverOnlyField')));
   });
 
   test(
@@ -221,7 +371,10 @@ void main() {
     }''';
 
     expect(
-      () => WebSocketMessage.fromJsonString(message),
+      () => WebSocketMessage.fromJsonString(
+        message,
+        _TestSerializationManager(),
+      ),
       throwsA(
         isA<UnknownMessageException>()
             .having((e) => e.error, 'error', isA<FormatException>()),
@@ -232,15 +385,34 @@ void main() {
   test(
       'Given method stream serializable exception when building websocket message from string then MethodStreamSerializableException is returned.',
       () {
+    var serializationManager = _TestSerializationManager();
     var message = MethodStreamSerializableException.buildMessage(
       endpoint: 'endpoint',
       method: 'method',
       connectionId: const Uuid().v4obj(),
-      object:
-          '{"className": "serializableException", "data": {"message": "error message"}}',
+      object: _TestSerializableException(),
+      serializationManager: serializationManager,
     );
-    var result = WebSocketMessage.fromJsonString(message);
+    var result = WebSocketMessage.fromJsonString(
+      message,
+      _TestSerializationManager(),
+    );
     expect(result, isA<MethodStreamSerializableException>());
+  });
+
+  test(
+      'Given serializable exception with server only field when building MethodStreamSerializableException message then server only field is not included in serialization',
+      () {
+    var serializationManager = _TestSerializationManager();
+    var message = MethodStreamSerializableException.buildMessage(
+      endpoint: 'endpoint',
+      method: 'method',
+      connectionId: const Uuid().v4obj(),
+      object: _TestSerializableException(),
+      serializationManager: serializationManager,
+    );
+
+    expect(message, isNot(contains('serverOnlyField')));
   });
 
   test(
@@ -255,7 +427,10 @@ void main() {
     }''';
 
     expect(
-      () => WebSocketMessage.fromJsonString(message),
+      () => WebSocketMessage.fromJsonString(
+        message,
+        _TestSerializationManager(),
+      ),
       throwsA(
         isA<UnknownMessageException>()
             .having((e) => e.error, 'error', isA<FormatException>()),

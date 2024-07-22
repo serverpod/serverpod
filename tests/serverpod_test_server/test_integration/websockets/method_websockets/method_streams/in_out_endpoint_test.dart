@@ -58,7 +58,11 @@ void main() {
         });
 
         webSocket.stream.listen((event) {
-          var message = WebSocketMessage.fromJsonString(event);
+          var message = WebSocketMessage.fromJsonString(
+            event,
+            server.serializationManager,
+          );
+          ;
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();
           } else if (message is CloseMethodStreamCommand) {
@@ -68,8 +72,7 @@ void main() {
               closeMethodStreamCommand.complete(message);
             }
           } else if (message is MethodStreamMessage) {
-            endpointResponse.complete(server.serializationManager
-                .decodeWithType(message.object) as int);
+            endpointResponse.complete(message.object as int);
           }
         });
 
@@ -89,7 +92,8 @@ void main() {
           method: method,
           parameter: inputParameter,
           connectionId: connectionId,
-          object: server.serializationManager.encodeWithType(inputValue),
+          object: inputValue,
+          serializationManager: server.serializationManager,
         ));
       });
 
@@ -185,14 +189,17 @@ void main() {
         });
 
         webSocket.stream.listen((event) {
-          var message = WebSocketMessage.fromJsonString(event);
+          var message = WebSocketMessage.fromJsonString(
+            event,
+            server.serializationManager,
+          );
+          ;
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();
           } else if (message is CloseMethodStreamCommand) {
             closeMethodStreamCommand.complete(message);
           } else if (message is MethodStreamMessage) {
-            endpointResponses.add(server.serializationManager
-                .decodeWithType(message.object) as int);
+            endpointResponses.add(message.object as int);
           }
         });
 
@@ -287,7 +294,11 @@ void main() {
         });
 
         webSocket.stream.listen((event) {
-          var message = WebSocketMessage.fromJsonString(event);
+          var message = WebSocketMessage.fromJsonString(
+            event,
+            server.serializationManager,
+          );
+          ;
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();
           } else if (message is CloseMethodStreamCommand) {
@@ -297,8 +308,7 @@ void main() {
               closeMethodStreamCommand.complete(message);
             }
           } else if (message is MethodStreamMessage) {
-            endpointResponses.add(server.serializationManager
-                .decodeWithType(message.object) as int);
+            endpointResponses.add(message.object as int);
           }
         });
 
@@ -319,7 +329,8 @@ void main() {
             method: method,
             parameter: inputParameter,
             connectionId: connectionId,
-            object: server.serializationManager.encodeWithType(inputValue),
+            object: inputValue,
+            serializationManager: server.serializationManager,
           ));
 
         webSocket.sink.add(CloseMethodStreamCommand.buildMessage(

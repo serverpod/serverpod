@@ -52,15 +52,18 @@ void main() {
         });
 
         webSocket.stream.listen((event) {
-          var message = WebSocketMessage.fromJsonString(event);
+          var message = WebSocketMessage.fromJsonString(
+            event,
+            server.serializationManager,
+          );
+          ;
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();
           } else if (message is CloseMethodStreamCommand &&
               message.parameter == null) {
             closeMethodStreamCommand.complete(message);
           } else if (message is MethodStreamMessage) {
-            endpointResponse.complete(server.serializationManager
-                .decodeWithType(message.object) as bool);
+            endpointResponse.complete(message.object as bool);
           }
         });
 
@@ -75,23 +78,22 @@ void main() {
         assert(streamOpened.isCompleted == true,
             'Failed to open method stream with server');
 
-        var serializedException = server.serializationManager.encodeWithType(
-          ExceptionWithData(
-            message: 'Throwing an exception',
-            creationDate: DateTime.now(),
-            errorFields: [
-              'first line error',
-              'second line error',
-            ],
-            someNullableField: 1,
-          ),
+        var serializableException = ExceptionWithData(
+          message: 'Throwing an exception',
+          creationDate: DateTime.now(),
+          errorFields: [
+            'first line error',
+            'second line error',
+          ],
+          someNullableField: 1,
         );
         webSocket.sink.add(MethodStreamSerializableException.buildMessage(
           endpoint: endpoint,
           method: method,
           parameter: inputParameter,
           connectionId: connectionId,
-          object: serializedException,
+          object: serializableException,
+          serializationManager: server.serializationManager,
         ));
       });
 

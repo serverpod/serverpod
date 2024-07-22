@@ -7,7 +7,10 @@ sealed class WebSocketMessage {
   /// Converts a JSON string to a [WebSocketMessage] object.
   ///
   /// Throws an [UnknownMessageException] if the message is not recognized.
-  static WebSocketMessage fromJsonString(String jsonString) {
+  static WebSocketMessage fromJsonString(
+    String jsonString,
+    SerializationManager serializationManager,
+  ) {
     try {
       Map data = jsonDecode(jsonString) as Map;
 
@@ -27,9 +30,9 @@ sealed class WebSocketMessage {
         case CloseMethodStreamCommand._messageType:
           return CloseMethodStreamCommand(data);
         case MethodStreamMessage._messageType:
-          return MethodStreamMessage(data);
+          return MethodStreamMessage(data, serializationManager);
         case MethodStreamSerializableException._messageType:
-          return MethodStreamSerializableException(data);
+          return MethodStreamSerializableException(data, serializationManager);
       }
 
       throw UnknownMessageException(jsonString);
@@ -92,7 +95,7 @@ class OpenMethodStreamResponse extends WebSocketMessage {
     required UuidValue connectionId,
     required OpenMethodStreamResponseType responseType,
   }) {
-    return SerializationManager.encode({
+    return SerializationManager.encodeForProtocol({
       'messageType': _messageType,
       'connectionId': connectionId,
       'responseType': responseType.name,
@@ -142,7 +145,7 @@ class OpenMethodStreamCommand extends WebSocketMessage {
     required UuidValue connectionId,
     String? authentication,
   }) {
-    return SerializationManager.encode({
+    return SerializationManager.encodeForProtocol({
       'messageType': _messageType,
       'endpoint': endpoint,
       'method': method,
@@ -157,7 +160,7 @@ class OpenMethodStreamCommand extends WebSocketMessage {
         'messageType': _messageType,
         'endpoint': endpoint,
         'method': method,
-        'connectionId': SerializationManager.encode(connectionId),
+        'connectionId': SerializationManager.encodeForProtocol(connectionId),
         'args': args,
         if (authentication != null) 'authentication': authentication,
       }.toString();
@@ -217,7 +220,7 @@ class CloseMethodStreamCommand extends WebSocketMessage {
     required String method,
     required CloseReason reason,
   }) {
-    return SerializationManager.encode({
+    return SerializationManager.encodeForProtocol({
       'messageType': _messageType,
       'endpoint': endpoint,
       'method': method,
@@ -244,7 +247,8 @@ class PingCommand extends WebSocketMessage {
 
   /// Builds a [PingCommand] message.
   static String buildMessage() {
-    return SerializationManager.encode({'messageType': _messageType});
+    return SerializationManager.encodeForProtocol(
+        {'messageType': _messageType});
   }
 
   @override
@@ -257,7 +261,8 @@ class PongCommand extends WebSocketMessage {
 
   /// Builds a [PongCommand] message.
   static String buildMessage() {
-    return SerializationManager.encode({'messageType': _messageType});
+    return SerializationManager.encodeForProtocol(
+        {'messageType': _messageType});
   }
 
   @override
@@ -281,43 +286,52 @@ class MethodStreamSerializableException extends WebSocketMessage {
   /// If this is null the message is sent to the return stream of the method.
   final String? parameter;
 
-  /// The object to send.
-  final String object;
+  /// The serializable exception sent.
+  final SerializableException exception;
 
   /// Creates a new [MethodStreamSerializableException].
-  MethodStreamSerializableException(Map data)
-      : endpoint = data['endpoint'],
+  /// The [exception] must be a serializable exception processed by the
+  /// [SerializationManager.wrapWithClassName] method.
+  MethodStreamSerializableException(
+    Map data,
+    SerializationManager serializationManager,
+  )   : endpoint = data['endpoint'],
         method = data['method'],
         connectionId = UuidValueJsonExtension.fromJson(data['connectionId']),
         parameter = data['parameter'],
-        object = data['object'];
+        exception =
+            serializationManager.deserializeByClassName(data['exception']);
 
   /// Builds a [MethodStreamSerializableException] message.
+  /// The [exception] must be a serializable exception processed by the
+  /// [SerializationManager.wrapWithClassName] method.
   static String buildMessage({
     required String endpoint,
     required String method,
     required UuidValue connectionId,
     String? parameter,
-    required String object,
+    required dynamic object,
+    required SerializationManager serializationManager,
   }) {
-    return SerializationManager.encode({
+    return SerializationManager.encodeForProtocol({
       'messageType': _messageType,
       'endpoint': endpoint,
       'method': method,
       'connectionId': connectionId,
       if (parameter != null) 'parameter': parameter,
-      'object': object,
+      'exception': serializationManager.wrapWithClassName(object),
     });
   }
 
   @override
-  String toString() => buildMessage(
-        endpoint: endpoint,
-        method: method,
-        connectionId: connectionId,
-        parameter: parameter,
-        object: object,
-      );
+  String toString() => {
+        'messageType': _messageType,
+        'endpoint': endpoint,
+        'method': method,
+        'connectionId': connectionId,
+        if (parameter != null) 'parameter': parameter,
+        'exception': exception,
+      }.toString();
 }
 
 /// A message sent to a method stream.
@@ -337,16 +351,18 @@ class MethodStreamMessage extends WebSocketMessage {
   /// If this is null the message is sent to the return stream of the method.
   final String? parameter;
 
-  /// The object to send.
-  final String object;
+  /// The object that was sent.
+  final dynamic object;
 
   /// Creates a new [MethodStreamMessage].
-  MethodStreamMessage(Map data)
+  /// The [object] must be an object processed by the
+  /// [SerializationManager.wrapWithClassName] method.
+  MethodStreamMessage(Map data, SerializationManager serializationManager)
       : endpoint = data['endpoint'],
         method = data['method'],
         connectionId = UuidValueJsonExtension.fromJson(data['connectionId']),
         parameter = data['parameter'],
-        object = data['object'];
+        object = serializationManager.deserializeByClassName(data['object']);
 
   /// Builds a [MethodStreamMessage] message.
   static String buildMessage({
@@ -354,26 +370,28 @@ class MethodStreamMessage extends WebSocketMessage {
     required String method,
     required UuidValue connectionId,
     String? parameter,
-    required String object,
+    required dynamic object,
+    required SerializationManager serializationManager,
   }) {
-    return SerializationManager.encode({
+    return SerializationManager.encodeForProtocol({
       'messageType': _messageType,
       'endpoint': endpoint,
       'method': method,
       'connectionId': connectionId,
       if (parameter != null) 'parameter': parameter,
-      'object': object,
+      'object': serializationManager.wrapWithClassName(object),
     });
   }
 
   @override
-  String toString() => buildMessage(
-        endpoint: endpoint,
-        method: method,
-        connectionId: connectionId,
-        parameter: parameter,
-        object: object,
-      );
+  String toString() => {
+        'messageType': _messageType,
+        'endpoint': endpoint,
+        'method': method,
+        'connectionId': connectionId,
+        if (parameter != null) 'parameter': parameter,
+        'object': object,
+      }.toString();
 }
 
 /// A message sent when a bad request is received.
@@ -388,7 +406,7 @@ class BadRequestMessage extends WebSocketMessage {
 
   /// Builds a [BadRequestMessage] message.
   static String buildMessage(String request) {
-    return SerializationManager.encode({
+    return SerializationManager.encodeForProtocol({
       'messageType': _messageType,
       'request': request,
     });
@@ -415,4 +433,9 @@ class UnknownMessageException implements Exception {
     this.error,
     this.stackTrace,
   });
+
+  @override
+  String toString() {
+    return 'UnknownMessageException: $jsonString\n$error\n$stackTrace';
+  }
 }

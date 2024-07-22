@@ -24,7 +24,10 @@ class MethodWebsocketRequestHandler {
       await for (String jsonData in webSocket) {
         WebSocketMessage message;
         try {
-          message = WebSocketMessage.fromJsonString(jsonData);
+          message = WebSocketMessage.fromJsonString(
+            jsonData,
+            server.serializationManager,
+          );
         } on UnknownMessageException catch (_) {
           webSocket.tryAdd(BadRequestMessage.buildMessage(jsonData));
           throw Exception(
@@ -92,8 +95,12 @@ class MethodWebsocketRequestHandler {
         }
       }
     } catch (e, stackTrace) {
-      var session = await server.serverpod.createSession();
-      await session.close(error: e, stackTrace: stackTrace);
+      if (server.serverpod.runtimeSettings.logMalformedCalls) {
+        stderr.writeln(
+            '${DateTime.now().toUtc()} Method stream websocket error.');
+        stderr.writeln('$e');
+        stderr.writeln('$stackTrace');
+      }
     } finally {
       await _methodStreamManager.closeAllStreams();
       // Send a close message to the client.
@@ -329,8 +336,7 @@ class _MethodStreamManager {
       return false;
     }
 
-    streamContext.controller
-        .add(server.serializationManager.decodeWithType(message.object));
+    streamContext.controller.add(message.object);
     return true;
   }
 
@@ -349,14 +355,7 @@ class _MethodStreamManager {
       return;
     }
 
-    var serializableException =
-        server.serializationManager.decodeWithType(message.object);
-
-    if (serializableException is! SerializableException) {
-      throw Exception(
-        'Expected SerializableException, but got ${serializableException.runtimeType}',
-      );
-    }
+    var serializableException = message.exception;
 
     streamContext.controller.addError(serializableException);
   }
@@ -508,7 +507,8 @@ class _MethodStreamManager {
             endpoint: message.endpoint,
             method: message.method,
             connectionId: message.connectionId,
-            object: server.serializationManager.encodeWithType(e),
+            object: e,
+            serializationManager: server.serializationManager,
           ),
         );
       }
@@ -536,7 +536,8 @@ class _MethodStreamManager {
           endpoint: message.endpoint,
           method: message.method,
           connectionId: message.connectionId,
-          object: server.serializationManager.encodeWithType(result),
+          object: result,
+          serializationManager: server.serializationManager,
         ),
       );
     }
@@ -568,7 +569,8 @@ class _MethodStreamManager {
             endpoint: message.endpoint,
             method: message.method,
             connectionId: message.connectionId,
-            object: server.serializationManager.encodeWithType(value),
+            object: value,
+            serializationManager: server.serializationManager,
           ),
         );
       },
@@ -591,7 +593,8 @@ class _MethodStreamManager {
               endpoint: message.endpoint,
               method: message.method,
               connectionId: message.connectionId,
-              object: server.serializationManager.encodeWithType(e),
+              object: e,
+              serializationManager: server.serializationManager,
             ),
           );
         }
