@@ -2,12 +2,12 @@ import 'dart:convert';
 
 import 'package:amazon_cognito_identity_dart_2/sig_v4.dart';
 import 'package:built_value/serializer.dart';
-import 'exceptions.dart';
 import 'package:http/http.dart';
 import 'package:xml2json/xml2json.dart';
 
 import '../model/list_bucket_result.dart';
 import '../model/list_bucket_result_parker.dart';
+import 'exceptions.dart';
 
 class GCPS3Client {
   final String _secretKey;
@@ -58,11 +58,11 @@ class GCPS3Client {
   }
 
   Future<Response> getObject(String key) {
-    return _doSignedGetRequest(key: key);
+    return _doGetRequest(key: key);
   }
 
   Future<Response> headObject(String key) {
-    return _doSignedHeadRequest(key: key);
+    return _doHeadRequest(key: key);
   }
 
   Future<Response> deleteObject(String key) {
@@ -126,13 +126,22 @@ $payload''';
     return _client.get(params.uri, headers: params.headers);
   }
 
-  Future<Response> _doSignedHeadRequest({
+  Future<Response> _doGetRequest({
     required String key,
     Map<String, String>? queryParams,
   }) async {
-    final SignedRequestParams params =
-        buildSignedParams(key: key, queryParams: queryParams, method: 'HEAD');
-    return _client.head(params.uri, headers: params.headers);
+    final unencodedPath = "$_bucketId/$key";
+    final uri = Uri.https(_host, unencodedPath, queryParams);
+    return _client.get(uri);
+  }
+
+  Future<Response> _doHeadRequest({
+    required String key,
+    Map<String, String>? queryParams,
+  }) async {
+    final unencodedPath = "$_bucketId/$key";
+    final uri = Uri.https(_host, unencodedPath, queryParams);
+    return _client.head(uri);
   }
 
   Future<Response> _doSignedDeleteRequest({
