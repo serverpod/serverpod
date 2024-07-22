@@ -139,13 +139,13 @@ class WebServer {
       );
     } catch (e) {
       // Triggered if the URI query parameters are malformed
-      logDebug('Failed to create method call session: $e');
+      if (serverpod.runtimeSettings.logMalformedCalls) {
+        logDebug('Malformed call: $e');
+      }
       request.response.statusCode = HttpStatus.badRequest;
       await request.response.close();
       return;
     }
-
-//    print('Getting path: ${uri.path}');
 
     // Check routes
     for (var route in routes) {
