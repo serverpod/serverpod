@@ -22,6 +22,7 @@ void main() async {
 
     tearDown(() async {
       await client.closeStreamingConnection();
+      client.close();
       await await session.close();
       await server.shutdown(exitProcess: false);
     });
@@ -92,6 +93,9 @@ void main() async {
 
       var logs = await LoggingUtil.findAllLogs(session);
 
+      // Wait for the log to be written
+      await Future.delayed(Duration(milliseconds: 100));
+
       expect(logs, hasLength(1));
       expect(logs.first.messages, hasLength(1));
     });
@@ -110,6 +114,9 @@ void main() async {
 
       await client.logging.sendStreamMessage(Types());
       await client.closeStreamingConnection();
+
+      // Wait for the log to potentially be written
+      await Future.delayed(Duration(milliseconds: 100));
 
       var logs = await LoggingUtil.findAllLogs(session);
 
@@ -135,6 +142,9 @@ void main() async {
       await client.logging.sendStreamMessage(Types());
       await client.closeStreamingConnection();
 
+      // Wait for the log to be written
+      await Future.delayed(Duration(milliseconds: 100));
+
       var logs = await LoggingUtil.findAllLogs(session);
 
       expect(logs, hasLength(1));
@@ -158,6 +168,9 @@ void main() async {
 
       await client.logging.sendStreamMessage(Types());
       await client.closeStreamingConnection();
+
+      // Wait for the log to be written
+      await Future.delayed(Duration(milliseconds: 100));
 
       var logs = await LoggingUtil.findAllLogs(session);
 
