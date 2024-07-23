@@ -126,11 +126,11 @@ String? _getColumnDefault(
   var defaultValueType = column.type.defaultValueType;
   if (defaultValueType == null) return null;
 
+  var defaultValue = column.defaultPersistValue;
+  if (defaultValue == null) return null;
+
   switch (defaultValueType) {
     case DefaultValueAllowedType.dateTime:
-      var defaultValue = column.defaultPersistValue;
-      if (defaultValue == null) return null;
-
       if (defaultValue is! String) {
         throw StateError('Invalid DateTime default value: $defaultValue');
       }
@@ -143,19 +143,15 @@ String? _getColumnDefault(
       return '\'${DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime)}\'::timestamp without time zone';
     case DefaultValueAllowedType.bool:
       var defaultValue = column.defaultPersistValue;
-      if (defaultValue == null) return null;
       return defaultValue;
     case DefaultValueAllowedType.int:
       var defaultValue = column.defaultPersistValue;
-      if (defaultValue == null) return null;
       return '$defaultValue';
     case DefaultValueAllowedType.double:
       var defaultValue = column.defaultPersistValue;
-      if (defaultValue == null) return null;
       return '$defaultValue';
     case DefaultValueAllowedType.string:
       var defaultValue = column.defaultPersistValue;
-      if (defaultValue == null) return null;
       return '$defaultValue::text';
   }
 }
