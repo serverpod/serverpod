@@ -182,9 +182,3 @@ class DefaultValueRestriction extends ValueRestriction {
     return errors;
   }
 }
-
-void main() {
-  String value = 'This is a default value';
-  String cleanedString = value.replaceAll(r'\\', '').replaceAll('\'', '');
-  print(cleanedString); // Output: This is a default value
-}
