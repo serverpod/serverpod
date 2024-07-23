@@ -160,6 +160,33 @@ void main() {
     });
 
     test(
+        'when an open method stream command is sent without required input stream then OpenMethodStreamResponse type "invalidArguments" is received.',
+        () async {
+      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        endpoint: 'methodStreaming',
+        method: 'intEchoStream',
+        args: {},
+        connectionId: const Uuid().v4obj(),
+        inputStreams: [],
+      ));
+
+      var response = await webSocket.stream.first as String;
+      var message = WebSocketMessage.fromJsonString(
+        response,
+        server.serializationManager,
+      );
+      ;
+
+      expect(
+          message,
+          isA<OpenMethodStreamResponse>().having(
+            (m) => m.responseType,
+            'responseType',
+            OpenMethodStreamResponseType.invalidArguments,
+          ));
+    });
+
+    test(
         'when a open method stream command is sent with required argument then OpenMethodStreamResponse type "success" is received.',
         () async {
       webSocket.sink.add(OpenMethodStreamCommand.buildMessage(

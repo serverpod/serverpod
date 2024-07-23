@@ -165,6 +165,22 @@ class MethodWebsocketRequestHandler {
       );
     }
 
+    List<StreamParameterDescription> requestedInputStreams;
+    try {
+      requestedInputStreams = EndpointDispatch.parseRequestedInputStreams(
+        descriptions: endpointMethodConnector.streamParams,
+        requestedInputStreams: message.inputStreams,
+      );
+    } catch (e) {
+      server.serverpod.logVerbose(
+        'Failed to parse input streams for open stream request: $message',
+      );
+      return OpenMethodStreamResponse.buildMessage(
+        connectionId: message.connectionId,
+        responseType: OpenMethodStreamResponseType.invalidArguments,
+      );
+    }
+
     // Create session
     var session = MethodStreamSession(
       server: server,
@@ -203,6 +219,7 @@ class MethodWebsocketRequestHandler {
 
     _methodStreamManager.createStream(
       methodConnector: endpointMethodConnector,
+      requestedInputStreams: requestedInputStreams,
       session: session,
       args: args,
       message: message,
@@ -277,6 +294,7 @@ class _MethodStreamManager {
 
   void createStream({
     required MethodStreamConnector methodConnector,
+    required List<StreamParameterDescription> requestedInputStreams,
     required Session session,
     required Map<String, dynamic> args,
     required OpenMethodStreamCommand message,
@@ -285,7 +303,7 @@ class _MethodStreamManager {
   }) {
     _registerOutputStream(webSocket, message, methodConnector);
     var inputStreams = _createInputStreams(
-      methodConnector,
+      requestedInputStreams,
       webSocket,
       message,
     );
@@ -444,11 +462,10 @@ class _MethodStreamManager {
   }
 
   Map<String, StreamController> _createInputStreams(
-    MethodStreamConnector methodStreamConnector,
+    List<StreamParameterDescription> streamParamDescriptions,
     WebSocket webSocket,
     OpenMethodStreamCommand message,
   ) {
-    var streamParamDescriptions = methodStreamConnector.streamParams.values;
     var inputStreams = <String, StreamController>{};
 
     for (var streamParam in streamParamDescriptions) {
