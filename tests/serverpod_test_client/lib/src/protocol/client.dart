@@ -1271,13 +1271,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'value': value},
       );
 
-  _i2.Future<int?> nullableResponse(int? value) =>
-      caller.callServerEndpoint<int?>(
-        'methodStreaming',
-        'nullableResponse',
-        {'value': value},
-      );
-
   _i2.Future<int> doubleInputValue(int value) => caller.callServerEndpoint<int>(
         'methodStreaming',
         'doubleInputValue',
