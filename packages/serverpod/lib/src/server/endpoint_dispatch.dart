@@ -219,6 +219,27 @@ abstract class EndpointDispatch {
 
     return deserializedParams;
   }
+
+  /// Parses a list of requested input stream parameter descriptions and returns
+  /// a list of stream parameter descriptions.
+  ///
+  /// Throws an exception if a required input stream parameter is missing.
+  static List<StreamParameterDescription> parseRequestedInputStreams({
+    required Map<String, StreamParameterDescription> descriptions,
+    required List<String> requestedInputStreams,
+  }) {
+    var streamDescriptions = <StreamParameterDescription>[];
+    for (var description in descriptions.values) {
+      if (requestedInputStreams.contains(description.name)) {
+        streamDescriptions.add(description);
+      } else if (!description.nullable) {
+        throw Exception(
+            'Missing required stream parameter: ${description.name}');
+      }
+    }
+
+    return streamDescriptions;
+  }
 }
 
 /// The [EndpointConnector] associates a name with and endpoint and its

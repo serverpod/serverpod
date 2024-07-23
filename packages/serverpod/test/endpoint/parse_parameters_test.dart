@@ -82,6 +82,19 @@ void main() {
         throwsA(isA<Exception>()),
       );
     });
+
+    test(
+        'when parsing parameter string with additional parameter then additional parameter is ignored',
+        () {
+      expect(
+        EndpointDispatch.parseParameters(
+          '{"arg1": 42, "arg2": "ignored"}',
+          parameterDescriptions,
+          Protocol(),
+        ),
+        {'arg1': 42},
+      );
+    });
   });
 
   group('Given single nullable parameter description', () {
