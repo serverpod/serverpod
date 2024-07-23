@@ -206,12 +206,40 @@ void main() {
       args: {'arg1': 'value1', 'arg2': 2},
       connectionId: const Uuid().v4obj(),
       authentication: 'auth',
+      inputStreams: ['input1'],
     );
     var result = WebSocketMessage.fromJsonString(
       message,
       _TestSerializationManager(),
     );
     expect(result, isA<OpenMethodStreamCommand>());
+  });
+
+  test(
+      'Given an invalid open method stream command json String that has int for input stream when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
+      () {
+    var message = OpenMethodStreamCommand.buildMessage(
+      endpoint: 'endpoint',
+      method: 'method',
+      args: {'arg1': 'value1', 'arg2': 2},
+      connectionId: const Uuid().v4obj(),
+      authentication: 'auth',
+      inputStreams: ['input1'],
+    );
+
+    // This message is missing the mandatory endpoint field.
+    message = message.replaceAll('"input1"', '1');
+
+    expect(
+      () => WebSocketMessage.fromJsonString(
+        message,
+        _TestSerializationManager(),
+      ),
+      throwsA(
+        isA<UnknownMessageException>()
+            .having((e) => e.error, 'error', isA<TypeError>()),
+      ),
+    );
   });
 
   test(
@@ -223,6 +251,7 @@ void main() {
       args: {'arg1': 'value1', 'arg2': 2},
       connectionId: const Uuid().v4obj(),
       authentication: 'auth',
+      inputStreams: ['input1'],
     );
 
     // This message is missing the mandatory endpoint field.

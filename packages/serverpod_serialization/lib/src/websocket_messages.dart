@@ -150,6 +150,9 @@ class OpenMethodStreamCommand extends WebSocketMessage {
   /// The arguments to pass to the method.
   final String args;
 
+  /// The input streams that should be opened.
+  final List<String> inputStreams;
+
   /// The connection id that uniquely identifies the stream.
   final UuidValue connectionId;
 
@@ -162,7 +165,8 @@ class OpenMethodStreamCommand extends WebSocketMessage {
         method = data['method'],
         args = data['args'],
         connectionId = UuidValueJsonExtension.fromJson(data['connectionId']),
-        authentication = data['authentication'];
+        authentication = data['authentication'],
+        inputStreams = List<String>.from(data['inputStreams']);
 
   /// Creates a new [OpenMethodStreamCommand].
   static String buildMessage({
@@ -170,6 +174,7 @@ class OpenMethodStreamCommand extends WebSocketMessage {
     required String method,
     required Map<String, dynamic> args,
     required UuidValue connectionId,
+    required List<String> inputStreams,
     String? authentication,
   }) {
     return WebSocketMessage._buildMessage(_messageType, {
@@ -177,6 +182,7 @@ class OpenMethodStreamCommand extends WebSocketMessage {
       'method': method,
       'connectionId': connectionId,
       'args': SerializationManager.encodeForProtocol(args),
+      'inputStreams': inputStreams,
       if (authentication != null) 'authentication': authentication,
     });
   }
@@ -187,6 +193,7 @@ class OpenMethodStreamCommand extends WebSocketMessage {
         'method': method,
         'connectionId': SerializationManager.encodeForProtocol(connectionId),
         'args': args,
+        'inputStreams': inputStreams,
         if (authentication != null) 'authentication': authentication,
       }).toString();
 }
