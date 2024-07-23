@@ -136,14 +136,6 @@ abstract class EndpointMethodAnalyzer {
       );
     }
 
-    if ((dartType.isDartAsyncStream || hasStreamParameter) &&
-        innerType.nullabilitySuffix != NullabilitySuffix.none) {
-      return SourceSpanSeverityException(
-        'Nullable return type for streaming methods are not supported.',
-        dartElement.span,
-      );
-    }
-
     try {
       TypeDefinition.fromDartType(innerType);
     } on FromDartTypeClassNameException catch (e) {

@@ -410,26 +410,29 @@ class ExampleEndpoint extends Endpoint {
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then a validation errors is reported.', () {
-      expect(collector.errors, hasLength(1));
-    });
-
-    test(
-        'then validation error informs that nullable return types are not supported.',
-        () {
-      expect(
-        collector.errors.firstOrNull?.message,
-        'Nullable return type for streaming methods are not supported.',
-      );
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
     });
 
     test('then endpoint definition is created.', () {
       expect(endpointDefinitions, hasLength(1));
     });
 
-    test('then no endpoint method definition is created.', () {
-      var methods = endpointDefinitions.firstOrNull?.methods;
-      expect(methods, isEmpty);
+    group('then endpoint method definition', () {
+      test('is a method stream definition.', () {
+        var methodDefinition =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull;
+        expect(methodDefinition, isA<MethodStreamDefinition>());
+      });
+
+      test('has stream return type.', () {
+        var returnType =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+        expect(returnType?.className, 'Stream');
+        expect(returnType?.generics, hasLength(1));
+        expect(returnType?.generics.firstOrNull?.className, 'String');
+        expect(returnType?.generics.firstOrNull?.nullable, isTrue);
+      });
     });
   });
 
@@ -458,26 +461,29 @@ class ExampleEndpoint extends Endpoint {
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then a validation errors is reported.', () {
-      expect(collector.errors, hasLength(1));
-    });
-
-    test(
-        'then validation error informs that nullable return types are not supported.',
-        () {
-      expect(
-        collector.errors.firstOrNull?.message,
-        'Nullable return type for streaming methods are not supported.',
-      );
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
     });
 
     test('then endpoint definition is created.', () {
       expect(endpointDefinitions, hasLength(1));
     });
 
-    test('then no endpoint method definition is created.', () {
-      var methods = endpointDefinitions.firstOrNull?.methods;
-      expect(methods, isEmpty);
+    group('then endpoint method definition', () {
+      test('is a method stream definition.', () {
+        var methodDefinition =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull;
+        expect(methodDefinition, isA<MethodStreamDefinition>());
+      });
+
+      test('has future return type.', () {
+        var returnType =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+        expect(returnType?.className, 'Future');
+        expect(returnType?.generics, hasLength(1));
+        expect(returnType?.generics.firstOrNull?.className, 'String');
+        expect(returnType?.generics.firstOrNull?.nullable, isTrue);
+      });
     });
   });
 
