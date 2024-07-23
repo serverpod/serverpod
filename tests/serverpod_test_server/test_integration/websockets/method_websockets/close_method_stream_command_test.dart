@@ -61,6 +61,7 @@ void main() {
           method: method,
           args: {'delay': 10},
           connectionId: connectionId,
+          inputStreams: [],
         ));
 
         await delayedResponseOpen.future.timeout(
@@ -151,6 +152,7 @@ void main() {
           method: method,
           args: {},
           connectionId: connectionId,
+          inputStreams: [inputStreamParameter],
         ));
 
         await streamOpened.future;
@@ -217,6 +219,7 @@ void main() {
         method: method,
         args: {'delay': 20},
         connectionId: connectionId,
+        inputStreams: [],
       ));
     });
 
@@ -271,6 +274,7 @@ void main() {
         method: method,
         args: {'delay': 20},
         connectionId: connectionId,
+        inputStreams: ['stream'],
       ));
     });
 
@@ -325,6 +329,7 @@ void main() {
         method: method,
         args: {'delay': 20},
         connectionId: connectionId,
+        inputStreams: ['stream'],
       ));
     });
 
@@ -422,6 +427,7 @@ void main() {
           method: method,
           args: {},
           connectionId: connectionId,
+          inputStreams: [inputParameter],
         ));
 
         await streamOpened.future;

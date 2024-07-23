@@ -58,6 +58,7 @@ void main() {
         method: method,
         args: {'value': 4},
         connectionId: const Uuid().v4obj(),
+        inputStreams: [],
       ));
 
       await streamOpened.future;
@@ -145,6 +146,7 @@ void main() {
         method: keepAliveMethod,
         args: {},
         connectionId: keepAliveConnectionId,
+        inputStreams: ['stream'],
       ));
 
       webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
@@ -152,6 +154,7 @@ void main() {
         method: closeMethod,
         args: {'value': 4},
         connectionId: const Uuid().v4obj(),
+        inputStreams: [],
       ));
 
       await streamOpened.future;
@@ -238,6 +241,7 @@ void main() {
         method: method,
         args: {},
         connectionId: const Uuid().v4obj(),
+        inputStreams: [],
       ));
 
       await streamOpened.future;
@@ -312,6 +316,7 @@ void main() {
         method: method,
         args: {},
         connectionId: const Uuid().v4obj(),
+        inputStreams: [],
       ));
 
       await streamOpened.future;
@@ -398,6 +403,7 @@ void main() {
         method: keepAliveMethod,
         args: {},
         connectionId: keepAliveConnectionId,
+        inputStreams: ['stream'],
       ));
 
       webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
@@ -405,6 +411,7 @@ void main() {
         method: throwMethod,
         args: {},
         connectionId: const Uuid().v4obj(),
+        inputStreams: [],
       ));
 
       await streamOpened.future;
@@ -505,6 +512,7 @@ void main() {
         method: keepAliveMethod,
         args: {},
         connectionId: keepAliveConnectionId,
+        inputStreams: ['stream'],
       ));
 
       webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
@@ -512,6 +520,7 @@ void main() {
         method: throwMethod,
         args: {},
         connectionId: const Uuid().v4obj(),
+        inputStreams: [],
       ));
 
       await streamOpened.future;

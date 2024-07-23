@@ -97,6 +97,7 @@ void main() {
           method: method,
           args: {},
           connectionId: connectionId,
+          inputStreams: ['stream'],
         ));
 
         await streamOpened.future;
@@ -168,6 +169,7 @@ void main() {
           method: method,
           args: {'value': inputValue},
           connectionId: connectionId,
+          inputStreams: [],
         ));
 
         await streamOpened.future.timeout(
@@ -259,6 +261,7 @@ void main() {
           method: method,
           args: {'value': inputValue},
           connectionId: connectionId,
+          inputStreams: [],
         ));
 
         await streamOpened.future.timeout(
@@ -353,6 +356,7 @@ void main() {
           method: 'delayedStreamResponse',
           args: {'delay': 10},
           connectionId: delayedResponseConnectionId,
+          inputStreams: [],
         ));
 
         webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
@@ -360,6 +364,7 @@ void main() {
           method: 'directVoidReturnWithStreamInput',
           args: {},
           connectionId: returningStreamConnectionId,
+          inputStreams: ['stream'],
         ));
 
         await Future.wait([
@@ -440,6 +445,7 @@ void main() {
           method: 'delayedStreamResponse',
           args: {'delay': 10},
           connectionId: delayedResponseConnectionId,
+          inputStreams: [],
         ));
 
         webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
@@ -447,6 +453,7 @@ void main() {
           method: 'simpleStream',
           args: {},
           connectionId: returningStreamConnectionId,
+          inputStreams: [],
         ));
 
         await Future.wait([
@@ -546,6 +553,7 @@ void main() {
           method: method,
           args: {},
           connectionId: connectionId,
+          inputStreams: ['stream'],
         ));
 
         await streamOpened.future;

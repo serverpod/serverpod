@@ -80,6 +80,7 @@ void main() {
           method: method,
           args: {},
           connectionId: connectionId,
+          inputStreams: [inputParameter],
         ));
 
         await streamOpened.future;

@@ -76,6 +76,7 @@ void main() {
           method: method,
           args: {},
           connectionId: connectionId,
+          inputStreams: [inputStreamParameter1, inputStreamParameter2],
         ));
 
         await streamOpened.future;
@@ -177,6 +178,7 @@ void main() {
           method: method,
           args: {},
           connectionId: connectionId,
+          inputStreams: [closedStreamParameter, openStreamParameter],
         ));
 
         await streamOpened.future;
@@ -289,6 +291,7 @@ void main() {
           method: method,
           args: {},
           connectionId: connectionId,
+          inputStreams: [inputStreamParameter1, inputStreamParameter2],
         ));
 
         await streamOpened.future;
