@@ -13,7 +13,7 @@ void main() async {
         ));
 
     test(
-      'when creating a record in the database with an unsafe query, then the "intDefaultAndDefaultModel" field value should match the provided value',
+      'when creating a record in the database with an unsafe query, then the "intDefaultAndDefaultModel" field value should match the default value',
       () async {
         await session.db.unsafeQuery(
           '''

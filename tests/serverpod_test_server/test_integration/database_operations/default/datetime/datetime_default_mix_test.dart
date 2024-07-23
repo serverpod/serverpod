@@ -12,18 +12,18 @@ void main() async {
         ));
 
     test(
-      'when creating a record in the database with an unsafe query, then the "dateTimeDefaultAndDefaultModel" field value should match the provided value',
+      'when creating a record in the database with an unsafe query, then the "dateTimeDefaultAndDefaultModel" field value should match the default value',
       () async {
         await session.db.unsafeQuery(
           '''
         INSERT INTO "${DateTimeDefaultMix.t.tableName}" ("dateTimeDefaultAndDefaultModel", "dateTimeDefaultAndDefaultPersist", "dateTimeDefaultModelAndDefaultPersist")
-        VALUES ('2024-05-10T22:00:00.000Z', DEFAULT, DEFAULT);
+        VALUES (DEFAULT, DEFAULT, DEFAULT);
         ''',
         );
         var databaseObject = await DateTimeDefaultMix.db.findFirstRow(session);
         expect(
           databaseObject?.dateTimeDefaultAndDefaultModel,
-          DateTime.parse('2024-05-10T22:00:00.000Z'),
+          DateTime.parse('2024-05-01T22:00:00.000Z'),
         );
       },
     );
