@@ -363,24 +363,28 @@ class ExampleEndpoint extends Endpoint {
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then a validation errors is reported.', () {
-      expect(collector.errors, hasLength(1));
-    });
-
-    test('then validation error informs that return type must be future', () {
-      expect(
-        collector.errors.firstOrNull?.message,
-        'Return generic must have a type defined. E.g. Stream<String>.',
-      );
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
     });
 
     test('then endpoint definition is created.', () {
       expect(endpointDefinitions, hasLength(1));
     });
 
-    test('then no endpoint method definition is created.', () {
-      var methods = endpointDefinitions.firstOrNull?.methods;
-      expect(methods, isEmpty);
+    group('then endpoint method definition', () {
+      test('is a method stream definition.', () {
+        var methodDefinition =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull;
+        expect(methodDefinition, isA<MethodStreamDefinition>());
+      });
+
+      test('has dynamic stream return type.', () {
+        var returnType =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+        expect(returnType?.className, 'Stream');
+        expect(returnType?.generics, hasLength(1));
+        expect(returnType?.generics.firstOrNull?.className, 'dynamic');
+      });
     });
   });
 
@@ -432,6 +436,57 @@ class ExampleEndpoint extends Endpoint {
         expect(returnType?.generics, hasLength(1));
         expect(returnType?.generics.firstOrNull?.className, 'String');
         expect(returnType?.generics.firstOrNull?.nullable, isTrue);
+      });
+    });
+  });
+
+  group(
+      'Given an endpoint method that returns a Stream with dynamic type when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Stream<dynamic> hello(Session session, String name) async* {
+    yield 'Hello';
+    yield 'World';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    group('then endpoint method definition', () {
+      test('is a method stream definition.', () {
+        var methodDefinition =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull;
+        expect(methodDefinition, isA<MethodStreamDefinition>());
+      });
+
+      test('has dynamic stream return type.', () {
+        var returnType =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+        expect(returnType?.className, 'Stream');
+        expect(returnType?.generics, hasLength(1));
+        expect(returnType?.generics.firstOrNull?.className, 'dynamic');
       });
     });
   });

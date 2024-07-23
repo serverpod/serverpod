@@ -129,7 +129,7 @@ abstract class EndpointMethodAnalyzer {
       return null;
     }
 
-    if (innerType is DynamicType) {
+    if (innerType is DynamicType && !dartType.isDartAsyncStream) {
       return SourceSpanSeverityException(
         'Return generic must have a type defined. E.g. ${dartType.element.name}<String>.',
         dartElement.span,
