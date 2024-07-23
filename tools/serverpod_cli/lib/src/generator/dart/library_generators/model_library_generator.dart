@@ -948,14 +948,11 @@ class SerializableModelLibraryGenerator {
             .property('parse')
             .call([CodeExpression(Code("'$defaultValue'"))]).code;
       case DefaultValueAllowedType.bool:
-        switch (defaultValue) {
-          case defaultBooleanTrue:
-            return literalBool(true).code;
-          case defaultBooleanFalse:
-            return literalBool(false).code;
-          default:
-            return null;
-        }
+        return switch (defaultValue) {
+          defaultBooleanTrue => literalBool(true).code,
+          defaultBooleanFalse => literalBool(false).code,
+          _ => null,
+        };
       case DefaultValueAllowedType.int:
         return literalNum(int.parse(defaultValue)).code;
       case DefaultValueAllowedType.double:
