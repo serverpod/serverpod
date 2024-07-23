@@ -28,9 +28,6 @@ class MethodWebsocketRequestHandler {
             jsonData,
             server.serializationManager,
           );
-        } on IncompatibleVersionException catch (_) {
-          webSocket.tryAdd(BadRequestMessage.buildMessage(jsonData));
-          rethrow;
         } on UnknownMessageException catch (_) {
           webSocket.tryAdd(BadRequestMessage.buildMessage(jsonData));
           rethrow;

@@ -157,7 +157,7 @@ void main() {
       'Given an unknown command json String when building websocket message from string then UnknownMessageException is thrown.',
       () {
     var message =
-        '{"${WebSocketMessage.messageTypeKeyword}": "this is not a known message type", "${WebSocketMessage.messageVersionKeyword}": ${WebSocketMessage.version}}';
+        '{"${WebSocketMessage.messageTypeKeyword}": "this is not a known message type"}';
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
@@ -187,8 +187,7 @@ void main() {
   test(
       'Given a null messageType when building websocket message from string then UnknownMessageException is thrown.',
       () {
-    var message =
-        '{"${WebSocketMessage.messageTypeKeyword}": null, "${WebSocketMessage.messageVersionKeyword}": ${WebSocketMessage.version}}';
+    var message = '{"${WebSocketMessage.messageTypeKeyword}": null}';
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
@@ -466,133 +465,6 @@ void main() {
         isA<UnknownMessageException>()
             .having((e) => e.error, 'error', isA<TypeError>()),
       ),
-    );
-  });
-
-  test('Given a ping command when building message then version is included.',
-      () {
-    var message = PingCommand.buildMessage();
-    expect(
-        message,
-        contains(
-            '"${WebSocketMessage.messageVersionKeyword}":${WebSocketMessage.version}'));
-  });
-
-  test(
-      'Given a pong command when building message then version is included in serialization.',
-      () {
-    var message = PongCommand.buildMessage();
-    expect(
-        message,
-        contains(
-            '"${WebSocketMessage.messageVersionKeyword}":${WebSocketMessage.version}'));
-  });
-
-  test(
-      'Given a bad request message when building message then version is included.',
-      () {
-    var message = BadRequestMessage.buildMessage('This is a bad request');
-    expect(
-        message,
-        contains(
-            '"${WebSocketMessage.messageVersionKeyword}":${WebSocketMessage.version}'));
-  });
-
-  test(
-      'Given an open method stream command when building message then version is included.',
-      () {
-    var message = OpenMethodStreamCommand.buildMessage(
-      endpoint: 'endpoint',
-      method: 'method',
-      args: {'arg1': 'value1', 'arg2': 2},
-      connectionId: const Uuid().v4obj(),
-      authentication: 'auth',
-    );
-    expect(
-        message,
-        contains(
-            '"${WebSocketMessage.messageVersionKeyword}":${WebSocketMessage.version}'));
-  });
-
-  test(
-      'Given an open method stream response when building message then version is included.',
-      () {
-    var message = OpenMethodStreamResponse.buildMessage(
-      connectionId: const Uuid().v4obj(),
-      responseType: OpenMethodStreamResponseType.success,
-    );
-    expect(
-        message,
-        contains(
-            '"${WebSocketMessage.messageVersionKeyword}":${WebSocketMessage.version}'));
-  });
-
-  test(
-      'Given a close method stream command when building message then version is included.',
-      () {
-    var message = CloseMethodStreamCommand.buildMessage(
-      connectionId: const Uuid().v4obj(),
-      endpoint: 'endpoint',
-      parameter: 'parameter',
-      method: 'method',
-      reason: CloseReason.done,
-    );
-    expect(
-        message,
-        contains(
-            '"${WebSocketMessage.messageVersionKeyword}":${WebSocketMessage.version}'));
-  });
-
-  test(
-      'Given a method stream message when building message then version is included.',
-      () {
-    var serializationManager = _TestSerializationManager();
-    var message = MethodStreamMessage.buildMessage(
-      endpoint: 'endpoint',
-      method: 'method',
-      connectionId: const Uuid().v4obj(),
-      object: _SimpleData('hello world'),
-      serializationManager: serializationManager,
-    );
-    expect(
-        message,
-        contains(
-            '"${WebSocketMessage.messageVersionKeyword}":${WebSocketMessage.version}'));
-  });
-
-  test(
-      'Given a method stream serializable exception when building message then version is included.',
-      () {
-    var serializationManager = _TestSerializationManager();
-    var message = MethodStreamSerializableException.buildMessage(
-      endpoint: 'endpoint',
-      method: 'method',
-      connectionId: const Uuid().v4obj(),
-      object: _TestSerializableException(),
-      serializationManager: serializationManager,
-    );
-    expect(
-        message,
-        contains(
-            '"${WebSocketMessage.messageVersionKeyword}":${WebSocketMessage.version}'));
-  });
-
-  test(
-      'Given a message with an incompatible version when build web socket message from string then IncompatibleVersionException is thrown.',
-      () {
-    var message = PingCommand.buildMessage();
-
-    message = message.replaceAll(
-      '"${WebSocketMessage.messageVersionKeyword}":${WebSocketMessage.version}',
-      '"${WebSocketMessage.messageVersionKeyword}":${WebSocketMessage.version + 1}',
-    );
-
-    expect(
-      () => WebSocketMessage.fromJsonString(
-        message,
-        _TestSerializationManager(),
-      ),
-      throwsA(isA<IncompatibleVersionException>()),
     );
   });
 }

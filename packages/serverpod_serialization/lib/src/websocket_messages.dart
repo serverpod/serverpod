@@ -4,12 +4,6 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Base class for messages sent over a WebSocket connection.
 sealed class WebSocketMessage {
-  /// The version of the protocol.
-  static const int version = 1;
-
-  /// The keyword used for the version in the websocket message.
-  static const String messageVersionKeyword = 'version';
-
   /// The keyword used for the message type in the websocket message.
   static const String messageTypeKeyword = 'type';
 
@@ -21,7 +15,6 @@ sealed class WebSocketMessage {
     Map<String, dynamic>? data,
   ]) {
     return SerializationManager.encodeForProtocol({
-      messageVersionKeyword: version,
       messageTypeKeyword: messageType,
       messageDataKeyword: data,
     });
@@ -36,12 +29,6 @@ sealed class WebSocketMessage {
   ) {
     try {
       Map data = jsonDecode(jsonString) as Map;
-
-      var messageVersion = data[messageVersionKeyword] as int;
-
-      if (messageVersion != version) {
-        throw IncompatibleVersionException(messageVersion, version, version);
-      }
 
       var messageType = data[messageTypeKeyword];
       var messageData = data[messageDataKeyword];
@@ -72,8 +59,6 @@ sealed class WebSocketMessage {
       }
 
       throw UnknownMessageException(jsonString, error: 'Unknown message type');
-    } on IncompatibleVersionException {
-      rethrow;
     } on UnknownMessageException {
       rethrow;
     } catch (e, stackTrace) {
@@ -481,29 +466,5 @@ class UnknownMessageException implements Exception {
   @override
   String toString() {
     return 'UnknownMessageException: $jsonString\n$error\n$stackTrace';
-  }
-}
-
-/// Exception thrown when a message with an incompatible version is received.
-class IncompatibleVersionException implements Exception {
-  /// The version that was received.
-  final int version;
-
-  /// The minimum allowed version.
-  final int minAllowedVersion;
-
-  /// The maximum allowed version.
-  final int maxAllowedVersion;
-
-  /// Creates a new [IncompatibleVersionException].
-  IncompatibleVersionException(
-    this.version,
-    this.minAllowedVersion,
-    this.maxAllowedVersion,
-  );
-
-  @override
-  String toString() {
-    return 'IncompatibleVersionException: message version "$version", not in allowed range ($minAllowedVersion-$maxAllowedVersion)';
   }
 }

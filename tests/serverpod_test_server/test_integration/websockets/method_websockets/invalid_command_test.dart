@@ -53,19 +53,5 @@ void main() {
         BadRequestMessage.buildMessage(unrecognizedCommandMessage),
       );
     });
-
-    test(
-        'when a message with an invalid version is sent then BadRequestMessage response is received.',
-        () async {
-      var response = webSocket.stream.first.timeout(Duration(seconds: 10));
-      var invalidVersionMessage =
-          '{"${WebSocketMessage.messageVersionKeyword}": ${WebSocketMessage.version + 1}}';
-      webSocket.sink.add(invalidVersionMessage);
-
-      expect(
-        await response,
-        BadRequestMessage.buildMessage(invalidVersionMessage),
-      );
-    });
   });
 }
