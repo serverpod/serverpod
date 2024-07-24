@@ -124,8 +124,10 @@ void main() {
   test(
       'Given a bad request message without mandatory field building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
       () {
+    var message = BadRequestMessage.buildMessage('testRequest');
+
     /// Missing mandatory field 'request'
-    var message = '{"messageType": "bad_request_message"}';
+    message = message.replaceAll('"request":"testRequest"', '');
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
@@ -154,13 +156,15 @@ void main() {
   test(
       'Given an unknown command json String when building websocket message from string then UnknownMessageException is thrown.',
       () {
-    var message = '{"messageType": "this is not a known message type"}';
+    var message =
+        '{"${WebSocketMessage.messageTypeKeyword}": "this is not a known message type"}';
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
         _TestSerializationManager(),
       ),
-      throwsA(isA<UnknownMessageException>()),
+      throwsA(isA<UnknownMessageException>()
+          .having((e) => e.error, 'error', 'Unknown message type')),
     );
   });
 
@@ -183,7 +187,7 @@ void main() {
   test(
       'Given a null messageType when building websocket message from string then UnknownMessageException is thrown.',
       () {
-    var message = '{"messageType": null}';
+    var message = '{"${WebSocketMessage.messageTypeKeyword}": null}';
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
@@ -211,16 +215,18 @@ void main() {
   });
 
   test(
-      'Given an invalid open method stream command json String that is missing mandatory endpoint field when building websocket message from string then UnknownMessageException is thrown having FormatException error type.',
+      'Given an invalid open method stream command json String that is missing mandatory endpoint field when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
       () {
+    var message = OpenMethodStreamCommand.buildMessage(
+      endpoint: 'endpoint',
+      method: 'method',
+      args: {'arg1': 'value1', 'arg2': 2},
+      connectionId: const Uuid().v4obj(),
+      authentication: 'auth',
+    );
+
     // This message is missing the mandatory endpoint field.
-    var message = '''{
-      "messageType": "open_method_stream_command',
-      "method": "method',
-      "args": {"arg1": "value1", "arg2": 2},
-      "uuid": "uuid",
-      "authentication": "auth",
-    }''';
+    message = message.replaceAll('"endpoint":"endpoint",', '');
 
     expect(
       () => WebSocketMessage.fromJsonString(
@@ -229,7 +235,7 @@ void main() {
       ),
       throwsA(
         isA<UnknownMessageException>()
-            .having((e) => e.error, 'error', isA<FormatException>()),
+            .having((e) => e.error, 'error', isA<TypeError>()),
       ),
     );
   });
@@ -251,11 +257,15 @@ void main() {
   test(
       'Given an open method stream response with an invalid response type when building websocket message from string then UnknownMessageException is thrown.',
       () {
-    var message = '''{
-      "messageType": "open_method_stream_response",
-      "uuid": "uuid",
-      "responseType": "this response type does not exist"
-    }''';
+    var message = OpenMethodStreamResponse.buildMessage(
+      connectionId: const Uuid().v4obj(),
+      responseType: OpenMethodStreamResponseType.success,
+    );
+
+    message = message.replaceAll(
+      OpenMethodStreamResponseType.success.name,
+      'this response type does not exist',
+    );
 
     expect(
       () => WebSocketMessage.fromJsonString(
@@ -284,16 +294,23 @@ void main() {
   });
 
   test(
-      'Given an invalid close method stream command json String that is missing mandatory uuid field when building websocket message from string then UnknownMessageException is thrown having FormatException error type.',
+      'Given an invalid close method stream command json String that is missing mandatory connectionId field when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
       () {
-    // This message is missing the mandatory uuid field.
-    var message = '''{
-      "messageType": "close_method_stream_command",
-      "endpoint": "endpoint",
-      "parameter": "parameter",
-      "method": "method",
-      "reason": "done",
-    }''';
+    var connectionId = const Uuid().v4obj();
+    var message = CloseMethodStreamCommand.buildMessage(
+      connectionId: connectionId,
+      endpoint: 'endpoint',
+      parameter: 'parameter',
+      method: 'method',
+      reason: CloseReason.done,
+    );
+
+    // This message is missing the mandatory connectionId field.
+    message = message.replaceAll(
+      '"connectionId":${SerializationManager.encodeForProtocol(connectionId)},',
+      '',
+    );
+
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
@@ -301,7 +318,7 @@ void main() {
       ),
       throwsA(
         isA<UnknownMessageException>()
-            .having((e) => e.error, 'error', isA<FormatException>()),
+            .having((e) => e.error, 'error', isA<TypeError>()),
       ),
     );
   });
@@ -309,14 +326,19 @@ void main() {
   test(
       'Given an close method stream command with an invalid reason when building websocket message from string then UnknownMessageException is thrown.',
       () {
-    var message = '''{
-      "messageType": "close_method_stream_command",
-      "uuid": "uuid",
-      "endpoint": "endpoint",
-      "parameter": "parameter",
-      "method": "method",
-      "reason": "this reason does not exist"
-    }''';
+    var message = CloseMethodStreamCommand.buildMessage(
+      connectionId: const Uuid().v4obj(),
+      endpoint: 'endpoint',
+      parameter: 'parameter',
+      method: 'method',
+      reason: CloseReason.done,
+    );
+
+    message = message.replaceAll(
+      CloseReason.done.name,
+      'this reason does not exist',
+    );
+
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
@@ -360,15 +382,19 @@ void main() {
   });
 
   test(
-      'Given an invalid method stream message json String that is missing mandatory endpoint field when building websocket message from string then UnknownMessageException is thrown.',
+      'Given an invalid method stream message json String that is missing mandatory endpoint field when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
       () {
+    var serializationManager = _TestSerializationManager();
+    var message = MethodStreamMessage.buildMessage(
+      endpoint: 'endpoint',
+      method: 'method',
+      connectionId: const Uuid().v4obj(),
+      object: _SimpleData('hello world'),
+      serializationManager: serializationManager,
+    );
+
     // This message is missing the mandatory endpoint field.
-    var message = '''{
-      "messageType": "method_stream_message",
-      "method": "method",
-      "uuid": "uuid",
-      "object": '{"className": "bamboo", "data": {"number": 2}}',
-    }''';
+    message = message.replaceAll('"endpoint":"endpoint",', '');
 
     expect(
       () => WebSocketMessage.fromJsonString(
@@ -377,7 +403,7 @@ void main() {
       ),
       throwsA(
         isA<UnknownMessageException>()
-            .having((e) => e.error, 'error', isA<FormatException>()),
+            .having((e) => e.error, 'error', isA<TypeError>()),
       ),
     );
   });
@@ -416,15 +442,19 @@ void main() {
   });
 
   test(
-      'Given invalid method stream serializable exception json String when building websocket message from string then UnknownMessageException is thrown.',
+      'Given invalid method stream serializable exception json String when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
       () {
+    var serializationManager = _TestSerializationManager();
+    var message = MethodStreamSerializableException.buildMessage(
+      endpoint: 'endpoint',
+      method: 'method',
+      connectionId: const Uuid().v4obj(),
+      object: _TestSerializableException(),
+      serializationManager: serializationManager,
+    );
+
     // This message is missing the mandatory endpoint field.
-    var message = '''{
-      "messageType": "method_stream_serializable_exception",
-      "method": "method",
-      "uuid": "uuid",
-      "object": '{"className": "serializableException", "data": {"message": "error message"}}',
-    }''';
+    message = message.replaceAll('"endpoint":"endpoint",', '');
 
     expect(
       () => WebSocketMessage.fromJsonString(
@@ -433,7 +463,7 @@ void main() {
       ),
       throwsA(
         isA<UnknownMessageException>()
-            .having((e) => e.error, 'error', isA<FormatException>()),
+            .having((e) => e.error, 'error', isA<TypeError>()),
       ),
     );
   });

@@ -30,9 +30,7 @@ class MethodWebsocketRequestHandler {
           );
         } on UnknownMessageException catch (_) {
           webSocket.tryAdd(BadRequestMessage.buildMessage(jsonData));
-          throw Exception(
-            'Unknown message received on websocket connection: $jsonData',
-          );
+          rethrow;
         }
 
         switch (message) {
