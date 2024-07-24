@@ -374,6 +374,16 @@ abstract class ServerpodClientShared extends EndpointCaller {
     }
     await _sendControlCommandToStream('auth', {'key': authKey});
   }
+
+  @override
+  dynamic callStreamingServerEndpoint<T, G>(
+    String endpoint,
+    String method,
+    Map<String, dynamic> args,
+    Map<String, Stream> streams,
+  ) {
+    throw UnimplementedError();
+  }
 }
 
 /// This class is used to connect modules with the client. Overridden by
@@ -390,6 +400,21 @@ abstract class ModuleEndpointCaller extends EndpointCaller {
       String endpoint, String method, Map<String, dynamic> args) {
     return client.callServerEndpoint<T>(endpoint, method, args);
   }
+
+  @override
+  dynamic callStreamingServerEndpoint<T, G>(
+    String endpoint,
+    String method,
+    Map<String, dynamic> args,
+    Map<String, Stream> streams,
+  ) {
+    return client.callStreamingServerEndpoint<T, G>(
+      endpoint,
+      method,
+      args,
+      streams,
+    );
+  }
 }
 
 /// Super class for all classes that can call a server endpoint.
@@ -402,6 +427,24 @@ abstract class EndpointCaller {
   /// Typically, this method is called by generated code.
   Future<T> callServerEndpoint<T>(
       String endpoint, String method, Map<String, dynamic> args);
+
+  /// Calls a server endpoint method that supports streaming. The [streams]
+  /// parameter is a map of stream names to stream objects. The method will
+  /// listen to the streams and send the data to the server.
+  /// Typically, this method is called by generated code.
+  ///
+  /// [T] is the type of the return value of the endpoint stream. This is either
+  /// a [Stream] or a [Future].
+  ///
+  /// [G] is the generic of [T].
+  ///
+  /// If [T] is not a [Stream] or a [Future], the method will throw an exception.
+  dynamic callStreamingServerEndpoint<T, G>(
+    String endpoint,
+    String method,
+    Map<String, dynamic> args,
+    Map<String, Stream> streams,
+  );
 }
 
 /// This class connects endpoints on the server with the client, it also

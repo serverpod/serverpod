@@ -1275,10 +1275,132 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
   @override
   String get name => 'methodStreaming';
 
+  /// Check Null and Object in validation.
+  _i2.Stream<int> simpleStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'simpleStream',
+        {},
+        {},
+      );
+
   _i2.Future<void> methodCallEndpoint() => caller.callServerEndpoint<void>(
         'methodStreaming',
         'methodCallEndpoint',
         {},
+      );
+
+  _i2.Future<int> intReturnFromStream(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<int>, int>(
+        'methodStreaming',
+        'intReturnFromStream',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Stream<int> intStreamFromValue(int value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'intStreamFromValue',
+        {'value': value},
+        {},
+      );
+
+  _i2.Stream<int> intEchoStream(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'intEchoStream',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Stream<dynamic> dynamicEchoStream(_i2.Stream<dynamic> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<dynamic>, dynamic>(
+        'methodStreaming',
+        'dynamicEchoStream',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Stream<int?> nullableIntEchoStream(_i2.Stream<int?> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int?>, int?>(
+        'methodStreaming',
+        'nullableIntEchoStream',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Future<void> voidReturnAfterStream(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
+        'methodStreaming',
+        'voidReturnAfterStream',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Stream<int> multipleIntEchoStreams(
+    _i2.Stream<int> stream1,
+    _i2.Stream<int> stream2,
+  ) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'multipleIntEchoStreams',
+        {},
+        {
+          'stream1': stream1,
+          'stream2': stream2,
+        },
+      );
+
+  _i2.Future<void> directVoidReturnWithStreamInput(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
+        'methodStreaming',
+        'directVoidReturnWithStreamInput',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Future<int> directOneIntReturnWithStreamInput(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<int>, int>(
+        'methodStreaming',
+        'directOneIntReturnWithStreamInput',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Future<int> simpleInputReturnStream(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<int>, int>(
+        'methodStreaming',
+        'simpleInputReturnStream',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Stream<int> simpleStreamWithParameter(int value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'simpleStreamWithParameter',
+        {'value': value},
+        {},
+      );
+
+  _i2.Stream<_i10.SimpleData> simpleDataStream(int value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<_i10.SimpleData>,
+          _i10.SimpleData>(
+        'methodStreaming',
+        'simpleDataStream',
+        {'value': value},
+        {},
+      );
+
+  _i2.Stream<_i10.SimpleData> simpleInOutDataStream(
+          _i2.Stream<_i10.SimpleData> simpleDataStream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<_i10.SimpleData>,
+          _i10.SimpleData>(
+        'methodStreaming',
+        'simpleInOutDataStream',
+        {},
+        {'simpleDataStream': simpleDataStream},
       );
 
   _i2.Future<void> simpleEndpoint() => caller.callServerEndpoint<void>(
@@ -1309,6 +1431,36 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'delay': delay},
       );
 
+  _i2.Stream<int> delayedStreamResponse(int delay) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'delayedStreamResponse',
+        {'delay': delay},
+        {},
+      );
+
+  _i2.Future<void> delayedNeverListenedInputStream(
+    int delay,
+    _i2.Stream<int> stream,
+  ) =>
+      caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
+        'methodStreaming',
+        'delayedNeverListenedInputStream',
+        {'delay': delay},
+        {'stream': stream},
+      );
+
+  _i2.Future<void> delayedPausedInputStream(
+    int delay,
+    _i2.Stream<int> stream,
+  ) =>
+      caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
+        'methodStreaming',
+        'delayedPausedInputStream',
+        {'delay': delay},
+        {'stream': stream},
+      );
+
   /// Completes all delayed responses.
   /// This makes the delayedResponse return directly.
   _i2.Future<void> completeAllDelayedResponses() =>
@@ -1318,17 +1470,102 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<void> throwsException() => caller.callServerEndpoint<void>(
+  _i2.Future<void> inStreamThrowsException(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
         'methodStreaming',
-        'throwsException',
+        'inStreamThrowsException',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Future<void> inStreamThrowsSerializableException(
+          _i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
+        'methodStreaming',
+        'inStreamThrowsSerializableException',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Stream<int> outStreamThrowsException() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'outStreamThrowsException',
+        {},
         {},
       );
 
-  _i2.Future<void> throwsSerializableException() =>
-      caller.callServerEndpoint<void>(
+  _i2.Stream<int> outStreamThrowsSerializableException() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'outStreamThrowsSerializableException',
+        {},
+        {},
+      );
+
+  _i2.Future<void> throwsExceptionVoid(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
+        'methodStreaming',
+        'throwsExceptionVoid',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Future<void> throwsSerializableExceptionVoid(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
+        'methodStreaming',
+        'throwsSerializableExceptionVoid',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Future<int> throwsException(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<int>, int>(
+        'methodStreaming',
+        'throwsException',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Future<int> throwsSerializableException(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<int>, int>(
         'methodStreaming',
         'throwsSerializableException',
         {},
+        {'stream': stream},
+      );
+
+  _i2.Stream<int> throwsExceptionStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'throwsExceptionStream',
+        {},
+        {},
+      );
+
+  _i2.Stream<int> throwsSerializableExceptionStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'throwsSerializableExceptionStream',
+        {},
+        {},
+      );
+
+  _i2.Future<bool> didInputStreamHaveError(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<bool>, bool>(
+        'methodStreaming',
+        'didInputStreamHaveError',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Future<bool> didInputStreamHaveSerializableExceptionError(
+          _i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<bool>, bool>(
+        'methodStreaming',
+        'didInputStreamHaveSerializableExceptionError',
+        {},
+        {'stream': stream},
       );
 }
 
@@ -1339,6 +1576,14 @@ class EndpointAuthenticatedMethodStreaming extends _i1.EndpointRef {
 
   @override
   String get name => 'authenticatedMethodStreaming';
+
+  _i2.Stream<int> simpleStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'authenticatedMethodStreaming',
+        'simpleStream',
+        {},
+        {},
+      );
 }
 
 /// {@category Endpoint}
