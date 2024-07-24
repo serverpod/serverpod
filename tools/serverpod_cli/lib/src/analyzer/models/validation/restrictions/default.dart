@@ -167,13 +167,16 @@ class DefaultValueRestriction extends ValueRestriction {
           span,
         ),
       );
+      return errors;
     }
 
-    bool validStringValue = RegExp(r"^'.*'$").hasMatch(value);
-    if (!validStringValue) {
+    bool validDoubleQuote = RegExp(r'^"(\\.|[^"\\])*"$').hasMatch(value);
+    bool validSingleQuote = RegExp(r"^'(\\.|[^'\\])*'$").hasMatch(value);
+
+    if (!validDoubleQuote && !validSingleQuote) {
       errors.add(
         SourceSpanSeverityException(
-          'The "$key" value must be a valid string.',
+          'The "$key" value must be a properly quoted string.',
           span,
         ),
       );
