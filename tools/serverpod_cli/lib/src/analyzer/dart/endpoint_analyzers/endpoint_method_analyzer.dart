@@ -1,5 +1,4 @@
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
@@ -129,17 +128,9 @@ abstract class EndpointMethodAnalyzer {
       return null;
     }
 
-    if (innerType is DynamicType) {
+    if (innerType is DynamicType && !dartType.isDartAsyncStream) {
       return SourceSpanSeverityException(
         'Return generic must have a type defined. E.g. ${dartType.element.name}<String>.',
-        dartElement.span,
-      );
-    }
-
-    if ((dartType.isDartAsyncStream || hasStreamParameter) &&
-        innerType.nullabilitySuffix != NullabilitySuffix.none) {
-      return SourceSpanSeverityException(
-        'Nullable return type for streaming methods are not supported.',
         dartElement.span,
       );
     }

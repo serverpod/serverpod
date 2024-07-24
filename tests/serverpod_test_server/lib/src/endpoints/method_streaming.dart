@@ -35,6 +35,21 @@ class MethodStreaming extends Endpoint {
     }
   }
 
+  Stream dynamicEchoStream(Session session, Stream stream) async* {
+    await for (var value in stream) {
+      yield value;
+    }
+  }
+
+  Stream<int?> nullableIntEchoStream(
+    Session session,
+    Stream<int?> stream,
+  ) async* {
+    await for (var value in stream) {
+      yield value;
+    }
+  }
+
   Future<void> voidReturnAfterStream(
     Session session,
     Stream<int> stream,
@@ -112,10 +127,6 @@ class MethodStreaming extends Endpoint {
   Future<void> simpleEndpoint(Session session) async {}
 
   Future<void> intParameter(Session session, int value) async {}
-
-  Future<int?> nullableResponse(Session session, int? value) async {
-    return value;
-  }
 
   Future<int> doubleInputValue(Session session, int value) async {
     return value * 2;

@@ -160,6 +160,8 @@ methodStreaming:
   - intReturnFromStream:
   - intStreamFromValue:
   - intEchoStream:
+  - dynamicEchoStream:
+  - nullableIntEchoStream:
   - voidReturnAfterStream:
   - multipleIntEchoStreams:
   - directVoidReturnWithStreamInput:
@@ -170,7 +172,6 @@ methodStreaming:
   - simpleInOutDataStream:
   - simpleEndpoint:
   - intParameter:
-  - nullableResponse:
   - doubleInputValue:
   - delayedResponse:
   - delayedStreamResponse:

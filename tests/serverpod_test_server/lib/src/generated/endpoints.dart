@@ -2888,25 +2888,6 @@ class Endpoints extends _i1.EndpointDispatch {
             params['value'],
           ),
         ),
-        'nullableResponse': _i1.MethodConnector(
-          name: 'nullableResponse',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<int?>(),
-              nullable: true,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['methodStreaming'] as _i20.MethodStreaming)
-                  .nullableResponse(
-            session,
-            params['value'],
-          ),
-        ),
         'doubleInputValue': _i1.MethodConnector(
           name: 'doubleInputValue',
           params: {
@@ -3050,6 +3031,48 @@ class Endpoints extends _i1.EndpointDispatch {
                   .intEchoStream(
             session,
             streamParams['stream']!.cast<int>(),
+          ),
+        ),
+        'dynamicEchoStream': _i1.MethodStreamConnector(
+          name: 'dynamicEchoStream',
+          params: {},
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<dynamic>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .dynamicEchoStream(
+            session,
+            streamParams['stream']!.cast<dynamic>(),
+          ),
+        ),
+        'nullableIntEchoStream': _i1.MethodStreamConnector(
+          name: 'nullableIntEchoStream',
+          params: {},
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<int?>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .nullableIntEchoStream(
+            session,
+            streamParams['stream']!.cast<int?>(),
           ),
         ),
         'voidReturnAfterStream': _i1.MethodStreamConnector(

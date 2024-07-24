@@ -595,23 +595,43 @@ class ExampleEndpoint extends Endpoint {
       analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
-    test(
-        'then a validation error is reported that informs the type is not supported.',
-        () {
-      expect(collector.errors, hasLength(1));
-      expect(
-        collector.errors.firstOrNull?.message,
-        'The type "Stream" must have a concrete type defined. E.g. Stream<String>.',
-      );
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
     });
 
     test('then endpoint definition is created.', () {
       expect(endpointDefinitions, hasLength(1));
     });
 
-    test('then endpoint definition method is not defined.', () {
+    test('then endpoint method definition is created.', () {
       var methods = endpointDefinitions.firstOrNull?.methods;
-      expect(methods, isEmpty);
+      expect(methods, hasLength(1));
+    });
+
+    group('then endpoint method parameter', () {
+      test('is defined.', () {
+        var parameters =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull?.parameters;
+        expect(parameters, hasLength(1));
+      });
+
+      test('has expected name.', () {
+        var name = endpointDefinitions
+            .firstOrNull?.methods.firstOrNull?.parameters.firstOrNull?.name;
+        expect(name, 'stream');
+      });
+
+      test('has stream type.', () {
+        var type = endpointDefinitions
+            .firstOrNull?.methods.firstOrNull?.parameters.firstOrNull?.type;
+        expect(type?.className, 'Stream');
+      });
+
+      test('has dynamic generic,', () {
+        var generic = endpointDefinitions.firstOrNull?.methods.firstOrNull
+            ?.parameters.firstOrNull?.type.generics.firstOrNull;
+        expect(generic?.className, 'dynamic');
+      });
     });
   });
 
@@ -645,7 +665,7 @@ class ExampleEndpoint extends Endpoint {
       expect(collector.errors, hasLength(1));
       expect(
         collector.errors.firstOrNull?.message,
-        'The type "Stream" must have a concrete type defined. E.g. Stream<String>.',
+        'The type "Stream" does not support void generic type.',
       );
     });
 
@@ -683,23 +703,43 @@ class ExampleEndpoint extends Endpoint {
       analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
-    test(
-        'then a validation error is reported that informs the type is not supported.',
-        () {
-      expect(collector.errors, hasLength(1));
-      expect(
-        collector.errors.firstOrNull?.message,
-        'The type "Stream" must have a concrete type defined. E.g. Stream<String>.',
-      );
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
     });
 
     test('then endpoint definition is created.', () {
       expect(endpointDefinitions, hasLength(1));
     });
 
-    test('then endpoint definition method is not defined.', () {
+    test('then endpoint method definition is created.', () {
       var methods = endpointDefinitions.firstOrNull?.methods;
-      expect(methods, isEmpty);
+      expect(methods, hasLength(1));
+    });
+
+    group('then endpoint method parameter', () {
+      test('is defined.', () {
+        var parameters =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull?.parameters;
+        expect(parameters, hasLength(1));
+      });
+
+      test('has expected name.', () {
+        var name = endpointDefinitions
+            .firstOrNull?.methods.firstOrNull?.parameters.firstOrNull?.name;
+        expect(name, 'stream');
+      });
+
+      test('has stream type.', () {
+        var type = endpointDefinitions
+            .firstOrNull?.methods.firstOrNull?.parameters.firstOrNull?.type;
+        expect(type?.className, 'Stream');
+      });
+
+      test('has dynamic generic,', () {
+        var generic = endpointDefinitions.firstOrNull?.methods.firstOrNull
+            ?.parameters.firstOrNull?.type.generics.firstOrNull;
+        expect(generic?.className, 'dynamic');
+      });
     });
   });
 
@@ -727,23 +767,45 @@ class ExampleEndpoint extends Endpoint {
       analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
-    test(
-        'then a validation error is reported that informs the type is not supported.',
-        () {
-      expect(collector.errors, hasLength(1));
-      expect(
-        collector.errors.firstOrNull?.message,
-        'Nullable types are not supported for "Stream" parameters.',
-      );
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
     });
 
     test('then endpoint definition is created.', () {
       expect(endpointDefinitions, hasLength(1));
     });
 
-    test('then endpoint definition method is not defined.', () {
+    test('then endpoint method definition is created.', () {
       var methods = endpointDefinitions.firstOrNull?.methods;
-      expect(methods, isEmpty);
+      expect(methods, hasLength(1));
+    });
+
+    group('then endpoint method parameter', () {
+      test('is defined.', () {
+        var parameters =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull?.parameters;
+        expect(parameters, hasLength(1));
+      });
+
+      test('has expected name.', () {
+        var name = endpointDefinitions
+            .firstOrNull?.methods.firstOrNull?.parameters.firstOrNull?.name;
+        expect(name, 'stream');
+      });
+
+      test('has stream type.', () {
+        var type = endpointDefinitions
+            .firstOrNull?.methods.firstOrNull?.parameters.firstOrNull?.type;
+        expect(type?.className, 'Stream');
+      });
+
+      test('has nullable string generic,', () {
+        var generic = endpointDefinitions.firstOrNull?.methods.firstOrNull
+            ?.parameters.firstOrNull?.type.generics.firstOrNull;
+        expect(generic?.className, 'String');
+        expect(generic?.nullable, isTrue);
+      });
     });
   });
 }

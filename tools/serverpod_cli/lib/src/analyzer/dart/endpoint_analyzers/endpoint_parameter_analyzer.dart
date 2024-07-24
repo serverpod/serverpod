@@ -62,18 +62,10 @@ abstract class EndpointParameterAnalyzer {
                 parameter.span,
               );
             }
-
             var innerType = typeArguments[0];
-            if (innerType is VoidType || innerType is DynamicType) {
+            if (innerType is VoidType) {
               return SourceSpanSeverityException(
-                'The type "Stream" must have a concrete type defined. E.g. Stream<String>.',
-                parameter.span,
-              );
-            }
-
-            if (innerType.nullabilitySuffix != NullabilitySuffix.none) {
-              return SourceSpanSeverityException(
-                'Nullable types are not supported for "Stream" parameters.',
+                'The type "Stream" does not support void generic type.',
                 parameter.span,
               );
             }
