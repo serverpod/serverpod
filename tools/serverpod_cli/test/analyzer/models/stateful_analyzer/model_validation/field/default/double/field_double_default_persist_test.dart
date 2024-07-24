@@ -11,7 +11,7 @@ void main() {
 
   group('Given a class with fields with a "defaultPersist" keyword', () {
     test(
-      'when the field is of type double and the default is set to "10.5", then the field should have a "default persist" value',
+      'when the field is of type double and the defaultPersist is set to "10.5", then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -37,7 +37,7 @@ void main() {
     );
 
     test(
-      'when the field is of type double and the default is set to "20.5", then the field should have a "default persist" value',
+      'when the field is of type double and the defaultPersist is set to "20.5", then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -67,7 +67,33 @@ void main() {
     );
 
     test(
-      'when the field is of type double with an invalid default value "TEN.POINT_FIVE", then an error is generated',
+      'when the field is of type double and the defaultPersist is set to an integer "10", then the field should have a "default persist" value',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            doubleType: double?, defaultPersist=10
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        var definitions =
+            StatefulAnalyzer(config, models, onErrorsCollector(collector))
+                .validateAll();
+
+        expect(collector.errors, isEmpty);
+
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.last.defaultPersistValue, '10');
+      },
+    );
+
+    test(
+      'when the field is of type double with an invalid defaultPersist value "TEN.POINT_FIVE", then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -95,7 +121,7 @@ void main() {
     );
 
     test(
-      'when the field is of type double with an invalid default value containing non-numeric characters, then an error is generated',
+      'when the field is of type double with an invalid defaultPersist value containing non-numeric characters, then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(

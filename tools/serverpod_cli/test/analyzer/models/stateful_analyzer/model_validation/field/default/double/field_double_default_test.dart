@@ -66,6 +66,33 @@ void main() {
     );
 
     test(
+      'when the field is of type double and the default is set to an integer "10", then the field should have a "default model" and "default persist" value',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            doubleType: double, default=10
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        var definitions =
+            StatefulAnalyzer(config, models, onErrorsCollector(collector))
+                .validateAll();
+
+        expect(collector.errors, isEmpty);
+
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.last.defaultModelValue, '10');
+        expect(definition.fields.last.defaultPersistValue, '10');
+      },
+    );
+
+    test(
       'when the field is of type double with an invalid default value "TEN.FIVE", then an error is generated',
       () {
         var models = [
