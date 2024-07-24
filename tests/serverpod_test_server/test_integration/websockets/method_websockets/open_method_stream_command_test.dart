@@ -32,6 +32,7 @@ void main() {
         method: 'method',
         args: {},
         connectionId: const Uuid().v4obj(),
+        inputStreams: [],
       ));
 
       var response = await webSocket.stream.first as String;
@@ -58,6 +59,7 @@ void main() {
         method: 'this is not an existing method',
         args: {},
         connectionId: const Uuid().v4obj(),
+        inputStreams: [],
       ));
 
       var response = await webSocket.stream.first as String;
@@ -84,6 +86,7 @@ void main() {
         method: 'methodCallEndpoint',
         args: {},
         connectionId: const Uuid().v4obj(),
+        inputStreams: [],
       ));
 
       var response = await webSocket.stream.first as String;
@@ -110,6 +113,7 @@ void main() {
         method: 'simpleStream',
         args: {},
         connectionId: const Uuid().v4obj(),
+        inputStreams: [],
       ));
 
       var response = await webSocket.stream.first as String;
@@ -136,6 +140,34 @@ void main() {
         method: 'simpleStreamWithParameter',
         args: {},
         connectionId: const Uuid().v4obj(),
+        inputStreams: [],
+      ));
+
+      var response = await webSocket.stream.first as String;
+      var message = WebSocketMessage.fromJsonString(
+        response,
+        server.serializationManager,
+      );
+      ;
+
+      expect(
+          message,
+          isA<OpenMethodStreamResponse>().having(
+            (m) => m.responseType,
+            'responseType',
+            OpenMethodStreamResponseType.invalidArguments,
+          ));
+    });
+
+    test(
+        'when an open method stream command is sent without required input stream then OpenMethodStreamResponse type "invalidArguments" is received.',
+        () async {
+      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        endpoint: 'methodStreaming',
+        method: 'intEchoStream',
+        args: {},
+        connectionId: const Uuid().v4obj(),
+        inputStreams: [],
       ));
 
       var response = await webSocket.stream.first as String;
@@ -162,6 +194,7 @@ void main() {
         method: 'simpleStreamWithParameter',
         args: {'value': 42},
         connectionId: const Uuid().v4obj(),
+        inputStreams: [],
       ));
 
       var response = await webSocket.stream.first as String;
@@ -188,6 +221,7 @@ void main() {
         method: 'simpleInputReturnStream',
         args: {},
         connectionId: const Uuid().v4obj(),
+        inputStreams: ['stream'],
       ));
 
       var response = webSocket.stream.first;
@@ -218,6 +252,7 @@ void main() {
         method: 'simpleStream',
         args: {},
         connectionId: const Uuid().v4obj(),
+        inputStreams: [],
         // No authentication token is provided
       ));
 
@@ -245,6 +280,7 @@ void main() {
         method: 'simpleStream',
         args: {},
         connectionId: const Uuid().v4obj(),
+        inputStreams: [],
         authentication: 'invalid token',
       ));
 
@@ -291,6 +327,7 @@ void main() {
           args: {},
           connectionId: const Uuid().v4obj(),
           authentication: token,
+          inputStreams: [],
         ));
 
         var response = await webSocket.stream.first as String;
@@ -341,6 +378,7 @@ void main() {
           args: {},
           connectionId: const Uuid().v4obj(),
           authentication: token,
+          inputStreams: [],
         ));
 
         var response = await webSocket.stream.first as String;

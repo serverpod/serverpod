@@ -55,6 +55,7 @@ void main() {
           method: method,
           args: {},
           connectionId: connectionId,
+          inputStreams: ['stream'],
         ));
 
         await streamOpened.future.timeout(
@@ -113,6 +114,7 @@ void main() {
           method: method,
           args: {},
           connectionId: connectionId,
+          inputStreams: [],
         ));
 
         await streamOpened.future.timeout(
@@ -179,6 +181,7 @@ void main() {
           method: method,
           args: {},
           connectionId: connectionId,
+          inputStreams: ['stream'],
         ));
 
         await streamOpened.future.timeout(
@@ -263,6 +266,7 @@ void main() {
           method: method,
           args: {},
           connectionId: connectionId,
+          inputStreams: [],
         ));
 
         await streamOpened.future.timeout(

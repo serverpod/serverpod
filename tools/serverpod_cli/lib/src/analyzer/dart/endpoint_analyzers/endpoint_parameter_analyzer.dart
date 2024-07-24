@@ -54,6 +54,13 @@ abstract class EndpointParameterAnalyzer {
           }
 
           if (type.isDartAsyncStream && type is ParameterizedType) {
+            if (type.nullabilitySuffix != NullabilitySuffix.none) {
+              return SourceSpanSeverityException(
+                'Nullable parameters of the type "Stream" are not supported.',
+                parameter.span,
+              );
+            }
+
             var typeArguments = type.typeArguments;
             if (typeArguments.length != 1) {
               // Streams only allow a single generic so this case is only here for safety.
