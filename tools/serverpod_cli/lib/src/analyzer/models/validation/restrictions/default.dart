@@ -163,7 +163,7 @@ class DefaultValueRestriction extends ValueRestriction {
     if (value is! String) {
       errors.add(
         SourceSpanSeverityException(
-          'The "$key" value must be a valid string.',
+          'The "$key" value must be a valid string (e.g., \'This is a string\' or "This is a string").',
           span,
         ),
       );
@@ -176,7 +176,7 @@ class DefaultValueRestriction extends ValueRestriction {
     if (!validDoubleQuote && !validSingleQuote) {
       errors.add(
         SourceSpanSeverityException(
-          'The "$key" value must be a properly quoted string.',
+          'The "$key" value must be a properly quoted string (e.g., \'This is a string\' or "This is a string").',
           span,
         ),
       );

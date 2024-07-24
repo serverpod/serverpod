@@ -92,7 +92,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "default" value must be a properly quoted string.',
+          'The "default" value must be a properly quoted string (e.g., \'This is a string\' or "This is a string").',
         );
       },
     );
@@ -120,7 +120,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "default" value must be a properly quoted string.',
+          'The "default" value must be a properly quoted string (e.g., \'This is a string\' or "This is a string").',
         );
       },
     );
@@ -148,7 +148,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "default" value must be a properly quoted string.',
+          'The "default" value must be a properly quoted string (e.g., \'This is a string\' or "This is a string").',
         );
       },
     );
@@ -176,7 +176,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "default" value must be a properly quoted string.',
+          'The "default" value must be a properly quoted string (e.g., \'This is a string\' or "This is a string").',
         );
       },
     );
