@@ -90,7 +90,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultPersist" value must be a valid string.',
+          'The "defaultPersist" value must be a properly quoted string.',
         );
       },
     );
@@ -116,8 +116,10 @@ void main() {
         expect(collector.errors, isNotEmpty);
 
         var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(firstError.message,
-            'The "defaultPersist" value must be a valid string.');
+        expect(
+          firstError.message,
+          'The "defaultPersist" value must be a properly quoted string.',
+        );
       },
     );
 
@@ -142,8 +144,174 @@ void main() {
         expect(collector.errors, isNotEmpty);
 
         var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(firstError.message,
-            'The "defaultPersist" value must be a valid string.');
+        expect(
+          firstError.message,
+          'The "defaultPersist" value must be a properly quoted string.',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type String with an invalid defaultPersist value containing unescaped single quotes, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+        class: Example
+        table: example
+        fields:
+          stringInvalid: String?, defaultPersist='This 'is' a test'
+        ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          'The "defaultPersist" value must be a properly quoted string.',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type String with an invalid defaultPersist value containing unescaped double quotes, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+        class: Example
+        table: example
+        fields:
+          stringInvalid: String?, defaultPersist="This "is" a test"
+        ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          'The "defaultPersist" value must be a properly quoted string.',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type String and the defaultPersist is set to \'This \\\'is\\\' a default persist value\', then the field should have a "default persist" value',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            stringType: String?, defaultPersist='This \\'is\\' a default persist value'
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        var definitions =
+            StatefulAnalyzer(config, models, onErrorsCollector(collector))
+                .validateAll();
+
+        expect(collector.errors, isEmpty);
+
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.last.defaultPersistValue,
+            '\'This \\\'is\\\' a default persist value\'');
+      },
+    );
+
+    test(
+      'when the field is of type String and the defaultPersist is set to "This \\"is\\" a default persist value", then the field should have a "default persist" value',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            stringType: String?, defaultPersist="This \\"is\\" a default persist value"
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        var definitions =
+            StatefulAnalyzer(config, models, onErrorsCollector(collector))
+                .validateAll();
+
+        expect(collector.errors, isEmpty);
+
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.last.defaultPersistValue,
+            '"This \\"is\\" a default persist value"');
+      },
+    );
+
+    test(
+      'when the field is of type String and the defaultPersist is set to "This, is a default persist value", then the field should have a "default persist" value',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            stringType: String?, defaultPersist='This, is a default persist value'
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        var definitions =
+            StatefulAnalyzer(config, models, onErrorsCollector(collector))
+                .validateAll();
+
+        expect(collector.errors, isEmpty);
+
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.last.defaultPersistValue,
+            '\'This, is a default persist value\'');
+      },
+    );
+
+    test(
+      'when the field is of type String and the defaultPersist is set to "This \\"is\\", a default persist value", then the field should have a "default persist" value',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            stringType: String?, defaultPersist="This \\"is\\", a default persist value"
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        var definitions =
+            StatefulAnalyzer(config, models, onErrorsCollector(collector))
+                .validateAll();
+
+        expect(collector.errors, isEmpty);
+
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.last.defaultPersistValue,
+            '"This \\"is\\", a default persist value"');
       },
     );
 
