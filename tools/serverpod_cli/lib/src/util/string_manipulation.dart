@@ -1,7 +1,7 @@
-import 'package:super_string/super_string.dart';
-
 /// Splits a string on the separator token unless the token is inside
-/// brackets or angle brackets, ( ) and < >.
+/// brackets, angle brackets, ( ) and < >, single quotes, or double quotes.
+/// Handles nested brackets and skips separators within single (' ')
+/// or double (" ") quotes.
 List<String> splitIgnoringBrackets(
   String input, {
   String separator = ',',
@@ -9,9 +9,16 @@ List<String> splitIgnoringBrackets(
   List<String> result = [];
   StringBuffer current = StringBuffer();
   int depth = 0;
+  bool insideSingleQuotes = false;
+  bool insideDoubleQuotes = false;
 
-  for (var char in input.iterable) {
-    if (char == separator && depth == 0) {
+  for (int i = 0; i < input.length; i++) {
+    var char = input[i];
+
+    if (char == separator &&
+        depth == 0 &&
+        !insideSingleQuotes &&
+        !insideDoubleQuotes) {
       result.add(current.toString().trim());
       current.clear();
     } else {
@@ -20,6 +27,26 @@ List<String> splitIgnoringBrackets(
         depth++;
       } else if (char == '>' || char == ')') {
         depth--;
+      } else if (char == "'" && !insideDoubleQuotes) {
+        if (insideSingleQuotes) {
+          // Check if it's an escaped single quote
+          if (i > 0 && input[i - 1] == '\\') {
+            continue;
+          }
+          insideSingleQuotes = false;
+        } else {
+          insideSingleQuotes = true;
+        }
+      } else if (char == '"' && !insideSingleQuotes) {
+        if (insideDoubleQuotes) {
+          // Check if it's an escaped double quote
+          if (i > 0 && input[i - 1] == '\\') {
+            continue;
+          }
+          insideDoubleQuotes = false;
+        } else {
+          insideDoubleQuotes = true;
+        }
       }
     }
   }
