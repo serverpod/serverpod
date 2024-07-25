@@ -276,6 +276,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
         }
       });
     } catch (e) {
+      // ignore: avoid_print
       print('Failed to open streaming connection: $e');
       _webSocket = null;
       _cancelConnectionTimer();
@@ -315,6 +316,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       _webSocket = null;
       _cancelConnectionTimer();
     } catch (e) {
+      // ignore: avoid_print
       print('Error while listening to websocket stream: $e');
       _webSocket = null;
       _cancelConnectionTimer();
