@@ -4,6 +4,24 @@ import 'package:test/test.dart';
 
 void main() {
   group('Given String column definition', () {
+    group('with no default value', () {
+      ColumnDefinition defaultColumn = ColumnDefinition(
+        name: 'stringDefault',
+        columnType: ColumnType.text,
+        isNullable: false,
+        dartType: 'String',
+      );
+
+      test(
+          'when converting to PostgreSQL SQL code, then it should not have the default value',
+          () {
+        expect(
+          defaultColumn.toPgSqlFragment(),
+          '"stringDefault" text NOT NULL',
+        );
+      });
+    });
+
     group('with "This is a default value" as default value', () {
       ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'stringDefault',
@@ -38,24 +56,6 @@ void main() {
         expect(
           defaultColumn.toPgSqlFragment(),
           '"stringDefault" text NOT NULL DEFAULT \'Another default value\'',
-        );
-      });
-    });
-
-    group('with no default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
-        name: 'stringDefault',
-        columnType: ColumnType.text,
-        isNullable: false,
-        dartType: 'String',
-      );
-
-      test(
-          'when converting to PostgreSQL SQL code, then it should not have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"stringDefault" text NOT NULL',
         );
       });
     });

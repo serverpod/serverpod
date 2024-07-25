@@ -4,6 +4,24 @@ import 'package:test/test.dart';
 
 void main() {
   group('Given Integer column definition', () {
+    group('with no default value', () {
+      ColumnDefinition defaultColumn = ColumnDefinition(
+        name: 'intDefault',
+        columnType: ColumnType.integer,
+        isNullable: false,
+        dartType: 'int',
+      );
+
+      test(
+          'when converting to PostgreSQL SQL code, then it should not have the default value',
+          () {
+        expect(
+          defaultColumn.toPgSqlFragment(),
+          '"intDefault" integer NOT NULL',
+        );
+      });
+    });
+
     group('with 10 as default value', () {
       ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'intDefault',
@@ -38,24 +56,6 @@ void main() {
         expect(
           defaultColumn.toPgSqlFragment(),
           '"intDefault" integer NOT NULL DEFAULT 20',
-        );
-      });
-    });
-
-    group('with no default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
-        name: 'intDefault',
-        columnType: ColumnType.integer,
-        isNullable: false,
-        dartType: 'int',
-      );
-
-      test(
-          'when converting to PostgreSQL SQL code, then it should not have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"intDefault" integer NOT NULL',
         );
       });
     });

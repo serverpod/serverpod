@@ -4,6 +4,24 @@ import 'package:test/test.dart';
 
 void main() {
   group('Given Double column definition', () {
+    group('with no default value', () {
+      ColumnDefinition defaultColumn = ColumnDefinition(
+        name: 'doubleDefault',
+        columnType: ColumnType.doublePrecision,
+        isNullable: false,
+        dartType: 'double',
+      );
+
+      test(
+          'when converting to PostgreSQL SQL code, then it should not have the default value',
+          () {
+        expect(
+          defaultColumn.toPgSqlFragment(),
+          '"doubleDefault" double precision NOT NULL',
+        );
+      });
+    });
+
     group('with 10.5 as default value', () {
       ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'doubleDefault',
@@ -38,24 +56,6 @@ void main() {
         expect(
           defaultColumn.toPgSqlFragment(),
           '"doubleDefault" double precision NOT NULL DEFAULT 20.5',
-        );
-      });
-    });
-
-    group('with no default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
-        name: 'doubleDefault',
-        columnType: ColumnType.doublePrecision,
-        isNullable: false,
-        dartType: 'double',
-      );
-
-      test(
-          'when converting to PostgreSQL SQL code, then it should not have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"doubleDefault" double precision NOT NULL',
         );
       });
     });

@@ -4,6 +4,24 @@ import 'package:test/test.dart';
 
 void main() {
   group('Given Boolean column definition', () {
+    group('with no default value', () {
+      ColumnDefinition defaultColumn = ColumnDefinition(
+        name: 'boolDefault',
+        columnType: ColumnType.boolean,
+        isNullable: false,
+        dartType: 'bool',
+      );
+
+      test(
+          'when converting to PostgreSQL SQL code, then it should not have the default value',
+          () {
+        expect(
+          defaultColumn.toPgSqlFragment(),
+          '"boolDefault" boolean NOT NULL',
+        );
+      });
+    });
+
     group('with TRUE as default value', () {
       ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'boolDefault',
@@ -38,24 +56,6 @@ void main() {
         expect(
           defaultColumn.toPgSqlFragment(),
           '"boolDefault" boolean NOT NULL DEFAULT false',
-        );
-      });
-    });
-
-    group('with no default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
-        name: 'boolDefault',
-        columnType: ColumnType.boolean,
-        isNullable: false,
-        dartType: 'bool',
-      );
-
-      test(
-          'when converting to PostgreSQL SQL code, then it should not have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"boolDefault" boolean NOT NULL',
         );
       });
     });
