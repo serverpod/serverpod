@@ -112,7 +112,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a valid double.',
+          'The "defaultModel" value must be a valid double (e.g., "defaultModel"=10.5).',
         );
       },
     );
@@ -140,7 +140,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a valid double.',
+          'The "defaultModel" value must be a valid double (e.g., "defaultModel"=10.5).',
         );
       },
     );
@@ -168,7 +168,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a valid double.',
+          'The "defaultModel" value must be a valid double (e.g., "defaultModel"=10.5).',
         );
       },
     );

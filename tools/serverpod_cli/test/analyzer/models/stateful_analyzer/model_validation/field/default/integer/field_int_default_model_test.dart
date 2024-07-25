@@ -86,7 +86,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a valid integer.',
+          'The "defaultModel" value must be a valid integer (e.g., "defaultModel"=10).',
         );
       },
     );
@@ -114,7 +114,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a valid integer.',
+          'The "defaultModel" value must be a valid integer (e.g., "defaultModel"=10).',
         );
       },
     );
@@ -142,7 +142,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a valid integer.',
+          'The "defaultModel" value must be a valid integer (e.g., "defaultModel"=10).',
         );
       },
     );

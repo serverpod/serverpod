@@ -115,7 +115,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultPersist" value must be a valid double.',
+          'The "defaultPersist" value must be a valid double (e.g., "defaultPersist"=10.5).',
         );
       },
     );
@@ -143,7 +143,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultPersist" value must be a valid double.',
+          'The "defaultPersist" value must be a valid double (e.g., "defaultPersist"=10.5).',
         );
       },
     );
@@ -171,7 +171,7 @@ void main() {
         var error = collector.errors.first as SourceSpanSeverityException;
         expect(
           error.message,
-          'The "defaultPersist" value must be a valid double.',
+          'The "defaultPersist" value must be a valid double (e.g., "defaultPersist"=10.5).',
         );
       },
     );

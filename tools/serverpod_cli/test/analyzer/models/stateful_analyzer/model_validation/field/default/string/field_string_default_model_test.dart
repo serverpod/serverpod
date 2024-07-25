@@ -88,7 +88,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a properly quoted string (e.g., \'This is a string\' or "This is a string").',
+          'The "defaultModel" value must be a properly quoted string (e.g., "defaultModel"=\'This is a string\' or "defaultModel"="This is a string").',
         );
       },
     );
@@ -116,7 +116,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a properly quoted string (e.g., \'This is a string\' or "This is a string").',
+          'The "defaultModel" value must be a properly quoted string (e.g., "defaultModel"=\'This is a string\' or "defaultModel"="This is a string").',
         );
       },
     );
@@ -144,7 +144,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a properly quoted string (e.g., \'This is a string\' or "This is a string").',
+          'The "defaultModel" value must be a properly quoted string (e.g., "defaultModel"=\'This is a string\' or "defaultModel"="This is a string").',
         );
       },
     );
@@ -172,7 +172,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a properly quoted string (e.g., \'This is a string\' or "This is a string").',
+          'The "defaultModel" value must be a properly quoted string (e.g., "defaultModel"=\'This is a string\' or "defaultModel"="This is a string").',
         );
       },
     );
@@ -200,7 +200,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a properly quoted string (e.g., \'This is a string\' or "This is a string").',
+          'The "defaultModel" value must be a properly quoted string (e.g., "defaultModel"=\'This is a string\' or "defaultModel"="This is a string").',
         );
       },
     );

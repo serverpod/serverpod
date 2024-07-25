@@ -89,7 +89,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultPersist" value must be a valid integer.',
+          'The "defaultPersist" value must be a valid integer (e.g., "defaultPersist"=10).',
         );
       },
     );
@@ -117,7 +117,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultPersist" value must be a valid integer.',
+          'The "defaultPersist" value must be a valid integer (e.g., "defaultPersist"=10).',
         );
       },
     );
@@ -145,7 +145,7 @@ void main() {
         var error = collector.errors.first as SourceSpanSeverityException;
         expect(
           error.message,
-          'The "defaultPersist" value must be a valid integer.',
+          'The "defaultPersist" value must be a valid integer (e.g., "defaultPersist"=10).',
         );
       },
     );
