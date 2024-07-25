@@ -124,6 +124,35 @@ void main() {
     });
 
     test(
+        'when generating SQL with nullable boolean field and columnDefault (FALSE), then the table should be nullable with the correct default value.',
+        () {
+      var databaseDefinition = DatabaseDefinitionBuilder()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName('example_table')
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName('boolDefault')
+                      .withColumnType(ColumnType.boolean)
+                      .withIsNullable(true)
+                      .withColumnDefault('false')
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
+
+      var sql = databaseDefinition.toPgSql(installedModules: []);
+
+      expect(
+        sql,
+        contains(
+          '"boolDefault" boolean DEFAULT false',
+        ),
+      );
+    });
+
+    test(
         'when generating SQL with nullable boolean field and no columnDefault, then the table should be nullable with no default value.',
         () {
       var databaseDefinition = DatabaseDefinitionBuilder()
