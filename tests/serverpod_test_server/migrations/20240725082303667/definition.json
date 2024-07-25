@@ -194,6 +194,204 @@
       "managed": true
     },
     {
+      "name": "bool_default",
+      "dartName": "BoolDefault",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('bool_default_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "boolDefaultTrue",
+          "columnType": 1,
+          "isNullable": false,
+          "columnDefault": "true",
+          "dartType": "bool"
+        },
+        {
+          "name": "boolDefaultFalse",
+          "columnType": 1,
+          "isNullable": false,
+          "columnDefault": "false",
+          "dartType": "bool"
+        },
+        {
+          "name": "boolDefaultNullFalse",
+          "columnType": 1,
+          "isNullable": true,
+          "columnDefault": "false",
+          "dartType": "bool?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "bool_default_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "bool_default_mix",
+      "dartName": "BoolDefaultMix",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('bool_default_mix_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "boolDefaultAndDefaultModel",
+          "columnType": 1,
+          "isNullable": false,
+          "columnDefault": "true",
+          "dartType": "bool"
+        },
+        {
+          "name": "boolDefaultAndDefaultPersist",
+          "columnType": 1,
+          "isNullable": false,
+          "columnDefault": "false",
+          "dartType": "bool"
+        },
+        {
+          "name": "boolDefaultModelAndDefaultPersist",
+          "columnType": 1,
+          "isNullable": false,
+          "columnDefault": "false",
+          "dartType": "bool"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "bool_default_mix_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "bool_default_model",
+      "dartName": "BoolDefaultModel",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('bool_default_model_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "boolDefaultModelTrue",
+          "columnType": 1,
+          "isNullable": false,
+          "dartType": "bool"
+        },
+        {
+          "name": "boolDefaultModelFalse",
+          "columnType": 1,
+          "isNullable": false,
+          "dartType": "bool"
+        },
+        {
+          "name": "boolDefaultModelNullFalse",
+          "columnType": 1,
+          "isNullable": false,
+          "dartType": "bool"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "bool_default_model_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "bool_default_persist",
+      "dartName": "BoolDefaultPersist",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('bool_default_persist_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "boolDefaultPersistTrue",
+          "columnType": 1,
+          "isNullable": true,
+          "columnDefault": "true",
+          "dartType": "bool?"
+        },
+        {
+          "name": "boolDefaultPersistFalse",
+          "columnType": 1,
+          "isNullable": true,
+          "columnDefault": "false",
+          "dartType": "bool?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "bool_default_persist_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
       "name": "cat",
       "dartName": "Cat",
       "module": "serverpod_test",
@@ -787,6 +985,184 @@
       "managed": true
     },
     {
+      "name": "double_default",
+      "dartName": "DoubleDefault",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('double_default_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "doubleDefault",
+          "columnType": 3,
+          "isNullable": false,
+          "columnDefault": "10.5",
+          "dartType": "double"
+        },
+        {
+          "name": "doubleDefaultNull",
+          "columnType": 3,
+          "isNullable": true,
+          "columnDefault": "20.5",
+          "dartType": "double?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "double_default_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "double_default_mix",
+      "dartName": "DoubleDefaultMix",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('double_default_mix_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "doubleDefaultAndDefaultModel",
+          "columnType": 3,
+          "isNullable": false,
+          "columnDefault": "10.5",
+          "dartType": "double"
+        },
+        {
+          "name": "doubleDefaultAndDefaultPersist",
+          "columnType": 3,
+          "isNullable": false,
+          "columnDefault": "20.5",
+          "dartType": "double"
+        },
+        {
+          "name": "doubleDefaultModelAndDefaultPersist",
+          "columnType": 3,
+          "isNullable": false,
+          "columnDefault": "20.5",
+          "dartType": "double"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "double_default_mix_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "double_default_model",
+      "dartName": "DoubleDefaultModel",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('double_default_model_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "doubleDefaultModel",
+          "columnType": 3,
+          "isNullable": false,
+          "dartType": "double"
+        },
+        {
+          "name": "doubleDefaultModelNull",
+          "columnType": 3,
+          "isNullable": false,
+          "dartType": "double"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "double_default_model_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "double_default_persist",
+      "dartName": "DoubleDefaultPersist",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('double_default_persist_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "doubleDefaultPersist",
+          "columnType": 3,
+          "isNullable": true,
+          "columnDefault": "10.5",
+          "dartType": "double?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "double_default_persist_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
       "name": "empty_model",
       "dartName": "EmptyModel",
       "module": "serverpod_test",
@@ -956,6 +1332,184 @@
           "type": "btree",
           "isUnique": true,
           "isPrimary": false
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "int_default",
+      "dartName": "IntDefault",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('int_default_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "intDefault",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "10",
+          "dartType": "int"
+        },
+        {
+          "name": "intDefaultNull",
+          "columnType": 6,
+          "isNullable": true,
+          "columnDefault": "20",
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "int_default_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "int_default_mix",
+      "dartName": "IntDefaultMix",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('int_default_mix_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "intDefaultAndDefaultModel",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "10",
+          "dartType": "int"
+        },
+        {
+          "name": "intDefaultAndDefaultPersist",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "20",
+          "dartType": "int"
+        },
+        {
+          "name": "intDefaultModelAndDefaultPersist",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "20",
+          "dartType": "int"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "int_default_mix_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "int_default_model",
+      "dartName": "IntDefaultModel",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('int_default_model_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "intDefaultModel",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        },
+        {
+          "name": "intDefaultModelNull",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "int_default_model_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "int_default_persist",
+      "dartName": "IntDefaultPersist",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('int_default_persist_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "intDefaultPersist",
+          "columnType": 6,
+          "isNullable": true,
+          "columnDefault": "10",
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "int_default_persist_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -2395,6 +2949,184 @@
       "indexes": [
         {
           "indexName": "simple_date_time_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "string_default",
+      "dartName": "StringDefault",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('string_default_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "stringDefault",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'This is a default value'::text",
+          "dartType": "String"
+        },
+        {
+          "name": "stringDefaultNull",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'This is a default null value'::text",
+          "dartType": "String?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "string_default_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "string_default_mix",
+      "dartName": "StringDefaultMix",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('string_default_mix_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "stringDefaultAndDefaultModel",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'This is a default value'::text",
+          "dartType": "String"
+        },
+        {
+          "name": "stringDefaultAndDefaultPersist",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'This is a default persist value'::text",
+          "dartType": "String"
+        },
+        {
+          "name": "stringDefaultModelAndDefaultPersist",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": "'This is a default persist value'::text",
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "string_default_mix_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "string_default_model",
+      "dartName": "StringDefaultModel",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('string_default_model_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "stringDefaultModel",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "name": "stringDefaultModelNull",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "string_default_model_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "string_default_persist",
+      "dartName": "StringDefaultPersist",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('string_default_persist_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "stringDefaultPersist",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'This is a default persist value'::text",
+          "dartType": "String?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "string_default_persist_pkey",
           "elements": [
             {
               "type": 0,
@@ -4598,7 +5330,7 @@
   "installedModules": [
     {
       "module": "serverpod_test",
-      "version": "20240628142846424"
+      "version": "20240725082303667"
     },
     {
       "module": "serverpod_auth",

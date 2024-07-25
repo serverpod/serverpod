@@ -33,6 +33,45 @@ CREATE TABLE "blocking" (
 CREATE UNIQUE INDEX "blocking_blocked_unique_idx" ON "blocking" USING btree ("blockedId", "blockedById");
 
 --
+-- Class BoolDefault as table bool_default
+--
+CREATE TABLE "bool_default" (
+    "id" bigserial PRIMARY KEY,
+    "boolDefaultTrue" boolean NOT NULL DEFAULT true,
+    "boolDefaultFalse" boolean NOT NULL DEFAULT false,
+    "boolDefaultNullFalse" boolean DEFAULT false
+);
+
+--
+-- Class BoolDefaultMix as table bool_default_mix
+--
+CREATE TABLE "bool_default_mix" (
+    "id" bigserial PRIMARY KEY,
+    "boolDefaultAndDefaultModel" boolean NOT NULL DEFAULT true,
+    "boolDefaultAndDefaultPersist" boolean NOT NULL DEFAULT false,
+    "boolDefaultModelAndDefaultPersist" boolean NOT NULL DEFAULT false
+);
+
+--
+-- Class BoolDefaultModel as table bool_default_model
+--
+CREATE TABLE "bool_default_model" (
+    "id" bigserial PRIMARY KEY,
+    "boolDefaultModelTrue" boolean NOT NULL,
+    "boolDefaultModelFalse" boolean NOT NULL,
+    "boolDefaultModelNullFalse" boolean NOT NULL
+);
+
+--
+-- Class BoolDefaultPersist as table bool_default_persist
+--
+CREATE TABLE "bool_default_persist" (
+    "id" bigserial PRIMARY KEY,
+    "boolDefaultPersistTrue" boolean DEFAULT true,
+    "boolDefaultPersistFalse" boolean DEFAULT false
+);
+
+--
 -- Class Cat as table cat
 --
 CREATE TABLE "cat" (
@@ -102,6 +141,81 @@ CREATE TABLE "customer" (
 );
 
 --
+-- Class DateTimeDefault as table datetime_default
+--
+CREATE TABLE "datetime_default" (
+    "id" bigserial PRIMARY KEY,
+    "dateTimeDefaultNow" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "dateTimeDefaultStr" timestamp without time zone NOT NULL DEFAULT '2024-05-24 22:00:00'::timestamp without time zone,
+    "dateTimeDefaultStrNull" timestamp without time zone DEFAULT '2024-05-24 22:00:00'::timestamp without time zone
+);
+
+--
+-- Class DateTimeDefaultMix as table datetime_default_mix
+--
+CREATE TABLE "datetime_default_mix" (
+    "id" bigserial PRIMARY KEY,
+    "dateTimeDefaultAndDefaultModel" timestamp without time zone NOT NULL DEFAULT '2024-05-01 22:00:00'::timestamp without time zone,
+    "dateTimeDefaultAndDefaultPersist" timestamp without time zone NOT NULL DEFAULT '2024-05-10 22:00:00'::timestamp without time zone,
+    "dateTimeDefaultModelAndDefaultPersist" timestamp without time zone NOT NULL DEFAULT '2024-05-10 22:00:00'::timestamp without time zone
+);
+
+--
+-- Class DateTimeDefaultModel as table datetime_default_model
+--
+CREATE TABLE "datetime_default_model" (
+    "id" bigserial PRIMARY KEY,
+    "dateTimeDefaultModelNow" timestamp without time zone NOT NULL,
+    "dateTimeDefaultModelStr" timestamp without time zone NOT NULL,
+    "dateTimeDefaultModelStrNull" timestamp without time zone
+);
+
+--
+-- Class DateTimeDefaultPersist as table datetime_default_persist
+--
+CREATE TABLE "datetime_default_persist" (
+    "id" bigserial PRIMARY KEY,
+    "dateTimeDefaultPersistNow" timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    "dateTimeDefaultPersistStr" timestamp without time zone DEFAULT '2024-05-10 22:00:00'::timestamp without time zone
+);
+
+--
+-- Class DoubleDefault as table double_default
+--
+CREATE TABLE "double_default" (
+    "id" bigserial PRIMARY KEY,
+    "doubleDefault" double precision NOT NULL DEFAULT 10.5,
+    "doubleDefaultNull" double precision DEFAULT 20.5
+);
+
+--
+-- Class DoubleDefaultMix as table double_default_mix
+--
+CREATE TABLE "double_default_mix" (
+    "id" bigserial PRIMARY KEY,
+    "doubleDefaultAndDefaultModel" double precision NOT NULL DEFAULT 10.5,
+    "doubleDefaultAndDefaultPersist" double precision NOT NULL DEFAULT 20.5,
+    "doubleDefaultModelAndDefaultPersist" double precision NOT NULL DEFAULT 20.5
+);
+
+--
+-- Class DoubleDefaultModel as table double_default_model
+--
+CREATE TABLE "double_default_model" (
+    "id" bigserial PRIMARY KEY,
+    "doubleDefaultModel" double precision NOT NULL,
+    "doubleDefaultModelNull" double precision NOT NULL
+);
+
+--
+-- Class DoubleDefaultPersist as table double_default_persist
+--
+CREATE TABLE "double_default_persist" (
+    "id" bigserial PRIMARY KEY,
+    "doubleDefaultPersist" double precision DEFAULT 10.5
+);
+
+--
 -- Class EmptyModel as table empty_model
 --
 CREATE TABLE "empty_model" (
@@ -128,6 +242,42 @@ CREATE TABLE "enrollment" (
 
 -- Indexes
 CREATE UNIQUE INDEX "enrollment_index_idx" ON "enrollment" USING btree ("studentId", "courseId");
+
+--
+-- Class IntDefault as table int_default
+--
+CREATE TABLE "int_default" (
+    "id" bigserial PRIMARY KEY,
+    "intDefault" bigint NOT NULL DEFAULT 10,
+    "intDefaultNull" bigint DEFAULT 20
+);
+
+--
+-- Class IntDefaultMix as table int_default_mix
+--
+CREATE TABLE "int_default_mix" (
+    "id" bigserial PRIMARY KEY,
+    "intDefaultAndDefaultModel" bigint NOT NULL DEFAULT 10,
+    "intDefaultAndDefaultPersist" bigint NOT NULL DEFAULT 20,
+    "intDefaultModelAndDefaultPersist" bigint NOT NULL DEFAULT 20
+);
+
+--
+-- Class IntDefaultModel as table int_default_model
+--
+CREATE TABLE "int_default_model" (
+    "id" bigserial PRIMARY KEY,
+    "intDefaultModel" bigint NOT NULL,
+    "intDefaultModelNull" bigint NOT NULL
+);
+
+--
+-- Class IntDefaultPersist as table int_default_persist
+--
+CREATE TABLE "int_default_persist" (
+    "id" bigserial PRIMARY KEY,
+    "intDefaultPersist" bigint DEFAULT 10
+);
 
 --
 -- Class LongImplicitIdField as table long_implicit_id_field
@@ -384,6 +534,42 @@ CREATE TABLE "simple_data" (
 CREATE TABLE "simple_date_time" (
     "id" bigserial PRIMARY KEY,
     "dateTime" timestamp without time zone NOT NULL
+);
+
+--
+-- Class StringDefault as table string_default
+--
+CREATE TABLE "string_default" (
+    "id" bigserial PRIMARY KEY,
+    "stringDefault" text NOT NULL DEFAULT 'This is a default value'::text,
+    "stringDefaultNull" text DEFAULT 'This is a default null value'::text
+);
+
+--
+-- Class StringDefaultMix as table string_default_mix
+--
+CREATE TABLE "string_default_mix" (
+    "id" bigserial PRIMARY KEY,
+    "stringDefaultAndDefaultModel" text NOT NULL DEFAULT 'This is a default value'::text,
+    "stringDefaultAndDefaultPersist" text NOT NULL DEFAULT 'This is a default persist value'::text,
+    "stringDefaultModelAndDefaultPersist" text NOT NULL DEFAULT 'This is a default persist value'::text
+);
+
+--
+-- Class StringDefaultModel as table string_default_model
+--
+CREATE TABLE "string_default_model" (
+    "id" bigserial PRIMARY KEY,
+    "stringDefaultModel" text NOT NULL,
+    "stringDefaultModelNull" text NOT NULL
+);
+
+--
+-- Class StringDefaultPersist as table string_default_persist
+--
+CREATE TABLE "string_default_persist" (
+    "id" bigserial PRIMARY KEY,
+    "stringDefaultPersist" text DEFAULT 'This is a default persist value'::text
 );
 
 --
@@ -1121,9 +1307,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20240603145858809', now())
+    VALUES ('serverpod_test', '20240725082303667', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240603145858809', "timestamp" = now();
+    DO UPDATE SET "version" = '20240725082303667', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth
