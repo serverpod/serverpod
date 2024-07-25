@@ -11,7 +11,7 @@ void main() {
 
   group('Given a class with fields with a "defaultModel" keyword', () {
     test(
-      'when the field is of type bool and the default is set to "true", then the field should have a "default model" value',
+      'when the field is of type bool and the defaultModel is set to "true", then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -37,7 +37,7 @@ void main() {
     );
 
     test(
-      'when the field is of type bool and the default is set to "false", then the field should have a "default model" value',
+      'when the field is of type bool and the defaultModel is set to "false", then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -58,13 +58,40 @@ void main() {
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
-
         expect(definition.fields.last.defaultModelValue, 'false');
       },
     );
 
     test(
-      'when the field is of type bool with an invalid default value "TRUE", then an error is generated',
+      'when the field is of type bool and the defaultModel is empty, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            boolType: bool, defaultModel=
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          'The "defaultModel" value must be a valid boolean: "true" or "false"',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type bool with an invalid defaultModel value "TRUE", then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(

@@ -66,6 +66,34 @@ void main() {
     );
 
     test(
+      'when the field is of type int and the default is empty, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            intType: int, default=
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          'The "default" value must be a valid integer (e.g., "default"=10).',
+        );
+      },
+    );
+
+    test(
       'when the field is of type int with an invalid default value "TEN", then an error is generated',
       () {
         var models = [

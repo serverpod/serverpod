@@ -11,7 +11,7 @@ void main() {
 
   group('Given a class with fields with a "defaultModel" keyword', () {
     test(
-      'when the field is of type int and the default is set to "10", then the field should have a "default model" value',
+      'when the field is of type int and the defaultModel is set to "10", then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -37,7 +37,7 @@ void main() {
     );
 
     test(
-      'when the field is of type int and the default is set to "20", then the field should have a "default model" value',
+      'when the field is of type int and the defaultModel is set to "20", then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -60,6 +60,34 @@ void main() {
         var definition = definitions.first as ClassDefinition;
 
         expect(definition.fields.last.defaultModelValue, '20');
+      },
+    );
+
+    test(
+      'when the field is of type int and the defaultModel is empty, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            intType: int, defaultModel=
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          'The "defaultModel" value must be a valid integer (e.g., "defaultModel"=10).',
+        );
       },
     );
 

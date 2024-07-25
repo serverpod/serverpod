@@ -8,9 +8,10 @@ import 'package:test/test.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().build();
+
   group('Given a class with fields with a "defaultPersist" keyword', () {
     test(
-      'when the field is of type bool and the default is set to "true", then the field should have a "default persist" value',
+      'when the field is of type bool and the defaultPersist is set to "true", then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -36,7 +37,7 @@ void main() {
     );
 
     test(
-      'when the field is of type bool and the default is set to "false", then the field should have a "default persist" value',
+      'when the field is of type bool and the defaultPersist is set to "false", then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -57,16 +58,40 @@ void main() {
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.last.defaultPersistValue, 'false');
+      },
+    );
 
+    test(
+      'when the field is of type bool and the defaultPersist is empty, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            boolType: bool?, defaultPersist=
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
-          definition.fields.last.defaultPersistValue,
-          'false',
+          firstError.message,
+          'The "defaultPersist" value must be a valid boolean: "true" or "false"',
         );
       },
     );
 
     test(
-      'when the field is of type bool with an invalid default value "TRUE", then an error is generated',
+      'when the field is of type bool with an invalid defaultPersist value "TRUE", then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(

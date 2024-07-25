@@ -93,6 +93,34 @@ void main() {
     );
 
     test(
+      'when the field is of type double and the default is empty, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            doubleType: double, default=
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          'The "default" value must be a valid double (e.g., "default"=10.5).',
+        );
+      },
+    );
+
+    test(
       'when the field is of type double with an invalid default value "TEN.FIVE", then an error is generated',
       () {
         var models = [

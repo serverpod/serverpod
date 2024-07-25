@@ -66,6 +66,34 @@ void main() {
     );
 
     test(
+      'when the field is of type bool and the default is empty, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            boolType: bool, default=
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          'The "default" value must be a valid boolean: "true" or "false"',
+        );
+      },
+    );
+
+    test(
       'when the field is of type bool with an invalid default value "TRUE", then an error is generated',
       () {
         var models = [

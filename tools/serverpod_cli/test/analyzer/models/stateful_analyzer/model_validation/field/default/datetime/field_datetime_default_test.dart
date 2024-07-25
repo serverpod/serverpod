@@ -72,6 +72,34 @@ void main() {
     );
 
     test(
+      'when the field is of type DateTime and the default is empty, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            dateTimeType: DateTime, default=
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          'The "default" value must be a valid UTC DateTime String or "now"',
+        );
+      },
+    );
+
+    test(
       'when the field is of type DateTime with an invalid default value "NOW", then an error is generated',
       () {
         var models = [
