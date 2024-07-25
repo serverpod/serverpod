@@ -129,7 +129,7 @@ class Emails {
         AuthConfig.current.passwordHashValidator.hashCode !=
             defaultValidatePasswordHash.hashCode) {
       throw Exception(
-          'Can\'t migrate legacy password with another password hash algorithm');
+          'Legacy password hash migration not supported when using custom password hash algorithm.');
     }
     var updatedEntries = 0;
     int lastEntryId = 0;
