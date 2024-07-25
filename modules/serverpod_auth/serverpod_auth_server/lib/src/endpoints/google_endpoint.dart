@@ -149,7 +149,8 @@ class GoogleEndpoint extends Endpoint {
       }
 
       var data = jsonDecode(response.body);
-      if (data['iss'] != 'accounts.google.com') {
+      if (data['iss'] != 'accounts.google.com' &&
+          data['iss'] != 'https://accounts.google.com') {
         session.log('Invalid token received', level: LogLevel.debug);
         return AuthenticationResponse(
           success: false,
