@@ -83,12 +83,13 @@ class RouteStaticDirectory extends Route {
         request.response.headers.contentType = contentType;
       }
 
-      // Enforce strong cache control.
       var regexp = noCachePathRegexp;
       request.response.headers.set(
         'Cache-Control',
         regexp != null && regexp.hasMatch(path)
+            // Don't cache this path
             ? 'max-age=0, s-maxage=0, no-cache, no-store'
+            // Enforce strong cache control
             : 'max-age=31536000',
       );
 
