@@ -74,7 +74,7 @@ void main() {
   });
 
   group('Given a string with single quotes', () {
-    test('when splitting then it is split correctly.', () {
+    test('when splitting then it is recognized as a single token.', () {
       var result = splitIgnoringBracketsAndQuotes(
         "controlToken, 'This is a default value', controlToken",
       );
@@ -86,7 +86,7 @@ void main() {
     });
 
     test(
-        'containing double quotes and a single quote when splitting then it is split correctly.',
+        'with single double quote when splitting then it is recognized as a single token.',
         () {
       var result = splitIgnoringBracketsAndQuotes(
         "controlToken, 'This \"is a default value', controlToken",
@@ -99,7 +99,32 @@ void main() {
     });
 
     test(
-        'containing double quotes and a comma when splitting then it is split correctly.',
+        'with single escaped double quote when splitting then it is recognized as a single token.',
+        () {
+      var result = splitIgnoringBracketsAndQuotes(
+        "controlToken, 'This \\\"is a default value', controlToken",
+      );
+      expect(result, [
+        'controlToken',
+        '\'This \\"is a default value\'',
+        'controlToken',
+      ]);
+    });
+
+    test(
+        'with single escaped single quote when splitting then it is recognized as a single token.',
+        () {
+      var result = splitIgnoringBracketsAndQuotes(
+        "controlToken, 'This \\'is a default value', controlToken",
+      );
+      expect(result, [
+        'controlToken',
+        '\'This \\\'is a default value\'',
+        'controlToken',
+      ]);
+    });
+
+    test('with a comma when splitting then it is recognized as a single token.',
         () {
       var result = splitIgnoringBracketsAndQuotes(
         "controlToken, 'This ,is a default value', controlToken",
@@ -112,7 +137,7 @@ void main() {
     });
 
     test(
-        'containing double quotes and angle brackets < when splitting then it is split correctly.',
+        'with angle brackets "<" when splitting then it is recognized as a single token.',
         () {
       var result = splitIgnoringBracketsAndQuotes(
         "controlToken, 'This <is a default value', controlToken",
@@ -125,7 +150,7 @@ void main() {
     });
 
     test(
-        'containing double quotes and angle brackets > when splitting then it is split correctly.',
+        'with angle brackets ">" when splitting then it is recognized as a single token.',
         () {
       var result = splitIgnoringBracketsAndQuotes(
         "controlToken, 'This >is a default value', controlToken",
@@ -138,7 +163,7 @@ void main() {
     });
 
     test(
-        'containing double quotes and parentheses ( when splitting then it is split correctly.',
+        'with parentheses "(" when splitting then it is recognized as a single token.',
         () {
       var result = splitIgnoringBracketsAndQuotes(
         "controlToken, 'This (is a default value', controlToken",
@@ -151,7 +176,7 @@ void main() {
     });
 
     test(
-        'containing double quotes and parentheses ) when splitting then it is split correctly.',
+        'with parentheses ")" when splitting then it is recognized as a single token.',
         () {
       var result = splitIgnoringBracketsAndQuotes(
         "controlToken, 'This )is a default value', controlToken",
@@ -165,7 +190,7 @@ void main() {
   });
 
   group('Given a string with double quotes', () {
-    test('when splitting then it is split correctly.', () {
+    test('when splitting then it is recognized as a single token.', () {
       var result = splitIgnoringBracketsAndQuotes(
         'controlToken, "This is a default value", controlToken',
       );
@@ -177,7 +202,7 @@ void main() {
     });
 
     test(
-        'containing single quotes and a single quote when splitting then it is split correctly.',
+        'with a single single quote when splitting then it is recognized as a single token.',
         () {
       var result = splitIgnoringBracketsAndQuotes(
         'controlToken, "This \'is a default value", controlToken',
@@ -190,7 +215,32 @@ void main() {
     });
 
     test(
-        'containing single quotes and a comma when splitting then it is split correctly.',
+        'with a single excaped single quote when splitting then it is recognized as a single token.',
+        () {
+      var result = splitIgnoringBracketsAndQuotes(
+        'controlToken, "This \\\'is a default value", controlToken',
+      );
+      expect(result, [
+        'controlToken',
+        '"This \\\'is a default value"',
+        'controlToken',
+      ]);
+    });
+
+    test(
+        'with a single excaped double quote when splitting then it is recognized as a single token.',
+        () {
+      var result = splitIgnoringBracketsAndQuotes(
+        'controlToken, "This \\"is a default value", controlToken',
+      );
+      expect(result, [
+        'controlToken',
+        '"This \\"is a default value"',
+        'controlToken',
+      ]);
+    });
+
+    test('with a comma when splitting then it is recognized as a single token.',
         () {
       var result = splitIgnoringBracketsAndQuotes(
         'controlToken, "This ,is a default value", controlToken',
@@ -203,7 +253,7 @@ void main() {
     });
 
     test(
-        'containing single quotes and angle brackets < when splitting then it is split correctly.',
+        'with angle brackets "<" when splitting then it is recognized as a single token.',
         () {
       var result = splitIgnoringBracketsAndQuotes(
         'controlToken, "This <is a default value", controlToken',
@@ -216,7 +266,7 @@ void main() {
     });
 
     test(
-        'containing single quotes and angle brackets > when splitting then it is split correctly.',
+        'with angle brackets ">" when splitting then it is recognized as a single token.',
         () {
       var result = splitIgnoringBracketsAndQuotes(
         'controlToken, "This >is a default value", controlToken',
@@ -229,7 +279,7 @@ void main() {
     });
 
     test(
-        'containing single quotes and parentheses ( when splitting then it is split correctly.',
+        'with parentheses "(" when splitting then it is recognized as a single token.',
         () {
       var result = splitIgnoringBracketsAndQuotes(
         'controlToken, "This (is a default value", controlToken',
@@ -242,7 +292,7 @@ void main() {
     });
 
     test(
-        'containing single quotes and parentheses ) when splitting then it is split correctly.',
+        'with parentheses ")" when splitting then it is recognized as a single token.',
         () {
       var result = splitIgnoringBracketsAndQuotes(
         'controlToken, "This )is a default value", controlToken',
