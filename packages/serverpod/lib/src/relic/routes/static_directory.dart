@@ -84,12 +84,13 @@ class RouteStaticDirectory extends Route {
       }
 
       // Enforce strong cache control.
-      if (noCachePathRegexp != null && noCachePathRegexp!.hasMatch(path)) {
-        request.response.headers
-            .set('Cache-Control', 'max-age=0, s-maxage=0, no-cache, no-store');
-      } else {
-        request.response.headers.set('Cache-Control', 'max-age=31536000');
-      }
+      var regexp = noCachePathRegexp;
+      request.response.headers.set(
+        'Cache-Control',
+        regexp != null && regexp.hasMatch(path)
+            ? 'max-age=0, s-maxage=0, no-cache, no-store'
+            : 'max-age=31536000',
+      );
 
       var filePath = path.startsWith('/') ? path.substring(1) : path;
       filePath = 'web/$filePath';
