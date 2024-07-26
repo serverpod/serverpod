@@ -484,7 +484,7 @@ TypeDefinition parseType(
   if (start != -1 && end != -1) {
     var internalTypes = trimmedInput.substring(start + 1, end);
 
-    var genericsInputs = splitIgnoringBrackets(internalTypes);
+    var genericsInputs = splitIgnoringBracketsAndQuotes(internalTypes);
 
     generics = genericsInputs
         .map((generic) => parseType(generic, extraClasses: extraClasses))

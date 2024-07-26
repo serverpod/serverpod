@@ -1,51 +1,47 @@
+import 'package:super_string/super_string.dart';
+
 /// Splits a string on the separator token unless the token is inside
-/// brackets, angle brackets, ( ) and < >, single quotes, or double quotes.
-/// Handles nested brackets and skips separators within single (' ')
-/// or double (" ") quotes.
-List<String> splitIgnoringBrackets(
+/// brackets, angle brackets, ( ) and < >, single quotes '', or double quotes "".
+List<String> splitIgnoringBracketsAndQuotes(
   String input, {
   String separator = ',',
 }) {
   List<String> result = [];
   StringBuffer current = StringBuffer();
   int depth = 0;
-  bool insideSingleQuotes = false;
-  bool insideDoubleQuotes = false;
 
-  for (int i = 0; i < input.length; i++) {
-    var char = input[i];
+  bool insideSingleQuote = false;
+  bool insideDoubleQuote = false;
 
-    if (char == separator &&
-        depth == 0 &&
-        !insideSingleQuotes &&
-        !insideDoubleQuotes) {
+  for (var (index, char) in input.iterable.indexed) {
+    if (char == separator && depth == 0) {
       result.add(current.toString().trim());
       current.clear();
     } else {
       current.write(char);
-      if (char == '<' || char == '(') {
-        depth++;
-      } else if (char == '>' || char == ')') {
-        depth--;
-      } else if (char == "'" && !insideDoubleQuotes) {
-        if (insideSingleQuotes) {
-          // Check if it's an escaped single quote
-          if (i > 0 && input[i - 1] == '\\') {
-            continue;
-          }
-          insideSingleQuotes = false;
-        } else {
-          insideSingleQuotes = true;
+      if (insideDoubleQuote || insideSingleQuote) {
+        var isEscaped = index > 0 && input[index - 1] == '\\';
+
+        if (insideDoubleQuote && char == '"' && !isEscaped) {
+          /// If inside "" and non escaped " is found, only descrease depth and switch bool value
+          depth--;
+          insideDoubleQuote = false;
+        } else if (insideSingleQuote && char == '\'' && !isEscaped) {
+          /// If inside ' and non escaped ' is found, only descrease depth and switch bool value
+          depth--;
+          insideSingleQuote = false;
         }
-      } else if (char == '"' && !insideSingleQuotes) {
-        if (insideDoubleQuotes) {
-          // Check if it's an escaped double quote
-          if (i > 0 && input[i - 1] == '\\') {
-            continue;
-          }
-          insideDoubleQuotes = false;
-        } else {
-          insideDoubleQuotes = true;
+      } else {
+        if (char == '<' || char == '(') {
+          depth++;
+        } else if (char == '>' || char == ')') {
+          depth--;
+        } else if (char == '"') {
+          depth++;
+          insideDoubleQuote = true;
+        } else if (char == '\'') {
+          depth++;
+          insideSingleQuote = true;
         }
       }
     }
