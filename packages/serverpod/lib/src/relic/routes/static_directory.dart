@@ -27,8 +27,23 @@ class RouteStaticDirectory extends Route {
   /// The path to the directory to serve static files from.
   final String? basePath;
 
+  /// A regular expression that will be used to determine if a path should not
+  /// be cached.
+  late final RegExp? noCachePathRegexp;
+
   /// Creates a static directory with the [serverDirectory] as its root.
-  RouteStaticDirectory({required this.serverDirectory, this.basePath});
+  /// If [basePath] is provided, the directory will be served from that path.
+  /// If [noCachePathPattern] is provided, paths matching the provided pattern
+  /// will not be cached. (Otherwise, all paths will be cached for a year.)
+  RouteStaticDirectory({
+    required this.serverDirectory,
+    this.basePath,
+    String? noCachePathPattern,
+  }) {
+    // Pre-compile the regexp pattern, if provided
+    final regexpPath = noCachePathPattern;
+    noCachePathRegexp = regexpPath == null ? null : RegExp(regexpPath);
+  }
 
   @override
   Future<bool> handleCall(Session session, HttpRequest request) async {
@@ -69,7 +84,12 @@ class RouteStaticDirectory extends Route {
       }
 
       // Enforce strong cache control.
-      request.response.headers.set('Cache-Control', 'max-age=31536000');
+      if (noCachePathRegexp != null && noCachePathRegexp!.hasMatch(path)) {
+        request.response.headers
+            .set('Cache-Control', 'max-age=0, s-maxage=0, no-cache, no-store');
+      } else {
+        request.response.headers.set('Cache-Control', 'max-age=31536000');
+      }
 
       var filePath = path.startsWith('/') ? path.substring(1) : path;
       filePath = 'web/$filePath';
