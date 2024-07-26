@@ -1,0 +1,4 @@
+class: StringDefaultPersist
+table: string_default_persist
+fields:
+  stringDefaultPersist: String?, defaultPersist='This is a default persist value'

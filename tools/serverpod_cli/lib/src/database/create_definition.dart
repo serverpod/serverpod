@@ -123,14 +123,14 @@ String? _getColumnDefault(
     return "nextval('${classDefinition.tableName!}_id_seq'::regclass)";
   }
 
-  var defaultValue = column.type.defaultValueType;
+  var defaultValueType = column.type.defaultValueType;
+  if (defaultValueType == null) return null;
+
+  var defaultValue = column.defaultPersistValue;
   if (defaultValue == null) return null;
 
-  switch (defaultValue) {
+  switch (defaultValueType) {
     case DefaultValueAllowedType.dateTime:
-      var defaultValue = column.defaultPersistValue;
-      if (defaultValue == null) return null;
-
       if (defaultValue is! String) {
         throw StateError('Invalid DateTime default value: $defaultValue');
       }
@@ -141,5 +141,17 @@ String? _getColumnDefault(
 
       DateTime? dateTime = DateTime.parse(defaultValue);
       return '\'${DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime)}\'::timestamp without time zone';
+    case DefaultValueAllowedType.bool:
+      var defaultValue = column.defaultPersistValue;
+      return defaultValue;
+    case DefaultValueAllowedType.int:
+      var defaultValue = column.defaultPersistValue;
+      return '$defaultValue';
+    case DefaultValueAllowedType.double:
+      var defaultValue = column.defaultPersistValue;
+      return '$defaultValue';
+    case DefaultValueAllowedType.string:
+      var defaultValue = column.defaultPersistValue;
+      return '$defaultValue::text';
   }
 }

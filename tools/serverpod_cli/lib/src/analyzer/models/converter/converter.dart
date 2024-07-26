@@ -107,7 +107,7 @@ List<String> _extractStringifiedNodes(String? input) {
   if (input == null) return [];
 
   // Split on comma, but not if the comma is inside < > or ( )
-  return splitIgnoringBrackets(input);
+  return splitIgnoringBracketsAndQuotes(input);
 }
 
 Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(

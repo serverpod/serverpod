@@ -4,6 +4,24 @@ import 'package:test/test.dart';
 
 void main() {
   group('Given DateTime column definition', () {
+    group('with no default value', () {
+      ColumnDefinition defaultColumn = ColumnDefinition(
+        name: 'dateTime',
+        columnType: ColumnType.timestampWithoutTimeZone,
+        isNullable: false,
+        dartType: 'DateTime',
+      );
+
+      test(
+          'when converting to PostgreSQL SQL code, then it should not have the default value',
+          () {
+        expect(
+          defaultColumn.toPgSqlFragment(),
+          '"dateTime" timestamp without time zone NOT NULL',
+        );
+      });
+    });
+
     group('with CURRENT_TIMESTAMP as default value', () {
       ColumnDefinition defaultColumn = ColumnDefinition(
         name: 'dateTime',
@@ -39,24 +57,6 @@ void main() {
         expect(
           defaultColumn.toPgSqlFragment(),
           '"dateTime" timestamp without time zone NOT NULL DEFAULT \'2024-01-01T01:01:01.000Z\'::timestamp without time zone',
-        );
-      });
-    });
-
-    group('with no default value', () {
-      ColumnDefinition defaultColumn = ColumnDefinition(
-        name: 'dateTime',
-        columnType: ColumnType.timestampWithoutTimeZone,
-        isNullable: false,
-        dartType: 'DateTime',
-      );
-
-      test(
-          'when converting to PostgreSQL SQL code, then it should not have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"dateTime" timestamp without time zone NOT NULL',
         );
       });
     });

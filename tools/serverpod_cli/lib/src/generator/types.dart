@@ -446,6 +446,14 @@ class TypeDefinition {
     switch (valueType) {
       case ValueType.dateTime:
         return DefaultValueAllowedType.dateTime;
+      case ValueType.bool:
+        return DefaultValueAllowedType.bool;
+      case ValueType.int:
+        return DefaultValueAllowedType.int;
+      case ValueType.double:
+        return DefaultValueAllowedType.double;
+      case ValueType.string:
+        return DefaultValueAllowedType.string;
       default:
         return null;
     }
@@ -476,7 +484,7 @@ TypeDefinition parseType(
   if (start != -1 && end != -1) {
     var internalTypes = trimmedInput.substring(start + 1, end);
 
-    var genericsInputs = splitIgnoringBrackets(internalTypes);
+    var genericsInputs = splitIgnoringBracketsAndQuotes(internalTypes);
 
     generics = genericsInputs
         .map((generic) => parseType(generic, extraClasses: extraClasses))
@@ -540,4 +548,8 @@ enum ValueType {
 
 enum DefaultValueAllowedType {
   dateTime,
+  bool,
+  int,
+  double,
+  string,
 }

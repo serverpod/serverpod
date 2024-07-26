@@ -1,0 +1,5 @@
+class: IntDefaultModel
+table: int_default_model
+fields:
+  intDefaultModel: int, defaultModel=10
+  intDefaultModelNull: int, defaultModel=20
