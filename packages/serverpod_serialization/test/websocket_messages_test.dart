@@ -273,6 +273,8 @@ void main() {
       'Given an open method stream response when building websocket message from string then OpenMethodStreamResponse is returned.',
       () {
     var message = OpenMethodStreamResponse.buildMessage(
+      endpoint: 'endpoint',
+      method: 'method',
       connectionId: const Uuid().v4obj(),
       responseType: OpenMethodStreamResponseType.success,
     );
@@ -287,6 +289,8 @@ void main() {
       'Given an open method stream response with an invalid response type when building websocket message from string then UnknownMessageException is thrown.',
       () {
     var message = OpenMethodStreamResponse.buildMessage(
+      endpoint: 'endpoint',
+      method: 'method',
       connectionId: const Uuid().v4obj(),
       responseType: OpenMethodStreamResponseType.success,
     );
