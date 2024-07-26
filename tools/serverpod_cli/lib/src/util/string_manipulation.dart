@@ -19,6 +19,8 @@ List<String> splitIgnoringBracketsAndQuotes(
       current.clear();
     } else {
       current.write(char);
+
+      /// When inside quotes we ignore all depth modification until matching end quote is found.
       if (insideDoubleQuote || insideSingleQuote) {
         var isEscaped = index > 0 && input[index - 1] == '\\';
 
