@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:serverpod_client/serverpod_client.dart';
+import 'package:serverpod_client/src/client_method_stream_manager.dart';
+import 'package:serverpod_client/src/method_stream/method_stream_connection_details.dart';
+import 'package:serverpod_client/src/method_stream/method_stream_manager_exceptions.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 /// A callback with no parameters or return value.
@@ -54,12 +57,27 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   final List<VoidCallback> _websocketConnectionStatusListeners = [];
 
+  ClientMethodStreamManager? _clientMethodStreamManager;
+  ClientMethodStreamManager get _methodStreamManager {
+    var methodStreamManager = _clientMethodStreamManager;
+    if (methodStreamManager == null) {
+      methodStreamManager = ClientMethodStreamManager(
+        connectionTimeout: streamingConnectionTimeout,
+        webSocketHost: _webSocketHost.replace(path: '/v1/websocket'),
+        serializationManager: serializationManager,
+      );
+      _clientMethodStreamManager = methodStreamManager;
+    }
+
+    return methodStreamManager;
+  }
+
   // StreamSubscription<ConnectivityResult>? _connectivitySubscription;
   bool _disconnectOnLostInternetConnection = false;
 
   /// Full host name of the web socket endpoint.
   /// E.g. "wss://example.com/websocket"
-  Future<String> get websocketHost async {
+  Uri get _webSocketHost {
     var uri = Uri.parse(host);
     if (uri.scheme == 'http') {
       uri = uri.replace(scheme: 'ws');
@@ -67,6 +85,15 @@ abstract class ServerpodClientShared extends EndpointCaller {
       uri = uri.replace(scheme: 'wss');
     }
     uri = uri.replace(path: '/websocket');
+    return uri;
+  }
+
+  /// Full host name of the web socket endpoint.
+  /// E.g. "wss://example.com/websocket"
+  ///
+  /// This string also includes the authentication key if one is available.
+  Future<String> get websocketHost async {
+    var uri = _webSocketHost;
 
     if (authenticationKeyManager != null) {
       var auth = await authenticationKeyManager!.get();
@@ -78,6 +105,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
         );
       }
     }
+
     return uri.toString();
   }
 
@@ -382,7 +410,39 @@ abstract class ServerpodClientShared extends EndpointCaller {
     Map<String, dynamic> args,
     Map<String, Stream> streams,
   ) {
-    throw UnimplementedError();
+    var connectionDetails = MethodStreamConnectionDetails(
+      endpoint: endpoint,
+      method: method,
+      args: args,
+      parameterStreams: streams,
+      outputController: StreamController<G>(),
+    );
+
+    if (T == Stream<G>) {
+      _methodStreamManager
+          .openMethodStream(connectionDetails)
+          .onError<OpenMethodStreamException>((e, _) {
+        var error = switch (e.responseType) {
+          OpenMethodStreamResponseType.endpointNotFound =>
+            ServerpodClientNotFound(),
+          OpenMethodStreamResponseType.authenticationFailed =>
+            ServerpodClientUnauthorized(),
+          OpenMethodStreamResponseType.authorizationDeclined =>
+            ServerpodClientForbidden(),
+          OpenMethodStreamResponseType.invalidArguments =>
+            ServerpodClientBadRequest(),
+          OpenMethodStreamResponseType.success =>
+            ServerpodClientException('Unknown error, data: $e', -1),
+        };
+        connectionDetails.outputController.addError(error);
+        connectionDetails.outputController.close();
+      });
+      return connectionDetails.outputController.stream;
+    } else if (T == Future<G>) {
+      throw UnimplementedError();
+    } else {
+      throw UnsupportedError('Unsupported type $T');
+    }
   }
 }
 
