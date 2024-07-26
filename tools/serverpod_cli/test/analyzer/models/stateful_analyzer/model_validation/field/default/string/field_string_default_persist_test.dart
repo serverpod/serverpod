@@ -452,7 +452,7 @@ void main() {
         var error = collector.errors.first as SourceSpanSeverityException;
         expect(
           error.message,
-          'For single quoted "defaultPersist" string values, single quotes must be escaped or use double quotes (e.g., "defaultPersist"=\'This "is" a string\' or "defaultPersist"=\'This \\\'is\\\' a string\').',
+          'The "defaultPersist" property is mutually exclusive with the "!persist" property.',
         );
       },
     );
