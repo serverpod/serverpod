@@ -9,7 +9,7 @@ class DatabaseException implements Exception {
   // subclass of PgException
 
   /// The severity of the exception.
-  final Severity? severity;
+  final Severity severity;
 
   /// An index into an executed query string where an error occurred, if by provided by the database.
   final int? position;
