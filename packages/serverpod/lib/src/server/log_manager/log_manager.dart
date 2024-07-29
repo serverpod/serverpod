@@ -23,6 +23,8 @@ class SessionLogManager {
 
   int _logOrderId;
 
+  bool _isLoggingOpened;
+
   int get _nextLogOrderId => ++_logOrderId;
 
   /// Creates a new [LogManager] from [RuntimeSettings].
@@ -34,7 +36,8 @@ class SessionLogManager {
   })  : _logOrderId = 0,
         _logWriter = logWriter,
         _settingsForSession = settingsForSession,
-        _serverId = serverId;
+        _serverId = serverId,
+        _isLoggingOpened = false;
 
   bool _shouldLogQuery({
     required Session session,
@@ -235,50 +238,24 @@ class SessionLogManager {
     Future<void> Function(T) writeLog,
     Function(int, T) setSessionLogId,
   ) async {
-    await _attemptOpenStreamingLog(session: session);
-    if (_continuouslyLogging(session) && session is StreamingSession) {
-      try {
-        setSessionLogId(session.sessionLogId!, entry);
-        await writeLog(entry);
-      } catch (exception, stackTrace) {
-        stderr
-            .writeln('${DateTime.now().toUtc()} FAILED TO LOG STREAMING $type');
-        stderr.write('ENDPOINT: ${session.endpointName}');
-        stderr.writeln('CALL error: $exception');
-        stderr.writeln('$stackTrace');
-      }
-    } else {
+    if (!_isLoggingOpened) {
+      await _openLog(session);
+    }
+    try {
       await writeLog(entry);
+    } catch (exception, stackTrace) {
+      stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG $type');
+      stderr.write('ENDPOINT: ${session.endpointName}');
+      stderr.writeln('CALL error: $exception');
+      stderr.writeln('$stackTrace');
     }
   }
 
-  final Lock _openStreamLogLock = Lock();
+  final Lock _openingLock = Lock();
 
-  /// Sets up a log for a streaming session. Instead of writing all session data
-  /// when the session is completed the session will be continuously logged.
-  Future<void> _attemptOpenStreamingLog({
-    required Session session,
-  }) async {
-    // TODO: This method along with finialize session logs are crusial to refactor and simplify.
-    // These are the main methods causing issues right now.
-    // They should be called for all sessions not only streaming sessions. Then the writer decides if the logging will be cached or not.
-
-    await _openStreamLogLock.synchronized(() async {
-      if (session is! StreamingSession) {
-        // Only open streaming logs for streaming sessions.
-        return;
-      }
-
-      if (session.sessionLogId != null) {
-        // Streaming log is already opened.
-        return;
-      }
-
-      var logSettings = _settingsForSession(session);
-      if (!logSettings.logStreamingSessionsContinuously) {
-        // This call should not stream continuously.
-        return;
-      }
+  Future<void> _openLog(Session session) async {
+    await _openingLock.synchronized(() async {
+      if (_isLoggingOpened) return;
 
       var now = DateTime.now();
 
@@ -291,11 +268,11 @@ class SessionLogManager {
         isOpen: true,
       );
 
-      var sessionLogId = await _logWriter.openLog(
+      await _logWriter.openLog(
         sessionLogEntry,
       );
 
-      session.sessionLogId = sessionLogId;
+      _isLoggingOpened = true;
     });
   }
 
