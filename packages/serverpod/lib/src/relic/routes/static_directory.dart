@@ -20,11 +20,17 @@ final _contentTypeMapping = <String, ContentType>{
   '.pdf': ContentType('application', 'pdf'),
 };
 
+/// A path pattern to match, and the max age that paths that match the pattern
+/// should be cached for, in seconds.
 class PathCacheMaxAge {
   final Pattern pathPattern;
   final int maxAge;
 
+  /// A value for [maxAge] that indicates that the path should not be cached.
   static const noCache = 0;
+
+  /// A value for [maxAge] that indicates that the path should be cached for
+  /// one year.
   static const oneYear = 31536000;
 
   PathCacheMaxAge({
