@@ -244,7 +244,7 @@ class SessionLogManager {
       } catch (exception, stackTrace) {
         stderr
             .writeln('${DateTime.now().toUtc()} FAILED TO LOG STREAMING $type');
-        stderr.write('ENDPOINT: ${_endpointForSession(session)}');
+        stderr.write('ENDPOINT: ${session.endpointName}');
         stderr.writeln('CALL error: $exception');
         stderr.writeln('$stackTrace');
       }
@@ -283,8 +283,8 @@ class SessionLogManager {
         serverId: _serverId,
         time: now,
         touched: now,
-        endpoint: _endpointForSession(session),
-        method: _methodForSession(session),
+        endpoint: session.endpointName,
+        method: session.methodName,
         isOpen: true,
       );
 
@@ -343,8 +343,8 @@ class SessionLogManager {
         serverId: _serverId,
         time: now,
         touched: now,
-        endpoint: _endpointForSession(session),
-        method: _methodForSession(session),
+        endpoint: session.endpointName,
+        method: session.methodName,
         duration: duration.inMicroseconds / 1000000.0,
         numQueries: cachedEntry.numQueries,
         slow: isSlow,
@@ -365,9 +365,9 @@ class SessionLogManager {
         }
       } catch (e, logStackTrace) {
         stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');
-        if (_methodForSession(session) != null) {
+        if (session.methodName != null) {
           stderr.writeln(
-              'CALL: ${_endpointForSession(session)}.${_methodForSession(session)} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
+              'CALL: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
         }
         stderr.writeln('CALL error: $exception');
         stderr.writeln('$logStackTrace');
@@ -418,27 +418,4 @@ class LogManager {
     _openSessionLogs.add(logEntry);
     return logEntry;
   }
-}
-
-String? _methodForSession(Session session) {
-  var localSession = session;
-
-  if (localSession is MethodCallSession) return localSession.methodName;
-  if (localSession is MethodStreamSession) return localSession.methodName;
-  if (localSession is FutureCallSession) return localSession.futureCallName;
-  if (localSession is InternalSession) return null;
-  if (localSession is StreamingSession) return null;
-
-  throw Exception('Unknown session type: $session');
-}
-
-String _endpointForSession(Session session) {
-  var localSession = session;
-  if (localSession is MethodCallSession) return localSession.endpointName;
-  if (localSession is MethodStreamSession) return localSession.endpointName;
-  if (localSession is FutureCallSession) return 'FutureCallSession';
-  if (localSession is InternalSession) return 'InternalSession';
-  if (localSession is StreamingSession) return 'StreamingSession';
-
-  throw Exception('Unknown session type: $session');
 }

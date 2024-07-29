@@ -98,6 +98,12 @@ abstract class Session {
 
   late final SessionLogManager? _logManager;
 
+  /// Endpoint that triggered this session.
+  final String endpointName;
+
+  /// Method that triggered this session, if any.
+  final String? methodName;
+
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
     UuidValue? sessionId,
@@ -106,6 +112,8 @@ abstract class Session {
     HttpRequest? httpRequest,
     WebSocket? webSocket,
     required this.enableLogging,
+    required this.endpointName,
+    this.methodName,
   })  : _authenticationKey = authenticationKey,
         sessionId = sessionId ?? const Uuid().v4obj() {
     _startTime = DateTime.now();
@@ -232,7 +240,7 @@ class InternalSession extends Session {
   InternalSession({
     required super.server,
     super.enableLogging = true,
-  });
+  }) : super(endpointName: 'InternalSession');
 }
 
 /// When a call is made to the [Server] a [MethodCallSession] object is created.
@@ -249,10 +257,16 @@ class MethodCallSession extends Session {
   late final Map<String, dynamic> queryParameters;
 
   /// The name of the called [Endpoint].
-  late final String endpointName;
+  late final String _endpointName;
+
+  @override
+  String get endpointName => _endpointName;
 
   /// The name of the method that is being called.
-  late final String methodName;
+  late final String _methodName;
+
+  @override
+  String get methodName => _methodName;
 
   /// The [HttpRequest] associated with the call.
   final HttpRequest httpRequest;
@@ -266,7 +280,7 @@ class MethodCallSession extends Session {
     required this.httpRequest,
     String? authenticationKey,
     super.enableLogging = true,
-  }) {
+  }) : super(endpointName: 'MethodCall') {
     // Read query parameters
     var queryParameters = <String, dynamic>{};
     if (body != '' && body != 'null') {
@@ -280,16 +294,16 @@ class MethodCallSession extends Session {
     if (path.contains('/')) {
       // Using the new path format (for OpenAPI)
       var pathComponents = path.split('/');
-      endpointName = pathComponents[0];
-      methodName = pathComponents[1];
+      _endpointName = pathComponents[0];
+      _methodName = pathComponents[1];
     } else {
       // Using the standard format with query parameters
-      endpointName = path;
+      _endpointName = path;
       var methodName = queryParameters['method'];
       if (methodName == null && path == 'webserver') {
-        this.methodName = '';
+        _methodName = '';
       } else if (methodName != null) {
-        this.methodName = methodName;
+        _methodName = methodName;
       } else {
         throw FormatException(
           'No method name specified in call to $endpointName',
@@ -307,24 +321,24 @@ class MethodCallSession extends Session {
 /// associated with the current connection and provides easy access to the
 /// database.
 class MethodStreamSession extends Session {
-  /// The name of the method that is being called.
-  final String methodName;
-
-  /// The name of the endpoint that is being called.
-  final String endpointName;
-
   /// The connection id that uniquely identifies the stream.
   final UuidValue connectionId;
+
+  final String _methodName;
+
+  @override
+  String get methodName => _methodName;
 
   /// Creates a new [MethodStreamSession].
   MethodStreamSession({
     required super.server,
     required super.enableLogging,
     required super.authenticationKey,
-    required this.endpointName,
-    required this.methodName,
+    required super.endpointName,
+    required String methodName,
     required this.connectionId,
-  });
+  })  : _methodName = methodName,
+        super(methodName: methodName);
 }
 
 /// When a web socket connection is opened to the [Server] a [StreamingSession]
@@ -346,12 +360,17 @@ class StreamingSession extends Session {
   /// Set if there is an open session log.
   int? sessionLogId;
 
-  /// The endpoint that is currently being processed.
-  String endpointName;
-
   /// The id of the current incoming message being processed. Increments by 1
   /// for each message passed to an endpoint for processing.
   int currentMessageId = 0;
+
+  String _endpointName;
+
+  /// The name of the endpoint that is being called.
+  set endpointName(String endpointName) => _endpointName = endpointName;
+
+  @override
+  String get endpointName => _endpointName;
 
   /// Creates a new [Session] for the web socket stream.
   StreamingSession({
@@ -359,9 +378,9 @@ class StreamingSession extends Session {
     required this.uri,
     required this.httpRequest,
     required this.webSocket,
-    this.endpointName = 'StreamingSession',
+    super.endpointName = 'StreamingSession',
     super.enableLogging = true,
-  }) {
+  }) : _endpointName = endpointName {
     // Read query parameters
     var queryParameters = <String, String>{};
     queryParameters.addAll(uri.queryParameters);
@@ -390,7 +409,7 @@ class FutureCallSession extends Session {
     required super.server,
     required this.futureCallName,
     super.enableLogging = true,
-  });
+  }) : super(endpointName: 'FutureCall', methodName: futureCallName);
 }
 
 /// Collects methods for accessing cloud storage.
