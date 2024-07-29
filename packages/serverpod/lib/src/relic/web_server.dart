@@ -132,8 +132,8 @@ class WebServer {
       session = WebCallSession(
         server: serverpod.server,
         uri: uri,
-        path: 'webserver',
-        body: '',
+        path: uri.path,
+        queryParameters: request.uri.queryParameters,
         authenticationKey: authenticationKey,
         httpRequest: request,
       );
