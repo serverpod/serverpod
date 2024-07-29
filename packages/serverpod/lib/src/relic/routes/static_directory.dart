@@ -29,20 +29,22 @@ class RouteStaticDirectory extends Route {
 
   /// A regular expression that will be used to determine if a path should not
   /// be cached.
-  late final RegExp? noCachePathRegexp;
+  late final List<Pattern>? _noCachePathPatterns;
 
   /// Creates a static directory with the [serverDirectory] as its root.
   /// If [basePath] is provided, the directory will be served from that path.
-  /// If [noCachePathPattern] is provided, paths matching the provided pattern
-  /// will not be cached. (Otherwise, all paths will be cached for a year.)
+  /// If [noCachePathPatterns] is provided, paths matching the provided
+  /// patterns will not be cached (if a provided [Pattern] is a [String], then
+  /// the path is not cached if it is equal to the [String], and if the
+  /// provided pattern is a [RegExp], then the path is not cached if the
+  /// pattern matches the path). Paths that are not excluded from caching
+  /// in this way are cached for a year.
   RouteStaticDirectory({
     required this.serverDirectory,
     this.basePath,
-    String? noCachePathPattern,
+    List<Pattern>? noCachePathPatterns,
   }) {
-    // Pre-compile the regexp pattern, if provided
-    var regexpPath = noCachePathPattern;
-    noCachePathRegexp = regexpPath == null ? null : RegExp(regexpPath);
+    _noCachePathPatterns = noCachePathPatterns;
   }
 
   @override
@@ -83,10 +85,22 @@ class RouteStaticDirectory extends Route {
         request.response.headers.contentType = contentType;
       }
 
-      var regexp = noCachePathRegexp;
+      // Check if the path should not be cached
+      var noCache = _noCachePathPatterns != null &&
+          _noCachePathPatterns.any((pattern) {
+            if (pattern is String) {
+              return path == pattern;
+            } else if (pattern is RegExp) {
+              return pattern.hasMatch(path);
+            } else {
+              return false;
+            }
+          });
+
+      // Set Cache-Control header
       request.response.headers.set(
         'Cache-Control',
-        regexp != null && regexp.hasMatch(path)
+        noCache
             // Don't cache this path
             ? 'max-age=0, s-maxage=0, no-cache, no-store'
             // Enforce strong cache control
