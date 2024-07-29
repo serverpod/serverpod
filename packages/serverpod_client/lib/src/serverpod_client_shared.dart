@@ -416,6 +416,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       args: args,
       parameterStreams: streams,
       outputController: StreamController<G>(),
+      authenticationProvider: () async => authenticationKeyManager?.get(),
     );
 
     if (T == Stream<G>) {

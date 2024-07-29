@@ -8,12 +8,14 @@ class MethodStreamConnectionDetailsBuilder {
   Map<String, dynamic> _args;
   Map<String, Stream> _parameterStreams;
   StreamController _outputController;
+  Future<String?> Function() _authenticationProvider;
 
   MethodStreamConnectionDetailsBuilder()
       : _endpoint = 'ExampleEndpoint',
         _method = 'exampleMethod',
         _args = {},
         _parameterStreams = {},
+        _authenticationProvider = (() async => null),
         _outputController = StreamController();
 
   MethodStreamConnectionDetailsBuilder withEndpoint(String endpoint) {
@@ -45,6 +47,13 @@ class MethodStreamConnectionDetailsBuilder {
     return this;
   }
 
+  MethodStreamConnectionDetailsBuilder withAuthenticationProvider(
+    Future<String?> Function() authenticationProvider,
+  ) {
+    _authenticationProvider = authenticationProvider;
+    return this;
+  }
+
   MethodStreamConnectionDetails build() {
     return MethodStreamConnectionDetails(
       endpoint: _endpoint,
@@ -52,6 +61,7 @@ class MethodStreamConnectionDetailsBuilder {
       args: _args,
       parameterStreams: _parameterStreams,
       outputController: _outputController,
+      authenticationProvider: _authenticationProvider,
     );
   }
 }

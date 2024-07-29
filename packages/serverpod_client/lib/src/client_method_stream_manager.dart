@@ -60,7 +60,9 @@ final class ClientMethodStreamManager {
       args: connectionDetails.args,
       inputStreams:
           connectionDetails.parameterStreams.keys.map((key) => key).toList(),
+      authentication: await connectionDetails.authenticationProvider.call(),
     );
+
     _webSocket?.sink.add(openCommand);
     var openResponse = await inboundStreamContext.openCompleter.future;
 

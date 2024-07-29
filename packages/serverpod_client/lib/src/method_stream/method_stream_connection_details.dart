@@ -17,6 +17,9 @@ class MethodStreamConnectionDetails {
   /// The controller for the output stream.
   final StreamController outputController;
 
+  /// The authentication token provider.
+  final Future<String?> Function() authenticationProvider;
+
   /// Creates a new [MethodStreamConnectionDetails].
   MethodStreamConnectionDetails({
     required this.endpoint,
@@ -24,5 +27,6 @@ class MethodStreamConnectionDetails {
     required this.args,
     required this.parameterStreams,
     required this.outputController,
+    required this.authenticationProvider,
   });
 }
