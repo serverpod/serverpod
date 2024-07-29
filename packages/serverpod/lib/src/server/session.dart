@@ -284,22 +284,10 @@ class MethodCallSession extends Session {
 /// created. It contains all data associated with the current connection and
 /// provides easy access to the database.
 class WebCallSession extends Session {
-  /// The uri that was used to call the server.
-  final Uri uri;
-
-  /// Query parameters of the server call.
-  final Map<String, dynamic> queryParameters;
-
-  /// The [HttpRequest] associated with the call.
-  final HttpRequest httpRequest;
-
   /// Creates a new [Session] for a method call to an endpoint.
   WebCallSession({
     required super.server,
-    required this.uri,
     required String path,
-    required this.httpRequest,
-    required this.queryParameters,
     required super.authenticationKey,
     super.enableLogging = true,
   }) : super(endpointName: path);

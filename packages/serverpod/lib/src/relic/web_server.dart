@@ -129,14 +129,10 @@ class WebServer {
     var queryParameters = request.uri.queryParameters;
     authenticationKey ??= queryParameters['auth'];
 
-    // TODO: Fix body
     WebCallSession session = WebCallSession(
       server: serverpod.server,
-      uri: uri,
       path: uri.path,
-      queryParameters: queryParameters,
       authenticationKey: authenticationKey,
-      httpRequest: request,
     );
 
     // Check routes
