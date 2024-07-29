@@ -274,7 +274,7 @@ class MethodCallSession extends Session {
     required super.endpointName,
     required String methodName,
     required this.queryParameters,
-    String? authenticationKey,
+    required super.authenticationKey,
     super.enableLogging = true,
   })  : _methodName = methodName,
         super(methodName: methodName);
@@ -300,7 +300,7 @@ class WebCallSession extends Session {
     required String path,
     required this.httpRequest,
     required this.queryParameters,
-    required String? authenticationKey,
+    required super.authenticationKey,
     super.enableLogging = true,
   }) : super(endpointName: path);
 }
