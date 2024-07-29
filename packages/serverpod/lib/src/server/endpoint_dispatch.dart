@@ -111,24 +111,18 @@ abstract class EndpointDispatch {
     // Get the the authentication key, if any
     String? authenticationKey = queryParameters['auth'];
 
-    MethodCallSession session;
-
-    try {
-      session = MethodCallSession(
-        server: server,
-        uri: uri,
-        body: body,
-        path: path,
-        httpRequest: request,
-        methodName: methodName,
-        endpointName: endpointName,
-        queryParameters: queryParameters,
-        authenticationKey: authenticationKey,
-        enableLogging: connector.endpoint.logSessions,
-      );
-    } catch (e) {
-      return ResultInvalidParams('Malformed call: $uri');
-    }
+    MethodCallSession session = MethodCallSession(
+      server: server,
+      uri: uri,
+      body: body,
+      path: path,
+      httpRequest: request,
+      methodName: methodName,
+      endpointName: endpointName,
+      queryParameters: queryParameters,
+      authenticationKey: authenticationKey,
+      enableLogging: connector.endpoint.logSessions,
+    );
 
     try {
       var endpoint = connector.endpoint;

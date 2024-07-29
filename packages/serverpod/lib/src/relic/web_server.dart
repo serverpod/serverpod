@@ -126,26 +126,15 @@ class WebServer {
       }
     }
 
-    WebCallSession session;
-    try {
-      // TODO: Fix body
-      session = WebCallSession(
-        server: serverpod.server,
-        uri: uri,
-        path: uri.path,
-        queryParameters: request.uri.queryParameters,
-        authenticationKey: authenticationKey,
-        httpRequest: request,
-      );
-    } catch (e) {
-      // Triggered if the URI query parameters are malformed
-      if (serverpod.runtimeSettings.logMalformedCalls) {
-        logError('Malformed call: $e');
-      }
-      request.response.statusCode = HttpStatus.badRequest;
-      await request.response.close();
-      return;
-    }
+    // TODO: Fix body
+    WebCallSession session = WebCallSession(
+      server: serverpod.server,
+      uri: uri,
+      path: uri.path,
+      queryParameters: request.uri.queryParameters,
+      authenticationKey: authenticationKey,
+      httpRequest: request,
+    );
 
     // Check routes
     for (var route in routes) {
