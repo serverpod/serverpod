@@ -1037,6 +1037,22 @@ class EndpointLogging extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointDelayedLogging extends _i1.EndpointRef {
+  EndpointDelayedLogging(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'delayedLogging';
+}
+
+/// {@category Endpoint}
+class EndpointDelayedLoggingQuery extends _i1.EndpointRef {
+  EndpointDelayedLoggingQuery(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'delayedLoggingQuery';
+}
+
+/// {@category Endpoint}
 class EndpointLoggingDisabled extends _i1.EndpointRef {
   EndpointLoggingDisabled(_i1.EndpointCaller caller) : super(caller);
 
@@ -1661,6 +1677,8 @@ class Client extends _i1.ServerpodClient {
     futureCalls = EndpointFutureCalls(this);
     listParameters = EndpointListParameters(this);
     logging = EndpointLogging(this);
+    delayedLogging = EndpointDelayedLogging(this);
+    delayedLoggingQuery = EndpointDelayedLoggingQuery(this);
     loggingDisabled = EndpointLoggingDisabled(this);
     mapParameters = EndpointMapParameters(this);
     methodStreaming = EndpointMethodStreaming(this);
@@ -1711,6 +1729,10 @@ class Client extends _i1.ServerpodClient {
   late final EndpointListParameters listParameters;
 
   late final EndpointLogging logging;
+
+  late final EndpointDelayedLogging delayedLogging;
+
+  late final EndpointDelayedLoggingQuery delayedLoggingQuery;
 
   late final EndpointLoggingDisabled loggingDisabled;
 
@@ -1764,6 +1786,8 @@ class Client extends _i1.ServerpodClient {
         'futureCalls': futureCalls,
         'listParameters': listParameters,
         'logging': logging,
+        'delayedLogging': delayedLogging,
+        'delayedLoggingQuery': delayedLoggingQuery,
         'loggingDisabled': loggingDisabled,
         'mapParameters': mapParameters,
         'methodStreaming': methodStreaming,

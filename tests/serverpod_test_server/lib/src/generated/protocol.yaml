@@ -127,6 +127,8 @@ logging:
   - logInfo:
   - logDebugAndInfoAndError:
   - twoQueries:
+delayedLogging:
+delayedLoggingQuery:
 loggingDisabled:
   - logInfo:
 mapParameters:

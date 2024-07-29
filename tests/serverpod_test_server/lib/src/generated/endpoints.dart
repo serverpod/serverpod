@@ -157,6 +157,18 @@ class Endpoints extends _i1.EndpointDispatch {
           'logging',
           null,
         ),
+      'delayedLogging': _i17.DelayedLoggingEndpoint()
+        ..initialize(
+          server,
+          'delayedLogging',
+          null,
+        ),
+      'delayedLoggingQuery': _i17.DelayedLoggingQueryEndpoint()
+        ..initialize(
+          server,
+          'delayedLoggingQuery',
+          null,
+        ),
       'loggingDisabled': _i18.LoggingDisabledEndpoint()
         ..initialize(
           server,
@@ -2357,6 +2369,16 @@ class Endpoints extends _i1.EndpointDispatch {
                   .twoQueries(session),
         ),
       },
+    );
+    connectors['delayedLogging'] = _i1.EndpointConnector(
+      name: 'delayedLogging',
+      endpoint: endpoints['delayedLogging']!,
+      methodConnectors: {},
+    );
+    connectors['delayedLoggingQuery'] = _i1.EndpointConnector(
+      name: 'delayedLoggingQuery',
+      endpoint: endpoints['delayedLoggingQuery']!,
+      methodConnectors: {},
     );
     connectors['loggingDisabled'] = _i1.EndpointConnector(
       name: 'loggingDisabled',
