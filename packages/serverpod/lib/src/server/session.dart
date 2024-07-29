@@ -324,8 +324,10 @@ class MethodStreamSession extends Session {
   /// The connection id that uniquely identifies the stream.
   final UuidValue connectionId;
 
+  final String _methodName;
+
   @override
-  String get methodName => super.methodName!;
+  String get methodName => _methodName;
 
   /// Creates a new [MethodStreamSession].
   MethodStreamSession({
@@ -335,7 +337,8 @@ class MethodStreamSession extends Session {
     required super.endpointName,
     required String methodName,
     required this.connectionId,
-  }) : super(methodName: methodName);
+  })  : _methodName = methodName,
+        super(methodName: methodName);
 }
 
 /// When a web socket connection is opened to the [Server] a [StreamingSession]
