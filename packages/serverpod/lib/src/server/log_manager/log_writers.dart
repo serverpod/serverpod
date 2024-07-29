@@ -150,29 +150,33 @@ class DatabaseLogWriter extends LogWriter {
 
 @internal
 class StdOutLogWriter extends LogWriter {
+  final int _logId;
+
+  StdOutLogWriter(Session session) : _logId = session.sessionId.hashCode;
+
   @override
   Future<void> logEntry(LogEntry entry) async {
-    entry.sessionLogId = hashCode;
+    entry.sessionLogId = _logId;
     stdout.writeln(entry);
   }
 
   @override
   Future<void> logMessage(MessageLogEntry entry) async {
-    entry.sessionLogId = hashCode;
+    entry.sessionLogId = _logId;
     stdout.writeln(entry);
   }
 
   @override
   Future<void> logQuery(QueryLogEntry entry) async {
-    entry.sessionLogId = hashCode;
+    entry.sessionLogId = _logId;
     stdout.writeln(entry);
   }
 
   @override
   Future<int> openLog(SessionLogEntry entry) async {
-    entry.id = hashCode;
+    entry.id = _logId;
     stdout.writeln(entry);
-    return hashCode;
+    return _logId;
   }
 
   @override

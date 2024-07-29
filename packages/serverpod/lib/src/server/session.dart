@@ -142,7 +142,7 @@ abstract class Session {
 
     LogWriter logWriter = switch (Features.enablePersistentLogging) {
       (true) => DatabaseLogWriter(session),
-      (false) => StdOutLogWriter(),
+      (false) => StdOutLogWriter(session),
     };
 
     if ((session is StreamingSession || session is MethodStreamSession) &&
