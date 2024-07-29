@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart';
 
@@ -19,6 +20,25 @@ final _contentTypeMapping = <String, ContentType>{
   '.pdf': ContentType('application', 'pdf'),
 };
 
+class PathCacheMaxAge {
+  final Pattern pathPattern;
+  final int maxAge;
+
+  static const noCache = 0;
+  static const oneYear = 31536000;
+
+  PathCacheMaxAge({
+    required this.pathPattern,
+    required this.maxAge,
+  });
+
+  bool _shouldCache(String path) => pathPattern is String
+      ? path == pathPattern
+      : pathPattern is RegExp
+          ? (pathPattern as RegExp).hasMatch(path)
+          : false;
+}
+
 /// Route for serving a directory of static files.
 class RouteStaticDirectory extends Route {
   /// The path to the directory to serve relative to the web/ directory.
@@ -29,22 +49,19 @@ class RouteStaticDirectory extends Route {
 
   /// A regular expression that will be used to determine if a path should not
   /// be cached.
-  late final List<Pattern>? _noCachePathPatterns;
+  late final List<PathCacheMaxAge>? _pathCachePatterns;
 
   /// Creates a static directory with the [serverDirectory] as its root.
   /// If [basePath] is provided, the directory will be served from that path.
-  /// If [noCachePathPatterns] is provided, paths matching the provided
-  /// patterns will not be cached (if a provided [Pattern] is a [String], then
-  /// the path is not cached if it is equal to the [String], and if the
-  /// provided pattern is a [RegExp], then the path is not cached if the
-  /// pattern matches the path). Paths that are not excluded from caching
-  /// in this way are cached for a year.
+  /// If [pathCachePatterns] is provided, paths matching the requested
+  /// patterns will be cached for the requested amount of time. Paths that
+  /// are do not match any provided pattern are cached for one year.
   RouteStaticDirectory({
     required this.serverDirectory,
     this.basePath,
-    List<Pattern>? noCachePathPatterns,
+    List<PathCacheMaxAge>? pathCachePatterns,
   }) {
-    _noCachePathPatterns = noCachePathPatterns;
+    _pathCachePatterns = pathCachePatterns;
   }
 
   @override
@@ -85,26 +102,22 @@ class RouteStaticDirectory extends Route {
         request.response.headers.contentType = contentType;
       }
 
-      // Check if the path should not be cached
-      var noCache = _noCachePathPatterns != null &&
-          _noCachePathPatterns.any((pattern) {
-            if (pattern is String) {
-              return path == pattern;
-            } else if (pattern is RegExp) {
-              return pattern.hasMatch(path);
-            } else {
-              return false;
-            }
-          });
+      // Get the max age for the path
+      var pathCacheMaxAge = _pathCachePatterns
+              ?.firstWhereOrNull((pattern) => pattern._shouldCache(path))
+              ?.maxAge ??
+          // Default to a max age of one year if no pattern matched
+          PathCacheMaxAge.oneYear;
 
       // Set Cache-Control header
       request.response.headers.set(
         'Cache-Control',
-        noCache
+        pathCacheMaxAge == 0
             // Don't cache this path
             ? 'max-age=0, s-maxage=0, no-cache, no-store'
-            // Enforce strong cache control
-            : 'max-age=31536000',
+            // Cache for the specified amount of time, or the default
+            // of one year if no pattern matched
+            : 'max-age=$pathCacheMaxAge',
       );
 
       var filePath = path.startsWith('/') ? path.substring(1) : path;
