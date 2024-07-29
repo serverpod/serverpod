@@ -28,10 +28,9 @@ class LogSettingsManager {
     var method = session.methodName;
 
     LogSettings? settings;
-    if (method != null) {
-      settings = _methodOverrides['$endpoint.$method'];
-      if (settings != null) return settings;
-    }
+
+    if (method != null) settings = _methodOverrides['$endpoint.$method'];
+    if (settings != null) return settings;
 
     settings = _endpointOverrides[endpoint];
     if (settings != null) return settings;
