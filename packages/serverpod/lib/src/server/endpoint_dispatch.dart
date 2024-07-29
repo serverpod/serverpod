@@ -102,7 +102,7 @@ abstract class EndpointDispatch {
       if (method is String) {
         methodName = method;
       } else {
-        throw FormatException(
+        return ResultInvalidParams(
           'No method name specified in call to $endpointName',
         );
       }
