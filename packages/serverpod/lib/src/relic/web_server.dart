@@ -126,10 +126,10 @@ class WebServer {
       }
     }
 
-    MethodCallSession session;
+    WebCallSession session;
     try {
       // TODO: Fix body
-      session = MethodCallSession(
+      session = WebCallSession(
         server: serverpod.server,
         uri: uri,
         path: 'webserver',

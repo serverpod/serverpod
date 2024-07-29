@@ -316,6 +316,37 @@ class MethodCallSession extends Session {
   }
 }
 
+class WebCallSession extends Session {
+  /// The uri that was used to call the server.
+  final Uri uri;
+
+  /// The body of the server call.
+  final String body;
+
+  /// Query parameters of the server call.
+  late final Map<String, dynamic> queryParameters;
+
+  /// The name of the called [Endpoint].
+  late final String _endpointName;
+
+  @override
+  String get endpointName => _endpointName;
+
+  /// The [HttpRequest] associated with the call.
+  final HttpRequest httpRequest;
+
+  /// Creates a new [Session] for a method call to an endpoint.
+  WebCallSession({
+    required super.server,
+    required this.uri,
+    required this.body,
+    required String path,
+    required this.httpRequest,
+    required String? authenticationKey,
+    super.enableLogging = true,
+  }) : super(endpointName: path);
+}
+
 /// When a connection is made to the [Server] to an endpoint method that uses a
 /// stream [MethodStreamSession] object is created. It contains all data
 /// associated with the current connection and provides easy access to the
