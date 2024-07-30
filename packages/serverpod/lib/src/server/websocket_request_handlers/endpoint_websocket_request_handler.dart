@@ -107,7 +107,7 @@ abstract class EndpointWebsocketRequestHandler {
             var duration = DateTime.now().difference(startTime);
             unawaited(session.logManager?.logMessage(
               session,
-              messageId: session.currentMessageId(),
+              messageId: session.nextMessageId(),
               endpointName: endpointName,
               messageName: serialization['className'],
               duration: duration,

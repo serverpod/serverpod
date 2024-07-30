@@ -222,7 +222,6 @@ abstract class Session {
     _logManager?.logEntry(
       this,
       message: message,
-      messageId: _messageId,
       level: level ?? LogLevel.info,
       error: exception?.toString(),
       stackTrace: stackTrace,
@@ -582,7 +581,10 @@ extension SessionInternalMethods on Session {
   SessionLogManager? get logManager => _logManager;
 
   /// Returns the next message id for the session.
-  int currentMessageId() {
+  int? get messageId => _messageId;
+
+  /// Returns the next message id for the session.
+  int nextMessageId() {
     var id = _messageId ?? 0;
     _messageId = id + 1;
 
