@@ -157,6 +157,12 @@ class Endpoints extends _i1.EndpointDispatch {
           'logging',
           null,
         ),
+      'streamLogging': _i17.StreamLogging()
+        ..initialize(
+          server,
+          'streamLogging',
+          null,
+        ),
       'loggingDisabled': _i18.LoggingDisabledEndpoint()
         ..initialize(
           server,
@@ -2357,6 +2363,11 @@ class Endpoints extends _i1.EndpointDispatch {
                   .twoQueries(session),
         ),
       },
+    );
+    connectors['streamLogging'] = _i1.EndpointConnector(
+      name: 'streamLogging',
+      endpoint: endpoints['streamLogging']!,
+      methodConnectors: {},
     );
     connectors['loggingDisabled'] = _i1.EndpointConnector(
       name: 'loggingDisabled',

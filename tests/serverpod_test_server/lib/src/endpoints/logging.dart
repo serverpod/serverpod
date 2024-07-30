@@ -63,3 +63,13 @@ class LoggingEndpoint extends Endpoint {
     // do nothing
   }
 }
+
+class StreamLogging extends Endpoint {
+  @override
+  Future<void> handleStreamMessage(
+    StreamingSession session,
+    SerializableModel message,
+  ) async {
+    session.log('This is a message', level: LogLevel.debug);
+  }
+}

@@ -1037,6 +1037,14 @@ class EndpointLogging extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointStreamLogging extends _i1.EndpointRef {
+  EndpointStreamLogging(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'streamLogging';
+}
+
+/// {@category Endpoint}
 class EndpointLoggingDisabled extends _i1.EndpointRef {
   EndpointLoggingDisabled(_i1.EndpointCaller caller) : super(caller);
 
@@ -1661,6 +1669,7 @@ class Client extends _i1.ServerpodClient {
     futureCalls = EndpointFutureCalls(this);
     listParameters = EndpointListParameters(this);
     logging = EndpointLogging(this);
+    streamLogging = EndpointStreamLogging(this);
     loggingDisabled = EndpointLoggingDisabled(this);
     mapParameters = EndpointMapParameters(this);
     methodStreaming = EndpointMethodStreaming(this);
@@ -1711,6 +1720,8 @@ class Client extends _i1.ServerpodClient {
   late final EndpointListParameters listParameters;
 
   late final EndpointLogging logging;
+
+  late final EndpointStreamLogging streamLogging;
 
   late final EndpointLoggingDisabled loggingDisabled;
 
@@ -1764,6 +1775,7 @@ class Client extends _i1.ServerpodClient {
         'futureCalls': futureCalls,
         'listParameters': listParameters,
         'logging': logging,
+        'streamLogging': streamLogging,
         'loggingDisabled': loggingDisabled,
         'mapParameters': mapParameters,
         'methodStreaming': methodStreaming,
