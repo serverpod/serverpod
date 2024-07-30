@@ -107,15 +107,13 @@ abstract class EndpointWebsocketRequestHandler {
             var duration = DateTime.now().difference(startTime);
             unawaited(session.logManager?.logMessage(
               session,
-              messageId: session.currentMessageId,
+              messageId: session.currentMessageId(),
               endpointName: endpointName,
               messageName: serialization['className'],
               duration: duration,
               error: messageError?.toString(),
               stackTrace: messageStackTrace,
             ));
-
-            session.currentMessageId += 1;
           }
         }
       } catch (e, s) {

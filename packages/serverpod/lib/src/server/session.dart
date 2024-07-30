@@ -34,6 +34,8 @@ abstract class Session {
   @internal
   late final SessionLogEntryCache sessionLogs;
 
+  int? _messageId;
+
   AuthenticationInfo? _authenticated;
 
   /// Updates the authentication information for the session.
@@ -113,8 +115,10 @@ abstract class Session {
     WebSocket? webSocket,
     required this.enableLogging,
     required this.endpointName,
+    int? messageId,
     this.methodName,
   })  : _authenticationKey = authenticationKey,
+        _messageId = messageId,
         sessionId = sessionId ?? const Uuid().v4obj() {
     _startTime = DateTime.now();
 
@@ -215,15 +219,10 @@ abstract class Session {
       );
     }
 
-    int? messageId;
-    if (this is StreamingSession) {
-      messageId = (this as StreamingSession).currentMessageId;
-    }
-
     _logManager?.logEntry(
       this,
       message: message,
-      messageId: messageId,
+      messageId: _messageId,
       level: level ?? LogLevel.info,
       error: exception?.toString(),
       stackTrace: stackTrace,
@@ -338,7 +337,7 @@ class MethodStreamSession extends Session {
     required String methodName,
     required this.connectionId,
   })  : _methodName = methodName,
-        super(methodName: methodName);
+        super(methodName: methodName, messageId: 0);
 }
 
 /// When a web socket connection is opened to the [Server] a [StreamingSession]
@@ -360,10 +359,6 @@ class StreamingSession extends Session {
   /// Set if there is an open session log.
   int? sessionLogId;
 
-  /// The id of the current incoming message being processed. Increments by 1
-  /// for each message passed to an endpoint for processing.
-  int currentMessageId = 0;
-
   String _endpointName;
 
   /// The name of the endpoint that is being called.
@@ -380,7 +375,8 @@ class StreamingSession extends Session {
     required this.webSocket,
     super.endpointName = 'StreamingSession',
     super.enableLogging = true,
-  }) : _endpointName = endpointName {
+  })  : _endpointName = endpointName,
+        super(messageId: 0) {
     // Read query parameters
     var queryParameters = <String, String>{};
     queryParameters.addAll(uri.queryParameters);
@@ -584,4 +580,12 @@ class MessageCentralAccess {
 extension SessionInternalMethods on Session {
   /// Returns the [LogManager] for the session.
   SessionLogManager? get logManager => _logManager;
+
+  /// Returns the next message id for the session.
+  int currentMessageId() {
+    var id = _messageId ?? 0;
+    _messageId = id + 1;
+
+    return id;
+  }
 }
