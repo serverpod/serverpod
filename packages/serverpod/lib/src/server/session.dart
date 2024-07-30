@@ -7,7 +7,6 @@ import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod/src/server/log_manager/log_writers.dart';
-import 'package:serverpod/src/server/log_manager/session_log_cache.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import '../cache/caches.dart';
 import '../database/database.dart';
@@ -29,10 +28,6 @@ abstract class Session {
 
   /// The time the session object was created.
   DateTime get startTime => _startTime;
-
-  /// Log messages saved during the session.
-  @internal
-  late final SessionLogEntryCache sessionLogs;
 
   int? _messageId;
 
@@ -144,8 +139,6 @@ abstract class Session {
     } else {
       _logManager = null;
     }
-
-    sessionLogs = server.serverpod.logManager.initializeSessionLog(this);
   }
 
   LogWriter _createLogWriter(Session session, LogSettingsManager settings) {

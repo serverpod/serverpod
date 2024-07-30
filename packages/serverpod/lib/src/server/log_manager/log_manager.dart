@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/server/log_manager/log_writers.dart';
-import 'package:serverpod/src/server/log_manager/session_log_cache.dart';
 import 'package:serverpod/src/server/session.dart';
 import 'package:synchronized/synchronized.dart';
 
@@ -130,7 +129,6 @@ class SessionLogManager {
       'ENTRY',
       session,
       entry,
-      session.sessionLogs.logEntries,
       _logWriter.logEntry,
     );
   }
@@ -178,7 +176,6 @@ class SessionLogManager {
       'QUERY',
       session,
       entry,
-      session.sessionLogs.queries,
       _logWriter.logQuery,
     );
   }
@@ -227,7 +224,6 @@ class SessionLogManager {
       'MESSAGE',
       session,
       entry,
-      session.sessionLogs.messages,
       _logWriter.logMessage,
     );
   }
@@ -236,7 +232,6 @@ class SessionLogManager {
     String type,
     Session session,
     T entry,
-    List<T> logCollector,
     Future<void> Function(T) writeLog,
   ) async {
     if (!_isLoggingOpened) await _openLog(session);
@@ -353,8 +348,6 @@ class LogManager {
   @Deprecated('Will be removed in 3.0.0')
   final RuntimeSettings runtimeSettings;
 
-  final List<SessionLogEntryCache> _openSessionLogs = [];
-
   int _nextTemporarySessionId = -1;
 
   /// Returns a new unique temporary session id. The id will be negative, and
@@ -370,15 +363,6 @@ class LogManager {
     this.runtimeSettings, {
     required String serverId,
   });
-
-  /// Initializes the logging for a session, automatically called when a session
-  /// is created. Each call to this method should have a corresponding
-  /// [finalizeSessionLog] call.
-  SessionLogEntryCache initializeSessionLog(Session session) {
-    var logEntry = SessionLogEntryCache(session);
-    _openSessionLogs.add(logEntry);
-    return logEntry;
-  }
 }
 
 extension on Session {
