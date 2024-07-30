@@ -287,10 +287,10 @@ class WebCallSession extends Session {
   /// Creates a new [Session] for a method call to an endpoint.
   WebCallSession({
     required super.server,
-    required String path,
+    required super.endpointName,
     required super.authenticationKey,
     super.enableLogging = true,
-  }) : super(endpointName: path);
+  });
 }
 
 /// When a connection is made to the [Server] to an endpoint method that uses a
