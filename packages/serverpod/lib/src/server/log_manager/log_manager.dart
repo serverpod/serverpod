@@ -296,7 +296,8 @@ class SessionLogManager {
       }
     }
 
-    var slowMicros = (logSettings.slowSessionDuration * 1000000.0).toInt();
+    var slowMicros =
+        (logSettings.slowSessionDuration * _microNormalizer).toInt();
     var isSlow =
         duration > Duration(microseconds: slowMicros) && !session.isLongLived;
 
@@ -312,7 +313,7 @@ class SessionLogManager {
         touched: now,
         endpoint: session.endpointName,
         method: session.methodName,
-        duration: duration.inMicroseconds / 1000000.0,
+        duration: duration.inMicroseconds / _microNormalizer,
         numQueries: _numberOfQueries,
         isOpen: false,
         slow: isSlow,
