@@ -15,8 +15,6 @@ import '../database/database.dart';
 /// contains all data associated with the current connection and provides
 /// easy access to the database.
 abstract class Session {
-  final bool _isLongLived;
-
   /// The id of the session.
   final UuidValue sessionId;
 
@@ -32,6 +30,8 @@ abstract class Session {
   DateTime get startTime => _startTime;
 
   AuthenticationInfo? _authenticated;
+
+  final bool _isLongLived;
 
   /// Updates the authentication information for the session.
   /// This is typically done by the [Server] when the user is authenticated.
@@ -229,16 +229,9 @@ abstract class Session {
       );
     }
 
-    /// TODO this should probably be removed and handled lower down...?!
-    int? messageId;
-    if (this is StreamingSession) {
-      messageId = (this as StreamingSession).currentMessageId;
-    }
-
     _logManager?.logEntry(
       this,
       message: message,
-      messageId: messageId,
       level: level ?? LogLevel.info,
       error: exception?.toString(),
       stackTrace: stackTrace,
@@ -355,7 +348,12 @@ class StreamingSession extends Session {
 
   /// The id of the current incoming message being processed. Increments by 1
   /// for each message passed to an endpoint for processing.
-  int currentMessageId = 0;
+  int get currentMessageId => _currentMessageId;
+
+  /// Creates the next message id.
+  int get createMessageId => _currentMessageId++;
+
+  int _currentMessageId = 0;
 
   String _endpointName;
 
@@ -576,9 +574,10 @@ class MessageCentralAccess {
 /// This is used to provide access to internal methods that should not be
 /// accessed from outside the library.
 extension SessionInternalMethods on Session {
-  /// Returns the [LogManager] for the session.
+  /// Returns the [SessionLogManager] for the session.
   SessionLogManager? get logManager => _logManager;
 
-  /// Returns true if the session should log slow queries.
+  /// Returns true if the session is expected to be alive for an extended
+  /// period of time.
   bool get isLongLived => _isLongLived;
 }

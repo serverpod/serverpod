@@ -22,6 +22,8 @@ class SessionLogManager {
 
   int _numberOfQueries = 0;
 
+  int? _messageId;
+
   int _logOrderId;
 
   bool _isLoggingOpened;
@@ -93,7 +95,6 @@ class SessionLogManager {
   @internal
   Future<void> logEntry(
     Session session, {
-    int? messageId,
     LogLevel? level,
     required String message,
     String? error,
@@ -102,7 +103,7 @@ class SessionLogManager {
     var entry = LogEntry(
       sessionLogId: _temporarySessionId,
       serverId: _serverId,
-      messageId: messageId,
+      messageId: _messageId,
       logLevel: level ?? LogLevel.info,
       message: message,
       time: DateTime.now(),
@@ -184,7 +185,6 @@ class SessionLogManager {
     Session session, {
     required String endpointName,
     required String messageName,
-    required int messageId,
     required Duration duration,
     required String? error,
     required StackTrace? stackTrace,
@@ -203,6 +203,8 @@ class SessionLogManager {
 
     if (!shouldLog) return;
 
+    var messageId = _messageId ??= 0;
+
     var entry = MessageLogEntry(
       sessionLogId: _temporarySessionId,
       serverId: _serverId,
@@ -215,6 +217,8 @@ class SessionLogManager {
       stackTrace: stackTrace?.toString(),
       slow: slow,
     );
+
+    _messageId = messageId++;
 
     await _internalLogger(
       'MESSAGE',
@@ -346,16 +350,6 @@ class LogManager {
   /// The [RuntimeSettings] the log manager retrieves its settings from.
   @Deprecated('Will be removed in 3.0.0')
   final RuntimeSettings runtimeSettings;
-
-  int _nextTemporarySessionId = -1;
-
-  /// Returns a new unique temporary session id. The id will be negative, and
-  /// ids are only unique to this running instance.
-  int nextTemporarySessionId() {
-    var id = _nextTemporarySessionId;
-    _nextTemporarySessionId -= 1;
-    return id;
-  }
 
   /// Creates a new [LogManager] from [RuntimeSettings].
   LogManager(
