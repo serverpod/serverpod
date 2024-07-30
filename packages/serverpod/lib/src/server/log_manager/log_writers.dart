@@ -17,14 +17,16 @@ abstract class LogWriter {
   /// Logs a message from a stream.
   Future<void> logMessage(MessageLogEntry entry);
 
-  /// Opens a new streaming log and returns the id of the log.
-  /// The id is used to identify the log when writing log entries so that
-  /// they can be identified to a single session.
-  Future<int> openLog(SessionLogEntry entry);
+  /// Opens the log for a session, this method should be called before any other log
+  /// methods are called.
+  Future<void> openLog(SessionLogEntry entry);
 
-  /// Closes a streaming log.
+  /// Closes the log for a session. This method should be called after all logs
+  /// have been written. Returns the id of the log. It is valid to call this method
+  /// without calling [openLog] first, in that case the [entry] will be used to create
+  /// a new log entry.
   /// This marks the end of all logs from this session.
-  Future<void> closeLog(SessionLogEntry entry);
+  Future<int> closeLog(SessionLogEntry entry);
 }
 
 @internal
@@ -44,19 +46,14 @@ class CachedLogWriter implements LogWriter {
 
   CachedLogWriter(this._logWriter);
 
-  static const _fakeId = -1;
-
   @override
-  Future<int> openLog(SessionLogEntry entry) async {
-    if (_openLogEntry != null) return _fakeId;
+  Future<void> openLog(SessionLogEntry entry) async {
     _openLogEntry = entry;
-    return _fakeId;
   }
 
   @override
-  Future<void> closeLog(SessionLogEntry entry) async {
-    var openLogEntry = _openLogEntry;
-    if (openLogEntry == null) return;
+  Future<int> closeLog(SessionLogEntry entry) async {
+    var openLogEntry = _openLogEntry ?? entry;
 
     await _logWriter.openLog(openLogEntry);
 
@@ -94,48 +91,71 @@ class CachedLogWriter implements LogWriter {
 @internal
 class DatabaseLogWriter extends LogWriter {
   final Session _session;
-  late int sessionLogId;
+  int? _sessionLogId;
 
   DatabaseLogWriter(this._session);
 
   @override
   Future<void> logEntry(LogEntry entry) async {
-    entry.sessionLogId = sessionLogId;
+    var id = _sessionLogId;
+    if (id == null) throw StateError('The log has not been opened');
+
+    entry.sessionLogId = id;
     await _databaseLog(_session, entry);
   }
 
   @override
   Future<void> logMessage(MessageLogEntry entry) async {
-    entry.sessionLogId = sessionLogId;
+    var id = _sessionLogId;
+    if (id == null) throw StateError('The log has not been opened');
+
+    entry.sessionLogId = id;
     await _databaseLog(_session, entry);
   }
 
   @override
   Future<void> logQuery(QueryLogEntry entry) async {
-    entry.sessionLogId = sessionLogId;
+    var id = _sessionLogId;
+    if (id == null) throw StateError('The log has not been opened');
+
+    entry.sessionLogId = id;
     await _databaseLog(_session, entry);
   }
 
   @override
-  Future<int> openLog(SessionLogEntry entry) async {
-    var sessionLog = await _databaseLog(_session, entry);
-    sessionLogId = sessionLog.id!;
-    return sessionLogId;
+  Future<void> openLog(SessionLogEntry entry) async {
+    if (_sessionLogId != null) throw StateError('The log is already open');
+    _sessionLogId = await _databaseLog(_session, entry);
   }
 
   @override
-  Future<void> closeLog(SessionLogEntry entry) async {
-    entry.id = sessionLogId;
-    var tempSession = await _session.serverpod.createSession(
+  Future<int> closeLog(SessionLogEntry entry) async {
+    var id = _sessionLogId;
+    if (id == null) {
+      id = await _databaseLog(_session, entry);
+    } else {
+      entry.id = id;
+      await _databaseLogUpdate(_session, entry);
+    }
+
+    _sessionLogId = null;
+    return id;
+  }
+
+  Future<void> _databaseLogUpdate<T extends TableRow>(
+    Session session,
+    T entry,
+  ) async {
+    var tempSession = await session.serverpod.createSession(
       enableLogging: false,
     );
 
-    await SessionLogEntry.db.updateRow(tempSession, entry);
+    await tempSession.db.updateRow<T>(entry);
 
     await tempSession.close();
   }
 
-  Future<T> _databaseLog<T extends TableRow>(Session session, T entry) async {
+  Future<int> _databaseLog<T extends TableRow>(Session session, T entry) async {
     var tempSession = await session.serverpod.createSession(
       enableLogging: false,
     );
@@ -144,7 +164,10 @@ class DatabaseLogWriter extends LogWriter {
 
     await tempSession.close();
 
-    return result;
+    var id = result.id;
+
+    if (id == null) throw StateError('Failed to insert log entry');
+    return id;
   }
 }
 
@@ -173,15 +196,16 @@ class StdOutLogWriter extends LogWriter {
   }
 
   @override
-  Future<int> openLog(SessionLogEntry entry) async {
+  Future<void> openLog(SessionLogEntry entry) async {
     entry.id = _logId;
     stdout.writeln(entry);
-    return _logId;
   }
 
   @override
-  Future<void> closeLog(SessionLogEntry entry) async {
-    entry.id = hashCode;
+  Future<int> closeLog(SessionLogEntry entry) async {
+    entry.id = _logId;
     stdout.writeln(entry);
+
+    return _logId;
   }
 }
