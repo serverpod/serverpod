@@ -81,7 +81,11 @@ abstract class EndpointDispatch {
     // Read query parameters
     var queryParameters = <String, dynamic>{};
     if (body != '' && body != 'null') {
-      queryParameters = jsonDecode(body).cast<String, dynamic>();
+      try {
+        queryParameters = jsonDecode(body).cast<String, dynamic>();
+      } catch (_) {
+        return ResultInvalidParams('Invalid JSON in body: $body');
+      }
     }
 
     // Add query parameters from uri
