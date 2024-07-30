@@ -277,6 +277,8 @@ class SessionLogManager {
     String? exception,
     StackTrace? stackTrace,
   }) async {
+    if (!_isLoggingOpened) await _openingLock.synchronized(() => null);
+
     var duration = session.duration;
     LogSettings logSettings = _settingsForSession(session);
 

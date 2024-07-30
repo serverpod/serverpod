@@ -172,7 +172,7 @@ void main() async {
 
       expect(logs.first.sessionLogEntry.endpoint, 'logging');
       expect(logs.first.sessionLogEntry.method, 'failedQueryMethod');
-    }, skip: 'Fail because of the synchronized lock method, not sure why.');
+    });
 
     test(
         'Given a log setting with everything turned on when calling a method logging a message then the log including the message log is written.',
