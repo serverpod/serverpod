@@ -331,13 +331,9 @@ class SessionLogManager {
     LogSettings logSettings = _settingsForSession(session);
 
     if (session.serverpod.runMode == ServerpodRunMode.development) {
-      if (session is MethodCallSession) {
-        stdout.writeln(
-            'METHOD CALL: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: $_numberOfQueries authenticatedUser: $authenticatedUserId');
-      } else if (session is FutureCallSession) {
-        stdout.writeln(
-            'FUTURE CALL: ${session.futureCallName} duration: ${duration.inMilliseconds}ms numQueries: $_numberOfQueries');
-      }
+      stdout.writeln(
+        'CALL: ${session.callName} duration: ${duration.inMilliseconds}ms numQueries: $_numberOfQueries authenticatedUser: $authenticatedUserId',
+      );
       if (exception != null) {
         stdout.writeln(exception);
         stdout.writeln('$stackTrace');
@@ -385,10 +381,8 @@ class SessionLogManager {
         }
       } catch (e, logStackTrace) {
         stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');
-        if (session.methodName != null) {
-          stderr.writeln(
-              'CALL: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: $_numberOfQueries authenticatedUser: $authenticatedUserId');
-        }
+        stderr.writeln(
+            'CALL: ${session.callName} duration: ${duration.inMilliseconds}ms numQueries: $_numberOfQueries authenticatedUser: $authenticatedUserId');
         stderr.writeln('CALL error: $exception');
         stderr.writeln('$logStackTrace');
 
@@ -437,6 +431,15 @@ class LogManager {
     var logEntry = SessionLogEntryCache(session);
     _openSessionLogs.add(logEntry);
     return logEntry;
+  }
+}
+
+extension on Session {
+  String get callName {
+    if (methodName != null) {
+      return '$endpointName.$methodName';
+    }
+    return endpointName;
   }
 }
 
