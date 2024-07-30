@@ -166,13 +166,15 @@ void main() async {
         await client.logging.failedQueryMethod();
       } catch (_) {}
 
+      await Future.delayed(Duration(milliseconds: 100));
+
       var logs = await LoggingUtil.findAllLogs(session);
 
       expect(logs, hasLength(1));
 
       expect(logs.first.sessionLogEntry.endpoint, 'logging');
       expect(logs.first.sessionLogEntry.method, 'failedQueryMethod');
-    }, skip: 'Fail because of the synchronized lock method, not sure why.');
+    });
 
     test(
         'Given a log setting with everything turned on when calling a method logging a message then the log including the message log is written.',
