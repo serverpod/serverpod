@@ -15,6 +15,8 @@ import '../database/database.dart';
 /// contains all data associated with the current connection and provides
 /// easy access to the database.
 abstract class Session {
+  final bool _isLongLived;
+
   /// The id of the session.
   final UuidValue sessionId;
 
@@ -108,8 +110,10 @@ abstract class Session {
     WebSocket? webSocket,
     required this.enableLogging,
     required this.endpointName,
+    bool isLongLived = false,
     this.methodName,
   })  : _authenticationKey = authenticationKey,
+        _isLongLived = isLongLived,
         sessionId = sessionId ?? const Uuid().v4obj() {
     _startTime = DateTime.now();
 
@@ -225,6 +229,7 @@ abstract class Session {
       );
     }
 
+    /// TODO this should probably be removed and handled lower down...?!
     int? messageId;
     if (this is StreamingSession) {
       messageId = (this as StreamingSession).currentMessageId;
@@ -326,7 +331,7 @@ class MethodStreamSession extends Session {
     required String methodName,
     required this.connectionId,
   })  : _methodName = methodName,
-        super(methodName: methodName);
+        super(methodName: methodName, isLongLived: true);
 }
 
 /// When a web socket connection is opened to the [Server] a [StreamingSession]
@@ -368,7 +373,8 @@ class StreamingSession extends Session {
     required this.webSocket,
     super.endpointName = 'StreamingSession',
     super.enableLogging = true,
-  }) : _endpointName = endpointName {
+  })  : _endpointName = endpointName,
+        super(isLongLived: true) {
     // Read query parameters
     var queryParameters = <String, String>{};
     queryParameters.addAll(uri.queryParameters);
@@ -572,4 +578,7 @@ class MessageCentralAccess {
 extension SessionInternalMethods on Session {
   /// Returns the [LogManager] for the session.
   SessionLogManager? get logManager => _logManager;
+
+  /// Returns true if the session should log slow queries.
+  bool get isLongLived => _isLongLived;
 }
