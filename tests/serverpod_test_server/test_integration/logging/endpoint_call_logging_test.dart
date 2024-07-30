@@ -147,6 +147,48 @@ void main() async {
     });
 
     test(
+        'Given a log setting that enables all logs when calling a method executing a query then a query log is created',
+        () async {
+      var settings = RuntimeSettingsBuilder()
+          .withLogSettings(
+            LogSettingsBuilder().build(),
+          )
+          .build();
+
+      await server.updateRuntimeSettings(settings);
+
+      await client.logging.queryMethod(1);
+
+      var logs = await LoggingUtil.findAllLogs(session);
+
+      expect(logs, hasLength(1));
+
+      expect(logs.first.queries, hasLength(1));
+      expect(logs.first.sessionLogEntry.numQueries, 1);
+    });
+
+    test(
+        'Given a log setting that enables all logs when calling a method executing several queries then a log for each query is created',
+        () async {
+      var settings = RuntimeSettingsBuilder()
+          .withLogSettings(
+            LogSettingsBuilder().build(),
+          )
+          .build();
+
+      await server.updateRuntimeSettings(settings);
+
+      await client.logging.queryMethod(4);
+
+      var logs = await LoggingUtil.findAllLogs(session);
+
+      expect(logs, hasLength(1));
+
+      expect(logs.first.queries, hasLength(4));
+      expect(logs.first.sessionLogEntry.numQueries, 4);
+    });
+
+    test(
         'Given a log setting that enables failed query logging when calling a method executing an invalid query then a single log entry is created.',
         () async {
       var settings = RuntimeSettingsBuilder()

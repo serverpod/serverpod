@@ -10,9 +10,6 @@ class SessionLogEntryCache {
   /// Queries made during the session.
   final List<QueryLogEntry> queries = [];
 
-  /// Number of queries made during this session.
-  int get numQueries => queries.length;
-
   /// Log entries made during the session.
   final List<LogEntry> logEntries = [];
 

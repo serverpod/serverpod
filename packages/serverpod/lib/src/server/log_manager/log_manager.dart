@@ -20,6 +20,8 @@ class SessionLogManager {
 
   final LogSettings Function(Session) _settingsForSession;
 
+  int _numberOfQueries;
+
   int _logOrderId;
 
   int get _nextLogOrderId => ++_logOrderId;
@@ -31,6 +33,7 @@ class SessionLogManager {
     required LogSettings Function(Session) settingsForSession,
     required String serverId,
   })  : _logOrderId = 0,
+        _numberOfQueries = 0,
         _logWriter = logWriter,
         _settingsForSession = settingsForSession,
         _serverId = serverId;
@@ -176,6 +179,8 @@ class SessionLogManager {
       _logWriter.logStreamQuery,
       (sessionLogId, entry) => entry.sessionLogId = sessionLogId,
     );
+
+    _numberOfQueries++;
   }
 
   /// Logs a message from a stream, depending on the session type it will be
@@ -313,10 +318,10 @@ class SessionLogManager {
     if (session.serverpod.runMode == ServerpodRunMode.development) {
       if (session is MethodCallSession) {
         stdout.writeln(
-            'METHOD CALL: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
+            'METHOD CALL: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: $_numberOfQueries authenticatedUser: $authenticatedUserId');
       } else if (session is FutureCallSession) {
         stdout.writeln(
-            'FUTURE CALL: ${session.futureCallName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length}');
+            'FUTURE CALL: ${session.futureCallName} duration: ${duration.inMilliseconds}ms numQueries: $_numberOfQueries');
       }
       if (exception != null) {
         stdout.writeln(exception);
@@ -346,7 +351,7 @@ class SessionLogManager {
         endpoint: session.endpointName,
         method: session.methodName,
         duration: duration.inMicroseconds / 1000000.0,
-        numQueries: cachedEntry.numQueries,
+        numQueries: _numberOfQueries,
         slow: isSlow,
         error: exception,
         stackTrace: stackTrace?.toString(),
@@ -367,7 +372,7 @@ class SessionLogManager {
         stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');
         if (session.methodName != null) {
           stderr.writeln(
-              'CALL: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
+              'CALL: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: $_numberOfQueries authenticatedUser: $authenticatedUserId');
         }
         stderr.writeln('CALL error: $exception');
         stderr.writeln('$logStackTrace');
