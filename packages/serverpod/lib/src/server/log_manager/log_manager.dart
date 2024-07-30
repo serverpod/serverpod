@@ -30,6 +30,8 @@ class SessionLogManager {
 
   final _FutureTaskManager _logTasks;
 
+  bool _isLoggingOpened;
+
   /// Creates a new [LogManager] from [RuntimeSettings].
   @internal
   SessionLogManager(
@@ -41,6 +43,7 @@ class SessionLogManager {
         _logWriter = logWriter,
         _settingsForSession = settingsForSession,
         _serverId = serverId,
+        _isLoggingOpened = false,
         _logTasks = _FutureTaskManager();
 
   bool _shouldLogQuery({
@@ -245,7 +248,7 @@ class SessionLogManager {
     Future<void> Function(Session, T) writeLog,
     Function(int, T) setSessionLogId,
   ) async {
-    await _attemptOpenStreamingLog(session: session);
+    if (!_isLoggingOpened) await _attemptOpenStreamingLog(session: session);
 
     if (_continuouslyLogging(session) && session is StreamingSession) {
       try {
@@ -271,6 +274,8 @@ class SessionLogManager {
     required Session session,
   }) async {
     await _openStreamLogLock.synchronized(() async {
+      if (_isLoggingOpened) return;
+
       if (session is! StreamingSession) {
         // Only open streaming logs for streaming sessions.
         return;
@@ -304,6 +309,8 @@ class SessionLogManager {
       );
 
       session.sessionLogId = sessionLogId;
+
+      _isLoggingOpened = true;
     });
   }
 
@@ -316,7 +323,7 @@ class SessionLogManager {
     String? exception,
     StackTrace? stackTrace,
   }) async {
-    await _openStreamLogLock.synchronized(() {});
+    if (!_isLoggingOpened) await _openStreamLogLock.synchronized(() {});
     await _logTasks.awaitAllTasks();
 
     var duration = session.duration;
