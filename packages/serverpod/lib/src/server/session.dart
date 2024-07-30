@@ -578,4 +578,9 @@ extension SessionInternalMethods on Session {
 
     return id;
   }
+
+  /// Returns true if the session is expected to be alive for an extended
+  /// period of time.
+  bool get isLongLived =>
+      this is StreamingSession || this is MethodStreamSession;
 }

@@ -297,8 +297,8 @@ class SessionLogManager {
     }
 
     var slowMicros = (logSettings.slowSessionDuration * 1000000.0).toInt();
-    var isSlow = duration > Duration(microseconds: slowMicros) &&
-        session is! StreamingSession;
+    var isSlow =
+        duration > Duration(microseconds: slowMicros) && !session.isLongLived;
 
     if (logSettings.logAllSessions ||
         (logSettings.logSlowSessions && isSlow) ||
