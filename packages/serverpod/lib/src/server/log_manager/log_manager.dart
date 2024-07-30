@@ -312,6 +312,7 @@ class SessionLogManager {
     String? exception,
     StackTrace? stackTrace,
   }) async {
+    await _openStreamLogLock.synchronized(() {});
     await _logTasks.awaitAllTasks();
 
     var duration = session.duration;
