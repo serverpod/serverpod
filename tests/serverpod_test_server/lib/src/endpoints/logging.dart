@@ -73,3 +73,13 @@ class StreamLogging extends Endpoint {
     session.log('This is a message', level: LogLevel.debug);
   }
 }
+
+class StreamQueryLogging extends Endpoint {
+  @override
+  Future<void> handleStreamMessage(
+    StreamingSession session,
+    SerializableModel message,
+  ) async {
+    await session.db.findFirstRow<SimpleData>();
+  }
+}
