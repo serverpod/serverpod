@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
-import 'package:serverpod/src/server/log_manager/log_writer.dart';
+import 'package:serverpod/src/server/log_manager/log_writers.dart';
 import 'package:serverpod/src/server/log_manager/session_log_cache.dart';
 import 'package:serverpod/src/server/session.dart';
 import 'package:synchronized/synchronized.dart';
@@ -93,11 +93,6 @@ class SessionLogManager {
     return false;
   }
 
-  bool _continuouslyLogging(Session session) =>
-      session is StreamingSession &&
-      session.sessionLogId != null &&
-      session.sessionLogId! >= 0;
-
   /// Logs an entry, depending on the session type it will be logged directly
   /// or stored in the temporary cache until the session is closed.
   /// This method can be called asynchronously.
@@ -136,8 +131,7 @@ class SessionLogManager {
       session,
       entry,
       session.sessionLogs.logEntries,
-      _logWriter.logStreamEntry,
-      (sessionLogId, entry) => entry.sessionLogId = sessionLogId,
+      _logWriter.logEntry,
     );
   }
 
@@ -185,8 +179,7 @@ class SessionLogManager {
       session,
       entry,
       session.sessionLogs.queries,
-      _logWriter.logStreamQuery,
-      (sessionLogId, entry) => entry.sessionLogId = sessionLogId,
+      _logWriter.logQuery,
     );
   }
 
@@ -235,8 +228,7 @@ class SessionLogManager {
       session,
       entry,
       session.sessionLogs.messages,
-      _logWriter.logStreamMessage,
-      (sessionLogId, entry) => entry.sessionLogId = sessionLogId,
+      _logWriter.logMessage,
     );
   }
 
@@ -245,24 +237,17 @@ class SessionLogManager {
     Session session,
     T entry,
     List<T> logCollector,
-    Future<void> Function(Session, T) writeLog,
-    Function(int, T) setSessionLogId,
+    Future<void> Function(T) writeLog,
   ) async {
     if (!_isLoggingOpened) await _attemptOpenStreamingLog(session: session);
 
-    if (_continuouslyLogging(session) && session is StreamingSession) {
-      try {
-        setSessionLogId(session.sessionLogId!, entry);
-        _logTasks.addTask(() => writeLog(session, entry));
-      } catch (exception, stackTrace) {
-        stderr
-            .writeln('${DateTime.now().toUtc()} FAILED TO LOG STREAMING $type');
-        stderr.write('ENDPOINT: ${session.endpointName}');
-        stderr.writeln('CALL error: $exception');
-        stderr.writeln('$stackTrace');
-      }
-    } else {
-      logCollector.add(entry);
+    try {
+      _logTasks.addTask(() => writeLog(entry));
+    } catch (exception, stackTrace) {
+      stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG $type');
+      stderr.write('ENDPOINT: ${session.endpointName}');
+      stderr.writeln('CALL error: $exception');
+      stderr.writeln('$stackTrace');
     }
   }
 
@@ -303,12 +288,9 @@ class SessionLogManager {
         isOpen: true,
       );
 
-      var sessionLogId = await _logWriter.openStreamingLog(
-        session,
+      await _logWriter.openLog(
         sessionLogEntry,
       );
-
-      session.sessionLogId = sessionLogId;
 
       _isLoggingOpened = true;
     });
@@ -327,7 +309,6 @@ class SessionLogManager {
     await _logTasks.awaitAllTasks();
 
     var duration = session.duration;
-    var cachedEntry = session.sessionLogs;
     LogSettings logSettings = _settingsForSession(session);
 
     if (session.serverpod.runMode == ServerpodRunMode.development) {
@@ -347,12 +328,7 @@ class SessionLogManager {
     if (logSettings.logAllSessions ||
         (logSettings.logSlowSessions && isSlow) ||
         (logSettings.logFailedSessions && exception != null) ||
-        cachedEntry.queries.isNotEmpty ||
-        cachedEntry.logEntries.isNotEmpty ||
-        cachedEntry.messages.isNotEmpty ||
-        _continuouslyLogging(session)) {
-      int? sessionLogId;
-
+        _isLoggingOpened) {
       var now = DateTime.now();
 
       var sessionLogEntry = SessionLogEntry(
@@ -363,6 +339,7 @@ class SessionLogManager {
         method: session.methodName,
         duration: duration.inMicroseconds / 1000000.0,
         numQueries: _numberOfQueries,
+        isOpen: false,
         slow: isSlow,
         error: exception,
         stackTrace: stackTrace?.toString(),
@@ -370,15 +347,7 @@ class SessionLogManager {
       );
 
       try {
-        if (_continuouslyLogging(session)) {
-          session as StreamingSession;
-          sessionLogId = session.sessionLogId!;
-          sessionLogEntry.id = sessionLogId;
-          sessionLogEntry.isOpen = false;
-          await _logWriter.closeStreamingLog(session, sessionLogEntry);
-        } else {
-          await _logWriter.logAllCached(session, sessionLogEntry, cachedEntry);
-        }
+        return await _logWriter.closeLog(sessionLogEntry);
       } catch (e, logStackTrace) {
         stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');
         stderr.writeln(
@@ -392,8 +361,6 @@ class SessionLogManager {
         stderr.writeln('Current stacktrace:');
         stderr.writeln('${StackTrace.current}');
       }
-
-      return sessionLogId;
     }
     return null;
   }

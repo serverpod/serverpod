@@ -5,7 +5,8 @@ import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
-import 'package:serverpod/src/server/log_manager/log_writer.dart';
+import 'package:serverpod/src/server/log_manager/log_settings.dart';
+import 'package:serverpod/src/server/log_manager/log_writers.dart';
 import 'package:serverpod/src/server/log_manager/session_log_cache.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import '../cache/caches.dart';
@@ -129,9 +130,10 @@ abstract class Session {
     }
 
     if (enableLogging) {
-      var logWriter = Features.enablePersistentLogging
-          ? DatabaseLogWriter()
-          : StdOutLogWriter();
+      var logWriter = _createLogWriter(
+        this,
+        server.serverpod.logSettingsManager,
+      );
       _logManager = SessionLogManager(
         logWriter,
         settingsForSession: (Session session) => server
@@ -144,6 +146,22 @@ abstract class Session {
     }
 
     sessionLogs = server.serverpod.logManager.initializeSessionLog(this);
+  }
+
+  LogWriter _createLogWriter(Session session, LogSettingsManager settings) {
+    var logSettings = settings.getLogSettingsForSession(session);
+
+    LogWriter logWriter = switch (Features.enablePersistentLogging) {
+      (true) => DatabaseLogWriter(session),
+      (false) => StdOutLogWriter(session),
+    };
+
+    if ((session is StreamingSession || session is MethodStreamSession) &&
+        logSettings.logStreamingSessionsContinuously) {
+      return logWriter;
+    }
+
+    return CachedLogWriter(logWriter);
   }
 
   bool _initialized = false;
