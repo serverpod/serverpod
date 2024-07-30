@@ -970,6 +970,12 @@ class EndpointLogging extends _i1.EndpointRef {
         {'seconds': seconds},
       );
 
+  _i2.Future<void> queryMethod(int queries) => caller.callServerEndpoint<void>(
+        'logging',
+        'queryMethod',
+        {'queries': queries},
+      );
+
   _i2.Future<void> failedQueryMethod() => caller.callServerEndpoint<void>(
         'logging',
         'failedQueryMethod',
