@@ -239,7 +239,7 @@ class SessionLogManager {
     List<T> logCollector,
     Future<void> Function(T) writeLog,
   ) async {
-    if (!_isLoggingOpened) await _attemptOpenStreamingLog(session: session);
+    if (!_isLoggingOpened) await _openLog(session);
 
     try {
       _logTasks.addTask(() => writeLog(entry));
@@ -251,31 +251,11 @@ class SessionLogManager {
     }
   }
 
-  final Lock _openStreamLogLock = Lock();
+  final Lock _openLogLock = Lock();
 
-  /// Sets up a log for a streaming session. Instead of writing all session data
-  /// when the session is completed the session will be continuously logged.
-  Future<void> _attemptOpenStreamingLog({
-    required Session session,
-  }) async {
-    await _openStreamLogLock.synchronized(() async {
+  Future<void> _openLog(Session session) async {
+    await _openLogLock.synchronized(() async {
       if (_isLoggingOpened) return;
-
-      if (session is! StreamingSession) {
-        // Only open streaming logs for streaming sessions.
-        return;
-      }
-
-      if (session.sessionLogId != null) {
-        // Streaming log is already opened.
-        return;
-      }
-
-      var logSettings = _settingsForSession(session);
-      if (!logSettings.logStreamingSessionsContinuously) {
-        // This call should not stream continuously.
-        return;
-      }
 
       var now = DateTime.now();
 
@@ -305,7 +285,7 @@ class SessionLogManager {
     String? exception,
     StackTrace? stackTrace,
   }) async {
-    if (!_isLoggingOpened) await _openStreamLogLock.synchronized(() {});
+    if (!_isLoggingOpened) await _openLogLock.synchronized(() {});
     await _logTasks.awaitAllTasks();
 
     var duration = session.duration;
