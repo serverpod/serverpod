@@ -2237,6 +2237,24 @@ class Endpoints extends _i1.EndpointDispatch {
             params['seconds'],
           ),
         ),
+        'queryMethod': _i1.MethodConnector(
+          name: 'queryMethod',
+          params: {
+            'queries': _i1.ParameterDescription(
+              name: 'queries',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['logging'] as _i17.LoggingEndpoint).queryMethod(
+            session,
+            params['queries'],
+          ),
+        ),
         'failedQueryMethod': _i1.MethodConnector(
           name: 'failedQueryMethod',
           params: {},

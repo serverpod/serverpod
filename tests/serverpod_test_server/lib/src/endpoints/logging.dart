@@ -5,17 +5,21 @@ class LoggingEndpoint extends Endpoint {
   Future<void> slowQueryMethod(Session session, int seconds) async {
     try {
       await session.db.unsafeQuery('SELECT pg_sleep($seconds);');
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
+  }
+
+  Future<void> queryMethod(Session session, int queries) async {
+    try {
+      for (var i = 0; i < queries; i++) {
+        await Types.db.findFirstRow(session);
+      }
+    } catch (e) {}
   }
 
   Future<void> failedQueryMethod(Session session) async {
     try {
       await session.db.unsafeQuery('SELECT * FROM table_does_not_exist;');
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
   }
 
   Future<void> slowMethod(Session session, int delayMillis) async {
