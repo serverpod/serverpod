@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
@@ -27,6 +28,8 @@ class SessionLogManager {
 
   int get _nextLogOrderId => ++_logOrderId;
 
+  final _FutureTaskManager _logTasks;
+
   /// Creates a new [LogManager] from [RuntimeSettings].
   @internal
   SessionLogManager(
@@ -37,7 +40,8 @@ class SessionLogManager {
         _numberOfQueries = 0,
         _logWriter = logWriter,
         _settingsForSession = settingsForSession,
-        _serverId = serverId;
+        _serverId = serverId,
+        _logTasks = _FutureTaskManager();
 
   bool _shouldLogQuery({
     required Session session,
@@ -242,10 +246,11 @@ class SessionLogManager {
     Function(int, T) setSessionLogId,
   ) async {
     await _attemptOpenStreamingLog(session: session);
+
     if (_continuouslyLogging(session) && session is StreamingSession) {
       try {
         setSessionLogId(session.sessionLogId!, entry);
-        await writeLog(session, entry);
+        _logTasks.addTask(() => writeLog(session, entry));
       } catch (exception, stackTrace) {
         stderr
             .writeln('${DateTime.now().toUtc()} FAILED TO LOG STREAMING $type');
@@ -311,6 +316,9 @@ class SessionLogManager {
     String? exception,
     StackTrace? stackTrace,
   }) async {
+    await _openStreamLogLock.synchronized(() {});
+    await _logTasks.awaitAllTasks();
+
     var duration = session.duration;
     var cachedEntry = session.sessionLogs;
     LogSettings logSettings = _settingsForSession(session);
@@ -422,5 +430,48 @@ class LogManager {
     var logEntry = SessionLogEntryCache(session);
     _openSessionLogs.add(logEntry);
     return logEntry;
+  }
+}
+
+typedef _TaskCallback = Future<void> Function();
+
+class _FutureTaskManager {
+  final Set<_TaskCallback> _pendingTasks = {};
+
+  Completer<void>? _tasksCompleter;
+
+  /// Synchronously adds a task to the task manager.
+  void addTask(_TaskCallback task) {
+    _tasksCompleter ??= Completer<void>();
+    _pendingTasks.add(task);
+
+    task().then((value) {
+      _completeTask(task);
+    }).onError((error, stackTrace) {
+      _completeTask(task);
+      var e = error;
+      if (e is Exception) throw e;
+      if (e is Error) throw e;
+    });
+  }
+
+  void _completeTask(_TaskCallback task) {
+    _pendingTasks.remove(task);
+
+    var tasksCompleter = _tasksCompleter;
+    if (_pendingTasks.isEmpty && tasksCompleter != null) {
+      tasksCompleter.complete();
+      _tasksCompleter = null;
+    }
+  }
+
+  Future<void> awaitAllTasks() {
+    var completer = _tasksCompleter;
+
+    if (completer == null) {
+      return Future.value();
+    } else {
+      return completer.future;
+    }
   }
 }
