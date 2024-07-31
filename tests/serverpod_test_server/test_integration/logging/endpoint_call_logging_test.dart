@@ -189,6 +189,30 @@ void main() async {
     });
 
     test(
+        'Given a log setting that turns off all database query logging when calling a method executing several queries then the number of queries are still counted.',
+        () async {
+      var settings = RuntimeSettingsBuilder()
+          .withLogSettings(
+            LogSettingsBuilder()
+                .withLoggingTurnedDown()
+                .withLogAllSessions(true)
+                .build(),
+          )
+          .build();
+
+      await server.updateRuntimeSettings(settings);
+
+      await client.logging.queryMethod(4);
+
+      var logs = await LoggingUtil.findAllLogs(session);
+
+      expect(logs, hasLength(1));
+
+      expect(logs.first.queries, isEmpty);
+      expect(logs.first.sessionLogEntry.numQueries, 4);
+    });
+
+    test(
         'Given a log setting that enables failed query logging when calling a method executing an invalid query then a single log entry is created.',
         () async {
       var settings = RuntimeSettingsBuilder()

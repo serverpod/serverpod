@@ -147,6 +147,7 @@ class SessionLogManager {
     required StackTrace stackTrace,
   }) async {
     var executionTime = duration.inMicroseconds / _microNormalizer;
+    _numberOfQueries++;
 
     var logSettings = _settingsForSession(session);
 
@@ -179,8 +180,6 @@ class SessionLogManager {
       _logWriter.logStreamQuery,
       (sessionLogId, entry) => entry.sessionLogId = sessionLogId,
     );
-
-    _numberOfQueries++;
   }
 
   /// Logs a message from a stream, depending on the session type it will be
