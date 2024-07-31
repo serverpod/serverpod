@@ -349,16 +349,6 @@ class LogManager {
   @Deprecated('Will be removed in 3.0.0')
   final RuntimeSettings runtimeSettings;
 
-  int _nextTemporarySessionId = -1;
-
-  /// Returns a new unique temporary session id. The id will be negative, and
-  /// ids are only unique to this running instance.
-  int nextTemporarySessionId() {
-    var id = _nextTemporarySessionId;
-    _nextTemporarySessionId -= 1;
-    return id;
-  }
-
   /// Creates a new [LogManager] from [RuntimeSettings].
   LogManager(
     this.runtimeSettings, {
