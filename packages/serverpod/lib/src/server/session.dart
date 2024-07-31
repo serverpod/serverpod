@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -254,17 +253,11 @@ class MethodCallSession extends Session {
   final String body;
 
   /// Query parameters of the server call.
-  late final Map<String, dynamic> queryParameters;
+  final Map<String, dynamic> queryParameters;
 
-  /// The name of the called [Endpoint].
-  late final String _endpointName;
-
-  @override
-  String get endpointName => _endpointName;
+  final String _methodName;
 
   /// The name of the method that is being called.
-  late final String _methodName;
-
   @override
   String get methodName => _methodName;
 
@@ -278,42 +271,26 @@ class MethodCallSession extends Session {
     required this.body,
     required String path,
     required this.httpRequest,
-    String? authenticationKey,
+    required super.endpointName,
+    required String methodName,
+    required this.queryParameters,
+    required super.authenticationKey,
     super.enableLogging = true,
-  }) : super(endpointName: 'MethodCall') {
-    // Read query parameters
-    var queryParameters = <String, dynamic>{};
-    if (body != '' && body != 'null') {
-      queryParameters = jsonDecode(body).cast<String, dynamic>();
-    }
+  })  : _methodName = methodName,
+        super(methodName: methodName);
+}
 
-    // Add query parameters from uri
-    queryParameters.addAll(uri.queryParameters);
-    this.queryParameters = queryParameters;
-
-    if (path.contains('/')) {
-      // Using the new path format (for OpenAPI)
-      var pathComponents = path.split('/');
-      _endpointName = pathComponents[0];
-      _methodName = pathComponents[1];
-    } else {
-      // Using the standard format with query parameters
-      _endpointName = path;
-      var methodName = queryParameters['method'];
-      if (methodName == null && path == 'webserver') {
-        _methodName = '';
-      } else if (methodName != null) {
-        _methodName = methodName;
-      } else {
-        throw FormatException(
-          'No method name specified in call to $endpointName',
-        );
-      }
-    }
-
-    // Get the the authentication key, if any
-    _authenticationKey = authenticationKey ?? queryParameters['auth'];
-  }
+/// When a request is made to the web server a [WebCallSession] object is
+/// created. It contains all data associated with the current connection and
+/// provides easy access to the database.
+class WebCallSession extends Session {
+  /// Creates a new [Session] for a method call to an endpoint.
+  WebCallSession({
+    required super.server,
+    required super.endpointName,
+    required super.authenticationKey,
+    super.enableLogging = true,
+  });
 }
 
 /// When a connection is made to the [Server] to an endpoint method that uses a

@@ -78,23 +78,55 @@ abstract class EndpointDispatch {
       return ResultInvalidParams('Endpoint $path does not exist');
     }
 
-    MethodCallSession session;
-
-    try {
-      session = MethodCallSession(
-        server: server,
-        uri: uri,
-        body: body,
-        path: path,
-        httpRequest: request,
-        enableLogging: connector.endpoint.logSessions,
-      );
-    } catch (e) {
-      return ResultInvalidParams('Malformed call: $uri');
+    // Read query parameters
+    var queryParameters = <String, dynamic>{};
+    if (body != '' && body != 'null') {
+      try {
+        queryParameters = jsonDecode(body).cast<String, dynamic>();
+      } catch (_) {
+        return ResultInvalidParams('Invalid JSON in body: $body');
+      }
     }
 
-    var methodName = session.methodName;
-    var inputParams = session.queryParameters;
+    // Add query parameters from uri
+    queryParameters.addAll(uri.queryParameters);
+
+    String endpointName;
+    String methodName;
+
+    if (path.contains('/')) {
+      // Using the new path format (for OpenAPI)
+      var pathComponents = path.split('/');
+      endpointName = pathComponents[0];
+      methodName = pathComponents[1];
+    } else {
+      // Using the standard format with query parameters
+      endpointName = path;
+      var method = queryParameters['method'];
+      if (method is String) {
+        methodName = method;
+      } else {
+        return ResultInvalidParams(
+          'No method name specified in call to $endpointName',
+        );
+      }
+    }
+
+    // Get the the authentication key, if any
+    String? authenticationKey = queryParameters['auth'];
+
+    MethodCallSession session = MethodCallSession(
+      server: server,
+      uri: uri,
+      body: body,
+      path: path,
+      httpRequest: request,
+      methodName: methodName,
+      endpointName: endpointName,
+      queryParameters: queryParameters,
+      authenticationKey: authenticationKey,
+      enableLogging: connector.endpoint.logSessions,
+    );
 
     try {
       var endpoint = connector.endpoint;
@@ -117,11 +149,11 @@ abstract class EndpointDispatch {
       // TODO: Check parameters and check null safety
 
       var paramMap = <String, dynamic>{};
-      for (var paramName in inputParams.keys) {
+      for (var paramName in queryParameters.keys) {
         var type = method.params[paramName]?.type;
         if (type == null) continue;
         var formatted = _formatArg(
-            inputParams[paramName], type, server.serializationManager);
+            queryParameters[paramName], type, server.serializationManager);
         paramMap[paramName] = formatted;
       }
 
