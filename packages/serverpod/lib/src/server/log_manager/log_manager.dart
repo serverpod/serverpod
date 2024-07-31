@@ -246,7 +246,7 @@ class SessionLogManager {
     if (_continuouslyLogging(session) && session is StreamingSession) {
       try {
         setSessionLogId(session.sessionLogId!, entry);
-        await _logTasks.addTask(() => writeLog(session, entry));
+        _logTasks.addTask(() => writeLog(session, entry));
       } catch (exception, stackTrace) {
         stderr
             .writeln('${DateTime.now().toUtc()} FAILED TO LOG STREAMING $type');
@@ -436,17 +436,19 @@ class _FutureTaskManager {
 
   Completer<void>? _tasksCompleter;
 
-  Future<void> addTask(_TaskCallback task) async {
+  /// Synchronously adds a task to the task manager.
+  void addTask(_TaskCallback task) {
     _tasksCompleter ??= Completer<void>();
     _pendingTasks.add(task);
 
-    try {
-      await task();
+    task().then((value) {
       _completeTask(task);
-    } catch (_) {
+    }).onError((error, stackTrace) {
       _completeTask(task);
-      rethrow;
-    }
+      var e = error;
+      if (e is Exception) throw e;
+      if (e is Error) throw e;
+    });
   }
 
   void _completeTask(_TaskCallback task) {
