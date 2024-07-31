@@ -127,6 +127,8 @@ logging:
   - logInfo:
   - logDebugAndInfoAndError:
   - twoQueries:
+streamLogging:
+streamQueryLogging:
 loggingDisabled:
   - logInfo:
 mapParameters:

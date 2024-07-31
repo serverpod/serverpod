@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/server/log_manager/log_writer.dart';
 import 'package:serverpod/src/server/log_manager/session_log_cache.dart';
+import 'package:serverpod/src/server/session.dart';
 import 'package:synchronized/synchronized.dart';
 
 import '../../../server.dart';
@@ -93,7 +94,6 @@ class SessionLogManager {
   @internal
   Future<void> logEntry(
     Session session, {
-    int? messageId,
     LogLevel? level,
     required String message,
     String? error,
@@ -102,7 +102,7 @@ class SessionLogManager {
     var entry = LogEntry(
       sessionLogId: _temporarySessionId,
       serverId: _serverId,
-      messageId: messageId,
+      messageId: session.messageId,
       logLevel: level ?? LogLevel.info,
       message: message,
       time: DateTime.now(),
@@ -160,6 +160,7 @@ class SessionLogManager {
       sessionLogId: _temporarySessionId,
       serverId: _serverId,
       query: query,
+      messageId: session.messageId,
       duration: executionTime,
       numRows: numRowsAffected,
       error: error,

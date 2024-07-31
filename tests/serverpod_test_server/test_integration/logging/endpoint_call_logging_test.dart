@@ -194,6 +194,23 @@ void main() async {
     });
 
     test(
+        'Given a log setting with everything turned on when calling a method logging a message then the logs messageId is null.',
+        () async {
+      var settings = RuntimeSettingsBuilder().build();
+
+      await server.updateRuntimeSettings(settings);
+
+      await client.logging.log('message', [LogLevel.debug.toJson()]);
+
+      var logs = await LoggingUtil.findAllLogs(session);
+
+      expect(logs, isNotEmpty);
+
+      expect(logs.first.logs, isNotEmpty);
+      expect(logs.first.logs.first.messageId, isNull);
+    });
+
+    test(
         'Given a log setting with everything turned on but only accepting info level and below when calling a method logging a message then the log is written but only includes the info level message.',
         () async {
       var settings = RuntimeSettingsBuilder()
