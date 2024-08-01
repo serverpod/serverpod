@@ -19,6 +19,7 @@ final class ClientMethodStreamManager {
   final SerializationManager _serializationManager;
 
   final Map<String, _InboundStreamContext> _inboundStreams = {};
+  final Map<String, _OutboundStreamContext> _outboundStreams = {};
 
   ClientMethodStreamManager({
     required Duration connectionTimeout,
@@ -47,7 +48,11 @@ final class ClientMethodStreamManager {
       endpoint: connectionDetails.endpoint,
       method: connectionDetails.method,
     );
+
+    var parameterStreams = connectionDetails.parameterStreams.keys.toList();
+
     var inboundStreamContext = _InboundStreamContext(
+      parameterStreams: parameterStreams,
       controller: connectionDetails.outputController,
     );
 
@@ -58,8 +63,7 @@ final class ClientMethodStreamManager {
       endpoint: connectionDetails.endpoint,
       method: connectionDetails.method,
       args: connectionDetails.args,
-      inputStreams:
-          connectionDetails.parameterStreams.keys.map((key) => key).toList(),
+      inputStreams: parameterStreams,
       authentication: await connectionDetails.authenticationProvider.call(),
     );
 
@@ -69,6 +73,13 @@ final class ClientMethodStreamManager {
     if (openResponse != OpenMethodStreamResponseType.success) {
       throw OpenMethodStreamException(openResponse);
     }
+
+    _buildOutboundStreams(
+      streams: connectionDetails.parameterStreams,
+      connectionId: connectionId,
+      endpoint: connectionDetails.endpoint,
+      method: connectionDetails.method,
+    );
   }
 
   /// Builds a unique key for a stream.
@@ -90,7 +101,91 @@ final class ClientMethodStreamManager {
         _inboundStreams.values.map((c) => c.controller).toList();
     _inboundStreams.clear();
 
-    await _closeControllers(inputControllers);
+    var outboundStreamSubscriptions =
+        _outboundStreams.values.map((c) => c.subscription).toList();
+
+    var closeSubscriptionsFutures =
+        outboundStreamSubscriptions.map((s) => s.cancel());
+
+    await Future.wait([
+      ...closeSubscriptionsFutures,
+      _closeControllers(inputControllers),
+    ]);
+  }
+
+  void _buildOutboundStreams({
+    required Map<String, Stream<dynamic>> streams,
+    required UuidValue connectionId,
+    required String endpoint,
+    required String method,
+  }) {
+    for (var MapEntry(key: streamName, value: stream) in streams.entries) {
+      var streamKey = _buildStreamKey(
+        connectionId: connectionId,
+        endpoint: endpoint,
+        method: method,
+        parameter: streamName,
+      );
+
+      var subscription = stream.listen(
+        (event) {
+          var message = MethodStreamMessage.buildMessage(
+            endpoint: endpoint,
+            method: method,
+            parameter: streamName,
+            connectionId: connectionId,
+            object: event,
+            serializationManager: _serializationManager,
+          );
+          _webSocket?.sink.add(message);
+        },
+        onDone: () {
+          var closeMessage = CloseMethodStreamCommand.buildMessage(
+            endpoint: endpoint,
+            method: method,
+            connectionId: connectionId,
+            parameter: streamName,
+            reason: CloseReason.done,
+          );
+
+          _webSocket?.sink.add(closeMessage);
+          _outboundStreams.remove(streamKey);
+        },
+        onError: (e, stackTrace) async {
+          if (e is SerializableException) {
+            var message = MethodStreamSerializableException.buildMessage(
+              endpoint: endpoint,
+              method: method,
+              parameter: streamName,
+              connectionId: connectionId,
+              object: e,
+              serializationManager: _serializationManager,
+            );
+            _webSocket?.sink.add(message);
+          }
+
+          var closeMessage = CloseMethodStreamCommand.buildMessage(
+            endpoint: endpoint,
+            method: method,
+            connectionId: connectionId,
+            parameter: streamName,
+            reason: CloseReason.error,
+          );
+
+          _webSocket?.sink.add(closeMessage);
+          _outboundStreams.remove(streamKey);
+        },
+        // Cancel on error prevents the stream from continuing after an exception
+        // has been thrown. This is important since we want to close the stream
+        // when an exception is thrown and handle the complete shutdown in the
+        // onError callback.
+        cancelOnError: true,
+      );
+
+      _outboundStreams[streamKey] = _OutboundStreamContext(
+        subscription: subscription,
+      );
+    }
   }
 
   Future<void> _closeControllers(Iterable<StreamController> controllers) async {
@@ -117,6 +212,16 @@ final class ClientMethodStreamManager {
   Future<void> _dispatchCloseMethodStreamCommand(
     CloseMethodStreamCommand message,
   ) async {
+    if (message.parameter == null) {
+      await _tryCloseInboundStream(message);
+    } else {
+      await _tryCloseOutboundStream(message);
+    }
+  }
+
+  Future<void> _tryCloseInboundStream(
+    CloseMethodStreamCommand message,
+  ) async {
     var inboundStreamKey = _buildStreamKey(
       connectionId: message.connectionId,
       endpoint: message.endpoint,
@@ -137,7 +242,49 @@ final class ClientMethodStreamManager {
       );
     }
 
-    await _closeControllers([inboundStreamContext.controller]);
+    var cancelSubscriptionFutures = <Future>[];
+    for (var parameter in inboundStreamContext.parameterStreams) {
+      var parameterStreamKey = _buildStreamKey(
+        connectionId: message.connectionId,
+        endpoint: message.endpoint,
+        method: message.method,
+        parameter: parameter,
+      );
+
+      var outboundStreamContext = _outboundStreams.remove(parameterStreamKey);
+      if (outboundStreamContext == null) {
+        continue;
+      }
+
+      cancelSubscriptionFutures.add(
+        outboundStreamContext.subscription.cancel(),
+      );
+    }
+
+    await Future.wait(
+      [
+        ...cancelSubscriptionFutures,
+        _closeControllers([inboundStreamContext.controller])
+      ],
+    );
+  }
+
+  Future<void> _tryCloseOutboundStream(
+    CloseMethodStreamCommand message,
+  ) async {
+    var outboundStreamKey = _buildStreamKey(
+      connectionId: message.connectionId,
+      endpoint: message.endpoint,
+      method: message.method,
+      parameter: message.parameter,
+    );
+
+    var outboundStreamContext = _outboundStreams.remove(outboundStreamKey);
+    if (outboundStreamContext == null) {
+      return;
+    }
+
+    await outboundStreamContext.subscription.cancel();
   }
 
   bool _dispatchMessage(MethodStreamMessage message) {
@@ -289,10 +436,18 @@ final class ClientMethodStreamManager {
 
 class _InboundStreamContext {
   final StreamController controller;
+  final List<String> parameterStreams;
   final Completer<OpenMethodStreamResponseType> openCompleter =
       Completer<OpenMethodStreamResponseType>();
 
   _InboundStreamContext({
     required this.controller,
+    required this.parameterStreams,
   });
+}
+
+class _OutboundStreamContext {
+  final StreamSubscription subscription;
+
+  _OutboundStreamContext({required this.subscription});
 }
