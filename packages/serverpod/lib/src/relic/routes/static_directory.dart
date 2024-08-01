@@ -43,8 +43,9 @@ class RouteStaticDirectory extends Route {
 
     var path = Uri.decodeFull(session.uri.path);
 
-    if (serveAsRootPath != null && path == '/') {
-      path = serveAsRootPath!;
+    var rootPath = serverAsRootPath;
+    if (rootPath != null && path == '/') {
+      path = rootPath;
     }
 
     try {
