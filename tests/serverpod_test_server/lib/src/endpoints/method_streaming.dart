@@ -239,11 +239,33 @@ class MethodStreaming extends Endpoint {
     );
   }
 
-  Future<void> throwsException(Session session) async {
+  Future<void> throwsExceptionVoid(Session session, Stream<int> stream) async {
     throw Exception('This is an exception');
   }
 
-  Future<void> throwsSerializableException(Session session) async {
+  Future<void> throwsSerializableExceptionVoid(
+    Session session,
+    Stream<int> stream,
+  ) async {
+    throw ExceptionWithData(
+      message: 'Throwing an exception',
+      creationDate: DateTime.now(),
+      errorFields: [
+        'first line error',
+        'second line error',
+      ],
+      someNullableField: 1,
+    );
+  }
+
+  Future<int> throwsException(Session session, Stream<int> stream) async {
+    throw Exception('This is an exception');
+  }
+
+  Future<int> throwsSerializableException(
+    Session session,
+    Stream<int> stream,
+  ) async {
     throw ExceptionWithData(
       message: 'Throwing an exception',
       creationDate: DateTime.now(),
