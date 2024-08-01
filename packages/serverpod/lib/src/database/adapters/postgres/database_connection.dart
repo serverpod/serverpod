@@ -391,9 +391,9 @@ class DatabaseConnection {
       return result;
     } catch (exception, trace) {
       if (exception is pg.PgException) {
-        var serverpodException = DatabaseException(
-          exception.message,
-        );
+        var serverpodException = exception is pg.ServerException
+            ? DatabaseException.fromServerException(exception)
+            : DatabaseException(exception.message);
         _logQuery(
           session,
           query,
