@@ -419,28 +419,44 @@ abstract class ServerpodClientShared extends EndpointCaller {
       authenticationProvider: () async => authenticationKeyManager?.get(),
     );
 
+    _methodStreamManager
+        .openMethodStream(connectionDetails)
+        .onError<OpenMethodStreamException>((e, _) {
+      var error = switch (e.responseType) {
+        OpenMethodStreamResponseType.endpointNotFound =>
+          ServerpodClientNotFound(),
+        OpenMethodStreamResponseType.authenticationFailed =>
+          ServerpodClientUnauthorized(),
+        OpenMethodStreamResponseType.authorizationDeclined =>
+          ServerpodClientForbidden(),
+        OpenMethodStreamResponseType.invalidArguments =>
+          ServerpodClientBadRequest(),
+        OpenMethodStreamResponseType.success =>
+          ServerpodClientException('Unknown error, data: $e', -1),
+      };
+      connectionDetails.outputController.addError(error);
+      connectionDetails.outputController.close();
+    });
     if (T == Stream<G>) {
-      _methodStreamManager
-          .openMethodStream(connectionDetails)
-          .onError<OpenMethodStreamException>((e, _) {
-        var error = switch (e.responseType) {
-          OpenMethodStreamResponseType.endpointNotFound =>
-            ServerpodClientNotFound(),
-          OpenMethodStreamResponseType.authenticationFailed =>
-            ServerpodClientUnauthorized(),
-          OpenMethodStreamResponseType.authorizationDeclined =>
-            ServerpodClientForbidden(),
-          OpenMethodStreamResponseType.invalidArguments =>
-            ServerpodClientBadRequest(),
-          OpenMethodStreamResponseType.success =>
-            ServerpodClientException('Unknown error, data: $e', -1),
-        };
-        connectionDetails.outputController.addError(error);
-        connectionDetails.outputController.close();
-      });
       return connectionDetails.outputController.stream;
+    } else if ((T == Future<G>) && G == getType<void>()) {
+      var result = Completer<void>();
+      // Listen to stream so that close can be called when method has returned.
+      connectionDetails.outputController.stream.listen(
+        (e) {},
+        onError: ((e, _) => result.completeError(e)),
+        onDone: () => result.complete(),
+        cancelOnError: true,
+      );
+      return result.future;
     } else if (T == Future<G>) {
-      throw UnimplementedError();
+      var result = Completer<G>();
+      connectionDetails.outputController.stream.first.then((e) {
+        result.complete(e);
+      }, onError: (e, _) {
+        result.completeError(e);
+      });
+      return result.future;
     } else {
       throw UnsupportedError('Unsupported type $T');
     }

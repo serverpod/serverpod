@@ -140,4 +140,38 @@ void main() {
     await streamComplete.future;
     expect(received, sequence);
   });
+
+  test(
+      'Given a stream that throws an exception when calling a streaming method that true if exception is thrown on input stream then server responds with true,',
+      () async {
+    var inputStream = StreamController<int>();
+    var responseFuture =
+        client.methodStreaming.didInputStreamHaveError(inputStream.stream);
+
+    inputStream.addError(Exception('This is an exception'));
+    inputStream.close();
+
+    expect(await responseFuture, true);
+  });
+
+  test(
+      'Given a stream that throws a serializable exception when calling a streaming method that true if exception is thrown on input stream then server responds with true,',
+      () async {
+    var inputStream = StreamController<int>();
+    var responseFuture = client.methodStreaming
+        .didInputStreamHaveSerializableExceptionError(inputStream.stream);
+
+    inputStream.addError(ExceptionWithData(
+      message: 'Throwing an exception',
+      creationDate: DateTime.now(),
+      errorFields: [
+        'first line error',
+        'second line error',
+      ],
+      someNullableField: 1,
+    ));
+    inputStream.close();
+
+    expect(await responseFuture, true);
+  });
 }
