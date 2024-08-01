@@ -38,11 +38,17 @@ class PathCacheMaxAge {
     required this.maxAge,
   });
 
-  bool _shouldCache(String path) => pathPattern is String
-      ? path == pathPattern
-      : pathPattern is RegExp
-          ? (pathPattern as RegExp).hasMatch(path)
-          : false;
+bool _shouldCache(String path) {
+  var pattern = pathPattern;
+
+  if (pattern is String) {
+    return path == pattern;
+  } else if (pattern is RegExp) {
+    return pattern.hasMatch(path);
+  }
+
+  return false;
+}
 }
 
 /// Route for serving a directory of static files.
