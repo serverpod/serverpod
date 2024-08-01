@@ -32,9 +32,7 @@ class RouteStaticDirectory extends Route {
 
   @override
   Future<bool> handleCall(Session session, HttpRequest request) async {
-    session as MethodCallSession;
-
-    var path = Uri.decodeFull(session.uri.path);
+    var path = Uri.decodeFull(request.requestedUri.path);
 
     try {
       // Remove version control string
@@ -48,9 +46,10 @@ class RouteStaticDirectory extends Route {
       }
       base = baseParts.join('@');
 
-      if (basePath != null && path.startsWith(basePath!)) {
+      var localBasePath = basePath;
+      if (localBasePath != null && path.startsWith(localBasePath)) {
         var requestDir = p.dirname(path);
-        var middlePath = requestDir.substring(basePath!.length);
+        var middlePath = requestDir.substring(localBasePath.length);
 
         if (middlePath.isNotEmpty) {
           path = p.join(dir, middlePath, base + extension);
