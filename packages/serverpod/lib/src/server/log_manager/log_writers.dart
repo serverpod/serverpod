@@ -182,26 +182,48 @@ class StdOutLogWriter extends LogWriter {
   @override
   Future<void> logEntry(LogEntry entry) async {
     entry.sessionLogId = _logId;
-    stdout.writeln(entry);
+
+    if (entry.error != null ||
+        entry.logLevel == LogLevel.error ||
+        entry.logLevel == LogLevel.fatal) {
+      stderr.writeln(entry);
+    } else {
+      stdout.writeln(entry);
+    }
   }
 
   @override
   Future<void> logMessage(MessageLogEntry entry) async {
     entry.sessionLogId = _logId;
-    stdout.writeln(entry);
+
+    if (entry.error != null) {
+      stderr.writeln(entry);
+    } else {
+      stdout.writeln(entry);
+    }
   }
 
   @override
   Future<void> logQuery(QueryLogEntry entry) async {
     entry.sessionLogId = _logId;
-    stdout.writeln(entry);
+
+    if (entry.error != null) {
+      stderr.writeln(entry);
+    } else {
+      stdout.writeln(entry);
+    }
   }
 
   @override
   Future<void> openLog(SessionLogEntry entry) async {
     entry.id = _logId;
     _entry = entry;
-    stdout.writeln(entry);
+
+    if (entry.error != null) {
+      stderr.writeln(entry);
+    } else {
+      stdout.writeln(entry);
+    }
   }
 
   @override
@@ -209,7 +231,13 @@ class StdOutLogWriter extends LogWriter {
     if (_entry != null) return _logId;
 
     entry.id = _logId;
-    stdout.writeln(entry);
+
+    if (entry.error != null) {
+      stderr.writeln(entry);
+    } else {
+      stdout.writeln(entry);
+    }
+
     return _logId;
   }
 }
