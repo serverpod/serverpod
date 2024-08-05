@@ -234,6 +234,8 @@ class SessionLogManager {
     T entry,
     Future<void> Function(T) writeLog,
   ) async {
+    // Skip checking the lock if logging is already opened.
+    // This makes the execution faster as we skip a roundtrip in the event loop.
     if (!_isLoggingOpened) await _openLog(session);
 
     try {
@@ -280,7 +282,7 @@ class SessionLogManager {
     String? exception,
     StackTrace? stackTrace,
   }) async {
-    if (!_isLoggingOpened) await _openLogLock.synchronized(() {});
+    await _openLogLock.synchronized(() {});
     await _logTasks.awaitAllTasks();
 
     var duration = session.duration;
