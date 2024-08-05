@@ -43,7 +43,7 @@ void main() {
     });
 
     test(
-        'when an unrecognized message is sent then BadRequestMessage is response is received.',
+        'when an unrecognized message is sent then BadRequestMessage response is received.',
         () async {
       var response = webSocket.stream.first.timeout(Duration(seconds: 10));
       webSocket.sink.add(unrecognizedCommandMessage);

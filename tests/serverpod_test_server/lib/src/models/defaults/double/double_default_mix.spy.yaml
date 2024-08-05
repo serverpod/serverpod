@@ -1,0 +1,6 @@
+class: DoubleDefaultMix
+table: double_default_mix
+fields:
+  doubleDefaultAndDefaultModel: double, default=10.5, defaultModel=20.5
+  doubleDefaultAndDefaultPersist: double, default=10.5, defaultPersist=20.5
+  doubleDefaultModelAndDefaultPersist: double, defaultModel=10.5, defaultPersist=20.5

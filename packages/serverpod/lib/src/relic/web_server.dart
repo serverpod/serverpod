@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:serverpod/serverpod.dart';
 import 'package:path/path.dart' as path;
+import 'package:serverpod/serverpod.dart';
 
 /// The Serverpod webserver.
 class WebServer {
@@ -126,17 +126,14 @@ class WebServer {
       }
     }
 
-    // TODO: Fix body
-    var session = MethodCallSession(
-      server: serverpod.server,
-      uri: uri,
-      path: 'webserver',
-      body: '',
-      authenticationKey: authenticationKey,
-      httpRequest: request,
-    );
+    var queryParameters = request.uri.queryParameters;
+    authenticationKey ??= queryParameters['auth'];
 
-//    print('Getting path: ${uri.path}');
+    WebCallSession session = WebCallSession(
+      server: serverpod.server,
+      endpointName: uri.path,
+      authenticationKey: authenticationKey,
+    );
 
     // Check routes
     for (var route in routes) {
@@ -175,7 +172,9 @@ class WebServer {
   /// Logs an error to stderr.
   void logError(var e, {StackTrace? stackTrace}) {
     stderr.writeln('ERROR: $e');
-    stderr.writeln('$stackTrace');
+    if (stackTrace != null) {
+      stderr.writeln('$stackTrace');
+    }
   }
 
   /// Logs a message to stdout.

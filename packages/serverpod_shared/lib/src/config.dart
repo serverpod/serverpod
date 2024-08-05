@@ -1,7 +1,13 @@
 import 'dart:io';
 
+import 'package:serverpod_shared/src/environment_variables.dart';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as path;
+
+/// The configuration sections for the serverpod configuration file.
+typedef Convert<T> = T Function(String value);
+
+const int _defaultMaxRequestSize = 524288;
 
 /// Parser for the Serverpod configuration file.
 class ServerpodConfig {
@@ -69,43 +75,55 @@ class ServerpodConfig {
     String runMode,
     String serverId,
     Map<String, String> passwords,
-    Map configMap,
-  ) {
-    /// Get api server setup. This field cannot be null, so if the
-    /// configuration is missing an exception is thrown.
-    var apiSetup = configMap['apiServer'];
-    if (apiSetup == null) {
-      throw Exception('apiServer is missing in config');
+    Map configMap, {
+    Map<String, String> environment = const {},
+  }) {
+    var apiConfig = _apiConfigMap(configMap, environment);
+    if (apiConfig == null) {
+      throw _ServerpodApiServerConfigMissing();
     }
 
-    var apiServer = ServerConfig._fromJson(apiSetup, 'apiServer');
+    var apiServer = ServerConfig._fromJson(
+      apiConfig,
+      ServerpodConfigMap.apiServer,
+    );
 
-    /// Get insights server setup
-    var insightsSetup = configMap['insightsServer'];
-    var insightsServer = insightsSetup != null
-        ? ServerConfig._fromJson(insightsSetup, 'insightsServer')
+    var insightsConfig = _insightsConfigMap(configMap, environment);
+    var insightsServer = insightsConfig != null
+        ? ServerConfig._fromJson(
+            insightsConfig,
+            ServerpodConfigMap.insightsServer,
+          )
         : null;
 
-    /// Get web server setup
-    var webSetup = configMap['webServer'];
-    var webServer =
-        webSetup != null ? ServerConfig._fromJson(webSetup, 'webServer') : null;
-
-    // Get max request size (default to 512kb)
-    var maxRequestSize = configMap['maxRequestSize'] ?? 524288;
-
-    var serviceSecret = passwords['serviceSecret'];
-
-    // Get database setup
-    var dbSetup = configMap['database'];
-    var database = dbSetup != null
-        ? DatabaseConfig._fromJson(dbSetup, passwords, 'database')
+    var webConfig = _webConfigMap(configMap, environment);
+    var webServer = webConfig != null
+        ? ServerConfig._fromJson(
+            webConfig,
+            ServerpodConfigMap.webServer,
+          )
         : null;
 
-    // Get Redis setup
-    var redisSetup = configMap['redis'];
-    var redis = redisSetup != null
-        ? RedisConfig._fromJson(redisSetup, passwords, 'redis')
+    var maxRequestSize = _readMaxRequestSize(configMap, environment);
+
+    var serviceSecret = passwords[ServerpodPassword.serviceSecret.configKey];
+
+    var databaseConfig = _databaseConfigMap(configMap, environment);
+    var database = databaseConfig != null
+        ? DatabaseConfig._fromJson(
+            databaseConfig,
+            passwords,
+            ServerpodConfigMap.database,
+          )
+        : null;
+
+    var redisConfig = _redisConfigMap(configMap, environment);
+    var redis = redisConfig != null
+        ? RedisConfig._fromJson(
+            redisConfig,
+            passwords,
+            ServerpodConfigMap.redis,
+          )
         : null;
 
     return ServerpodConfig(
@@ -128,12 +146,27 @@ class ServerpodConfig {
     String serverId,
     Map<String, String> passwords,
   ) {
-    String data;
+    dynamic doc = {};
 
-    data = File(_createConfigPath(runMode)).readAsStringSync();
+    if (isConfigAvailable(runMode)) {
+      String data = File(_createConfigPath(runMode)).readAsStringSync();
+      doc = loadYaml(data);
+    }
 
-    var doc = loadYaml(data);
-    return ServerpodConfig.loadFromMap(runMode, serverId, passwords, doc);
+    try {
+      return ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        doc,
+        environment: Platform.environment,
+      );
+    } catch (e) {
+      if (e is _ServerpodApiServerConfigMissing) {
+        return ServerpodConfig.defaultConfig();
+      }
+      rethrow;
+    }
   }
 
   /// Checks if a configuration file is available on disk for the given run mode.
@@ -187,20 +220,20 @@ class ServerConfig {
   factory ServerConfig._fromJson(Map serverSetup, String name) {
     _validateJsonConfig(
       const {
-        'port': int,
-        'publicHost': String,
-        'publicPort': int,
-        'publicScheme': String,
+        ServerpodServerConfigMap.port: int,
+        ServerpodServerConfigMap.publicHost: String,
+        ServerpodServerConfigMap.publicPort: int,
+        ServerpodServerConfigMap.publicScheme: String,
       },
       serverSetup,
       name,
     );
 
     return ServerConfig(
-      port: serverSetup['port'],
-      publicHost: serverSetup['publicHost'],
-      publicPort: serverSetup['publicPort'],
-      publicScheme: serverSetup['publicScheme'],
+      port: serverSetup[ServerpodServerConfigMap.port],
+      publicHost: serverSetup[ServerpodServerConfigMap.publicHost],
+      publicPort: serverSetup[ServerpodServerConfigMap.publicPort],
+      publicScheme: serverSetup[ServerpodServerConfigMap.publicScheme],
     );
   }
 
@@ -252,29 +285,30 @@ class DatabaseConfig {
 
   factory DatabaseConfig._fromJson(Map dbSetup, Map passwords, String name) {
     _validateJsonConfig(
-      const {
-        'host': String,
-        'port': int,
-        'name': String,
-        'user': String,
+      {
+        ServerpodEnv.databaseHost.configKey: String,
+        ServerpodEnv.databasePort.configKey: int,
+        ServerpodEnv.databaseName.configKey: String,
+        ServerpodEnv.databaseUser.configKey: String,
       },
       dbSetup,
       name,
     );
 
-    var password = passwords['database'];
+    var password = passwords[ServerpodPassword.databasePassword.configKey];
     if (password == null) {
       throw Exception('Missing database password.');
     }
 
     return DatabaseConfig(
-      host: dbSetup['host'],
-      port: dbSetup['port'],
-      name: dbSetup['name'],
-      user: dbSetup['user'],
-      requireSsl: dbSetup['requireSsl'] ?? false,
-      isUnixSocket: dbSetup['isUnixSocket'] ?? false,
-      password: passwords['database'],
+      host: dbSetup[ServerpodEnv.databaseHost.configKey],
+      port: dbSetup[ServerpodEnv.databasePort.configKey],
+      name: dbSetup[ServerpodEnv.databaseName.configKey],
+      user: dbSetup[ServerpodEnv.databaseUser.configKey],
+      requireSsl: dbSetup[ServerpodEnv.databaseRequireSsl.configKey] ?? false,
+      isUnixSocket:
+          dbSetup[ServerpodEnv.databaseIsUnixSocket.configKey] ?? false,
+      password: password,
     );
   }
 
@@ -320,20 +354,20 @@ class RedisConfig {
 
   factory RedisConfig._fromJson(Map redisSetup, Map passwords, String name) {
     _validateJsonConfig(
-      const {
-        'host': String,
-        'port': int,
+      {
+        ServerpodEnv.redisHost.configKey: String,
+        ServerpodEnv.redisPort.configKey: int,
       },
       redisSetup,
       name,
     );
 
     return RedisConfig(
-      enabled: redisSetup['enabled'] ?? false,
-      host: redisSetup['host'],
-      port: redisSetup['port'],
-      user: redisSetup['user'],
-      password: passwords['redis'],
+      enabled: redisSetup[ServerpodEnv.redisEnabled.configKey] ?? false,
+      host: redisSetup[ServerpodEnv.redisHost.configKey],
+      port: redisSetup[ServerpodEnv.redisPort.configKey],
+      user: redisSetup[ServerpodEnv.redisUser.configKey],
+      password: passwords[ServerpodPassword.redisPassword.configKey],
     );
   }
 
@@ -350,6 +384,120 @@ class RedisConfig {
     }
     return str;
   }
+}
+
+Map? _insightsConfigMap(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+) {
+  var serverConfig = configMap[ServerpodConfigMap.insightsServer] ?? {};
+
+  return _buildConfigMap(serverConfig, environment, [
+    (ServerpodEnv.insightsPort, int.parse),
+    (ServerpodEnv.insightsPublicHost, null),
+    (ServerpodEnv.insightsPublicPort, int.parse),
+    (ServerpodEnv.insightsPublicScheme, null),
+  ]);
+}
+
+Map? _webConfigMap(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+) {
+  var serverConfig = configMap[ServerpodConfigMap.webServer] ?? {};
+
+  return _buildConfigMap(serverConfig, environment, [
+    (ServerpodEnv.webPort, int.parse),
+    (ServerpodEnv.webPublicHost, null),
+    (ServerpodEnv.webPublicPort, int.parse),
+    (ServerpodEnv.webPublicScheme, null),
+  ]);
+}
+
+Map? _apiConfigMap(Map configMap, Map<String, String> environment) {
+  var serverConfig = configMap[ServerpodConfigMap.apiServer] ?? {};
+
+  return _buildConfigMap(serverConfig, environment, [
+    (ServerpodEnv.apiPort, int.parse),
+    (ServerpodEnv.apiPublicHost, null),
+    (ServerpodEnv.apiPublicPort, int.parse),
+    (ServerpodEnv.apiPublicScheme, null),
+  ]);
+}
+
+Map? _databaseConfigMap(Map configMap, Map<String, String> environment) {
+  var databaseConfig = configMap[ServerpodConfigMap.database] ?? {};
+
+  return _buildConfigMap(databaseConfig, environment, [
+    (ServerpodEnv.databaseHost, null),
+    (ServerpodEnv.databasePort, int.parse),
+    (ServerpodEnv.databaseName, null),
+    (ServerpodEnv.databaseUser, null),
+    (ServerpodEnv.databaseRequireSsl, bool.parse),
+    (ServerpodEnv.databaseIsUnixSocket, bool.parse),
+  ]);
+}
+
+Map? _redisConfigMap(Map configMap, Map<String, String> environment) {
+  var redisConfig = configMap[ServerpodConfigMap.redis] ?? {};
+
+  return _buildConfigMap(redisConfig, environment, [
+    (ServerpodEnv.redisHost, null),
+    (ServerpodEnv.redisPort, int.parse),
+    (ServerpodEnv.redisUser, null),
+    (ServerpodEnv.redisEnabled, bool.parse),
+  ]);
+}
+
+Map? _buildConfigMap(
+  Map<dynamic, dynamic> serverConfig,
+  Map<String, String> environment,
+  List<(ServerpodEnv, Convert?)> envEntries,
+) {
+  Map config = {
+    ...serverConfig,
+    for (var entry in envEntries)
+      ..._extractMapEntry(environment, entry.$1, entry.$2),
+  };
+
+  if (config.isEmpty) return null;
+
+  return config;
+}
+
+Map<String, dynamic> _extractMapEntry(
+  Map<String, String> env,
+  ServerpodEnv serverpodEnv, [
+  Convert? convert,
+]) {
+  var content = env[serverpodEnv.envVariable];
+
+  if (content == null) return {};
+  if (convert == null) return {serverpodEnv.configKey: content};
+
+  try {
+    return {serverpodEnv.configKey: convert.call(content)};
+  } catch (e) {
+    throw Exception(
+      'Invalid value ($content) for ${serverpodEnv.envVariable}.',
+    );
+  }
+}
+
+int _readMaxRequestSize(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+) {
+  var maxRequestSize = configMap[ServerpodEnv.maxRequestSize.configKey];
+  maxRequestSize =
+      environment[ServerpodEnv.maxRequestSize.envVariable] ?? maxRequestSize;
+
+  if (maxRequestSize is String) {
+    maxRequestSize = int.tryParse(maxRequestSize);
+  }
+
+  maxRequestSize ??= _defaultMaxRequestSize;
+  return maxRequestSize;
 }
 
 /// Validates that a JSON configuration contains all required keys, and that
@@ -371,5 +519,13 @@ void _validateJsonConfig(
         '$name configuration has invalid type for $key. Expected $value, got ${jsonConfig[key].runtimeType}.',
       );
     }
+  }
+}
+
+/// The configuration keys for the serverpod configuration file.
+class _ServerpodApiServerConfigMissing implements Exception {
+  @override
+  String toString() {
+    return 'Serverpod API server configuration is missing.';
   }
 }

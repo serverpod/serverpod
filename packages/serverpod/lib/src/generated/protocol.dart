@@ -1779,7 +1779,9 @@ class Protocol extends _i1.SerializationManagerServer {
   }
 
   @override
-  String? getClassNameForObject(Object data) {
+  String? getClassNameForObject(Object? data) {
+    String? className = super.getClassNameForObject(data);
+    if (className != null) return className;
     if (data is _i3.CacheInfo) {
       return 'CacheInfo';
     }
@@ -1945,7 +1947,7 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i57.SessionLogResult) {
       return 'SessionLogResult';
     }
-    return super.getClassNameForObject(data);
+    return null;
   }
 
   @override

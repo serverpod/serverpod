@@ -1,0 +1,5 @@
+class: DoubleDefault
+table: double_default
+fields:
+  doubleDefault: double, default=10.5
+  doubleDefaultNull: double?, default=20.5

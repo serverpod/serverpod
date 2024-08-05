@@ -118,9 +118,18 @@ listParameters:
   - returnDurationList:
   - returnDurationListNullableDurations:
 logging:
+  - slowQueryMethod:
+  - queryMethod:
+  - failedQueryMethod:
+  - slowMethod:
+  - failingMethod:
+  - emptyMethod:
+  - log:
   - logInfo:
   - logDebugAndInfoAndError:
   - twoQueries:
+streamLogging:
+streamQueryLogging:
 loggingDisabled:
   - logInfo:
 mapParameters:
@@ -148,6 +157,42 @@ mapParameters:
   - returnNullableSimpleDataMapNullableSimpleData:
   - returnDurationMap:
   - returnDurationMapNullableDurations:
+methodStreaming:
+  - simpleStream:
+  - methodCallEndpoint:
+  - intReturnFromStream:
+  - intStreamFromValue:
+  - intEchoStream:
+  - dynamicEchoStream:
+  - nullableIntEchoStream:
+  - voidReturnAfterStream:
+  - multipleIntEchoStreams:
+  - directVoidReturnWithStreamInput:
+  - directOneIntReturnWithStreamInput:
+  - simpleInputReturnStream:
+  - simpleStreamWithParameter:
+  - simpleDataStream:
+  - simpleInOutDataStream:
+  - simpleEndpoint:
+  - intParameter:
+  - doubleInputValue:
+  - delayedResponse:
+  - delayedStreamResponse:
+  - delayedNeverListenedInputStream:
+  - delayedPausedInputStream:
+  - completeAllDelayedResponses:
+  - inStreamThrowsException:
+  - inStreamThrowsSerializableException:
+  - outStreamThrowsException:
+  - outStreamThrowsSerializableException:
+  - throwsException:
+  - throwsSerializableException:
+  - throwsExceptionStream:
+  - throwsSerializableExceptionStream:
+  - didInputStreamHaveError:
+  - didInputStreamHaveSerializableExceptionError:
+authenticatedMethodStreaming:
+  - simpleStream:
 moduleSerialization:
   - serializeModuleObject:
   - modifyModuleObject:

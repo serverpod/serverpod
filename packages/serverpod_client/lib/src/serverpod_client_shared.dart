@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -277,7 +276,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
         }
       });
     } catch (e) {
-      stderr.writeln('Failed to open streaming connection: $e');
+      // ignore: avoid_print
+      print('Failed to open streaming connection: $e');
       _webSocket = null;
       _cancelConnectionTimer();
       rethrow;
@@ -316,7 +316,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
       _webSocket = null;
       _cancelConnectionTimer();
     } catch (e) {
-      stderr.writeln('Error while listening to websocket stream: $e');
+      // ignore: avoid_print
+      print('Error while listening to websocket stream: $e');
       _webSocket = null;
       _cancelConnectionTimer();
     }

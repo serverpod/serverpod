@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -77,23 +78,55 @@ abstract class EndpointDispatch {
       return ResultInvalidParams('Endpoint $path does not exist');
     }
 
-    MethodCallSession session;
-
-    try {
-      session = MethodCallSession(
-        server: server,
-        uri: uri,
-        body: body,
-        path: path,
-        httpRequest: request,
-        enableLogging: connector.endpoint.logSessions,
-      );
-    } catch (e) {
-      return ResultInvalidParams('Malformed call: $uri');
+    // Read query parameters
+    var queryParameters = <String, dynamic>{};
+    if (body != '' && body != 'null') {
+      try {
+        queryParameters = jsonDecode(body).cast<String, dynamic>();
+      } catch (_) {
+        return ResultInvalidParams('Invalid JSON in body: $body');
+      }
     }
 
-    var methodName = session.methodName;
-    var inputParams = session.queryParameters;
+    // Add query parameters from uri
+    queryParameters.addAll(uri.queryParameters);
+
+    String endpointName;
+    String methodName;
+
+    if (path.contains('/')) {
+      // Using the new path format (for OpenAPI)
+      var pathComponents = path.split('/');
+      endpointName = pathComponents[0];
+      methodName = pathComponents[1];
+    } else {
+      // Using the standard format with query parameters
+      endpointName = path;
+      var method = queryParameters['method'];
+      if (method is String) {
+        methodName = method;
+      } else {
+        return ResultInvalidParams(
+          'No method name specified in call to $endpointName',
+        );
+      }
+    }
+
+    // Get the the authentication key, if any
+    String? authenticationKey = queryParameters['auth'];
+
+    MethodCallSession session = MethodCallSession(
+      server: server,
+      uri: uri,
+      body: body,
+      path: path,
+      httpRequest: request,
+      methodName: methodName,
+      endpointName: endpointName,
+      queryParameters: queryParameters,
+      authenticationKey: authenticationKey,
+      enableLogging: connector.endpoint.logSessions,
+    );
 
     try {
       var endpoint = connector.endpoint;
@@ -107,7 +140,7 @@ abstract class EndpointDispatch {
       }
 
       var method = connector.methodConnectors[methodName];
-      if (method == null) {
+      if (method is! MethodConnector) {
         await session.close();
         return ResultInvalidParams(
             'Method $methodName not found in call: $uri');
@@ -116,11 +149,11 @@ abstract class EndpointDispatch {
       // TODO: Check parameters and check null safety
 
       var paramMap = <String, dynamic>{};
-      for (var paramName in inputParams.keys) {
+      for (var paramName in queryParameters.keys) {
         var type = method.params[paramName]?.type;
         if (type == null) continue;
         var formatted = _formatArg(
-            inputParams[paramName], type, server.serializationManager);
+            queryParameters[paramName], type, server.serializationManager);
         paramMap[paramName] = formatted;
       }
 
@@ -182,10 +215,67 @@ abstract class EndpointDispatch {
       dynamic input, Type type, SerializationManager serializationManager) {
     return serializationManager.deserialize(input, type);
   }
+
+  /// Parses query parameters from a string into a map of parameters formatted
+  /// according to the provided [ParameterDescription]s.
+  ///
+  /// Throws an exception if required parameters are missing or if the
+  /// paramString can't be jsonDecoded.
+  static Map<String, dynamic> parseParameters(
+    String? paramString,
+    Map<String, ParameterDescription> descriptions,
+    SerializationManager serializationManager, {
+    Map<String, dynamic> additionalParameters = const {},
+  }) {
+    if (descriptions.isEmpty) return {};
+
+    var decodedParams = paramString == null
+        ? {}
+        : jsonDecode(paramString) as Map<String, dynamic>;
+    decodedParams.addAll(additionalParameters);
+
+    var deserializedParams = <String, dynamic>{};
+    for (var description in descriptions.values) {
+      var name = description.name;
+      var serializedParam = decodedParams[name];
+
+      if (serializedParam != null) {
+        deserializedParams[name] = serializationManager.deserialize(
+          serializedParam,
+          description.type,
+        );
+      } else if (!description.nullable) {
+        throw Exception('Missing required query parameter: $name');
+      }
+    }
+
+    return deserializedParams;
+  }
+
+  /// Parses a list of requested input stream parameter descriptions and returns
+  /// a list of stream parameter descriptions.
+  ///
+  /// Throws an exception if a required input stream parameter is missing.
+  static List<StreamParameterDescription> parseRequestedInputStreams({
+    required Map<String, StreamParameterDescription> descriptions,
+    required List<String> requestedInputStreams,
+  }) {
+    var streamDescriptions = <StreamParameterDescription>[];
+    for (var description in descriptions.values) {
+      if (requestedInputStreams.contains(description.name)) {
+        streamDescriptions.add(description);
+      } else if (!description.nullable) {
+        throw Exception(
+            'Missing required stream parameter: ${description.name}');
+      }
+    }
+
+    return streamDescriptions;
+  }
 }
 
 /// The [EndpointConnector] associates a name with and endpoint and its
-/// [MethodConnector]s.
+/// [EndpointMethodConnector]s.
 class EndpointConnector {
   /// Name of the [Endpoint].
   final String name;
@@ -193,35 +283,93 @@ class EndpointConnector {
   /// Reference to the [Endpoint].
   final Endpoint endpoint;
 
-  /// All [MethodConnector]s associated with the [Endpoint].
-  final Map<String, MethodConnector> methodConnectors;
+  /// All [EndpointMethodConnector]s associated with the [Endpoint].
+  final Map<String, EndpointMethodConnector> methodConnectors;
 
   /// Creates a new [EndpointConnector].
-  EndpointConnector(
-      {required this.name,
-      required this.endpoint,
-      required this.methodConnectors});
+  EndpointConnector({
+    required this.name,
+    required this.endpoint,
+    required this.methodConnectors,
+  });
 }
 
 /// Calls a named method referenced in a [MethodConnector].
 typedef MethodCall = Future Function(
     Session session, Map<String, dynamic> params);
 
-/// The [MethodConnector] hooks up a method with its name and the actual call
-/// to the method.
-class MethodConnector {
+/// The [EndpointMethodConnector] is a base class for connectors that connect
+/// methods their implementation.
+abstract class EndpointMethodConnector {
   /// The name of the method.
   final String name;
 
   /// List of parameters used by the method.
   final Map<String, ParameterDescription> params;
 
+  /// Creates a new [EndpointMethodConnector].
+  EndpointMethodConnector({required this.name, required this.params});
+}
+
+/// The [MethodConnector] hooks up a method with its name and the actual call
+/// to the method.
+class MethodConnector extends EndpointMethodConnector {
   /// A function that performs a call to the named method.
   final MethodCall call;
 
+  /// True if the method returns void.
+  /// If null, no assumption can be made about the return value.
+  final bool? returnsVoid;
+
   /// Creates a new [MethodConnector].
-  MethodConnector(
-      {required this.name, required this.params, required this.call});
+  MethodConnector({
+    required super.name,
+    required super.params,
+    required this.call,
+    this.returnsVoid,
+  });
+}
+
+/// Calls a named method referenced in a [MethodStreamConnector].
+typedef MethodStream = dynamic Function(
+  Session session,
+  Map<String, dynamic> params,
+  Map<String, Stream<dynamic>> streamParams,
+);
+
+/// The type of return value from a [MethodStreamConnector].
+enum MethodStreamReturnType {
+  /// The method returns a single value as a future.
+  futureType,
+
+  /// The method returns a stream of values.
+  streamType,
+
+  /// The method has future void return value.
+  voidType,
+}
+
+/// The [MethodStreamConnector] hooks up a method with its name and
+/// implementation. The method communicates with the client using a websocket
+/// connection. Enabling support for streaming return values or parameters.
+class MethodStreamConnector extends EndpointMethodConnector {
+  /// The type of return value from the method.
+  final MethodStreamReturnType returnType;
+
+  /// List of parameter streams used by the method.
+  final Map<String, StreamParameterDescription> streamParams;
+
+  /// A function that performs a call to the named method.
+  final MethodStream call;
+
+  /// Creates a new [MethodStreamConnector].
+  MethodStreamConnector({
+    required super.name,
+    required super.params,
+    required this.returnType,
+    required this.streamParams,
+    required this.call,
+  });
 }
 
 /// Defines a parameter in a [MethodConnector].
@@ -238,6 +386,21 @@ class ParameterDescription {
   /// Creates a new [ParameterDescription].
   ParameterDescription(
       {required this.name, required this.type, required this.nullable});
+}
+
+/// Description of a stream parameter.
+class StreamParameterDescription<T> {
+  /// The name of the parameter.
+  final String name;
+
+  /// The type of the parameter.
+  final Type type = T;
+
+  /// True if the parameter can be nullable.
+  final bool nullable;
+
+  /// Creates a new [StreamParameterDescription].
+  StreamParameterDescription({required this.name, required this.nullable});
 }
 
 /// The [Result] of an [Endpoint] method call.

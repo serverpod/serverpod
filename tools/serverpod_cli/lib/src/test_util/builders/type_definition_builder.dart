@@ -41,6 +41,14 @@ class TypeDefinitionBuilder {
     return this;
   }
 
+  TypeDefinitionBuilder withStreamOf(
+    String className,
+  ) {
+    _className = 'Stream';
+    _generics.add(TypeDefinitionBuilder().withClassName(className).build());
+    return this;
+  }
+
   TypeDefinitionBuilder withListOf(String className, [bool nullable = false]) {
     _className = 'List';
     _generics.add(TypeDefinitionBuilder()

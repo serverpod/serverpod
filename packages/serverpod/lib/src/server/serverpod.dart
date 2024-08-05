@@ -12,7 +12,8 @@ import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
-import 'package:serverpod/src/server/log_manager.dart';
+import 'package:serverpod/src/server/log_manager/log_manager.dart';
+import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../authentication/default_authentication_handler.dart';
@@ -142,12 +143,12 @@ class Serverpod {
 
   late LogManager _logManager;
 
-  late LogWriter _logWriter;
-
   /// The [LogManager] of the Serverpod, its typically only used internally
   /// by the Serverpod. Instead of using this object directly, call the log
   /// method on the current [Session].
   LogManager get logManager => _logManager;
+
+  LogSettingsManager? _logSettingsManager;
 
   FutureCallManager? _futureCallManager;
 
@@ -191,10 +192,15 @@ class Serverpod {
   /// Serverpod runtime settings as read from the database.
   internal.RuntimeSettings get runtimeSettings => _runtimeSettings!;
 
+  void _updateLogSettings(internal.RuntimeSettings settings) {
+    _runtimeSettings = settings;
+    _logSettingsManager = LogSettingsManager(settings);
+    _logManager = LogManager(settings, serverId: serverId);
+  }
+
   /// Updates the runtime settings and writes the new settings to the database.
   Future<void> updateRuntimeSettings(internal.RuntimeSettings settings) async {
-    _runtimeSettings = settings;
-    _logManager = LogManager(settings, _logWriter);
+    _updateLogSettings(settings);
     if (Features.enablePersistentLogging) {
       await _storeRuntimeSettings(settings);
     }
@@ -213,8 +219,7 @@ class Serverpod {
     try {
       var settings = await internal.RuntimeSettings.db.findFirstRow(session);
       if (settings != null) {
-        _runtimeSettings = settings;
-        _logManager = LogManager(settings, _logWriter);
+        _updateLogSettings(settings);
       }
       await session.close();
     } catch (e, stackTrace) {
@@ -297,16 +302,17 @@ class Serverpod {
     _passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
 
     // Load config
-    this.config = _loadConfig(config, _passwords);
+    this.config = config ??
+        ServerpodConfig.load(
+          _runMode,
+          serverId,
+          _passwords,
+        );
     Features(this.config);
-
-    _logWriter = Features.enablePersistentLogging
-        ? DatabaseLogWriter()
-        : StdOutLogWriter();
 
     // Create a temporary log manager with default settings, until we have
     // loaded settings from the database.
-    _logManager = LogManager(_defaultRuntimeSettings, _logWriter);
+    _updateLogSettings(_defaultRuntimeSettings);
 
     // Setup database
     var databaseConfiguration = this.config.database;
@@ -315,6 +321,13 @@ class Serverpod {
         serializationManager,
         databaseConfiguration,
       );
+
+      // TODO: Remove this when we have a better way to handle this.
+      // Tracked by issue: https://github.com/serverpod/serverpod/issues/2421
+      // This is required because other operations in Serverpod assumes that the
+      // database is connected when the Serverpod is created
+      // (such as createSession(...)).
+      _databasePoolManager?.start();
     }
 
     if (Features.enableDatabase) {
@@ -392,32 +405,11 @@ class Serverpod {
     logVerbose(this.config.toString());
   }
 
-  ServerpodConfig _loadConfig(
-    ServerpodConfig? config,
-    Map<String, String> passwords,
-  ) {
-    if (config != null) return config;
-
-    if (ServerpodConfig.isConfigAvailable(runMode)) {
-      try {
-        return ServerpodConfig.load(_runMode, serverId, passwords);
-      } catch (error) {
-        stderr.writeln('Failed to load config: $error');
-        rethrow;
-      }
-    }
-
-    return ServerpodConfig.defaultConfig();
-  }
-
   int _exitCode = 0;
 
   /// Starts the Serverpod and all [Server]s that it manages.
   Future<void> start() async {
     _startedTime = DateTime.now().toUtc();
-    // It is important that we start the database pool manager before
-    // attempting to connect to the database.
-    _databasePoolManager?.start();
 
     await runZonedGuarded(() async {
       // Register cloud store endpoint if we're using the database cloud store
@@ -425,6 +417,10 @@ class Serverpod {
           storage['private'] is DatabaseCloudStorage) {
         CloudStoragePublicEndpoint().register(this);
       }
+
+      // It is important that we start the database pool manager before
+      // attempting to connect to the database.
+      _databasePoolManager?.start();
 
       if (_databasePoolManager == null) {
         _runtimeSettings = _defaultRuntimeSettings;
@@ -440,11 +436,7 @@ class Serverpod {
         _exitCode = 1;
       }
 
-      // Setup log manager.
-      _logManager = LogManager(
-        _runtimeSettings ?? _defaultRuntimeSettings,
-        _logWriter,
-      );
+      _updateLogSettings(_runtimeSettings ?? _defaultRuntimeSettings);
 
       // Connect to Redis
       if (Features.enableRedis) {
@@ -818,4 +810,11 @@ class Serverpod {
   bool _isValidSecret(String? secret) {
     return secret != null && secret.isNotEmpty && secret.length > 20;
   }
+}
+
+/// Internal methods used by the Serverpod. These methods are not intended to
+/// be exposed to end users.
+extension ServerpodInternalMethods on Serverpod {
+  /// Retrieve the log settings manager
+  LogSettingsManager get logSettingsManager => _logSettingsManager!;
 }

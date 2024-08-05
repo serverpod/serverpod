@@ -55,6 +55,12 @@ class TypeDefinition {
 
   bool get isIdType => className == 'int';
 
+  bool get isVoidType => className == 'void';
+
+  bool get isStreamType => className == 'Stream';
+
+  bool get isFutureType => className == 'Future';
+
   bool get isModuleType =>
       url == 'serverpod' || (url?.startsWith(_moduleRef) ?? false);
 
@@ -264,15 +270,15 @@ class TypeDefinition {
     return 'ColumnSerializable';
   }
 
-  /// Strip the outer most future of this type.
-  /// Throws, if this type is not a future.
-  TypeDefinition stripFuture() {
-    if (dartType?.isDartAsyncFuture ?? className == 'Future') {
-      return generics.first;
-    } else {
-      throw FormatException(
-          '$this is not a Future, so Future cant be stripped.');
+  /// Retrieves the generic from this type.
+  /// Throws a [FormatException] if no generic is found.
+  TypeDefinition retrieveGenericType() {
+    var genericType = generics.firstOrNull;
+    if (genericType == null) {
+      throw FormatException('$this does not have a generic type to retrieve.');
     }
+
+    return genericType;
   }
 
   /// Generates the constructors for List and Map types
@@ -435,6 +441,24 @@ class TypeDefinition {
     return ValueType.classType;
   }
 
+  /// Returns DefaultValueAllowedType only for fields that are allowed to have defaults
+  DefaultValueAllowedType? get defaultValueType {
+    switch (valueType) {
+      case ValueType.dateTime:
+        return DefaultValueAllowedType.dateTime;
+      case ValueType.bool:
+        return DefaultValueAllowedType.bool;
+      case ValueType.int:
+        return DefaultValueAllowedType.int;
+      case ValueType.double:
+        return DefaultValueAllowedType.double;
+      case ValueType.string:
+        return DefaultValueAllowedType.string;
+      default:
+        return null;
+    }
+  }
+
   @override
   String toString() {
     var genericsString = generics.isNotEmpty ? '<${generics.join(',')}>' : '';
@@ -460,7 +484,7 @@ TypeDefinition parseType(
   if (start != -1 && end != -1) {
     var internalTypes = trimmedInput.substring(start + 1, end);
 
-    var genericsInputs = splitIgnoringBrackets(internalTypes);
+    var genericsInputs = splitIgnoringBracketsAndQuotes(internalTypes);
 
     generics = genericsInputs
         .map((generic) => parseType(generic, extraClasses: extraClasses))
@@ -519,5 +543,13 @@ enum ValueType {
   set,
   map,
   isEnum,
-  classType,
+  classType;
+}
+
+enum DefaultValueAllowedType {
+  dateTime,
+  bool,
+  int,
+  double,
+  string,
 }

@@ -963,6 +963,57 @@ class EndpointLogging extends _i1.EndpointRef {
   @override
   String get name => 'logging';
 
+  _i2.Future<void> slowQueryMethod(int seconds) =>
+      caller.callServerEndpoint<void>(
+        'logging',
+        'slowQueryMethod',
+        {'seconds': seconds},
+      );
+
+  _i2.Future<void> queryMethod(int queries) => caller.callServerEndpoint<void>(
+        'logging',
+        'queryMethod',
+        {'queries': queries},
+      );
+
+  _i2.Future<void> failedQueryMethod() => caller.callServerEndpoint<void>(
+        'logging',
+        'failedQueryMethod',
+        {},
+      );
+
+  _i2.Future<void> slowMethod(int delayMillis) =>
+      caller.callServerEndpoint<void>(
+        'logging',
+        'slowMethod',
+        {'delayMillis': delayMillis},
+      );
+
+  _i2.Future<void> failingMethod() => caller.callServerEndpoint<void>(
+        'logging',
+        'failingMethod',
+        {},
+      );
+
+  _i2.Future<void> emptyMethod() => caller.callServerEndpoint<void>(
+        'logging',
+        'emptyMethod',
+        {},
+      );
+
+  _i2.Future<void> log(
+    String message,
+    List<int> logLevels,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'logging',
+        'log',
+        {
+          'message': message,
+          'logLevels': logLevels,
+        },
+      );
+
   _i2.Future<void> logInfo(String message) => caller.callServerEndpoint<void>(
         'logging',
         'logInfo',
@@ -989,6 +1040,22 @@ class EndpointLogging extends _i1.EndpointRef {
         'twoQueries',
         {},
       );
+}
+
+/// {@category Endpoint}
+class EndpointStreamLogging extends _i1.EndpointRef {
+  EndpointStreamLogging(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'streamLogging';
+}
+
+/// {@category Endpoint}
+class EndpointStreamQueryLogging extends _i1.EndpointRef {
+  EndpointStreamQueryLogging(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'streamQueryLogging';
 }
 
 /// {@category Endpoint}
@@ -1199,6 +1266,79 @@ class EndpointMapParameters extends _i1.EndpointRef {
         'returnDurationMapNullableDurations',
         {'map': map},
       );
+}
+
+/// {@category Endpoint}
+class EndpointMethodStreaming extends _i1.EndpointRef {
+  EndpointMethodStreaming(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'methodStreaming';
+
+  _i2.Future<void> methodCallEndpoint() => caller.callServerEndpoint<void>(
+        'methodStreaming',
+        'methodCallEndpoint',
+        {},
+      );
+
+  _i2.Future<void> simpleEndpoint() => caller.callServerEndpoint<void>(
+        'methodStreaming',
+        'simpleEndpoint',
+        {},
+      );
+
+  _i2.Future<void> intParameter(int value) => caller.callServerEndpoint<void>(
+        'methodStreaming',
+        'intParameter',
+        {'value': value},
+      );
+
+  _i2.Future<int> doubleInputValue(int value) => caller.callServerEndpoint<int>(
+        'methodStreaming',
+        'doubleInputValue',
+        {'value': value},
+      );
+
+  /// Delays the response for [delay] seconds.
+  ///
+  /// Responses can be closed by calling [completeAllDelayedResponses].
+  _i2.Future<void> delayedResponse(int delay) =>
+      caller.callServerEndpoint<void>(
+        'methodStreaming',
+        'delayedResponse',
+        {'delay': delay},
+      );
+
+  /// Completes all delayed responses.
+  /// This makes the delayedResponse return directly.
+  _i2.Future<void> completeAllDelayedResponses() =>
+      caller.callServerEndpoint<void>(
+        'methodStreaming',
+        'completeAllDelayedResponses',
+        {},
+      );
+
+  _i2.Future<void> throwsException() => caller.callServerEndpoint<void>(
+        'methodStreaming',
+        'throwsException',
+        {},
+      );
+
+  _i2.Future<void> throwsSerializableException() =>
+      caller.callServerEndpoint<void>(
+        'methodStreaming',
+        'throwsSerializableException',
+        {},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointAuthenticatedMethodStreaming extends _i1.EndpointRef {
+  EndpointAuthenticatedMethodStreaming(_i1.EndpointCaller caller)
+      : super(caller);
+
+  @override
+  String get name => 'authenticatedMethodStreaming';
 }
 
 /// {@category Endpoint}
@@ -1543,8 +1683,12 @@ class Client extends _i1.ServerpodClient {
     futureCalls = EndpointFutureCalls(this);
     listParameters = EndpointListParameters(this);
     logging = EndpointLogging(this);
+    streamLogging = EndpointStreamLogging(this);
+    streamQueryLogging = EndpointStreamQueryLogging(this);
     loggingDisabled = EndpointLoggingDisabled(this);
     mapParameters = EndpointMapParameters(this);
+    methodStreaming = EndpointMethodStreaming(this);
+    authenticatedMethodStreaming = EndpointAuthenticatedMethodStreaming(this);
     moduleSerialization = EndpointModuleSerialization(this);
     namedParameters = EndpointNamedParameters(this);
     optionalParameters = EndpointOptionalParameters(this);
@@ -1592,9 +1736,17 @@ class Client extends _i1.ServerpodClient {
 
   late final EndpointLogging logging;
 
+  late final EndpointStreamLogging streamLogging;
+
+  late final EndpointStreamQueryLogging streamQueryLogging;
+
   late final EndpointLoggingDisabled loggingDisabled;
 
   late final EndpointMapParameters mapParameters;
+
+  late final EndpointMethodStreaming methodStreaming;
+
+  late final EndpointAuthenticatedMethodStreaming authenticatedMethodStreaming;
 
   late final EndpointModuleSerialization moduleSerialization;
 
@@ -1640,8 +1792,12 @@ class Client extends _i1.ServerpodClient {
         'futureCalls': futureCalls,
         'listParameters': listParameters,
         'logging': logging,
+        'streamLogging': streamLogging,
+        'streamQueryLogging': streamQueryLogging,
         'loggingDisabled': loggingDisabled,
         'mapParameters': mapParameters,
+        'methodStreaming': methodStreaming,
+        'authenticatedMethodStreaming': authenticatedMethodStreaming,
         'moduleSerialization': moduleSerialization,
         'namedParameters': namedParameters,
         'optionalParameters': optionalParameters,
