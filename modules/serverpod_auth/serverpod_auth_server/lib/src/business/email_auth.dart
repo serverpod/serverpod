@@ -12,7 +12,7 @@ import 'package:serverpod_auth_server/src/business/user_images.dart';
 ///
 /// Warning: Using a custom hashing algorithm for passwords
 /// will permanently disrupt compatibility with Serverpod's
-/// validation and password hash migration.
+/// password hash validation and migration.
 Future<String> defaultGeneratePasswordHash(String password) =>
     PasswordHash.argon2id(
       password,
@@ -24,7 +24,7 @@ Future<String> defaultGeneratePasswordHash(String password) =>
 ///
 /// Warning: Using a custom hashing algorithm for passwords
 /// will permanently disrupt compatibility with Serverpod's
-/// validation and password hash migration.
+/// password hash validation and migration.
 Future<bool> defaultValidatePasswordHash(
   String password,
   String email,
