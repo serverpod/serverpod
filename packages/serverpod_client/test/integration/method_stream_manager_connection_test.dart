@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_client/src/client_method_stream_manager.dart';
+import 'package:serverpod_client/src/method_stream/method_stream_connection_details.dart';
 import 'package:serverpod_client/src/method_stream/method_stream_manager_exceptions.dart';
 import 'package:test/test.dart';
 
@@ -51,7 +53,7 @@ void main() async {
       webSocketHost = await callbackUrlFuture.future;
     });
 
-    tearDown(() => closeServer());
+    tearDown(() async => await closeServer());
 
     test(
         'when trying to open method stream then ConnectionAttemptTimedOutException is thrown.',
@@ -133,7 +135,7 @@ void main() async {
       webSocketHost = await callbackUrlFuture.future;
     });
 
-    tearDown(() => closeServer());
+    tearDown(() async => await closeServer());
     test(
         'when trying to open multiple method streams at once then single connection is validated using ping commands.',
         () async {
@@ -155,6 +157,201 @@ void main() async {
         openMethodStream(),
       ]);
       expect(pingCommandsReceived, 1);
+    });
+  });
+
+  group(
+      'Given websocket server that completes initialization sequence with error',
+      () {
+    Completer<Uri> callbackUrlFuture;
+    late Completer<void> webSocketClosed;
+    late Uri webSocketHost;
+    late Future<void> Function() closeServer;
+    setUp(() async {
+      webSocketClosed = Completer<void>();
+      callbackUrlFuture = Completer<Uri>();
+      closeServer = await TestWebSocketServer.startServer(
+        webSocketHandler: (webSocket) {
+          webSocket.listen((event) {
+            var message = WebSocketMessage.fromJsonString(
+              event,
+              TestSerializationManager(),
+            );
+            if (message is PingCommand) {
+              webSocket.add(PongCommand.buildMessage());
+            } else if (message is OpenMethodStreamCommand) {
+              webSocket.add(OpenMethodStreamResponse.buildMessage(
+                connectionId: message.connectionId,
+                endpoint: message.endpoint,
+                method: message.method,
+                responseType: OpenMethodStreamResponseType.endpointNotFound,
+              ));
+            }
+          }, onDone: () {
+            webSocketClosed.complete();
+          });
+        },
+        onConnected: (host) {
+          callbackUrlFuture.complete(host);
+        },
+      );
+
+      webSocketHost = await callbackUrlFuture.future;
+    });
+
+    tearDown(() async => await closeServer());
+    test(
+        'when trying to open method stream then websocket connection is closed.',
+        () async {
+      var streamManager = ClientMethodStreamManager(
+        connectionTimeout: const Duration(milliseconds: 100),
+        webSocketHost: webSocketHost,
+        serializationManager: TestSerializationManager(),
+      );
+
+      expect(
+        () => streamManager.openMethodStream(
+          MethodStreamConnectionDetailsBuilder().build(),
+        ),
+        throwsA(isA<OpenMethodStreamException>()),
+      );
+
+      await expectLater(webSocketClosed.future, completes);
+    });
+  });
+
+  group(
+      'Given websocket server that completes initialization sequence and then closes method stream',
+      () {
+    Completer<Uri> callbackUrlFuture;
+    late Completer<void> webSocketClosed;
+    late Uri webSocketHost;
+    late Future<void> Function() closeServer;
+    setUp(() async {
+      webSocketClosed = Completer<void>();
+      callbackUrlFuture = Completer<Uri>();
+      closeServer = await TestWebSocketServer.startServer(
+        webSocketHandler: (webSocket) {
+          webSocket.listen((event) {
+            var message = WebSocketMessage.fromJsonString(
+              event,
+              TestSerializationManager(),
+            );
+            if (message is PingCommand) {
+              webSocket.add(PongCommand.buildMessage());
+            } else if (message is OpenMethodStreamCommand) {
+              webSocket.add(OpenMethodStreamResponse.buildMessage(
+                connectionId: message.connectionId,
+                endpoint: message.endpoint,
+                method: message.method,
+                responseType: OpenMethodStreamResponseType.success,
+              ));
+
+              webSocket.add(
+                CloseMethodStreamCommand.buildMessage(
+                  endpoint: message.endpoint,
+                  connectionId: message.connectionId,
+                  method: message.method,
+                  reason: CloseReason.done,
+                ),
+              );
+            }
+          }, onDone: () {
+            webSocketClosed.complete();
+          });
+        },
+        onConnected: (host) {
+          callbackUrlFuture.complete(host);
+        },
+      );
+
+      webSocketHost = await callbackUrlFuture.future;
+    });
+
+    tearDown(() async => await closeServer());
+    test('when opening method stream then websocket connection is closed.',
+        () async {
+      var streamManager = ClientMethodStreamManager(
+        connectionTimeout: const Duration(milliseconds: 100),
+        webSocketHost: webSocketHost,
+        serializationManager: TestSerializationManager(),
+      );
+
+      await streamManager.openMethodStream(
+        MethodStreamConnectionDetailsBuilder().build(),
+      );
+
+      await expectLater(webSocketClosed.future, completes);
+    });
+  });
+
+  group('Given open method streaming connection', () {
+    Completer<Uri> callbackUrlFuture;
+    late WebSocket testWebSocket;
+    late Completer<void> webSocketClosed;
+    late Future<void> Function() closeServer;
+    late MethodStreamConnectionDetails streamConnectionDetails;
+    setUp(() async {
+      webSocketClosed = Completer<void>();
+      callbackUrlFuture = Completer<Uri>();
+      closeServer = await TestWebSocketServer.startServer(
+        webSocketHandler: (webSocket) {
+          testWebSocket = webSocket;
+          webSocket.listen((event) {
+            var message = WebSocketMessage.fromJsonString(
+              event,
+              TestSerializationManager(),
+            );
+            if (message is PingCommand) {
+              webSocket.add(PongCommand.buildMessage());
+            } else if (message is OpenMethodStreamCommand) {
+              webSocket.add(OpenMethodStreamResponse.buildMessage(
+                connectionId: message.connectionId,
+                endpoint: message.endpoint,
+                method: message.method,
+                responseType: OpenMethodStreamResponseType.success,
+              ));
+            }
+          }, onDone: () {
+            webSocketClosed.complete();
+          });
+        },
+        onConnected: (host) {
+          callbackUrlFuture.complete(host);
+        },
+      );
+
+      var webSocketHost = await callbackUrlFuture.future;
+      var streamManager = ClientMethodStreamManager(
+        connectionTimeout: const Duration(milliseconds: 100),
+        webSocketHost: webSocketHost,
+        serializationManager: TestSerializationManager(),
+      );
+
+      streamConnectionDetails = MethodStreamConnectionDetailsBuilder().build();
+      await streamManager.openMethodStream(
+        streamConnectionDetails,
+      );
+    });
+
+    tearDown(() async => await closeServer());
+    test(
+        'when websocket connection is closed then outbound stream is closed with exception.',
+        () async {
+      var errorCompleter = Completer();
+      var outputController = streamConnectionDetails.outputController;
+      outputController.stream.listen(
+        (e) {
+          // ignore
+        },
+        onError: (e, s) => errorCompleter.complete(e),
+      );
+
+      await testWebSocket.close();
+      await expectLater(webSocketClosed.future, completes);
+      await expectLater(errorCompleter.future, completes);
+      var error = await errorCompleter.future;
+      expect(error, isA<ServerpodClientException>());
     });
   });
 }

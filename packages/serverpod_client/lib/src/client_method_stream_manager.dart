@@ -12,18 +12,38 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 /// Manages the connection to the server for method streams.
 @internal
 final class ClientMethodStreamManager {
+  /// The WebSocket channel used to communicate with the server.
+  /// If null, no connection is open.
   WebSocketChannel? _webSocket;
+
+  /// The host of the WebSocket server.
   final Uri _webSocketHost;
+
+  /// Timer used to cancel the connection attempt if it takes too long.
+  /// If null, no connection attempt is in progress.
   Timer? _connectionTimer;
+
+  /// Completer that is completed when the handshake is complete.
   Completer _handshakeComplete = Completer();
+
+  /// The timeout for the connection attempt.
   final Duration _connectionTimeout;
+
+  /// The serialization manager used to serialize and deserialize messages.
   final SerializationManager _serializationManager;
 
+  /// Lock used to synchronize access when establishing websocket connection.
   final Lock _lock = Lock();
 
+  /// A map of all inbound streams. These are streams that received messages
+  /// from the server.
   final Map<String, _InboundStreamContext> _inboundStreams = {};
+
+  /// A map of all outbound streams. These are streams that send messages to
+  /// the server.
   final Map<String, _OutboundStreamContext> _outboundStreams = {};
 
+  /// Creates a new [ClientMethodStreamManager].
   ClientMethodStreamManager({
     required Duration connectionTimeout,
     required Uri webSocketHost,
@@ -32,15 +52,30 @@ final class ClientMethodStreamManager {
         _connectionTimeout = connectionTimeout,
         _serializationManager = serializationManager;
 
-  void closeConnection() async {
+  /// Closes all open connections and streams
+  ///
+  /// If an error is provided, it will be added to all inbound streams.
+  Future<void> closeAllConnections([Object? error]) async {
     await _lock.synchronized(() async {
-      await _closeAllStreams();
-      await _webSocket?.sink.close();
+      var webSocket = _webSocket;
       _webSocket = null;
+      await _closeAllStreams(error);
+      await webSocket?.sink.close();
       _cancelConnectionTimer();
     });
   }
 
+  /// Opens a method stream connection to the server.
+  /// If no websocket connection is open, a new connection will be established.
+  /// The connection will be closed when all streams are done.
+  ///
+  /// Throws an [OpenMethodStreamException] if the connection could not be
+  /// established.
+  ///
+  /// Throws a [WebSocketConnectException] if the connection attempt fails.
+  ///
+  /// Throws a [ConnectionAttemptTimedOutException] if the connection attempt
+  /// takes too long.
   Future<void> openMethodStream(
     MethodStreamConnectionDetails connectionDetails,
   ) async {
@@ -76,6 +111,8 @@ final class ClientMethodStreamManager {
     var openResponse = await inboundStreamContext.openCompleter.future;
 
     if (openResponse != OpenMethodStreamResponseType.success) {
+      _inboundStreams.remove(inboundStreamKey);
+      _tryCloseConnection();
       throw OpenMethodStreamException(openResponse);
     }
 
@@ -85,6 +122,12 @@ final class ClientMethodStreamManager {
       endpoint: connectionDetails.endpoint,
       method: connectionDetails.method,
     );
+  }
+
+  void _tryCloseConnection() {
+    if (_inboundStreams.isEmpty && _outboundStreams.isEmpty) {
+      closeAllConnections();
+    }
   }
 
   /// Builds a unique key for a stream.
@@ -101,10 +144,19 @@ final class ClientMethodStreamManager {
     _connectionTimer = null;
   }
 
-  Future<void> _closeAllStreams() async {
+  /// Closes all streams and controllers.
+  /// If an exception is provided, it will be added to the inbound stream
+  /// controller.
+  Future<void> _closeAllStreams([Object? exception]) async {
     var inputControllers =
         _inboundStreams.values.map((c) => c.controller).toList();
     _inboundStreams.clear();
+
+    if (exception != null) {
+      for (var c in inputControllers) {
+        c.addError(exception);
+      }
+    }
 
     var outboundStreamSubscriptions =
         _outboundStreams.values.map((c) => c.subscription).toList();
@@ -222,6 +274,8 @@ final class ClientMethodStreamManager {
     } else {
       await _tryCloseOutboundStream(message);
     }
+
+    _tryCloseConnection();
   }
 
   Future<void> _tryCloseInboundStream(
@@ -341,6 +395,8 @@ final class ClientMethodStreamManager {
   }
 
   Future<void> _listenToWebSocketStream(WebSocketChannel webSocket) async {
+    Object closeException =
+        const ServerpodClientException('WebSocket was closed', -1);
     try {
       await for (String jsonData in webSocket.stream) {
         if (!_handshakeComplete.isCompleted) {
@@ -395,9 +451,10 @@ final class ClientMethodStreamManager {
         }
       }
     } catch (e, s) {
-      throw WebSocketListenException(e, s);
+      closeException = WebSocketListenException(e, s);
     } finally {
-      closeConnection();
+      /// Close any still open streams with an exception.
+      await closeAllConnections(closeException);
     }
   }
 

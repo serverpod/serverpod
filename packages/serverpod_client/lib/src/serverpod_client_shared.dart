@@ -260,6 +260,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// Closes all open connections to the server.
   void close() {
     closeStreamingConnection();
+    closeStreamingMethodConnections();
   }
 
   void _cancelConnectionTimer() {
@@ -314,6 +315,20 @@ abstract class ServerpodClientShared extends EndpointCaller {
     // If everything is going according to plan, we are now connected to the
     // server.
     _notifyWebSocketConnectionStatusListeners();
+  }
+
+  /// Closes all open streaming method connections.
+  ///
+  /// [exception] is an optional exception that will be thrown to all
+  /// listeners of open streams.
+  ///
+  /// If [exception] is not provided, a [ServerpodClientException] will be
+  /// thrown with the message 'Connection closed by client' and code -1.
+  Future<void> closeStreamingMethodConnections({
+    Object? exception =
+        const ServerpodClientException('Connection closed by client', -1),
+  }) async {
+    await _methodStreamManager.closeAllConnections(exception);
   }
 
   /// Closes the streaming connection if it is open.
