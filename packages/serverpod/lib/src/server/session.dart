@@ -134,7 +134,7 @@ abstract class Session {
         settingsForSession: (Session session) => server
             .serverpod.logSettingsManager
             .getLogSettingsForSession(session),
-        skipLoggingSlowSessions: _isLongLived(this),
+        disableLoggingSlowSessions: _isLongLived(this),
         serverId: server.serverId,
       );
     } else {
