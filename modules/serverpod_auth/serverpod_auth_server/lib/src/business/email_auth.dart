@@ -8,18 +8,55 @@ import 'package:serverpod_auth_server/src/business/password_hash.dart';
 import 'package:serverpod_auth_server/src/business/user_authentication.dart';
 import 'package:serverpod_auth_server/src/business/user_images.dart';
 
+/// The default generate password hash, using argon2id.
+///
+/// Warning: Using a custom hashing algorithm for passwords
+/// will permanently disrupt compatibility with Serverpod's
+/// password hash validation and migration.
+Future<String> defaultGeneratePasswordHash(String password) =>
+    PasswordHash.argon2id(
+      password,
+      pepper: EmailSecrets.pepper,
+      allowUnsecureRandom: AuthConfig.current.allowUnsecureRandom,
+    );
+
+/// The default validation password hash.
+///
+/// Warning: Using a custom hashing algorithm for passwords
+/// will permanently disrupt compatibility with Serverpod's
+/// password hash validation and migration.
+Future<bool> defaultValidatePasswordHash(
+  String password,
+  String email,
+  String hash, {
+  void Function({
+    required String passwordHash,
+    required String storedHash,
+  })? onValidationFailure,
+  void Function(Object e)? onError,
+}) async {
+  try {
+    return await PasswordHash(
+      hash,
+      legacySalt: EmailSecrets.legacySalt,
+      legacyEmail: AuthConfig.current.extraSaltyHash ? email : null,
+      pepper: EmailSecrets.pepper,
+    ).validate(password, onValidationFailure: onValidationFailure);
+  } catch (e) {
+    onError?.call(e);
+    return false;
+  }
+}
+
 /// Collection of utility methods when working with email authentication.
 class Emails {
   /// Generates a password hash from a users password and email. This value
   /// can safely be stored in the database without the risk of exposing
   /// passwords.
-  static Future<String> generatePasswordHash(String password) async {
-    return PasswordHash.argon2id(
-      password,
-      pepper: EmailSecrets.pepper,
-      allowUnsecureRandom: AuthConfig.current.allowUnsecureRandom,
-    );
-  }
+  static Future<String> generatePasswordHash(String password) async =>
+      AuthConfig.current.passwordHashGenerator(
+        password,
+      );
 
   /// Generates a password hash from the password using the provided hash
   /// algorithm and validates that they match.
@@ -34,22 +71,19 @@ class Emails {
     String password,
     String email,
     String hash, {
-    void Function({required String passwordHash, required String storedHash})?
-        onValidationFailure,
+    void Function({
+      required String passwordHash,
+      required String storedHash,
+    })? onValidationFailure,
     void Function(Object e)? onError,
-  }) async {
-    try {
-      return await PasswordHash(
+  }) =>
+      AuthConfig.current.passwordHashValidator(
+        password,
+        email,
         hash,
-        legacySalt: EmailSecrets.legacySalt,
-        legacyEmail: AuthConfig.current.extraSaltyHash ? email : null,
-        pepper: EmailSecrets.pepper,
-      ).validate(password, onValidationFailure: onValidationFailure);
-    } catch (e) {
-      onError?.call(e);
-      return false;
-    }
-  }
+        onError: onError,
+        onValidationFailure: onValidationFailure,
+      );
 
   /// Migrates an EmailAuth entry if required.
   ///
@@ -81,11 +115,22 @@ class Emails {
   /// migrated. If null, all entries in the database will be migrated.
   ///
   /// Returns the number of migrated entries.
+  ///
+  /// Warning: This migration method is designed for password hashes generated
+  /// by the framework's default algorithm. Hashes stored with a custom
+  /// generator or different algorithm may produce unexpected results.
   static Future<int> migrateLegacyPasswordHashes(
     Session session, {
     int batchSize = 100,
     int? maxMigratedEntries,
   }) async {
+    if (AuthConfig.current.passwordHashGenerator.hashCode !=
+            defaultGeneratePasswordHash.hashCode ||
+        AuthConfig.current.passwordHashValidator.hashCode !=
+            defaultValidatePasswordHash.hashCode) {
+      throw Exception(
+          'Legacy password hash migration not supported when using custom password hash algorithm.');
+    }
     var updatedEntries = 0;
     int lastEntryId = 0;
 
@@ -504,20 +549,24 @@ class Emails {
     session.log(' - password is correct, userId: ${entry.userId})',
         level: LogLevel.debug);
 
-    var migratedAuth = await Emails.tryMigrateAuthEntry(
-      password: password,
-      entry: entry,
-    );
-
-    if (migratedAuth != null) {
-      session.log(' - migrating authentication entry', level: LogLevel.debug);
-      try {
-        await EmailAuth.db.updateRow(session, migratedAuth);
-      } catch (e) {
-        session.log(
-          ' - failed to update migrated auth: $e',
-          level: LogLevel.error,
-        );
+    if (AuthConfig.current.passwordHashGenerator.hashCode ==
+            defaultGeneratePasswordHash.hashCode &&
+        AuthConfig.current.passwordHashValidator.hashCode ==
+            defaultValidatePasswordHash.hashCode) {
+      var migratedAuth = await Emails.tryMigrateAuthEntry(
+        password: password,
+        entry: entry,
+      );
+      if (migratedAuth != null) {
+        session.log(' - migrating authentication entry', level: LogLevel.debug);
+        try {
+          await EmailAuth.db.updateRow(session, migratedAuth);
+        } catch (e) {
+          session.log(
+            ' - failed to update migrated auth: $e',
+            level: LogLevel.error,
+          );
+        }
       }
     }
 
