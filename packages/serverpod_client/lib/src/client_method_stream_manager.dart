@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_client/src/method_stream/method_stream_connection_details.dart';
 import 'package:serverpod_client/src/method_stream/method_stream_manager_exceptions.dart';
+import 'package:serverpod_client/src/util/lock.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 /// Manages the connection to the server for method streams.
@@ -17,6 +18,8 @@ final class ClientMethodStreamManager {
   Completer _handshakeComplete = Completer();
   final Duration _connectionTimeout;
   final SerializationManager _serializationManager;
+
+  final Lock _lock = Lock();
 
   final Map<String, _InboundStreamContext> _inboundStreams = {};
   final Map<String, _OutboundStreamContext> _outboundStreams = {};
@@ -30,16 +33,18 @@ final class ClientMethodStreamManager {
         _serializationManager = serializationManager;
 
   void closeConnection() async {
-    await _closeAllStreams();
-    await _webSocket?.sink.close();
-    _webSocket = null;
-    _cancelConnectionTimer();
+    await _lock.synchronized(() async {
+      await _closeAllStreams();
+      await _webSocket?.sink.close();
+      _webSocket = null;
+      _cancelConnectionTimer();
+    });
   }
 
   Future<void> openMethodStream(
     MethodStreamConnectionDetails connectionDetails,
   ) async {
-    await _tryConnect();
+    if (_webSocket == null) await _connectSynchronized();
 
     var connectionId = const Uuid().v4obj();
 
@@ -335,12 +340,7 @@ final class ClientMethodStreamManager {
     await _closeControllers([inboundStreamContext.controller]);
   }
 
-  Future<void> _listenToWebSocketStream() async {
-    var webSocket = _webSocket;
-    if (webSocket == null) {
-      return;
-    }
-
+  Future<void> _listenToWebSocketStream(WebSocketChannel webSocket) async {
     try {
       await for (String jsonData in webSocket.stream) {
         if (!_handshakeComplete.isCompleted) {
@@ -401,36 +401,31 @@ final class ClientMethodStreamManager {
     }
   }
 
-  Future<void> _tryConnect() async {
-    // TODO: Ensure this section is not run in parallel.
-    if (_webSocket != null) {
-      return;
-    }
+  Future<void> _connectSynchronized() async {
+    await _lock.synchronized(() async {
+      if (_webSocket != null) return;
 
-    var webSocket = WebSocketChannel.connect(_webSocketHost);
-    _webSocket = webSocket;
-    //  End of section that should not be run in parallel.
+      var webSocket = WebSocketChannel.connect(_webSocketHost);
 
-    await webSocket.ready.onError((e, s) {
-      _webSocket = null;
-      throw WebSocketConnectException(e, s);
+      await webSocket.ready.onError((e, s) {
+        throw WebSocketConnectException(e, s);
+      });
+
+      webSocket.sink.add(PingCommand.buildMessage());
+      _connectionTimer = Timer(_connectionTimeout, () {
+        if (!_handshakeComplete.isCompleted) {
+          webSocket.sink.close();
+          _handshakeComplete.completeError('');
+        }
+      });
+
+      _handshakeComplete = Completer();
+      unawaited(_listenToWebSocketStream(webSocket));
+
+      await _handshakeComplete.future
+          .catchError((e, s) => throw ConnectionAttemptTimedOutException());
+      _webSocket = webSocket;
     });
-
-    webSocket.sink.add(PingCommand.buildMessage());
-    _connectionTimer = Timer(_connectionTimeout, () {
-      if (!_handshakeComplete.isCompleted) {
-        _webSocket?.sink.close();
-        _webSocket = null;
-        _handshakeComplete.completeError('');
-      }
-    });
-
-    _handshakeComplete = Completer();
-    unawaited(_listenToWebSocketStream());
-
-    await _handshakeComplete.future.onError(
-      (e, s) => throw ConnectionAttemptTimedOutException(),
-    );
   }
 }
 

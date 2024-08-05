@@ -32,11 +32,14 @@ void main() async {
     Completer<Uri> callbackUrlFuture;
     late Uri webSocketHost;
     late Future<void> Function() closeServer;
+    late int pingCommandsReceived;
     setUp(() async {
+      pingCommandsReceived = 0;
       callbackUrlFuture = Completer<Uri>();
       closeServer = await TestWebSocketServer.startServer(
         webSocketHandler: (webSocket) {
           webSocket.listen((event) {
+            pingCommandsReceived++;
             // Do nothing
           });
         },
@@ -65,6 +68,93 @@ void main() async {
         ),
         throwsA(isA<ConnectionAttemptTimedOutException>()),
       );
+    });
+
+    test(
+        'when trying to open multiple method streams then a connection attempt is made for each method stream.',
+        () async {
+      var streamManager = ClientMethodStreamManager(
+        connectionTimeout: const Duration(milliseconds: 100),
+        webSocketHost: webSocketHost,
+        serializationManager: TestSerializationManager(),
+      );
+
+      Future<void> openMethodStream() async => streamManager.openMethodStream(
+            MethodStreamConnectionDetailsBuilder().build(),
+          );
+
+      await Future.wait([
+        openMethodStream(),
+        openMethodStream(),
+        openMethodStream(),
+        openMethodStream(),
+        openMethodStream(),
+      ]).onError<ConnectionAttemptTimedOutException>(
+        (error, stackTrace) => Future.value([]),
+      );
+
+      expect(pingCommandsReceived, 5);
+    });
+  });
+
+  group('Given websocket server that completes initialization sequence', () {
+    Completer<Uri> callbackUrlFuture;
+    late Uri webSocketHost;
+    late Future<void> Function() closeServer;
+    late int pingCommandsReceived;
+    setUp(() async {
+      pingCommandsReceived = 0;
+      callbackUrlFuture = Completer<Uri>();
+      closeServer = await TestWebSocketServer.startServer(
+        webSocketHandler: (webSocket) {
+          webSocket.listen((event) {
+            var message = WebSocketMessage.fromJsonString(
+              event,
+              TestSerializationManager(),
+            );
+            if (message is PingCommand) {
+              pingCommandsReceived++;
+              webSocket.add(PongCommand.buildMessage());
+            } else if (message is OpenMethodStreamCommand) {
+              webSocket.add(OpenMethodStreamResponse.buildMessage(
+                connectionId: message.connectionId,
+                endpoint: message.endpoint,
+                method: message.method,
+                responseType: OpenMethodStreamResponseType.success,
+              ));
+            }
+          });
+        },
+        onConnected: (host) {
+          callbackUrlFuture.complete(host);
+        },
+      );
+
+      webSocketHost = await callbackUrlFuture.future;
+    });
+
+    tearDown(() => closeServer());
+    test(
+        'when trying to open multiple method streams at once then single connection is validated using ping commands.',
+        () async {
+      var streamManager = ClientMethodStreamManager(
+        connectionTimeout: const Duration(milliseconds: 100),
+        webSocketHost: webSocketHost,
+        serializationManager: TestSerializationManager(),
+      );
+
+      Future<void> openMethodStream() async => streamManager.openMethodStream(
+            MethodStreamConnectionDetailsBuilder().build(),
+          );
+
+      await Future.wait([
+        openMethodStream(),
+        openMethodStream(),
+        openMethodStream(),
+        openMethodStream(),
+        openMethodStream(),
+      ]);
+      expect(pingCommandsReceived, 1);
     });
   });
 }
