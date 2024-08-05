@@ -2,8 +2,8 @@ import 'package:intl/intl.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Create the target [DatabaseDefinition] based on the [serializableModel].
 DatabaseDefinition createDatabaseDefinitionFromModels(
@@ -47,6 +47,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
               ],
               type: 'btree',
               isUnique: true,
+              isNotNull: false,
               isPrimary: true,
             ),
             for (var index in classDefinition.indexes)
@@ -60,7 +61,9 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                 ],
                 type: index.type,
                 isUnique: index.unique,
+                isNotNull: index.nonNulls,
                 isPrimary: false,
+                predicate: !index.nonNulls ? null : _predicate(index.fields),
               ),
           ],
           managed: classDefinition.manageMigration,
@@ -84,6 +87,22 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
       },
     ).toList(),
   );
+}
+
+String _predicate(List<String> fieldNames) {
+  var expr = fieldNames
+      .map((fieldName) => '(${_quoteIfNeeded(fieldName)} IS NOT NULL)')
+      .join(' AND ');
+  return fieldNames.length > 1 ? '($expr)' : expr;
+}
+
+/// Try to match Postgres' quoting rules for column names.
+String _quoteIfNeeded(String fieldName) {
+  var regex = RegExp(r'^[a-z_]+[a-z0-9_]*$');
+  if (!regex.hasMatch(fieldName)) {
+    return '"$fieldName"';
+  }
+  return fieldName;
 }
 
 List<ForeignKeyDefinition> _createForeignKeys(ClassDefinition classDefinition) {

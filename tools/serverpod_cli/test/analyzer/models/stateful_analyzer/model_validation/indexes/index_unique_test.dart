@@ -122,4 +122,87 @@ void main() {
     var index = definition.indexes.first;
     expect(index.unique, true);
   });
+
+  test(
+      'Given a class with an index with an undefined nonNulls key, then return a definition where unique is set to false.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          name: String
+        indexes:
+          example_index:
+            fields: name
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
+    var definition = definitions.first as ClassDefinition;
+
+    var index = definition.indexes.first;
+    expect(index.nonNulls, false);
+  });
+
+  test(
+      'Given a class with an index with a nonNulls key set to false, then return a definition where unique is set to false.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+      class: Example
+      table: example
+      fields:
+        name: String
+      indexes:
+        example_index:
+          fields: name
+          nonNulls: false
+      ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
+    var definition = definitions.first as ClassDefinition;
+
+    var index = definition.indexes.first;
+    expect(index.nonNulls, false);
+  });
+
+  test(
+      'Given a class with an index with a nonNulls key set to true, then return a definition where unique is set to true.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          name: String
+        indexes:
+          example_index:
+            fields: name
+            nonNulls: true
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
+    var definition = definitions.first as ClassDefinition;
+
+    var index = definition.indexes.first;
+    expect(index.nonNulls, true);
+  });
 }

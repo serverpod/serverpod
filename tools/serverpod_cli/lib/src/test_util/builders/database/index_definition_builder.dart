@@ -5,6 +5,7 @@ class IndexDefinitionBuilder {
   List<IndexElementDefinition> _elements;
   String _type;
   bool _isUnique;
+  bool _isNotNull;
   bool _isPrimary;
   String? _predicate;
 
@@ -13,6 +14,7 @@ class IndexDefinitionBuilder {
         _elements = [],
         _type = 'btree',
         _isUnique = false,
+        _isNotNull = false,
         _isPrimary = false,
         _predicate = null;
 
@@ -22,6 +24,7 @@ class IndexDefinitionBuilder {
       elements: _elements,
       type: _type,
       isUnique: _isUnique,
+      isNotNull: _isNotNull,
       isPrimary: _isPrimary,
       predicate: _predicate,
     );
@@ -56,6 +59,11 @@ class IndexDefinitionBuilder {
 
   IndexDefinitionBuilder withIsUnique(bool isUnique) {
     _isUnique = isUnique;
+    return this;
+  }
+
+  IndexDefinitionBuilder withIsNotNull(bool isNotNull) {
+    _isNotNull = isNotNull;
     return this;
   }
 
