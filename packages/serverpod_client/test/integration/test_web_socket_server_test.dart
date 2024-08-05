@@ -1,3 +1,8 @@
+@OnPlatform({
+  'browser': Skip('WebSocket tests are not supported in browser'),
+})
+library;
+
 import 'dart:async';
 
 import 'package:test/test.dart';
