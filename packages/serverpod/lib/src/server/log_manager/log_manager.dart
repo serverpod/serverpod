@@ -19,15 +19,17 @@ class SessionLogManager {
 
   final LogWriter _logWriter;
 
+  final bool _skipSlowSessionLogging;
+
   final LogSettings Function(Session) _settingsForSession;
+
+  final _FutureTaskManager _logTasks;
 
   int _numberOfQueries;
 
   int _logOrderId;
 
   int get _nextLogOrderId => ++_logOrderId;
-
-  final _FutureTaskManager _logTasks;
 
   bool _isLoggingOpened;
 
@@ -37,12 +39,14 @@ class SessionLogManager {
     LogWriter logWriter, {
     required LogSettings Function(Session) settingsForSession,
     required String serverId,
+    bool skipLoggingSlowSessions = false,
   })  : _logOrderId = 0,
         _numberOfQueries = 0,
         _logWriter = logWriter,
         _settingsForSession = settingsForSession,
         _serverId = serverId,
         _isLoggingOpened = false,
+        _skipSlowSessionLogging = skipLoggingSlowSessions,
         _logTasks = _FutureTaskManager();
 
   bool _shouldLogQuery({
@@ -300,8 +304,8 @@ class SessionLogManager {
 
     var slowMicros =
         (logSettings.slowSessionDuration * _microNormalizer).toInt();
-    var isSlow =
-        duration > Duration(microseconds: slowMicros) && !session.isLongLived;
+    var isSlow = duration > Duration(microseconds: slowMicros) &&
+        !_skipSlowSessionLogging;
 
     if (logSettings.logAllSessions ||
         (logSettings.logSlowSessions && isSlow) ||

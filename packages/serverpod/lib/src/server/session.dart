@@ -134,6 +134,7 @@ abstract class Session {
         settingsForSession: (Session session) => server
             .serverpod.logSettingsManager
             .getLogSettingsForSession(session),
+        skipLoggingSlowSessions: _isLongLived(this),
         serverId: server.serverId,
       );
     } else {
@@ -149,7 +150,7 @@ abstract class Session {
       (false) => StdOutLogWriter(session),
     };
 
-    if ((session is StreamingSession || session is MethodStreamSession) &&
+    if ((_isLongLived(session)) &&
         logSettings.logStreamingSessionsContinuously) {
       return logWriter;
     }
@@ -578,9 +579,9 @@ extension SessionInternalMethods on Session {
 
     return id;
   }
-
-  /// Returns true if the session is expected to be alive for an extended
-  /// period of time.
-  bool get isLongLived =>
-      this is StreamingSession || this is MethodStreamSession;
 }
+
+/// Returns true if the session is expected to be alive for an extended
+/// period of time.
+bool _isLongLived(Session session) =>
+    session is StreamingSession || session is MethodStreamSession;
