@@ -526,7 +526,7 @@ class Serverpod {
 
     try {
       await _connectToDatabase(
-        session: internalSession
+        session: internalSession,
         maxAttempts: maxAttempts,
       );
     } catch (e) {
@@ -557,7 +557,8 @@ class Serverpod {
 
       if (commandLineArgs.applyMigrations) {
         logVerbose('Applying database migrations.');
-        var migrationsApplied = await migrationManager.migrateToLatest(internalSession);
+        var migrationsApplied =
+            await migrationManager.migrateToLatest(internalSession);
 
         if (migrationsApplied == null) {
           stdout.writeln('Latest database migration already applied.');
@@ -812,5 +813,7 @@ extension ServerpodInternalMethods on Serverpod {
   /// Retrieve the log settings manager
   LogSettingsManager get logSettingsManager => _logSettingsManager!;
 
+  /// Retrieve the global internal session used by the Serverpod.
+  /// Logging is turned off.
   Session get internalSession => _internalSession;
 }
