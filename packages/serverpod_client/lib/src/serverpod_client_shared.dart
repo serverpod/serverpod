@@ -73,7 +73,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
   }
 
   // StreamSubscription<ConnectivityResult>? _connectivitySubscription;
-  bool _disconnectOnLostInternetConnection = false;
+  late bool _disconnectWebSocketStreamOnLostInternetConnection;
+  late bool _disconnectMethodStreamsOnLostInternetConnection;
 
   /// Full host name of the web socket endpoint.
   /// E.g. "wss://example.com/websocket"
@@ -171,10 +172,15 @@ abstract class ServerpodClientShared extends EndpointCaller {
   }
 
   void _connectivityChanged(bool connected) {
-    if (!connected) {
-      if (_disconnectOnLostInternetConnection && _webSocket != null) {
-        closeStreamingConnection();
-      }
+    if (connected) return;
+
+    if (_disconnectMethodStreamsOnLostInternetConnection) {
+      closeStreamingMethodConnections();
+    }
+
+    if (_disconnectWebSocketStreamOnLostInternetConnection &&
+        _webSocket != null) {
+      closeStreamingConnection();
     }
   }
 
@@ -189,6 +195,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     required Duration? connectionTimeout,
     this.onFailedCall,
     this.onSucceededCall,
+    bool? disconnectStreamsOnLostInternetConnection,
   })  : connectionTimeout = connectionTimeout ?? const Duration(seconds: 20),
         streamingConnectionTimeout =
             streamingConnectionTimeout ?? const Duration(seconds: 5) {
@@ -196,6 +203,11 @@ abstract class ServerpodClientShared extends EndpointCaller {
         'host must end with a slash, eg: https://example.com/');
     assert(host.startsWith('http://') || host.startsWith('https://'),
         'host must include protocol, eg: https://example.com/');
+    disconnectStreamsOnLostInternetConnection ??= false;
+    _disconnectMethodStreamsOnLostInternetConnection =
+        disconnectStreamsOnLostInternetConnection;
+    _disconnectWebSocketStreamOnLostInternetConnection =
+        disconnectStreamsOnLostInternetConnection;
   }
 
   /// Handles a message received from the WebSocket stream. Typically, this
@@ -279,7 +291,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
         'To enable automatic disconnect on lost internet connection, you need to set the connectivityMonitor property.',
       );
     }
-    _disconnectOnLostInternetConnection = disconnectOnLostInternetConnection;
+    _disconnectWebSocketStreamOnLostInternetConnection =
+        disconnectOnLostInternetConnection;
 
     try {
       // Connect to the server.

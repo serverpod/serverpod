@@ -1902,6 +1902,7 @@ class Client extends _i1.ServerpodClient {
       StackTrace,
     )? onFailedCall,
     Function(_i1.MethodCallContext)? onSucceededCall,
+    bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
           _i20.Protocol(),
@@ -1911,6 +1912,8 @@ class Client extends _i1.ServerpodClient {
           connectionTimeout: connectionTimeout,
           onFailedCall: onFailedCall,
           onSucceededCall: onSucceededCall,
+          disconnectStreamsOnLostInternetConnection:
+              disconnectStreamsOnLostInternetConnection,
         ) {
     asyncTasks = EndpointAsyncTasks(this);
     authentication = EndpointAuthentication(this);

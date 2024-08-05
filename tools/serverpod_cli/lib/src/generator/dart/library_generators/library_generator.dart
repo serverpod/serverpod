@@ -549,6 +549,15 @@ class LibraryGenerator {
                             ..url = serverpodUrl(false)
                             ..isNullable = false),
                         ))),
+                    Parameter((p) => p
+                      ..name = 'disconnectStreamsOnLostInternetConnection'
+                      ..named = true
+                      ..type = TypeReference(
+                        (t) => t
+                          ..symbol = 'bool'
+                          ..url = 'dart:core'
+                          ..isNullable = true,
+                      )),
                   ])
                   ..initializers.add(refer('super').call([
                     refer('host'),
@@ -562,6 +571,8 @@ class LibraryGenerator {
                     'connectionTimeout': refer('connectionTimeout'),
                     'onFailedCall': refer('onFailedCall'),
                     'onSucceededCall': refer('onSucceededCall'),
+                    'disconnectStreamsOnLostInternetConnection':
+                        refer('disconnectStreamsOnLostInternetConnection'),
                   }).code);
               } else {
                 c
