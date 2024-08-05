@@ -42,7 +42,17 @@ jobs:
           SERVERPOD_PASSWORDS: ${{ secrets.SERVERPOD_PASSWORDS }}
         run: |
           pwd
-          echo "$SERVERPOD_PASSWORDS" > config/passwords.yaml
+          printenv SERVERPOD_PASSWORDS > config/passwords.yaml
+          ls config/
+
+      - name: Create Firebase service account key file
+        working-directory: click_server
+        shell: bash
+        env:
+          FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+        run: |
+          pwd
+          printenv FIREBASE_SERVICE_ACCOUNT_KEY > config/firebase_service_account_key.json
           ls config/
 
       - name: Get Dart packages
