@@ -5,8 +5,8 @@ import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
-import 'package:serverpod/src/server/log_manager/log_writer.dart';
-import 'package:serverpod/src/server/log_manager/session_log_cache.dart';
+import 'package:serverpod/src/server/log_manager/log_settings.dart';
+import 'package:serverpod/src/server/log_manager/log_writers.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import '../cache/caches.dart';
 import '../database/database.dart';
@@ -28,10 +28,6 @@ abstract class Session {
 
   /// The time the session object was created.
   DateTime get startTime => _startTime;
-
-  /// Log messages saved during the session.
-  @internal
-  late final SessionLogEntryCache sessionLogs;
 
   int? _messageId;
 
@@ -129,21 +125,37 @@ abstract class Session {
     }
 
     if (enableLogging) {
-      var logWriter = Features.enablePersistentLogging
-          ? DatabaseLogWriter()
-          : StdOutLogWriter();
+      var logWriter = _createLogWriter(
+        this,
+        server.serverpod.logSettingsManager,
+      );
       _logManager = SessionLogManager(
         logWriter,
         settingsForSession: (Session session) => server
             .serverpod.logSettingsManager
             .getLogSettingsForSession(session),
+        disableLoggingSlowSessions: _isLongLived(this),
         serverId: server.serverId,
       );
     } else {
       _logManager = null;
     }
+  }
 
-    sessionLogs = server.serverpod.logManager.initializeSessionLog(this);
+  LogWriter _createLogWriter(Session session, LogSettingsManager settings) {
+    var logSettings = settings.getLogSettingsForSession(session);
+
+    LogWriter logWriter = switch (Features.enablePersistentLogging) {
+      (true) => DatabaseLogWriter(session),
+      (false) => StdOutLogWriter(session),
+    };
+
+    if ((_isLongLived(session)) &&
+        logSettings.logStreamingSessionsContinuously) {
+      return logWriter;
+    }
+
+    return CachedLogWriter(logWriter);
   }
 
   bool _initialized = false;
@@ -568,3 +580,8 @@ extension SessionInternalMethods on Session {
     return id;
   }
 }
+
+/// Returns true if the session is expected to be alive for an extended
+/// period of time.
+bool _isLongLived(Session session) =>
+    session is StreamingSession || session is MethodStreamSession;
