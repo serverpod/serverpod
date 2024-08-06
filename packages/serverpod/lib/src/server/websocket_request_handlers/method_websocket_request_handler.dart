@@ -74,6 +74,7 @@ class MethodWebsocketRequestHandler {
               connectionId: message.connectionId,
               reason: message.reason,
             );
+            break;
           case MethodStreamSerializableException():
             _methodStreamManager.dispatchSerializableException(
               message,
