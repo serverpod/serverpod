@@ -343,7 +343,6 @@ void main() {
         () async {
       var websocketCompleter = Completer<void>();
       webSocket.stream.listen((event) {
-        print(event);
         // Listen to the to keep it open.
       }, onDone: () {
         websocketCompleter.complete();
