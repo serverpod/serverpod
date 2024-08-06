@@ -160,6 +160,7 @@ final class ClientMethodStreamManager {
 
     var outboundStreamSubscriptions =
         _outboundStreams.values.map((c) => c.subscription).toList();
+    _outboundStreams.clear();
 
     var closeSubscriptionsFutures =
         outboundStreamSubscriptions.map((s) => s.cancel());
