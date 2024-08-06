@@ -325,7 +325,7 @@ class MethodStreamSession extends Session {
     required String methodName,
     required this.connectionId,
   })  : _methodName = methodName,
-        super(methodName: methodName, messageId: 0);
+        super(methodName: methodName);
 }
 
 /// When a web socket connection is opened to the [Server] a [StreamingSession]
