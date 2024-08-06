@@ -43,7 +43,7 @@ void main() async {
     });
   });
 
-  group('Given sequence websocket test server with single response', () {
+  group('Given sequence websocket test server with a single response', () {
     Completer<Uri> callbackUrlFuture;
     late Uri webSocketHost;
     late Future<void> Function() closeServer;
@@ -78,7 +78,7 @@ void main() async {
       expect(response, sequence.first);
     });
 
-    test('when sending multiple messages then single response is returned.',
+    test('when sending multiple messages then a single response is returned.',
         () async {
       var webSocket = WebSocketChannel.connect(webSocketHost);
       await webSocket.ready;

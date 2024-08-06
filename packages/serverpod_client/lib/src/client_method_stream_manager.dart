@@ -255,8 +255,8 @@ final class ClientMethodStreamManager {
 
     for (var controller in controllersToClose) {
       // Paused streams will never process the close event and
-      // will never complete. Therefore we need add a timeout to complete the
-      // future.
+      // will never complete. Therefore we need to add a timeout to complete
+      // the future.
       futures.add(controller.close().timeout(
             const Duration(seconds: 6),
             onTimeout: () async => await controller.onCancel?.call(),

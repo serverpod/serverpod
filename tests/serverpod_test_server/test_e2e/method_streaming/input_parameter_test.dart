@@ -142,7 +142,7 @@ void main() {
   });
 
   test(
-      'Given a stream that throws an exception when calling a streaming method that true if exception is thrown on input stream then server responds with true,',
+      'Given an input stream that throws an exception when calling a streaming method that returns true if exception is thrown on input stream then server responds with true,',
       () async {
     var inputStream = StreamController<int>();
     var responseFuture =
@@ -155,7 +155,7 @@ void main() {
   });
 
   test(
-      'Given a stream that throws a serializable exception when calling a streaming method that true if exception is thrown on input stream then server responds with true,',
+      'Given an input stream that throws a serializable exception when calling a streaming method that returns true if exception is thrown on input stream then server responds with true,',
       () async {
     var inputStream = StreamController<int>();
     var responseFuture = client.methodStreaming

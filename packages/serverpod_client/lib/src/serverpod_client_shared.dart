@@ -541,7 +541,7 @@ abstract class EndpointCaller {
   /// [T] is the type of the return value of the endpoint stream. This is either
   /// a [Stream] or a [Future].
   ///
-  /// [G] is the generic of [T].
+  /// [G] is the generic of [T], such as T<G>.
   ///
   /// If [T] is not a [Stream] or a [Future], the method will throw an exception.
   dynamic callStreamingServerEndpoint<T, G>(
