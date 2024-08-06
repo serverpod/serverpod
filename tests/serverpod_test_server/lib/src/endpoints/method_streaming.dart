@@ -23,6 +23,13 @@ class MethodStreaming extends Endpoint {
     return stream.first;
   }
 
+  Future<int?> nullableIntReturnFromStream(
+    Session session,
+    Stream<int?> stream,
+  ) async {
+    return stream.first;
+  }
+
   Stream<int> intStreamFromValue(Session session, int value) async* {
     for (var i in List.generate(value, (index) => index)) {
       yield i;

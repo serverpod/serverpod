@@ -161,6 +161,7 @@ methodStreaming:
   - simpleStream:
   - methodCallEndpoint:
   - intReturnFromStream:
+  - nullableIntReturnFromStream:
   - intStreamFromValue:
   - intEchoStream:
   - dynamicEchoStream:

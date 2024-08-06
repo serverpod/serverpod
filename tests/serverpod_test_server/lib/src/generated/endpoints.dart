@@ -3010,6 +3010,27 @@ class Endpoints extends _i1.EndpointDispatch {
             streamParams['stream']!.cast<int>(),
           ),
         ),
+        'nullableIntReturnFromStream': _i1.MethodStreamConnector(
+          name: 'nullableIntReturnFromStream',
+          params: {},
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<int?>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.futureType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .nullableIntReturnFromStream(
+            session,
+            streamParams['stream']!.cast<int?>(),
+          ),
+        ),
         'intStreamFromValue': _i1.MethodStreamConnector(
           name: 'intStreamFromValue',
           params: {
