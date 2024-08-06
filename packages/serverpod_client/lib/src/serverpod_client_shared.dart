@@ -96,15 +96,13 @@ abstract class ServerpodClientShared extends EndpointCaller {
   Future<String> get websocketHost async {
     var uri = _webSocketHost;
 
-    if (authenticationKeyManager != null) {
-      var auth = await authenticationKeyManager!.get();
-      if (auth != null) {
-        uri = uri.replace(
-          queryParameters: {
-            'auth': auth,
-          },
-        );
-      }
+    var auth = await authenticationKeyManager?.get();
+    if (auth != null) {
+      uri = uri.replace(
+        queryParameters: {
+          'auth': auth,
+        },
+      );
     }
 
     return uri.toString();
