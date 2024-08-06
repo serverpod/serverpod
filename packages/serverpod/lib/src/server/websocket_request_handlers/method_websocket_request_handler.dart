@@ -42,29 +42,7 @@ class MethodWebsocketRequestHandler {
           case OpenMethodStreamResponse():
             break;
           case MethodStreamMessage():
-            if (message.parameter == null) {
-              // Assume message is intended for method streams return stream.
-              webSocket.tryAdd(BadRequestMessage.buildMessage(
-                  'Server does not accept messages targeting the return stream.'));
-              throw Exception(
-                'Message targeting return stream received: $message',
-              );
-            }
-
-            var success = _methodStreamManager.dispatchMessage(message, server);
-            if (success) break;
-
-            server.serverpod.logVerbose(
-              'Failed to dispatch message: $message',
-            );
-
-            webSocket.tryAdd(CloseMethodStreamCommand.buildMessage(
-              endpoint: message.endpoint,
-              method: message.method,
-              parameter: message.parameter,
-              connectionId: message.connectionId,
-              reason: CloseReason.error,
-            ));
+            _dispatchMethodStreamMessage(message, webSocket, server);
             break;
           case CloseMethodStreamCommand():
             await _methodStreamManager.closeStream(
@@ -106,6 +84,36 @@ class MethodWebsocketRequestHandler {
       await webSocket.close();
       onClosed();
     }
+  }
+
+  void _dispatchMethodStreamMessage(
+    MethodStreamMessage message,
+    WebSocket webSocket,
+    Server server,
+  ) {
+    if (message.parameter == null) {
+      // Assume message is intended for method streams return stream.
+      webSocket.tryAdd(BadRequestMessage.buildMessage(
+          'Server does not accept messages targeting the return stream.'));
+      throw Exception(
+        'Message targeting return stream received: $message',
+      );
+    }
+
+    var success = _methodStreamManager.dispatchMessage(message, server);
+    if (success) return;
+
+    server.serverpod.logVerbose(
+      'Failed to dispatch message: $message',
+    );
+
+    webSocket.tryAdd(CloseMethodStreamCommand.buildMessage(
+      endpoint: message.endpoint,
+      method: message.method,
+      parameter: message.parameter,
+      connectionId: message.connectionId,
+      reason: CloseReason.error,
+    ));
   }
 
   Future<String> _handleOpenMethodStreamCommand(
