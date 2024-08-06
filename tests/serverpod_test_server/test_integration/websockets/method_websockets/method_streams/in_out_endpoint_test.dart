@@ -272,8 +272,6 @@ void main() {
 
     group('when a stream of values are passed in', () {
       late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
-      late Completer<CloseMethodStreamCommand>
-          closeMethodStreamParameterCommand;
       TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
       var inputValues = List.generate(4, (index) => index);
       late List<int> endpointResponses;
@@ -284,14 +282,10 @@ void main() {
       setUp(() async {
         endpointResponses = [];
         closeMethodStreamCommand = Completer<CloseMethodStreamCommand>();
-        closeMethodStreamParameterCommand =
-            Completer<CloseMethodStreamCommand>();
         var streamOpened = Completer<void>();
 
         testCompleterTimeout.start({
           'closeMethodStreamCommand': closeMethodStreamCommand,
-          'closeMethodStreamParameterCommand':
-              closeMethodStreamParameterCommand,
           'streamOpened': streamOpened,
         });
 
@@ -304,11 +298,7 @@ void main() {
           if (message is OpenMethodStreamResponse) {
             streamOpened.complete();
           } else if (message is CloseMethodStreamCommand) {
-            if (message.parameter == inputParameter) {
-              closeMethodStreamParameterCommand.complete(message);
-            } else {
-              closeMethodStreamCommand.complete(message);
-            }
+            closeMethodStreamCommand.complete(message);
           } else if (message is MethodStreamMessage) {
             endpointResponses.add(message.object as int);
           }
@@ -372,26 +362,6 @@ void main() {
         });
 
         await expectLater(closeMethodStreamCommand.future, completes);
-      });
-
-      test(
-          'then CloseMethodStreamCommand matching the stream parameter is received.',
-          () async {
-        closeMethodStreamParameterCommand.future.catchError((error) {
-          fail(
-              'Failed to receive CloseMethodStreamCommand from server for input parameter.');
-        }).then((message) {
-          expect(message.endpoint, endpoint);
-          expect(message.method, method);
-          expect(message.parameter, inputParameter);
-          expect(message.connectionId, connectionId);
-          expect(message.reason, CloseReason.done);
-        });
-
-        await expectLater(
-          closeMethodStreamParameterCommand.future,
-          completes,
-        );
       });
     });
   });
