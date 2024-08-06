@@ -7,10 +7,20 @@ import 'package:serverpod_test_server/src/generated/protocol.dart';
 class MethodStreaming extends Endpoint {
   Map<String, Completer> _delayedResponses = {};
 
-  /// Check Null and Object in validation.
   Stream<int> simpleStream(Session session) async* {
     for (var i = 0; i < 10; i++) {
       yield i;
+    }
+  }
+
+  Stream<int> neverEndingStreamWithDelay(
+    Session session,
+    int millisecondsDelay,
+  ) async* {
+    int i = 0;
+    while (true) {
+      await Future.delayed(Duration(milliseconds: millisecondsDelay));
+      yield i++;
     }
   }
 

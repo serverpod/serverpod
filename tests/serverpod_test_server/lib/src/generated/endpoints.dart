@@ -2989,6 +2989,28 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['methodStreaming'] as _i20.MethodStreaming)
                   .simpleStream(session),
         ),
+        'neverEndingStreamWithDelay': _i1.MethodStreamConnector(
+          name: 'neverEndingStreamWithDelay',
+          params: {
+            'millisecondsDelay': _i1.ParameterDescription(
+              name: 'millisecondsDelay',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i20.MethodStreaming)
+                  .neverEndingStreamWithDelay(
+            session,
+            params['millisecondsDelay'],
+          ),
+        ),
         'intReturnFromStream': _i1.MethodStreamConnector(
           name: 'intReturnFromStream',
           params: {},
