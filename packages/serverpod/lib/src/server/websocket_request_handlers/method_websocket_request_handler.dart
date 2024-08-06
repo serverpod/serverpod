@@ -267,18 +267,29 @@ class _InputStreamContext implements _StreamContext {
 }
 
 class _MethodStreamManager {
+  static const Duration _closeTimeout = Duration(seconds: 6);
   final Map<String, _InputStreamContext> _inputStreamContexts = {};
   final Map<String, _OutputStreamContext> _outputStreamContexts = {};
 
   Future<void> closeAllStreams() async {
     var inputControllers =
         _inputStreamContexts.values.map((c) => c.controller).toList();
-    inputControllers.clear();
-    var outputControllers =
-        _outputStreamContexts.values.map((c) => c.controller).toList();
-    outputControllers.clear();
+    _inputStreamContexts.clear();
 
-    await _closeControllers([...inputControllers, ...outputControllers]);
+    var outboundStreamContexts = _outputStreamContexts.values.toList();
+    _outputStreamContexts.clear();
+
+    var closeSubscriptionFutures = outboundStreamContexts.map(
+      (c) => c.subscription.cancel().timeout(
+            _closeTimeout,
+            onTimeout: () => c.controller.onCancel?.call(),
+          ),
+    );
+
+    await Future.wait([
+      ...closeSubscriptionFutures,
+      _closeControllers(inputControllers),
+    ]);
   }
 
   Future<void> closeStream({
@@ -288,33 +299,38 @@ class _MethodStreamManager {
     required UuidValue connectionId,
     required CloseReason reason,
   }) async {
-    _StreamContext? context;
+    var streamKey = _buildStreamKey(
+      endpoint: endpoint,
+      method: method,
+      parameter: parameter,
+      connectionId: connectionId,
+    );
+
     if (parameter == null) {
-      context = _outputStreamContexts.remove(_buildStreamKey(
-        endpoint: endpoint,
-        method: method,
-        connectionId: connectionId,
-      ));
+      var context = _outputStreamContexts[streamKey];
+
+      if (context == null) {
+        return;
+      }
+
+      // Immediate close of the stream
+      await context.controller.onCancel?.call();
+      unawaited(context.subscription.cancel());
     } else {
-      context = _inputStreamContexts.remove(_buildStreamKey(
-        endpoint: endpoint,
-        method: method,
-        parameter: parameter,
-        connectionId: connectionId,
-      ));
-    }
+      var context = _inputStreamContexts.remove(streamKey);
 
-    if (context == null) {
-      return;
-    }
+      if (context == null) {
+        return;
+      }
 
-    if (reason == CloseReason.error) {
-      context.controller.addError(
-        const StreamClosedWithErrorException(),
-      );
-    }
+      if (reason == CloseReason.error) {
+        context.controller.addError(
+          const StreamClosedWithErrorException(),
+        );
+      }
 
-    return _closeControllers([context.controller]);
+      return _closeControllers([context.controller]);
+    }
   }
 
   void createStream({
@@ -326,7 +342,7 @@ class _MethodStreamManager {
     required SerializationManager serializationManager,
     required WebSocket webSocket,
   }) {
-    var outputController = _createOutputController(
+    var outputStreamContext = _createOutputController(
       message,
       methodConnector,
       webSocket,
@@ -347,43 +363,43 @@ class _MethodStreamManager {
       case MethodStreamReturnType.streamType:
         _handleMethodWithStreamReturn(
           methodConnector: methodConnector,
+          message: message,
           session: session,
           args: args,
           streamParams: streamParams,
-          outputController: outputController,
+          outputController: outputStreamContext.controller,
+          subscription: outputStreamContext.subscription,
         );
         break;
       case MethodStreamReturnType.futureType:
       case MethodStreamReturnType.voidType:
         _handleMethodWithFutureReturn(
           methodConnector: methodConnector,
+          message: message,
           session: session,
           args: args,
           streamParams: streamParams,
-          outputController: outputController,
+          outputController: outputStreamContext.controller,
         );
         break;
     }
   }
 
-  StreamController<dynamic> _createOutputController(
+  _OutputStreamContext _createOutputController(
     OpenMethodStreamCommand message,
     MethodStreamConnector methodConnector,
     WebSocket webSocket,
     Session session,
     SerializationManager serializationManager,
   ) {
-    var outputController = StreamController();
-    _outputStreamContexts[_buildStreamKey(
-      endpoint: message.endpoint,
-      method: message.method,
-      connectionId: message.connectionId,
-    )] = _OutputStreamContext(
-      outputController,
-      methodConnector.streamParams.values,
-    );
+    var outputController = StreamController(onCancel: () async {
+      await _closeOutboundStream(webSocket, message);
+      await session.close();
+      await tryCloseWebsocket(webSocket);
+    });
 
-    outputController.stream.listen(
+    late StreamSubscription subscription;
+    subscription = outputController.stream.listen(
       (value) {
         webSocket.tryAdd(MethodStreamMessage.buildMessage(
           endpoint: message.endpoint,
@@ -392,11 +408,6 @@ class _MethodStreamManager {
           object: value,
           serializationManager: serializationManager,
         ));
-      },
-      onDone: () async {
-        await _closeOutboundStream(webSocket, message, CloseReason.done);
-        await session.close();
-        await tryCloseWebsocket(webSocket);
       },
       onError: (e, s) async {
         if (e is SerializableException) {
@@ -411,18 +422,44 @@ class _MethodStreamManager {
           );
         }
 
-        await _closeOutboundStream(webSocket, message, CloseReason.error);
-        await session.close(error: e, stackTrace: s);
-        await tryCloseWebsocket(webSocket);
+        var streamKey = _buildStreamKey(
+          endpoint: message.endpoint,
+          method: message.method,
+          connectionId: message.connectionId,
+        );
+        _updateCloseReason(streamKey, CloseReason.error);
+
+        /// Required to close stream when error occurs.
+        /// This will also close the input streams.
+        /// We can't use the "cancelOnError" option
+        /// for the listen method because this cancels
+        /// the stream before the onError callback has
+        /// been called.
+        await subscription.cancel();
       },
-      // Cancel on error prevents the stream from continuing after an exception
-      // has been thrown. This is important since we want to close the stream
-      // when an exception is thrown and handle the complete shutdown in the
-      // onError callback.
-      cancelOnError: true,
     );
 
-    return outputController;
+    var outputStreamContext =
+        _OutputStreamContext(outputController, subscription);
+    _outputStreamContexts[_buildStreamKey(
+      endpoint: message.endpoint,
+      method: message.method,
+      connectionId: message.connectionId,
+    )] = outputStreamContext;
+
+    return outputStreamContext;
+  }
+
+  void _updateCloseReason(
+    String streamKey,
+    CloseReason reason,
+  ) {
+    if (_outputStreamContexts.containsKey(streamKey)) {
+      _outputStreamContexts.update(
+        streamKey,
+        (value) => value..closeReason = reason,
+      );
+    }
   }
 
   /// Dispatches a message to the correct stream controller.
@@ -486,7 +523,7 @@ class _MethodStreamManager {
       // will never complete. Therefore we need add a timeout to complete the
       // future.
       futures.add(controller.close().timeout(
-            const Duration(seconds: 6),
+            _closeTimeout,
             onTimeout: () async => await controller.onCancel?.call(),
           ));
     }
@@ -538,22 +575,26 @@ class _MethodStreamManager {
 
   Future<void> _handleMethodWithFutureReturn({
     required MethodStreamConnector methodConnector,
+    required OpenMethodStreamCommand message,
     required Session session,
     required Map<String, dynamic> args,
     required Map<String, Stream<dynamic>> streamParams,
     required StreamController outputController,
   }) async {
-    dynamic result;
+    var streamKey = _buildStreamKey(
+      endpoint: message.endpoint,
+      method: message.method,
+      connectionId: message.connectionId,
+    );
     try {
-      result = await methodConnector.call(session, args, streamParams);
+      var result = await methodConnector.call(session, args, streamParams);
+      _updateCloseReason(streamKey, CloseReason.done);
+      if (methodConnector.returnType != MethodStreamReturnType.voidType) {
+        outputController.add(result);
+      }
     } catch (e, stackTrace) {
+      _updateCloseReason(streamKey, CloseReason.error);
       outputController.addError(e, stackTrace);
-      await outputController.close();
-      return;
-    }
-
-    if (methodConnector.returnType != MethodStreamReturnType.voidType) {
-      outputController.add(result);
     }
 
     await outputController.close();
@@ -562,22 +603,28 @@ class _MethodStreamManager {
   Future<void> _closeOutboundStream(
     WebSocket webSocket,
     OpenMethodStreamCommand message,
-    CloseReason reason,
   ) async {
-    _outputStreamContexts.remove(
+    var context = _outputStreamContexts.remove(
       _buildStreamKey(
-          endpoint: message.endpoint,
-          method: message.method,
-          connectionId: message.connectionId),
-    );
-    webSocket.tryAdd(
-      CloseMethodStreamCommand.buildMessage(
         endpoint: message.endpoint,
         method: message.method,
         connectionId: message.connectionId,
-        reason: reason,
       ),
     );
+
+    if (context == null) return;
+
+    var closeReason = context.closeReason;
+    if (closeReason != null) {
+      webSocket.tryAdd(
+        CloseMethodStreamCommand.buildMessage(
+          endpoint: message.endpoint,
+          method: message.method,
+          connectionId: message.connectionId,
+          reason: closeReason,
+        ),
+      );
+    }
 
     var inputStreamControllers = <StreamController>[];
     for (var streamParam in message.inputStreams) {
@@ -598,7 +645,7 @@ class _MethodStreamManager {
           method: message.method,
           parameter: streamParam,
           connectionId: message.connectionId,
-          reason: reason,
+          reason: closeReason ?? CloseReason.done,
         ),
       );
 
@@ -610,18 +657,28 @@ class _MethodStreamManager {
 
   void _handleMethodWithStreamReturn({
     required MethodStreamConnector methodConnector,
+    required OpenMethodStreamCommand message,
     required Session session,
     required Map<String, dynamic> args,
     required Map<String, Stream<dynamic>> streamParams,
     required StreamController outputController,
+    required StreamSubscription subscription,
   }) {
     outputController
         .addStream(
-          methodConnector.call(session, args, streamParams),
-        )
+      methodConnector.call(session, args, streamParams),
+    )
         .whenComplete(
-          () async => await outputController.close(),
+      () async {
+        var streamKey = _buildStreamKey(
+          endpoint: message.endpoint,
+          method: message.method,
+          connectionId: message.connectionId,
         );
+        _updateCloseReason(streamKey, CloseReason.done);
+        await subscription.cancel();
+      },
+    );
   }
 
   Future<void> tryCloseWebsocket(webSocket) async {
@@ -646,9 +703,11 @@ class _OutputStreamContext implements _StreamContext {
   @override
   final StreamController controller;
 
-  final Iterable<StreamParameterDescription> streamParams;
+  final StreamSubscription subscription;
 
-  _OutputStreamContext(this.controller, this.streamParams);
+  CloseReason? closeReason;
+
+  _OutputStreamContext(this.controller, this.subscription);
 }
 
 abstract interface class _StreamContext {
