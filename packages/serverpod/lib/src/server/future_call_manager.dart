@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
+import 'package:serverpod/src/server/serverpod.dart';
 
 /// Manages [FutureCall]s in the [Server]. A [FutureCall] is a method that will
 /// be called at a certain time in the future. The call request and its
@@ -50,22 +51,19 @@ class FutureCallManager {
       identifier: identifier,
     );
 
-    var session = await _server.serverpod.createSession(enableLogging: false);
+    var session = _server.serverpod.internalSession;
     await FutureCallEntry.db.insertRow(session, entry);
-    await session.close();
   }
 
   /// Cancels a [FutureCall] with the specified identifier. If no future call
   /// with the specified identifier is found, this call will have no effect.
   Future<void> cancelFutureCall(String identifier) async {
-    var session = await _server.serverpod.createSession(enableLogging: false);
+    var session = _server.serverpod.internalSession;
 
     await FutureCallEntry.db.deleteWhere(
       session,
       where: (t) => t.identifier.equals(identifier),
     );
-
-    await session.close();
   }
 
   /// Registers a [FutureCall] with the manager.
@@ -108,16 +106,12 @@ class FutureCallManager {
       // Get calls
       var now = DateTime.now().toUtc();
 
-      var tempSession = await _server.serverpod.createSession(
-        enableLogging: false,
-      );
+      var tempSession = _server.serverpod.internalSession;
 
       var rows = await FutureCallEntry.db.deleteWhere(
         tempSession,
         where: (t) => t.time <= now,
       );
-
-      await tempSession.close();
 
       for (var entry in rows) {
         var call = _futureCalls[entry.name];

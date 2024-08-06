@@ -146,7 +146,9 @@ abstract class Session {
     var logSettings = settings.getLogSettingsForSession(session);
 
     LogWriter logWriter = switch (Features.enablePersistentLogging) {
-      (true) => DatabaseLogWriter(session),
+      (true) => DatabaseLogWriter(
+          logWriterSession: session.serverpod.internalSession,
+        ),
       (false) => StdOutLogWriter(session),
     };
 

@@ -34,6 +34,8 @@ typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
 class Serverpod {
   static Serverpod? _instance;
 
+  late Session _internalSession;
+
   DateTime? _startedTime;
 
   /// The time the [Serverpod] was started.
@@ -215,37 +217,33 @@ class Serverpod {
       );
     }
 
-    var session = await createSession(enableLogging: false);
     try {
-      var settings = await internal.RuntimeSettings.db.findFirstRow(session);
+      var settings =
+          await internal.RuntimeSettings.db.findFirstRow(internalSession);
       if (settings != null) {
         _updateLogSettings(settings);
       }
-      await session.close();
-    } catch (e, stackTrace) {
-      await session.close(error: e, stackTrace: stackTrace);
+    } catch (_) {
       return;
     }
   }
 
   Future<void> _storeRuntimeSettings(internal.RuntimeSettings settings) async {
-    var session = await createSession(enableLogging: false);
     try {
       var oldRuntimeSettings =
-          await internal.RuntimeSettings.db.findFirstRow(session);
+          await internal.RuntimeSettings.db.findFirstRow(internalSession);
       if (oldRuntimeSettings == null) {
         settings.id = null;
-        settings =
-            await internal.RuntimeSettings.db.insertRow(session, settings);
+        settings = await internal.RuntimeSettings.db
+            .insertRow(internalSession, settings);
       } else {
         settings.id = oldRuntimeSettings.id;
-        await internal.RuntimeSettings.db.updateRow(session, settings);
+        await internal.RuntimeSettings.db.updateRow(internalSession, settings);
       }
-    } catch (e, stackTrace) {
-      await session.close(error: e, stackTrace: stackTrace);
-      return;
+    } catch (error, stackTrace) {
+      logVerbose(error.toString());
+      logVerbose(stackTrace.toString());
     }
-    await session.close();
   }
 
   /// Currently not used.
@@ -377,6 +375,8 @@ class Serverpod {
       httpOptionsResponseHeaders: httpOptionsResponseHeaders,
     );
     endpoints.initializeEndpoints(server);
+
+    _internalSession = InternalSession(server: server, enableLogging: false);
 
     if (Features.enableFutureCalls) {
       _futureCallManager = FutureCallManager(
@@ -524,11 +524,9 @@ class Serverpod {
     int? maxAttempts =
         commandLineArgs.role == ServerpodRole.maintenance ? 6 : null;
 
-    Session session;
-
     try {
-      session = await _connectToDatabase(
-        enableLogging: false,
+      await _connectToDatabase(
+        session: internalSession,
         maxAttempts: maxAttempts,
       );
     } catch (e) {
@@ -542,24 +540,25 @@ class Serverpod {
     try {
       logVerbose('Initializing migration manager.');
       _migrationManager = MigrationManager();
-      await migrationManager.initialize(session);
+      await migrationManager.initialize(internalSession);
 
       if (commandLineArgs.applyRepairMigration) {
         logVerbose('Applying database repair migration');
         var appliedRepairMigration =
-            await migrationManager.applyRepairMigration(session);
+            await migrationManager.applyRepairMigration(internalSession);
         if (appliedRepairMigration == null) {
           stderr.writeln('Failed to apply database repair migration.');
         } else {
           stdout.writeln(
               'Database repair migration "$appliedRepairMigration" applied.');
         }
-        await migrationManager.initialize(session);
+        await migrationManager.initialize(internalSession);
       }
 
       if (commandLineArgs.applyMigrations) {
         logVerbose('Applying database migrations.');
-        var migrationsApplied = await migrationManager.migrateToLatest(session);
+        var migrationsApplied =
+            await migrationManager.migrateToLatest(internalSession);
 
         if (migrationsApplied == null) {
           stdout.writeln('Latest database migration already applied.');
@@ -571,11 +570,11 @@ class Serverpod {
           }
         }
 
-        await migrationManager.initialize(session);
+        await migrationManager.initialize(internalSession);
       }
 
       logVerbose('Verifying database integrity.');
-      await migrationManager.verifyDatabaseIntegrity(session);
+      await migrationManager.verifyDatabaseIntegrity(internalSession);
     } catch (e) {
       _exitCode = 1;
       stderr.writeln(
@@ -586,7 +585,7 @@ class Serverpod {
     logVerbose('Loading runtime settings.');
     try {
       _runtimeSettings =
-          await internal.RuntimeSettings.db.findFirstRow(session);
+          await internal.RuntimeSettings.db.findFirstRow(internalSession);
     } catch (e) {
       _exitCode = 1;
       stderr.writeln(
@@ -598,7 +597,7 @@ class Serverpod {
       logVerbose('Runtime settings not found, creating default settings.');
       try {
         _runtimeSettings = await RuntimeSettings.db
-            .insertRow(session, _defaultRuntimeSettings);
+            .insertRow(internalSession, _defaultRuntimeSettings);
       } catch (e) {
         _exitCode = 1;
         stderr.writeln(
@@ -608,8 +607,6 @@ class Serverpod {
     } else {
       logVerbose('Runtime settings loaded.');
     }
-
-    await session.close();
   }
 
   bool _completedHealthChecks = false;
@@ -746,6 +743,7 @@ class Serverpod {
 
   /// Shuts down the Serverpod and all associated servers.
   Future<void> shutdown({bool exitProcess = true}) async {
+    await _internalSession.close();
     await redisController?.stop();
     await server.shutdown();
     await _webServer?.stop();
@@ -772,14 +770,13 @@ class Serverpod {
   /// Establishes a connection to the database. This method will retry
   /// connecting to the database until it succeeds.
   Future<Session> _connectToDatabase({
-    required bool enableLogging,
+    required Session session,
     int? maxAttempts,
   }) async {
     bool printedDatabaseConnectionError = false;
     int attempts = 0;
     while (true) {
       attempts++;
-      var session = await createSession(enableLogging: enableLogging);
       try {
         await session.db.testConnection();
         return session;
@@ -793,8 +790,6 @@ class Serverpod {
           stderr.writeln(config.database.toString());
           printedDatabaseConnectionError = true;
         }
-
-        await session.close();
 
         if (maxAttempts != null && attempts >= maxAttempts) {
           throw TimeoutException(
@@ -817,4 +812,8 @@ class Serverpod {
 extension ServerpodInternalMethods on Serverpod {
   /// Retrieve the log settings manager
   LogSettingsManager get logSettingsManager => _logSettingsManager!;
+
+  /// Retrieve the global internal session used by the Serverpod.
+  /// Logging is turned off.
+  Session get internalSession => _internalSession;
 }
