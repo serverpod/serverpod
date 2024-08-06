@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/cloud_storage/content_type.dart';
 import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
 
 const _endpointName = 'serverpod_cloud_storage';
@@ -30,21 +31,9 @@ class CloudStoragePublicEndpoint extends Endpoint {
 
     var extension = p.extension(path);
     extension = extension.toLowerCase();
-    if (extension == '.js') {
-      response.headers.contentType = ContentType('text', 'javascript');
-    } else if (extension == '.css') {
-      response.headers.contentType = ContentType('text', 'css');
-    } else if (extension == '.png') {
-      response.headers.contentType = ContentType('image', 'png');
-    } else if (extension == '.jpg') {
-      response.headers.contentType = ContentType('image', 'jpeg');
-    } else if (extension == '.svg') {
-      response.headers.contentType = ContentType('image', 'svg+xml');
-    } else if (extension == '.ttf') {
-      response.headers.contentType = ContentType('application', 'x-font-ttf');
-    } else if (extension == '.woff') {
-      response.headers.contentType = ContentType('application', 'x-font-woff');
-    }
+ 
+      response.headers.contentType = contentType[extension];
+   
 
     // Retrieve the file from storage and return it.
     return file;

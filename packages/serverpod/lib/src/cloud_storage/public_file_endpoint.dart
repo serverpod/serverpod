@@ -1,9 +1,10 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
+import 'package:serverpod/src/cloud_storage/content_type.dart';
 
 const _endpointName = 'serverpod_file_storage';
 
@@ -30,37 +31,17 @@ class FileStoragePublicEndpoint extends Endpoint {
 
     var extension = p.extension(path);
     extension = extension.toLowerCase();
-    if (extension == '.js') {
-      response.headers.contentType = ContentType('text', 'javascript');
-    } else if (extension == '.css') {
-      response.headers.contentType = ContentType('text', 'css');
-    } else if (extension == '.png') {
-      response.headers.contentType = ContentType('image', 'png');
-    } else if (extension == '.jpg') {
-      response.headers.contentType = ContentType('image', 'jpeg');
-    } else if (extension == '.svg') {
-      response.headers.contentType = ContentType('image', 'svg+xml');
-    } else if (extension == '.ttf') {
-      response.headers.contentType = ContentType('application', 'x-font-ttf');
-    } else if (extension == '.woff') {
-      response.headers.contentType = ContentType('application', 'x-font-woff');
-    }else if (extension == '.pdf') {
-    response.headers.contentType = ContentType('application', 'pdf');
-} else if (extension == '.epub') {
-    response.headers.contentType = ContentType('application', 'epub+zip');
-}
    
+      response.headers.contentType = contentType[extension];
+  
       final fileData = await file.readAsBytes();
       final data = ByteData.view(fileData.buffer);
       return data;
   }
 
-  /// Uploads a file to the the public database cloud storage.
+  /// Uploads a file to the Servers directory represented with path.
   Future<bool> upload(MethodCallSession session, String path) async {
-    print("OVER HERE");
 
-    print("========================");
-    print(path);
     var body = await _readBinaryBody(session.httpRequest);
     if (body == null) return false;
 
