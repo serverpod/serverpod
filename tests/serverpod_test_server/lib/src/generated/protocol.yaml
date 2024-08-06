@@ -185,6 +185,8 @@ methodStreaming:
   - inStreamThrowsSerializableException:
   - outStreamThrowsException:
   - outStreamThrowsSerializableException:
+  - throwsExceptionVoid:
+  - throwsSerializableExceptionVoid:
   - throwsException:
   - throwsSerializableException:
   - throwsExceptionStream:

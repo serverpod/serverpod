@@ -27,6 +27,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
     super.connectionTimeout,
     super.onFailedCall,
     super.onSucceededCall,
+    super.disconnectStreamsOnLostInternetConnection,
   }) {
     assert(securityContext == null || securityContext is SecurityContext,
         'Context must be of type SecurityContext');

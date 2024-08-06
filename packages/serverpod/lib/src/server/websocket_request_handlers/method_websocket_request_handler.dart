@@ -121,6 +121,8 @@ class MethodWebsocketRequestHandler {
       );
       return OpenMethodStreamResponse.buildMessage(
         connectionId: message.connectionId,
+        endpoint: message.endpoint,
+        method: message.method,
         responseType: OpenMethodStreamResponseType.endpointNotFound,
       );
     }
@@ -133,6 +135,8 @@ class MethodWebsocketRequestHandler {
       );
       return OpenMethodStreamResponse.buildMessage(
         connectionId: message.connectionId,
+        endpoint: message.endpoint,
+        method: message.method,
         responseType: OpenMethodStreamResponseType.endpointNotFound,
       );
     }
@@ -142,6 +146,8 @@ class MethodWebsocketRequestHandler {
         'Endpoint method is not a valid stream method: $message',
       );
       return OpenMethodStreamResponse.buildMessage(
+        endpoint: message.endpoint,
+        method: message.method,
         connectionId: message.connectionId,
         responseType: OpenMethodStreamResponseType.endpointNotFound,
       );
@@ -160,6 +166,8 @@ class MethodWebsocketRequestHandler {
         'Failed to parse parameters for open stream request: $message',
       );
       return OpenMethodStreamResponse.buildMessage(
+        endpoint: message.endpoint,
+        method: message.method,
         connectionId: message.connectionId,
         responseType: OpenMethodStreamResponseType.invalidArguments,
       );
@@ -176,6 +184,8 @@ class MethodWebsocketRequestHandler {
         'Failed to parse input streams for open stream request: $message',
       );
       return OpenMethodStreamResponse.buildMessage(
+        endpoint: message.endpoint,
+        method: message.method,
         connectionId: message.connectionId,
         responseType: OpenMethodStreamResponseType.invalidArguments,
       );
@@ -206,11 +216,15 @@ class MethodWebsocketRequestHandler {
       return switch (authFailed.reason) {
         AuthenticationFailureReason.insufficientAccess =>
           OpenMethodStreamResponse.buildMessage(
+            endpoint: message.endpoint,
+            method: message.method,
             connectionId: message.connectionId,
             responseType: OpenMethodStreamResponseType.authorizationDeclined,
           ),
         AuthenticationFailureReason.unauthenticated =>
           OpenMethodStreamResponse.buildMessage(
+            endpoint: message.endpoint,
+            method: message.method,
             connectionId: message.connectionId,
             responseType: OpenMethodStreamResponseType.authenticationFailed,
           ),
@@ -228,6 +242,8 @@ class MethodWebsocketRequestHandler {
     );
 
     return OpenMethodStreamResponse.buildMessage(
+      endpoint: message.endpoint,
+      method: message.method,
       connectionId: message.connectionId,
       responseType: OpenMethodStreamResponseType.success,
     );
@@ -574,6 +590,8 @@ class _MethodStreamManager {
     required OpenMethodStreamCommand message,
     required Server server,
   }) {
+    /// Will never be stopped listened to if the method does not return.
+    /// This is a potential memory leak.
     methodConnector.call(session, args, streamParams).listen(
       (value) {
         _postMessage(

@@ -44,6 +44,8 @@ void main() {
       });
 
       webSocket.sink.add(OpenMethodStreamResponse.buildMessage(
+        endpoint: 'endpoint',
+        method: 'method',
         responseType: OpenMethodStreamResponseType.success,
         connectionId: const Uuid().v4obj(),
       ));

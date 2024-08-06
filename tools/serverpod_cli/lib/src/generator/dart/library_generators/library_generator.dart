@@ -374,8 +374,7 @@ class LibraryGenerator {
                   'package:serverpod_client/serverpod_client.dart')))
             ..initializers.add(refer('super').call([refer('caller')]).code)));
 
-          for (var methodDef
-              in endpointDef.methods.whereType<MethodCallDefinition>()) {
+          for (var methodDef in endpointDef.methods) {
             var requiredParams = methodDef.parameters;
             var optionalParams = methodDef.parametersPositional;
             var namedParameters = methodDef.parametersNamed;
@@ -409,24 +408,28 @@ class LibraryGenerator {
                         ..type =
                             parameterDef.type.reference(false, config: config))
                   ])
-                  ..body = refer('caller').property('callServerEndpoint').call([
-                    literalString('$modulePrefix${endpointDef.name}'),
-                    literalString(methodDef.name),
-                    literalMap({
-                      for (var parameterDef in requiredParams)
-                        literalString(parameterDef.name):
-                            refer(parameterDef.name),
-                      for (var parameterDef in optionalParams)
-                        literalString(parameterDef.name):
-                            refer(parameterDef.name),
-                      for (var parameterDef in namedParameters)
-                        literalString(parameterDef.name):
-                            refer(parameterDef.name),
-                    })
-                  ], {}, [
-                    methodDef.returnType.generics.first
-                        .reference(false, config: config)
-                  ]).code,
+                  ..body = switch (methodDef) {
+                    MethodCallDefinition methodDef => _buildCallServerEndpoint(
+                        modulePrefix,
+                        endpointDef,
+                        methodDef,
+                        requiredParams,
+                        optionalParams,
+                        namedParameters,
+                      ),
+                    MethodStreamDefinition methodDef =>
+                      _buildCallStreamingServerEndpoint(
+                        modulePrefix,
+                        endpointDef,
+                        methodDef,
+                        requiredParams,
+                        optionalParams,
+                        namedParameters,
+                      ),
+                    _ => throw Exception(
+                        'Unknown method definition type: $methodDef',
+                      ),
+                  },
               ),
             );
           }
@@ -546,6 +549,15 @@ class LibraryGenerator {
                             ..url = serverpodUrl(false)
                             ..isNullable = false),
                         ))),
+                    Parameter((p) => p
+                      ..name = 'disconnectStreamsOnLostInternetConnection'
+                      ..named = true
+                      ..type = TypeReference(
+                        (t) => t
+                          ..symbol = 'bool'
+                          ..url = 'dart:core'
+                          ..isNullable = true,
+                      )),
                   ])
                   ..initializers.add(refer('super').call([
                     refer('host'),
@@ -559,6 +571,8 @@ class LibraryGenerator {
                     'connectionTimeout': refer('connectionTimeout'),
                     'onFailedCall': refer('onFailedCall'),
                     'onSucceededCall': refer('onSucceededCall'),
+                    'disconnectStreamsOnLostInternetConnection':
+                        refer('disconnectStreamsOnLostInternetConnection'),
                   }).code);
               } else {
                 c
@@ -624,6 +638,63 @@ class LibraryGenerator {
     );
 
     return library.build();
+  }
+
+  Code _buildCallServerEndpoint(
+    String modulePrefix,
+    EndpointDefinition endpointDef,
+    MethodCallDefinition methodDef,
+    List<ParameterDefinition> requiredParams,
+    List<ParameterDefinition> optionalParams,
+    List<ParameterDefinition> namedParameters,
+  ) {
+    var params = [
+      ...requiredParams,
+      ...optionalParams,
+      ...namedParameters,
+    ];
+
+    return refer('caller').property('callServerEndpoint').call([
+      literalString('$modulePrefix${endpointDef.name}'),
+      literalString(methodDef.name),
+      literalMap({
+        for (var parameterDef in params)
+          literalString(parameterDef.name): refer(parameterDef.name),
+      })
+    ], {}, [
+      methodDef.returnType.generics.first.reference(false, config: config)
+    ]).code;
+  }
+
+  Code _buildCallStreamingServerEndpoint(
+    String modulePrefix,
+    EndpointDefinition endpointDef,
+    MethodStreamDefinition methodDef,
+    List<ParameterDefinition> requiredParams,
+    List<ParameterDefinition> optionalParams,
+    List<ParameterDefinition> namedParameters,
+  ) {
+    var (streamingParams, params) = separateStreamParametersFromParameters([
+      ...requiredParams,
+      ...optionalParams,
+      ...namedParameters,
+    ]);
+
+    return refer('caller').property('callStreamingServerEndpoint').call([
+      literalString('$modulePrefix${endpointDef.name}'),
+      literalString(methodDef.name),
+      literalMap({
+        for (var parameterDef in params)
+          literalString(parameterDef.name): refer(parameterDef.name),
+      }),
+      literalMap({
+        for (var parameterDef in streamingParams)
+          literalString(parameterDef.name): refer(parameterDef.name),
+      }),
+    ], {}, [
+      methodDef.returnType.reference(false, config: config),
+      methodDef.returnType.generics.first.reference(false, config: config),
+    ]).code;
   }
 
   String _endpointPath(EndpointDefinition endpoint) {
