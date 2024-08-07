@@ -254,6 +254,17 @@ class SessionLogManager {
 
   final Lock _openLogLock = Lock();
 
+  /// Opens the log for a session immediately if logging for all sessions is
+  /// enabled. Otherwise, it will be opened when something is logged or the
+  /// session is closed. Called automatically when a session is created.
+  @internal
+  Future<void> openLog(Session session) async {
+    var settings = _settingsForSession(session);
+    if (!settings.logAllSessions) return;
+
+    await _openLog(session);
+  }
+
   Future<void> _openLog(Session session) async {
     await _openLogLock.synchronized(() async {
       if (_isLoggingOpened) return;
@@ -269,9 +280,7 @@ class SessionLogManager {
         isOpen: true,
       );
 
-      await _logWriter.openLog(
-        sessionLogEntry,
-      );
+      await _logWriter.openLog(sessionLogEntry);
 
       _isLoggingOpened = true;
     });
@@ -280,7 +289,7 @@ class SessionLogManager {
   /// Called automatically when a session is closed. Writes the session and its
   /// logs to the database, if configuration says so.
   @internal
-  Future<int?> finalizeSessionLog(
+  Future<int?> finalizeLog(
     Session session, {
     int? authenticatedUserId,
     String? exception,

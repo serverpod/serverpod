@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -137,6 +138,8 @@ abstract class Session {
         disableLoggingSlowSessions: _isLongLived(this),
         serverId: server.serverId,
       );
+
+      unawaited(_logManager?.openLog(this));
     } else {
       _logManager = null;
     }
@@ -205,9 +208,9 @@ abstract class Session {
       }
 
       server.messageCentral.removeListenersForSession(this);
-      return await _logManager?.finalizeSessionLog(
+      return await _logManager?.finalizeLog(
         this,
-        exception: error == null ? null : '$error',
+        exception: error?.toString(),
         stackTrace: stackTrace,
         authenticatedUserId: _authenticated?.userId,
       );
