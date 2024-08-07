@@ -246,7 +246,7 @@ class SessionLogManager {
       _logTasks.addTask(() => writeLog(entry));
     } catch (exception, stackTrace) {
       stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG $type');
-      stderr.write('ENDPOINT: ${session.endpointName}');
+      stderr.write('ENDPOINT: ${session.endpoint}');
       stderr.writeln('CALL error: $exception');
       stderr.writeln('$stackTrace');
     }
@@ -264,8 +264,8 @@ class SessionLogManager {
         serverId: _serverId,
         time: now,
         touched: now,
-        endpoint: session.endpointName,
-        method: session.methodName,
+        endpoint: session.endpoint,
+        method: session.method,
         isOpen: true,
       );
 
@@ -317,8 +317,8 @@ class SessionLogManager {
         serverId: _serverId,
         time: now,
         touched: now,
-        endpoint: session.endpointName,
-        method: session.methodName,
+        endpoint: session.endpoint,
+        method: session.method,
         duration: duration.inMicroseconds / _microNormalizer,
         numQueries: _numberOfQueries,
         isOpen: false,
@@ -364,10 +364,10 @@ class LogManager {
 
 extension on Session {
   String get callName {
-    if (methodName != null) {
-      return '$endpointName.$methodName';
+    if (method != null) {
+      return '$endpoint.$method';
     }
-    return endpointName;
+    return endpoint;
   }
 }
 

@@ -24,8 +24,8 @@ class LogSettingsManager {
 
   /// Returns the [LogSettings] for a specific session.
   LogSettings getLogSettingsForSession(Session session) {
-    var endpoint = session.endpointName;
-    var method = session.methodName;
+    var endpoint = session.endpoint;
+    var method = session.method;
 
     LogSettings? settings;
 
