@@ -392,7 +392,14 @@ class _MethodStreamManager {
     Session session,
     SerializationManager serializationManager,
   ) {
+    bool isCanceled = false;
     var outputController = StreamController(onCancel: () async {
+      /// Guard against multiple calls to onCancel
+      /// This is required because we invoke the onCancel
+      /// method manually if the stream is closed by a timeout
+      /// or a request from the client.
+      if (isCanceled) return;
+      isCanceled = true;
       await _closeOutboundStream(webSocket, message);
       await session.close();
       await tryCloseWebsocket(webSocket);
@@ -681,7 +688,7 @@ class _MethodStreamManager {
     );
   }
 
-  Future<void> tryCloseWebsocket(webSocket) async {
+  Future<void> tryCloseWebsocket(WebSocket webSocket) async {
     if (_inputStreamContexts.isEmpty && _outputStreamContexts.isEmpty) {
       await webSocket.close();
     }
