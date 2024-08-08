@@ -33,6 +33,12 @@ class WebSocketListenException extends MethodStreamExceptions {
   const WebSocketListenException(this.error, [this.stackTrace]);
 }
 
+/// Thrown if the WebSocket connection is closed.
+class WebSocketClosedException extends MethodStreamExceptions {
+  /// Creates a new [WebSocketClosedException].
+  const WebSocketClosedException();
+}
+
 /// Thrown if opening a method stream fails.
 class OpenMethodStreamException extends MethodStreamExceptions {
   /// The response type that caused the exception.

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:serverpod_client/src/method_stream/method_stream_manager_exceptions.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_key_manager.dart';
@@ -43,7 +44,7 @@ void main() {
 
       await expectLater(streamErrorCompleter.future, completes);
       var error = await streamErrorCompleter.future;
-      expect(error, isA<ServerpodClientException>());
+      expect(error, isA<WebSocketClosedException>());
     });
   });
 

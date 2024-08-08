@@ -333,11 +333,10 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// [exception] is an optional exception that will be thrown to all
   /// listeners of open streams.
   ///
-  /// If [exception] is not provided, a [ServerpodClientException] will be
-  /// thrown with the message 'Connection closed by client' and code -1.
+  /// If [exception] is not provided, a [WebSocketClosedException] will be
+  /// thrown.
   Future<void> closeStreamingMethodConnections({
-    Object? exception =
-        const ServerpodClientException('Connection closed by client', -1),
+    Object? exception = const WebSocketClosedException(),
   }) async {
     await _methodStreamManager.closeAllConnections(exception);
   }
