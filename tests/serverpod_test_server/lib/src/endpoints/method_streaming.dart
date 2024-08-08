@@ -7,6 +7,7 @@ import 'package:serverpod_test_server/src/generated/protocol.dart';
 class MethodStreaming extends Endpoint {
   Map<String, Completer> _delayedResponses = {};
 
+  /// Returns a simple stream of integers from 0 to 9.
   Stream<int> simpleStream(Session session) async* {
     for (var i = 0; i < 10; i++) {
       yield i;
