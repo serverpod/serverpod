@@ -196,8 +196,8 @@ class MethodWebsocketRequestHandler {
       server: server,
       enableLogging: endpointConnector.endpoint.logSessions,
       authenticationKey: message.authentication,
-      endpointName: endpointConnector.name,
-      methodName: endpointMethodConnector.name,
+      endpoint: endpointConnector.name,
+      method: endpointMethodConnector.name,
       connectionId: message.connectionId,
     );
 

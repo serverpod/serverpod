@@ -131,7 +131,7 @@ class WebServer {
 
     WebCallSession session = WebCallSession(
       server: serverpod.server,
-      endpointName: uri.path,
+      endpoint: uri.path,
       authenticationKey: authenticationKey,
     );
 
