@@ -112,19 +112,6 @@ class Body {
     return Body._(Stream.value(body), encoding, body.length);
   }
 
-  /// Returns whether [bytes] is plain ASCII.
-  ///
-  /// [codeUnits] is the number of code units in the original string.
-  static bool _isPlainAscii(List<int> bytes, int codeUnits) {
-    // Most non-ASCII code units will produce multiple bytes and make the text
-    // longer.
-    if (bytes.length != codeUnits) return false;
-
-    // Non-ASCII code units between U+0080 and U+009F produce 8-bit characters
-    // with the high bit set.
-    return bytes.every((byte) => byte & 0x80 == 0);
-  }
-
   /// Returns a [Stream] representing the body.
   ///
   /// Can only be called once.

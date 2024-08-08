@@ -6,7 +6,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:collection/collection.dart';
 import 'package:serverpod_relic_helpers/src/body.dart';
 import 'package:serverpod_relic_helpers/src/message.dart';
 import 'package:test/test.dart';
