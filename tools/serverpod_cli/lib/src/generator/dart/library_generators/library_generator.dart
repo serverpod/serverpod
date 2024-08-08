@@ -640,8 +640,20 @@ class LibraryGenerator {
     return library.build();
   }
 
-  String _buildEndpointCallDocumentation(MethodDefinition methodDef) =>
-      methodDef.documentationComment ?? '';
+  String _buildEndpointCallDocumentation(MethodDefinition methodDef) {
+    if (methodDef is! MethodStreamDefinition) {
+      return methodDef.documentationComment ?? '';
+    }
+
+    const experimentalWarning =
+        '/// Warning: Streaming methods are still experimental.';
+    var documentationComment = methodDef.documentationComment;
+    if (documentationComment == null) {
+      return experimentalWarning;
+    }
+
+    return '$experimentalWarning\n///\n$documentationComment';
+  }
 
   Code _buildCallServerEndpoint(
     String modulePrefix,
