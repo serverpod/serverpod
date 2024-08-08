@@ -8,7 +8,7 @@ import 'package:serverpod_test_server/test_util/logging_utils.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
-Future<T> awaitFirst<T>(Stream<T> stream) async {
+Future<T> awaitFirstWithoutClosingStream<T>(Stream<T> stream) async {
   var completer = Completer<T>();
   stream.listen((event) {
     completer.complete(event);
@@ -51,7 +51,7 @@ void main() async {
       var outputStream = client.logging.streamEmpty(controller.stream);
 
       controller.add(1);
-      await awaitFirst(outputStream);
+      await awaitFirstWithoutClosingStream(outputStream);
 
       // Wait for the log to be written
       await Future.delayed(Duration(milliseconds: 100));
@@ -126,7 +126,7 @@ void main() async {
       var outputStream = client.logging.streamQueryLogging(controller.stream);
 
       controller.add(1);
-      await awaitFirst(outputStream);
+      await awaitFirstWithoutClosingStream(outputStream);
 
       // Wait for the log to be written
       await Future.delayed(Duration(milliseconds: 100));
@@ -151,7 +151,7 @@ void main() async {
       var outputStream = client.logging.streamEmpty(controller.stream);
 
       controller.add(1);
-      await awaitFirst(outputStream);
+      await awaitFirstWithoutClosingStream(outputStream);
 
       // Wait for the log to be written
       await Future.delayed(Duration(milliseconds: 100));
@@ -176,7 +176,7 @@ void main() async {
       var outputStream = client.logging.streamEmpty(controller.stream);
 
       controller.add(1);
-      await awaitFirst(outputStream);
+      await awaitFirstWithoutClosingStream(outputStream);
 
       // Wait for the log to be written
       await Future.delayed(Duration(milliseconds: 100));
