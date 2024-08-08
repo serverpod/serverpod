@@ -383,7 +383,7 @@ class LibraryGenerator {
             endpoint.methods.add(
               Method(
                 (m) => m
-                  ..docs.add(methodDef.documentationComment ?? '')
+                  ..docs.add(_buildEndpointCallDocumentation(methodDef))
                   ..returns = returnType.reference(false, config: config)
                   ..name = methodDef.name
                   ..requiredParameters.addAll([
@@ -639,6 +639,9 @@ class LibraryGenerator {
 
     return library.build();
   }
+
+  String _buildEndpointCallDocumentation(MethodDefinition methodDef) =>
+      methodDef.documentationComment ?? '';
 
   Code _buildCallServerEndpoint(
     String modulePrefix,
