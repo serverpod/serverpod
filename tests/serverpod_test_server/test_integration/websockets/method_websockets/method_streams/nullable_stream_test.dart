@@ -155,7 +155,6 @@ void main() {
       late Completer<CloseMethodStreamCommand>
           closeMethodStreamParameterCommand;
       TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
-      var inputValue = null;
       late List<int?> endpointResponses;
 
       var inputParameter = 'stream';
@@ -211,7 +210,7 @@ void main() {
           method: method,
           parameter: inputParameter,
           connectionId: connectionId,
-          object: inputValue,
+          object: null,
           serializationManager: server.serializationManager,
         ));
 
@@ -233,10 +232,7 @@ void main() {
 
         await expectLater(closeMethodStreamCommand.future, completes);
 
-        expect(
-          endpointResponses,
-          [inputValue],
-        );
+        expect(endpointResponses, [null]);
       });
     });
   });
