@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -131,6 +132,7 @@ abstract class Session {
       );
       _logManager = SessionLogManager(
         logWriter,
+        session: this,
         settingsForSession: (Session session) => server
             .serverpod.logSettingsManager
             .getLogSettingsForSession(session),
@@ -205,9 +207,9 @@ abstract class Session {
       }
 
       server.messageCentral.removeListenersForSession(this);
-      return await _logManager?.finalizeSessionLog(
+      return await _logManager?.finalizeLog(
         this,
-        exception: error == null ? null : '$error',
+        exception: error?.toString(),
         stackTrace: stackTrace,
         authenticatedUserId: _authenticated?.userId,
       );
@@ -233,7 +235,6 @@ abstract class Session {
     }
 
     _logManager?.logEntry(
-      this,
       message: message,
       level: level ?? LogLevel.info,
       error: exception?.toString(),

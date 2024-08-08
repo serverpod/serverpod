@@ -17,6 +17,8 @@ const int _temporarySessionId = -1;
 class SessionLogManager {
   final String _serverId;
 
+  final Session _session;
+
   final LogWriter _logWriter;
 
   final bool _disableSlowSessionLogging;
@@ -37,6 +39,7 @@ class SessionLogManager {
   @internal
   SessionLogManager(
     LogWriter logWriter, {
+    required Session session,
     required LogSettings Function(Session) settingsForSession,
     required String serverId,
     bool disableLoggingSlowSessions = false,
@@ -47,7 +50,13 @@ class SessionLogManager {
         _serverId = serverId,
         _isLoggingOpened = false,
         _disableSlowSessionLogging = disableLoggingSlowSessions,
-        _logTasks = _FutureTaskManager();
+        _session = session,
+        _logTasks = _FutureTaskManager() {
+    var settings = _settingsForSession(session);
+    if (!settings.logAllSessions) return;
+
+    unawaited(_openLog(session));
+  }
 
   bool _shouldLogQuery({
     required Session session,
@@ -100,8 +109,7 @@ class SessionLogManager {
   /// or stored in the temporary cache until the session is closed.
   /// This method can be called asynchronously.
   @internal
-  Future<void> logEntry(
-    Session session, {
+  Future<void> logEntry({
     LogLevel? level,
     required String message,
     String? error,
@@ -110,7 +118,7 @@ class SessionLogManager {
     var entry = LogEntry(
       sessionLogId: _temporarySessionId,
       serverId: _serverId,
-      messageId: session.messageId,
+      messageId: _session.messageId,
       logLevel: level ?? LogLevel.info,
       message: message,
       time: DateTime.now(),
@@ -119,19 +127,19 @@ class SessionLogManager {
       order: _nextLogOrderId,
     );
 
-    if (session.serverpod.runMode == ServerpodRunMode.development) {
+    if (_session.serverpod.runMode == ServerpodRunMode.development) {
       stdout.writeln('${entry.logLevel.name.toUpperCase()}: ${entry.message}');
       if (entry.error != null) stdout.writeln(entry.error);
       if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);
     }
 
-    if (!_shouldLogEntry(session: session, entry: entry)) {
+    if (!_shouldLogEntry(session: _session, entry: entry)) {
       return;
     }
 
     await _internalLogger(
       'ENTRY',
-      session,
+      _session,
       entry,
       _logWriter.logEntry,
     );
@@ -141,8 +149,7 @@ class SessionLogManager {
   /// or stored in the temporary cache until the session is closed.
   /// This method can be called asynchronously.
   @internal
-  Future<void> logQuery(
-    Session session, {
+  Future<void> logQuery({
     required String query,
     required Duration duration,
     required int? numRowsAffected,
@@ -152,11 +159,11 @@ class SessionLogManager {
     var executionTime = duration.inMicroseconds / _microNormalizer;
     _numberOfQueries++;
 
-    var logSettings = _settingsForSession(session);
+    var logSettings = _settingsForSession(_session);
 
     var slow = executionTime >= logSettings.slowQueryDuration;
     var shouldLog = _shouldLogQuery(
-      session: session,
+      session: _session,
       slow: slow,
       failed: error != null,
     );
@@ -167,7 +174,7 @@ class SessionLogManager {
       sessionLogId: _temporarySessionId,
       serverId: _serverId,
       query: query,
-      messageId: session.messageId,
+      messageId: _session.messageId,
       duration: executionTime,
       numRows: numRowsAffected,
       error: error,
@@ -178,7 +185,7 @@ class SessionLogManager {
 
     await _internalLogger(
       'QUERY',
-      session,
+      _session,
       entry,
       _logWriter.logQuery,
     );
@@ -188,8 +195,7 @@ class SessionLogManager {
   /// logged directly or stored in the temporary cache until the session is
   /// closed. This method can be called asynchronously.
   @internal
-  Future<void> logMessage(
-    Session session, {
+  Future<void> logMessage({
     required String endpointName,
     required String messageName,
     required int messageId,
@@ -200,10 +206,10 @@ class SessionLogManager {
     var executionTime = duration.inMicroseconds / _microNormalizer;
 
     var slow =
-        executionTime >= _settingsForSession(session).slowSessionDuration;
+        executionTime >= _settingsForSession(_session).slowSessionDuration;
 
     var shouldLog = _shouldLogMessage(
-      session: session,
+      session: _session,
       endpoint: endpointName,
       slow: slow,
       failed: error != null,
@@ -226,7 +232,7 @@ class SessionLogManager {
 
     await _internalLogger(
       'MESSAGE',
-      session,
+      _session,
       entry,
       _logWriter.logMessage,
     );
@@ -269,9 +275,7 @@ class SessionLogManager {
         isOpen: true,
       );
 
-      await _logWriter.openLog(
-        sessionLogEntry,
-      );
+      await _logWriter.openLog(sessionLogEntry);
 
       _isLoggingOpened = true;
     });
@@ -280,7 +284,7 @@ class SessionLogManager {
   /// Called automatically when a session is closed. Writes the session and its
   /// logs to the database, if configuration says so.
   @internal
-  Future<int?> finalizeSessionLog(
+  Future<int?> finalizeLog(
     Session session, {
     int? authenticatedUserId,
     String? exception,

@@ -512,7 +512,6 @@ class DatabaseConnection {
     trace ??= StackTrace.current;
 
     session.logManager?.logQuery(
-      session,
       query: query,
       duration: duration,
       numRowsAffected: numRowsAffected,

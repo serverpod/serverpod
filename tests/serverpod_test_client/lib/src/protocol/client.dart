@@ -1040,6 +1040,33 @@ class EndpointLogging extends _i1.EndpointRef {
         'twoQueries',
         {},
       );
+
+  /// Warning: Streaming methods are still experimental.
+  _i2.Stream<int> streamEmpty(_i2.Stream<int> input) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'logging',
+        'streamEmpty',
+        {},
+        {'input': input},
+      );
+
+  /// Warning: Streaming methods are still experimental.
+  _i2.Stream<int> streamLogging(_i2.Stream<int> input) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'logging',
+        'streamLogging',
+        {},
+        {'input': input},
+      );
+
+  /// Warning: Streaming methods are still experimental.
+  _i2.Stream<int> streamQueryLogging(_i2.Stream<int> input) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'logging',
+        'streamQueryLogging',
+        {},
+        {'input': input},
+      );
 }
 
 /// {@category Endpoint}

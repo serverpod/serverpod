@@ -2386,6 +2386,66 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['logging'] as _i17.LoggingEndpoint)
                   .twoQueries(session),
         ),
+        'streamEmpty': _i1.MethodStreamConnector(
+          name: 'streamEmpty',
+          params: {},
+          streamParams: {
+            'input': _i1.StreamParameterDescription<int>(
+              name: 'input',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['logging'] as _i17.LoggingEndpoint).streamEmpty(
+            session,
+            streamParams['input']!.cast<int>(),
+          ),
+        ),
+        'streamLogging': _i1.MethodStreamConnector(
+          name: 'streamLogging',
+          params: {},
+          streamParams: {
+            'input': _i1.StreamParameterDescription<int>(
+              name: 'input',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['logging'] as _i17.LoggingEndpoint).streamLogging(
+            session,
+            streamParams['input']!.cast<int>(),
+          ),
+        ),
+        'streamQueryLogging': _i1.MethodStreamConnector(
+          name: 'streamQueryLogging',
+          params: {},
+          streamParams: {
+            'input': _i1.StreamParameterDescription<int>(
+              name: 'input',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['logging'] as _i17.LoggingEndpoint).streamQueryLogging(
+            session,
+            streamParams['input']!.cast<int>(),
+          ),
+        ),
       },
     );
     connectors['streamLogging'] = _i1.EndpointConnector(

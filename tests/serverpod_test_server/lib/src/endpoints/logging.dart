@@ -59,6 +59,27 @@ class LoggingEndpoint extends Endpoint {
     data = (await session.db.findFirstRow<SimpleData>())!;
   }
 
+  Stream<int> streamEmpty(Session session, Stream<int> input) async* {
+    await for (var value in input) {
+      yield value;
+    }
+  }
+
+  Stream<int> streamLogging(Session session, Stream<int> input) async* {
+    await for (var value in input) {
+      session.log('Received value: $value', level: LogLevel.debug);
+
+      yield value;
+    }
+  }
+
+  Stream<int> streamQueryLogging(Session session, Stream<int> input) async* {
+    await for (var value in input) {
+      await session.db.findFirstRow<SimpleData>();
+      yield value;
+    }
+  }
+
   @override
   Future<void> handleStreamMessage(
     StreamingSession session,
