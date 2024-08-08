@@ -132,14 +132,13 @@ abstract class Session {
       );
       _logManager = SessionLogManager(
         logWriter,
+        session: this,
         settingsForSession: (Session session) => server
             .serverpod.logSettingsManager
             .getLogSettingsForSession(session),
         disableLoggingSlowSessions: _isLongLived(this),
         serverId: server.serverId,
       );
-
-      unawaited(_logManager?.openLog(this));
     } else {
       _logManager = null;
     }
@@ -236,7 +235,6 @@ abstract class Session {
     }
 
     _logManager?.logEntry(
-      this,
       message: message,
       level: level ?? LogLevel.info,
       error: exception?.toString(),
