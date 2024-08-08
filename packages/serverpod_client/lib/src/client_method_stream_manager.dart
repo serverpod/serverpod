@@ -421,8 +421,7 @@ final class ClientMethodStreamManager {
   }
 
   Future<void> _listenToWebSocketStream(WebSocketChannel webSocket) async {
-    Object closeException =
-        const ServerpodClientException('WebSocket was closed', -1);
+    MethodStreamExceptions closeException = const WebSocketClosedException();
     try {
       await for (String jsonData in webSocket.stream) {
         if (!_handshakeComplete.isCompleted) {

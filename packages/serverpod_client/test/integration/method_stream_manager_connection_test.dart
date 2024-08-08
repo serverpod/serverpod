@@ -356,7 +356,7 @@ void main() async {
       await expectLater(webSocketClosed.future, completes);
       await expectLater(errorCompleter.future, completes);
       var error = await errorCompleter.future;
-      expect(error, isA<ServerpodClientException>());
+      expect(error, isA<WebSocketClosedException>());
     });
   });
 
