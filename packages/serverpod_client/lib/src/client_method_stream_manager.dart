@@ -169,6 +169,12 @@ final class ClientMethodStreamManager {
         _inboundStreams.values.map((c) => c.controller).toList();
     _inboundStreams.clear();
 
+    // Remove onCancel callbacks to prevent controllers from
+    // sending a close command to the server.
+    for (var c in inputControllers) {
+      c.onCancel = null;
+    }
+
     if (exception != null) {
       for (var c in inputControllers) {
         c.addError(exception);
