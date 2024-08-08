@@ -4,14 +4,16 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:serverpod_relic_helpers/serverpod_relic_helpers.dart';
+import 'package:serverpod_relic_helpers/src/body.dart';
 import 'package:test/test.dart';
 
 import 'test_util.dart';
 
 Request _request(
-    {Map<String, String>? headers, Object? body, Encoding? encoding}) {
+    {Map<String, String>? headers, Body? body, Encoding? encoding}) {
   return Request('GET', localhostUri,
       headers: headers, body: body, encoding: encoding);
 }
@@ -215,7 +217,7 @@ void main() {
 
   group('change', () {
     test('with no arguments returns instance with equal values', () {
-      var controller = StreamController<Object>();
+      var controller = StreamController<Uint8List>();
 
       var uri = Uri.parse('https://test.example.com/static/file.html');
 
@@ -224,7 +226,7 @@ void main() {
           headers: {'header1': 'header value 1'},
           url: Uri.parse('file.html'),
           handlerPath: '/static/',
-          body: controller.stream,
+          body: Body.fromDataStream(controller.stream),
           context: {'context1': 'context value 1'});
 
       var copy = request.change();
@@ -254,7 +256,7 @@ void main() {
           headers: {'header1': 'header value 1'},
           url: Uri.parse('file.html'),
           handlerPath: '/static/',
-          body: '',
+          body: Body.fromString(''),
           context: {'context1': 'context value 1'});
 
       test('delete value with null', () {
@@ -262,18 +264,26 @@ void main() {
           headers: {'header1': null},
           context: {'context1': null},
         );
-        expect(r.headers, {'content-length': '0'});
+        expect(r.headers, {
+          'content-length': '0',
+          'content-type': 'application/octet-stream; charset=utf-8',
+        });
         expect(r.headersAll, {
           'content-length': ['0'],
+          'content-type': ['application/octet-stream; charset=utf-8'],
         });
         expect(r.context, isEmpty);
       });
 
       test('delete value with empty list', () {
         final r = request.change(headers: {'header1': <String>[]});
-        expect(r.headers, {'content-length': '0'});
+        expect(r.headers, {
+          'content-length': '0',
+          'content-type': 'application/octet-stream; charset=utf-8',
+        });
         expect(r.headersAll, {
           'content-length': ['0'],
+          'content-type': ['application/octet-stream; charset=utf-8'],
         });
       });
 
@@ -282,10 +292,12 @@ void main() {
         expect(r.headers, {
           'header1': 'new header value',
           'content-length': '0',
+          'content-type': 'application/octet-stream; charset=utf-8',
         });
         expect(r.headersAll, {
           'header1': ['new header value'],
           'content-length': ['0'],
+          'content-type': ['application/octet-stream; charset=utf-8'],
         });
       });
 
@@ -296,10 +308,12 @@ void main() {
         expect(r.headers, {
           'header1': 'new header value',
           'content-length': '0',
+          'content-type': 'application/octet-stream; charset=utf-8',
         });
         expect(r.headersAll, {
           'header1': ['new header value'],
           'content-length': ['0'],
+          'content-type': ['application/octet-stream; charset=utf-8'],
         });
       });
 
@@ -310,10 +324,12 @@ void main() {
         expect(r.headers, {
           'header1': 'new header value,other value',
           'content-length': '0',
+          'content-type': 'application/octet-stream; charset=utf-8',
         });
         expect(r.headersAll, {
           'header1': ['new header value', 'other value'],
           'content-length': ['0'],
+          'content-type': ['application/octet-stream; charset=utf-8'],
         });
       });
 
@@ -325,6 +341,7 @@ void main() {
         expect(r.headers, {
           'header1': 'header value 1',
           'content-length': '0',
+          'content-type': 'application/octet-stream; charset=utf-8',
           'a': 'A',
           'b': 'B1,B2',
           'c': 'C'
@@ -332,6 +349,7 @@ void main() {
         expect(r.headersAll, {
           'header1': ['header value 1'],
           'content-length': ['0'],
+          'content-type': ['application/octet-stream; charset=utf-8'],
           'a': ['A'],
           'b': ['B1', 'B2'],
           'c': ['C'],

@@ -5,6 +5,7 @@
 import 'dart:convert';
 
 import 'package:http_parser/http_parser.dart';
+import 'package:serverpod_relic_helpers/src/body.dart';
 import 'package:stream_channel/stream_channel.dart';
 
 import 'hijack_exception.dart';
@@ -133,7 +134,7 @@ class Request extends Message {
     Map<String, /* String | List<String> */ Object>? headers,
     String? handlerPath,
     Uri? url,
-    Object? body,
+    Body? body,
     Encoding? encoding,
     Map<String, Object>? context,
     void Function(void Function(StreamChannel<List<int>>))? onHijack,
@@ -160,7 +161,7 @@ class Request extends Message {
     Map<String, /* String | List<String> */ Object>? headers,
     String? handlerPath,
     Uri? url,
-    Object? body,
+    Body? body,
     Encoding? encoding,
     Map<String, Object>? context,
     _OnHijack? onHijack,
@@ -168,7 +169,7 @@ class Request extends Message {
         url = _computeUrl(requestedUri, handlerPath, url),
         handlerPath = _computeHandlerPath(requestedUri, handlerPath, url),
         _onHijack = onHijack,
-        super(body, encoding: encoding, headers: headers, context: context) {
+        super(body, headers: headers, context: context) {
     if (method.isEmpty) {
       throw ArgumentError.value(method, 'method', 'cannot be empty.');
     }
@@ -245,7 +246,7 @@ class Request extends Message {
     Map<String, /* String | List<String> */ Object?>? headers,
     Map<String, Object?>? context,
     String? path,
-    Object? body,
+    Body? body,
   }) {
     final headersAll = updateHeaders(this.headersAll, headers);
     final newContext = updateMap<String, Object>(this.context, context);

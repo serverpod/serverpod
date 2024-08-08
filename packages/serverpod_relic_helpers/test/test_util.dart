@@ -3,15 +3,17 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:serverpod_relic_helpers/serverpod_relic_helpers.dart';
+import 'package:serverpod_relic_helpers/src/body.dart';
 import 'package:test/test.dart';
 
 // "hello,"
-const helloBytes = [104, 101, 108, 108, 111, 44];
+final helloBytes = Uint8List.fromList([104, 101, 108, 108, 111, 44]);
 
 // " world"
-const worldBytes = [32, 119, 111, 114, 108, 100];
+final worldBytes = Uint8List.fromList([32, 119, 111, 114, 108, 100]);
 
 final Matcher throwsHijackException = throwsA(isA<HijackException>());
 
@@ -21,8 +23,11 @@ final Matcher throwsHijackException = throwsA(isA<HijackException>());
 /// `Hello from ${request.url.path}`.
 Response syncHandler(Request request,
     {int? statusCode, Map<String, String>? headers}) {
-  return Response(statusCode ?? 200,
-      headers: headers, body: 'Hello from ${request.requestedUri.path}');
+  return Response(
+    statusCode ?? 200,
+    headers: headers,
+    body: Body.fromString('Hello from ${request.requestedUri.path}'),
+  );
 }
 
 /// Calls [syncHandler] and wraps the response in a [Future].

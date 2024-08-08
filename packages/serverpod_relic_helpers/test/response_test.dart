@@ -8,6 +8,7 @@ import 'dart:typed_data';
 
 import 'package:serverpod_relic_helpers/serverpod_relic_helpers.dart'
     hide Request;
+import 'package:serverpod_relic_helpers/src/body.dart';
 import 'package:test/test.dart';
 
 import 'test_util.dart';
@@ -15,48 +16,31 @@ import 'test_util.dart';
 void main() {
   group('supports a String body', () {
     test('readAsString', () {
-      var response = Response.ok('hello, world');
+      var response = Response.ok(Body.fromString('hello, world'));
       expect(response.readAsString(), completion(equals('hello, world')));
     });
 
     test('read', () {
       var helloWorldBytes = [...helloBytes, ...worldBytes];
 
-      var response = Response.ok('hello, world');
+      var response = Response.ok(Body.fromString('hello, world'));
       expect(response.read().toList(), completion(equals([helloWorldBytes])));
     });
   });
 
   test('supports a Uint8List body without copying', () async {
     var bytes = Uint8List(10);
-    var response = Response.ok(bytes);
+    var response = Response.ok(Body.fromData(bytes));
 
     expect(response.contentLength, 10);
     expect(await response.read().single, same(bytes));
   });
 
-  test('supports a List<int> body without copying', () async {
-    var bytes = <int>[1, 2, 3, 4];
-    var response = Response.ok(bytes);
-
-    expect(response.contentLength, 4);
-    expect(await response.read().single, same(bytes));
-  });
-
-  test('supports a Stream<List<int>> body without copying', () async {
-    var bytes = Stream.value(<int>[1, 2, 3, 4]);
-    var response = Response.ok(bytes);
+  test('supports a Stream<Uint8List> body without copying', () async {
+    var bytes = Stream.value(Uint8List.fromList([1, 2, 3, 4]));
+    var response = Response.ok(Body.fromDataStream(bytes));
 
     expect(response.read(), same(bytes));
-  });
-
-  test('Copies a dynamic list of int elements', () async {
-    var bytes = <dynamic>[1, 2, 3, 4];
-    var response = Response.ok(bytes);
-
-    expect(response.contentLength, 4);
-    expect(await response.read().single,
-        isA<List<int>>().having((values) => values, 'values', [1, 2, 3, 4]));
   });
 
   test('allows content-length header even if body is null', () async {
@@ -83,15 +67,20 @@ void main() {
 
     test('sets the content-type header to text/plain', () {
       var response = Response.internalServerError();
-      expect(response.headers, containsPair('content-type', 'text/plain'));
+      expect(response.headers, {
+        'content-type': 'text/plain; charset=utf-8',
+        'content-length': '21',
+      });
     });
 
     test('preserves content-type parameters', () {
       var response = Response.internalServerError(headers: {
-        'content-type': 'application/octet-stream; param=whatever'
+        'content-type': 'application/octet-stream; param=whatever',
       });
-      expect(response.headers,
-          containsPair('content-type', 'text/plain; param=whatever'));
+      expect(response.headers, {
+        'content-type': 'text/plain; param=whatever; charset=utf-8',
+        'content-length': '21',
+      });
     });
   });
 
@@ -102,14 +91,18 @@ void main() {
     });
 
     test('sets body', () {
-      var response = Response.badRequest(body: 'missing token');
+      var response = Response.badRequest(
+        body: Body.fromString('missing token'),
+      );
       expect(response.readAsString(), completion(equals('missing token')));
     });
   });
 
   group('Response.unauthorized:', () {
     test('sets body', () {
-      var response = Response.unauthorized('request unauthorized');
+      var response = Response.unauthorized(
+        Body.fromString('request unauthorized'),
+      );
       expect(
           response.readAsString(), completion(equals('request unauthorized')));
       expect(response.statusCode, 401);
@@ -130,12 +123,12 @@ void main() {
 
   group('expires', () {
     test('is null without an Expires header', () {
-      expect(Response.ok('okay!').expires, isNull);
+      expect(Response.ok(Body.fromString('okay!')).expires, isNull);
     });
 
     test('comes from the Expires header', () {
       expect(
-          Response.ok('okay!',
+          Response.ok(Body.fromString('okay!'),
               headers: {'expires': 'Sun, 06 Nov 1994 08:49:37 GMT'}).expires,
           equals(DateTime.parse('1994-11-06 08:49:37z')));
     });
@@ -143,12 +136,12 @@ void main() {
 
   group('lastModified', () {
     test('is null without a Last-Modified header', () {
-      expect(Response.ok('okay!').lastModified, isNull);
+      expect(Response.ok(Body.fromString('okay!')).lastModified, isNull);
     });
 
     test('comes from the Last-Modified header', () {
       expect(
-          Response.ok('okay!',
+          Response.ok(Body.fromString('okay!'),
                   headers: {'last-modified': 'Sun, 06 Nov 1994 08:49:37 GMT'})
               .lastModified,
           equals(DateTime.parse('1994-11-06 08:49:37z')));
@@ -160,7 +153,7 @@ void main() {
       var controller = StreamController<Object>();
 
       var request = Response(345,
-          body: 'hèllo, world',
+          body: Body.fromString('hèllo, world'),
           encoding: latin1,
           headers: {'header1': 'header value 1'},
           context: {'context1': 'context value 1'});
@@ -219,18 +212,26 @@ void main() {
           headers: {'header1': null},
           context: {'context1': null},
         );
-        expect(r.headers, {'content-length': '0'});
+        expect(r.headers, {
+          'content-length': '0',
+          'content-type': 'application/octet-stream; charset=utf-8',
+        });
         expect(r.headersAll, {
           'content-length': ['0'],
+          'content-type': ['application/octet-stream; charset=utf-8'],
         });
         expect(r.context, isEmpty);
       });
 
       test('delete value with empty list', () {
         final r = response.change(headers: {'header1': <String>[]});
-        expect(r.headers, {'content-length': '0'});
+        expect(r.headers, {
+          'content-length': '0',
+          'content-type': 'application/octet-stream; charset=utf-8',
+        });
         expect(r.headersAll, {
           'content-length': ['0'],
+          'content-type': ['application/octet-stream; charset=utf-8'],
         });
       });
 
@@ -239,10 +240,12 @@ void main() {
         expect(r.headers, {
           'header1': 'new header value',
           'content-length': '0',
+          'content-type': 'application/octet-stream; charset=utf-8',
         });
         expect(r.headersAll, {
           'header1': ['new header value'],
           'content-length': ['0'],
+          'content-type': ['application/octet-stream; charset=utf-8'],
         });
       });
 
@@ -253,10 +256,12 @@ void main() {
         expect(r.headers, {
           'header1': 'new header value',
           'content-length': '0',
+          'content-type': 'application/octet-stream; charset=utf-8',
         });
         expect(r.headersAll, {
           'header1': ['new header value'],
           'content-length': ['0'],
+          'content-type': ['application/octet-stream; charset=utf-8'],
         });
       });
 
@@ -267,10 +272,12 @@ void main() {
         expect(r.headers, {
           'header1': 'new header value,other value',
           'content-length': '0',
+          'content-type': 'application/octet-stream; charset=utf-8',
         });
         expect(r.headersAll, {
           'header1': ['new header value', 'other value'],
           'content-length': ['0'],
+          'content-type': ['application/octet-stream; charset=utf-8'],
         });
       });
 
@@ -282,6 +289,7 @@ void main() {
         expect(r.headers, {
           'header1': 'header value 1',
           'content-length': '0',
+          'content-type': 'application/octet-stream; charset=utf-8',
           'a': 'A',
           'b': 'B1,B2',
           'c': 'C'
@@ -289,6 +297,7 @@ void main() {
         expect(r.headersAll, {
           'header1': ['header value 1'],
           'content-length': ['0'],
+          'content-type': ['application/octet-stream; charset=utf-8'],
           'a': ['A'],
           'b': ['B1', 'B2'],
           'c': ['C'],
