@@ -185,7 +185,7 @@ class ExampleEndpoint extends Endpoint {
     expect(collector.errors, isNotEmpty);
     expect(
       collector.errors.first.message,
-      'The type void is not supported for streams.',
+      'The type "void" is not supported for streams.',
     );
   });
 

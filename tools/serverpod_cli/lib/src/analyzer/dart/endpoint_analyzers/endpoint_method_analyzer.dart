@@ -126,7 +126,7 @@ abstract class EndpointMethodAnalyzer {
 
     if (innerType is VoidType && dartType.isDartAsyncStream) {
       return SourceSpanSeverityException(
-        'The type void is not supported for streams.',
+        'The type "void" is not supported for streams.',
         dartElement.span,
       );
     }
