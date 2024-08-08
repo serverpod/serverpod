@@ -89,7 +89,7 @@ void main() async {
       var outputStream = await client.logging.streamLogging(controller.stream);
 
       controller.add(1);
-      await outputStream.first;
+      await awaitFirstWithoutClosingStream(outputStream);
 
       // Wait for the log to be written
       await Future.delayed(Duration(milliseconds: 100));
