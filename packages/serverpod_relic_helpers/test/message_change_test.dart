@@ -4,8 +4,10 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:serverpod_relic_helpers/serverpod_relic_helpers.dart';
+import 'package:serverpod_relic_helpers/src/body.dart';
 import 'package:serverpod_relic_helpers/src/message.dart';
 import 'package:test/test.dart';
 
@@ -46,15 +48,16 @@ void main() {
 /// Shared test method used by [Request] and [Response] tests to validate
 /// the behavior of `change` with different `headers` and `context` values.
 void _testChange(
-    Message Function({
-      dynamic body,
-      Map<String, String> headers,
-      Map<String, Object> context,
-    }) factory) {
+  Message Function({
+    Body? body,
+    Map<String, String> headers,
+    Map<String, Object> context,
+  }) factory,
+) {
   group('body', () {
     test('with String', () async {
-      var request = factory(body: 'Hello, world');
-      var copy = request.change(body: 'Goodbye, world');
+      var request = factory(body: Body.fromString('Hello, world'));
+      var copy = request.change(body: Body.fromString('Goodbye, world'));
 
       var newBody = await copy.readAsString();
 
@@ -62,10 +65,14 @@ void _testChange(
     });
 
     test('with Stream', () async {
-      var request = factory(body: 'Hello, world');
+      var request = factory(body: Body.fromString('Hello, world'));
       var copy = request.change(
-          body:
-              Stream.fromIterable(['Goodbye, world']).transform(utf8.encoder));
+        body: Body.fromDataStream(
+          Stream.fromIterable(['Goodbye, world'])
+              .transform(utf8.encoder)
+              .map((list) => Uint8List.fromList(list)),
+        ),
+      );
 
       var newBody = await copy.readAsString();
 
@@ -92,15 +99,23 @@ void _testChange(
     var request = factory(headers: {'test': 'test value'});
     var copy = request.change(headers: {'test2': 'test2 value'});
 
-    expect(copy.headers,
-        {'test': 'test value', 'test2': 'test2 value', 'content-length': '0'});
+    expect(copy.headers, {
+      'test': 'test value',
+      'test2': 'test2 value',
+      'content-length': '0',
+      'content-type': 'application/octet-stream; charset=utf-8',
+    });
   });
 
   test('existing header values are overwritten', () {
     var request = factory(headers: {'test': 'test value'});
     var copy = request.change(headers: {'test': 'new test value'});
 
-    expect(copy.headers, {'test': 'new test value', 'content-length': '0'});
+    expect(copy.headers, {
+      'test': 'new test value',
+      'content-length': '0',
+      'content-type': 'application/octet-stream; charset=utf-8',
+    });
   });
 
   test('new context values are added', () {

@@ -23,9 +23,11 @@ library;
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:serverpod_relic_helpers/src/body.dart';
 import 'package:stack_trace/stack_trace.dart';
 import 'package:stream_channel/stream_channel.dart';
 
@@ -116,7 +118,7 @@ Future<void> handleRequest(
       _logTopLevelError('Error parsing request.\n$error', stackTrace);
       final response = Response(
         400,
-        body: 'Bad Request',
+        body: Body.fromString('Bad Request'),
         headers: {HttpHeaders.contentTypeHeader: 'text/plain'},
       );
       await _writeResponse(response, request.response, poweredByHeader);
@@ -199,7 +201,7 @@ Request _fromHttpRequest(HttpRequest request) {
     request.requestedUri,
     protocolVersion: request.protocolVersion,
     headers: headers,
-    body: request,
+    body: Body.fromDataStream(request),
     onHijack: onHijack,
     context: {'shelf.io.connection_info': request.connectionInfo!},
   );
@@ -230,8 +232,14 @@ Future<void> _writeResponse(
     // otherwise `dart:io` will try to add another layer of chunking.
     //
     // TODO(nweiz): Do this more cleanly when sdk#27886 is fixed.
+    var body = Body.fromDataStream(
+      chunkedCoding.encoder
+          .bind(response.read())
+          .map((list) => Uint8List.fromList(list)),
+    );
+
     response = response.change(
-      body: chunkedCoding.decoder.bind(response.read()),
+      body: body,
     );
     httpResponse.headers.set(HttpHeaders.transferEncodingHeader, 'chunked');
   } else if (response.statusCode >= 200 &&

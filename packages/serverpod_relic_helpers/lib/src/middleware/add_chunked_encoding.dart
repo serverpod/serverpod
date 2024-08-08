@@ -2,8 +2,11 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:typed_data';
+
 import 'package:collection/collection.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:serverpod_relic_helpers/src/body.dart';
 
 import '../middleware.dart';
 
@@ -32,7 +35,15 @@ final addChunkedEncoding = createMiddleware(responseHandler: (response) {
     return response;
   }
 
+  // TODO: Remove old (for reference)
+  //  Body.fromDataStream(chunkedCoding.encoder.bind(response.read()))
+
+  var body = Body.fromDataStream(chunkedCoding.encoder
+      .bind(response.read())
+      .map((list) => Uint8List.fromList(list)));
+
   return response.change(
-      headers: {'transfer-encoding': 'chunked'},
-      body: chunkedCoding.encoder.bind(response.read()));
+    headers: {'transfer-encoding': 'chunked'},
+    body: body,
+  );
 });

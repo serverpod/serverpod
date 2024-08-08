@@ -7,6 +7,7 @@
 import 'dart:async';
 
 import 'package:serverpod_relic_helpers/serverpod_relic_helpers.dart';
+import 'package:serverpod_relic_helpers/src/body.dart';
 import 'package:test/test.dart';
 
 import 'test_util.dart';
@@ -223,5 +224,7 @@ void main() {
 
 Response _failHandler(Request request) => fail('should never get here');
 
-final Response _middlewareResponse =
-    Response.ok('middleware content', headers: {'from': 'middleware'});
+final Response _middlewareResponse = Response.ok(
+  Body.fromString('middleware content'),
+  headers: {'from': 'middleware'},
+);

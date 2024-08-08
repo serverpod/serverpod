@@ -5,6 +5,7 @@
 import 'dart:convert';
 
 import 'package:http_parser/http_parser.dart';
+import 'package:serverpod_relic_helpers/src/body.dart';
 
 import 'message.dart';
 import 'util.dart';
@@ -64,7 +65,7 @@ class Response extends Message {
   /// An empty list will cause the header to be omitted.
   /// {@endtemplate}
   Response.ok(
-    Object? body, {
+    Body? body, {
     Map<String, /* String | List<String> */ Object>? headers,
     Encoding? encoding,
     Map<String, Object>? context,
@@ -80,7 +81,7 @@ class Response extends Message {
   /// {@macro shelf_response_body_and_encoding_param}
   Response.movedPermanently(
     Object location, {
-    Object? body,
+    Body? body,
     Map<String, /* String | List<String> */ Object>? headers,
     Encoding? encoding,
     Map<String, Object>? context,
@@ -95,7 +96,7 @@ class Response extends Message {
   /// {@macro shelf_response_body_and_encoding_param}
   Response.found(
     Object location, {
-    Object? body,
+    Body? body,
     Map<String, /* String | List<String> */ Object>? headers,
     Encoding? encoding,
     Map<String, Object>? context,
@@ -118,7 +119,7 @@ class Response extends Message {
   /// {@macro shelf_response_body_and_encoding_param}
   Response.seeOther(
     Object location, {
-    Object? body,
+    Body? body,
     Map<String, /* String | List<String> */ Object>? headers,
     Encoding? encoding,
     Map<String, Object>? context,
@@ -128,7 +129,7 @@ class Response extends Message {
   Response._redirect(
     int statusCode,
     Object location,
-    Object? body,
+    Body? body,
     Map<String, /* String | List<String> */ Object>? headers,
     Encoding? encoding, {
     Map<String, Object>? context,
@@ -168,14 +169,14 @@ class Response extends Message {
   ///
   /// {@macro shelf_response_body_and_encoding_param}
   Response.badRequest({
-    Object? body,
+    Body? body,
     Map<String, /* String | List<String> */ Object>? headers,
     Encoding? encoding,
     Map<String, Object>? context,
   }) : this(
           400,
           headers: body == null ? _adjustErrorHeaders(headers) : headers,
-          body: body ?? 'Bad Request',
+          body: body ?? Body.fromString('Bad Request'),
           context: context,
           encoding: encoding,
         );
@@ -187,14 +188,14 @@ class Response extends Message {
   ///
   /// {@macro shelf_response_body_and_encoding_param}
   Response.unauthorized(
-    Object? body, {
+    Body? body, {
     Map<String, /* String | List<String> */ Object>? headers,
     Encoding? encoding,
     Map<String, Object>? context,
   }) : this(
           401,
           headers: body == null ? _adjustErrorHeaders(headers) : headers,
-          body: body ?? 'Unauthorized',
+          body: body ?? Body.fromString('Unauthorized'),
           context: context,
           encoding: encoding,
         );
@@ -205,14 +206,14 @@ class Response extends Message {
   ///
   /// {@macro shelf_response_body_and_encoding_param}
   Response.forbidden(
-    Object? body, {
+    Body? body, {
     Map<String, /* String | List<String> */ Object>? headers,
     Encoding? encoding,
     Map<String, Object>? context,
   }) : this(
           403,
           headers: body == null ? _adjustErrorHeaders(headers) : headers,
-          body: body ?? 'Forbidden',
+          body: body ?? Body.fromString('Forbidden'),
           context: context,
           encoding: encoding,
         );
@@ -224,14 +225,14 @@ class Response extends Message {
   ///
   /// {@macro shelf_response_body_and_encoding_param}
   Response.notFound(
-    Object? body, {
+    Body? body, {
     Map<String, /* String | List<String> */ Object>? headers,
     Encoding? encoding,
     Map<String, Object>? context,
   }) : this(
           404,
           headers: body == null ? _adjustErrorHeaders(headers) : headers,
-          body: body ?? 'Not Found',
+          body: body ?? Body.fromString('Not Found'),
           context: context,
           encoding: encoding,
         );
@@ -243,14 +244,14 @@ class Response extends Message {
   ///
   /// {@macro shelf_response_body_and_encoding_param}
   Response.internalServerError({
-    Object? body,
+    Body? body,
     Map<String, /* String | List<String> */ Object>? headers,
     Encoding? encoding,
     Map<String, Object>? context,
   }) : this(
           500,
           headers: body == null ? _adjustErrorHeaders(headers) : headers,
-          body: body ?? 'Internal Server Error',
+          body: body ?? Body.fromString('Internal Server Error'),
           context: context,
           encoding: encoding,
         );
@@ -262,11 +263,11 @@ class Response extends Message {
   /// {@macro shelf_response_body_and_encoding_param}
   Response(
     this.statusCode, {
-    Object? body,
+    Body? body,
     Map<String, /* String | List<String> */ Object>? headers,
     Encoding? encoding,
     Map<String, Object>? context,
-  }) : super(body, encoding: encoding, headers: headers, context: context) {
+  }) : super(body, headers: headers, context: context) {
     if (statusCode < 100) {
       throw ArgumentError('Invalid status code: $statusCode.');
     }
@@ -295,7 +296,7 @@ class Response extends Message {
   Response change({
     Map<String, /* String | List<String> */ Object?>? headers,
     Map<String, Object?>? context,
-    Object? body,
+    Body? body,
   }) {
     final headersAll = updateHeaders(this.headersAll, headers);
     final newContext = updateMap(this.context, context);
