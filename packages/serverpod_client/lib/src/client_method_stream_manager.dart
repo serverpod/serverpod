@@ -116,6 +116,23 @@ final class ClientMethodStreamManager {
       throw OpenMethodStreamException(openResponse);
     }
 
+    connectionDetails.outputController.onCancel = () async {
+      _webSocket?.sink.add(CloseMethodStreamCommand.buildMessage(
+        connectionId: connectionId,
+        endpoint: connectionDetails.endpoint,
+        method: connectionDetails.method,
+        reason: CloseReason.done,
+      ));
+
+      await _tryCloseInboundStream(
+        endpoint: connectionDetails.endpoint,
+        method: connectionDetails.method,
+        connectionId: connectionId,
+        reason: CloseReason.done,
+      );
+      _tryCloseConnection();
+    };
+
     _buildOutboundStreams(
       streams: connectionDetails.parameterStreams,
       connectionId: connectionId,
@@ -271,7 +288,12 @@ final class ClientMethodStreamManager {
     CloseMethodStreamCommand message,
   ) async {
     if (message.parameter == null) {
-      await _tryCloseInboundStream(message);
+      await _tryCloseInboundStream(
+        endpoint: message.endpoint,
+        method: message.method,
+        connectionId: message.connectionId,
+        reason: message.reason,
+      );
     } else {
       await _tryCloseOutboundStream(message);
     }
@@ -279,13 +301,16 @@ final class ClientMethodStreamManager {
     _tryCloseConnection();
   }
 
-  Future<void> _tryCloseInboundStream(
-    CloseMethodStreamCommand message,
-  ) async {
+  Future<void> _tryCloseInboundStream({
+    required String endpoint,
+    required String method,
+    required UuidValue connectionId,
+    required CloseReason reason,
+  }) async {
     var inboundStreamKey = _buildStreamKey(
-      connectionId: message.connectionId,
-      endpoint: message.endpoint,
-      method: message.method,
+      connectionId: connectionId,
+      endpoint: endpoint,
+      method: method,
     );
 
     var inboundStreamContext = _inboundStreams.remove(inboundStreamKey);
@@ -293,7 +318,7 @@ final class ClientMethodStreamManager {
       return;
     }
 
-    if (message.reason == CloseReason.error) {
+    if (reason == CloseReason.error) {
       inboundStreamContext.controller.addError(
         const ServerpodClientException(
           'Stream closed with error reason',
@@ -305,9 +330,9 @@ final class ClientMethodStreamManager {
     var cancelSubscriptionFutures = <Future>[];
     for (var parameter in inboundStreamContext.parameterStreams) {
       var parameterStreamKey = _buildStreamKey(
-        connectionId: message.connectionId,
-        endpoint: message.endpoint,
-        method: message.method,
+        connectionId: connectionId,
+        endpoint: endpoint,
+        method: method,
         parameter: parameter,
       );
 

@@ -359,4 +359,92 @@ void main() async {
       expect(error, isA<ServerpodClientException>());
     });
   });
+
+  group('Given single connected method stream', () {
+    Completer<Uri> callbackUrlFuture;
+    late Completer<CloseMethodStreamCommand> closeMethodStreamCommandCompleter;
+    late Completer<void> webSocketClosed;
+    late Uri webSocketHost;
+    late Future<void> Function() closeServer;
+    setUp(() async {
+      webSocketClosed = Completer<void>();
+      callbackUrlFuture = Completer<Uri>();
+      closeMethodStreamCommandCompleter = Completer<CloseMethodStreamCommand>();
+      closeServer = await TestWebSocketServer.startServer(
+        webSocketHandler: (webSocket) {
+          webSocket.listen((event) {
+            var message = WebSocketMessage.fromJsonString(
+              event,
+              TestSerializationManager(),
+            );
+            if (message is PingCommand) {
+              webSocket.add(PongCommand.buildMessage());
+            } else if (message is OpenMethodStreamCommand) {
+              webSocket.add(OpenMethodStreamResponse.buildMessage(
+                connectionId: message.connectionId,
+                endpoint: message.endpoint,
+                method: message.method,
+                responseType: OpenMethodStreamResponseType.success,
+              ));
+            } else if (message is CloseMethodStreamCommand) {
+              closeMethodStreamCommandCompleter.complete(message);
+            }
+          }, onDone: () {
+            webSocketClosed.complete();
+          });
+        },
+        onConnected: (host) {
+          callbackUrlFuture.complete(host);
+        },
+      );
+
+      webSocketHost = await callbackUrlFuture.future;
+    });
+
+    tearDown(() async => await closeServer());
+
+    test(
+        'when output stream stops being listened to then CloseMethodStreamCommand is sent.',
+        () async {
+      var streamManager = ClientMethodStreamManager(
+        connectionTimeout: const Duration(milliseconds: 100),
+        webSocketHost: webSocketHost,
+        serializationManager: TestSerializationManager(),
+      );
+
+      var connectionDetails = MethodStreamConnectionDetailsBuilder().build();
+      await streamManager.openMethodStream(
+        connectionDetails,
+      );
+
+      var subscription =
+          connectionDetails.outputController.stream.listen((event) {});
+      await subscription.cancel();
+
+      await expectLater(closeMethodStreamCommandCompleter.future, completes);
+      var message = await closeMethodStreamCommandCompleter.future;
+      expect(message.reason, CloseReason.done);
+    });
+
+    test(
+        'when output stream stops being listened to then WebSocket connection is closed.',
+        () async {
+      var streamManager = ClientMethodStreamManager(
+        connectionTimeout: const Duration(milliseconds: 100),
+        webSocketHost: webSocketHost,
+        serializationManager: TestSerializationManager(),
+      );
+
+      var connectionDetails = MethodStreamConnectionDetailsBuilder().build();
+      await streamManager.openMethodStream(
+        connectionDetails,
+      );
+
+      var subscription =
+          connectionDetails.outputController.stream.listen((event) {});
+      await subscription.cancel();
+
+      await expectLater(webSocketClosed.future, completes);
+    });
+  });
 }
