@@ -318,6 +318,10 @@ final class ClientMethodStreamManager {
       return;
     }
 
+    // Remove the onCancel callback to prevent the controller from sending
+    // a close message to the server.
+    inboundStreamContext.controller.onCancel = null;
+
     if (reason == CloseReason.error) {
       inboundStreamContext.controller.addError(
         const ServerpodClientException(
