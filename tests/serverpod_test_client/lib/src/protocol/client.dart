@@ -1275,12 +1275,19 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
   @override
   String get name => 'methodStreaming';
 
-  /// Check Null and Object in validation.
   _i2.Stream<int> simpleStream() =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'methodStreaming',
         'simpleStream',
         {},
+        {},
+      );
+
+  _i2.Stream<int> neverEndingStreamWithDelay(int millisecondsDelay) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'neverEndingStreamWithDelay',
+        {'millisecondsDelay': millisecondsDelay},
         {},
       );
 
@@ -1294,6 +1301,14 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
       caller.callStreamingServerEndpoint<_i2.Future<int>, int>(
         'methodStreaming',
         'intReturnFromStream',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Future<int?> nullableIntReturnFromStream(_i2.Stream<int?> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<int?>, int?>(
+        'methodStreaming',
+        'nullableIntReturnFromStream',
         {},
         {'stream': stream},
       );

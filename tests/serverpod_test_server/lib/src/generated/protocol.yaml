@@ -159,8 +159,10 @@ mapParameters:
   - returnDurationMapNullableDurations:
 methodStreaming:
   - simpleStream:
+  - neverEndingStreamWithDelay:
   - methodCallEndpoint:
   - intReturnFromStream:
+  - nullableIntReturnFromStream:
   - intStreamFromValue:
   - intEchoStream:
   - dynamicEchoStream:
