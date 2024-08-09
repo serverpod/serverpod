@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 
 // TODO: Support for server clusters.
@@ -15,6 +17,7 @@ class MessageCentral {
   final _sessionToChannelNamesLookup = <Session, Set<String>>{};
   final _sessionToCallbacksLookup =
       <Session, Set<MessageCentralListenerCallback>>{};
+  final _sessionToCleanupCallbacksLookup = <Session, Set<Function()>>{};
 
   /// Posts a [message] to a named channel. Optionally a [destinationServerId]
   /// can be provided, in which case the message is sent only to that specific
@@ -167,5 +170,65 @@ class MessageCentral {
         session.serverpod.redisController!.unsubscribe(channelName);
       }
     }
+
+    _executeCleanupCallbacks(session);
+  }
+
+  /// Creates a stream that listens to a specified channel.
+  ///
+  /// This stream emits messages of type [T] whenever a message is received on
+  /// the specified channel.
+  ///
+  /// If messages on the channel does not match the type [T], the stream will
+  /// emit an error.
+  Stream<T> createStream<T>(
+    Session session,
+    String channelName,
+  ) {
+    var controller = StreamController<T>();
+    void addToStream(dynamic message) {
+      try {
+        controller.add(message as T);
+      } catch (e) {
+        controller.addError(e);
+      }
+    }
+
+    addListener(session, channelName, addToStream);
+    _addCleanupCallback(session, controller.close);
+
+    controller.onCancel = () {
+      _removeCleanupCallback(session, controller.close);
+      removeListener(session, channelName, addToStream);
+    };
+
+    return controller.stream;
+  }
+
+  void _addCleanupCallback(Session session, Function() callback) {
+    var callbacks = _sessionToCleanupCallbacksLookup[session];
+    if (callbacks == null) {
+      callbacks = {};
+      _sessionToCleanupCallbacksLookup[session] = callbacks;
+    }
+    callbacks.add(callback);
+  }
+
+  void _removeCleanupCallback(Session session, Function() callback) {
+    var callbacks = _sessionToCleanupCallbacksLookup[session];
+    if (callbacks == null) return;
+
+    callbacks.remove(callback);
+  }
+
+  void _executeCleanupCallbacks(Session session) {
+    var callbacks = _sessionToCleanupCallbacksLookup[session];
+    if (callbacks == null) return;
+
+    for (var callback in callbacks) {
+      callback();
+    }
+
+    _sessionToCleanupCallbacksLookup.remove(session);
   }
 }
