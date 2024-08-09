@@ -1,6 +1,6 @@
 
 import 'dart:io';
-import 'dart:math';
+
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
@@ -17,7 +17,7 @@ class FileCloudStorage extends CloudStorage {
   Future<void> deleteFile(
       {required Session session, required String path}) async {
     try {
-      final file = File(path);
+      var file = File(path);
       if (file.existsSync()) {
         await file.delete();
       }
@@ -31,7 +31,7 @@ class FileCloudStorage extends CloudStorage {
   Future<bool> fileExists(
       {required Session session, required String path}) async {
     try {
-       final file = File(path);
+       var file = File(path);
      return (file.existsSync());
     } catch (e) {
       throw CloudStorageException('Failed to check if file exists. ($e)');
@@ -67,7 +67,7 @@ class FileCloudStorage extends CloudStorage {
   }) async {
  
     try {
-        final file = File(path);
+        var file = File(path);
         if (!file.existsSync()) return null;
       
         return ByteData.view(file.readAsBytesSync().buffer);
@@ -87,8 +87,7 @@ class FileCloudStorage extends CloudStorage {
     DateTime? expiration,
     bool verified = true,
   }) async {
-    var addedTime = DateTime.now().toUtc();
-   
+ 
     try {
       var buffer = byteData.buffer;
       var file =  File(path);
