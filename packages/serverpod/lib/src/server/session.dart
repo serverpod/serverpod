@@ -14,13 +14,12 @@ import '../cache/caches.dart';
 import '../database/database.dart';
 
 /// A listener that will be called when the session is about to close.
-typedef WillCloseListener = FutureOr<void> Function(Session);
+typedef WillCloseListener = FutureOr<void> Function(Session session);
 
 /// When a call is made to the [Server] a [Session] object is created. It
 /// contains all data associated with the current connection and provides
 /// easy access to the database.
 abstract class Session {
-  /// List of listeners that will be called when the session is about to close.
   final LinkedHashSet<WillCloseListener> _willCloseListeners = LinkedHashSet();
 
   /// Adds a listener that will be called when the session is about to close.
