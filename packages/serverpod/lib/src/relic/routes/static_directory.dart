@@ -38,7 +38,7 @@ class RouteStaticDirectory extends Route {
   });
 
   @override
-  Future<bool> handleCall(Session session, HttpRequest request) async {
+  Future<Response> handleCall(Session session, Request request) async {
     var path = Uri.decodeFull(request.requestedUri.path);
 
     var rootPath = serveAsRootPath;
@@ -75,22 +75,22 @@ class RouteStaticDirectory extends Route {
       // Set content type.
       extension = extension.toLowerCase();
       var contentType = _contentTypeMapping[extension];
-      if (contentType != null) {
-        request.response.headers.contentType = contentType;
-      }
-
-      // Enforce strong cache control.
-      request.response.headers.set('Cache-Control', 'max-age=31536000');
 
       var filePath = path.startsWith('/') ? path.substring(1) : path;
       filePath = 'web/$filePath';
 
       var fileContents = await File(filePath).readAsBytes();
-      request.response.add(fileContents);
-      return true;
+
+      return Response.ok(
+        body: Body.fromData(fileContents),
+        headers: {
+          'Cache-Control': 'max-age=31536000',
+          'Content-Type': contentType?.mimeType ?? 'application/octet-stream',
+        },
+      );
     } catch (e) {
       // Couldn't find or load file.
-      return false;
+      return Response.notFound();
     }
   }
 }

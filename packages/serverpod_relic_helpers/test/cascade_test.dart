@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:serverpod_relic_helpers/serverpod_relic_helpers.dart';
-import 'package:serverpod_relic_helpers/src/body.dart';
 import 'package:test/test.dart';
 
 import 'test_util.dart';
@@ -14,21 +13,21 @@ void main() {
     setUp(() {
       handler = Cascade().add((request) {
         if (request.headers['one'] == 'false') {
-          return Response.notFound(Body.fromString('handler 1'));
+          return Response.notFound(body: Body.fromString('handler 1'));
         } else {
-          return Response.ok(Body.fromString('handler 1'));
+          return Response.ok(body: Body.fromString('handler 1'));
         }
       }).add((request) {
         if (request.headers['two'] == 'false') {
-          return Response.notFound(Body.fromString('handler 2'));
+          return Response.notFound(body: Body.fromString('handler 2'));
         } else {
-          return Response.ok(Body.fromString('handler 2'));
+          return Response.ok(body: Body.fromString('handler 2'));
         }
       }).add((request) {
         if (request.headers['three'] == 'false') {
-          return Response.notFound(Body.fromString('handler 3'));
+          return Response.notFound(body: Body.fromString('handler 3'));
         } else {
-          return Response.ok(Body.fromString('handler 3'));
+          return Response.ok(body: Body.fromString('handler 3'));
         }
       }).handler;
     });
@@ -76,8 +75,8 @@ void main() {
 
   test('a 404 response triggers a cascade by default', () async {
     var handler = Cascade()
-        .add((_) => Response.notFound(Body.fromString(('handler 1'))))
-        .add((_) => Response.ok(Body.fromString('handler 2')))
+        .add((_) => Response.notFound(body: Body.fromString(('handler 1'))))
+        .add((_) => Response.ok(body: Body.fromString('handler 2')))
         .handler;
 
     final response = await makeSimpleRequest(handler);
@@ -88,7 +87,7 @@ void main() {
   test('a 405 response triggers a cascade by default', () async {
     var handler = Cascade()
         .add((_) => Response(405))
-        .add((_) => Response.ok(Body.fromString('handler 2')))
+        .add((_) => Response.ok(body: Body.fromString('handler 2')))
         .handler;
 
     final response = await makeSimpleRequest(handler);
@@ -99,9 +98,9 @@ void main() {
   test('[statusCodes] controls which statuses cause cascading', () async {
     var handler = Cascade(statusCodes: [302, 403])
         .add((_) => Response.found('/'))
-        .add((_) => Response.forbidden(Body.fromString('handler 2')))
-        .add((_) => Response.notFound(Body.fromString('handler 3')))
-        .add((_) => Response.ok(Body.fromString('handler 4')))
+        .add((_) => Response.forbidden(body: Body.fromString('handler 2')))
+        .add((_) => Response.notFound(body: Body.fromString('handler 3')))
+        .add((_) => Response.ok(body: Body.fromString('handler 4')))
         .handler;
 
     final response = await makeSimpleRequest(handler);
@@ -113,9 +112,9 @@ void main() {
     var handler =
         Cascade(shouldCascade: (response) => response.statusCode.isOdd)
             .add((_) => Response.movedPermanently('/'))
-            .add((_) => Response.forbidden(Body.fromString('handler 2')))
-            .add((_) => Response.notFound(Body.fromString('handler 3')))
-            .add((_) => Response.ok(Body.fromString('handler 4')))
+            .add((_) => Response.forbidden(body: Body.fromString('handler 2')))
+            .add((_) => Response.notFound(body: Body.fromString('handler 3')))
+            .add((_) => Response.ok(body: Body.fromString('handler 4')))
             .handler;
 
     final response = await makeSimpleRequest(handler);

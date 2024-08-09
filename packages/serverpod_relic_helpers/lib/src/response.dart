@@ -3,7 +3,10 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:serverpod_relic_helpers/src/body.dart';
 
@@ -64,13 +67,18 @@ class Response extends Message {
   /// [headers] must contain values that are either `String` or `List<String>`.
   /// An empty list will cause the header to be omitted.
   /// {@endtemplate}
-  Response.ok(
-    Body? body, {
+  Response.ok({
+    Body? body,
     Map<String, /* String | List<String> */ Object>? headers,
     Encoding? encoding,
     Map<String, Object>? context,
-  }) : this(200,
-            body: body, headers: headers, encoding: encoding, context: context);
+  }) : this(
+          200,
+          body: body,
+          headers: headers,
+          encoding: encoding,
+          context: context,
+        );
 
   /// Constructs a 301 Moved Permanently response.
   ///
@@ -187,8 +195,8 @@ class Response extends Message {
   /// because it lacks valid authentication credentials.
   ///
   /// {@macro shelf_response_body_and_encoding_param}
-  Response.unauthorized(
-    Body? body, {
+  Response.unauthorized({
+    Body? body,
     Map<String, /* String | List<String> */ Object>? headers,
     Encoding? encoding,
     Map<String, Object>? context,
@@ -205,8 +213,8 @@ class Response extends Message {
   /// This indicates that the server is refusing to fulfill the request.
   ///
   /// {@macro shelf_response_body_and_encoding_param}
-  Response.forbidden(
-    Body? body, {
+  Response.forbidden({
+    Body? body,
     Map<String, /* String | List<String> */ Object>? headers,
     Encoding? encoding,
     Map<String, Object>? context,
@@ -224,8 +232,8 @@ class Response extends Message {
   /// requested URI.
   ///
   /// {@macro shelf_response_body_and_encoding_param}
-  Response.notFound(
-    Body? body, {
+  Response.notFound({
+    Body? body,
     Map<String, /* String | List<String> */ Object>? headers,
     Encoding? encoding,
     Map<String, Object>? context,
@@ -310,6 +318,65 @@ class Response extends Message {
       context: newContext,
     );
   }
+
+  Future<void> writeHttpResponse(
+    HttpResponse httpResponse,
+    String? poweredByHeader,
+  ) {
+    if (context.containsKey('shelf.io.buffer_output')) {
+      httpResponse.bufferOutput = context['shelf.io.buffer_output'] as bool;
+    }
+
+    httpResponse.statusCode = statusCode;
+
+    // An adapter must not add or modify the `Transfer-Encoding` parameter, but
+    // the Dart SDK sets it by default. Set this before we fill in
+    // [response.headers] so that the user or Shelf can explicitly override it if
+    // necessary.
+    httpResponse.headers.chunkedTransferEncoding = false;
+
+    headersAll.forEach((header, value) {
+      httpResponse.headers.set(header, value);
+    });
+
+    var coding = headers['transfer-encoding'];
+    if (coding != null && !equalsIgnoreAsciiCase(coding, 'identity')) {
+      // If the response is already in a chunked encoding, de-chunk it because
+      // otherwise `dart:io` will try to add another layer of chunking.
+      //
+      // TODO(nweiz): Do this more cleanly when sdk#27886 is fixed.
+      var body = Body.fromDataStream(
+        chunkedCoding.encoder
+            .bind(read())
+            .map((list) => Uint8List.fromList(list)),
+      );
+
+      // TODO: Fix
+      var response = change(
+        body: body,
+      );
+      httpResponse.headers.set(HttpHeaders.transferEncodingHeader, 'chunked');
+    } else if (statusCode >= 200 &&
+        statusCode != 204 &&
+        statusCode != 304 &&
+        contentLength == null &&
+        mimeType != 'multipart/byteranges') {
+      // If the response isn't chunked yet and there's no other way to tell its
+      // length, enable `dart:io`'s chunked encoding.
+      httpResponse.headers.set(HttpHeaders.transferEncodingHeader, 'chunked');
+    }
+
+    if (poweredByHeader != null &&
+        !headers.containsKey(_xPoweredByResponseHeader)) {
+      httpResponse.headers.set(_xPoweredByResponseHeader, poweredByHeader);
+    }
+
+    if (!headers.containsKey(HttpHeaders.dateHeader)) {
+      httpResponse.headers.date = DateTime.now().toUtc();
+    }
+
+    return httpResponse.addStream(read()).then((_) => httpResponse.close());
+  }
 }
 
 /// Adds content-type information to [headers].
@@ -340,3 +407,8 @@ String _locationToString(Object location) {
     'Response location must be a String or Uri, was "$location".',
   );
 }
+
+/// Common header to advertise the server technology being used.
+///
+/// See https://webtechsurvey.com/response-header/x-powered-by
+const _xPoweredByResponseHeader = 'X-Powered-By';

@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http_parser/http_parser.dart';
 import 'package:serverpod_relic_helpers/src/body.dart';
@@ -51,6 +52,9 @@ class Request extends Message {
 
   /// The original [Uri] for the request.
   final Uri requestedUri;
+
+  /// The [HttpConnectionInfo] info associated with this request, if available.
+  final HttpConnectionInfo? connectionInfo;
 
   /// The callback wrapper for hijacking this request.
   ///
@@ -130,6 +134,7 @@ class Request extends Message {
   Request(
     String method,
     Uri requestedUri, {
+    HttpConnectionInfo? connectionInfo,
     String? protocolVersion,
     Map<String, /* String | List<String> */ Object>? headers,
     String? handlerPath,
@@ -138,15 +143,19 @@ class Request extends Message {
     Encoding? encoding,
     Map<String, Object>? context,
     void Function(void Function(StreamChannel<List<int>>))? onHijack,
-  }) : this._(method, requestedUri,
-            protocolVersion: protocolVersion,
-            headers: headers,
-            url: url,
-            handlerPath: handlerPath,
-            body: body,
-            encoding: encoding,
-            context: context,
-            onHijack: onHijack == null ? null : _OnHijack(onHijack));
+  }) : this._(
+          method,
+          requestedUri,
+          connectionInfo,
+          protocolVersion: protocolVersion,
+          headers: headers,
+          url: url,
+          handlerPath: handlerPath,
+          body: body,
+          encoding: encoding,
+          context: context,
+          onHijack: onHijack == null ? null : _OnHijack(onHijack),
+        );
 
   /// This constructor has the same signature as [Request.new] except that
   /// accepts [onHijack] as [_OnHijack].
@@ -156,7 +165,8 @@ class Request extends Message {
   /// from a changed [Request].
   Request._(
     this.method,
-    this.requestedUri, {
+    this.requestedUri,
+    this.connectionInfo, {
     String? protocolVersion,
     Map<String, /* String | List<String> */ Object>? headers,
     String? handlerPath,
@@ -211,6 +221,33 @@ class Request extends Message {
     }
   }
 
+  factory Request.fromHttpRequest(HttpRequest request) {
+    var headers = <String, List<String>>{};
+    request.headers.forEach((k, v) {
+      headers[k] = v;
+    });
+
+    // Remove the Transfer-Encoding header per the adapter requirements.
+    headers.remove(HttpHeaders.transferEncodingHeader);
+
+    void onHijack(void Function(StreamChannel<List<int>>) callback) {
+      request.response
+          .detachSocket(writeHeaders: false)
+          .then((socket) => callback(StreamChannel(socket, socket)));
+    }
+
+    return Request(
+      request.method,
+      request.requestedUri,
+      connectionInfo: request.connectionInfo,
+      protocolVersion: request.protocolVersion,
+      headers: headers,
+      body: Body.fromDataStream(request),
+      onHijack: onHijack,
+      context: {},
+    );
+  }
+
   /// Creates a new [Request] by copying existing values and applying specified
   /// changes.
   ///
@@ -256,13 +293,17 @@ class Request extends Message {
     var handlerPath = this.handlerPath;
     if (path != null) handlerPath += path;
 
-    return Request._(method, requestedUri,
-        protocolVersion: protocolVersion,
-        headers: headersAll,
-        handlerPath: handlerPath,
-        body: body,
-        context: newContext,
-        onHijack: _onHijack);
+    return Request._(
+      method,
+      requestedUri,
+      connectionInfo,
+      protocolVersion: protocolVersion,
+      headers: headersAll,
+      handlerPath: handlerPath,
+      body: body,
+      context: newContext,
+      onHijack: _onHijack,
+    );
   }
 
   /// Takes control of the underlying request socket.

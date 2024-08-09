@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+export 'src/body.dart' show Body;
 export 'src/cascade.dart' show Cascade;
 export 'src/handler.dart' show Handler;
 export 'src/hijack_exception.dart' show HijackException;

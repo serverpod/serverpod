@@ -10,6 +10,15 @@ class WebServer {
   /// Reference to the [Serverpod] this webserver is associated with.
   final Serverpod serverpod;
 
+  /// If a security context is provided an HTTPS server will be started.
+  final SecurityContext? securityContext;
+
+  /// The [address] can either be a [String] or an [InternetAddress]. If
+  /// [address] is a [String], the server will perform a
+  /// [InternetAddress.lookup] and use the first value in the list. Defaults to
+  /// [InternetAddress.anyIPv6].
+  final Object? address;
+
   /// The server id of this server.
   final String serverId;
 
@@ -19,15 +28,19 @@ class WebServer {
   /// A list of [Route] which defines how to handle path passed to the server.
   final List<Route> routes = <Route>[];
 
-  /// Creates a new webserver.
+  /// Creates a new webserver. If a security context is provided an HTTPS server
+  /// will be started.
   WebServer({
     required this.serverpod,
+    this.securityContext,
+    this.address,
   }) : serverId = serverpod.serverId {
     var config = serverpod.config.webServer;
 
     if (config == null) {
       throw StateError(
-        'No web server configuration found in Serverpod unable to create the WebServer.',
+        'No web server configuration found in Serverpod unable to create the '
+        'WebServer.',
       );
     }
 
@@ -62,7 +75,16 @@ class WebServer {
     }
 
     try {
-      _httpServer = await HttpServer.bind(InternetAddress.anyIPv6, _port);
+      _httpServer = await (securityContext == null
+          ? HttpServer.bind(
+              address ?? InternetAddress.anyIPv6,
+              _port,
+            )
+          : HttpServer.bindSecure(
+              address ?? InternetAddress.anyIPv6,
+              _port,
+              securityContext!,
+            ));
     } catch (e) {
       stderr.writeln(
         '${DateTime.now().toUtc()} ERROR: Failed to bind socket, Webserver '
@@ -102,17 +124,14 @@ class WebServer {
   }
 
   void _handleRequest(HttpRequest request) async {
-    if (serverpod.runMode == 'production') {
-      request.response.headers.add('Strict-Transport-Security',
-          'max-age=63072000; includeSubDomains; preload');
-    }
-
     Uri uri;
     try {
       uri = request.requestedUri;
     } catch (e) {
       logDebug(
-          'Malformed call, invalid uri from ${request.connectionInfo?.remoteAddress.address}');
+        'Malformed call, invalid uri from '
+        '${request.connectionInfo?.remoteAddress.address}',
+      );
 
       request.response.statusCode = HttpStatus.badRequest;
       await request.response.close();
@@ -138,12 +157,15 @@ class WebServer {
     // Check routes
     for (var route in routes) {
       if (route._isMatch(uri.path)) {
-        var found = await _handleRouteCall(route, session, request);
-        if (found) {
-          await request.response.close();
-          await session.close();
-          return;
+        var response = await _handleRouteCall(
+          route,
+          session,
+          Request.fromHttpRequest(request),
+        );
+        if (response.statusCode == HttpStatus.notFound) {
+          continue;
         }
+        await response.writeHttpResponse(request.response, 'serverpod-relic');
       }
     }
 
@@ -153,20 +175,13 @@ class WebServer {
     await session.close();
   }
 
-  Future<bool> _handleRouteCall(
-      Route route, Session session, HttpRequest request) async {
-    route.setHeaders(request.response.headers);
+  Future<Response> _handleRouteCall(
+      Route route, Session session, Request request) async {
     try {
-      var found = await route.handleCall(session, request);
-      return found;
-    } catch (e, stackTrace) {
-      logError(e, stackTrace: stackTrace);
-
-      request.response.statusCode = HttpStatus.internalServerError;
-      request.response.write('$e');
-      await request.response.close();
+      return route.handleCall(session, request);
+    } catch (e) {
+      return Response.internalServerError();
     }
-    return true;
   }
 
   /// Logs an error to stderr.
@@ -222,7 +237,7 @@ abstract class Route {
   /// Handles a call to this route. This method is responsible for setting
   /// a correct response headers, status code, and write the response body to
   /// `request.response`.
-  Future<bool> handleCall(Session session, HttpRequest request);
+  Future<Response> handleCall(Session session, Request request);
 
   bool _isMatch(String path) {
     if (_matchPath == null) {
@@ -284,21 +299,26 @@ abstract class Route {
 abstract class WidgetRoute extends Route {
   /// Override this method to build your web [Widget] from the current [session]
   /// and [request].
-  Future<AbstractWidget> build(Session session, HttpRequest request);
+  Future<AbstractWidget> build(Session session, Request request);
 
   @override
-  Future<bool> handleCall(Session session, HttpRequest request) async {
+  Future<Response> handleCall(Session session, Request request) async {
     var widget = await build(session, request);
 
     if (widget is WidgetJson) {
-      request.response.headers.contentType = ContentType('application', 'json');
-    } else if (widget is WidgetRedirect) {
-      var uri = Uri.parse(widget.url);
-      await request.response.redirect(uri);
-      return true;
+      return Response.ok(
+        body: Body.fromString(widget.toString()),
+        headers: {'content-type': 'application/json'},
+      );
+    } else if (widget is WidgetRedirectPermanently) {
+      return Response.movedPermanently(widget.url);
+    } else if (widget is WidgetRedirectTemporarily) {
+      return Response.seeOther(widget.url);
+    } else {
+      return Response.ok(
+        body: Body.fromString(widget.toString()),
+        headers: {'content-type': 'text/html'},
+      );
     }
-
-    request.response.write(widget.toString());
-    return true;
   }
 }

@@ -23,3 +23,6 @@ export 'package:serverpod/src/cloud_storage/database_cloud_storage.dart';
 
 // Cache
 export 'package:serverpod/src/cache/cache_miss_handler.dart';
+
+export 'package:serverpod_relic_helpers/serverpod_relic_helpers.dart'
+    hide Server;

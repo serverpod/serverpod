@@ -23,11 +23,7 @@ library;
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:collection/collection.dart';
-import 'package:http_parser/http_parser.dart';
-import 'package:serverpod_relic_helpers/src/body.dart';
 import 'package:stack_trace/stack_trace.dart';
 import 'package:stream_channel/stream_channel.dart';
 
@@ -121,17 +117,17 @@ Future<void> handleRequest(
         body: Body.fromString('Bad Request'),
         headers: {HttpHeaders.contentTypeHeader: 'text/plain'},
       );
-      await _writeResponse(response, request.response, poweredByHeader);
+      await response.writeHttpResponse(request.response, poweredByHeader);
     } else {
       _logTopLevelError('Error parsing request.\n$error', stackTrace);
       final response = Response.internalServerError();
-      await _writeResponse(response, request.response, poweredByHeader);
+      await response.writeHttpResponse(request.response, poweredByHeader);
     }
     return;
   } catch (error, stackTrace) {
     _logTopLevelError('Error parsing request.\n$error', stackTrace);
     final response = Response.internalServerError();
-    await _writeResponse(response, request.response, poweredByHeader);
+    await response.writeHttpResponse(request.response, poweredByHeader);
     return;
   }
 
@@ -159,16 +155,18 @@ Future<void> handleRequest(
   }
 
   if ((response as dynamic) == null) {
-    // Handle nulls flowing from opt-out code
-    await _writeResponse(
-        _logError(
-            shelfRequest, 'null response from handler.', StackTrace.current),
-        request.response,
-        poweredByHeader);
+    _logError(
+      shelfRequest,
+      'null response from handler.',
+      StackTrace.current,
+    ).writeHttpResponse(
+      request.response,
+      poweredByHeader,
+    );
     return;
   }
   if (shelfRequest.canHijack) {
-    await _writeResponse(response, request.response, poweredByHeader);
+    await response.writeHttpResponse(request.response, poweredByHeader);
     return;
   }
 
@@ -199,77 +197,78 @@ Request _fromHttpRequest(HttpRequest request) {
   return Request(
     request.method,
     request.requestedUri,
+    connectionInfo: request.connectionInfo,
     protocolVersion: request.protocolVersion,
     headers: headers,
     body: Body.fromDataStream(request),
     onHijack: onHijack,
-    context: {'shelf.io.connection_info': request.connectionInfo!},
+    context: {},
   );
 }
 
-Future<void> _writeResponse(
-    Response response, HttpResponse httpResponse, String? poweredByHeader) {
-  if (response.context.containsKey('shelf.io.buffer_output')) {
-    httpResponse.bufferOutput =
-        response.context['shelf.io.buffer_output'] as bool;
-  }
+// Future<void> _writeResponse(
+//     Response response, HttpResponse httpResponse, String? poweredByHeader) {
+//   if (response.context.containsKey('shelf.io.buffer_output')) {
+//     httpResponse.bufferOutput =
+//         response.context['shelf.io.buffer_output'] as bool;
+//   }
 
-  httpResponse.statusCode = response.statusCode;
+//   httpResponse.statusCode = response.statusCode;
 
-  // An adapter must not add or modify the `Transfer-Encoding` parameter, but
-  // the Dart SDK sets it by default. Set this before we fill in
-  // [response.headers] so that the user or Shelf can explicitly override it if
-  // necessary.
-  httpResponse.headers.chunkedTransferEncoding = false;
+//   // An adapter must not add or modify the `Transfer-Encoding` parameter, but
+//   // the Dart SDK sets it by default. Set this before we fill in
+//   // [response.headers] so that the user or Shelf can explicitly override it if
+//   // necessary.
+//   httpResponse.headers.chunkedTransferEncoding = false;
 
-  response.headersAll.forEach((header, value) {
-    httpResponse.headers.set(header, value);
-  });
+//   response.headersAll.forEach((header, value) {
+//     httpResponse.headers.set(header, value);
+//   });
 
-  var coding = response.headers['transfer-encoding'];
-  if (coding != null && !equalsIgnoreAsciiCase(coding, 'identity')) {
-    // If the response is already in a chunked encoding, de-chunk it because
-    // otherwise `dart:io` will try to add another layer of chunking.
-    //
-    // TODO(nweiz): Do this more cleanly when sdk#27886 is fixed.
-    var body = Body.fromDataStream(
-      chunkedCoding.encoder
-          .bind(response.read())
-          .map((list) => Uint8List.fromList(list)),
-    );
+//   var coding = response.headers['transfer-encoding'];
+//   if (coding != null && !equalsIgnoreAsciiCase(coding, 'identity')) {
+//     // If the response is already in a chunked encoding, de-chunk it because
+//     // otherwise `dart:io` will try to add another layer of chunking.
+//     //
+//     // TODO(nweiz): Do this more cleanly when sdk#27886 is fixed.
+//     var body = Body.fromDataStream(
+//       chunkedCoding.encoder
+//           .bind(response.read())
+//           .map((list) => Uint8List.fromList(list)),
+//     );
 
-    response = response.change(
-      body: body,
-    );
-    httpResponse.headers.set(HttpHeaders.transferEncodingHeader, 'chunked');
-  } else if (response.statusCode >= 200 &&
-      response.statusCode != 204 &&
-      response.statusCode != 304 &&
-      response.contentLength == null &&
-      response.mimeType != 'multipart/byteranges') {
-    // If the response isn't chunked yet and there's no other way to tell its
-    // length, enable `dart:io`'s chunked encoding.
-    httpResponse.headers.set(HttpHeaders.transferEncodingHeader, 'chunked');
-  }
+//     response = response.change(
+//       body: body,
+//     );
+//     httpResponse.headers.set(HttpHeaders.transferEncodingHeader, 'chunked');
+//   } else if (response.statusCode >= 200 &&
+//       response.statusCode != 204 &&
+//       response.statusCode != 304 &&
+//       response.contentLength == null &&
+//       response.mimeType != 'multipart/byteranges') {
+//     // If the response isn't chunked yet and there's no other way to tell its
+//     // length, enable `dart:io`'s chunked encoding.
+//     httpResponse.headers.set(HttpHeaders.transferEncodingHeader, 'chunked');
+//   }
 
-  if (poweredByHeader != null &&
-      !response.headers.containsKey(_xPoweredByResponseHeader)) {
-    httpResponse.headers.set(_xPoweredByResponseHeader, poweredByHeader);
-  }
+//   if (poweredByHeader != null &&
+//       !response.headers.containsKey(_xPoweredByResponseHeader)) {
+//     httpResponse.headers.set(_xPoweredByResponseHeader, poweredByHeader);
+//   }
 
-  if (!response.headers.containsKey(HttpHeaders.dateHeader)) {
-    httpResponse.headers.date = DateTime.now().toUtc();
-  }
+//   if (!response.headers.containsKey(HttpHeaders.dateHeader)) {
+//     httpResponse.headers.date = DateTime.now().toUtc();
+//   }
 
-  return httpResponse
-      .addStream(response.read())
-      .then((_) => httpResponse.close());
-}
+//   return httpResponse
+//       .addStream(response.read())
+//       .then((_) => httpResponse.close());
+// }
 
-/// Common header to advertise the server technology being used.
-///
-/// See https://webtechsurvey.com/response-header/x-powered-by
-const _xPoweredByResponseHeader = 'X-Powered-By';
+// /// Common header to advertise the server technology being used.
+// ///
+// /// See https://webtechsurvey.com/response-header/x-powered-by
+// const _xPoweredByResponseHeader = 'X-Powered-By';
 
 // TODO(kevmoo) A developer mode is needed to include error info in response
 // TODO(kevmoo) Make error output plugable. stderr, logging, etc

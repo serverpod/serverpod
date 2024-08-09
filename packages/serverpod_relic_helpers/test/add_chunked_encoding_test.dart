@@ -6,14 +6,13 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:serverpod_relic_helpers/serverpod_relic_helpers.dart';
-import 'package:serverpod_relic_helpers/src/body.dart';
 import 'package:test/test.dart';
 
 void main() {
   test('adds chunked encoding with no transfer-encoding header', () async {
     var response = await _chunkResponse(
       Response.ok(
-        Body.fromDataStream(
+        body: Body.fromDataStream(
           Stream.fromIterable([Uint8List.fromList('hi'.codeUnits)]),
         ),
       ),
@@ -24,7 +23,7 @@ void main() {
 
   test('adds chunked encoding with transfer-encoding: identity', () async {
     var response = await _chunkResponse(Response.ok(
-      Body.fromDataStream(
+      body: Body.fromDataStream(
         Stream.fromIterable([Uint8List.fromList('hi'.codeUnits)]),
       ),
       headers: {'transfer-encoding': 'identity'},
@@ -34,7 +33,9 @@ void main() {
   });
 
   test("doesn't add chunked encoding with content length", () async {
-    var response = await _chunkResponse(Response.ok(Body.fromString('hi')));
+    var response = await _chunkResponse(Response.ok(
+      body: Body.fromString('hi'),
+    ));
     expect(response.headers, isNot(contains('transfer-encoding')));
     expect(response.readAsString(), completion(equals('hi')));
   });
