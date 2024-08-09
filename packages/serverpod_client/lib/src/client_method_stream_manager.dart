@@ -16,6 +16,9 @@ final class ClientMethodStreamManager {
   /// If null, no connection is open.
   WebSocketChannel? _webSocket;
 
+  /// Completer that is completed when the WebSocket listener is done.
+  Completer _webSocketListenerCompleter = Completer()..complete();
+
   /// The host of the WebSocket server.
   final Uri _webSocketHost;
 
@@ -61,7 +64,7 @@ final class ClientMethodStreamManager {
       _webSocket = null;
       await _closeAllStreams(error);
       await webSocket?.sink.close();
-      _cancelConnectionTimer();
+      await _webSocketListenerCompleter.future;
     });
   }
 
@@ -107,7 +110,7 @@ final class ClientMethodStreamManager {
       authentication: await connectionDetails.authenticationProvider.call(),
     );
 
-    _webSocket?.sink.add(openCommand);
+    _addMessageToWebSocket(openCommand);
     var openResponse = await inboundStreamContext.openCompleter.future;
 
     if (openResponse != OpenMethodStreamResponseType.success) {
@@ -117,7 +120,7 @@ final class ClientMethodStreamManager {
     }
 
     connectionDetails.outputController.onCancel = () async {
-      _webSocket?.sink.add(CloseMethodStreamCommand.buildMessage(
+      _addMessageToWebSocket(CloseMethodStreamCommand.buildMessage(
         connectionId: connectionId,
         endpoint: connectionDetails.endpoint,
         method: connectionDetails.method,
@@ -169,6 +172,12 @@ final class ClientMethodStreamManager {
         _inboundStreams.values.map((c) => c.controller).toList();
     _inboundStreams.clear();
 
+    // Remove onCancel callbacks to prevent controllers from
+    // sending a close command to the server.
+    for (var c in inputControllers) {
+      c.onCancel = null;
+    }
+
     if (exception != null) {
       for (var c in inputControllers) {
         c.addError(exception);
@@ -212,7 +221,7 @@ final class ClientMethodStreamManager {
             object: event,
             serializationManager: _serializationManager,
           );
-          _webSocket?.sink.add(message);
+          _addMessageToWebSocket(message);
         },
         onDone: () {
           var closeMessage = CloseMethodStreamCommand.buildMessage(
@@ -223,7 +232,7 @@ final class ClientMethodStreamManager {
             reason: CloseReason.done,
           );
 
-          _webSocket?.sink.add(closeMessage);
+          _addMessageToWebSocket(closeMessage);
           _outboundStreams.remove(streamKey);
         },
         onError: (e, stackTrace) async {
@@ -236,7 +245,7 @@ final class ClientMethodStreamManager {
               object: e,
               serializationManager: _serializationManager,
             );
-            _webSocket?.sink.add(message);
+            _addMessageToWebSocket(message);
           }
 
           var closeMessage = CloseMethodStreamCommand.buildMessage(
@@ -247,7 +256,7 @@ final class ClientMethodStreamManager {
             reason: CloseReason.error,
           );
 
-          _webSocket?.sink.add(closeMessage);
+          _addMessageToWebSocket(closeMessage);
           _outboundStreams.remove(streamKey);
         },
         // Cancel on error prevents the stream from continuing after an exception
@@ -317,6 +326,10 @@ final class ClientMethodStreamManager {
     if (inboundStreamContext == null) {
       return;
     }
+
+    // Remove the onCancel callback to prevent the controller from sending
+    // a close message to the server.
+    inboundStreamContext.controller.onCancel = null;
 
     if (reason == CloseReason.error) {
       inboundStreamContext.controller.addError(
@@ -421,6 +434,7 @@ final class ClientMethodStreamManager {
   }
 
   Future<void> _listenToWebSocketStream(WebSocketChannel webSocket) async {
+    _webSocketListenerCompleter = Completer();
     MethodStreamExceptions closeException = const WebSocketClosedException();
     try {
       await for (String jsonData in webSocket.stream) {
@@ -435,7 +449,7 @@ final class ClientMethodStreamManager {
             _serializationManager,
           );
         } on UnknownMessageException catch (_) {
-          _webSocket?.sink.add(BadRequestMessage.buildMessage(jsonData));
+          _addMessageToWebSocket(BadRequestMessage.buildMessage(jsonData));
           rethrow;
         }
 
@@ -449,7 +463,7 @@ final class ClientMethodStreamManager {
             unawaited(_dispatchCloseMethodStreamCommand(message));
             break;
           case PingCommand():
-            _webSocket?.sink.add(PongCommand.buildMessage());
+            _addMessageToWebSocket(PongCommand.buildMessage());
             break;
           case PongCommand():
             // Ignore
@@ -461,7 +475,7 @@ final class ClientMethodStreamManager {
             var success = _dispatchMessage(message);
             if (success) break;
 
-            _webSocket?.sink.add(
+            _addMessageToWebSocket(
               CloseMethodStreamCommand.buildMessage(
                 connectionId: message.connectionId,
                 endpoint: message.endpoint,
@@ -477,9 +491,14 @@ final class ClientMethodStreamManager {
       }
     } catch (e, s) {
       closeException = WebSocketListenException(e, s);
+
+      /// Attempt to send close message to server if connection is still open.
+      await webSocket.sink.close();
     } finally {
       /// Close any still open streams with an exception.
-      await closeAllConnections(closeException);
+      await _closeAllStreams(closeException);
+      _cancelConnectionTimer();
+      _webSocketListenerCompleter.complete();
     }
   }
 
@@ -508,6 +527,17 @@ final class ClientMethodStreamManager {
           .catchError((e, s) => throw ConnectionAttemptTimedOutException());
       _webSocket = webSocket;
     });
+  }
+
+  void _addMessageToWebSocket(String message) {
+    var webSocket = _webSocket;
+    if (webSocket == null) {
+      throw StateError(
+        'Message posted when web socket connection is closed: $message',
+      );
+    }
+
+    webSocket.sink.add(message);
   }
 }
 
