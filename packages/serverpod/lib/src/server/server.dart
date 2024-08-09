@@ -248,6 +248,8 @@ class Server {
       return;
     } else if (uri.path == '/serverpod_cloud_storage') {
       readBody = false;
+    }else if (uri.path == '/serverpod_file_storage') {
+      readBody = false;
     }
 
     // This OPTIONS check is necessary when making requests from

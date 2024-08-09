@@ -3,7 +3,9 @@ import 'dart:io';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/cloud_storage/file_cloud_storage.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
+import 'package:serverpod/src/cloud_storage/public_file_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/migrations/migration_manager.dart';
@@ -332,6 +334,7 @@ class Serverpod {
       storage.addAll({
         'public': DatabaseCloudStorage('public'),
         'private': DatabaseCloudStorage('private'),
+        'file': FileCloudStorage('file'),
       });
     }
 
@@ -417,6 +420,10 @@ class Serverpod {
           storage['private'] is DatabaseCloudStorage) {
         CloudStoragePublicEndpoint().register(this);
       }
+       if(storage['file'] is FileCloudStorage){
+           FileStoragePublicEndpoint().register(this);
+      }
+     
 
       // It is important that we start the database pool manager before
       // attempting to connect to the database.
