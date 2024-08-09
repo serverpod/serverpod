@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 
 // TODO: Support for server clusters.
@@ -167,5 +169,34 @@ class MessageCentral {
         session.serverpod.redisController!.unsubscribe(channelName);
       }
     }
+  }
+
+  /// Creates a stream that listens to a specified channel.
+  ///
+  /// This stream emits messages of type [T] whenever a message is received on
+  /// the specified channel.
+  ///
+  /// If messages on the channel does not match the type [T], the stream will
+  /// emit an error.
+  Stream<T> createStream<T>(
+    Session session,
+    String channelName,
+  ) {
+    var controller = StreamController<T>();
+    void addToStream(dynamic message) {
+      try {
+        controller.add(message as T);
+      } catch (e) {
+        controller.addError(e);
+      }
+    }
+
+    addListener(session, channelName, addToStream);
+
+    controller.onCancel = () {
+      removeListener(session, channelName, addToStream);
+    };
+
+    return controller.stream;
   }
 }
