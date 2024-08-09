@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:serverpod_client/serverpod_client.dart';
+import 'package:serverpod_client/src/client_method_stream_manager.dart';
+import 'package:serverpod_client/src/method_stream/method_stream_connection_details.dart';
+import 'package:serverpod_client/src/method_stream/method_stream_manager_exceptions.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 /// A callback with no parameters or return value.
@@ -54,12 +57,28 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   final List<VoidCallback> _websocketConnectionStatusListeners = [];
 
+  ClientMethodStreamManager? _clientMethodStreamManager;
+  ClientMethodStreamManager get _methodStreamManager {
+    var methodStreamManager = _clientMethodStreamManager;
+    if (methodStreamManager == null) {
+      methodStreamManager = ClientMethodStreamManager(
+        connectionTimeout: streamingConnectionTimeout,
+        webSocketHost: _webSocketHost.replace(path: '/v1/websocket'),
+        serializationManager: serializationManager,
+      );
+      _clientMethodStreamManager = methodStreamManager;
+    }
+
+    return methodStreamManager;
+  }
+
   // StreamSubscription<ConnectivityResult>? _connectivitySubscription;
-  bool _disconnectOnLostInternetConnection = false;
+  late bool _disconnectWebSocketStreamOnLostInternetConnection;
+  late bool _disconnectMethodStreamsOnLostInternetConnection;
 
   /// Full host name of the web socket endpoint.
   /// E.g. "wss://example.com/websocket"
-  Future<String> get websocketHost async {
+  Uri get _webSocketHost {
     var uri = Uri.parse(host);
     if (uri.scheme == 'http') {
       uri = uri.replace(scheme: 'ws');
@@ -67,17 +86,25 @@ abstract class ServerpodClientShared extends EndpointCaller {
       uri = uri.replace(scheme: 'wss');
     }
     uri = uri.replace(path: '/websocket');
+    return uri;
+  }
 
-    if (authenticationKeyManager != null) {
-      var auth = await authenticationKeyManager!.get();
-      if (auth != null) {
-        uri = uri.replace(
-          queryParameters: {
-            'auth': auth,
-          },
-        );
-      }
+  /// Full host name of the web socket endpoint.
+  /// E.g. "wss://example.com/websocket"
+  ///
+  /// This string also includes the authentication key if one is available.
+  Future<String> get websocketHost async {
+    var uri = _webSocketHost;
+
+    var auth = await authenticationKeyManager?.get();
+    if (auth != null) {
+      uri = uri.replace(
+        queryParameters: {
+          'auth': auth,
+        },
+      );
     }
+
     return uri.toString();
   }
 
@@ -143,10 +170,15 @@ abstract class ServerpodClientShared extends EndpointCaller {
   }
 
   void _connectivityChanged(bool connected) {
-    if (!connected) {
-      if (_disconnectOnLostInternetConnection && _webSocket != null) {
-        closeStreamingConnection();
-      }
+    if (connected) return;
+
+    if (_disconnectMethodStreamsOnLostInternetConnection) {
+      closeStreamingMethodConnections();
+    }
+
+    if (_disconnectWebSocketStreamOnLostInternetConnection &&
+        _webSocket != null) {
+      closeStreamingConnection();
     }
   }
 
@@ -161,6 +193,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     required Duration? connectionTimeout,
     this.onFailedCall,
     this.onSucceededCall,
+    bool? disconnectStreamsOnLostInternetConnection,
   })  : connectionTimeout = connectionTimeout ?? const Duration(seconds: 20),
         streamingConnectionTimeout =
             streamingConnectionTimeout ?? const Duration(seconds: 5) {
@@ -168,6 +201,11 @@ abstract class ServerpodClientShared extends EndpointCaller {
         'host must end with a slash, eg: https://example.com/');
     assert(host.startsWith('http://') || host.startsWith('https://'),
         'host must include protocol, eg: https://example.com/');
+    disconnectStreamsOnLostInternetConnection ??= false;
+    _disconnectMethodStreamsOnLostInternetConnection =
+        disconnectStreamsOnLostInternetConnection;
+    _disconnectWebSocketStreamOnLostInternetConnection =
+        disconnectStreamsOnLostInternetConnection;
   }
 
   /// Handles a message received from the WebSocket stream. Typically, this
@@ -232,6 +270,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// Closes all open connections to the server.
   void close() {
     closeStreamingConnection();
+    closeStreamingMethodConnections();
   }
 
   void _cancelConnectionTimer() {
@@ -250,7 +289,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
         'To enable automatic disconnect on lost internet connection, you need to set the connectivityMonitor property.',
       );
     }
-    _disconnectOnLostInternetConnection = disconnectOnLostInternetConnection;
+    _disconnectWebSocketStreamOnLostInternetConnection =
+        disconnectOnLostInternetConnection;
 
     try {
       // Connect to the server.
@@ -286,6 +326,19 @@ abstract class ServerpodClientShared extends EndpointCaller {
     // If everything is going according to plan, we are now connected to the
     // server.
     _notifyWebSocketConnectionStatusListeners();
+  }
+
+  /// Closes all open streaming method connections.
+  ///
+  /// [exception] is an optional exception that will be thrown to all
+  /// listeners of open streams.
+  ///
+  /// If [exception] is not provided, a [WebSocketClosedException] will be
+  /// thrown.
+  Future<void> closeStreamingMethodConnections({
+    Object? exception = const WebSocketClosedException(),
+  }) async {
+    await _methodStreamManager.closeAllConnections(exception);
   }
 
   /// Closes the streaming connection if it is open.
@@ -374,6 +427,65 @@ abstract class ServerpodClientShared extends EndpointCaller {
     }
     await _sendControlCommandToStream('auth', {'key': authKey});
   }
+
+  @override
+  dynamic callStreamingServerEndpoint<T, G>(
+    String endpoint,
+    String method,
+    Map<String, dynamic> args,
+    Map<String, Stream> streams,
+  ) {
+    var connectionDetails = MethodStreamConnectionDetails(
+      endpoint: endpoint,
+      method: method,
+      args: args,
+      parameterStreams: streams,
+      outputController: StreamController<G>(),
+      authenticationProvider: () async => authenticationKeyManager?.get(),
+    );
+
+    _methodStreamManager
+        .openMethodStream(connectionDetails)
+        .onError<OpenMethodStreamException>((e, _) {
+      var error = switch (e.responseType) {
+        OpenMethodStreamResponseType.endpointNotFound =>
+          ServerpodClientNotFound(),
+        OpenMethodStreamResponseType.authenticationFailed =>
+          ServerpodClientUnauthorized(),
+        OpenMethodStreamResponseType.authorizationDeclined =>
+          ServerpodClientForbidden(),
+        OpenMethodStreamResponseType.invalidArguments =>
+          ServerpodClientBadRequest(),
+        OpenMethodStreamResponseType.success =>
+          ServerpodClientException('Unknown error, data: $e', -1),
+      };
+      connectionDetails.outputController.addError(error);
+      connectionDetails.outputController.close();
+    });
+    if (T == Stream<G>) {
+      return connectionDetails.outputController.stream;
+    } else if ((T == Future<G>) && G == getType<void>()) {
+      var result = Completer<void>();
+      // Listen to stream so that close can be called when method has returned.
+      connectionDetails.outputController.stream.listen(
+        (e) {},
+        onError: ((e, _) => result.completeError(e)),
+        onDone: () => result.complete(),
+        cancelOnError: true,
+      );
+      return result.future;
+    } else if (T == Future<G>) {
+      var result = Completer<G>();
+      connectionDetails.outputController.stream.first.then((e) {
+        result.complete(e);
+      }, onError: (e, _) {
+        result.completeError(e);
+      });
+      return result.future;
+    } else {
+      throw UnsupportedError('Unsupported type $T');
+    }
+  }
 }
 
 /// This class is used to connect modules with the client. Overridden by
@@ -390,6 +502,21 @@ abstract class ModuleEndpointCaller extends EndpointCaller {
       String endpoint, String method, Map<String, dynamic> args) {
     return client.callServerEndpoint<T>(endpoint, method, args);
   }
+
+  @override
+  dynamic callStreamingServerEndpoint<T, G>(
+    String endpoint,
+    String method,
+    Map<String, dynamic> args,
+    Map<String, Stream> streams,
+  ) {
+    return client.callStreamingServerEndpoint<T, G>(
+      endpoint,
+      method,
+      args,
+      streams,
+    );
+  }
 }
 
 /// Super class for all classes that can call a server endpoint.
@@ -402,6 +529,24 @@ abstract class EndpointCaller {
   /// Typically, this method is called by generated code.
   Future<T> callServerEndpoint<T>(
       String endpoint, String method, Map<String, dynamic> args);
+
+  /// Calls a server endpoint method that supports streaming. The [streams]
+  /// parameter is a map of stream names to stream objects. The method will
+  /// listen to the streams and send the data to the server.
+  /// Typically, this method is called by generated code.
+  ///
+  /// [T] is the type of the return value of the endpoint stream. This is either
+  /// a [Stream] or a [Future].
+  ///
+  /// [G] is the generic of [T], such as T<G>.
+  ///
+  /// If [T] is not a [Stream] or a [Future], the method will throw an exception.
+  dynamic callStreamingServerEndpoint<T, G>(
+    String endpoint,
+    String method,
+    Map<String, dynamic> args,
+    Map<String, Stream> streams,
+  );
 }
 
 /// This class connects endpoints on the server with the client, it also

@@ -7,10 +7,21 @@ import 'package:serverpod_test_server/src/generated/protocol.dart';
 class MethodStreaming extends Endpoint {
   Map<String, Completer> _delayedResponses = {};
 
-  /// Check Null and Object in validation.
+  /// Returns a simple stream of integers from 0 to 9.
   Stream<int> simpleStream(Session session) async* {
     for (var i = 0; i < 10; i++) {
       yield i;
+    }
+  }
+
+  Stream<int> neverEndingStreamWithDelay(
+    Session session,
+    int millisecondsDelay,
+  ) async* {
+    int i = 0;
+    while (true) {
+      await Future.delayed(Duration(milliseconds: millisecondsDelay));
+      yield i++;
     }
   }
 
@@ -19,6 +30,13 @@ class MethodStreaming extends Endpoint {
   Future<int> intReturnFromStream(
     Session session,
     Stream<int> stream,
+  ) async {
+    return stream.first;
+  }
+
+  Future<int?> nullableIntReturnFromStream(
+    Session session,
+    Stream<int?> stream,
   ) async {
     return stream.first;
   }
@@ -239,11 +257,33 @@ class MethodStreaming extends Endpoint {
     );
   }
 
-  Future<void> throwsException(Session session) async {
+  Future<void> throwsExceptionVoid(Session session, Stream<int> stream) async {
     throw Exception('This is an exception');
   }
 
-  Future<void> throwsSerializableException(Session session) async {
+  Future<void> throwsSerializableExceptionVoid(
+    Session session,
+    Stream<int> stream,
+  ) async {
+    throw ExceptionWithData(
+      message: 'Throwing an exception',
+      creationDate: DateTime.now(),
+      errorFields: [
+        'first line error',
+        'second line error',
+      ],
+      someNullableField: 1,
+    );
+  }
+
+  Future<int> throwsException(Session session, Stream<int> stream) async {
+    throw Exception('This is an exception');
+  }
+
+  Future<int> throwsSerializableException(
+    Session session,
+    Stream<int> stream,
+  ) async {
     throw ExceptionWithData(
       message: 'Throwing an exception',
       creationDate: DateTime.now(),

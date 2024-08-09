@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -96,10 +97,10 @@ abstract class Session {
   late final SessionLogManager? _logManager;
 
   /// Endpoint that triggered this session.
-  final String endpointName;
+  final String endpoint;
 
   /// Method that triggered this session, if any.
-  final String? methodName;
+  final String? method;
 
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
@@ -109,9 +110,9 @@ abstract class Session {
     HttpRequest? httpRequest,
     WebSocket? webSocket,
     required this.enableLogging,
-    required this.endpointName,
+    required this.endpoint,
     int? messageId,
-    this.methodName,
+    this.method,
   })  : _authenticationKey = authenticationKey,
         _messageId = messageId,
         sessionId = sessionId ?? const Uuid().v4obj() {
@@ -131,6 +132,7 @@ abstract class Session {
       );
       _logManager = SessionLogManager(
         logWriter,
+        session: this,
         settingsForSession: (Session session) => server
             .serverpod.logSettingsManager
             .getLogSettingsForSession(session),
@@ -205,9 +207,9 @@ abstract class Session {
       }
 
       server.messageCentral.removeListenersForSession(this);
-      return await _logManager?.finalizeSessionLog(
+      return await _logManager?.finalizeLog(
         this,
-        exception: error == null ? null : '$error',
+        exception: error?.toString(),
         stackTrace: stackTrace,
         authenticatedUserId: _authenticated?.userId,
       );
@@ -233,7 +235,6 @@ abstract class Session {
     }
 
     _logManager?.logEntry(
-      this,
       message: message,
       level: level ?? LogLevel.info,
       error: exception?.toString(),
@@ -251,7 +252,7 @@ class InternalSession extends Session {
   InternalSession({
     required super.server,
     super.enableLogging = true,
-  }) : super(endpointName: 'InternalSession');
+  }) : super(endpoint: 'InternalSession');
 }
 
 /// When a call is made to the [Server] a [MethodCallSession] object is created.
@@ -267,11 +268,19 @@ class MethodCallSession extends Session {
   /// Query parameters of the server call.
   final Map<String, dynamic> queryParameters;
 
-  final String _methodName;
+  final String _method;
 
   /// The name of the method that is being called.
   @override
-  String get methodName => _methodName;
+  String get method => _method;
+
+  /// The name of the method that is being called.
+  @Deprecated('Use method instead')
+  String get methodName => _method;
+
+  /// The name of the endpoint that is being called.
+  @Deprecated('Use endpoint instead')
+  String get endpointName => endpoint;
 
   /// The [HttpRequest] associated with the call.
   final HttpRequest httpRequest;
@@ -283,13 +292,13 @@ class MethodCallSession extends Session {
     required this.body,
     required String path,
     required this.httpRequest,
-    required super.endpointName,
-    required String methodName,
+    required super.endpoint,
+    required String method,
     required this.queryParameters,
     required super.authenticationKey,
     super.enableLogging = true,
-  })  : _methodName = methodName,
-        super(methodName: methodName);
+  })  : _method = method,
+        super(method: method);
 }
 
 /// When a request is made to the web server a [WebCallSession] object is
@@ -299,7 +308,7 @@ class WebCallSession extends Session {
   /// Creates a new [Session] for a method call to an endpoint.
   WebCallSession({
     required super.server,
-    required super.endpointName,
+    required super.endpoint,
     required super.authenticationKey,
     super.enableLogging = true,
   });
@@ -313,21 +322,21 @@ class MethodStreamSession extends Session {
   /// The connection id that uniquely identifies the stream.
   final UuidValue connectionId;
 
-  final String _methodName;
+  final String _method;
 
   @override
-  String get methodName => _methodName;
+  String get method => _method;
 
   /// Creates a new [MethodStreamSession].
   MethodStreamSession({
     required super.server,
     required super.enableLogging,
     required super.authenticationKey,
-    required super.endpointName,
-    required String methodName,
+    required super.endpoint,
+    required String method,
     required this.connectionId,
-  })  : _methodName = methodName,
-        super(methodName: methodName);
+  })  : _method = method,
+        super(method: method);
 }
 
 /// When a web socket connection is opened to the [Server] a [StreamingSession]
@@ -349,13 +358,17 @@ class StreamingSession extends Session {
   /// Set if there is an open session log.
   int? sessionLogId;
 
-  String _endpointName;
+  String _endpoint;
 
   /// The name of the endpoint that is being called.
-  set endpointName(String endpointName) => _endpointName = endpointName;
+  set endpoint(String endpoint) => _endpoint = endpoint;
 
   @override
-  String get endpointName => _endpointName;
+  String get endpoint => _endpoint;
+
+  /// The name of the endpoint that is being called.
+  @Deprecated('Use endpoint instead')
+  String get endpointName => _endpoint;
 
   /// Creates a new [Session] for the web socket stream.
   StreamingSession({
@@ -363,9 +376,9 @@ class StreamingSession extends Session {
     required this.uri,
     required this.httpRequest,
     required this.webSocket,
-    super.endpointName = 'StreamingSession',
+    super.endpoint = 'StreamingSession',
     super.enableLogging = true,
-  })  : _endpointName = endpointName,
+  })  : _endpoint = endpoint,
         super(messageId: 0) {
     // Read query parameters
     var queryParameters = <String, String>{};
@@ -395,7 +408,7 @@ class FutureCallSession extends Session {
     required super.server,
     required this.futureCallName,
     super.enableLogging = true,
-  }) : super(endpointName: 'FutureCall', methodName: futureCallName);
+  }) : super(endpoint: 'FutureCall', method: futureCallName);
 }
 
 /// Collects methods for accessing cloud storage.
@@ -562,6 +575,16 @@ class MessageCentralAccess {
         message,
         global: global,
       );
+
+  /// Creates a stream that listens to a specified channel.
+  ///
+  /// This stream emits messages of type [T] whenever a message is received on
+  /// the specified channel.
+  ///
+  /// If messages on the channel does not match the type [T], the stream will
+  /// emit an error.
+  Stream<T> createStream<T>(String channelName) =>
+      _session.server.messageCentral.createStream<T>(_session, channelName);
 }
 
 /// Internal methods for [Session].

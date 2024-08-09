@@ -224,6 +224,7 @@ void main() async {
               .build())
           .build();
       await server.updateRuntimeSettings(settings);
+
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );

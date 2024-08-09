@@ -105,12 +105,20 @@ class OpenMethodStreamResponse extends WebSocketMessage {
   /// The connection id that uniquely identifies the stream.
   final UuidValue connectionId;
 
+  /// The endpoint called.
+  final String endpoint;
+
+  /// The method called.
+  final String method;
+
   /// The response type.
   final OpenMethodStreamResponseType responseType;
 
   /// Creates a new [OpenMethodStreamResponse].
   OpenMethodStreamResponse(Map data)
       : connectionId = UuidValueJsonExtension.fromJson(data['connectionId']),
+        endpoint = data['endpoint'],
+        method = data['method'],
         responseType = OpenMethodStreamResponseType.tryParse(
           data['responseType'],
         );
@@ -119,19 +127,27 @@ class OpenMethodStreamResponse extends WebSocketMessage {
   static String buildMessage({
     required UuidValue connectionId,
     required OpenMethodStreamResponseType responseType,
+    required String endpoint,
+    required String method,
   }) {
     return WebSocketMessage._buildMessage(
       _messageType,
       {
         'connectionId': connectionId,
         'responseType': responseType.name,
+        'endpoint': endpoint,
+        'method': method,
       },
     );
   }
 
   @override
-  String toString() =>
-      buildMessage(connectionId: connectionId, responseType: responseType);
+  String toString() => buildMessage(
+        connectionId: connectionId,
+        responseType: responseType,
+        endpoint: endpoint,
+        method: method,
+      );
 }
 
 /// A message sent over a websocket connection to open a websocket stream of

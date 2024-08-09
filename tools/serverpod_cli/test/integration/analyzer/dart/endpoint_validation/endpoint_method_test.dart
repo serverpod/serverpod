@@ -157,6 +157,38 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
+  test(
+      'Given an endpoint method with a Stream<void> return when analyzed then an error is reported',
+      () async {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late EndpointsAnalyzer analyzer;
+
+    var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+    endpointFile.createSync(recursive: true);
+    endpointFile.writeAsStringSync('''
+import 'dart:async';
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Stream<void> hello(Session session) async* {
+    yield 'Hello';
+    yield 'World';
+  }
+}
+''');
+    analyzer = EndpointsAnalyzer(testDirectory);
+    await analyzer.analyze(collector: collector);
+
+    expect(collector.errors, isNotEmpty);
+    expect(
+      collector.errors.first.message,
+      'The type "void" is not supported for streams.',
+    );
+  });
+
   group('Given an endpoint method with a stream return type when analyzed', () {
     var collector = CodeGenerationCollector();
     var testDirectory =
