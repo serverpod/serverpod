@@ -10,7 +10,7 @@ environment:
 dependencies:
   async: ^2.5.0
   collection: ^1.15.0
-  http_parser: ^4.1.0
+  http_parser: ^4.0.2
   path: ^1.8.0
   stack_trace: ^1.10.0
   stream_channel: ^2.1.0
