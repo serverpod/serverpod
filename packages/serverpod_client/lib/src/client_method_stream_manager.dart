@@ -533,7 +533,8 @@ final class ClientMethodStreamManager {
     var webSocket = _webSocket;
     if (webSocket == null) {
       throw StateError(
-          'Message posted when web socket connection is closed: $message');
+        'Message posted when web socket connection is closed: $message',
+      );
     }
 
     webSocket.sink.add(message);
