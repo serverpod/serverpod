@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -12,10 +13,30 @@ import 'package:serverpod/src/server/serverpod.dart';
 import '../cache/caches.dart';
 import '../database/database.dart';
 
+/// A listener that will be called when the session is about to close.
+typedef WillCloseListener = FutureOr<void> Function(Session);
+
 /// When a call is made to the [Server] a [Session] object is created. It
 /// contains all data associated with the current connection and provides
 /// easy access to the database.
 abstract class Session {
+  /// List of listeners that will be called when the session is about to close.
+  final LinkedHashSet<WillCloseListener> _willCloseListeners = LinkedHashSet();
+
+  /// Adds a listener that will be called when the session is about to close.
+  /// The listener should return a [FutureOr] that completes when the listener
+  /// is done.
+  ///
+  /// The listener will be called in the order they were added.
+  void addWillCloseListener(WillCloseListener listener) {
+    _willCloseListeners.add(listener);
+  }
+
+  /// Removes a listener that will be called when the session is about to close.
+  void removeWillCloseListener(WillCloseListener listener) {
+    _willCloseListeners.remove(listener);
+  }
+
   /// The id of the session.
   final UuidValue sessionId;
 
@@ -197,6 +218,13 @@ abstract class Session {
   }) async {
     if (_closed) return null;
     _closed = true;
+
+    var willCloseListeners = _willCloseListeners.toList();
+    _willCloseListeners.clear();
+
+    for (var listener in willCloseListeners) {
+      await listener(this);
+    }
 
     try {
       if (_logManager == null && error != null) {
