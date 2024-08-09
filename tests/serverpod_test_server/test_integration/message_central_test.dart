@@ -51,17 +51,21 @@ void main() async {
 
   group('Given stream listening on channel in message central', () {
     late Completer<SimpleData> messageReceivedCompleter;
+    late Completer streamDoneCompleter;
     late Completer streamErrorCompleter;
     late Stream<SimpleData> stream;
     late StreamSubscription<SimpleData> subscription;
 
     setUp(() {
       messageReceivedCompleter = Completer<SimpleData>();
+      streamDoneCompleter = Completer();
       streamErrorCompleter = Completer<dynamic>();
 
       stream = messageCentral.createStream<SimpleData>(channelName);
       subscription = stream.listen((data) {
         messageReceivedCompleter.complete(data);
+      }, onDone: () {
+        streamDoneCompleter.complete();
       }, onError: (error) {
         streamErrorCompleter.complete(error);
       });
@@ -89,6 +93,12 @@ void main() async {
       var error = await streamErrorCompleter.future;
       expect(error, isA<TypeError>());
     });
+
+    test('when session is closed then stream is closed', () async {
+      await session.close();
+
+      await expectLater(streamDoneCompleter.future, completes);
+    });
   });
 
   group('Given multiple streams listening to the same channel ', () {
@@ -96,18 +106,26 @@ void main() async {
     late Completer<SimpleData> messageReceivedCompleter2;
     late StreamSubscription<SimpleData> subscription1;
     late StreamSubscription<SimpleData> subscription2;
+    late Completer stream1DoneCompleter;
+    late Completer stream2DoneCompleter;
 
     setUp(() {
       messageReceivedCompleter1 = Completer<SimpleData>();
+      stream1DoneCompleter = Completer();
       var stream1 = messageCentral.createStream<SimpleData>(channelName);
       subscription1 = stream1.listen((data) {
         messageReceivedCompleter1.complete(data);
+      }, onDone: () {
+        stream1DoneCompleter.complete();
       });
 
       messageReceivedCompleter2 = Completer<SimpleData>();
+      stream2DoneCompleter = Completer();
       var stream2 = messageCentral.createStream<SimpleData>(channelName);
       subscription2 = stream2.listen((data) {
         messageReceivedCompleter2.complete(data);
+      }, onDone: () {
+        stream2DoneCompleter.complete();
       });
     });
 
@@ -137,6 +155,13 @@ void main() async {
       await expectLater(messageReceivedCompleter1.future, completes);
       var message1 = await messageReceivedCompleter1.future;
       expect(message1.num, 42);
+    });
+
+    test('when session is closed then all streams are done', () async {
+      await session.close();
+
+      await expectLater(stream1DoneCompleter.future, completes);
+      await expectLater(stream2DoneCompleter.future, completes);
     });
   });
 }
