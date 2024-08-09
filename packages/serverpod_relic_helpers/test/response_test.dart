@@ -8,7 +8,6 @@ import 'dart:typed_data';
 
 import 'package:serverpod_relic_helpers/serverpod_relic_helpers.dart'
     hide Request;
-import 'package:serverpod_relic_helpers/src/body.dart';
 import 'package:test/test.dart';
 
 import 'test_util.dart';
@@ -16,21 +15,21 @@ import 'test_util.dart';
 void main() {
   group('supports a String body', () {
     test('readAsString', () {
-      var response = Response.ok(Body.fromString('hello, world'));
+      var response = Response.ok(body: Body.fromString('hello, world'));
       expect(response.readAsString(), completion(equals('hello, world')));
     });
 
     test('read', () {
       var helloWorldBytes = [...helloBytes, ...worldBytes];
 
-      var response = Response.ok(Body.fromString('hello, world'));
+      var response = Response.ok(body: Body.fromString('hello, world'));
       expect(response.read().toList(), completion(equals([helloWorldBytes])));
     });
   });
 
   test('supports a Uint8List body without copying', () async {
     var bytes = Uint8List(10);
-    var response = Response.ok(Body.fromData(bytes));
+    var response = Response.ok(body: Body.fromData(bytes));
 
     expect(response.contentLength, 10);
     expect(await response.read().single, same(bytes));
@@ -38,14 +37,14 @@ void main() {
 
   test('supports a Stream<Uint8List> body without copying', () async {
     var bytes = Stream.value(Uint8List.fromList([1, 2, 3, 4]));
-    var response = Response.ok(Body.fromDataStream(bytes));
+    var response = Response.ok(body: Body.fromDataStream(bytes));
 
     expect(response.read(), same(bytes));
   });
 
   test('allows content-length header even if body is null', () async {
     // needed for HEAD responses
-    var response = Response.ok(null, headers: {'Content-Length': '42'});
+    var response = Response.ok(headers: {'Content-Length': '42'});
 
     expect(response.contentLength, 42);
     expect(await response.readAsString(), isEmpty);
@@ -101,7 +100,7 @@ void main() {
   group('Response.unauthorized:', () {
     test('sets body', () {
       var response = Response.unauthorized(
-        Body.fromString('request unauthorized'),
+        body: Body.fromString('request unauthorized'),
       );
       expect(
           response.readAsString(), completion(equals('request unauthorized')));
@@ -123,12 +122,13 @@ void main() {
 
   group('expires', () {
     test('is null without an Expires header', () {
-      expect(Response.ok(Body.fromString('okay!')).expires, isNull);
+      expect(Response.ok(body: Body.fromString('okay!')).expires, isNull);
     });
 
     test('comes from the Expires header', () {
       expect(
-          Response.ok(Body.fromString('okay!'),
+          Response.ok(
+              body: Body.fromString('okay!'),
               headers: {'expires': 'Sun, 06 Nov 1994 08:49:37 GMT'}).expires,
           equals(DateTime.parse('1994-11-06 08:49:37z')));
     });
@@ -136,12 +136,13 @@ void main() {
 
   group('lastModified', () {
     test('is null without a Last-Modified header', () {
-      expect(Response.ok(Body.fromString('okay!')).lastModified, isNull);
+      expect(Response.ok(body: Body.fromString('okay!')).lastModified, isNull);
     });
 
     test('comes from the Last-Modified header', () {
       expect(
-          Response.ok(Body.fromString('okay!'),
+          Response.ok(
+                  body: Body.fromString('okay!'),
                   headers: {'last-modified': 'Sun, 06 Nov 1994 08:49:37 GMT'})
               .lastModified,
           equals(DateTime.parse('1994-11-06 08:49:37z')));
@@ -175,7 +176,7 @@ void main() {
     });
 
     test('allows the original response to be read', () {
-      var response = Response.ok(null);
+      var response = Response.ok(body: null);
       var changed = response.change();
 
       expect(response.read().toList(), completion(isEmpty));
@@ -183,7 +184,7 @@ void main() {
     });
 
     test('allows the changed response to be read', () {
-      var response = Response.ok(null);
+      var response = Response.ok(body: null);
       var changed = response.change();
 
       expect(changed.read().toList(), completion(isEmpty));
@@ -191,7 +192,7 @@ void main() {
     });
 
     test('allows another changed response to be read', () {
-      var response = Response.ok(null);
+      var response = Response.ok(body: null);
       var changed1 = response.change();
       var changed2 = response.change();
 

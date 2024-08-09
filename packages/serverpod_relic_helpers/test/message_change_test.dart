@@ -7,7 +7,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:serverpod_relic_helpers/serverpod_relic_helpers.dart';
-import 'package:serverpod_relic_helpers/src/body.dart';
 import 'package:serverpod_relic_helpers/src/message.dart';
 import 'package:test/test.dart';
 
@@ -37,7 +36,7 @@ void main() {
       Map<String, Object>? context,
     }) {
       return Response.ok(
-        body,
+        body: body,
         headers: headers,
         context: context,
       );

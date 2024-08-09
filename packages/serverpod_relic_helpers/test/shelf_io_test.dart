@@ -15,7 +15,6 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' as parser;
 import 'package:serverpod_relic_helpers/serverpod_relic_helpers.dart';
 import 'package:serverpod_relic_helpers/shelf_io.dart' as shelf_io;
-import 'package:serverpod_relic_helpers/src/body.dart';
 import 'package:serverpod_relic_helpers/src/util.dart';
 import 'package:test/test.dart';
 
@@ -117,7 +116,7 @@ void main() {
           completion(equals([
             [1, 2, 3, 4]
           ])));
-      return Response.ok(null);
+      return Response.ok();
     }));
 
     var request =
@@ -132,7 +131,8 @@ void main() {
 
   test('custom response headers are received by the client', () async {
     await _scheduleServer((request) {
-      return Response.ok(Body.fromString('Hello from /'),
+      return Response.ok(
+          body: Body.fromString('Hello from /'),
           headers: {'test-header': 'test-value', 'test-list': 'a, b, c'});
     });
 
@@ -144,7 +144,7 @@ void main() {
 
   test('multiple headers are received from the client', () async {
     await _scheduleServer((request) {
-      return Response.ok(Body.fromString('Hello from /'), headers: {
+      return Response.ok(body: Body.fromString('Hello from /'), headers: {
         'requested-values': request.headersAll['request-values']!,
         'requested-values-length':
             request.headersAll['request-values']!.length.toString(),
@@ -347,7 +347,8 @@ void main() {
     test('defers to header in response', () async {
       var date = DateTime.utc(1981, 6, 5);
       await _scheduleServer((request) {
-        return Response.ok(Body.fromString('test'),
+        return Response.ok(
+            body: Body.fromString('test'),
             headers: {HttpHeaders.dateHeader: parser.formatHttpDate(date)});
       });
 
@@ -373,7 +374,7 @@ void main() {
     test('defers to header in response when default', () async {
       await _scheduleServer((request) {
         return Response.ok(
-          Body.fromString('test'),
+          body: Body.fromString('test'),
           headers: {poweredBy: 'myServer'},
         );
       });
@@ -400,7 +401,7 @@ void main() {
       _server = await shelf_io.serve(
         (request) {
           return Response.ok(
-            Body.fromString('test'),
+            body: Body.fromString('test'),
             headers: {poweredBy: 'myServer'},
           );
         },
@@ -434,7 +435,8 @@ void main() {
       test('unset', () async {
         await _scheduleServer((request) {
           return Response.ok(
-            Body.fromDataStream(Stream.value(Uint8List.fromList([1, 2, 3, 4]))),
+            body: Body.fromDataStream(
+                Stream.value(Uint8List.fromList([1, 2, 3, 4]))),
           );
         });
 
@@ -447,7 +449,7 @@ void main() {
       test('"identity"', () async {
         await _scheduleServer((request) {
           return Response.ok(
-            Body.fromDataStream(
+            body: Body.fromDataStream(
               Stream.value(Uint8List.fromList([1, 2, 3, 4])),
             ),
             headers: {HttpHeaders.transferEncodingHeader: 'identity'},
@@ -484,7 +486,7 @@ void main() {
       test('content-length is set', () async {
         await _scheduleServer((request) {
           return Response.ok(
-            Body.fromDataStream(
+            body: Body.fromDataStream(
               Stream.value(Uint8List.fromList([1, 2, 3, 4])),
             ),
             headers: {HttpHeaders.contentLengthHeader: '4'},
@@ -538,7 +540,7 @@ void main() {
       controller.add('Hello, ');
 
       return Response.ok(
-          Body.fromDataStream(
+          body: Body.fromDataStream(
             utf8.encoder
                 .bind(controller.stream)
                 .map((list) => Uint8List.fromList(list)),
@@ -561,13 +563,11 @@ void main() {
     expect(stream.hasNext, completion(isFalse));
   });
 
-  test('includes the dart:io HttpConnectionInfo in request context', () async {
+  test('includes the dart:io HttpConnectionInfo in request', () async {
     await _scheduleServer((request) {
-      expect(request.context,
-          containsPair('shelf.io.connection_info', isA<HttpConnectionInfo>()));
+      expect(request.connectionInfo, isNotNull);
 
-      var connectionInfo =
-          request.context['shelf.io.connection_info'] as HttpConnectionInfo;
+      var connectionInfo = request.connectionInfo!;
       expect(connectionInfo.remoteAddress, equals(_server!.address));
       expect(connectionInfo.localPort, equals(_server!.port));
 
