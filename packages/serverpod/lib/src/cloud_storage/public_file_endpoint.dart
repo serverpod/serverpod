@@ -34,8 +34,8 @@ class FileStoragePublicEndpoint extends Endpoint {
    
       response.headers.contentType = contentType[extension];
   
-      final fileData = await file.readAsBytes();
-      final data = ByteData.view(fileData.buffer);
+      var fileData = await file.readAsBytes();
+      var data = ByteData.view(fileData.buffer);
       return data;
   }
 
@@ -47,8 +47,8 @@ class FileStoragePublicEndpoint extends Endpoint {
 
       var byteData = ByteData.view(Uint8List.fromList(body).buffer);
 
-      final buffer = byteData.buffer;
-      final file =  File(path);
+      var buffer = byteData.buffer;
+      var file =  File(path);
 
       await file.create(recursive: true);
       
