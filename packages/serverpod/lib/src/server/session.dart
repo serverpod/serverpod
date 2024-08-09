@@ -602,6 +602,16 @@ class MessageCentralAccess {
         message,
         global: global,
       );
+
+  /// Creates a stream that listens to a specified channel.
+  ///
+  /// This stream emits messages of type [T] whenever a message is received on
+  /// the specified channel.
+  ///
+  /// If messages on the channel does not match the type [T], the stream will
+  /// emit an error.
+  Stream<T> createStream<T>(String channelName) =>
+      _session.server.messageCentral.createStream<T>(_session, channelName);
 }
 
 /// Internal methods for [Session].
