@@ -12,8 +12,10 @@ environment:
 dependencies:
   serverpod:
     path: ../../../packages/serverpod
-  serverpod_serialization: 2.0.2
-  serverpod_shared: 2.0.2
+  serverpod_serialization: 
+    path: ../../../packages/serverpod_serialization
+  serverpod_shared:
+    path: ../../../packages/serverpod_serialization
   crypto: ^3.0.2
   email_validator: ^2.1.17
   openid_client: ^0.4.8
