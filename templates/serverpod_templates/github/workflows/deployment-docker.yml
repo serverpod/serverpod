@@ -4,7 +4,6 @@
 # Before deploying this workflow, you need to set up the following secrets in your repository settings:
 # PAT_GITHUB: A GitHub token with the repo scope
 # PAT_USER_GITHUB: GitHub username for the PAT
-# SERVERPOD_PASSWORDS: The passwords file for the serverpod (simple copy & paste)
 #
 # ## Server setup ##
 # on your vps / server you need to generate a keypair and add the public key to the authorized_keys file
