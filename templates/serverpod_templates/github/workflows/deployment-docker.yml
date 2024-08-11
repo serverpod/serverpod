@@ -95,6 +95,14 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
+      - name: Add SSH key to the agent
+        run: |
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_rsa
+
+      - name: Test SSH Connection
+        run: ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "echo SSH connection successful"
+
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
@@ -132,7 +140,8 @@ jobs:
           # have access through a different port or have multiple services on
           # the same host, you need to adjust the traefik configuration in the
           # docker-compose.production.yaml file.
-          SERVERPOD_API_SERVER_PUBLIC_PORT: 8080
+          SERVERPOD_API_SERVER_PUBLIC_PORT: 443
+          SERVERPOD_API_SERVER_PORT: 8080
           # The public scheme (http/https) for the API server
           SERVERPOD_API_SERVER_PUBLIC_SCHEME: "https"
           # The public host address of the Insights server
@@ -144,7 +153,8 @@ jobs:
           # have access through a different port or have multiple services on
           # the same host, you need to adjust the traefik configuration in the
           # docker-compose.production.yaml file.
-          SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT: 8081
+          SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT: 443
+          SERVERPOD_INSIGHTS_SERVER_PORT: 8081
           # The public scheme (http/https) for the Insights server
           SERVERPOD_INSIGHTS_SERVER_PUBLIC_SCHEME: "https"
           # The public host address of the Web server
@@ -156,7 +166,8 @@ jobs:
           # have access through a different port or have multiple services on
           # the same host, you need to adjust the traefik configuration in the
           # docker-compose.production.yaml file.
-          SERVERPOD_WEB_SERVER_PUBLIC_PORT: 8082
+          SERVERPOD_WEB_SERVER_PUBLIC_PORT: 443
+          SERVERPOD_WEB_SERVER_PORT: 8082
           # The public scheme (http/https) for the Web server
           SERVERPOD_WEB_SERVER_PUBLIC_SCHEME: "https"
           # The host address of the database
