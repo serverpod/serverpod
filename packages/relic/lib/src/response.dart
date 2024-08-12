@@ -8,7 +8,7 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:http_parser/http_parser.dart';
-import 'package:serverpod_relic_helpers/src/body.dart';
+import 'body.dart';
 
 import 'message.dart';
 import 'util.dart';
@@ -352,6 +352,7 @@ class Response extends Message {
       );
 
       // TODO: Fix
+      // ignore: unused_local_variable
       var response = change(
         body: body,
       );

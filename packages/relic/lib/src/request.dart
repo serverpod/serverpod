@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http_parser/http_parser.dart';
-import 'package:serverpod_relic_helpers/src/body.dart';
+import 'body.dart';
 import 'package:stream_channel/stream_channel.dart';
 
 import 'hijack_exception.dart';

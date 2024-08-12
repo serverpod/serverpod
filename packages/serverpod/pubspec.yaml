@@ -42,8 +42,8 @@ dev_dependencies:
   serverpod_lints: 2.1.2
 
 dependency_overrides:
-  serverpod_relic_helpers:
-    path: ../serverpod_relic_helpers
+  relic:
+    path: ../relic
   serverpod_shared:
     path: ../serverpod_shared
   serverpod_serialization:
