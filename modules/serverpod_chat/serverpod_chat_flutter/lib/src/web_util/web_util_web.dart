@@ -1,4 +1,3 @@
-
 import 'package:web/web.dart';
 
 /// Downloads the specified [url] to the download folder of the computer.
