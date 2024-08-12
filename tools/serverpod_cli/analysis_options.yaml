@@ -1,1 +1,4 @@
 include: package:serverpod_lints/cli.yaml
+analyzer:
+  exclude:
+    - test/integration/util/test_assets/pubspec_helpers/conditionally_ignored/pubspec.yaml
