@@ -27,7 +27,7 @@ import 'dart:io';
 import 'package:stack_trace/stack_trace.dart';
 import 'package:stream_channel/stream_channel.dart';
 
-import 'serverpod_relic_helpers.dart';
+import 'relic.dart';
 import 'src/util.dart';
 
 export 'src/io_server.dart' show IOServer;

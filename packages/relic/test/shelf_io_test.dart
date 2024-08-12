@@ -13,9 +13,9 @@ import 'dart:typed_data';
 import 'package:async/async.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' as parser;
-import 'package:serverpod_relic_helpers/serverpod_relic_helpers.dart';
-import 'package:serverpod_relic_helpers/shelf_io.dart' as shelf_io;
-import 'package:serverpod_relic_helpers/src/util.dart';
+import 'package:relic/relic.dart';
+import 'package:relic/shelf_io.dart' as shelf_io;
+import 'package:relic/src/util.dart';
 import 'package:test/test.dart';
 
 import 'ssl_certs.dart';

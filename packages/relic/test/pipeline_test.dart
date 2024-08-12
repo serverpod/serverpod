@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:serverpod_relic_helpers/serverpod_relic_helpers.dart';
+import 'package:relic/relic.dart';
 import 'package:test/test.dart';
 
 import 'test_util.dart';

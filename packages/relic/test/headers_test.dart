@@ -1,4 +1,4 @@
-import 'package:serverpod_relic_helpers/src/headers.dart';
+import 'package:relic/src/headers.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -9,7 +9,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:serverpod_relic_helpers/shelf_io.dart';
+import 'package:relic/shelf_io.dart';
 import 'package:test/test.dart';
 
 import 'test_util.dart';

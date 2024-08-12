@@ -4,7 +4,7 @@
 
 import 'dart:async';
 
-import 'package:serverpod_relic_helpers/serverpod_relic_helpers.dart';
+import 'package:relic/relic.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:test/test.dart';
 
