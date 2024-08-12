@@ -20,6 +20,7 @@ dependencies:
   serverpod_test_module_server:
     path: ../serverpod_test_module/serverpod_test_module_server
   uuid: ^4.0.0
+  web: ^0.5.1
 
 
 dev_dependencies:

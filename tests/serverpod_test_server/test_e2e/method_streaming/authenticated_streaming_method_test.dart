@@ -1,16 +1,19 @@
 // Call a streaming method unauthenticated, with invalid authentication and with valid authentication.
 
 import 'dart:async';
-import 'dart:html' if (dart.library.io) 'dart:io';
+import 'dart:js_interop';
+
+import 'package:web/web.dart' if (dart.library.io) 'dart:io';
 
 import 'package:serverpod/src/authentication/scope.dart';
-import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:serverpod_test_client/serverpod_test_client.dart'
+    as test_client;
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var client = Client(
+  var client = test_client.Client(
     serverUrl,
     authenticationKeyManager: TestAuthKeyManager(),
   );
@@ -28,8 +31,9 @@ void main() {
 
     await expectLater(
       await errorCompleter.future,
-      isA<ServerpodClientException>()
-          .having((e) => e.statusCode, 'statusCode', HttpStatus.unauthorized),
+      isA<test_client.ServerpodClientException>().having(
+          (e) => e.statusCode, 'statusCode', 401 //HttpStatus.unauthorized
+          ),
     );
   });
 
@@ -70,8 +74,9 @@ void main() {
 
       await expectLater(
         await errorCompleter.future,
-        isA<ServerpodClientException>()
-            .having((e) => e.statusCode, 'statusCode', HttpStatus.forbidden),
+        isA<test_client.ServerpodClientException>().having(
+            (e) => e.statusCode, 'statusCode', 403 //HttpStatus.forbidden
+            ),
       );
     });
   });
