@@ -37,3 +37,6 @@ dependency_overrides:
     path: ../../../packages/serverpod_lints
   serverpod_shared:
     path: ../../../packages/serverpod_shared
+
+false_secrets:
+  - test/firebase/firebase_auth_mock.dart
