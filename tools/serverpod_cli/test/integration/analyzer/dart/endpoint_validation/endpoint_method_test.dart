@@ -191,6 +191,38 @@ class ExampleEndpoint extends Endpoint {
         expect(methods, isEmpty);
       });
     });
+
+    group(
+        'and the first parameter instead contains an optional `Session` parameter when analyzed',
+        () {
+      setUpAll(() async {
+        var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+        endpointFile.createSync(recursive: true);
+        endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello([Session? session, String name = "name"]) async {
+    return 'Hello \$name';
+  }
+}
+''');
+        analyzer = EndpointsAnalyzer(testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector);
+      });
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then endpoint definition is created.', () {
+        expect(endpointDefinitions, hasLength(1));
+      });
+
+      test('then no endpoint method definition is created.', () {
+        var methods = endpointDefinitions.firstOrNull?.methods;
+        expect(methods, isEmpty);
+      });
+    });
   });
 
   test(

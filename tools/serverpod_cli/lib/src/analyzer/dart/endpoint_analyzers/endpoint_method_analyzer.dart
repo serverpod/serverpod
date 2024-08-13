@@ -95,7 +95,9 @@ abstract class EndpointMethodAnalyzer {
         parameters.first.type.element?.displayName != 'Session';
     if (firstParameterIsNotSession) return true;
 
-    return parameters.first.isNamed;
+    if (parameters.first.isNamed) return true;
+
+    return parameters.first.isOptional;
   }
 
   static SourceSpanSeverityException? _validateReturnType({
