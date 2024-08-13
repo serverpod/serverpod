@@ -19,6 +19,8 @@ dev_dependencies:
   serverpod_cli: 2.1.2
 
 dependency_overrides:
+  relic:
+    path: ../../packages/relic
   serverpod:
     path: ../../packages/serverpod
   serverpod_cli:

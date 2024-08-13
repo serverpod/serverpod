@@ -28,6 +28,8 @@ dev_dependencies:
   test: ^1.24.2
 
 dependency_overrides:
+  relic:
+    path: ../../../packages/relic
   serverpod:
     path: ../../../packages/serverpod
   serverpod_serialization:
