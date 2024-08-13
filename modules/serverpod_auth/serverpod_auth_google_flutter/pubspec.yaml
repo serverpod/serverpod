@@ -16,7 +16,7 @@ dependencies:
   serverpod_auth_client: 2.0.2
   serverpod_auth_shared_flutter: 2.0.2
   google_sign_in: ^6.1.0
-  web: ^1.0.0
+  web: ^0.5.1
 
 dev_dependencies:
   serverpod_lints: 2.0.2
