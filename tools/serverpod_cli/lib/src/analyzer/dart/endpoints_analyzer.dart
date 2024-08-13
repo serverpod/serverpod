@@ -73,19 +73,21 @@ class EndpointsAnalyzer {
         .toSet();
 
     for (var (library, filePath, rootPath) in validLibraries) {
-      var validationErrors = _validateLibrary(
+      var severityExceptions = _validateLibrary(
         library,
         filePath,
         duplicateEndpointClasses,
       );
-      collector.addErrors(validationErrors.values.expand((e) => e).toList());
+      collector.addErrors(severityExceptions.values.expand((e) => e).toList());
+
+      var failingExceptions = _filterNoFailExceptions(severityExceptions);
 
       endpointDefs.addAll(_parseLibrary(
         library,
         collector,
         filePath,
         rootPath,
-        validationErrors,
+        failingExceptions,
       ));
     }
 
@@ -228,5 +230,22 @@ class EndpointsAnalyzer {
     return topElements
         .whereType<ClassElement>()
         .where(EndpointClassAnalyzer.isEndpointClass);
+  }
+
+  Map<String, List<SourceSpanSeverityException>> _filterNoFailExceptions(
+      Map<String, List<SourceSpanSeverityException>> validationErrors) {
+    var noFailSeverities = [SourceSpanSeverity.hint, SourceSpanSeverity.info];
+
+    var failingErrors = validationErrors.map((key, exceptions) {
+      var failingExceptions = exceptions
+          .where((exception) => !noFailSeverities.contains(exception.severity))
+          .toList();
+
+      return MapEntry(key, failingExceptions);
+    });
+
+    failingErrors.removeWhere((key, exceptions) => exceptions.isEmpty);
+
+    return failingErrors;
   }
 }

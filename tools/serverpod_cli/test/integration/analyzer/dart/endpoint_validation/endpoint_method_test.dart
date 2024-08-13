@@ -81,6 +81,68 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
+      'Given a valid endpoint method with a first positional nullable `Session` parameter when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session? session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+    test('then a hint message is reported.', () {
+      expect(collector.errors, hasLength(1));
+      expect(collector.errors.first.message,
+          'The "Session" argument in an endpoint method does not have to be nullable, consider removing the "?".');
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then an endpoint method definition is created.', () {
+      var methods = endpointDefinitions.firstOrNull?.methods;
+      expect(methods, hasLength(1));
+    });
+
+    group('then endpoint method definition', () {
+      test('has expected name.', () {
+        var name = endpointDefinitions.firstOrNull?.methods.firstOrNull?.name;
+        expect(name, 'hello');
+      });
+
+      test('has no documentation.', () {
+        var documentation = endpointDefinitions
+            .firstOrNull?.methods.firstOrNull?.documentationComment;
+        expect(documentation, isNull);
+      });
+
+      test('has expected return type.', () {
+        var returnType =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+        expect(returnType?.className, 'Future');
+        expect(returnType?.generics, hasLength(1));
+        expect(returnType?.generics.firstOrNull?.className, 'String');
+      });
+    });
+  });
+
+  group(
       'Given an endpoint with excluded method name (overridden method from Endpoint class)',
       () {
     var collector = CodeGenerationCollector();
