@@ -2,8 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
-/// HTTP status codes. Extracted from dart:io since it does not exist on package:web/web.dart. 
+/// HTTP status codes. Extracted from dart:io since it does not exist on package:web/web.dart.
 abstract class HttpStatus {
   /// The client should continue with its request. This interim response is used to inform the client that the initial part of the request has been received and has not yet been rejected by the server.
   static const int continue_ = 100;
