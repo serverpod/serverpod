@@ -120,7 +120,8 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given an endpoint method without a first unnamed `Session` param', () {
+  group('Given an endpoint method without a first positional `Session` param',
+      () {
     var collector = CodeGenerationCollector();
     var testDirectory =
         Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
@@ -129,7 +130,7 @@ class ExampleEndpoint extends Endpoint {
     late EndpointsAnalyzer analyzer;
 
     group(
-        'And the other parameters are not a `Session` parameter when analyzed',
+        'and the other parameters are not a `Session` parameter when analyzed',
         () {
       setUpAll(() async {
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
@@ -161,7 +162,7 @@ class ExampleEndpoint extends Endpoint {
     });
 
     group(
-        'And the first parameter instead contains a named `Session` parameter when analyzed',
+        'and the first parameter instead contains a named `Session` parameter when analyzed',
         () {
       setUpAll(() async {
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
