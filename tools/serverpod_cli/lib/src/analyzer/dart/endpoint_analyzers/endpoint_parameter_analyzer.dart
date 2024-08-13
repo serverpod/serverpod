@@ -54,7 +54,7 @@ abstract class EndpointParameterAnalyzer {
           parameters.first.type.nullabilitySuffix != NullabilitySuffix.none;
       if (sessionIsNullable) {
         exceptions.add(SourceSpanSeverityException(
-            'The "Session" argument in an endpoint method does not have to be nullable, consider removing the "?".',
+            'The "Session" argument in an endpoint method does not have to be nullable, consider making it non-nullable.',
             parameters.first.span,
             severity: SourceSpanSeverity.hint));
       }

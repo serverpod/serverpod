@@ -108,7 +108,7 @@ class ExampleEndpoint extends Endpoint {
     test('then a hint message is reported.', () {
       expect(collector.errors, hasLength(1));
       expect(collector.errors.first.message,
-          'The "Session" argument in an endpoint method does not have to be nullable, consider removing the "?".');
+          'The "Session" argument in an endpoint method does not have to be nullable, consider making it non-nullable.');
     });
 
     test('then endpoint definition is created.', () {
