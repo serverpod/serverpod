@@ -13,7 +13,7 @@ import 'headers.dart';
 import 'shelf_unmodifiable_map.dart';
 import 'util.dart';
 
-Body extractBody(Message message) => message._body;
+// Body extractBody(Message message) => message.body;
 
 /// The default set of headers for a message created with no body and no
 /// explicit headers.
@@ -58,12 +58,12 @@ abstract class Message {
   /// The streaming body of the message.
   ///
   /// This can be read via [read] or [readAsString].
-  final Body _body;
+  final Body body;
 
   /// If `true`, the stream returned by [read] won't emit any bytes.
   ///
   /// This may have false negatives, but it won't have false positives.
-  bool get isEmpty => _body.contentLength == 0;
+  bool get isEmpty => body.contentLength == 0;
 
   /// Creates a new [Message].
   ///
@@ -93,7 +93,7 @@ abstract class Message {
 
   Message._withHeadersAll(
       Body body, Headers headers, Map<String, Object>? context)
-      : _body = body,
+      : body = body,
         _headers = headers,
         context = ShelfUnmodifiableMap(context, ignoreKeyCase: false);
 
@@ -150,7 +150,7 @@ abstract class Message {
   /// Returns a [Stream] representing the body.
   ///
   /// Can only be called once.
-  Stream<List<int>> read() => _body.read();
+  Stream<List<int>> read() => body.read();
 
   /// Returns a [Future] containing the body as a String.
   ///

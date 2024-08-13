@@ -288,7 +288,7 @@ class Request extends Message {
     final headersAll = updateHeaders(this.headersAll, headers);
     final newContext = updateMap<String, Object>(this.context, context);
 
-    body ??= extractBody(this);
+    body ??= this.body;
 
     var handlerPath = this.handlerPath;
     if (path != null) handlerPath += path;
