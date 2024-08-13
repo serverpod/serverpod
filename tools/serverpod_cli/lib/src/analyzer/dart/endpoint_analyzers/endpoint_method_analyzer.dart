@@ -6,6 +6,7 @@ import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_para
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/keywords.dart';
 
 const _excludedMethodNameSet = {
   'streamOpened',
@@ -92,7 +93,7 @@ abstract class EndpointMethodAnalyzer {
     if (parameters.isEmpty) return true;
 
     bool firstParameterIsNotSession =
-        parameters.first.type.element?.displayName != 'Session';
+        parameters.first.type.element?.displayName != Keyword.sessionClassName;
     if (firstParameterIsNotSession) return true;
 
     if (parameters.first.isNamed) return true;
