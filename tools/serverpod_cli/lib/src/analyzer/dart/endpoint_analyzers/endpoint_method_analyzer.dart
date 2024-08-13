@@ -90,7 +90,12 @@ abstract class EndpointMethodAnalyzer {
 
   static bool _missingSessionParameter(List<ParameterElement> parameters) {
     if (parameters.isEmpty) return true;
-    return parameters.first.type.element?.displayName != 'Session';
+
+    bool firstParameterIsNotSession =
+        parameters.first.type.element?.displayName != 'Session';
+    if (firstParameterIsNotSession) return true;
+
+    return parameters.first.isNamed;
   }
 
   static SourceSpanSeverityException? _validateReturnType({
