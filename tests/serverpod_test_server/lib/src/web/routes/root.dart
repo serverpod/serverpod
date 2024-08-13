@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:serverpod/serverpod.dart';
 
 import '../widgets/simple_page.dart';
