@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
@@ -26,6 +27,8 @@ dev_dependencies:
   lints: '>=3.0.0 <5.0.0'
 
 dependency_overrides:
+  relic:
+    path: $pathToServerpodRoot/packages/relic
   serverpod_shared:
     path: $pathToServerpodRoot/packages/serverpod_shared
   serverpod_serialization:
@@ -48,5 +51,8 @@ dependency_overrides:
         path.join(Directory.current.path, testProjectDirectory.path),
   );
 
-  assert(result.exitCode == 0, 'Failed to run pub get.');
+  assert(
+    result.exitCode == 0,
+    'Failed to run pub get. stderr: ${result.stderr}',
+  );
 }
