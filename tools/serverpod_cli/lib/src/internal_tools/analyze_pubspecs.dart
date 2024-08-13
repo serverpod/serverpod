@@ -85,12 +85,11 @@ Future<bool> _checkLatestVersion(
         continue;
       }
 
-      var depVersion = VersionConstraint.parse(deps.first.version);
-
       if (latestPubVersion == null) {
         continue;
       }
 
+      var depVersion = VersionConstraint.parse(deps.first.version);
       var differentVersion = switch (onlyMajorUpdate) {
         true => !depVersion.allows(latestPubVersion),
         false => depVersion != latestPubVersion,
