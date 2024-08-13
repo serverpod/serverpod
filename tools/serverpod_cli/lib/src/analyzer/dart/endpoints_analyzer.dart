@@ -233,7 +233,8 @@ class EndpointsAnalyzer {
   }
 
   Map<String, List<SourceSpanSeverityException>> _filterNoFailExceptions(
-      Map<String, List<SourceSpanSeverityException>> validationErrors) {
+    Map<String, List<SourceSpanSeverityException>> validationErrors,
+  ) {
     var noFailSeverities = [SourceSpanSeverity.hint, SourceSpanSeverity.info];
 
     var failingErrors = validationErrors.map((key, exceptions) {
