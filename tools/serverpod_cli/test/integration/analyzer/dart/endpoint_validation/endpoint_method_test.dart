@@ -137,7 +137,7 @@ class ExampleEndpoint extends Endpoint {
 import 'package:serverpod/serverpod.dart';
 
 class ExampleEndpoint extends Endpoint {
-  Future<String> hello(String name) async {
+  Future<String> hello(String name, int num) async {
     return 'Hello \$name';
   }
 }
