@@ -309,7 +309,7 @@ class Response extends Message {
     final headersAll = updateHeaders(this.headersAll, headers);
     final newContext = updateMap(this.context, context);
 
-    body ??= extractBody(this);
+    body ??= this.body;
 
     return Response(
       statusCode,
