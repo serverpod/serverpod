@@ -34,6 +34,8 @@ dev_dependencies:
   serverpod_test: SERVERPOD_VERSION
 
 dependency_overrides:
+  relic:
+    path: ../../packages/relic
   serverpod:
     path: ../../packages/serverpod
   serverpod_auth_server:
