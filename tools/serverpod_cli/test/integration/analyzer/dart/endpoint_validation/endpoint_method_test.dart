@@ -120,17 +120,21 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given an endpoint method without Session param when analyzed', () {
+  group('Given an endpoint method without a first unnamed `Session` param', () {
     var collector = CodeGenerationCollector();
     var testDirectory =
         Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
-    setUpAll(() async {
-      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
-      endpointFile.createSync(recursive: true);
-      endpointFile.writeAsStringSync('''
+
+    group(
+        'And the other parameters are not a `Session` parameter when analyzed',
+        () {
+      setUpAll(() async {
+        var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+        endpointFile.createSync(recursive: true);
+        endpointFile.writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
 
 class ExampleEndpoint extends Endpoint {
@@ -139,21 +143,53 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector);
+      });
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then endpoint definition is created.', () {
+        expect(endpointDefinitions, hasLength(1));
+      });
+
+      test('then no endpoint method definition is created.', () {
+        var methods = endpointDefinitions.firstOrNull?.methods;
+        expect(methods, isEmpty);
+      });
     });
 
-    test('then no validation errors are reported.', () {
-      expect(collector.errors, isEmpty);
-    });
+    group(
+        'And the first parameter instead contains a named `Session` parameter when analyzed',
+        () {
+      setUpAll(() async {
+        var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+        endpointFile.createSync(recursive: true);
+        endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
 
-    test('then endpoint definition is created.', () {
-      expect(endpointDefinitions, hasLength(1));
-    });
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello({required Session session, required String name}) async {
+    return 'Hello \$name';
+  }
+}
+''');
+        analyzer = EndpointsAnalyzer(testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector);
+      });
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
+      });
 
-    test('then no endpoint method definition is created.', () {
-      var methods = endpointDefinitions.firstOrNull?.methods;
-      expect(methods, isEmpty);
+      test('then endpoint definition is created.', () {
+        expect(endpointDefinitions, hasLength(1));
+      });
+
+      test('then no endpoint method definition is created.', () {
+        var methods = endpointDefinitions.firstOrNull?.methods;
+        expect(methods, isEmpty);
+      });
     });
   });
 
