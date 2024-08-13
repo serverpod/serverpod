@@ -8,7 +8,7 @@
 abstract class HttpStatus {
   /// The client should continue with its request. This interim response is used to inform the client that the initial part of the request has been received and has not yet been rejected by the server.
   static const int continue_ = 100;
-  
+
   /// The server understands and is willing to comply with the client's request to switch protocols.
   static const int switchingProtocols = 101;
 
@@ -55,7 +55,7 @@ abstract class HttpStatus {
   static const int found = 302;
 
   /// Common alias for the HTTP 302 status code. The requested resource resides temporarily under a different URI.
-  static const int movedTemporarily = 302; 
+  static const int movedTemporarily = 302;
 
   /// The response to the request can be found under another URI using a GET method.
   static const int seeOther = 303;
