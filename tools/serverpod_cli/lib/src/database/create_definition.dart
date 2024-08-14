@@ -142,16 +142,17 @@ String? _getColumnDefault(
       DateTime? dateTime = DateTime.parse(defaultValue);
       return '\'${DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime)}\'::timestamp without time zone';
     case DefaultValueAllowedType.bool:
-      var defaultValue = column.defaultPersistValue;
       return defaultValue;
     case DefaultValueAllowedType.int:
-      var defaultValue = column.defaultPersistValue;
       return '$defaultValue';
     case DefaultValueAllowedType.double:
-      var defaultValue = column.defaultPersistValue;
       return '$defaultValue';
     case DefaultValueAllowedType.string:
-      var defaultValue = column.defaultPersistValue;
       return '$defaultValue::text';
+    case DefaultValueAllowedType.uuidValue:
+      if (defaultUuidValueRandom == defaultValue) {
+        return 'gen_random_uuid()';
+      }
+      return '$defaultValue::uuid';
   }
 }
