@@ -36,7 +36,7 @@ class SerializableModelAnalyzer {
     Keyword.enumType,
   };
 
-  /// Best effort attempt to extract an model definition from a yaml file.
+  /// Best effort attempt to extract a model definition from a yaml file.
   static SerializableModelDefinition? extractModelDefinition(
     ModelSource modelSource,
     List<TypeDefinition> extraClasses,

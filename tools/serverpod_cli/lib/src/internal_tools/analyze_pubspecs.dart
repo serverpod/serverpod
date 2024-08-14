@@ -8,9 +8,21 @@ import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
+class CheckLatestVersion {
+  final bool onlyMajorUpdate;
+  final bool ignoreServerpodPackages;
+
+  CheckLatestVersion({
+    required this.onlyMajorUpdate,
+    required this.ignoreServerpodPackages,
+  });
+}
+
 /// The internal tool for analyzing the pubspec.yaml files in the Serverpod
 /// repo.
-Future<bool> pubspecDependenciesMatch(bool checkLatestVersion) async {
+Future<bool> pubspecDependenciesMatch({
+  required CheckLatestVersion? checkLatestVersion,
+}) async {
   var directory = Directory.current;
   if (!isServerpodRootDirectory(directory)) {
     log.error('Must be run from the serverpod repository root');
@@ -38,21 +50,28 @@ Future<bool> pubspecDependenciesMatch(bool checkLatestVersion) async {
 
   log.info('Dependencies match.');
 
-  if (checkLatestVersion) {
-    await _checkLatestVersion(dependencies);
+  if (checkLatestVersion != null) {
+    return await _checkLatestVersion(
+      dependencies,
+      onlyMajorUpdate: checkLatestVersion.onlyMajorUpdate,
+      ignoreServerpodPackages: checkLatestVersion.ignoreServerpodPackages,
+    );
   }
 
   return true;
 }
 
-Future<void> _checkLatestVersion(
-    Map<String, List<_ServerpodDependency>> dependencies) async {
+Future<bool> _checkLatestVersion(
+  Map<String, List<_ServerpodDependency>> dependencies, {
+  required bool onlyMajorUpdate,
+  required bool ignoreServerpodPackages,
+}) async {
+  bool latestVersionMatch = true;
   log.info('Checking latest pub versions.');
   try {
     var pub = PubApiClient();
     for (var depName in dependencies.keys) {
       var deps = dependencies[depName]!;
-      var depVersion = deps.first.version;
       Version? latestPubVersion;
       try {
         latestPubVersion = await pub.tryFetchLatestStableVersion(depName);
@@ -62,8 +81,25 @@ Future<void> _checkLatestVersion(
         log.error(e.message);
       }
 
-      if (latestPubVersion != null &&
-          depVersion != '^${latestPubVersion.toString()}') {
+      // Crude way to ignore serverpod packages when checking for latest version.
+      // This might cause unintentionally exclusion of external packages.
+      // TODO: Improve this, tracking issue: https://github.com/serverpod/serverpod/issues/2603
+      if (ignoreServerpodPackages && depName.startsWith('serverpod')) {
+        continue;
+      }
+
+      if (latestPubVersion == null) {
+        continue;
+      }
+
+      var depVersion = VersionConstraint.parse(deps.first.version);
+      var differentVersion = switch (onlyMajorUpdate) {
+        true => !depVersion.allows(latestPubVersion),
+        false => depVersion != latestPubVersion,
+      };
+
+      if (differentVersion) {
+        latestVersionMatch = false;
         log.info(depName);
         log.info('local: $depVersion');
         log.info('pub:   ^$latestPubVersion');
@@ -81,6 +117,8 @@ Future<void> _checkLatestVersion(
     log.error('Version check failed.');
     log.error(e.toString());
   }
+
+  return latestVersionMatch;
 }
 
 void _printMismatchedDependencies(Set<String> mismatchedDeps,
