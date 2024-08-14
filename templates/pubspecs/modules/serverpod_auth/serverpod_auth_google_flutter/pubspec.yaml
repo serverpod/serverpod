@@ -15,7 +15,8 @@ dependencies:
   serverpod_auth_client: SERVERPOD_VERSION
   serverpod_auth_shared_flutter: SERVERPOD_VERSION
   google_sign_in: ^6.1.0
-  web: ^0.3.0
+  web: '>=0.3.0 <2.0.0'
+
 dev_dependencies:
   serverpod_lints: SERVERPOD_VERSION
   flutter_test:
