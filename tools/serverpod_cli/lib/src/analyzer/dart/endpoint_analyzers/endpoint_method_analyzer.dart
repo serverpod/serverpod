@@ -30,6 +30,7 @@ abstract class EndpointMethodAnalyzer {
       return MethodStreamDefinition(
         name: method.name,
         documentationComment: method.documentationComment,
+        annotations: _parseAnnotations(dartElement: method),
         // TODO: Move removal of session parameter to Parameter analyzer
         parameters: parameters.required.sublist(1), // Skip session parameter,
         parametersNamed: parameters.named,
@@ -41,6 +42,7 @@ abstract class EndpointMethodAnalyzer {
     return MethodCallDefinition(
       name: method.name,
       documentationComment: method.documentationComment,
+      annotations: _parseAnnotations(dartElement: method),
       // TODO: Move removal of session parameter to Parameter analyzer
       parameters: parameters.required.sublist(1), // Skip session parameter,
       parametersNamed: parameters.named,
@@ -152,6 +154,41 @@ abstract class EndpointMethodAnalyzer {
     }
 
     return null;
+  }
+
+  static List<String> _parseAnnotations({
+    required Element dartElement,
+  }) {
+    final annotations = dartElement.metadata;
+    final includedAnnotations = <String>[];
+    for (final annotation in annotations) {
+      var annotationName;
+      if (annotation.element is ConstructorElement) {
+        final constructorElement = annotation.element as ConstructorElement;
+        annotationName = constructorElement.enclosingElement.name;
+      }
+      else {
+        annotationName = annotation.element?.name;
+      }
+        switch (annotationName) {
+          case 'Deprecated':
+            final message = annotation
+                .computeConstantValue()
+                ?.getField('message')
+                ?.toStringValue();
+            if (message != null) {
+              includedAnnotations.add(
+                  "@${annotationName}('${message}')");
+            }
+            break;
+          case 'deprecated':
+            // @deprecated is a shorthand for @Deprecated(..)
+            // see https://api.flutter.dev/flutter/dart-core/deprecated-constant.html
+            includedAnnotations.add("@${annotationName}");
+            break;
+        }
+    }
+    return includedAnnotations;
   }
 }
 

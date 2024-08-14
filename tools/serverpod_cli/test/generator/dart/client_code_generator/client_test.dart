@@ -133,4 +133,44 @@ void main() {
               'caller.callStreamingServerEndpoint<Future<String>, String'));
     });
   });
+
+  group(
+      'Given a protocol definition with a method with Deprecated annotation when generating client file',
+      () {
+    var endpointName = 'testing';
+    var methodName = 'deprecatedMethod';
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [
+        EndpointDefinitionBuilder()
+            .withClassName('${endpointName.pascalCase}Endpoint')
+            .withName(endpointName)
+            .withMethods([
+          MethodDefinitionBuilder()
+              .withName(methodName)
+              .withAnnotations(["@Deprecated('This method is deprecated.')"])
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ],
+      models: [],
+    );
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test('then client file is created.', () {
+      expect(codeMap, contains(expectedFileName));
+    });
+    var endpointsFile = codeMap[expectedFileName];
+
+    test('then client file contains Deprecated annotation for method.', () {
+      expect(
+        endpointsFile,
+        contains(
+          "@Deprecated('This method is deprecated.')",
+        ),
+      );
+    });
+  });
 }

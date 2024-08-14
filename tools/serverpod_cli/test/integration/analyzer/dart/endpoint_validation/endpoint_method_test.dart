@@ -783,6 +783,89 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
+  group('Given a valid endpoint method with @Deprecated() annotation', () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+const deprecatedMessage = 'is deprecated';
+
+class ExampleEndpoint extends Endpoint {
+  @Deprecated('This method \${deprecatedMessage}.')
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then endpoint definition method has expected annotations.', () {
+      final annotations = endpointDefinitions
+          .firstOrNull?.methods.firstOrNull?.annotations;
+      expect(annotations, ["@Deprecated('This method is deprecated.')"]);
+    });
+  });
+
+
+  group('Given a valid endpoint method with @deprecated annotation', () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+const deprecatedMessage = 'is deprecated';
+
+class ExampleEndpoint extends Endpoint {
+  @deprecated
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then endpoint definition method has expected annotations.', () {
+      final annotations = endpointDefinitions
+          .firstOrNull?.methods.firstOrNull?.annotations;
+      expect(annotations, ["@deprecated"]);
+    });
+  });
+
   group('Given an endpoint method with a void return type', () {
     var collector = CodeGenerationCollector();
     var testDirectory =

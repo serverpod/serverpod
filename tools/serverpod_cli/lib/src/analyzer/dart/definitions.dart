@@ -42,6 +42,9 @@ abstract base class MethodDefinition {
   /// The documentation of this method.
   final String? documentationComment;
 
+  /// The annotations of this method.
+  final List<String>? annotations;
+
   /// The returned type of this method.
   /// This should always be a future.
   final TypeDefinition returnType;
@@ -58,6 +61,7 @@ abstract base class MethodDefinition {
   const MethodDefinition({
     required this.name,
     required this.documentationComment,
+    required this.annotations,
     required this.returnType,
     required this.parameters,
     required this.parametersPositional,
@@ -71,6 +75,7 @@ final class MethodCallDefinition extends MethodDefinition {
   const MethodCallDefinition({
     required super.name,
     required super.documentationComment,
+    required super.annotations,
     required super.parameters,
     required super.parametersPositional,
     required super.parametersNamed,
@@ -83,6 +88,7 @@ final class MethodStreamDefinition extends MethodDefinition {
   MethodStreamDefinition({
     required super.name,
     required super.documentationComment,
+    required super.annotations,
     required super.returnType,
     required super.parameters,
     required super.parametersPositional,
