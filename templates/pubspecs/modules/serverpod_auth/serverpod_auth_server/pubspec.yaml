@@ -19,7 +19,7 @@ dependencies:
   googleapis: ^11.0.0
   googleapis_auth: ^1.6.0
   http: '>=1.0.0 <2.0.0'
-  image: ^4.0.15
+  image: ^4.2.0
   jose: ^0.3.3
   pointycastle: ^3.7.4
 
