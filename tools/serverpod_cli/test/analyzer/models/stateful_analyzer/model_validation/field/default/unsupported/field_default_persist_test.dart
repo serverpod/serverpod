@@ -65,34 +65,6 @@ void main() {
     );
 
     test(
-      'when the field is of an unsupported type UuidValue with a defaultPersist value, then an error is generated',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-          class: Example
-          table: example
-          fields:
-            uuidValueType: UuidValue?, defaultPersist=test
-          ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors, isNotEmpty);
-
-        var error = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          error.message,
-          'The "defaultPersist" key is not supported for "UuidValue" types',
-        );
-      },
-    );
-
-    test(
       'when the field is of an unsupported type Map with a defaultPersist value, then an error is generated',
       () {
         var models = [
