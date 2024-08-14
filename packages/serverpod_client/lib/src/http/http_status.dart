@@ -1,6 +1,8 @@
-// Copyright (c) 2012, the Dart project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
+// Copied from the Dart SDK.
+// https://github.com/dart-lang/sdk/blob/1c9356d8990a2a8c90c66097e20cb2f22e5cc267/sdk/lib/internal/internal.dart#L211
+
+// Copyright (c) 2012, the Dart project authors.
+// Licensed under BSD-3-Clause.
 
 /// HTTP status codes. Extracted from dart:io since it does not exist on package:web/web.dart.
 abstract class HttpStatus {
