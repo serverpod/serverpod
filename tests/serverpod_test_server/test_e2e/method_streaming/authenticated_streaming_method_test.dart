@@ -1,7 +1,6 @@
 // Call a streaming method unauthenticated, with invalid authentication and with valid authentication.
 
 import 'dart:async';
-import 'dart:html' if (dart.library.io) 'dart:io';
 
 import 'package:serverpod/src/authentication/scope.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';

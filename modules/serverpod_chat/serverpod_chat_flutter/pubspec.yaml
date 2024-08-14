@@ -22,6 +22,7 @@ dependencies:
   serverpod_auth_client: 2.0.2
   serverpod_chat_client: 2.0.2
   serverpod_auth_shared_flutter: 2.0.2
+  web: '>=0.3.0 <2.0.0'
 
 dev_dependencies:
   flutter_test:
