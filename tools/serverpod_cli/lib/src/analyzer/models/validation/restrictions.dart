@@ -164,6 +164,21 @@ class Restrictions {
       ];
     }
 
+    var duplicateExtraClass =
+        config.extraClasses.cast<TypeDefinition?>().firstWhere(
+              (extraClass) => extraClass?.className == className,
+              orElse: () => null,
+            );
+
+    if (duplicateExtraClass != null) {
+      return [
+        SourceSpanSeverityException(
+          'The $documentType name "$className" is already used by a custom class (${duplicateExtraClass.url}).',
+          span,
+        )
+      ];
+    }
+
     var classesByName = parsedModels.classNames[className]?.where(
         (model) => model.moduleAlias == documentDefinition?.moduleAlias);
 
