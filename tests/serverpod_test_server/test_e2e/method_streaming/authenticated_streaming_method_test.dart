@@ -3,14 +3,13 @@
 import 'dart:async';
 
 import 'package:serverpod/src/authentication/scope.dart';
-import 'package:serverpod_test_client/serverpod_test_client.dart'
-    as test_client;
+import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var client = test_client.Client(
+  var client = Client(
     serverUrl,
     authenticationKeyManager: TestAuthKeyManager(),
   );
@@ -28,8 +27,8 @@ void main() {
 
     await expectLater(
       await errorCompleter.future,
-      isA<test_client.ServerpodClientException>().having((e) => e.statusCode,
-          'statusCode', test_client.HttpStatus.unauthorized),
+      isA<ServerpodClientException>()
+          .having((e) => e.statusCode, 'statusCode', HttpStatus.unauthorized),
     );
   });
 
@@ -70,8 +69,8 @@ void main() {
 
       await expectLater(
         await errorCompleter.future,
-        isA<test_client.ServerpodClientException>().having((e) => e.statusCode,
-            'statusCode', test_client.HttpStatus.forbidden),
+        isA<ServerpodClientException>()
+            .having((e) => e.statusCode, 'statusCode', HttpStatus.forbidden),
       );
     });
   });
