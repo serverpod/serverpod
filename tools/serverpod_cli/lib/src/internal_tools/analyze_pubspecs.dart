@@ -81,6 +81,9 @@ Future<bool> _checkLatestVersion(
         log.error(e.message);
       }
 
+      // Crude way to ignore serverpod packages when checking for latest version.
+      // This might cause unintentionally exclusion of external packages.
+      // TODO: Improve this, tracking issue: https://github.com/serverpod/serverpod/issues/2603
       if (ignoreServerpodPackages && depName.startsWith('serverpod')) {
         continue;
       }
