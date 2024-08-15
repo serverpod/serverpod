@@ -234,7 +234,7 @@ class DefaultValueRestriction extends ValueRestriction {
     }
 
     String invalidValueError =
-        'The "$key" value must be a valid UUID string or "random" (e.g., "$key"=random or "$key"="550e8400-e29b-41d4-a716-446655440000").';
+        'The "$key" value must be a "random" or valid UUID string (e.g., "$key"=random or "$key"="550e8400-e29b-41d4-a716-446655440000").';
 
     if (value is! String || value.isEmpty) {
       errors.add(

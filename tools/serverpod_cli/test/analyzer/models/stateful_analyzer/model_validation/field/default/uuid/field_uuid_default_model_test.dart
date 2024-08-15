@@ -11,7 +11,7 @@ void main() {
 
   group('Given a class with fields with a "defaultModel" keyword', () {
     test(
-      'when the field is of type UUID and the defaultModel is set to "random", then the field should have a "default model" value',
+      'when the field is of type UUID and the defaultModel is set to "random", then the field\'s default model value is "random".',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -37,7 +37,7 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID and the defaultModel is set to a valid UUID string with single quotes, then the field should have a "default model" value',
+      'when the field is of type UUID and the defaultModel is set to a valid UUID string with single quotes, then the field\'s default model value is the provided UUID string.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -67,7 +67,7 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID and the defaultModel is set to a valid UUID string with double quotes, then the field should have a "default model" value',
+      'when the field is of type UUID and the defaultModel is set to a valid UUID string with double quotes, then the field\'s default model value is the provided UUID string.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -97,7 +97,7 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID and the defaultModel is empty, then an error is generated',
+      'when the field is of type UUID and the defaultModel is empty, then an error is generated.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -119,13 +119,13 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a valid UUID string or "random" (e.g., "defaultModel"=random or "defaultModel"="550e8400-e29b-41d4-a716-446655440000").',
+          'The "defaultModel" value must be a "random" or valid UUID string (e.g., "defaultModel"=random or "defaultModel"="550e8400-e29b-41d4-a716-446655440000").',
         );
       },
     );
 
     test(
-      'when the field is of type UUID with an invalid defaultModel value, then an error is generated',
+      'when the field is of type UUID with an invalid defaultModel value, then an error is generated.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -147,13 +147,13 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a valid UUID string or "random" (e.g., "defaultModel"=random or "defaultModel"="550e8400-e29b-41d4-a716-446655440000").',
+          'The "defaultModel" value must be a "random" or valid UUID string (e.g., "defaultModel"=random or "defaultModel"="550e8400-e29b-41d4-a716-446655440000").',
         );
       },
     );
 
     test(
-      'when the field is of type UUID with a malformed UUID in single quotes, then an error is generated',
+      'when the field is of type UUID with a malformed UUID in single quotes, then an error is generated.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -181,7 +181,7 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID with a malformed UUID in double quotes, then an error is generated',
+      'when the field is of type UUID with a malformed UUID in double quotes, then an error is generated.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -209,7 +209,7 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID with non-UUID defaultModel value, then an error is generated',
+      'when the field is of type UUID with non-UUID defaultModel value, then an error is generated.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -231,13 +231,13 @@ void main() {
         var error = collector.errors.first as SourceSpanSeverityException;
         expect(
           error.message,
-          'The "defaultModel" value must be a valid UUID string or "random" (e.g., "defaultModel"=random or "defaultModel"="550e8400-e29b-41d4-a716-446655440000").',
+          'The "defaultModel" value must be a "random" or valid UUID string (e.g., "defaultModel"=random or "defaultModel"="550e8400-e29b-41d4-a716-446655440000").',
         );
       },
     );
 
     test(
-      'when the field is of type UUID with an invalid character in the defaultModel value, then an error is generated',
+      'when the field is of type UUID with an invalid character in the defaultModel value, then an error is generated.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
