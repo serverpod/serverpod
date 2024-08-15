@@ -661,7 +661,7 @@ class LibraryGenerator {
     return methodDef.annotations.map((annotation) {
       var args = annotation.arguments;
       return refer(args != null
-          ? '${annotation.name}(${args.map((a) => "'$a'").join(',')})'
+          ? '${annotation.name}(${args.join(',')})'
           : annotation.name);
     });
   }

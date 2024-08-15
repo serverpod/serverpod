@@ -156,6 +156,13 @@ abstract class EndpointMethodAnalyzer {
     return null;
   }
 
+  static List<String>? _parseAnnotationArgument(
+      ElementAnnotation annotation, String fieldName) {
+    var argument =
+        annotation.computeConstantValue()?.getField(fieldName)?.toStringValue();
+    return argument != null ? ["'$argument'"] : null;
+  }
+
   static List<AnnotationDefinition> _parseAnnotations({
     required Element dartElement,
   }) {
@@ -169,12 +176,7 @@ abstract class EndpointMethodAnalyzer {
         'Deprecated' => [
             AnnotationDefinition(
               name: annotationName,
-              arguments: [
-                annotation
-                    .computeConstantValue()
-                    ?.getField('message')
-                    ?.toStringValue(),
-              ].whereType<String>().toList(),
+              arguments: _parseAnnotationArgument(annotation, 'message'),
             )
           ],
         'deprecated' =>

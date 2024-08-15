@@ -121,6 +121,7 @@ class AnnotationDefinition {
 
   /// The arguments of the annotation.
   /// Null means no arguments and no parenthesis; empty list means no arguments but with parenthesis.
+  /// Arguments must be valid Dart literals.
   final List<String>? arguments;
 
   const AnnotationDefinition({required this.name, this.arguments});

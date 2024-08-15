@@ -822,7 +822,7 @@ class ExampleEndpoint extends Endpoint {
           endpointDefinitions.firstOrNull?.methods.firstOrNull?.annotations;
       expect(annotations?.length, 1);
       expect(annotations![0].name, 'Deprecated');
-      expect(annotations[0].arguments, ['This method is deprecated.']);
+      expect(annotations[0].arguments, ["'This method is deprecated.'"]);
     });
   });
 
@@ -867,7 +867,7 @@ class ExampleEndpoint extends Endpoint {
           endpointDefinitions.firstOrNull?.methods.firstOrNull?.annotations;
       expect(annotations?.length, 1);
       expect(annotations![0].name, 'Deprecated');
-      expect(annotations[0].arguments, ['This method is deprecated.']);
+      expect(annotations[0].arguments, ["'This method is deprecated.'"]);
     });
   });
 
