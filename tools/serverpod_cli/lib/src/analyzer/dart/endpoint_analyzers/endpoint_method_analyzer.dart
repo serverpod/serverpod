@@ -160,13 +160,15 @@ abstract class EndpointMethodAnalyzer {
     required Element dartElement,
   }) {
     return dartElement.metadata.expand<AnnotationDefinition>((annotation) {
-      var annotationName = annotation.element is ConstructorElement
-          ? (annotation.element as ConstructorElement).enclosingElement.name
-          : annotation.element?.name;
+      var annotationElement = annotation.element;
+      var annotationName = annotationElement is ConstructorElement
+          ? annotationElement.enclosingElement.name
+          : annotationElement?.name;
+      if (annotationName == null) return [];
       return switch (annotationName) {
         'Deprecated' => [
             AnnotationDefinition(
-              name: annotationName!,
+              name: annotationName,
               arguments: [
                 annotation
                     .computeConstantValue()
@@ -178,7 +180,7 @@ abstract class EndpointMethodAnalyzer {
         'deprecated' =>
           // @deprecated is a shorthand for @Deprecated(..)
           // see https://api.flutter.dev/flutter/dart-core/deprecated-constant.html
-          [AnnotationDefinition(name: annotationName!)],
+          [AnnotationDefinition(name: annotationName)],
         _ => [],
       };
     }).toList();

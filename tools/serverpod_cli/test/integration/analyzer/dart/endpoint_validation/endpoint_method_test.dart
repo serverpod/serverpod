@@ -783,7 +783,52 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given a valid endpoint method with @Deprecated() annotation', () {
+  group(
+      'Given a valid endpoint method with @Deprecated(<string literal>) annotation',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  @Deprecated('This method is deprecated.')
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then endpoint definition method has expected annotations.', () {
+      var annotations =
+          endpointDefinitions.firstOrNull?.methods.firstOrNull?.annotations;
+      expect(annotations?.length, 1);
+      expect(annotations![0].name, 'Deprecated');
+      expect(annotations[0].arguments, ['This method is deprecated.']);
+    });
+  });
+
+  group(
+      'Given a valid endpoint method with @Deprecated(<string const expr>) annotation',
+      () {
     var collector = CodeGenerationCollector();
     var testDirectory =
         Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
@@ -838,8 +883,6 @@ class ExampleEndpoint extends Endpoint {
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
-
-const deprecatedMessage = 'is deprecated';
 
 class ExampleEndpoint extends Endpoint {
   @deprecated

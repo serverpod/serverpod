@@ -123,8 +123,5 @@ class AnnotationDefinition {
   /// Null means no arguments and no parenthesis; empty list means no arguments but with parenthesis.
   final List<String>? arguments;
 
-  const AnnotationDefinition({
-    required this.name,
-    this.arguments,
-  });
+  const AnnotationDefinition({required this.name, this.arguments});
 }
