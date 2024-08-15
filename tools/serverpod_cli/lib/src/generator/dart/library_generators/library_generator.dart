@@ -658,10 +658,11 @@ class LibraryGenerator {
 
   Iterable<Expression> _buildEndpointCallAnnotations(
       MethodDefinition methodDef) {
-    return methodDef.annotations.map((annotation) => refer(
-        annotation.arguments != null
-            ? '${annotation.name}(${annotation.arguments!.map((a) => "'$a'").join(',')})'
-            : annotation.name));
+    return methodDef.annotations.map((annotation) => refer(annotation
+                .arguments !=
+            null
+        ? '${annotation.name}(${annotation.arguments!.map((a) => "'$a'").join(',')})'
+        : annotation.name));
   }
 
   Code _buildCallServerEndpoint(

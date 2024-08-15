@@ -118,8 +118,9 @@ class ParameterDefinition {
 /// Describes an annotation.
 class AnnotationDefinition {
   final String name;
+
   /// The arguments of the annotation.
-  /// Null means no arguments and no parenthesis; empty list means no arguments but with parenthesis. 
+  /// Null means no arguments and no parenthesis; empty list means no arguments but with parenthesis.
   final List<String>? arguments;
 
   const AnnotationDefinition({

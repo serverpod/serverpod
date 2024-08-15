@@ -145,10 +145,10 @@ void main() {
             .withClassName('${endpointName.pascalCase}Endpoint')
             .withName(endpointName)
             .withMethods([
-          MethodDefinitionBuilder()
-              .withName(methodName)
-              .withAnnotations([const AnnotationDefinition(name: 'Deprecated', arguments: ['This method is deprecated.'])])
-              .buildMethodCallDefinition(),
+          MethodDefinitionBuilder().withName(methodName).withAnnotations([
+            const AnnotationDefinition(
+                name: 'Deprecated', arguments: ['This method is deprecated.'])
+          ]).buildMethodCallDefinition(),
         ]).build(),
       ],
       models: [],
@@ -185,10 +185,9 @@ void main() {
             .withClassName('${endpointName.pascalCase}Endpoint')
             .withName(endpointName)
             .withMethods([
-          MethodDefinitionBuilder()
-              .withName(methodName)
-              .withAnnotations([const AnnotationDefinition(name: 'deprecated')])
-              .buildMethodCallDefinition(),
+          MethodDefinitionBuilder().withName(methodName).withAnnotations([
+            const AnnotationDefinition(name: 'deprecated')
+          ]).buildMethodCallDefinition(),
         ]).build(),
       ],
       models: [],

@@ -818,14 +818,13 @@ class ExampleEndpoint extends Endpoint {
     });
 
     test('then endpoint definition method has expected annotations.', () {
-      var annotations = endpointDefinitions
-          .firstOrNull?.methods.firstOrNull?.annotations;
+      var annotations =
+          endpointDefinitions.firstOrNull?.methods.firstOrNull?.annotations;
       expect(annotations?.length, 1);
       expect(annotations![0].name, 'Deprecated');
       expect(annotations[0].arguments, ['This method is deprecated.']);
     });
   });
-
 
   group('Given a valid endpoint method with @deprecated annotation', () {
     var collector = CodeGenerationCollector();
@@ -862,8 +861,8 @@ class ExampleEndpoint extends Endpoint {
     });
 
     test('then endpoint definition method has expected annotations.', () {
-      var annotations = endpointDefinitions
-          .firstOrNull?.methods.firstOrNull?.annotations;
+      var annotations =
+          endpointDefinitions.firstOrNull?.methods.firstOrNull?.annotations;
       expect(annotations?.length, 1);
       expect(annotations![0].name, 'deprecated');
       expect(annotations[0].arguments, null);
