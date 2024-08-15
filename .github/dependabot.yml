@@ -1,0 +1,18 @@
+version: 2
+updates:
+  # Pub dependencies
+  - package-ecosystem: "pub"
+    directories:
+      - packages/**/*
+      - modules/**/*
+      - integrations/**/*
+      - templates/serverpod_templates
+      - tools/serverpod_cli
+    schedule:
+      interval: "daily"
+    versioning-strategy: "widen"
+    # Since we are using a monorepo, we want to update the same package
+    # in all directories at the same time.
+    # Currently dependabot does not support this, so we limit the number of
+    # open pull requests to 1 to avoid conflicts.
+    open-pull-requests-limit: 1
