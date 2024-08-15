@@ -1,0 +1,19 @@
+version: 2
+updates:
+  # Pub dependencies
+  - package-ecosystem: "pub"
+    directories:
+      - packages/**/*
+      - modules/**/*
+      - integrations/**/*
+      - templates/serverpod_templates
+      - tools/serverpod_cli
+    schedule:
+      interval: "daily"
+    versioning-strategy: "widen"
+    open-pull-requests-limit: 5
+    groups:
+      # Group all dependency updates together into a single PR.
+      dependency-updates:
+        patterns:
+          - "*"
