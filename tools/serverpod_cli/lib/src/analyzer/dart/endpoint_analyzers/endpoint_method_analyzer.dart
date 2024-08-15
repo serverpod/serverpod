@@ -156,39 +156,32 @@ abstract class EndpointMethodAnalyzer {
     return null;
   }
 
-  static List<String> _parseAnnotations({
+  static List<AnnotationDefinition> _parseAnnotations({
     required Element dartElement,
   }) {
-    final annotations = dartElement.metadata;
-    final includedAnnotations = <String>[];
-    for (final annotation in annotations) {
-      var annotationName;
-      if (annotation.element is ConstructorElement) {
-        final constructorElement = annotation.element as ConstructorElement;
-        annotationName = constructorElement.enclosingElement.name;
-      }
-      else {
-        annotationName = annotation.element?.name;
-      }
-        switch (annotationName) {
-          case 'Deprecated':
-            final message = annotation
-                .computeConstantValue()
-                ?.getField('message')
-                ?.toStringValue();
-            if (message != null) {
-              includedAnnotations.add(
-                  "@${annotationName}('${message}')");
-            }
-            break;
-          case 'deprecated':
-            // @deprecated is a shorthand for @Deprecated(..)
-            // see https://api.flutter.dev/flutter/dart-core/deprecated-constant.html
-            includedAnnotations.add("@${annotationName}");
-            break;
-        }
-    }
-    return includedAnnotations;
+    return dartElement.metadata.expand<AnnotationDefinition>((annotation) {
+      var annotationName = annotation.element is ConstructorElement
+          ? (annotation.element as ConstructorElement).enclosingElement.name
+          : annotation.element?.name;
+      return switch (annotationName) {
+        'Deprecated' => [
+            AnnotationDefinition(
+              name: annotationName!,
+              arguments: [
+                annotation
+                    .computeConstantValue()
+                    ?.getField('message')
+                    ?.toStringValue(),
+              ].whereType<String>().toList(),
+            )
+          ],
+        'deprecated' =>
+          // @deprecated is a shorthand for @Deprecated(..)
+          // see https://api.flutter.dev/flutter/dart-core/deprecated-constant.html
+          [AnnotationDefinition(name: annotationName!)],
+        _ => [],
+      };
+    }).toList();
   }
 }
 

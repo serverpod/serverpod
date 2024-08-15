@@ -43,7 +43,7 @@ abstract base class MethodDefinition {
   final String? documentationComment;
 
   /// The annotations of this method.
-  final List<String>? annotations;
+  final List<AnnotationDefinition> annotations;
 
   /// The returned type of this method.
   /// This should always be a future.
@@ -112,5 +112,18 @@ class ParameterDefinition {
     required this.name,
     required this.type,
     required this.required,
+  });
+}
+
+/// Describes an annotation.
+class AnnotationDefinition {
+  final String name;
+  /// The arguments of the annotation.
+  /// Null means no arguments and no parenthesis; empty list means no arguments but with parenthesis. 
+  final List<String>? arguments;
+
+  const AnnotationDefinition({
+    required this.name,
+    this.arguments,
   });
 }

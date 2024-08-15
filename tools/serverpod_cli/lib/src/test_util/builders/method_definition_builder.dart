@@ -5,7 +5,7 @@ import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dar
 class MethodDefinitionBuilder {
   String _name = 'example';
   String? _documentationComment;
-  List<String>? _annotations;
+  List<AnnotationDefinition> _annotations = [];
   TypeDefinition _returnType =
       TypeDefinitionBuilder().withFutureOf('String').build();
   List<ParameterDefinition> _parameters = [];
@@ -24,7 +24,7 @@ class MethodDefinitionBuilder {
   }
 
   MethodDefinitionBuilder withAnnotations(
-      List<String>? annotations) {
+      List<AnnotationDefinition> annotations) {
     _annotations = annotations;
     return this;
   }

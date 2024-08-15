@@ -656,11 +656,12 @@ class LibraryGenerator {
     return '$experimentalWarning\n///\n$documentationComment';
   }
 
-  Iterable<Expression> _buildEndpointCallAnnotations(MethodDefinition methodDef) {
-    // skips the first character of the annotation string which is a '@'
-    return methodDef.annotations
-            ?.map((annotation) => refer(annotation.substring(1))) ??
-        [];
+  Iterable<Expression> _buildEndpointCallAnnotations(
+      MethodDefinition methodDef) {
+    return methodDef.annotations.map((annotation) => refer(
+        annotation.arguments != null
+            ? '${annotation.name}(${annotation.arguments!.map((a) => "'$a'").join(',')})'
+            : annotation.name));
   }
 
   Code _buildCallServerEndpoint(
