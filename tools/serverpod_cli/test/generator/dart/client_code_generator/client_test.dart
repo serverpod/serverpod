@@ -135,7 +135,7 @@ void main() {
   });
 
   group(
-      'Given a protocol definition with a method with Deprecated(..) annotation when generating client file',
+      'Given a protocol definition with a method with "@Deprecated(..)" annotation when generating client file',
       () {
     var endpointName = 'testing';
     var methodName = 'deprecatedMethod';
@@ -175,7 +175,7 @@ void main() {
   });
 
   group(
-      'Given a protocol definition with a method with deprecated annotation when generating client file',
+      'Given a protocol definition with a method with "@deprecated" annotation when generating client file',
       () {
     var endpointName = 'testing';
     var methodName = 'deprecatedMethod';

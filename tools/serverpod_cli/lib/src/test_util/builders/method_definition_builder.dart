@@ -18,13 +18,15 @@ class MethodDefinitionBuilder {
   }
 
   MethodDefinitionBuilder withDocumentationComment(
-      String? documentationComment) {
+    String? documentationComment,
+  ) {
     _documentationComment = documentationComment;
     return this;
   }
 
   MethodDefinitionBuilder withAnnotations(
-      List<AnnotationDefinition> annotations) {
+    List<AnnotationDefinition> annotations,
+  ) {
     _annotations = annotations;
     return this;
   }
@@ -40,13 +42,15 @@ class MethodDefinitionBuilder {
   }
 
   MethodDefinitionBuilder withParametersPositional(
-      List<ParameterDefinition> parametersPositional) {
+    List<ParameterDefinition> parametersPositional,
+  ) {
     _parametersPositional = parametersPositional;
     return this;
   }
 
   MethodDefinitionBuilder withParametersNamed(
-      List<ParameterDefinition> parametersNamed) {
+    List<ParameterDefinition> parametersNamed,
+  ) {
     _parametersNamed = parametersNamed;
     return this;
   }

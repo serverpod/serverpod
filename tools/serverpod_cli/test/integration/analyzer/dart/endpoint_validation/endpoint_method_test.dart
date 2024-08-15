@@ -784,7 +784,7 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-      'Given a valid endpoint method with @Deprecated(<string literal>) annotation',
+      'Given a valid endpoint method with "@Deprecated(<string literal>)" annotation',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =
@@ -827,7 +827,7 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-      'Given a valid endpoint method with @Deprecated(<string const expr>) annotation',
+      'Given a valid endpoint method with "@Deprecated(<string const expr>)" annotation',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =
@@ -871,7 +871,7 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given a valid endpoint method with @deprecated annotation', () {
+  group('Given a valid endpoint method with "@deprecated" annotation', () {
     var collector = CodeGenerationCollector();
     var testDirectory =
         Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
