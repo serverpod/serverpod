@@ -286,12 +286,10 @@ class DefaultValueRestriction extends ValueRestriction {
 
     /// Extract the actual UUID string by removing quotes
     String uuidString = value.substring(1, value.length - 1);
-
-    bool isValidUuid = RegExp(
-      r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
-    ).hasMatch(uuidString);
-
-    if (!isValidUuid) {
+    UuidValue uuidValue = UuidValue.fromString(uuidString);
+    try {
+      uuidValue.validate();
+    } catch (_) {
       errors.add(
         SourceSpanSeverityException(
           'The "$key" value must be a valid UUID (e.g., \'550e8400-e29b-41d4-a716-446655440000\').',
