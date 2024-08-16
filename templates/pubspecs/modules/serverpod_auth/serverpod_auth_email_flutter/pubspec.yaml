@@ -12,7 +12,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  email_validator: ^2.1.17
+  email_validator: '>=2.1.17 <4.0.0'
   serverpod_auth_client: SERVERPOD_VERSION
   serverpod_auth_shared_flutter: SERVERPOD_VERSION
 

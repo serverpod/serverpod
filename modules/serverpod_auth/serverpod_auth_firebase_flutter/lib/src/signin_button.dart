@@ -70,7 +70,7 @@ class SignInWithFirebaseButton extends StatelessWidget {
         });
       },
       label: label ?? const Text('Sign in with Firebase'),
-      icon: icon ?? const Icon(MdiIcons.firebase),
+      icon: icon ?? Icon(MdiIcons.firebase),
     );
   }
 }
