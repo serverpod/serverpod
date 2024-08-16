@@ -15,6 +15,14 @@ void main() async {
       );
 
       test(
+        'when an object of the class is created, then the nullable "defaultModel=random" UUID field should not be null',
+        () {
+          var object = UuidDefaultModel();
+          expect(object.uuidDefaultModelRandomNull, isNotNull);
+        },
+      );
+
+      test(
         'when an object of the class is created, then the "defaultModel" UUID field with a string should match the default',
         () {
           var object = UuidDefaultModel();
@@ -49,23 +57,13 @@ void main() async {
       );
 
       test(
-        'when an object of the class is created, then the "defaultModel" UUID field value should match the default',
+        'when an object of the class is created, then the nullable "defaultModel=random" UUID field should generate a valid UUID',
         () {
           var object = UuidDefaultModel();
           expect(
-            object.uuidDefaultModelStr,
-            UuidValue.fromString("550e8400-e29b-41d4-a716-446655440000"),
-          );
-        },
-      );
-
-      test(
-        'when an object of the class is created, then the nullable "defaultModel" UUID field value should match the default',
-        () {
-          var object = UuidDefaultModel();
-          expect(
-            object.uuidDefaultModelStrNull,
-            UuidValue.fromString("3f2504e0-4f89-11d3-9a0c-0305e82c3301"),
+            RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
+                .hasMatch(object.uuidDefaultModelRandomNull.toString()),
+            isTrue,
           );
         },
       );

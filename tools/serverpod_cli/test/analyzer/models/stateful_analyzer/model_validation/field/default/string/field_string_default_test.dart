@@ -11,7 +11,7 @@ void main() {
 
   group('Given a class with fields with a "default" keyword', () {
     test(
-      'when the field is of type String and the default is set to "This is a default value", then the field should have a "default model" and "default persist" value',
+      'when the field is of type UUID and the default is set to "random", then the field\'s default model and persist values are "random".',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -19,7 +19,7 @@ void main() {
           class: Example
           table: example
           fields:
-            stringType: String, default='This is a default value'
+            uuidType: UuidValue, default=random
           ''',
           ).build()
         ];
@@ -32,15 +32,13 @@ void main() {
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
-        expect(definition.fields.last.defaultModelValue,
-            '\'This is a default value\'');
-        expect(definition.fields.last.defaultPersistValue,
-            '\'This is a default value\'');
+        expect(definition.fields.last.defaultModelValue, 'random');
+        expect(definition.fields.last.defaultPersistValue, 'random');
       },
     );
 
     test(
-      'when the field is of type String and the default is set to "This is a default null value", then the field should have a "default model" and "default persist" value',
+      'when the field is of type UUID and the default is set to a valid UUID string with single quotes, then the field\'s default model and persist values are the provided UUID string.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -48,7 +46,7 @@ void main() {
           class: Example
           table: example
           fields:
-            stringType: String?, default='This is a default null value'
+            uuidType: UuidValue, default='550e8400-e29b-41d4-a716-446655440000'
           ''',
           ).build()
         ];
@@ -62,77 +60,19 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
 
-        expect(definition.fields.last.defaultModelValue,
-            '\'This is a default null value\'');
-        expect(definition.fields.last.defaultPersistValue,
-            '\'This is a default null value\'');
-      },
-    );
-
-    test(
-      'when the field is of type String and the default is set to \'This \\\'is\\\' a default value\', then the field should have a "default model" and "default persist" value',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-          class: Example
-          table: example
-          fields:
-            stringType: String, default='This \\'is\\' a default value'
-          ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
-
-        expect(collector.errors, isEmpty);
-
-        var definition = definitions.first as ClassDefinition;
-        expect(definition.fields.last.defaultModelValue,
-            '\'This \\\'is\\\' a default value\'');
-        expect(definition.fields.last.defaultPersistValue,
-            '\'This \\\'is\\\' a default value\'');
-      },
-    );
-
-    test(
-      'when the field is of type String and the default is set to "This \\"is\\" a default value", then the field should have a "default model" and "default persist" value',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-          class: Example
-          table: example
-          fields:
-            stringType: String, default="This \\"is\\" a default value"
-          ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
-
-        expect(collector.errors, isEmpty);
-
-        var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          '"This \\"is\\" a default value"',
+          '\'550e8400-e29b-41d4-a716-446655440000\'',
         );
         expect(
           definition.fields.last.defaultPersistValue,
-          '"This \\"is\\" a default value"',
+          '\'550e8400-e29b-41d4-a716-446655440000\'',
         );
       },
     );
 
     test(
-      'when the field is of type String and the default is set to "This, is a default value", then the field should have a "default model" and "default persist" value',
+      'when the field is of type UUID and the default is set to a valid UUID string with double quotes, then the field\'s default model and persist values should be in single quotes.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -140,7 +80,7 @@ void main() {
           class: Example
           table: example
           fields:
-            stringType: String, default='This, is a default value'
+            uuidType: UuidValue, default="550e8400-e29b-41d4-a716-446655440000"
           ''',
           ).build()
         ];
@@ -153,19 +93,21 @@ void main() {
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
+
+        // Expecting single-quoted UUID string in the test result
         expect(
           definition.fields.last.defaultModelValue,
-          '\'This, is a default value\'',
+          '\'550e8400-e29b-41d4-a716-446655440000\'',
         );
         expect(
           definition.fields.last.defaultPersistValue,
-          '\'This, is a default value\'',
+          '\'550e8400-e29b-41d4-a716-446655440000\'',
         );
       },
     );
 
     test(
-      'when the field is of type String and the default is set to "This \\"is\\", a default value", then the field should have a "default model" and "default persist" value',
+      'when the field is of type UUID and the default is empty, then an error is generated.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -173,106 +115,7 @@ void main() {
           class: Example
           table: example
           fields:
-            stringType: String, default="This \\"is\\", a default value"
-          ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
-
-        expect(collector.errors, isEmpty);
-
-        var definition = definitions.first as ClassDefinition;
-        expect(
-          definition.fields.last.defaultModelValue,
-          '"This \\"is\\", a default value"',
-        );
-        expect(
-          definition.fields.last.defaultPersistValue,
-          '"This \\"is\\", a default value"',
-        );
-      },
-    );
-
-    test(
-      'when the field is of type String and the default is set to "This \'is\' a default value", then the field should have a "default model" and "default persist" value',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-          class: Example
-          table: example
-          fields:
-            stringType: String, default="This 'is' a default value"
-          ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
-
-        expect(collector.errors, isEmpty);
-
-        var definition = definitions.first as ClassDefinition;
-        expect(
-          definition.fields.last.defaultModelValue,
-          '"This \'is\' a default value"',
-        );
-        expect(
-          definition.fields.last.defaultPersistValue,
-          '"This \'is\' a default value"',
-        );
-      },
-    );
-
-    test(
-      'when the field is of type String and the default is set to \'This "is" a default value\', then the field should have a "default model" and "default persist" value',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-          class: Example
-          table: example
-          fields:
-            stringType: String, default='This "is" a default value'
-          ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
-
-        expect(collector.errors, isEmpty);
-
-        var definition = definitions.first as ClassDefinition;
-        expect(
-          definition.fields.last.defaultModelValue,
-          '\'This "is" a default value\'',
-        );
-        expect(
-          definition.fields.last.defaultPersistValue,
-          '\'This "is" a default value\'',
-        );
-      },
-    );
-
-    test(
-      'when the field is of type String and the default is empty, then an error is generated',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-          class: Example
-          table: example
-          fields:
-            stringType: String, default=
+            uuidType: UuidValue, default=
           ''',
           ).build()
         ];
@@ -286,13 +129,13 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "default" must be a quoted string (e.g., "default"=\'This is a string\' or "default"="This is a string").',
+          'The "default" value must be a "random" or valid UUID string (e.g., "default"=random or "default"=\'550e8400-e29b-41d4-a716-446655440000\').',
         );
       },
     );
 
     test(
-      'when the field is of type String with an invalid default value, then an error is generated',
+      'when the field is of type UUID with an invalid default value, then an error is generated.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -300,7 +143,7 @@ void main() {
         class: Example
         table: example
         fields:
-          stringInvalid: String?, default=10
+          uuidInvalid: UuidValue?, default=INVALID_UUID
         ''',
           ).build()
         ];
@@ -314,22 +157,22 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "default" must be a quoted string (e.g., "default"=\'This is a string\' or "default"="This is a string").',
+          'The "default" value must be a "random" or valid UUID string (e.g., "default"=random or "default"=\'550e8400-e29b-41d4-a716-446655440000\').',
         );
       },
     );
 
     test(
-      'when the field is of type String with an invalid default value, then an error is generated',
+      'when the field is of type UUID with a malformed UUID in single quotes, then an error is generated.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
             '''
-        class: Example
-        table: example
-        fields:
-          stringInvalid: String?, default=test
-        ''',
+          class: Example
+          table: example
+          fields:
+            uuidMalformed: UuidValue?, default='550e8400-e29b-41d4-a716-INVALID'
+          ''',
           ).build()
         ];
 
@@ -342,22 +185,22 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "default" must be a quoted string (e.g., "default"=\'This is a string\' or "default"="This is a string").',
+          'The "default" value must be a valid UUID (e.g., \'550e8400-e29b-41d4-a716-446655440000\').',
         );
       },
     );
 
     test(
-      'when the field is of type String with an invalid default value containing unescaped single quotes, then an error is generated',
+      'when the field is of type UUID with a malformed UUID in double quotes, then an error is generated.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
             '''
-        class: Example
-        table: example
-        fields:
-          stringInvalid: String?, default='This 'is' a test'
-        ''',
+          class: Example
+          table: example
+          fields:
+            uuidMalformed: UuidValue?, default="550e8400-e29b-41d4-a716-INVALID"
+          ''',
           ).build()
         ];
 
@@ -370,35 +213,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'For single quoted "default" string values, single quotes must be escaped or use double quotes (e.g., "default"=\'This "is" a string\' or "default"=\'This \\\'is\\\' a string\').',
-        );
-      },
-    );
-
-    test(
-      'when the field is of type String with an invalid default value containing unescaped double quotes, then an error is generated',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-        class: Example
-        table: example
-        fields:
-          stringInvalid: String?, default="This "is" a test"
-        ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors, isNotEmpty);
-
-        var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          firstError.message,
-          'For double quoted "default" string values, double quotes must be escaped or use single quotes (e.g., "default"="This \'is\' a string" or "default"="This \\"is\\" a string").',
+          'The "default" value must be a valid UUID (e.g., \'550e8400-e29b-41d4-a716-446655440000\').',
         );
       },
     );

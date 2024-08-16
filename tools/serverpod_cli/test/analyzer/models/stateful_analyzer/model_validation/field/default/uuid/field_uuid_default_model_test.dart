@@ -67,7 +67,7 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID and the defaultModel is set to a valid UUID string with double quotes, then the field\'s default model value is the provided UUID string.',
+      'when the field is of type UUID and the defaultModel is set to a valid UUID string with double quotes, then the field\'s default model value is the provided UUID string converted to single quotes.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -91,7 +91,7 @@ void main() {
 
         expect(
           definition.fields.last.defaultModelValue,
-          '"550e8400-e29b-41d4-a716-446655440000"',
+          '\'550e8400-e29b-41d4-a716-446655440000\'',
         );
       },
     );
@@ -119,7 +119,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a "random" or valid UUID string (e.g., "defaultModel"=random or "defaultModel"="550e8400-e29b-41d4-a716-446655440000").',
+          'The "defaultModel" value must be a "random" or valid UUID string (e.g., "defaultModel"=random or "defaultModel"=\'550e8400-e29b-41d4-a716-446655440000\').',
         );
       },
     );
@@ -147,7 +147,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a "random" or valid UUID string (e.g., "defaultModel"=random or "defaultModel"="550e8400-e29b-41d4-a716-446655440000").',
+          'The "defaultModel" value must be a "random" or valid UUID string (e.g., "defaultModel"=random or "defaultModel"=\'550e8400-e29b-41d4-a716-446655440000\').',
         );
       },
     );
@@ -175,7 +175,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000").',
+          'The "defaultModel" value must be a valid UUID (e.g., \'550e8400-e29b-41d4-a716-446655440000\').',
         );
       },
     );
@@ -203,35 +203,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000").',
-        );
-      },
-    );
-
-    test(
-      'when the field is of type UUID with non-UUID defaultModel value, then an error is generated.',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-          class: Example
-          table: example
-          fields:
-            uuidType: UuidValue?, defaultModel=test
-          ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors, isNotEmpty);
-
-        var error = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          error.message,
-          'The "defaultModel" value must be a "random" or valid UUID string (e.g., "defaultModel"=random or "defaultModel"="550e8400-e29b-41d4-a716-446655440000").',
+          'The "defaultModel" value must be a valid UUID (e.g., \'550e8400-e29b-41d4-a716-446655440000\').',
         );
       },
     );
@@ -259,7 +231,7 @@ void main() {
         var error = collector.errors.first as SourceSpanSeverityException;
         expect(
           error.message,
-          'The "defaultModel" value must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000").',
+          'The "defaultModel" value must be a valid UUID (e.g., \'550e8400-e29b-41d4-a716-446655440000\').',
         );
       },
     );

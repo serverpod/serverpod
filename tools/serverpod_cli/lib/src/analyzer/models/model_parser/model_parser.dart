@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/extensions.dart';
@@ -194,8 +195,15 @@ class ModelParser {
 
     var scope = _parseClassFieldScope(node, serverOnlyClass);
     var shouldPersist = _parseShouldPersist(node);
-    var defaultModelValue = _parseDefaultModelValue(node);
-    var defaultPersistValue = _parseDefaultPersistValue(node);
+
+    var defaultModelValue = _parseDefaultValue(
+      node,
+      Keyword.defaultModelKey,
+    );
+    var defaultPersistValue = _parseDefaultValue(
+      node,
+      Keyword.defaultPersistKey,
+    );
 
     RelationDefinition? relation = _parseRelation(
       fieldName,
@@ -340,14 +348,17 @@ class ModelParser {
     return _parseBooleanKey(node, Keyword.persist);
   }
 
-  static dynamic _parseDefaultModelValue(YamlMap node) {
-    return node.nodes[Keyword.defaultModelKey]?.value ??
-        node.nodes[Keyword.defaultKey]?.value;
-  }
+  static dynamic _parseDefaultValue(YamlMap node, String keyword) {
+    var value =
+        node.nodes[keyword]?.value ?? node.nodes[Keyword.defaultKey]?.value;
 
-  static dynamic _parseDefaultPersistValue(YamlMap node) {
-    return node.nodes[Keyword.defaultPersistKey]?.value ??
-        node.nodes[Keyword.defaultKey]?.value;
+    /// If the value is a string and is enclosed in double quotes,
+    /// convert it to a single-quoted string with proper escaping.
+    if (value is String && isValidDoubleQuote(value)) {
+      return convertToSingleQuotedString(value);
+    }
+
+    return value;
   }
 
   static bool _parseBooleanKey(YamlMap node, String key) {

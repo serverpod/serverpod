@@ -67,7 +67,7 @@ void main() {
     );
 
     test(
-      'when the field is of type UUID and the defaultPersist is set to a valid UUID string with double quotes, then the field\'s default persist value is the provided UUID string.',
+      'when the field is of type UUID and the defaultPersist is set to a valid UUID string with double quotes, then the field\'s default persist value is the provided UUID string converted to single quotes.',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -91,7 +91,7 @@ void main() {
 
         expect(
           definition.fields.last.defaultPersistValue,
-          '"550e8400-e29b-41d4-a716-446655440000"',
+          '\'550e8400-e29b-41d4-a716-446655440000\'',
         );
       },
     );
@@ -119,7 +119,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultPersist" value must be a "random" or valid UUID string (e.g., "defaultPersist"=random or "defaultPersist"="550e8400-e29b-41d4-a716-446655440000").',
+          'The "defaultPersist" value must be a "random" or valid UUID string (e.g., "defaultPersist"=random or "defaultPersist"=\'550e8400-e29b-41d4-a716-446655440000\').',
         );
       },
     );
@@ -147,7 +147,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultPersist" value must be a "random" or valid UUID string (e.g., "defaultPersist"=random or "defaultPersist"="550e8400-e29b-41d4-a716-446655440000").',
+          'The "defaultPersist" value must be a "random" or valid UUID string (e.g., "defaultPersist"=random or "defaultPersist"=\'550e8400-e29b-41d4-a716-446655440000\').',
         );
       },
     );
@@ -161,7 +161,7 @@ void main() {
           class: Example
           table: example
           fields:
-            uuidMalformed: UuidValue?, defaultPersist='550e8400-e29b-41d4-a716-INVALID'
+            uuidMalformed: UuidValue?, defaultPersist=\'550e8400-e29b-41d4-a716-INVALID\'
           ''',
           ).build()
         ];
@@ -175,7 +175,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultPersist" value must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000").',
+          'The "defaultPersist" value must be a valid UUID (e.g., \'550e8400-e29b-41d4-a716-446655440000\').',
         );
       },
     );
@@ -203,7 +203,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultPersist" value must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000").',
+          'The "defaultPersist" value must be a valid UUID (e.g., \'550e8400-e29b-41d4-a716-446655440000\').',
         );
       },
     );

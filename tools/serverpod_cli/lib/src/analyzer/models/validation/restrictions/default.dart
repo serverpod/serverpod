@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -179,8 +180,8 @@ class DefaultValueRestriction extends ValueRestriction {
       return errors;
     }
 
-    bool validDoubleQuote = RegExp(r'^"(\\.|[^"\\])*"$').hasMatch(value);
-    bool validSingleQuote = RegExp(r"^'(\\.|[^'\\])*'$").hasMatch(value);
+    bool validDoubleQuote = isValidDoubleQuote(value);
+    bool validSingleQuote = isValidSingleQuote(value);
 
     if (validDoubleQuote || validSingleQuote) {
       return errors;
@@ -234,7 +235,7 @@ class DefaultValueRestriction extends ValueRestriction {
     }
 
     String invalidValueError =
-        'The "$key" value must be a "random" or valid UUID string (e.g., "$key"=random or "$key"="550e8400-e29b-41d4-a716-446655440000").';
+        'The "$key" value must be a "random" or valid UUID string (e.g., "$key"=random or "$key"=\'550e8400-e29b-41d4-a716-446655440000\').';
 
     if (value is! String || value.isEmpty) {
       errors.add(
@@ -262,8 +263,8 @@ class DefaultValueRestriction extends ValueRestriction {
 
     if (value == defaultUuidValueRandom) return [];
 
-    bool validSingleQuote = RegExp(r"^'(\\.|[^'\\])*'$").hasMatch(value);
-    bool validDoubleQuote = RegExp(r'^"(\\.|[^"\\])*"$').hasMatch(value);
+    bool validSingleQuote = isValidSingleQuote(value);
+    bool validDoubleQuote = isValidDoubleQuote(value);
 
     if (value.startsWith("'") && !validSingleQuote) {
       errors.add(
@@ -293,7 +294,7 @@ class DefaultValueRestriction extends ValueRestriction {
     if (!isValidUuid) {
       errors.add(
         SourceSpanSeverityException(
-          'The "$key" value must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000").',
+          'The "$key" value must be a valid UUID (e.g., \'550e8400-e29b-41d4-a716-446655440000\').',
           span,
         ),
       );
