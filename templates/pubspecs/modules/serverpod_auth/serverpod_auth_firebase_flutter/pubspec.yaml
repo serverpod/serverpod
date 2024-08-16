@@ -12,7 +12,6 @@ environment:
   flutter: FLUTTER_VERSION
 
 dependencies:
-  firebase_core: ^2.10.0
   firebase_ui_auth: ^1.2.2
   flutter:
     sdk: flutter
