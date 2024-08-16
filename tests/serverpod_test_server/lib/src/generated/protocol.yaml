@@ -73,6 +73,9 @@ basicDatabase:
 transactionsDatabase:
   - removeRow:
   - updateInsertDelete:
+deprecation:
+  - setGlobalDouble:
+  - getGlobalDouble:
 emailAuthTestMethods:
   - findVerificationCode:
   - findResetCode:
