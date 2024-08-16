@@ -4,6 +4,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/class_generators/repository_classes.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
+import 'package:serverpod_cli/src/generator/keywords.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -432,13 +433,12 @@ class SerializableModelLibraryGenerator {
           noneMutableTypeNames.contains(field.type.className))) {
         assignment = refer('this').property(field.name);
       } else if (clonableTypeNames.contains(field.type.className)) {
-        assignment = _buildMaybeNullMethodCall(field, 'clone');
+        assignment = _buildClonableCopyWithAssignment(field);
       } else {
         assignment = _buildMaybeNullMethodCall(field, 'copyWith');
       }
 
       Expression valueDefinition;
-
       if (field.type.nullable) {
         valueDefinition = refer(field.name)
             .isA(field.type.reference(
@@ -462,6 +462,99 @@ class SerializableModelLibraryGenerator {
         field.name: valueDefinition,
       };
     });
+  }
+
+  Expression _buildClonableCopyWithAssignment(
+      SerializableModelFieldDefinition field) {
+    var shouldDeepClone = field.type.isListType || field.type.isMapType;
+
+    if (!shouldDeepClone) {
+      return refer(cloneTrivialFunctionName, serverpodUrl(serverCode))
+          .call([refer(Keyword.thisKeyword).property(field.name)]);
+    }
+
+    return _buildDeepCloneTree(
+      field.type,
+      field.name,
+      root: true,
+    );
+  }
+
+  Expression _buildDeepCloneTree(TypeDefinition type, String variableName,
+      {int depth = 0, bool root = false}) {
+    var isLeafNode = type.generics.isEmpty;
+    if (isLeafNode) {
+      return refer(cloneTrivialFunctionName, serverpodUrl(serverCode))
+          .call([refer(variableName)]);
+    }
+
+    var nextCallback = switch (type.className) {
+      ListKeyword.className =>
+        _buildListCloneCallback(type.generics.first, depth),
+      MapKeyword.className =>
+        _buildMapCloneCallback(type.generics[0], type.generics[1], depth),
+      _ => throw "Can't clone type ${type.className}",
+    };
+
+    Expression expression = switch (root) {
+      true => refer(Keyword.thisKeyword).property(variableName),
+      false => refer(variableName),
+    };
+
+    expression = switch (type.nullable) {
+      true => expression.nullSafeProperty(Keyword.mapFunctionName),
+      false => expression.property(Keyword.mapFunctionName),
+    }
+        .call([nextCallback]);
+
+    return type.isListType
+        ? expression.property(ListKeyword.toList).call([])
+        : expression;
+  }
+
+  Expression _buildListCloneCallback(TypeDefinition type, int depth) {
+    var variableName = 'e$depth';
+
+    return Method(
+      (p) {
+        p
+          ..lambda = true
+          ..requiredParameters.add(
+            Parameter((p) => p..name = variableName),
+          )
+          ..body =
+              _buildDeepCloneTree(type, variableName, depth: depth + 1).code;
+      },
+    ).closure;
+  }
+
+  Expression _buildMapCloneCallback(
+    TypeDefinition keyType,
+    TypeDefinition valueType,
+    int depth,
+  ) {
+    var keyVariableName = 'key$depth';
+    var valueVariableName = 'value$depth';
+
+    return Method(
+      (builder) {
+        builder
+          ..lambda = true
+          ..requiredParameters.add(
+            Parameter((p) => p..name = keyVariableName),
+          )
+          ..requiredParameters.add(
+            Parameter((p) => p..name = valueVariableName),
+          );
+
+        var keyArg =
+            _buildDeepCloneTree(keyType, keyVariableName, depth: depth + 1);
+        var valueArg =
+            _buildDeepCloneTree(valueType, valueVariableName, depth: depth + 1);
+
+        builder.body = refer(MapKeyword.mapEntry).call([keyArg, valueArg]).code;
+      },
+    ).closure;
   }
 
   Expression _buildMaybeNullMethodCall(

@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
-import 'package:uuid/uuid.dart';
 
 void main() {
   group('Copy behavior', () {
@@ -234,6 +234,111 @@ void main() {
       expect(mapDataCopy.data['a']?.id, null);
       expect(mapDataCopy.data['b']?.num, 2);
       expect(mapDataCopy.data['b']?.id, null);
+    });
+
+    group('Given an object with nested Lists and Maps when calling copyWith',
+        () {
+      var objectWithNestedObjects = ObjectWithObject(
+        data: SimpleData(num: 1),
+        dataList: [SimpleData(num: 2)],
+        listWithNullableData: [],
+        nestedDataListInMap: {
+          'firstKey': [
+            [
+              {111: SimpleData(num: 111)}
+            ],
+            [
+              {222: SimpleData(num: 222)}
+            ],
+          ],
+        },
+        nestedDataList: [
+          [SimpleData(num: 88), SimpleData(num: 99)],
+        ],
+        nestedDataMap: {
+          'firstKey': {
+            333: SimpleData(num: 333),
+          },
+        },
+      );
+
+      test('then a nested map should be deeply cloned', () {
+        var copy = objectWithNestedObjects.copyWith();
+
+        expect(copy.nestedDataMap?['firstKey']?[333]?.num, equals(333));
+
+        expect(
+          SerializationManager.encode(copy.nestedDataMap?.toJson()),
+          equals('{"firstKey":[{"k":333,"v":{"num":333}}]}'),
+        );
+      });
+
+      test('then a nested list should be deeply cloned', () {
+        var copy = objectWithNestedObjects.copyWith();
+
+        expect(copy.nestedDataList, hasLength(1));
+        expect(copy.nestedDataList?.first, hasLength(2));
+        expect(copy.nestedDataList?.first.first.num, equals(88));
+
+        var originalDeepList =
+            objectWithNestedObjects.nestedDataList?.first.first;
+        var newDeepList = copy.nestedDataList?.first.first;
+        expect(originalDeepList, isNot(equals(newDeepList)));
+
+        expect(
+          SerializationManager.encode(copy.nestedDataList?.toJson()),
+          equals('[[{"num":88},{"num":99}]]'),
+        );
+      });
+
+      test('then a nested list in a map should be deeply cloned', () {
+        var copy = objectWithNestedObjects.copyWith();
+
+        expect(copy.nestedDataListInMap?['firstKey'], hasLength(2));
+        expect(copy.nestedDataListInMap?['firstKey']?.first, hasLength(1));
+        expect(copy.nestedDataListInMap?['firstKey']?.first?.first[111]?.num,
+            equals(111));
+        expect(copy.nestedDataListInMap?['firstKey']?[1]?.first[222]?.num,
+            equals(222));
+
+        var originalDeepMap =
+            objectWithNestedObjects.nestedDataListInMap?['firstKey']?[1]?.first;
+        var newDeepMap = copy.nestedDataListInMap?['firstKey']?[1]?.first;
+        expect(originalDeepMap, isNot(equals(newDeepMap)));
+
+        expect(
+          SerializationManager.encode(copy.nestedDataListInMap?.toJson()),
+          equals(
+              '{"firstKey":[[[{"k":111,"v":{"num":111}}]],[[{"k":222,"v":{"num":222}}]]]}'),
+        );
+      });
+    });
+
+    test(
+        'Given an object with an Enum in a nested List when calling copyWith then the Enum is copied',
+        () {
+      var objectWithEnum =
+          ObjectWithEnum(testEnum: TestEnum.two, nullableEnum: null, enumList: [
+        TestEnum.one,
+      ], nullableEnumList: [
+        TestEnum.one,
+        null,
+        TestEnum.three
+      ], enumListList: [
+        [TestEnum.one, TestEnum.two],
+        [TestEnum.two, TestEnum.one]
+      ]);
+
+      var copy = objectWithEnum.copyWith();
+
+      expect(copy.enumListList, hasLength(2));
+      expect(copy.enumListList.first, equals([TestEnum.one, TestEnum.two]));
+
+      expect(
+          SerializationManager.encode(objectWithEnum.toJson()),
+          equals(
+            '{"testEnum":1,"enumList":[0],"nullableEnumList":[0,null,2],"enumListList":[[0,1],[1,0]]}',
+          ));
     });
   });
 }

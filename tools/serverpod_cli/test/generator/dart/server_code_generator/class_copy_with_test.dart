@@ -5,6 +5,7 @@ import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
 
@@ -343,8 +344,8 @@ void main() {
     test('then the clone method is called on field when copying the object.',
         () {
       var sourceCode = copyWithMethod?.body.toSource();
-      expect(
-          sourceCode, '{return Example(names: names ?? this.names.clone());}');
+      expect(sourceCode,
+          '{return Example(names: names ?? this.names.map((e0) => _i1.$cloneTrivialFunctionName(e0)).toList());}');
     }, skip: copyWithMethod == null);
   });
 
@@ -381,7 +382,8 @@ void main() {
     test('then the clone method is called on field when copying the object.',
         () {
       var sourceCode = copyWithMethod?.body.toSource();
-      expect(sourceCode, '{return Example(map: map ?? this.map.clone());}');
+      expect(sourceCode,
+          '{return Example(map: map ?? this.map.map((key0, value0) => MapEntry(_i1.$cloneTrivialFunctionName(key0), _i1.$cloneTrivialFunctionName(value0))));}');
     }, skip: copyWithMethod == null);
   });
 
@@ -417,7 +419,8 @@ void main() {
     test('then the clone method is called on field when copying the object.',
         () {
       var sourceCode = copyWithMethod?.body.toSource();
-      expect(sourceCode, '{return Example(data: data ?? this.data.clone());}');
+      expect(sourceCode,
+          '{return Example(data: data ?? _i1.cloneTrivial(this.data));}');
     }, skip: copyWithMethod == null);
   });
 

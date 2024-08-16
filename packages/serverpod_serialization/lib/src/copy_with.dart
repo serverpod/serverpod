@@ -15,26 +15,6 @@ extension CloneByteData on ByteData {
   }
 }
 
-/// Adds clone method that create a deep copy of a list.
-extension CloneList on List {
-  /// Creates a deep copy of the List, mutations to the original will
-  /// not affect the copy.
-  List<T> clone<T>() {
-    return map((e) => _guardedCopyWith(e)).whereType<T>().toList();
-  }
-}
-
-/// Adds clone method that create a deep copy of a map.
-extension CloneMap on Map {
-  /// Creates a deep copy of the Map, mutations to the original will
-  /// not affect the copy.
-  Map<K, V> clone<K, V>() {
-    return map(
-      (key, value) => MapEntry(_guardedCopyWith(key), _guardedCopyWith(value)),
-    ).cast<K, V>();
-  }
-}
-
 /// List of types that are not mutable and therefore do not need to be
 /// copied or handled in a copyWith method.
 final noneMutableTypeNames =
@@ -59,7 +39,12 @@ const _noneMutableTypes = [
   UuidValue,
 ];
 
-dynamic _guardedCopyWith(dynamic element) {
+/// Keyword helper for the `cloneTrivial` function
+const cloneTrivialFunctionName = 'cloneTrivial';
+
+/// Clones all types except `List` and `Map`, which can't be deep copied in a type safe manner.
+/// See https://github.com/serverpod/serverpod/pull/2612 for more information.
+T cloneTrivial<T>(T element) {
   if (_noneMutableTypes.contains(element.runtimeType)) {
     return element;
   }
@@ -68,13 +53,14 @@ dynamic _guardedCopyWith(dynamic element) {
   if (element is Enum) return element;
 
   // Required as the extension with clone() is not found otherwise.
-  if (element is ByteData) return element.clone();
-  if (element is List) return element.clone();
-  if (element is Map) return element.clone();
+  if (element is ByteData) return element.clone() as T;
+  if (element is List || element is Map) {
+    throw Exception("Can't clone `List` or `Map` types");
+  }
 
   try {
-    return element.copyWith();
+    return (element as dynamic).copyWith() as T;
   } on NoSuchMethodError {
-    throw 'No copyWith method found on ${element.runtimeType}';
+    throw Exception('No copyWith method found on ${element.runtimeType}');
   }
 }
