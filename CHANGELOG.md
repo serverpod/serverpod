@@ -1,4 +1,7 @@
 ## 2.1.0-beta.1
+ - feat: Deprecated endpoint methods are now being deprecated in generated client.
+ - feat: Adds support for WASM compiled web apps.
+ - fix: Adds validation of custom class names to look for potential collisions.
  - fix: Only considers positional `Session` parameter when validating endpoint method.
  - fix: Updates example documentation. 
  - feat: Adds support for `willClose` listener on `Session`.
