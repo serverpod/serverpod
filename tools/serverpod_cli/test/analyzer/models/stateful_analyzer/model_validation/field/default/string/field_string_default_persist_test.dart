@@ -188,7 +188,7 @@ void main() {
           class: Example
           table: example
           fields:
-            stringType: String?, defaultPersist=\'This, is a default persist value\'
+            stringType: String?, defaultPersist='This, is a default persist value'
           ''',
           ).build()
         ];
@@ -215,7 +215,7 @@ void main() {
           class: Example
           table: example
           fields:
-            stringType: String?, defaultPersist=\'This \\"is\\", a default persist value\'
+            stringType: String?, defaultPersist='This \\"is\\", a default persist value'
           ''',
           ).build()
         ];

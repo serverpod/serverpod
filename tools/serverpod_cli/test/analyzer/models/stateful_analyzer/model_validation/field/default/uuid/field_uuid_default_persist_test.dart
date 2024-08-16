@@ -161,7 +161,7 @@ void main() {
           class: Example
           table: example
           fields:
-            uuidMalformed: UuidValue?, defaultPersist=\'550e8400-e29b-41d4-a716-INVALID\'
+            uuidMalformed: UuidValue?, defaultPersist='550e8400-e29b-41d4-a716-INVALID'
           ''',
           ).build()
         ];
