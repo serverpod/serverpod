@@ -159,7 +159,7 @@ class _OrganizationWithLongTableNameImpl extends OrganizationWithLongTableName {
       name: name ?? this.name,
       people: people is List<_i2.PersonWithLongTableName>?
           ? people
-          : this.people?.clone(),
+          : this.people?.map((e0) => _i1.cloneTrivial(e0)).toList(),
       cityId: cityId is int? ? cityId : this.cityId,
       city: city is _i2.CityWithLongTableName? ? city : this.city?.copyWith(),
     );

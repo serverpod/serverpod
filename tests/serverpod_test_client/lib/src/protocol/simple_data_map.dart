@@ -45,6 +45,15 @@ class _SimpleDataMapImpl extends SimpleDataMap {
 
   @override
   SimpleDataMap copyWith({Map<String, _i2.SimpleData>? data}) {
-    return SimpleDataMap(data: data ?? this.data.clone());
+    return SimpleDataMap(
+        data: data ??
+            this.data.map((
+                  key0,
+                  value0,
+                ) =>
+                    MapEntry(
+                      _i1.cloneTrivial(key0),
+                      _i1.cloneTrivial(value0),
+                    )));
   }
 }

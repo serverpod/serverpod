@@ -536,84 +536,282 @@ class _TypesMapImpl extends TypesMap {
     Object? aListValue = _Undefined,
   }) {
     return TypesMap(
-      anIntKey:
-          anIntKey is Map<int, String>? ? anIntKey : this.anIntKey?.clone(),
-      aBoolKey:
-          aBoolKey is Map<bool, String>? ? aBoolKey : this.aBoolKey?.clone(),
+      anIntKey: anIntKey is Map<int, String>?
+          ? anIntKey
+          : this.anIntKey?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
+      aBoolKey: aBoolKey is Map<bool, String>?
+          ? aBoolKey
+          : this.aBoolKey?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
       aDoubleKey: aDoubleKey is Map<double, String>?
           ? aDoubleKey
-          : this.aDoubleKey?.clone(),
+          : this.aDoubleKey?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
       aDateTimeKey: aDateTimeKey is Map<DateTime, String>?
           ? aDateTimeKey
-          : this.aDateTimeKey?.clone(),
+          : this.aDateTimeKey?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
       aStringKey: aStringKey is Map<String, String>?
           ? aStringKey
-          : this.aStringKey?.clone(),
+          : this.aStringKey?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
       aByteDataKey: aByteDataKey is Map<_i2.ByteData, String>?
           ? aByteDataKey
-          : this.aByteDataKey?.clone(),
+          : this.aByteDataKey?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
       aDurationKey: aDurationKey is Map<Duration, String>?
           ? aDurationKey
-          : this.aDurationKey?.clone(),
+          : this.aDurationKey?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
       aUuidKey: aUuidKey is Map<_i1.UuidValue, String>?
           ? aUuidKey
-          : this.aUuidKey?.clone(),
+          : this.aUuidKey?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
       anEnumKey: anEnumKey is Map<_i3.TestEnum, String>?
           ? anEnumKey
-          : this.anEnumKey?.clone(),
+          : this.anEnumKey?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
       aStringifiedEnumKey:
           aStringifiedEnumKey is Map<_i3.TestEnumStringified, String>?
               ? aStringifiedEnumKey
-              : this.aStringifiedEnumKey?.clone(),
+              : this.aStringifiedEnumKey?.map((
+                    key0,
+                    value0,
+                  ) =>
+                      MapEntry(
+                        _i1.cloneTrivial(key0),
+                        _i1.cloneTrivial(value0),
+                      )),
       anObjectKey: anObjectKey is Map<_i3.Types, String>?
           ? anObjectKey
-          : this.anObjectKey?.clone(),
+          : this.anObjectKey?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
       aMapKey: aMapKey is Map<Map<_i3.Types, String>, String>?
           ? aMapKey
-          : this.aMapKey?.clone(),
+          : this.aMapKey?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0.map((
+                      key1,
+                      value1,
+                    ) =>
+                        MapEntry(
+                          _i1.cloneTrivial(key1),
+                          _i1.cloneTrivial(value1),
+                        )),
+                    _i1.cloneTrivial(value0),
+                  )),
       aListKey: aListKey is Map<List<_i3.Types>, String>?
           ? aListKey
-          : this.aListKey?.clone(),
+          : this.aListKey?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0.map((e1) => _i1.cloneTrivial(e1)).toList(),
+                    _i1.cloneTrivial(value0),
+                  )),
       anIntValue: anIntValue is Map<String, int>?
           ? anIntValue
-          : this.anIntValue?.clone(),
+          : this.anIntValue?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
       aBoolValue: aBoolValue is Map<String, bool>?
           ? aBoolValue
-          : this.aBoolValue?.clone(),
+          : this.aBoolValue?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
       aDoubleValue: aDoubleValue is Map<String, double>?
           ? aDoubleValue
-          : this.aDoubleValue?.clone(),
+          : this.aDoubleValue?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
       aDateTimeValue: aDateTimeValue is Map<String, DateTime>?
           ? aDateTimeValue
-          : this.aDateTimeValue?.clone(),
+          : this.aDateTimeValue?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
       aStringValue: aStringValue is Map<String, String>?
           ? aStringValue
-          : this.aStringValue?.clone(),
+          : this.aStringValue?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
       aByteDataValue: aByteDataValue is Map<String, _i2.ByteData>?
           ? aByteDataValue
-          : this.aByteDataValue?.clone(),
+          : this.aByteDataValue?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
       aDurationValue: aDurationValue is Map<String, Duration>?
           ? aDurationValue
-          : this.aDurationValue?.clone(),
+          : this.aDurationValue?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
       aUuidValue: aUuidValue is Map<String, _i1.UuidValue>?
           ? aUuidValue
-          : this.aUuidValue?.clone(),
+          : this.aUuidValue?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
       anEnumValue: anEnumValue is Map<String, _i3.TestEnum>?
           ? anEnumValue
-          : this.anEnumValue?.clone(),
+          : this.anEnumValue?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
       aStringifiedEnumValue:
           aStringifiedEnumValue is Map<String, _i3.TestEnumStringified>?
               ? aStringifiedEnumValue
-              : this.aStringifiedEnumValue?.clone(),
+              : this.aStringifiedEnumValue?.map((
+                    key0,
+                    value0,
+                  ) =>
+                      MapEntry(
+                        _i1.cloneTrivial(key0),
+                        _i1.cloneTrivial(value0),
+                      )),
       anObjectValue: anObjectValue is Map<String, _i3.Types>?
           ? anObjectValue
-          : this.anObjectValue?.clone(),
+          : this.anObjectValue?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
       aMapValue: aMapValue is Map<String, Map<String, _i3.Types>>?
           ? aMapValue
-          : this.aMapValue?.clone(),
+          : this.aMapValue?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    value0.map((
+                      key1,
+                      value1,
+                    ) =>
+                        MapEntry(
+                          _i1.cloneTrivial(key1),
+                          _i1.cloneTrivial(value1),
+                        )),
+                  )),
       aListValue: aListValue is Map<String, List<_i3.Types>>?
           ? aListValue
-          : this.aListValue?.clone(),
+          : this.aListValue?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    value0.map((e1) => _i1.cloneTrivial(e1)).toList(),
+                  )),
     );
   }
 }

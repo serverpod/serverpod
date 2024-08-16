@@ -96,7 +96,9 @@ class _CacheInfoImpl extends CacheInfo {
     return CacheInfo(
       numEntries: numEntries ?? this.numEntries,
       maxEntries: maxEntries ?? this.maxEntries,
-      keys: keys is List<String>? ? keys : this.keys?.clone(),
+      keys: keys is List<String>?
+          ? keys
+          : this.keys?.map((e0) => _i1.cloneTrivial(e0)).toList(),
     );
   }
 }

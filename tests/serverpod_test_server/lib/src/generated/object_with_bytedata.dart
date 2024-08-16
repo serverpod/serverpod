@@ -109,7 +109,7 @@ class _ObjectWithByteDataImpl extends ObjectWithByteData {
   }) {
     return ObjectWithByteData(
       id: id is int? ? id : this.id,
-      byteData: byteData ?? this.byteData.clone(),
+      byteData: byteData ?? _i1.cloneTrivial(this.byteData),
     );
   }
 }

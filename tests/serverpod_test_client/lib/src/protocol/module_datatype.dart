@@ -84,8 +84,16 @@ class _ModuleDatatypeImpl extends ModuleDatatype {
   }) {
     return ModuleDatatype(
       model: model ?? this.model.copyWith(),
-      list: list ?? this.list.clone(),
-      map: map ?? this.map.clone(),
+      list: list ?? this.list.map((e0) => _i1.cloneTrivial(e0)).toList(),
+      map: map ??
+          this.map.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    _i1.cloneTrivial(value0),
+                  )),
     );
   }
 }

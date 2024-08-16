@@ -111,7 +111,9 @@ class _TeamImpl extends Team {
       name: name ?? this.name,
       arenaId: arenaId is int? ? arenaId : this.arenaId,
       arena: arena is _i2.Arena? ? arena : this.arena?.copyWith(),
-      players: players is List<_i2.Player>? ? players : this.players?.clone(),
+      players: players is List<_i2.Player>?
+          ? players
+          : this.players?.map((e0) => _i1.cloneTrivial(e0)).toList(),
     );
   }
 }

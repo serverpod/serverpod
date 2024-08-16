@@ -163,7 +163,8 @@ class _UserInfoImpl extends UserInfo {
       email: email is String? ? email : this.email,
       created: created ?? this.created,
       imageUrl: imageUrl is String? ? imageUrl : this.imageUrl,
-      scopeNames: scopeNames ?? this.scopeNames.clone(),
+      scopeNames: scopeNames ??
+          this.scopeNames.map((e0) => _i1.cloneTrivial(e0)).toList(),
       blocked: blocked ?? this.blocked,
     );
   }

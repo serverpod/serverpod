@@ -111,7 +111,9 @@ class _CatImpl extends Cat {
       name: name ?? this.name,
       motherId: motherId is int? ? motherId : this.motherId,
       mother: mother is _i2.Cat? ? mother : this.mother?.copyWith(),
-      kittens: kittens is List<_i2.Cat>? ? kittens : this.kittens?.clone(),
+      kittens: kittens is List<_i2.Cat>?
+          ? kittens
+          : this.kittens?.map((e0) => _i1.cloneTrivial(e0)).toList(),
     );
   }
 }

@@ -93,8 +93,10 @@ class _DatabaseMigrationImpl extends DatabaseMigration {
     int? migrationApiVersion,
   }) {
     return DatabaseMigration(
-      actions: actions ?? this.actions.clone(),
-      warnings: warnings ?? this.warnings.clone(),
+      actions:
+          actions ?? this.actions.map((e0) => _i1.cloneTrivial(e0)).toList(),
+      warnings:
+          warnings ?? this.warnings.map((e0) => _i1.cloneTrivial(e0)).toList(),
       migrationApiVersion: migrationApiVersion ?? this.migrationApiVersion,
     );
   }

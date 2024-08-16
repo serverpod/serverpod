@@ -145,11 +145,12 @@ class _CityImpl extends City {
     return City(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      citizens:
-          citizens is List<_i2.Person>? ? citizens : this.citizens?.clone(),
+      citizens: citizens is List<_i2.Person>?
+          ? citizens
+          : this.citizens?.map((e0) => _i1.cloneTrivial(e0)).toList(),
       organizations: organizations is List<_i2.Organization>?
           ? organizations
-          : this.organizations?.clone(),
+          : this.organizations?.map((e0) => _i1.cloneTrivial(e0)).toList(),
     );
   }
 }

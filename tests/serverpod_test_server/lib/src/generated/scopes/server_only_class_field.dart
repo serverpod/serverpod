@@ -89,11 +89,21 @@ class _ServerOnlyClassFieldImpl extends ServerOnlyClassField {
     return ServerOnlyClassField(
       serverOnlyClassList: serverOnlyClassList is List<_i2.ServerOnlyClass>?
           ? serverOnlyClassList
-          : this.serverOnlyClassList?.clone(),
+          : this
+              .serverOnlyClassList
+              ?.map((e0) => _i1.cloneTrivial(e0))
+              .toList(),
       serverOnlyClassMap:
           serverOnlyClassMap is Map<String, _i2.ServerOnlyClass>?
               ? serverOnlyClassMap
-              : this.serverOnlyClassMap?.clone(),
+              : this.serverOnlyClassMap?.map((
+                    key0,
+                    value0,
+                  ) =>
+                      MapEntry(
+                        _i1.cloneTrivial(key0),
+                        _i1.cloneTrivial(value0),
+                      )),
     );
   }
 }

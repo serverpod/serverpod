@@ -20,6 +20,9 @@ abstract class ObjectWithObject implements _i1.SerializableModel {
     this.nullableDataList,
     required this.listWithNullableData,
     this.nullableListWithNullableData,
+    this.nestedDataList,
+    this.nestedDataListInMap,
+    this.nestedDataMap,
   });
 
   factory ObjectWithObject({
@@ -30,6 +33,9 @@ abstract class ObjectWithObject implements _i1.SerializableModel {
     List<_i2.SimpleData>? nullableDataList,
     required List<_i2.SimpleData?> listWithNullableData,
     List<_i2.SimpleData?>? nullableListWithNullableData,
+    List<List<_i2.SimpleData>>? nestedDataList,
+    Map<String, List<List<Map<int, _i2.SimpleData>>?>>? nestedDataListInMap,
+    Map<String, Map<int, _i2.SimpleData>>? nestedDataMap,
   }) = _ObjectWithObjectImpl;
 
   factory ObjectWithObject.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -58,6 +64,37 @@ abstract class ObjectWithObject implements _i1.SerializableModel {
                   ? null
                   : _i2.SimpleData.fromJson((e as Map<String, dynamic>)))
               .toList(),
+      nestedDataList: (jsonSerialization['nestedDataList'] as List?)
+          ?.map((e) => (e as List)
+              .map((e) => _i2.SimpleData.fromJson((e as Map<String, dynamic>)))
+              .toList())
+          .toList(),
+      nestedDataListInMap: (jsonSerialization['nestedDataListInMap'] as Map?)
+          ?.map((k, v) => MapEntry(
+                k as String,
+                (v as List)
+                    .map((e) => (e as List?)
+                        ?.map((e) => (e as List).fold<Map<int, _i2.SimpleData>>(
+                            {},
+                            (t, e) => {
+                                  ...t,
+                                  e['k'] as int: _i2.SimpleData.fromJson(
+                                      (e['v'] as Map<String, dynamic>))
+                                }))
+                        .toList())
+                    .toList(),
+              )),
+      nestedDataMap:
+          (jsonSerialization['nestedDataMap'] as Map?)?.map((k, v) => MapEntry(
+                k as String,
+                (v as List).fold<Map<int, _i2.SimpleData>>(
+                    {},
+                    (t, e) => {
+                          ...t,
+                          e['k'] as int: _i2.SimpleData.fromJson(
+                              (e['v'] as Map<String, dynamic>))
+                        }),
+              )),
     );
   }
 
@@ -78,6 +115,12 @@ abstract class ObjectWithObject implements _i1.SerializableModel {
 
   List<_i2.SimpleData?>? nullableListWithNullableData;
 
+  List<List<_i2.SimpleData>>? nestedDataList;
+
+  Map<String, List<List<Map<int, _i2.SimpleData>>?>>? nestedDataListInMap;
+
+  Map<String, Map<int, _i2.SimpleData>>? nestedDataMap;
+
   ObjectWithObject copyWith({
     int? id,
     _i2.SimpleData? data,
@@ -86,6 +129,9 @@ abstract class ObjectWithObject implements _i1.SerializableModel {
     List<_i2.SimpleData>? nullableDataList,
     List<_i2.SimpleData?>? listWithNullableData,
     List<_i2.SimpleData?>? nullableListWithNullableData,
+    List<List<_i2.SimpleData>>? nestedDataList,
+    Map<String, List<List<Map<int, _i2.SimpleData>>?>>? nestedDataListInMap,
+    Map<String, Map<int, _i2.SimpleData>>? nestedDataMap,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -102,6 +148,18 @@ abstract class ObjectWithObject implements _i1.SerializableModel {
       if (nullableListWithNullableData != null)
         'nullableListWithNullableData': nullableListWithNullableData?.toJson(
             valueToJson: (v) => v?.toJson()),
+      if (nestedDataList != null)
+        'nestedDataList': nestedDataList?.toJson(
+            valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
+      if (nestedDataListInMap != null)
+        'nestedDataListInMap': nestedDataListInMap?.toJson(
+            valueToJson: (v) => v.toJson(
+                valueToJson: (v) => v?.toJson(
+                    valueToJson: (v) =>
+                        v.toJson(valueToJson: (v) => v.toJson())))),
+      if (nestedDataMap != null)
+        'nestedDataMap': nestedDataMap?.toJson(
+            valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
     };
   }
 
@@ -122,6 +180,9 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
     List<_i2.SimpleData>? nullableDataList,
     required List<_i2.SimpleData?> listWithNullableData,
     List<_i2.SimpleData?>? nullableListWithNullableData,
+    List<List<_i2.SimpleData>>? nestedDataList,
+    Map<String, List<List<Map<int, _i2.SimpleData>>?>>? nestedDataListInMap,
+    Map<String, Map<int, _i2.SimpleData>>? nestedDataMap,
   }) : super._(
           id: id,
           data: data,
@@ -130,6 +191,9 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
           nullableDataList: nullableDataList,
           listWithNullableData: listWithNullableData,
           nullableListWithNullableData: nullableListWithNullableData,
+          nestedDataList: nestedDataList,
+          nestedDataListInMap: nestedDataListInMap,
+          nestedDataMap: nestedDataMap,
         );
 
   @override
@@ -141,6 +205,9 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
     Object? nullableDataList = _Undefined,
     List<_i2.SimpleData?>? listWithNullableData,
     Object? nullableListWithNullableData = _Undefined,
+    Object? nestedDataList = _Undefined,
+    Object? nestedDataListInMap = _Undefined,
+    Object? nestedDataMap = _Undefined,
   }) {
     return ObjectWithObject(
       id: id is int? ? id : this.id,
@@ -148,16 +215,65 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
       nullableData: nullableData is _i2.SimpleData?
           ? nullableData
           : this.nullableData?.copyWith(),
-      dataList: dataList ?? this.dataList.clone(),
+      dataList:
+          dataList ?? this.dataList.map((e0) => _i1.cloneTrivial(e0)).toList(),
       nullableDataList: nullableDataList is List<_i2.SimpleData>?
           ? nullableDataList
-          : this.nullableDataList?.clone(),
-      listWithNullableData:
-          listWithNullableData ?? this.listWithNullableData.clone(),
+          : this.nullableDataList?.map((e0) => _i1.cloneTrivial(e0)).toList(),
+      listWithNullableData: listWithNullableData ??
+          this.listWithNullableData.map((e0) => _i1.cloneTrivial(e0)).toList(),
       nullableListWithNullableData:
           nullableListWithNullableData is List<_i2.SimpleData?>?
               ? nullableListWithNullableData
-              : this.nullableListWithNullableData?.clone(),
+              : this
+                  .nullableListWithNullableData
+                  ?.map((e0) => _i1.cloneTrivial(e0))
+                  .toList(),
+      nestedDataList: nestedDataList is List<List<_i2.SimpleData>>?
+          ? nestedDataList
+          : this
+              .nestedDataList
+              ?.map((e0) => e0.map((e1) => _i1.cloneTrivial(e1)).toList())
+              .toList(),
+      nestedDataListInMap: nestedDataListInMap
+              is Map<String, List<List<Map<int, _i2.SimpleData>>?>>?
+          ? nestedDataListInMap
+          : this.nestedDataListInMap?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    value0
+                        .map((e1) => e1
+                            ?.map((e2) => e2.map((
+                                  key3,
+                                  value3,
+                                ) =>
+                                    MapEntry(
+                                      _i1.cloneTrivial(key3),
+                                      _i1.cloneTrivial(value3),
+                                    )))
+                            .toList())
+                        .toList(),
+                  )),
+      nestedDataMap: nestedDataMap is Map<String, Map<int, _i2.SimpleData>>?
+          ? nestedDataMap
+          : this.nestedDataMap?.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    _i1.cloneTrivial(key0),
+                    value0.map((
+                      key1,
+                      value1,
+                    ) =>
+                        MapEntry(
+                          _i1.cloneTrivial(key1),
+                          _i1.cloneTrivial(value1),
+                        )),
+                  )),
     );
   }
 }

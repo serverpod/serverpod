@@ -119,12 +119,15 @@ class _DatabaseDefinitionsImpl extends DatabaseDefinitions {
     List<_i2.DatabaseMigrationVersion>? latestAvailableMigrations,
   }) {
     return DatabaseDefinitions(
-      target: target ?? this.target.clone(),
-      live: live ?? this.live.clone(),
-      installedMigrations:
-          installedMigrations ?? this.installedMigrations.clone(),
-      latestAvailableMigrations:
-          latestAvailableMigrations ?? this.latestAvailableMigrations.clone(),
+      target: target ?? this.target.map((e0) => _i1.cloneTrivial(e0)).toList(),
+      live: live ?? this.live.map((e0) => _i1.cloneTrivial(e0)).toList(),
+      installedMigrations: installedMigrations ??
+          this.installedMigrations.map((e0) => _i1.cloneTrivial(e0)).toList(),
+      latestAvailableMigrations: latestAvailableMigrations ??
+          this
+              .latestAvailableMigrations
+              .map((e0) => _i1.cloneTrivial(e0))
+              .toList(),
     );
   }
 }
