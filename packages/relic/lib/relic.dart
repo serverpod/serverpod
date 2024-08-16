@@ -5,9 +5,10 @@
 export 'src/body.dart' show Body;
 export 'src/cascade.dart' show Cascade;
 export 'src/handler.dart' show Handler;
+export 'src/headers.dart' show Headers, CustomHeaders, BodyType;
 export 'src/hijack_exception.dart' show HijackException;
 export 'src/middleware.dart' show Middleware, createMiddleware;
-export 'src/middleware/add_chunked_encoding.dart' show addChunkedEncoding;
+// export 'src/middleware/add_chunked_encoding.dart' show addChunkedEncoding;
 export 'src/middleware/logger.dart' show logRequests;
 export 'src/middleware_extensions.dart' show MiddlewareExtensions;
 export 'src/pipeline.dart' show Pipeline;

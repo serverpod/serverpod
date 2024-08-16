@@ -4,12 +4,9 @@
 
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:collection/collection.dart';
-import 'package:http_parser/http_parser.dart';
 import 'body.dart';
-
+import 'headers.dart';
 import 'message.dart';
 import 'util.dart';
 
@@ -17,33 +14,6 @@ import 'util.dart';
 class Response extends Message {
   /// The HTTP status code of the response.
   final int statusCode;
-
-  /// The date and time after which the response's data should be considered
-  /// stale.
-  ///
-  /// This is parsed from the Expires header in [headers]. If [headers] doesn't
-  /// have an Expires header, this will be `null`.
-  DateTime? get expires {
-    if (_expiresCache != null) return _expiresCache;
-    if (!headers.containsKey('expires')) return null;
-    _expiresCache = parseHttpDate(headers['expires']!);
-    return _expiresCache;
-  }
-
-  DateTime? _expiresCache;
-
-  /// The date and time the source of the response's data was last modified.
-  ///
-  /// This is parsed from the Last-Modified header in [headers]. If [headers]
-  /// doesn't have a Last-Modified header, this will be `null`.
-  DateTime? get lastModified {
-    if (_lastModifiedCache != null) return _lastModifiedCache;
-    if (!headers.containsKey('last-modified')) return null;
-    _lastModifiedCache = parseHttpDate(headers['last-modified']!);
-    return _lastModifiedCache;
-  }
-
-  DateTime? _lastModifiedCache;
 
   /// Constructs a 200 OK response.
   ///
@@ -69,13 +39,13 @@ class Response extends Message {
   /// {@endtemplate}
   Response.ok({
     Body? body,
-    Map<String, /* String | List<String> */ Object>? headers,
+    Headers? headers,
     Encoding? encoding,
     Map<String, Object>? context,
   }) : this(
           200,
-          body: body,
-          headers: headers,
+          body: body ?? Body.empty(),
+          headers: headers ?? Headers.response(),
           encoding: encoding,
           context: context,
         );
@@ -88,12 +58,19 @@ class Response extends Message {
   ///
   /// {@macro shelf_response_body_and_encoding_param}
   Response.movedPermanently(
-    Object location, {
+    Uri location, {
     Body? body,
-    Map<String, /* String | List<String> */ Object>? headers,
+    Headers? headers,
     Encoding? encoding,
     Map<String, Object>? context,
-  }) : this._redirect(301, location, body, headers, encoding, context: context);
+  }) : this._redirect(
+          301,
+          location,
+          body,
+          headers,
+          encoding,
+          context: context,
+        );
 
   /// Constructs a 302 Found response.
   ///
@@ -103,9 +80,9 @@ class Response extends Message {
   ///
   /// {@macro shelf_response_body_and_encoding_param}
   Response.found(
-    Object location, {
+    Uri location, {
     Body? body,
-    Map<String, /* String | List<String> */ Object>? headers,
+    Headers? headers,
     Encoding? encoding,
     Map<String, Object>? context,
   }) : this._redirect(
@@ -126,9 +103,9 @@ class Response extends Message {
   ///
   /// {@macro shelf_response_body_and_encoding_param}
   Response.seeOther(
-    Object location, {
+    Uri location, {
     Body? body,
-    Map<String, /* String | List<String> */ Object>? headers,
+    Headers? headers,
     Encoding? encoding,
     Map<String, Object>? context,
   }) : this._redirect(303, location, body, headers, encoding, context: context);
@@ -136,16 +113,17 @@ class Response extends Message {
   /// Constructs a helper constructor for redirect responses.
   Response._redirect(
     int statusCode,
-    Object location,
+    Uri location,
     Body? body,
-    Map<String, /* String | List<String> */ Object>? headers,
+    Headers? headers,
     Encoding? encoding, {
     Map<String, Object>? context,
   }) : this(
           statusCode,
-          body: body,
+          body: body ?? Body.empty(),
           encoding: encoding,
-          headers: addHeader(headers, 'location', _locationToString(location)),
+          headers: headers?.copyWith(location: location) ??
+              Headers.response(location: location),
           context: context,
         );
 
@@ -161,14 +139,13 @@ class Response extends Message {
   ///
   /// If [headers] contains a value for `content-length` it will be removed.
   Response.notModified({
-    Map<String, /* String | List<String> */ Object>? headers,
+    Headers? headers,
     Map<String, Object>? context,
   }) : this(
           304,
-          headers: removeHeader(
-              addHeader(headers, 'date', formatHttpDate(DateTime.now())),
-              'content-length'),
+          body: Body.empty(),
           context: context,
+          headers: (headers ?? Headers.response()),
         );
 
   /// Constructs a 400 Bad Request response.
@@ -178,12 +155,12 @@ class Response extends Message {
   /// {@macro shelf_response_body_and_encoding_param}
   Response.badRequest({
     Body? body,
-    Map<String, /* String | List<String> */ Object>? headers,
+    Headers? headers,
     Encoding? encoding,
     Map<String, Object>? context,
   }) : this(
           400,
-          headers: body == null ? _adjustErrorHeaders(headers) : headers,
+          headers: headers ?? Headers.response(),
           body: body ?? Body.fromString('Bad Request'),
           context: context,
           encoding: encoding,
@@ -197,12 +174,12 @@ class Response extends Message {
   /// {@macro shelf_response_body_and_encoding_param}
   Response.unauthorized({
     Body? body,
-    Map<String, /* String | List<String> */ Object>? headers,
+    Headers? headers,
     Encoding? encoding,
     Map<String, Object>? context,
   }) : this(
           401,
-          headers: body == null ? _adjustErrorHeaders(headers) : headers,
+          headers: headers ?? Headers.response(),
           body: body ?? Body.fromString('Unauthorized'),
           context: context,
           encoding: encoding,
@@ -215,12 +192,12 @@ class Response extends Message {
   /// {@macro shelf_response_body_and_encoding_param}
   Response.forbidden({
     Body? body,
-    Map<String, /* String | List<String> */ Object>? headers,
+    Headers? headers,
     Encoding? encoding,
     Map<String, Object>? context,
   }) : this(
           403,
-          headers: body == null ? _adjustErrorHeaders(headers) : headers,
+          headers: headers ?? Headers.response(),
           body: body ?? Body.fromString('Forbidden'),
           context: context,
           encoding: encoding,
@@ -234,12 +211,12 @@ class Response extends Message {
   /// {@macro shelf_response_body_and_encoding_param}
   Response.notFound({
     Body? body,
-    Map<String, /* String | List<String> */ Object>? headers,
+    Headers? headers,
     Encoding? encoding,
     Map<String, Object>? context,
   }) : this(
           404,
-          headers: body == null ? _adjustErrorHeaders(headers) : headers,
+          headers: headers ?? Headers.response(),
           body: body ?? Body.fromString('Not Found'),
           context: context,
           encoding: encoding,
@@ -253,12 +230,12 @@ class Response extends Message {
   /// {@macro shelf_response_body_and_encoding_param}
   Response.internalServerError({
     Body? body,
-    Map<String, /* String | List<String> */ Object>? headers,
+    Headers? headers,
     Encoding? encoding,
     Map<String, Object>? context,
   }) : this(
           500,
-          headers: body == null ? _adjustErrorHeaders(headers) : headers,
+          headers: headers ?? Headers.response(),
           body: body ?? Body.fromString('Internal Server Error'),
           context: context,
           encoding: encoding,
@@ -272,10 +249,14 @@ class Response extends Message {
   Response(
     this.statusCode, {
     Body? body,
-    Map<String, /* String | List<String> */ Object>? headers,
+    Headers? headers,
     Encoding? encoding,
     Map<String, Object>? context,
-  }) : super(body, headers: headers, context: context) {
+  }) : super(
+          body ?? Body.empty(),
+          headers ?? Headers.response(),
+          context: context ?? {},
+        ) {
     if (statusCode < 100) {
       throw ArgumentError('Invalid status code: $statusCode.');
     }
@@ -302,19 +283,16 @@ class Response extends Message {
   /// [Stream<List<int>>], or `<int>[]` (empty list) to indicate no body.
   @override
   Response change({
-    Map<String, /* String | List<String> */ Object?>? headers,
+    Headers? headers,
     Map<String, Object?>? context,
     Body? body,
   }) {
-    final headersAll = updateHeaders(this.headersAll, headers);
     final newContext = updateMap(this.context, context);
-
-    body ??= this.body;
 
     return Response(
       statusCode,
-      body: body,
-      headers: headersAll,
+      body: body ?? this.body,
+      headers: headers ?? this.headers,
       context: newContext,
     );
   }
@@ -335,81 +313,46 @@ class Response extends Message {
     // necessary.
     httpResponse.headers.chunkedTransferEncoding = false;
 
-    headersAll.forEach((header, value) {
-      httpResponse.headers.set(header, value);
-    });
+    headers.applyHeaders(httpResponse, body);
 
-    var coding = headers['transfer-encoding'];
-    if (coding != null && !equalsIgnoreAsciiCase(coding, 'identity')) {
-      // If the response is already in a chunked encoding, de-chunk it because
-      // otherwise `dart:io` will try to add another layer of chunking.
-      //
-      // TODO(nweiz): Do this more cleanly when sdk#27886 is fixed.
-      var body = Body.fromDataStream(
-        chunkedCoding.encoder
-            .bind(read())
-            .map((list) => Uint8List.fromList(list)),
-      );
+    // TODO: Support chunked transfer encoding
+    // var coding = headers['transfer-encoding'];
+    // if (coding != null && !equalsIgnoreAsciiCase(coding, 'identity')) {
+    //   // If the response is already in a chunked encoding, de-chunk it because
+    //   // otherwise `dart:io` will try to add another layer of chunking.
+    //   //
+    //   // TODO(nweiz): Do this more cleanly when sdk#27886 is fixed.
+    //   var body = Body.fromDataStream(
+    //     chunkedCoding.encoder
+    //         .bind(read())
+    //         .map((list) => Uint8List.fromList(list)),
+    //   );
 
-      // TODO: Fix
-      // ignore: unused_local_variable
-      var response = change(
-        body: body,
-      );
-      httpResponse.headers.set(HttpHeaders.transferEncodingHeader, 'chunked');
-    } else if (statusCode >= 200 &&
-        statusCode != 204 &&
-        statusCode != 304 &&
-        contentLength == null &&
-        mimeType != 'multipart/byteranges') {
-      // If the response isn't chunked yet and there's no other way to tell its
-      // length, enable `dart:io`'s chunked encoding.
-      httpResponse.headers.set(HttpHeaders.transferEncodingHeader, 'chunked');
-    }
+    //   // TODO: Fix
+    //   // ignore: unused_local_variable
+    //   var response = change(
+    //     body: body,
+    //   );
+    //   httpResponse.headers.set(HttpHeaders.transferEncodingHeader, 'chunked');
+    // } else if (statusCode >= 200 &&
+    //     statusCode != 204 &&
+    //     statusCode != 304 &&
+    //     contentLength == null &&
+    //     mimeType != 'multipart/byteranges') {
+    //   // If the response isn't chunked yet and there's no other way to tell its
+    //   // length, enable `dart:io`'s chunked encoding.
+    //   httpResponse.headers.set(HttpHeaders.transferEncodingHeader, 'chunked');
+    // }
 
-    if (poweredByHeader != null &&
-        !headers.containsKey(_xPoweredByResponseHeader)) {
-      httpResponse.headers.set(_xPoweredByResponseHeader, poweredByHeader);
-    }
+    // if (poweredByHeader != null &&
+    //     !headers.containsKey(_xPoweredByResponseHeader)) {
+    //   httpResponse.headers.set(_xPoweredByResponseHeader, poweredByHeader);
+    // }
 
-    if (!headers.containsKey(HttpHeaders.dateHeader)) {
-      httpResponse.headers.date = DateTime.now().toUtc();
-    }
+    // if (!headers.containsKey(HttpHeaders.dateHeader)) {
+    //   httpResponse.headers.date = DateTime.now().toUtc();
+    // }
 
     return httpResponse.addStream(read()).then((_) => httpResponse.close());
   }
 }
-
-/// Adds content-type information to [headers].
-///
-/// Returns a new map without modifying [headers]. This is used to add
-/// content-type information when creating a 500 response with a default body.
-Map<String, Object> _adjustErrorHeaders(
-    Map<String, /* String | List<String> */ Object>? headers) {
-  if (headers == null || headers['content-type'] == null) {
-    return addHeader(headers, 'content-type', 'text/plain');
-  }
-
-  final contentTypeValue =
-      expandHeaderValue(headers['content-type']!).join(',');
-  var contentType =
-      MediaType.parse(contentTypeValue).change(mimeType: 'text/plain');
-  return addHeader(headers, 'content-type', contentType.toString());
-}
-
-/// Converts [location], which may be a [String] or a [Uri], to a [String].
-///
-/// Throws an [ArgumentError] if [location] isn't a [String] or a [Uri].
-String _locationToString(Object location) {
-  if (location is String) return location;
-  if (location is Uri) return location.toString();
-
-  throw ArgumentError(
-    'Response location must be a String or Uri, was "$location".',
-  );
-}
-
-/// Common header to advertise the server technology being used.
-///
-/// See https://webtechsurvey.com/response-header/x-powered-by
-const _xPoweredByResponseHeader = 'X-Powered-By';

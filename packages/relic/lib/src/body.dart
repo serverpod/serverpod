@@ -6,6 +6,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:relic/src/headers.dart';
+
 /// The body of a request or response.
 ///
 /// This tracks whether the body has been read. It's separate from [Message]
@@ -19,13 +21,19 @@ class Body {
 
   /// The encoding used to encode the stream returned by [read], or `null` if no
   /// encoding was used.
-  final Encoding? encoding;
+  // final Encoding? encoding;
 
   /// The length of the stream returned by [read], or `null` if that can't be
   /// determined efficiently.
   final int? contentLength;
 
-  Body._(this._stream, this.encoding, this.contentLength);
+  final BodyType contentType;
+
+  Body._(
+    this._stream,
+    this.contentType,
+    this.contentLength,
+  );
 
   /// Converts [body] to a byte stream and wraps it in a [Body].
   ///
@@ -73,13 +81,21 @@ class Body {
   //   return Body._(stream, encoding, contentLength);
   // }
 
-  static Body empty({Encoding encoding = utf8}) => Body._(
+  static Body empty({
+    Encoding encoding = utf8,
+    BodyType contentType = BodyType.plainText,
+  }) =>
+      Body._(
         Stream.empty(),
-        encoding,
+        contentType,
         0,
       );
 
-  factory Body.fromString(String body, {Encoding encoding = utf8}) {
+  factory Body.fromString(
+    String body, {
+    Encoding encoding = utf8,
+    BodyType contentType = BodyType.plainText,
+  }) {
     Uint8List encoded;
     if (encoding == utf8) {
       encoded = utf8.encode(body);
@@ -87,7 +103,7 @@ class Body {
       encoded = Uint8List.fromList(encoding.encode(body));
     }
 
-    return Body._(Stream.value(encoded), encoding, encoded.length);
+    return Body._(Stream.value(encoded), contentType, encoded.length);
 
     // if (encoding == null) {
     //   var encoded = utf8.encode(body);
@@ -104,12 +120,20 @@ class Body {
     // return Body._(stream, encoding, contentLength);
   }
 
-  factory Body.fromDataStream(Stream<Uint8List> body, {Encoding? encoding}) {
-    return Body._(body, encoding, null);
+  factory Body.fromDataStream(
+    Stream<Uint8List> body, {
+    Encoding? encoding,
+    BodyType contentType = BodyType.plainText,
+  }) {
+    return Body._(body, contentType, null);
   }
 
-  factory Body.fromData(Uint8List body, {Encoding? encoding}) {
-    return Body._(Stream.value(body), encoding, body.length);
+  factory Body.fromData(
+    Uint8List body, {
+    Encoding? encoding,
+    BodyType contentType = BodyType.binary,
+  }) {
+    return Body._(Stream.value(body), contentType, body.length);
   }
 
   /// Returns a [Stream] representing the body.

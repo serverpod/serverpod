@@ -22,10 +22,9 @@
 library;
 
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' as io;
 
 import 'package:stack_trace/stack_trace.dart';
-import 'package:stream_channel/stream_channel.dart';
 
 import 'relic.dart';
 import 'src/util.dart';
@@ -47,19 +46,19 @@ export 'src/io_server.dart' show IOServer;
 /// Pass [poweredByHeader] to set the default content for "X-Powered-By",
 /// pass `null` to omit this header.
 /// {@endtemplate}
-Future<HttpServer> serve(
+Future<io.HttpServer> serve(
   Handler handler,
   Object address,
   int port, {
-  SecurityContext? securityContext,
+  io.SecurityContext? securityContext,
   int? backlog,
   bool shared = false,
   String? poweredByHeader = 'Dart with package:shelf',
 }) async {
   backlog ??= 0;
   var server = await (securityContext == null
-      ? HttpServer.bind(address, port, backlog: backlog, shared: shared)
-      : HttpServer.bindSecure(
+      ? io.HttpServer.bind(address, port, backlog: backlog, shared: shared)
+      : io.HttpServer.bindSecure(
           address,
           port,
           securityContext,
@@ -82,7 +81,7 @@ Future<HttpServer> serve(
 ///
 /// {@macro shelf_io_header_defaults}
 void serveRequests(
-  Stream<HttpRequest> requests,
+  Stream<io.HttpRequest> requests,
   Handler handler, {
   String? poweredByHeader = 'Dart with package:shelf',
 }) {
@@ -100,23 +99,19 @@ void serveRequests(
 ///
 /// {@macro shelf_io_header_defaults}
 Future<void> handleRequest(
-  HttpRequest request,
+  io.HttpRequest request,
   Handler handler, {
   String? poweredByHeader = 'Dart with package:shelf',
 }) async {
   Request shelfRequest;
   try {
-    shelfRequest = _fromHttpRequest(request);
+    shelfRequest = Request.fromHttpRequest(request);
     // ignore: avoid_catching_errors
   } on ArgumentError catch (error, stackTrace) {
     if (error.name == 'method' || error.name == 'requestedUri') {
       // TODO: use a reduced log level when using package:logging
       _logTopLevelError('Error parsing request.\n$error', stackTrace);
-      final response = Response(
-        400,
-        body: Body.fromString('Bad Request'),
-        headers: {HttpHeaders.contentTypeHeader: 'text/plain'},
-      );
+      final response = Response.badRequest();
       await response.writeHttpResponse(request.response, poweredByHeader);
     } else {
       _logTopLevelError('Error parsing request.\n$error', stackTrace);
@@ -173,37 +168,9 @@ Future<void> handleRequest(
   var message = StringBuffer()
     ..writeln('Got a response for hijacked request '
         '${shelfRequest.method} ${shelfRequest.requestedUri}:')
-    ..writeln(response.statusCode);
-  response.headers.forEach((key, value) => message.writeln('$key: $value'));
+    ..writeln(response.statusCode)
+    ..writeln(response.headers);
   throw Exception(message.toString().trim());
-}
-
-/// Creates a new [Request] from the provided [HttpRequest].
-Request _fromHttpRequest(HttpRequest request) {
-  var headers = <String, List<String>>{};
-  request.headers.forEach((k, v) {
-    headers[k] = v;
-  });
-
-  // Remove the Transfer-Encoding header per the adapter requirements.
-  headers.remove(HttpHeaders.transferEncodingHeader);
-
-  void onHijack(void Function(StreamChannel<List<int>>) callback) {
-    request.response
-        .detachSocket(writeHeaders: false)
-        .then((socket) => callback(StreamChannel(socket, socket)));
-  }
-
-  return Request(
-    request.method,
-    request.requestedUri,
-    connectionInfo: request.connectionInfo,
-    protocolVersion: request.protocolVersion,
-    headers: headers,
-    body: Body.fromDataStream(request),
-    onHijack: onHijack,
-    context: {},
-  );
 }
 
 // TODO(kevmoo) A developer mode is needed to include error info in response
@@ -227,7 +194,7 @@ void _logTopLevelError(String message, StackTrace stackTrace) {
       .foldFrames((frame) => frame.isCore || frame.package == 'shelf')
       .terse;
 
-  stderr.writeln('ERROR - ${DateTime.now()}');
-  stderr.writeln(message);
-  stderr.writeln(chain);
+  io.stderr.writeln('ERROR - ${DateTime.now()}');
+  io.stderr.writeln(message);
+  io.stderr.writeln(chain);
 }

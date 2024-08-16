@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 void main() {
   test('Headers.from', () {
-    var header = Headers.from({
+    var header = CustomHeaders.from({
       'FoO': ['x', 'y'],
       'bAr': ['z'],
     });
@@ -15,7 +15,7 @@ void main() {
   });
 
   test('Headers.fromEntries', () {
-    var header = Headers.fromEntries({
+    var header = CustomHeaders.fromEntries({
       'FoO': ['x', 'y'],
       'bAr': ['z'],
     }.entries);
