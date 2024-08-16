@@ -14,7 +14,7 @@ dependencies:
   serverpod_serialization: 2.0.2
   serverpod_shared: 2.0.2
   crypto: ^3.0.2
-  email_validator: ^2.1.17
+  email_validator: '>=2.1.17 <4.0.0'
   openid_client: ^0.4.8
   meta: ^1.8.0
   googleapis: ^11.0.0
