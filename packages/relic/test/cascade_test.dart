@@ -12,19 +12,19 @@ void main() {
     late Handler handler;
     setUp(() {
       handler = Cascade().add((request) {
-        if (request.headers['one'] == 'false') {
+        if (request.headers.custom.singleValues['one'] == 'false') {
           return Response.notFound(body: Body.fromString('handler 1'));
         } else {
           return Response.ok(body: Body.fromString('handler 1'));
         }
       }).add((request) {
-        if (request.headers['two'] == 'false') {
+        if (request.headers.custom.singleValues['two'] == 'false') {
           return Response.notFound(body: Body.fromString('handler 2'));
         } else {
           return Response.ok(body: Body.fromString('handler 2'));
         }
       }).add((request) {
-        if (request.headers['three'] == 'false') {
+        if (request.headers.custom.singleValues['three'] == 'false') {
           return Response.notFound(body: Body.fromString('handler 3'));
         } else {
           return Response.ok(body: Body.fromString('handler 3'));
@@ -42,7 +42,13 @@ void main() {
         'the second response should be returned if it matches and the first '
         "doesn't", () async {
       final response = await handler(
-        Request('GET', localhostUri, headers: {'one': 'false'}),
+        Request(
+          'GET',
+          localhostUri,
+          headers: Headers.response(
+            custom: CustomHeaders({'one': 'false'}),
+          ),
+        ),
       );
       expect(response.statusCode, equals(200));
       expect(response.readAsString(), completion(equals('handler 2')));
@@ -52,7 +58,13 @@ void main() {
         'the third response should be returned if it matches and the first '
         "two don't", () async {
       final response = await handler(
-        Request('GET', localhostUri, headers: {'one': 'false', 'two': 'false'}),
+        Request(
+          'GET',
+          localhostUri,
+          headers: Headers.response(
+            custom: CustomHeaders({'one': 'false', 'two': 'false'}),
+          ),
+        ),
       );
 
       expect(response.statusCode, equals(200));
@@ -65,7 +77,11 @@ void main() {
         Request(
           'GET',
           localhostUri,
-          headers: {'one': 'false', 'two': 'false', 'three': 'false'},
+          headers: Headers.response(
+            custom: CustomHeaders(
+              {'one': 'false', 'two': 'false', 'three': 'false'},
+            ),
+          ),
         ),
       );
       expect(response.statusCode, equals(404));
@@ -97,7 +113,7 @@ void main() {
 
   test('[statusCodes] controls which statuses cause cascading', () async {
     var handler = Cascade(statusCodes: [302, 403])
-        .add((_) => Response.found('/'))
+        .add((_) => Response.found(Uri.parse('/')))
         .add((_) => Response.forbidden(body: Body.fromString('handler 2')))
         .add((_) => Response.notFound(body: Body.fromString('handler 3')))
         .add((_) => Response.ok(body: Body.fromString('handler 4')))
@@ -111,7 +127,7 @@ void main() {
   test('[shouldCascade] controls which responses cause cascading', () async {
     var handler =
         Cascade(shouldCascade: (response) => response.statusCode.isOdd)
-            .add((_) => Response.movedPermanently('/'))
+            .add((_) => Response.movedPermanently(Uri.parse('/')))
             .add((_) => Response.forbidden(body: Body.fromString('handler 2')))
             .add((_) => Response.notFound(body: Body.fromString('handler 3')))
             .add((_) => Response.ok(body: Body.fromString('handler 4')))

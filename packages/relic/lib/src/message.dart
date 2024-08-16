@@ -5,25 +5,20 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:collection/collection.dart';
-import 'package:http_parser/http_parser.dart';
-
 import 'body.dart';
 import 'headers.dart';
-import 'shelf_unmodifiable_map.dart';
-import 'util.dart';
 
 // Body extractBody(Message message) => message.body;
 
 /// The default set of headers for a message created with no body and no
 /// explicit headers.
-final _defaultHeaders = Headers.from({
-  'content-length': ['0'],
-});
+// final _defaultHeaders = Headers.from({
+//   'content-length': ['0'],
+// });
 
 /// Represents logic shared between [Request] and [Response].
 abstract class Message {
-  final Headers _headers;
+  final Headers headers;
 
   /// The HTTP headers with case-insensitive keys.
   ///
@@ -31,7 +26,7 @@ abstract class Message {
   /// by concatenating them with a comma.
   ///
   /// The returned map is unmodifiable.
-  Map<String, String> get headers => _headers.singleValues;
+  // Map<String, String> get headers => _headers.singleValues;
 
   /// The HTTP headers with multiple values with case-insensitive keys.
   ///
@@ -40,7 +35,7 @@ abstract class Message {
   /// for that occurrence.
   ///
   /// The returned map and the lists it contains are unmodifiable.
-  Map<String, List<String>> get headersAll => _headers;
+  // Map<String, List<String>> get headersAll => _headers;
 
   /// Extra context that can be used by for middleware and handlers.
   ///
@@ -77,37 +72,44 @@ abstract class Message {
   /// If [encoding] is passed, the "encoding" field of the Content-Type header
   /// in [headers] will be set appropriately. If there is no existing
   /// Content-Type header, it will be set to "application/octet-stream".
-  Message(
-    Body? body, {
-    Map<String, /* String | List<String> */ Object>? headers,
-    Map<String, Object>? context,
-  }) : this._withBody(body ?? Body.empty(), headers, context);
+  // Message(
+  //   Body? body, {
+  //   Headers headers,
+  //   Map<String, Object>? context,
+  // }) : this._withBody(
+  //         body ?? Body.empty(),
+  //         headers,
+  //         context,
+  //       );
 
-  Message._withBody(
-      Body body, Map<String, Object>? headers, Map<String, Object>? context)
-      : this._withHeadersAll(
-          body,
-          Headers.from(_adjustHeaders(expandToHeadersAll(headers), body)),
-          context,
-        );
+  // Message._withBody(Body body, Headers headers, Map<String, Object>? context)
+  //     : this._withHeadersAll(
+  //         body,
+  //         Headers.from(_adjustHeaders(expandToHeadersAll(headers), body)),
+  //         context,
+  //       );
 
-  Message._withHeadersAll(
-      Body body, Headers headers, Map<String, Object>? context)
-      : body = body,
-        _headers = headers,
-        context = ShelfUnmodifiableMap(context, ignoreKeyCase: false);
+  // Message._withHeadersAll(
+  //   this.body,
+  //   Headers headers,
+  //   Map<String, Object>? context,
+  // )   : _headers = headers,
+  //       context = ShelfUnmodifiableMap(context, ignoreKeyCase: false);
+
+  Message(this.body, this.headers, {this.context = const {}});
 
   /// The contents of the content-length field in [headers].
   ///
   /// If not set, `null`.
-  int? get contentLength {
-    if (_contentLengthCache != null) return _contentLengthCache;
-    if (!headers.containsKey('content-length')) return null;
-    _contentLengthCache = int.parse(headers['content-length']!);
-    return _contentLengthCache;
-  }
+  // int? get contentLength {
+  //   b
+  //   if (_contentLengthCache != null) return _contentLengthCache;
+  //   if (!headers.containsKey('content-length')) return null;
+  //   _contentLengthCache = int.parse(headers['content-length']!);
+  //   return _contentLengthCache;
+  // }
 
-  int? _contentLengthCache;
+  // int? _contentLengthCache;
 
   /// The MIME type of the message.
   ///
@@ -115,37 +117,37 @@ abstract class Message {
   /// the MIME type, without any Content-Type parameters.
   ///
   /// If [headers] doesn't have a Content-Type header, this will be `null`.
-  String? get mimeType {
-    var contentType = _contentType;
-    if (contentType == null) return null;
-    return contentType.mimeType;
-  }
+  // String? get mimeType {
+  //   var contentType = _contentType;
+  //   if (contentType == null) return null;
+  //   return contentType.mimeType;
+  // }
 
-  /// The encoding of the message body.
-  ///
-  /// This is parsed from the "charset" parameter of the Content-Type header in
-  /// [headers].
-  ///
-  /// If [headers] doesn't have a Content-Type header or it specifies an
-  /// encoding that `dart:convert` doesn't support, this will be `null`.
-  Encoding? get encoding {
-    var contentType = _contentType;
-    if (contentType == null) return null;
-    if (!contentType.parameters.containsKey('charset')) return null;
-    return Encoding.getByName(contentType.parameters['charset']);
-  }
+  // /// The encoding of the message body.
+  // ///
+  // /// This is parsed from the "charset" parameter of the Content-Type header in
+  // /// [headers].
+  // ///
+  // /// If [headers] doesn't have a Content-Type header or it specifies an
+  // /// encoding that `dart:convert` doesn't support, this will be `null`.
+  // Encoding? get encoding {
+  //   var contentType = _contentType;
+  //   if (contentType == null) return null;
+  //   if (!contentType.parameters.containsKey('charset')) return null;
+  //   return Encoding.getByName(contentType.parameters['charset']);
+  // }
 
-  /// The parsed version of the Content-Type header in [headers].
-  ///
-  /// This is cached for efficient access.
-  MediaType? get _contentType {
-    if (_contentTypeCache != null) return _contentTypeCache;
-    final contentTypeValue = headers['content-type'];
-    if (contentTypeValue == null) return null;
-    return _contentTypeCache = MediaType.parse(contentTypeValue);
-  }
+  // /// The parsed version of the Content-Type header in [headers].
+  // ///
+  // /// This is cached for efficient access.
+  // MediaType? get _contentType {
+  //   if (_contentTypeCache != null) return _contentTypeCache;
+  //   final contentTypeValue = headers['content-type'];
+  //   if (contentTypeValue == null) return null;
+  //   return _contentTypeCache = MediaType.parse(contentTypeValue);
+  // }
 
-  MediaType? _contentTypeCache;
+  // MediaType? _contentTypeCache;
 
   /// Returns a [Stream] representing the body.
   ///
@@ -160,74 +162,74 @@ abstract class Message {
   ///
   /// This calls [read] internally, which can only be called once.
   Future<String> readAsString([Encoding? encoding]) {
-    encoding ??= this.encoding ?? utf8;
+    encoding ??= body.contentType.encoding ?? utf8;
     return encoding.decodeStream(read());
   }
 
   /// Creates a new [Message] by copying existing values and applying specified
   /// changes.
   Message change({
-    Map<String, String> headers,
+    Headers headers,
     Map<String, Object> context,
     Body? body,
   });
 }
 
-/// Adds information about [encoding] to [headers].
-///
-/// Returns a new map without modifying [headers].
-Map<String, List<String>> _adjustHeaders(
-  Map<String, List<String>>? headers,
-  Body body,
-) {
-  var sameEncoding = _sameEncoding(headers, body);
-  if (sameEncoding) {
-    if (body.contentLength == null ||
-        findHeader(headers, 'content-length') == '${body.contentLength}') {
-      return headers ?? Headers.empty();
-    } else if (body.contentLength == 0 &&
-        (headers == null || headers.isEmpty)) {
-      return _defaultHeaders;
-    }
-  }
+// /// Adds information about [encoding] to [headers].
+// ///
+// /// Returns a new map without modifying [headers].
+// Map<String, List<String>> _adjustHeaders(
+//   Map<String, List<String>>? headers,
+//   Body body,
+// ) {
+//   var sameEncoding = _sameEncoding(headers, body);
+//   if (sameEncoding) {
+//     if (body.contentLength == null ||
+//         findHeader(headers, 'content-length') == '${body.contentLength}') {
+//       return headers ?? Headers.empty();
+//     } else if (body.contentLength == 0 &&
+//         (headers == null || headers.isEmpty)) {
+//       return _defaultHeaders;
+//     }
+//   }
 
-  var newHeaders = headers == null
-      ? CaseInsensitiveMap<List<String>>()
-      : CaseInsensitiveMap<List<String>>.from(headers);
+//   var newHeaders = headers == null
+//       ? CaseInsensitiveMap<List<String>>()
+//       : CaseInsensitiveMap<List<String>>.from(headers);
 
-  if (!sameEncoding) {
-    if (newHeaders['content-type'] == null) {
-      newHeaders['content-type'] = [
-        'application/octet-stream; charset=${body.encoding!.name}'
-      ];
-    } else {
-      final contentType =
-          MediaType.parse(joinHeaderValues(newHeaders['content-type'])!)
-              .change(parameters: {'charset': body.encoding!.name});
-      newHeaders['content-type'] = [contentType.toString()];
-    }
-  }
+//   if (!sameEncoding) {
+//     if (newHeaders['content-type'] == null) {
+//       newHeaders['content-type'] = [
+//         'application/octet-stream; charset=${body.contentType.encoding!.name}'
+//       ];
+//     } else {
+//       final contentType =
+//           MediaType.parse(joinHeaderValues(newHeaders['content-type'])!)
+//               .change(parameters: {'charset': body.contentType.encoding!.name});
+//       newHeaders['content-type'] = [contentType.toString()];
+//     }
+//   }
 
-  final explicitOverrideOfZeroLength =
-      body.contentLength == 0 && findHeader(headers, 'content-length') != null;
+//   final explicitOverrideOfZeroLength =
+//       body.contentLength == 0 && findHeader(headers, 'content-length') != null;
 
-  if (body.contentLength != null && !explicitOverrideOfZeroLength) {
-    final coding = joinHeaderValues(newHeaders['transfer-encoding']);
-    if (coding == null || equalsIgnoreAsciiCase(coding, 'identity')) {
-      newHeaders['content-length'] = [body.contentLength.toString()];
-    }
-  }
+//   if (body.contentLength != null && !explicitOverrideOfZeroLength) {
+//     final coding = joinHeaderValues(newHeaders['transfer-encoding']);
+//     if (coding == null || equalsIgnoreAsciiCase(coding, 'identity')) {
+//       newHeaders['content-length'] = [body.contentLength.toString()];
+//     }
+//   }
 
-  return newHeaders;
-}
+//   return newHeaders;
+// }
 
-/// Returns whether [headers] declares the same encoding as [body].
-bool _sameEncoding(Map<String, List<String>?>? headers, Body body) {
-  if (body.encoding == null) return true;
+// /// Returns whether [headers] declares the same encoding as [body].
+// bool _sameEncoding(Map<String, List<String>?>? headers, Body body) {
+//   if (body.contentType.encoding == null) return true;
 
-  var contentType = findHeader(headers, 'content-type');
-  if (contentType == null) return false;
+//   var contentType = findHeader(headers, 'content-type');
+//   if (contentType == null) return false;
 
-  var charset = MediaType.parse(contentType).parameters['charset'];
-  return Encoding.getByName(charset) == body.encoding;
-}
+//   var charset = MediaType.parse(contentType).parameters['charset'];
+//   return Encoding.getByName(charset) == body.contentType.encoding;
+// }

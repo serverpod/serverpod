@@ -138,6 +138,8 @@ class WebServer {
       return;
     }
 
+    print('Handle: $uri');
+
     String? authenticationKey;
     for (var cookie in request.cookies) {
       if (cookie.name == 'auth') {
@@ -165,10 +167,15 @@ class WebServer {
         if (response.statusCode == HttpStatus.notFound) {
           continue;
         }
+        print('Writing $uri');
         await response.writeHttpResponse(request.response, 'serverpod-relic');
+        print('Finished $uri');
+        await session.close();
+        return;
       }
     }
 
+    print('Not found. $uri');
     // No matching patch found
     request.response.statusCode = HttpStatus.notFound;
     await request.response.close();
@@ -227,12 +234,6 @@ abstract class Route {
 
   /// Creates a new [Route].
   Route({this.method = RouteMethod.get});
-
-  /// Sets the headers of the response. Default is text/html with UTF-8
-  /// encoding.
-  void setHeaders(HttpHeaders headers) {
-    headers.contentType = ContentType('text', 'html', charset: 'utf-8');
-  }
 
   /// Handles a call to this route. This method is responsible for setting
   /// a correct response headers, status code, and write the response body to
@@ -307,8 +308,10 @@ abstract class WidgetRoute extends Route {
 
     if (widget is WidgetJson) {
       return Response.ok(
-        body: Body.fromString(widget.toString()),
-        headers: {'content-type': 'application/json'},
+        body: Body.fromString(
+          widget.toString(),
+          contentType: BodyType.json,
+        ),
       );
     } else if (widget is WidgetRedirectPermanently) {
       return Response.movedPermanently(widget.url);
@@ -316,8 +319,10 @@ abstract class WidgetRoute extends Route {
       return Response.seeOther(widget.url);
     } else {
       return Response.ok(
-        body: Body.fromString(widget.toString()),
-        headers: {'content-type': 'text/html'},
+        body: Body.fromString(
+          widget.toString(),
+          contentType: BodyType.html,
+        ),
       );
     }
   }

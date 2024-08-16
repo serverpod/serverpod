@@ -3,14 +3,14 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' as io;
 
-import 'package:http_parser/http_parser.dart';
 import 'body.dart';
 import 'package:stream_channel/stream_channel.dart';
 
 import 'hijack_exception.dart';
 import 'message.dart';
+import 'headers.dart';
 import 'util.dart';
 
 /// An HTTP request to be processed by a Shelf application.
@@ -54,7 +54,7 @@ class Request extends Message {
   final Uri requestedUri;
 
   /// The [HttpConnectionInfo] info associated with this request, if available.
-  final HttpConnectionInfo? connectionInfo;
+  final io.HttpConnectionInfo? connectionInfo;
 
   /// The callback wrapper for hijacking this request.
   ///
@@ -76,14 +76,14 @@ class Request extends Message {
   ///
   /// Throws [FormatException], if incoming HTTP request has an invalid
   /// If-Modified-Since header.
-  DateTime? get ifModifiedSince {
-    if (_ifModifiedSinceCache != null) return _ifModifiedSinceCache;
-    if (!headers.containsKey('if-modified-since')) return null;
-    _ifModifiedSinceCache = parseHttpDate(headers['if-modified-since']!);
-    return _ifModifiedSinceCache;
-  }
+  // DateTime? get ifModifiedSince {
+  //   if (_ifModifiedSinceCache != null) return _ifModifiedSinceCache;
+  //   if (!headers.containsKey('if-modified-since')) return null;
+  //   _ifModifiedSinceCache = parseHttpDate(headers['if-modified-since']!);
+  //   return _ifModifiedSinceCache;
+  // }
 
-  DateTime? _ifModifiedSinceCache;
+  // DateTime? _ifModifiedSinceCache;
 
   /// Creates a new [Request].
   ///
@@ -134,9 +134,9 @@ class Request extends Message {
   Request(
     String method,
     Uri requestedUri, {
-    HttpConnectionInfo? connectionInfo,
+    io.HttpConnectionInfo? connectionInfo,
     String? protocolVersion,
-    Map<String, /* String | List<String> */ Object>? headers,
+    Headers? headers,
     String? handlerPath,
     Uri? url,
     Body? body,
@@ -147,8 +147,8 @@ class Request extends Message {
           method,
           requestedUri,
           connectionInfo,
+          headers ?? Headers.request(),
           protocolVersion: protocolVersion,
-          headers: headers,
           url: url,
           handlerPath: handlerPath,
           body: body,
@@ -156,6 +156,25 @@ class Request extends Message {
           context: context,
           onHijack: onHijack == null ? null : _OnHijack(onHijack),
         );
+
+  factory Request.fromHttpRequest(io.HttpRequest request) {
+    void onHijack(void Function(StreamChannel<List<int>>) callback) {
+      request.response
+          .detachSocket(writeHeaders: false)
+          .then((socket) => callback(StreamChannel(socket, socket)));
+    }
+
+    return Request(
+      request.method,
+      request.requestedUri,
+      connectionInfo: request.connectionInfo,
+      protocolVersion: request.protocolVersion,
+      headers: Headers.fromHttpRequest(request),
+      body: Body.fromDataStream(request),
+      onHijack: onHijack,
+      context: {},
+    );
+  }
 
   /// This constructor has the same signature as [Request.new] except that
   /// accepts [onHijack] as [_OnHijack].
@@ -166,9 +185,9 @@ class Request extends Message {
   Request._(
     this.method,
     this.requestedUri,
-    this.connectionInfo, {
+    this.connectionInfo,
+    Headers headers, {
     String? protocolVersion,
-    Map<String, /* String | List<String> */ Object>? headers,
     String? handlerPath,
     Uri? url,
     Body? body,
@@ -179,7 +198,7 @@ class Request extends Message {
         url = _computeUrl(requestedUri, handlerPath, url),
         handlerPath = _computeHandlerPath(requestedUri, handlerPath, url),
         _onHijack = onHijack,
-        super(body, headers: headers, context: context) {
+        super(body ?? Body.empty(), headers, context: context ?? {}) {
     if (method.isEmpty) {
       throw ArgumentError.value(method, 'method', 'cannot be empty.');
     }
@@ -221,33 +240,6 @@ class Request extends Message {
     }
   }
 
-  factory Request.fromHttpRequest(HttpRequest request) {
-    var headers = <String, List<String>>{};
-    request.headers.forEach((k, v) {
-      headers[k] = v;
-    });
-
-    // Remove the Transfer-Encoding header per the adapter requirements.
-    headers.remove(HttpHeaders.transferEncodingHeader);
-
-    void onHijack(void Function(StreamChannel<List<int>>) callback) {
-      request.response
-          .detachSocket(writeHeaders: false)
-          .then((socket) => callback(StreamChannel(socket, socket)));
-    }
-
-    return Request(
-      request.method,
-      request.requestedUri,
-      connectionInfo: request.connectionInfo,
-      protocolVersion: request.protocolVersion,
-      headers: headers,
-      body: Body.fromDataStream(request),
-      onHijack: onHijack,
-      context: {},
-    );
-  }
-
   /// Creates a new [Request] by copying existing values and applying specified
   /// changes.
   ///
@@ -280,15 +272,16 @@ class Request extends Message {
   ///     print(request.url);        // => file.html
   @override
   Request change({
-    Map<String, /* String | List<String> */ Object?>? headers,
+    Headers? headers,
     Map<String, Object?>? context,
     String? path,
     Body? body,
   }) {
-    final headersAll = updateHeaders(this.headersAll, headers);
+    // final headersAll = updateHeaders(this.headersAll, headers);
     final newContext = updateMap<String, Object>(this.context, context);
 
     body ??= this.body;
+    headers ?? this.headers;
 
     var handlerPath = this.handlerPath;
     if (path != null) handlerPath += path;
@@ -297,8 +290,8 @@ class Request extends Message {
       method,
       requestedUri,
       connectionInfo,
+      headers!,
       protocolVersion: protocolVersion,
-      headers: headersAll,
       handlerPath: handlerPath,
       body: body,
       context: newContext,

@@ -83,10 +83,15 @@ class RouteStaticDirectory extends Route {
 
       return Response.ok(
         body: Body.fromData(fileContents),
-        headers: {
-          'Cache-Control': 'max-age=31536000',
-          'Content-Type': contentType?.mimeType ?? 'application/octet-stream',
-        },
+        headers: Headers.response(
+          custom: CustomHeaders(
+            {
+              'Cache-Control': 'max-age=31536000',
+              'Content-Type':
+                  contentType?.mimeType ?? 'application/octet-stream',
+            },
+          ),
+        ),
       );
     } catch (e) {
       // Couldn't find or load file.
