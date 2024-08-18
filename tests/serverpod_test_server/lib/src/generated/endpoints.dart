@@ -1554,7 +1554,9 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['deprecation'] as _i11.DeprecationEndpoint)
-                  .setGlobalDouble(
+                  .
+// ignore: deprecated_member_use_from_same_package
+                  setGlobalDouble(
             session,
             params['value'],
           ),
@@ -1567,7 +1569,9 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['deprecation'] as _i11.DeprecationEndpoint)
-                  .getGlobalDouble(session),
+                  .
+// ignore: deprecated_member_use_from_same_package
+                  getGlobalDouble(session),
         ),
       },
     );
