@@ -219,42 +219,36 @@ class _TypesListImpl extends TypesList {
     Object? aList = _Undefined,
   }) {
     return TypesList(
-      anInt: anInt is List<int>?
-          ? anInt
-          : this.anInt?.map((e0) => _i1.strictShallowClone(e0)).toList(),
-      aBool: aBool is List<bool>?
-          ? aBool
-          : this.aBool?.map((e0) => _i1.strictShallowClone(e0)).toList(),
+      anInt: anInt is List<int>? ? anInt : this.anInt?.map((e0) => e0).toList(),
+      aBool:
+          aBool is List<bool>? ? aBool : this.aBool?.map((e0) => e0).toList(),
       aDouble: aDouble is List<double>?
           ? aDouble
-          : this.aDouble?.map((e0) => _i1.strictShallowClone(e0)).toList(),
+          : this.aDouble?.map((e0) => e0).toList(),
       aDateTime: aDateTime is List<DateTime>?
           ? aDateTime
-          : this.aDateTime?.map((e0) => _i1.strictShallowClone(e0)).toList(),
+          : this.aDateTime?.map((e0) => e0).toList(),
       aString: aString is List<String>?
           ? aString
-          : this.aString?.map((e0) => _i1.strictShallowClone(e0)).toList(),
+          : this.aString?.map((e0) => e0).toList(),
       aByteData: aByteData is List<_i2.ByteData>?
           ? aByteData
-          : this.aByteData?.map((e0) => _i1.strictShallowClone(e0)).toList(),
+          : this.aByteData?.map((e0) => e0.clone()).toList(),
       aDuration: aDuration is List<Duration>?
           ? aDuration
-          : this.aDuration?.map((e0) => _i1.strictShallowClone(e0)).toList(),
+          : this.aDuration?.map((e0) => e0).toList(),
       aUuid: aUuid is List<_i1.UuidValue>?
           ? aUuid
-          : this.aUuid?.map((e0) => _i1.strictShallowClone(e0)).toList(),
+          : this.aUuid?.map((e0) => e0).toList(),
       anEnum: anEnum is List<_i3.TestEnum>?
           ? anEnum
-          : this.anEnum?.map((e0) => _i1.strictShallowClone(e0)).toList(),
+          : this.anEnum?.map((e0) => e0).toList(),
       aStringifiedEnum: aStringifiedEnum is List<_i3.TestEnumStringified>?
           ? aStringifiedEnum
-          : this
-              .aStringifiedEnum
-              ?.map((e0) => _i1.strictShallowClone(e0))
-              .toList(),
+          : this.aStringifiedEnum?.map((e0) => e0).toList(),
       anObject: anObject is List<_i3.Types>?
           ? anObject
-          : this.anObject?.map((e0) => _i1.strictShallowClone(e0)).toList(),
+          : this.anObject?.map((e0) => e0.copyWith()).toList(),
       aMap: aMap is List<Map<String, _i3.Types>>?
           ? aMap
           : this
@@ -264,15 +258,15 @@ class _TypesListImpl extends TypesList {
                     value1,
                   ) =>
                       MapEntry(
-                        _i1.strictShallowClone(key1),
-                        _i1.strictShallowClone(value1),
+                        key1,
+                        value1.copyWith(),
                       )))
               .toList(),
       aList: aList is List<List<_i3.Types>>?
           ? aList
           : this
               .aList
-              ?.map((e0) => e0.map((e1) => _i1.strictShallowClone(e1)).toList())
+              ?.map((e0) => e0.map((e1) => e1.copyWith()).toList())
               .toList(),
     );
   }

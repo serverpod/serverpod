@@ -94,10 +94,7 @@ class _RelationToMultipleMaxFieldNameImpl
       multipleMaxFieldNames:
           multipleMaxFieldNames is List<_i2.MultipleMaxFieldName>?
               ? multipleMaxFieldNames
-              : this
-                  .multipleMaxFieldNames
-                  ?.map((e0) => _i1.strictShallowClone(e0))
-                  .toList(),
+              : this.multipleMaxFieldNames?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

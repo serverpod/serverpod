@@ -57,7 +57,6 @@ class _ClusterInfoImpl extends ClusterInfo {
   @override
   ClusterInfo copyWith({List<_i2.ClusterServerInfo>? servers}) {
     return ClusterInfo(
-        servers: servers ??
-            this.servers.map((e0) => _i1.strictShallowClone(e0)).toList());
+        servers: servers ?? this.servers.map((e0) => e0.copyWith()).toList());
   }
 }

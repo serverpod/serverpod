@@ -151,13 +151,10 @@ class _CityWithLongTableNameImpl extends CityWithLongTableName {
       name: name ?? this.name,
       citizens: citizens is List<_i2.PersonWithLongTableName>?
           ? citizens
-          : this.citizens?.map((e0) => _i1.strictShallowClone(e0)).toList(),
+          : this.citizens?.map((e0) => e0.copyWith()).toList(),
       organizations: organizations is List<_i2.OrganizationWithLongTableName>?
           ? organizations
-          : this
-              .organizations
-              ?.map((e0) => _i1.strictShallowClone(e0))
-              .toList(),
+          : this.organizations?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

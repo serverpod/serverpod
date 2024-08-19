@@ -191,25 +191,21 @@ class _TableMigrationImpl extends TableMigration {
       dartName: dartName is String? ? dartName : this.dartName,
       module: module is String? ? module : this.module,
       schema: schema ?? this.schema,
-      addColumns: addColumns ??
-          this.addColumns.map((e0) => _i1.strictShallowClone(e0)).toList(),
-      deleteColumns: deleteColumns ??
-          this.deleteColumns.map((e0) => _i1.strictShallowClone(e0)).toList(),
+      addColumns:
+          addColumns ?? this.addColumns.map((e0) => e0.copyWith()).toList(),
+      deleteColumns:
+          deleteColumns ?? this.deleteColumns.map((e0) => e0).toList(),
       modifyColumns: modifyColumns ??
-          this.modifyColumns.map((e0) => _i1.strictShallowClone(e0)).toList(),
-      addIndexes: addIndexes ??
-          this.addIndexes.map((e0) => _i1.strictShallowClone(e0)).toList(),
-      deleteIndexes: deleteIndexes ??
-          this.deleteIndexes.map((e0) => _i1.strictShallowClone(e0)).toList(),
+          this.modifyColumns.map((e0) => e0.copyWith()).toList(),
+      addIndexes:
+          addIndexes ?? this.addIndexes.map((e0) => e0.copyWith()).toList(),
+      deleteIndexes:
+          deleteIndexes ?? this.deleteIndexes.map((e0) => e0).toList(),
       addForeignKeys: addForeignKeys ??
-          this.addForeignKeys.map((e0) => _i1.strictShallowClone(e0)).toList(),
-      deleteForeignKeys: deleteForeignKeys ??
-          this
-              .deleteForeignKeys
-              .map((e0) => _i1.strictShallowClone(e0))
-              .toList(),
-      warnings: warnings ??
-          this.warnings.map((e0) => _i1.strictShallowClone(e0)).toList(),
+          this.addForeignKeys.map((e0) => e0.copyWith()).toList(),
+      deleteForeignKeys:
+          deleteForeignKeys ?? this.deleteForeignKeys.map((e0) => e0).toList(),
+      warnings: warnings ?? this.warnings.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

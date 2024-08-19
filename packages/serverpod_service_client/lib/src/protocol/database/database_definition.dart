@@ -114,13 +114,9 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
     return DatabaseDefinition(
       name: name is String? ? name : this.name,
       moduleName: moduleName ?? this.moduleName,
-      tables: tables ??
-          this.tables.map((e0) => _i1.strictShallowClone(e0)).toList(),
+      tables: tables ?? this.tables.map((e0) => e0.copyWith()).toList(),
       installedModules: installedModules ??
-          this
-              .installedModules
-              .map((e0) => _i1.strictShallowClone(e0))
-              .toList(),
+          this.installedModules.map((e0) => e0.copyWith()).toList(),
       migrationApiVersion: migrationApiVersion ?? this.migrationApiVersion,
     );
   }

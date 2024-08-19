@@ -147,8 +147,7 @@ class _IndexDefinitionImpl extends IndexDefinition {
     return IndexDefinition(
       indexName: indexName ?? this.indexName,
       tableSpace: tableSpace is String? ? tableSpace : this.tableSpace,
-      elements: elements ??
-          this.elements.map((e0) => _i1.strictShallowClone(e0)).toList(),
+      elements: elements ?? this.elements.map((e0) => e0.copyWith()).toList(),
       type: type ?? this.type,
       isUnique: isUnique ?? this.isUnique,
       isPrimary: isPrimary ?? this.isPrimary,

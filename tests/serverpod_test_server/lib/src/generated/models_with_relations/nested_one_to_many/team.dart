@@ -158,7 +158,7 @@ class _TeamImpl extends Team {
       arena: arena is _i2.Arena? ? arena : this.arena?.copyWith(),
       players: players is List<_i2.Player>?
           ? players
-          : this.players?.map((e0) => _i1.strictShallowClone(e0)).toList(),
+          : this.players?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

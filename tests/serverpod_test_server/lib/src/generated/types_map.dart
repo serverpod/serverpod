@@ -543,8 +543,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0,
+                    value0,
                   )),
       aBoolKey: aBoolKey is Map<bool, String>?
           ? aBoolKey
@@ -553,8 +553,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0,
+                    value0,
                   )),
       aDoubleKey: aDoubleKey is Map<double, String>?
           ? aDoubleKey
@@ -563,8 +563,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0,
+                    value0,
                   )),
       aDateTimeKey: aDateTimeKey is Map<DateTime, String>?
           ? aDateTimeKey
@@ -573,8 +573,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0,
+                    value0,
                   )),
       aStringKey: aStringKey is Map<String, String>?
           ? aStringKey
@@ -583,8 +583,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0,
+                    value0,
                   )),
       aByteDataKey: aByteDataKey is Map<_i2.ByteData, String>?
           ? aByteDataKey
@@ -593,8 +593,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0.clone(),
+                    value0,
                   )),
       aDurationKey: aDurationKey is Map<Duration, String>?
           ? aDurationKey
@@ -603,8 +603,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0,
+                    value0,
                   )),
       aUuidKey: aUuidKey is Map<_i1.UuidValue, String>?
           ? aUuidKey
@@ -613,8 +613,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0,
+                    value0,
                   )),
       anEnumKey: anEnumKey is Map<_i3.TestEnum, String>?
           ? anEnumKey
@@ -623,8 +623,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0,
+                    value0,
                   )),
       aStringifiedEnumKey:
           aStringifiedEnumKey is Map<_i3.TestEnumStringified, String>?
@@ -634,8 +634,8 @@ class _TypesMapImpl extends TypesMap {
                     value0,
                   ) =>
                       MapEntry(
-                        _i1.strictShallowClone(key0),
-                        _i1.strictShallowClone(value0),
+                        key0,
+                        value0,
                       )),
       anObjectKey: anObjectKey is Map<_i3.Types, String>?
           ? anObjectKey
@@ -644,8 +644,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0.copyWith(),
+                    value0,
                   )),
       aMapKey: aMapKey is Map<Map<_i3.Types, String>, String>?
           ? aMapKey
@@ -659,10 +659,10 @@ class _TypesMapImpl extends TypesMap {
                       value1,
                     ) =>
                         MapEntry(
-                          _i1.strictShallowClone(key1),
-                          _i1.strictShallowClone(value1),
+                          key1.copyWith(),
+                          value1,
                         )),
-                    _i1.strictShallowClone(value0),
+                    value0,
                   )),
       aListKey: aListKey is Map<List<_i3.Types>, String>?
           ? aListKey
@@ -671,8 +671,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    key0.map((e1) => _i1.strictShallowClone(e1)).toList(),
-                    _i1.strictShallowClone(value0),
+                    key0.map((e1) => e1.copyWith()).toList(),
+                    value0,
                   )),
       anIntValue: anIntValue is Map<String, int>?
           ? anIntValue
@@ -681,8 +681,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0,
+                    value0,
                   )),
       aBoolValue: aBoolValue is Map<String, bool>?
           ? aBoolValue
@@ -691,8 +691,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0,
+                    value0,
                   )),
       aDoubleValue: aDoubleValue is Map<String, double>?
           ? aDoubleValue
@@ -701,8 +701,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0,
+                    value0,
                   )),
       aDateTimeValue: aDateTimeValue is Map<String, DateTime>?
           ? aDateTimeValue
@@ -711,8 +711,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0,
+                    value0,
                   )),
       aStringValue: aStringValue is Map<String, String>?
           ? aStringValue
@@ -721,8 +721,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0,
+                    value0,
                   )),
       aByteDataValue: aByteDataValue is Map<String, _i2.ByteData>?
           ? aByteDataValue
@@ -731,8 +731,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0,
+                    value0.clone(),
                   )),
       aDurationValue: aDurationValue is Map<String, Duration>?
           ? aDurationValue
@@ -741,8 +741,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0,
+                    value0,
                   )),
       aUuidValue: aUuidValue is Map<String, _i1.UuidValue>?
           ? aUuidValue
@@ -751,8 +751,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0,
+                    value0,
                   )),
       anEnumValue: anEnumValue is Map<String, _i3.TestEnum>?
           ? anEnumValue
@@ -761,8 +761,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0,
+                    value0,
                   )),
       aStringifiedEnumValue:
           aStringifiedEnumValue is Map<String, _i3.TestEnumStringified>?
@@ -772,8 +772,8 @@ class _TypesMapImpl extends TypesMap {
                     value0,
                   ) =>
                       MapEntry(
-                        _i1.strictShallowClone(key0),
-                        _i1.strictShallowClone(value0),
+                        key0,
+                        value0,
                       )),
       anObjectValue: anObjectValue is Map<String, _i3.Types>?
           ? anObjectValue
@@ -782,8 +782,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0,
+                    value0.copyWith(),
                   )),
       aMapValue: aMapValue is Map<String, Map<String, _i3.Types>>?
           ? aMapValue
@@ -792,14 +792,14 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
+                    key0,
                     value0.map((
                       key1,
                       value1,
                     ) =>
                         MapEntry(
-                          _i1.strictShallowClone(key1),
-                          _i1.strictShallowClone(value1),
+                          key1,
+                          value1.copyWith(),
                         )),
                   )),
       aListValue: aListValue is Map<String, List<_i3.Types>>?
@@ -809,8 +809,8 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    value0.map((e1) => _i1.strictShallowClone(e1)).toList(),
+                    key0,
+                    value0.map((e1) => e1.copyWith()).toList(),
                   )),
     );
   }

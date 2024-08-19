@@ -95,15 +95,15 @@ class _ModuleDatatypeImpl extends ModuleDatatype {
   }) {
     return ModuleDatatype(
       model: model ?? this.model.copyWith(),
-      list: list ?? this.list.map((e0) => _i1.strictShallowClone(e0)).toList(),
+      list: list ?? this.list.map((e0) => e0.copyWith()).toList(),
       map: map ??
           this.map.map((
                 key0,
                 value0,
               ) =>
                   MapEntry(
-                    _i1.strictShallowClone(key0),
-                    _i1.strictShallowClone(value0),
+                    key0,
+                    value0.copyWith(),
                   )),
     );
   }

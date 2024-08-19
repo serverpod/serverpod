@@ -46,7 +46,6 @@ class _LogResultImpl extends LogResult {
   @override
   LogResult copyWith({List<_i2.LogEntry>? entries}) {
     return LogResult(
-        entries: entries ??
-            this.entries.map((e0) => _i1.strictShallowClone(e0)).toList());
+        entries: entries ?? this.entries.map((e0) => e0.copyWith()).toList());
   }
 }

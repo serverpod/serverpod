@@ -229,7 +229,7 @@ class _ChatMessageImpl extends ChatMessage {
       sent: sent is bool? ? sent : this.sent,
       attachments: attachments is List<_i3.ChatMessageAttachment>?
           ? attachments
-          : this.attachments?.map((e0) => _i1.strictShallowClone(e0)).toList(),
+          : this.attachments?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

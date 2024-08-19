@@ -181,12 +181,10 @@ class _TableDefinitionImpl extends TableDefinition {
       module: module is String? ? module : this.module,
       schema: schema ?? this.schema,
       tableSpace: tableSpace is String? ? tableSpace : this.tableSpace,
-      columns: columns ??
-          this.columns.map((e0) => _i1.strictShallowClone(e0)).toList(),
-      foreignKeys: foreignKeys ??
-          this.foreignKeys.map((e0) => _i1.strictShallowClone(e0)).toList(),
-      indexes: indexes ??
-          this.indexes.map((e0) => _i1.strictShallowClone(e0)).toList(),
+      columns: columns ?? this.columns.map((e0) => e0.copyWith()).toList(),
+      foreignKeys:
+          foreignKeys ?? this.foreignKeys.map((e0) => e0.copyWith()).toList(),
+      indexes: indexes ?? this.indexes.map((e0) => e0.copyWith()).toList(),
       managed: managed is bool? ? managed : this.managed,
     );
   }

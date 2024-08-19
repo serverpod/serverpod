@@ -59,8 +59,8 @@ class _SimpleDataMapImpl extends SimpleDataMap {
                   value0,
                 ) =>
                     MapEntry(
-                      _i1.strictShallowClone(key0),
-                      _i1.strictShallowClone(value0),
+                      key0,
+                      value0.copyWith(),
                     )));
   }
 }

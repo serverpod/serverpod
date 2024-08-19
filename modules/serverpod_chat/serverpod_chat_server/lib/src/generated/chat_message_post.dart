@@ -116,7 +116,7 @@ class _ChatMessagePostImpl extends ChatMessagePost {
       clientMessageId: clientMessageId ?? this.clientMessageId,
       attachments: attachments is List<_i2.ChatMessageAttachment>?
           ? attachments
-          : this.attachments?.map((e0) => _i1.strictShallowClone(e0)).toList(),
+          : this.attachments?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

@@ -82,10 +82,8 @@ class _DatabaseMigrationImpl extends DatabaseMigration {
     int? migrationApiVersion,
   }) {
     return DatabaseMigration(
-      actions: actions ??
-          this.actions.map((e0) => _i1.strictShallowClone(e0)).toList(),
-      warnings: warnings ??
-          this.warnings.map((e0) => _i1.strictShallowClone(e0)).toList(),
+      actions: actions ?? this.actions.map((e0) => e0.copyWith()).toList(),
+      warnings: warnings ?? this.warnings.map((e0) => e0.copyWith()).toList(),
       migrationApiVersion: migrationApiVersion ?? this.migrationApiVersion,
     );
   }

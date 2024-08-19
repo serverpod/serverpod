@@ -93,8 +93,8 @@ class _FilterImpl extends Filter {
     return Filter(
       name: name ?? this.name,
       table: table ?? this.table,
-      constraints: constraints ??
-          this.constraints.map((e0) => _i1.strictShallowClone(e0)).toList(),
+      constraints:
+          constraints ?? this.constraints.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
