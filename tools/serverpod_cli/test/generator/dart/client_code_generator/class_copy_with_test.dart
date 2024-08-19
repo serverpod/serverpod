@@ -343,7 +343,8 @@ void main() {
       name: 'copyWith',
     );
 
-    test('then the clone method is called on field when copying the object.',
+    test(
+        'then the strictShallowClone method is called when copying the object.',
         () {
       var sourceCode = copyWithMethod?.body.toSource();
       expect(sourceCode,
@@ -381,7 +382,8 @@ void main() {
       name: 'copyWith',
     );
 
-    test('then the clone method is called on field when copying the object.',
+    test(
+        'then the strictShallowClone method is called when copying the object.',
         () {
       var sourceCode = copyWithMethod?.body.toSource();
       expect(sourceCode,
@@ -418,7 +420,8 @@ void main() {
       name: 'copyWith',
     );
 
-    test('then the clone method is called on field when copying the object.',
+    test(
+        'then the strictShallowClone method is called when copying the object.',
         () {
       var sourceCode = copyWithMethod?.body.toSource();
       expect(sourceCode,
@@ -455,8 +458,7 @@ void main() {
       name: 'copyWith',
     );
 
-    test('then the clone method is called on field when copying the object.',
-        () {
+    test('then the copyWith method is called when copying the object.', () {
       var sourceCode = copyWithMethod?.body.toSource();
       expect(sourceCode,
           '{return Example(nested: nested ?? this.nested.copyWith());}');
