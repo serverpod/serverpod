@@ -420,7 +420,7 @@ void main() {
         () {
       var sourceCode = copyWithMethod?.body.toSource();
       expect(sourceCode,
-          '{return Example(data: data ?? _i1.cloneTrivial(this.data));}');
+          '{return Example(data: data ?? _i1.strictShallowClone(this.data));}');
     }, skip: copyWithMethod == null);
   });
 
