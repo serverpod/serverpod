@@ -111,7 +111,7 @@ class _OrganizationImpl extends Organization {
       name: name ?? this.name,
       people: people is List<_i2.Person>?
           ? people
-          : this.people?.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          : this.people?.map((e0) => _i1.strictShallowClone(e0)).toList(),
       cityId: cityId is int? ? cityId : this.cityId,
       city: city is _i2.City? ? city : this.city?.copyWith(),
     );

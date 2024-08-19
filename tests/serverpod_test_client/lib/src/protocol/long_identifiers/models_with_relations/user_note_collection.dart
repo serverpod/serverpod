@@ -92,7 +92,7 @@ class _UserNoteCollectionImpl extends UserNoteCollection {
           ? userNotesPropertyName
           : this
               .userNotesPropertyName
-              ?.map((e0) => _i1.cloneTrivial(e0))
+              ?.map((e0) => _i1.strictShallowClone(e0))
               .toList(),
     );
   }

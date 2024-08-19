@@ -111,11 +111,11 @@ class _SessionLogInfoImpl extends SessionLogInfo {
   }) {
     return SessionLogInfo(
       sessionLogEntry: sessionLogEntry ?? this.sessionLogEntry.copyWith(),
-      queries:
-          queries ?? this.queries.map((e0) => _i1.cloneTrivial(e0)).toList(),
-      logs: logs ?? this.logs.map((e0) => _i1.cloneTrivial(e0)).toList(),
-      messages:
-          messages ?? this.messages.map((e0) => _i1.cloneTrivial(e0)).toList(),
+      queries: queries ??
+          this.queries.map((e0) => _i1.strictShallowClone(e0)).toList(),
+      logs: logs ?? this.logs.map((e0) => _i1.strictShallowClone(e0)).toList(),
+      messages: messages ??
+          this.messages.map((e0) => _i1.strictShallowClone(e0)).toList(),
     );
   }
 }

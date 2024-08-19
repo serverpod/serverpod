@@ -229,7 +229,7 @@ class _TypesImpl extends Types {
       aString: aString is String? ? aString : this.aString,
       aByteData: aByteData is _i2.ByteData?
           ? aByteData
-          : _i1.cloneTrivial(this.aByteData),
+          : _i1.strictShallowClone(this.aByteData),
       aDuration: aDuration is Duration? ? aDuration : this.aDuration,
       aUuid: aUuid is _i1.UuidValue? ? aUuid : this.aUuid,
       anEnum: anEnum is _i3.TestEnum? ? anEnum : this.anEnum,

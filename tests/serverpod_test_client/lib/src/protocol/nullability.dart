@@ -663,10 +663,10 @@ class _NullabilityImpl extends Nullability {
       aNullableDateTime: aNullableDateTime is DateTime?
           ? aNullableDateTime
           : this.aNullableDateTime,
-      aByteData: aByteData ?? _i1.cloneTrivial(this.aByteData),
+      aByteData: aByteData ?? _i1.strictShallowClone(this.aByteData),
       aNullableByteData: aNullableByteData is _i2.ByteData?
           ? aNullableByteData
-          : _i1.cloneTrivial(this.aNullableByteData),
+          : _i1.strictShallowClone(this.aNullableByteData),
       aDuration: aDuration ?? this.aDuration,
       aNullableDuration: aNullableDuration is Duration?
           ? aNullableDuration
@@ -679,115 +679,124 @@ class _NullabilityImpl extends Nullability {
           ? aNullableObject
           : this.aNullableObject?.copyWith(),
       anIntList: anIntList ??
-          this.anIntList.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          this.anIntList.map((e0) => _i1.strictShallowClone(e0)).toList(),
       aNullableIntList: aNullableIntList is List<int>?
           ? aNullableIntList
-          : this.aNullableIntList?.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          : this
+              .aNullableIntList
+              ?.map((e0) => _i1.strictShallowClone(e0))
+              .toList(),
       aListWithNullableInts: aListWithNullableInts ??
-          this.aListWithNullableInts.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          this
+              .aListWithNullableInts
+              .map((e0) => _i1.strictShallowClone(e0))
+              .toList(),
       aNullableListWithNullableInts:
           aNullableListWithNullableInts is List<int?>?
               ? aNullableListWithNullableInts
               : this
                   .aNullableListWithNullableInts
-                  ?.map((e0) => _i1.cloneTrivial(e0))
+                  ?.map((e0) => _i1.strictShallowClone(e0))
                   .toList(),
       anObjectList: anObjectList ??
-          this.anObjectList.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          this.anObjectList.map((e0) => _i1.strictShallowClone(e0)).toList(),
       aNullableObjectList: aNullableObjectList is List<_i3.SimpleData>?
           ? aNullableObjectList
           : this
               .aNullableObjectList
-              ?.map((e0) => _i1.cloneTrivial(e0))
+              ?.map((e0) => _i1.strictShallowClone(e0))
               .toList(),
       aListWithNullableObjects: aListWithNullableObjects ??
           this
               .aListWithNullableObjects
-              .map((e0) => _i1.cloneTrivial(e0))
+              .map((e0) => _i1.strictShallowClone(e0))
               .toList(),
       aNullableListWithNullableObjects:
           aNullableListWithNullableObjects is List<_i3.SimpleData?>?
               ? aNullableListWithNullableObjects
               : this
                   .aNullableListWithNullableObjects
-                  ?.map((e0) => _i1.cloneTrivial(e0))
+                  ?.map((e0) => _i1.strictShallowClone(e0))
                   .toList(),
       aDateTimeList: aDateTimeList ??
-          this.aDateTimeList.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          this.aDateTimeList.map((e0) => _i1.strictShallowClone(e0)).toList(),
       aNullableDateTimeList: aNullableDateTimeList is List<DateTime>?
           ? aNullableDateTimeList
           : this
               .aNullableDateTimeList
-              ?.map((e0) => _i1.cloneTrivial(e0))
+              ?.map((e0) => _i1.strictShallowClone(e0))
               .toList(),
       aListWithNullableDateTimes: aListWithNullableDateTimes ??
           this
               .aListWithNullableDateTimes
-              .map((e0) => _i1.cloneTrivial(e0))
+              .map((e0) => _i1.strictShallowClone(e0))
               .toList(),
       aNullableListWithNullableDateTimes:
           aNullableListWithNullableDateTimes is List<DateTime?>?
               ? aNullableListWithNullableDateTimes
               : this
                   .aNullableListWithNullableDateTimes
-                  ?.map((e0) => _i1.cloneTrivial(e0))
+                  ?.map((e0) => _i1.strictShallowClone(e0))
                   .toList(),
       aByteDataList: aByteDataList ??
-          this.aByteDataList.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          this.aByteDataList.map((e0) => _i1.strictShallowClone(e0)).toList(),
       aNullableByteDataList: aNullableByteDataList is List<_i2.ByteData>?
           ? aNullableByteDataList
           : this
               .aNullableByteDataList
-              ?.map((e0) => _i1.cloneTrivial(e0))
+              ?.map((e0) => _i1.strictShallowClone(e0))
               .toList(),
       aListWithNullableByteDatas: aListWithNullableByteDatas ??
           this
               .aListWithNullableByteDatas
-              .map((e0) => _i1.cloneTrivial(e0))
+              .map((e0) => _i1.strictShallowClone(e0))
               .toList(),
       aNullableListWithNullableByteDatas:
           aNullableListWithNullableByteDatas is List<_i2.ByteData?>?
               ? aNullableListWithNullableByteDatas
               : this
                   .aNullableListWithNullableByteDatas
-                  ?.map((e0) => _i1.cloneTrivial(e0))
+                  ?.map((e0) => _i1.strictShallowClone(e0))
                   .toList(),
       aDurationList: aDurationList ??
-          this.aDurationList.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          this.aDurationList.map((e0) => _i1.strictShallowClone(e0)).toList(),
       aNullableDurationList: aNullableDurationList is List<Duration>?
           ? aNullableDurationList
           : this
               .aNullableDurationList
-              ?.map((e0) => _i1.cloneTrivial(e0))
+              ?.map((e0) => _i1.strictShallowClone(e0))
               .toList(),
       aListWithNullableDurations: aListWithNullableDurations ??
           this
               .aListWithNullableDurations
-              .map((e0) => _i1.cloneTrivial(e0))
+              .map((e0) => _i1.strictShallowClone(e0))
               .toList(),
       aNullableListWithNullableDurations:
           aNullableListWithNullableDurations is List<Duration?>?
               ? aNullableListWithNullableDurations
               : this
                   .aNullableListWithNullableDurations
-                  ?.map((e0) => _i1.cloneTrivial(e0))
+                  ?.map((e0) => _i1.strictShallowClone(e0))
                   .toList(),
       aUuidList: aUuidList ??
-          this.aUuidList.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          this.aUuidList.map((e0) => _i1.strictShallowClone(e0)).toList(),
       aNullableUuidList: aNullableUuidList is List<_i1.UuidValue>?
           ? aNullableUuidList
-          : this.aNullableUuidList?.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          : this
+              .aNullableUuidList
+              ?.map((e0) => _i1.strictShallowClone(e0))
+              .toList(),
       aListWithNullableUuids: aListWithNullableUuids ??
           this
               .aListWithNullableUuids
-              .map((e0) => _i1.cloneTrivial(e0))
+              .map((e0) => _i1.strictShallowClone(e0))
               .toList(),
       aNullableListWithNullableUuids:
           aNullableListWithNullableUuids is List<_i1.UuidValue?>?
               ? aNullableListWithNullableUuids
               : this
                   .aNullableListWithNullableUuids
-                  ?.map((e0) => _i1.cloneTrivial(e0))
+                  ?.map((e0) => _i1.strictShallowClone(e0))
                   .toList(),
       anIntMap: anIntMap ??
           this.anIntMap.map((
@@ -795,8 +804,8 @@ class _NullabilityImpl extends Nullability {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.cloneTrivial(key0),
-                    _i1.cloneTrivial(value0),
+                    _i1.strictShallowClone(key0),
+                    _i1.strictShallowClone(value0),
                   )),
       aNullableIntMap: aNullableIntMap is Map<String, int>?
           ? aNullableIntMap
@@ -805,8 +814,8 @@ class _NullabilityImpl extends Nullability {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.cloneTrivial(key0),
-                    _i1.cloneTrivial(value0),
+                    _i1.strictShallowClone(key0),
+                    _i1.strictShallowClone(value0),
                   )),
       aMapWithNullableInts: aMapWithNullableInts ??
           this.aMapWithNullableInts.map((
@@ -814,8 +823,8 @@ class _NullabilityImpl extends Nullability {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.cloneTrivial(key0),
-                    _i1.cloneTrivial(value0),
+                    _i1.strictShallowClone(key0),
+                    _i1.strictShallowClone(value0),
                   )),
       aNullableMapWithNullableInts:
           aNullableMapWithNullableInts is Map<String, int?>?
@@ -825,8 +834,8 @@ class _NullabilityImpl extends Nullability {
                     value0,
                   ) =>
                       MapEntry(
-                        _i1.cloneTrivial(key0),
-                        _i1.cloneTrivial(value0),
+                        _i1.strictShallowClone(key0),
+                        _i1.strictShallowClone(value0),
                       )),
     );
   }

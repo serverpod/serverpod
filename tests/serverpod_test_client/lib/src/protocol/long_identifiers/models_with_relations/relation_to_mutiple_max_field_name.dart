@@ -96,7 +96,7 @@ class _RelationToMultipleMaxFieldNameImpl
               ? multipleMaxFieldNames
               : this
                   .multipleMaxFieldNames
-                  ?.map((e0) => _i1.cloneTrivial(e0))
+                  ?.map((e0) => _i1.strictShallowClone(e0))
                   .toList(),
     );
   }

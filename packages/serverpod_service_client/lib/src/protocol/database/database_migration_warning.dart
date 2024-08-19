@@ -103,8 +103,8 @@ class _DatabaseMigrationWarningImpl extends DatabaseMigrationWarning {
       type: type ?? this.type,
       message: message ?? this.message,
       table: table ?? this.table,
-      columns:
-          columns ?? this.columns.map((e0) => _i1.cloneTrivial(e0)).toList(),
+      columns: columns ??
+          this.columns.map((e0) => _i1.strictShallowClone(e0)).toList(),
       destrucive: destrucive ?? this.destrucive,
     );
   }

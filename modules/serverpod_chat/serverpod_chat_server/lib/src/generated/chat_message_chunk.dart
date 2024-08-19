@@ -94,8 +94,8 @@ class _ChatMessageChunkImpl extends ChatMessageChunk {
   }) {
     return ChatMessageChunk(
       channel: channel ?? this.channel,
-      messages:
-          messages ?? this.messages.map((e0) => _i1.cloneTrivial(e0)).toList(),
+      messages: messages ??
+          this.messages.map((e0) => _i1.strictShallowClone(e0)).toList(),
       hasOlderMessages: hasOlderMessages ?? this.hasOlderMessages,
     );
   }

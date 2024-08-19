@@ -91,7 +91,7 @@ class _ServerOnlyClassFieldImpl extends ServerOnlyClassField {
           ? serverOnlyClassList
           : this
               .serverOnlyClassList
-              ?.map((e0) => _i1.cloneTrivial(e0))
+              ?.map((e0) => _i1.strictShallowClone(e0))
               .toList(),
       serverOnlyClassMap:
           serverOnlyClassMap is Map<String, _i2.ServerOnlyClass>?
@@ -101,8 +101,8 @@ class _ServerOnlyClassFieldImpl extends ServerOnlyClassField {
                     value0,
                   ) =>
                       MapEntry(
-                        _i1.cloneTrivial(key0),
-                        _i1.cloneTrivial(value0),
+                        _i1.strictShallowClone(key0),
+                        _i1.strictShallowClone(value0),
                       )),
     );
   }

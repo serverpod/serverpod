@@ -152,12 +152,15 @@ class _ForeignKeyDefinitionImpl extends ForeignKeyDefinition {
   }) {
     return ForeignKeyDefinition(
       constraintName: constraintName ?? this.constraintName,
-      columns:
-          columns ?? this.columns.map((e0) => _i1.cloneTrivial(e0)).toList(),
+      columns: columns ??
+          this.columns.map((e0) => _i1.strictShallowClone(e0)).toList(),
       referenceTable: referenceTable ?? this.referenceTable,
       referenceTableSchema: referenceTableSchema ?? this.referenceTableSchema,
       referenceColumns: referenceColumns ??
-          this.referenceColumns.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          this
+              .referenceColumns
+              .map((e0) => _i1.strictShallowClone(e0))
+              .toList(),
       onUpdate: onUpdate is _i2.ForeignKeyAction? ? onUpdate : this.onUpdate,
       onDelete: onDelete is _i2.ForeignKeyAction? ? onDelete : this.onDelete,
       matchType:

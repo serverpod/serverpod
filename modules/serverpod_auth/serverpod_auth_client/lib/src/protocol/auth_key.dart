@@ -124,7 +124,7 @@ class _AuthKeyImpl extends AuthKey {
       hash: hash ?? this.hash,
       key: key is String? ? key : this.key,
       scopeNames: scopeNames ??
-          this.scopeNames.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          this.scopeNames.map((e0) => _i1.strictShallowClone(e0)).toList(),
       method: method ?? this.method,
     );
   }

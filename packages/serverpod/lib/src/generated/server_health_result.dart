@@ -86,10 +86,10 @@ class _ServerHealthResultImpl extends ServerHealthResult {
     List<_i2.ServerHealthConnectionInfo>? connectionInfos,
   }) {
     return ServerHealthResult(
-      metrics:
-          metrics ?? this.metrics.map((e0) => _i1.cloneTrivial(e0)).toList(),
+      metrics: metrics ??
+          this.metrics.map((e0) => _i1.strictShallowClone(e0)).toList(),
       connectionInfos: connectionInfos ??
-          this.connectionInfos.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          this.connectionInfos.map((e0) => _i1.strictShallowClone(e0)).toList(),
     );
   }
 }

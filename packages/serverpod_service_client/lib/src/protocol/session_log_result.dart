@@ -49,6 +49,6 @@ class _SessionLogResultImpl extends SessionLogResult {
   SessionLogResult copyWith({List<_i2.SessionLogInfo>? sessionLog}) {
     return SessionLogResult(
         sessionLog: sessionLog ??
-            this.sessionLog.map((e0) => _i1.cloneTrivial(e0)).toList());
+            this.sessionLog.map((e0) => _i1.strictShallowClone(e0)).toList());
   }
 }

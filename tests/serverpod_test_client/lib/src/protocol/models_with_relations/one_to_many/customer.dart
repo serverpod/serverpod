@@ -88,7 +88,7 @@ class _CustomerImpl extends Customer {
       name: name ?? this.name,
       orders: orders is List<_i2.Order>?
           ? orders
-          : this.orders?.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          : this.orders?.map((e0) => _i1.strictShallowClone(e0)).toList(),
     );
   }
 }

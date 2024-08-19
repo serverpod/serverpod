@@ -108,7 +108,7 @@ class _ExceptionWithDataImpl extends ExceptionWithData {
       message: message ?? this.message,
       creationDate: creationDate ?? this.creationDate,
       errorFields: errorFields ??
-          this.errorFields.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          this.errorFields.map((e0) => _i1.strictShallowClone(e0)).toList(),
       someNullableField: someNullableField is int?
           ? someNullableField
           : this.someNullableField,

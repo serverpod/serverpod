@@ -148,10 +148,10 @@ class _MemberImpl extends Member {
       name: name ?? this.name,
       blocking: blocking is List<_i2.Blocking>?
           ? blocking
-          : this.blocking?.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          : this.blocking?.map((e0) => _i1.strictShallowClone(e0)).toList(),
       blockedBy: blockedBy is List<_i2.Blocking>?
           ? blockedBy
-          : this.blockedBy?.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          : this.blockedBy?.map((e0) => _i1.strictShallowClone(e0)).toList(),
     );
   }
 }

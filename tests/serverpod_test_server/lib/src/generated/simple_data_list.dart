@@ -52,6 +52,7 @@ class _SimpleDataListImpl extends SimpleDataList {
   @override
   SimpleDataList copyWith({List<_i2.SimpleData>? rows}) {
     return SimpleDataList(
-        rows: rows ?? this.rows.map((e0) => _i1.cloneTrivial(e0)).toList());
+        rows:
+            rows ?? this.rows.map((e0) => _i1.strictShallowClone(e0)).toList());
   }
 }

@@ -77,7 +77,7 @@ class _EmptyModelImpl extends EmptyModel {
       id: id is int? ? id : this.id,
       items: items is List<_i2.EmptyModelRelationItem>?
           ? items
-          : this.items?.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          : this.items?.map((e0) => _i1.strictShallowClone(e0)).toList(),
     );
   }
 }

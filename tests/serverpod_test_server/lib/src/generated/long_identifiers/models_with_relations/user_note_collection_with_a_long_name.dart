@@ -129,7 +129,7 @@ class _UserNoteCollectionWithALongNameImpl
       name: name ?? this.name,
       notes: notes is List<_i2.UserNoteWithALongName>?
           ? notes
-          : this.notes?.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          : this.notes?.map((e0) => _i1.strictShallowClone(e0)).toList(),
     );
   }
 }

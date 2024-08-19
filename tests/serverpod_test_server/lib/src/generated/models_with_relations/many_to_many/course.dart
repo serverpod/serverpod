@@ -127,7 +127,7 @@ class _CourseImpl extends Course {
       name: name ?? this.name,
       enrollments: enrollments is List<_i2.Enrollment>?
           ? enrollments
-          : this.enrollments?.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          : this.enrollments?.map((e0) => _i1.strictShallowClone(e0)).toList(),
     );
   }
 }

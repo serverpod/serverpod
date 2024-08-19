@@ -207,7 +207,7 @@ class _UserInfoImpl extends UserInfo {
       created: created ?? this.created,
       imageUrl: imageUrl is String? ? imageUrl : this.imageUrl,
       scopeNames: scopeNames ??
-          this.scopeNames.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          this.scopeNames.map((e0) => _i1.strictShallowClone(e0)).toList(),
       blocked: blocked ?? this.blocked,
     );
   }

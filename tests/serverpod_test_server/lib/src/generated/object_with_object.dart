@@ -276,25 +276,31 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
       nullableData: nullableData is _i2.SimpleData?
           ? nullableData
           : this.nullableData?.copyWith(),
-      dataList:
-          dataList ?? this.dataList.map((e0) => _i1.cloneTrivial(e0)).toList(),
+      dataList: dataList ??
+          this.dataList.map((e0) => _i1.strictShallowClone(e0)).toList(),
       nullableDataList: nullableDataList is List<_i2.SimpleData>?
           ? nullableDataList
-          : this.nullableDataList?.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          : this
+              .nullableDataList
+              ?.map((e0) => _i1.strictShallowClone(e0))
+              .toList(),
       listWithNullableData: listWithNullableData ??
-          this.listWithNullableData.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          this
+              .listWithNullableData
+              .map((e0) => _i1.strictShallowClone(e0))
+              .toList(),
       nullableListWithNullableData:
           nullableListWithNullableData is List<_i2.SimpleData?>?
               ? nullableListWithNullableData
               : this
                   .nullableListWithNullableData
-                  ?.map((e0) => _i1.cloneTrivial(e0))
+                  ?.map((e0) => _i1.strictShallowClone(e0))
                   .toList(),
       nestedDataList: nestedDataList is List<List<_i2.SimpleData>>?
           ? nestedDataList
           : this
               .nestedDataList
-              ?.map((e0) => e0.map((e1) => _i1.cloneTrivial(e1)).toList())
+              ?.map((e0) => e0.map((e1) => _i1.strictShallowClone(e1)).toList())
               .toList(),
       nestedDataListInMap: nestedDataListInMap
               is Map<String, List<List<Map<int, _i2.SimpleData>>?>>?
@@ -304,7 +310,7 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.cloneTrivial(key0),
+                    _i1.strictShallowClone(key0),
                     value0
                         .map((e1) => e1
                             ?.map((e2) => e2.map((
@@ -312,8 +318,8 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
                                   value3,
                                 ) =>
                                     MapEntry(
-                                      _i1.cloneTrivial(key3),
-                                      _i1.cloneTrivial(value3),
+                                      _i1.strictShallowClone(key3),
+                                      _i1.strictShallowClone(value3),
                                     )))
                             .toList())
                         .toList(),
@@ -325,14 +331,14 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.cloneTrivial(key0),
+                    _i1.strictShallowClone(key0),
                     value0.map((
                       key1,
                       value1,
                     ) =>
                         MapEntry(
-                          _i1.cloneTrivial(key1),
-                          _i1.cloneTrivial(value1),
+                          _i1.strictShallowClone(key1),
+                          _i1.strictShallowClone(value1),
                         )),
                   )),
     );

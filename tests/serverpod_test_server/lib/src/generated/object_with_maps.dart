@@ -291,8 +291,8 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.cloneTrivial(key0),
-                    _i1.cloneTrivial(value0),
+                    _i1.strictShallowClone(key0),
+                    _i1.strictShallowClone(value0),
                   )),
       intMap: intMap ??
           this.intMap.map((
@@ -300,8 +300,8 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.cloneTrivial(key0),
-                    _i1.cloneTrivial(value0),
+                    _i1.strictShallowClone(key0),
+                    _i1.strictShallowClone(value0),
                   )),
       stringMap: stringMap ??
           this.stringMap.map((
@@ -309,8 +309,8 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.cloneTrivial(key0),
-                    _i1.cloneTrivial(value0),
+                    _i1.strictShallowClone(key0),
+                    _i1.strictShallowClone(value0),
                   )),
       dateTimeMap: dateTimeMap ??
           this.dateTimeMap.map((
@@ -318,8 +318,8 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.cloneTrivial(key0),
-                    _i1.cloneTrivial(value0),
+                    _i1.strictShallowClone(key0),
+                    _i1.strictShallowClone(value0),
                   )),
       byteDataMap: byteDataMap ??
           this.byteDataMap.map((
@@ -327,8 +327,8 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.cloneTrivial(key0),
-                    _i1.cloneTrivial(value0),
+                    _i1.strictShallowClone(key0),
+                    _i1.strictShallowClone(value0),
                   )),
       durationMap: durationMap ??
           this.durationMap.map((
@@ -336,8 +336,8 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.cloneTrivial(key0),
-                    _i1.cloneTrivial(value0),
+                    _i1.strictShallowClone(key0),
+                    _i1.strictShallowClone(value0),
                   )),
       uuidMap: uuidMap ??
           this.uuidMap.map((
@@ -345,8 +345,8 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.cloneTrivial(key0),
-                    _i1.cloneTrivial(value0),
+                    _i1.strictShallowClone(key0),
+                    _i1.strictShallowClone(value0),
                   )),
       nullableDataMap: nullableDataMap ??
           this.nullableDataMap.map((
@@ -354,8 +354,8 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.cloneTrivial(key0),
-                    _i1.cloneTrivial(value0),
+                    _i1.strictShallowClone(key0),
+                    _i1.strictShallowClone(value0),
                   )),
       nullableIntMap: nullableIntMap ??
           this.nullableIntMap.map((
@@ -363,8 +363,8 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.cloneTrivial(key0),
-                    _i1.cloneTrivial(value0),
+                    _i1.strictShallowClone(key0),
+                    _i1.strictShallowClone(value0),
                   )),
       nullableStringMap: nullableStringMap ??
           this.nullableStringMap.map((
@@ -372,8 +372,8 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.cloneTrivial(key0),
-                    _i1.cloneTrivial(value0),
+                    _i1.strictShallowClone(key0),
+                    _i1.strictShallowClone(value0),
                   )),
       nullableDateTimeMap: nullableDateTimeMap ??
           this.nullableDateTimeMap.map((
@@ -381,8 +381,8 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.cloneTrivial(key0),
-                    _i1.cloneTrivial(value0),
+                    _i1.strictShallowClone(key0),
+                    _i1.strictShallowClone(value0),
                   )),
       nullableByteDataMap: nullableByteDataMap ??
           this.nullableByteDataMap.map((
@@ -390,8 +390,8 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.cloneTrivial(key0),
-                    _i1.cloneTrivial(value0),
+                    _i1.strictShallowClone(key0),
+                    _i1.strictShallowClone(value0),
                   )),
       nullableDurationMap: nullableDurationMap ??
           this.nullableDurationMap.map((
@@ -399,8 +399,8 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.cloneTrivial(key0),
-                    _i1.cloneTrivial(value0),
+                    _i1.strictShallowClone(key0),
+                    _i1.strictShallowClone(value0),
                   )),
       nullableUuidMap: nullableUuidMap ??
           this.nullableUuidMap.map((
@@ -408,8 +408,8 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.cloneTrivial(key0),
-                    _i1.cloneTrivial(value0),
+                    _i1.strictShallowClone(key0),
+                    _i1.strictShallowClone(value0),
                   )),
       intIntMap: intIntMap ??
           this.intIntMap.map((
@@ -417,8 +417,8 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
                 value0,
               ) =>
                   MapEntry(
-                    _i1.cloneTrivial(key0),
-                    _i1.cloneTrivial(value0),
+                    _i1.strictShallowClone(key0),
+                    _i1.strictShallowClone(value0),
                   )),
     );
   }

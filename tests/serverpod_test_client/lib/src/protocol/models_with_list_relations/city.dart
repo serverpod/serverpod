@@ -101,10 +101,13 @@ class _CityImpl extends City {
       name: name ?? this.name,
       citizens: citizens is List<_i2.Person>?
           ? citizens
-          : this.citizens?.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          : this.citizens?.map((e0) => _i1.strictShallowClone(e0)).toList(),
       organizations: organizations is List<_i2.Organization>?
           ? organizations
-          : this.organizations?.map((e0) => _i1.cloneTrivial(e0)).toList(),
+          : this
+              .organizations
+              ?.map((e0) => _i1.strictShallowClone(e0))
+              .toList(),
     );
   }
 }
