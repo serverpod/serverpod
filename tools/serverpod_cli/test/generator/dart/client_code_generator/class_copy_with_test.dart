@@ -4,7 +4,6 @@ import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
 

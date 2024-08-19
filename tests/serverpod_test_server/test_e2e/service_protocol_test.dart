@@ -430,7 +430,7 @@ void main() {
             .map((c) => c.dartType)
             .toList();
 
-        expect(columns, hasLength(9));
+        expect(columns, hasLength(10));
         expect(
             columns,
             containsAll([

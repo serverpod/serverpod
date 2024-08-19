@@ -308,6 +308,6 @@ void main() {
 
     expect(copy.enumListList, hasLength(2));
     expect(copy.enumListList.first, equals([TestEnum.one, TestEnum.two]));
-    expect(copy.enumListList.first, equals([TestEnum.two, TestEnum.one]));
+    expect(copy.enumListList[1], equals([TestEnum.two, TestEnum.one]));
   });
 }
