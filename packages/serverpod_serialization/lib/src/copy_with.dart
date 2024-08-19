@@ -15,40 +15,17 @@ extension CloneByteData on ByteData {
   }
 }
 
-/// Adds clone method that create a deep copy of a list.
-extension CloneList on List {
-  /// Creates a deep copy of the List, mutations to the original will
-  /// not affect the copy.
-  List<T> clone<T>() {
-    return map((e) => _guardedCopyWith(e)).whereType<T>().toList();
-  }
-}
-
-/// Adds clone method that create a deep copy of a map.
-extension CloneMap on Map {
-  /// Creates a deep copy of the Map, mutations to the original will
-  /// not affect the copy.
-  Map<K, V> clone<K, V>() {
-    return map(
-      (key, value) => MapEntry(_guardedCopyWith(key), _guardedCopyWith(value)),
-    ).cast<K, V>();
-  }
-}
-
 /// List of types that are not mutable and therefore do not need to be
 /// copied or handled in a copyWith method.
-final noneMutableTypeNames =
-    _noneMutableTypes.map((t) => t.toString()).toList();
+final nonMutableTypeNames = _nonMutableTypes.map((t) => t.toString()).toList();
 
 /// List of types that has a clone method extension and therefore can be
 /// copied by calling clone().
-const clonableTypeNames = [
+const hasCloneExtensionTypes = [
   'ByteData',
-  'List',
-  'Map',
 ];
 
-const _noneMutableTypes = [
+const _nonMutableTypes = [
   Null,
   String,
   int,
@@ -58,23 +35,3 @@ const _noneMutableTypes = [
   Duration,
   UuidValue,
 ];
-
-dynamic _guardedCopyWith(dynamic element) {
-  if (_noneMutableTypes.contains(element.runtimeType)) {
-    return element;
-  }
-
-  // Runtime type is never Enum but Enum is always inherited.
-  if (element is Enum) return element;
-
-  // Required as the extension with clone() is not found otherwise.
-  if (element is ByteData) return element.clone();
-  if (element is List) return element.clone();
-  if (element is Map) return element.clone();
-
-  try {
-    return element.copyWith();
-  } on NoSuchMethodError {
-    throw 'No copyWith method found on ${element.runtimeType}';
-  }
-}

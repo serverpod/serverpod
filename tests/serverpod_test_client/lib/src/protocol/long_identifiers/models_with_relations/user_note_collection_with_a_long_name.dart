@@ -91,7 +91,7 @@ class _UserNoteCollectionWithALongNameImpl
       name: name ?? this.name,
       notes: notes is List<_i2.UserNoteWithALongName>?
           ? notes
-          : this.notes?.clone(),
+          : this.notes?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

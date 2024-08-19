@@ -149,7 +149,8 @@ class _LongImplicitIdFieldCollectionImpl extends LongImplicitIdFieldCollection {
               ? thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
               : this
                   .thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
-                  ?.clone(),
+                  ?.map((e0) => e0.copyWith())
+                  .toList(),
     );
   }
 }

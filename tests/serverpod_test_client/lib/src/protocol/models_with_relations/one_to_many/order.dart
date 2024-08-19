@@ -112,8 +112,9 @@ class _OrderImpl extends Order {
       customerId: customerId ?? this.customerId,
       customer:
           customer is _i2.Customer? ? customer : this.customer?.copyWith(),
-      comments:
-          comments is List<_i2.Comment>? ? comments : this.comments?.clone(),
+      comments: comments is List<_i2.Comment>?
+          ? comments
+          : this.comments?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

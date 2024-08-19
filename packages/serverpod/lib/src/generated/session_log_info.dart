@@ -111,9 +111,9 @@ class _SessionLogInfoImpl extends SessionLogInfo {
   }) {
     return SessionLogInfo(
       sessionLogEntry: sessionLogEntry ?? this.sessionLogEntry.copyWith(),
-      queries: queries ?? this.queries.clone(),
-      logs: logs ?? this.logs.clone(),
-      messages: messages ?? this.messages.clone(),
+      queries: queries ?? this.queries.map((e0) => e0.copyWith()).toList(),
+      logs: logs ?? this.logs.map((e0) => e0.copyWith()).toList(),
+      messages: messages ?? this.messages.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
