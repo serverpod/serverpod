@@ -427,16 +427,11 @@ class SerializableModelLibraryGenerator {
     return fields
         .where((field) => field.shouldIncludeField(serverCode))
         .fold({}, (map, field) {
-      Expression assignment;
-
-      if ((field.type.isEnumType ||
-          noneMutableTypeNames.contains(field.type.className))) {
-        assignment = refer('this').property(field.name);
-      } else if (clonableTypeNames.contains(field.type.className)) {
-        assignment = _buildClonableCopyWithAssignment(field);
-      } else {
-        assignment = _buildMaybeNullMethodCall(field, 'copyWith');
-      }
+      Expression assignment = _buildDeepCloneTree(
+        field.type,
+        field.name,
+        isRoot: true,
+      );
 
       Expression valueDefinition;
       if (field.type.nullable) {
@@ -464,30 +459,11 @@ class SerializableModelLibraryGenerator {
     });
   }
 
-  Expression _buildClonableCopyWithAssignment(
-      SerializableModelFieldDefinition field) {
-    var shouldDeepClone = field.type.isListType || field.type.isMapType;
-
-    if (!shouldDeepClone) {
-      return refer(
-              Keyword.strictShallowCloneFunctionName, serverpodUrl(serverCode))
-          .call([refer(Keyword.thisKeyword).property(field.name)]);
-    }
-
-    return _buildDeepCloneTree(
-      field.type,
-      field.name,
-      root: true,
-    );
-  }
-
   Expression _buildDeepCloneTree(TypeDefinition type, String variableName,
-      {int depth = 0, bool root = false}) {
+      {int depth = 0, bool isRoot = false}) {
     var isLeafNode = type.generics.isEmpty;
     if (isLeafNode) {
-      return refer(
-              Keyword.strictShallowCloneFunctionName, serverpodUrl(serverCode))
-          .call([refer(variableName)]);
+      return _buildShallowClone(type, variableName, isRoot);
     }
 
     var nextCallback = switch (type.className) {
@@ -498,7 +474,7 @@ class SerializableModelLibraryGenerator {
       _ => throw UnimplementedError("Can't clone type ${type.className}"),
     };
 
-    Expression expression = switch (root) {
+    Expression expression = switch (isRoot) {
       true => refer(Keyword.thisKeyword).property(variableName),
       false => refer(variableName),
     };
@@ -512,6 +488,23 @@ class SerializableModelLibraryGenerator {
     return type.isListType
         ? expression.property(ListKeyword.toList).call([])
         : expression;
+  }
+
+  Expression _buildShallowClone(
+      TypeDefinition type, String variableName, bool isRoot) {
+    var isNonMutableType =
+        type.isEnumType || nonMutableTypeNames.contains(type.className);
+    if (isNonMutableType) {
+      return isRoot
+          ? refer(Keyword.thisKeyword).property(variableName)
+          : refer(variableName);
+    } else if (hasCloneExtensionTypes.contains(type.className)) {
+      return _buildMaybeNullMethodCall(
+          type.nullable, variableName, Keyword.cloneExtensionName, isRoot);
+    } else {
+      return _buildMaybeNullMethodCall(
+          type.nullable, variableName, Keyword.copyWithMethodName, isRoot);
+    }
   }
 
   Expression _buildListCloneCallback(TypeDefinition type, int depth) {
@@ -560,17 +553,20 @@ class SerializableModelLibraryGenerator {
   }
 
   Expression _buildMaybeNullMethodCall(
-    SerializableModelFieldDefinition field,
+    bool nullable,
+    String fieldName,
     String methodName,
+    bool isRoot,
   ) {
-    if (field.type.nullable) {
-      return refer('this')
-          .property(field.name)
-          .nullSafeProperty(methodName)
-          .call([]);
-    } else {
-      return refer('this').property(field.name).property(methodName).call([]);
-    }
+    Expression expression = switch (isRoot) {
+      true => refer(Keyword.thisKeyword).property(fieldName),
+      false => refer(fieldName),
+    };
+
+    return switch (nullable) {
+      true => expression.nullSafeProperty(methodName).call([]),
+      false => expression.property(methodName).call([]),
+    };
   }
 
   Method _buildModelClassTableGetter() {

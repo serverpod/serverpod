@@ -342,12 +342,10 @@ void main() {
       name: 'copyWith',
     );
 
-    test(
-        'then the strictShallowClone method is called when copying the object.',
-        () {
+    test('then the list is iterated and the strings are copied.', () {
       var sourceCode = copyWithMethod?.body.toSource();
       expect(sourceCode,
-          '{return Example(names: names ?? this.names.map((e0) => _i1.strictShallowClone(e0)).toList());}');
+          '{return Example(names: names ?? this.names.map((e0) => e0).toList());}');
     }, skip: copyWithMethod == null);
   });
 
@@ -381,12 +379,10 @@ void main() {
       name: 'copyWith',
     );
 
-    test(
-        'then the strictShallowClone method is called when copying the object.',
-        () {
+    test('then the map is iterated and the strings are copied .', () {
       var sourceCode = copyWithMethod?.body.toSource();
       expect(sourceCode,
-          '{return Example(map: map ?? this.map.map((key0, value0) => MapEntry(_i1.strictShallowClone(key0), _i1.strictShallowClone(value0))));}');
+          '{return Example(map: map ?? this.map.map((key0, value0) => MapEntry(key0, value0)));}');
     }, skip: copyWithMethod == null);
   });
 
@@ -419,12 +415,9 @@ void main() {
       name: 'copyWith',
     );
 
-    test(
-        'then the strictShallowClone method is called when copying the object.',
-        () {
+    test('then the clone method is called when copying the object.', () {
       var sourceCode = copyWithMethod?.body.toSource();
-      expect(sourceCode,
-          '{return Example(data: data ?? _i1.strictShallowClone(this.data));}');
+      expect(sourceCode, '{return Example(data: data ?? this.data.clone());}');
     }, skip: copyWithMethod == null);
   });
 
