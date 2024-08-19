@@ -495,7 +495,7 @@ class SerializableModelLibraryGenerator {
         _buildListCloneCallback(type.generics.first, depth),
       MapKeyword.className =>
         _buildMapCloneCallback(type.generics[0], type.generics[1], depth),
-      _ => throw "Can't clone type ${type.className}",
+      _ => throw UnimplementedError("Can't clone type ${type.className}"),
     };
 
     Expression expression = switch (root) {

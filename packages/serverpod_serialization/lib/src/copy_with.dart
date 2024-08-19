@@ -52,12 +52,8 @@ T strictShallowClone<T>(T element) {
   // Required as the extension with clone() is not found otherwise.
   if (element is ByteData) return element.clone() as T;
   if (element is List || element is Map) {
-    throw Exception("Can't clone `List` or `Map` types");
+    throw UnimplementedError("Can't clone `List` or `Map` types");
   }
 
-  try {
-    return (element as dynamic).copyWith() as T;
-  } on NoSuchMethodError {
-    throw Exception('No copyWith method found on ${element.runtimeType}');
-  }
+  return (element as dynamic).copyWith() as T;
 }

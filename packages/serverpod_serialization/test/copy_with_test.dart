@@ -92,27 +92,27 @@ void main() {
   });
 
   test(
-      'Given a Model when the copyWith method is not defined and calling strictShallowClone then an exception is thrown',
+      'Given a Model when the copyWith method is not defined and calling strictShallowClone then an Error is thrown',
       () {
     Object missingCopyWith = Object();
 
-    expect(
-        () => strictShallowClone(missingCopyWith), throwsA(isA<Exception>()));
+    expect(() => strictShallowClone(missingCopyWith),
+        throwsA(isA<NoSuchMethodError>()));
   });
 
-  test(
-      'Given a List when calling strictShallowClone then an exception is thrown',
+  test('Given a List when calling strictShallowClone then an Error is thrown',
       () {
     var original = [SimpleData(num: 1), SimpleData(num: 2)];
 
-    expect(() => strictShallowClone(original), throwsA(isA<Exception>()));
+    expect(
+        () => strictShallowClone(original), throwsA(isA<UnimplementedError>()));
   });
 
-  test(
-      'Given a Map when calling strictShallowClone then an exception is thrown',
+  test('Given a Map when calling strictShallowClone then an Error is thrown',
       () {
     var original = {'one': SimpleData(num: 1)};
 
-    expect(() => strictShallowClone(original), throwsA(isA<Exception>()));
+    expect(
+        () => strictShallowClone(original), throwsA(isA<UnimplementedError>()));
   });
 }
