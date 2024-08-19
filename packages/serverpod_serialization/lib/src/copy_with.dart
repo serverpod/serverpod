@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:uuid/uuid.dart';
 
 /// Adds clone method that create a deep copy of a ByteData.
-extension CloneByteData on ByteData {
+extension _CloneByteData on ByteData {
   /// Creates a deep copy of the ByteData, mutations to the original will
   /// not affect the copy.
   ByteData clone() {
