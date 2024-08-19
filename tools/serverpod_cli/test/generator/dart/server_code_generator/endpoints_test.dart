@@ -240,4 +240,50 @@ void main() {
           contains('streamParams[\'streamParam\']!.cast<String>()'));
     });
   });
+
+  group(
+      'Given a protocol definition with a method with "@Deprecated(..)" annotation when generating endpoints file',
+      () {
+    var endpointName = 'testing';
+    var methodName = 'deprecatedMethod';
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [
+        EndpointDefinitionBuilder()
+            .withClassName('${endpointName.pascalCase}Endpoint')
+            .withName(endpointName)
+            .withMethods([
+          MethodDefinitionBuilder().withName(methodName).withAnnotations([
+            const AnnotationDefinition(
+              name: 'Deprecated',
+              arguments: ["'This method is deprecated.'"],
+              methodCallAnalyzerIgnoreRule:
+                  'deprecated_member_use_from_same_package',
+            )
+          ]).buildMethodCallDefinition(),
+        ]).build(),
+      ],
+      models: [],
+    );
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test('then client file is created.', () {
+      expect(codeMap, contains(expectedFileName));
+    });
+    var endpointsFile = codeMap[expectedFileName];
+
+    test(
+        'then client file contains "ignore: deprecated_member_use_from_same_package" comment for method.',
+        () {
+      expect(
+        endpointsFile,
+        contains(
+          '\n// ignore: deprecated_member_use_from_same_package\n',
+        ),
+      );
+    });
+  });
 }
