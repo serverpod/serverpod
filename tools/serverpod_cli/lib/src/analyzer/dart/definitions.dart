@@ -124,5 +124,15 @@ class AnnotationDefinition {
   /// Arguments must be valid Dart literals.
   final List<String>? arguments;
 
-  const AnnotationDefinition({required this.name, this.arguments});
+  /// If set, this rule will be injected as an analyzer ignore directive on
+  /// the line preceeding internally generated method call sites.
+  /// This can be useful for suppressing deprecated method invocation
+  ///  within the generated server code.
+  final String? methodCallAnalyzerIgnoreRule;
+
+  const AnnotationDefinition({
+    required this.name,
+    this.arguments,
+    this.methodCallAnalyzerIgnoreRule,
+  });
 }

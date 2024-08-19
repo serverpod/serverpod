@@ -965,6 +965,8 @@ class ExampleEndpoint extends Endpoint {
       expect(annotations?.length, 1);
       expect(annotations![0].name, 'Deprecated');
       expect(annotations[0].arguments, ["'This method is deprecated.'"]);
+      expect(annotations[0].methodCallAnalyzerIgnoreRule,
+          'deprecated_member_use_from_same_package');
     });
   });
 
@@ -1010,6 +1012,8 @@ class ExampleEndpoint extends Endpoint {
       expect(annotations?.length, 1);
       expect(annotations![0].name, 'Deprecated');
       expect(annotations[0].arguments, ["'This method is deprecated.'"]);
+      expect(annotations[0].methodCallAnalyzerIgnoreRule,
+          'deprecated_member_use_from_same_package');
     });
   });
 
@@ -1051,6 +1055,8 @@ class ExampleEndpoint extends Endpoint {
       expect(annotations?.length, 1);
       expect(annotations![0].name, 'deprecated');
       expect(annotations[0].arguments, null);
+      expect(annotations[0].methodCallAnalyzerIgnoreRule,
+          'deprecated_member_use_from_same_package');
     });
   });
 
