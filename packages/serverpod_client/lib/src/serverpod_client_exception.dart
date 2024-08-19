@@ -1,5 +1,4 @@
-import 'http/http_status_html.dart'
-    if (dart.library.io) 'http/http_status_io.dart';
+import 'http/http_status.dart';
 
 /// [Exception] thrown when errors in communication with the server occurs.
 class ServerpodClientException implements Exception {

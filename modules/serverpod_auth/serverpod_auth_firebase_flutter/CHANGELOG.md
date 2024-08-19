@@ -1,3 +1,33 @@
+## 2.1.0-beta.1
+ - feat: Adds DevTools extension.
+ - feat: Adds support for `Stream` as parameters and return type in endpoint methods.
+ - feat: Adds stream subscriptions to message central.
+ - feat: Adds support for `willClose` listener on `Session`.
+ - feat: Adds support for default values in model files (types supported are `String`, `int`, `double`, `bool`, `DateTime`)
+ - feat: Adds support for WASM compiled web apps.
+ - feat: Endpoint methods with `@Deprecated` annotation are now also annotated in the client.
+ - feat: Allows custom password hash generator in `AuthConfig`.
+ - feat: Allows rewrite rule in root path in static web directories.
+ - feat: Improves error handling in `SignInWithGoogle` by rethrowing exceptions.
+ - feat: Adds support for nullable types in `encodeWithType` and `decodeWithType`.
+ - feat: Adds `Uuid` identifier to sessions.
+ - feat: Supports configuration through environment variables instead of yaml.
+ - fix: Adds validation of custom class names to look for potential collisions.
+ - fix: Only considers positional `Session` parameter when validating endpoint method.
+ - fix: Updates example documentation. 
+ - fix: Before a session is closed, all logging is now awaited.
+ - fix: Adds new `WebCallSession` for Relic.
+ - fix: Correctly verifies `iss` value for all possible domains in Sign in with Google.
+ - fix: Add `methodName` and `endpointName` to base session class.
+ - fix: Handles malformed web server URI parameters more gracefully.
+ - fix: Uses `text` as `KeyboardType` for validation code in `SignInWithEmailDialog`.
+ - fix: Correctly orders logs in Insights.
+ - fix: Correctly strips data in serialization of `List` and `Map`.
+ - fix: Starts database pool manager on Serverpod instance creation.
+ - fix: Adds mechanism for awaiting pending future calls on shutdown.
+ - fix: Improvements to websocket lifecycle.
+ - chore: Updates dependencies.
+
 ## 2.0.2
 - fix: Conditionally imports `HttpStatus` to improve compatibility.
 - fix: Improve `encodeForProtocol` method for `List` and `Map` input object types.

@@ -15,6 +15,9 @@ do
     if [ "$arg" == "--allow-infos" ] ; then
         LOG_LEVEL="--fatal-warnings"
         break
+    elif [ "$arg" == "--allow-warnings" ] ; then
+        LOG_LEVEL="--no-fatal-warnings"
+        break
     fi
 done
 

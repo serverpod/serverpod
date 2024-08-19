@@ -1,6 +1,7 @@
 import 'dart:async';
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
+import 'dart:js_interop';
+
+import 'package:web/web.dart' as web;
 
 /// Web implementation to sign in with google.
 /// Supply the clientId, defined in the Google developer console, should be the
@@ -24,11 +25,14 @@ class GoogleSignInWebService {
     required this.redirectUri,
   }) {
     // Handles callbacks from the window handling authentication.
-    html.window.addEventListener('message', _eventListener);
+    web.window.addEventListener('message', _eventListener.toJS);
   }
 
-  void _eventListener(html.Event event) {
-    _signInSession?.completeWithCode((event as html.MessageEvent).data);
+  void _eventListener(web.Event event) {
+    var messageEvent = event as web.MessageEvent;
+    var jsString = messageEvent.data as JSString;
+    var code = jsString.toDart;
+    _signInSession?.completeWithCode(code);
   }
 
   /// Signs in with Google and returns the server auth code.
@@ -64,7 +68,7 @@ class GoogleSignInWebService {
 
 class _SignInSession {
   final codeCompleter = Completer<String?>();
-  late final html.WindowBase _window;
+  late final web.Window _window;
   late final Timer _timer;
 
   bool get isClosed => codeCompleter.isCompleted;
@@ -74,11 +78,19 @@ class _SignInSession {
     // authentication is complete on the client side the window is redirected to.
     // This page will then make a callback into Flutter with the retrieved
     // server authentication code.
-    _window = html.window.open(
+    var window = web.window.open(
       authorizationUri,
       '_blank',
       'location=yes,width=550,height=600',
     );
+
+    // If the window could not be opened, we can't sign in.
+    if (window == null) {
+      codeCompleter.complete(null);
+      return;
+    }
+
+    _window = window;
 
     // Monitors the window, if it's closed without signing in, make the
     // completer return null.
