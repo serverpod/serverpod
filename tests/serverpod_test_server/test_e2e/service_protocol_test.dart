@@ -430,9 +430,10 @@ void main() {
             .map((c) => c.dartType)
             .toList();
 
+        expect(columns, hasLength(9));
         expect(
             columns,
-            equals([
+            containsAll([
               'int?',
               'protocol:SimpleData',
               'protocol:SimpleData?',
