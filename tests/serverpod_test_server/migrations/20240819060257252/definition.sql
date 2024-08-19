@@ -390,7 +390,10 @@ CREATE TABLE "object_with_object" (
     "dataList" json NOT NULL,
     "nullableDataList" json,
     "listWithNullableData" json NOT NULL,
-    "nullableListWithNullableData" json
+    "nullableListWithNullableData" json,
+    "nestedDataList" json,
+    "nestedDataListInMap" json,
+    "nestedDataMap" json
 );
 
 --
@@ -1307,9 +1310,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20240725082303667', now())
+    VALUES ('serverpod_test', '20240819060257252', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240725082303667', "timestamp" = now();
+    DO UPDATE SET "version" = '20240819060257252', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth

@@ -2087,6 +2087,24 @@
           "columnType": 8,
           "isNullable": true,
           "dartType": "List<protocol:SimpleData?>?"
+        },
+        {
+          "name": "nestedDataList",
+          "columnType": 8,
+          "isNullable": true,
+          "dartType": "List<List<protocol:SimpleData>>?"
+        },
+        {
+          "name": "nestedDataListInMap",
+          "columnType": 8,
+          "isNullable": true,
+          "dartType": "Map<String,List<List<Map<int,protocol:SimpleData>>?>>?"
+        },
+        {
+          "name": "nestedDataMap",
+          "columnType": 8,
+          "isNullable": true,
+          "dartType": "Map<String,Map<int,protocol:SimpleData>>?"
         }
       ],
       "foreignKeys": [],
@@ -5330,7 +5348,7 @@
   "installedModules": [
     {
       "module": "serverpod_test",
-      "version": "20240725082303667"
+      "version": "20240819060257252"
     },
     {
       "module": "serverpod_auth",
