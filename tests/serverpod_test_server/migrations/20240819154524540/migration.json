@@ -1064,6 +1064,62 @@
             "isNullable": true,
             "columnDefault": "'This is a default persist value'::text",
             "dartType": "String?"
+          },
+          {
+            "name": "stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote",
+            "columnType": 0,
+            "isNullable": true,
+            "columnDefault": "'This is a ''default persist value'::text",
+            "dartType": "String?"
+          },
+          {
+            "name": "stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote",
+            "columnType": 0,
+            "isNullable": true,
+            "columnDefault": "'This is a ''default'' persist value'::text",
+            "dartType": "String?"
+          },
+          {
+            "name": "stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote",
+            "columnType": 0,
+            "isNullable": true,
+            "columnDefault": "'This is a \"default persist value'::text",
+            "dartType": "String?"
+          },
+          {
+            "name": "stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote",
+            "columnType": 0,
+            "isNullable": true,
+            "columnDefault": "'This is a \"default\" persist value'::text",
+            "dartType": "String?"
+          },
+          {
+            "name": "stringDefaultPersistSingleQuoteWithOneDoubleQuote",
+            "columnType": 0,
+            "isNullable": true,
+            "columnDefault": "'This is a \"default persist value'::text",
+            "dartType": "String?"
+          },
+          {
+            "name": "stringDefaultPersistSingleQuoteWithTwoDoubleQuote",
+            "columnType": 0,
+            "isNullable": true,
+            "columnDefault": "'This is a \"default\" persist value'::text",
+            "dartType": "String?"
+          },
+          {
+            "name": "stringDefaultPersistDoubleQuoteWithOneSingleQuote",
+            "columnType": 0,
+            "isNullable": true,
+            "columnDefault": "'This is a ''default persist value'::text",
+            "dartType": "String?"
+          },
+          {
+            "name": "stringDefaultPersistDoubleQuoteWithTwoSingleQuote",
+            "columnType": 0,
+            "isNullable": true,
+            "columnDefault": "'This is a ''default'' persist value'::text",
+            "dartType": "String?"
           }
         ],
         "foreignKeys": [],

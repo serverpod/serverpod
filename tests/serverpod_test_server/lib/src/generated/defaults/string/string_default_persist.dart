@@ -15,11 +15,27 @@ abstract class StringDefaultPersist extends _i1.TableRow
   StringDefaultPersist._({
     int? id,
     this.stringDefaultPersist,
+    this.stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
+    this.stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
+    this.stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
+    this.stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
+    this.stringDefaultPersistSingleQuoteWithOneDoubleQuote,
+    this.stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
+    this.stringDefaultPersistDoubleQuoteWithOneSingleQuote,
+    this.stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
   }) : super(id);
 
   factory StringDefaultPersist({
     int? id,
     String? stringDefaultPersist,
+    String? stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
+    String? stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
+    String? stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
+    String? stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
+    String? stringDefaultPersistSingleQuoteWithOneDoubleQuote,
+    String? stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
+    String? stringDefaultPersistDoubleQuoteWithOneSingleQuote,
+    String? stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
   }) = _StringDefaultPersistImpl;
 
   factory StringDefaultPersist.fromJson(
@@ -28,6 +44,34 @@ abstract class StringDefaultPersist extends _i1.TableRow
       id: jsonSerialization['id'] as int?,
       stringDefaultPersist:
           jsonSerialization['stringDefaultPersist'] as String?,
+      stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote:
+          jsonSerialization[
+                  'stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote']
+              as String?,
+      stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote:
+          jsonSerialization[
+                  'stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote']
+              as String?,
+      stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote:
+          jsonSerialization[
+                  'stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote']
+              as String?,
+      stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote:
+          jsonSerialization[
+                  'stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote']
+              as String?,
+      stringDefaultPersistSingleQuoteWithOneDoubleQuote:
+          jsonSerialization['stringDefaultPersistSingleQuoteWithOneDoubleQuote']
+              as String?,
+      stringDefaultPersistSingleQuoteWithTwoDoubleQuote:
+          jsonSerialization['stringDefaultPersistSingleQuoteWithTwoDoubleQuote']
+              as String?,
+      stringDefaultPersistDoubleQuoteWithOneSingleQuote:
+          jsonSerialization['stringDefaultPersistDoubleQuoteWithOneSingleQuote']
+              as String?,
+      stringDefaultPersistDoubleQuoteWithTwoSingleQuote:
+          jsonSerialization['stringDefaultPersistDoubleQuoteWithTwoSingleQuote']
+              as String?,
     );
   }
 
@@ -37,12 +81,36 @@ abstract class StringDefaultPersist extends _i1.TableRow
 
   String? stringDefaultPersist;
 
+  String? stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote;
+
+  String? stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote;
+
+  String? stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote;
+
+  String? stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote;
+
+  String? stringDefaultPersistSingleQuoteWithOneDoubleQuote;
+
+  String? stringDefaultPersistSingleQuoteWithTwoDoubleQuote;
+
+  String? stringDefaultPersistDoubleQuoteWithOneSingleQuote;
+
+  String? stringDefaultPersistDoubleQuoteWithTwoSingleQuote;
+
   @override
   _i1.Table get table => t;
 
   StringDefaultPersist copyWith({
     int? id,
     String? stringDefaultPersist,
+    String? stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
+    String? stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
+    String? stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
+    String? stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
+    String? stringDefaultPersistSingleQuoteWithOneDoubleQuote,
+    String? stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
+    String? stringDefaultPersistDoubleQuoteWithOneSingleQuote,
+    String? stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -50,6 +118,30 @@ abstract class StringDefaultPersist extends _i1.TableRow
       if (id != null) 'id': id,
       if (stringDefaultPersist != null)
         'stringDefaultPersist': stringDefaultPersist,
+      if (stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote != null)
+        'stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote':
+            stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
+      if (stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote != null)
+        'stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote':
+            stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
+      if (stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote != null)
+        'stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote':
+            stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
+      if (stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote != null)
+        'stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote':
+            stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
+      if (stringDefaultPersistSingleQuoteWithOneDoubleQuote != null)
+        'stringDefaultPersistSingleQuoteWithOneDoubleQuote':
+            stringDefaultPersistSingleQuoteWithOneDoubleQuote,
+      if (stringDefaultPersistSingleQuoteWithTwoDoubleQuote != null)
+        'stringDefaultPersistSingleQuoteWithTwoDoubleQuote':
+            stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
+      if (stringDefaultPersistDoubleQuoteWithOneSingleQuote != null)
+        'stringDefaultPersistDoubleQuoteWithOneSingleQuote':
+            stringDefaultPersistDoubleQuoteWithOneSingleQuote,
+      if (stringDefaultPersistDoubleQuoteWithTwoSingleQuote != null)
+        'stringDefaultPersistDoubleQuoteWithTwoSingleQuote':
+            stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
     };
   }
 
@@ -59,6 +151,30 @@ abstract class StringDefaultPersist extends _i1.TableRow
       if (id != null) 'id': id,
       if (stringDefaultPersist != null)
         'stringDefaultPersist': stringDefaultPersist,
+      if (stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote != null)
+        'stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote':
+            stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
+      if (stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote != null)
+        'stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote':
+            stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
+      if (stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote != null)
+        'stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote':
+            stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
+      if (stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote != null)
+        'stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote':
+            stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
+      if (stringDefaultPersistSingleQuoteWithOneDoubleQuote != null)
+        'stringDefaultPersistSingleQuoteWithOneDoubleQuote':
+            stringDefaultPersistSingleQuoteWithOneDoubleQuote,
+      if (stringDefaultPersistSingleQuoteWithTwoDoubleQuote != null)
+        'stringDefaultPersistSingleQuoteWithTwoDoubleQuote':
+            stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
+      if (stringDefaultPersistDoubleQuoteWithOneSingleQuote != null)
+        'stringDefaultPersistDoubleQuoteWithOneSingleQuote':
+            stringDefaultPersistDoubleQuoteWithOneSingleQuote,
+      if (stringDefaultPersistDoubleQuoteWithTwoSingleQuote != null)
+        'stringDefaultPersistDoubleQuoteWithTwoSingleQuote':
+            stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
     };
   }
 
@@ -98,21 +214,89 @@ class _StringDefaultPersistImpl extends StringDefaultPersist {
   _StringDefaultPersistImpl({
     int? id,
     String? stringDefaultPersist,
+    String? stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
+    String? stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
+    String? stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
+    String? stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
+    String? stringDefaultPersistSingleQuoteWithOneDoubleQuote,
+    String? stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
+    String? stringDefaultPersistDoubleQuoteWithOneSingleQuote,
+    String? stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
   }) : super._(
           id: id,
           stringDefaultPersist: stringDefaultPersist,
+          stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote:
+              stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
+          stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote:
+              stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
+          stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote:
+              stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
+          stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote:
+              stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
+          stringDefaultPersistSingleQuoteWithOneDoubleQuote:
+              stringDefaultPersistSingleQuoteWithOneDoubleQuote,
+          stringDefaultPersistSingleQuoteWithTwoDoubleQuote:
+              stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
+          stringDefaultPersistDoubleQuoteWithOneSingleQuote:
+              stringDefaultPersistDoubleQuoteWithOneSingleQuote,
+          stringDefaultPersistDoubleQuoteWithTwoSingleQuote:
+              stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
         );
 
   @override
   StringDefaultPersist copyWith({
     Object? id = _Undefined,
     Object? stringDefaultPersist = _Undefined,
+    Object? stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote =
+        _Undefined,
+    Object? stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote =
+        _Undefined,
+    Object? stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote =
+        _Undefined,
+    Object? stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote =
+        _Undefined,
+    Object? stringDefaultPersistSingleQuoteWithOneDoubleQuote = _Undefined,
+    Object? stringDefaultPersistSingleQuoteWithTwoDoubleQuote = _Undefined,
+    Object? stringDefaultPersistDoubleQuoteWithOneSingleQuote = _Undefined,
+    Object? stringDefaultPersistDoubleQuoteWithTwoSingleQuote = _Undefined,
   }) {
     return StringDefaultPersist(
       id: id is int? ? id : this.id,
       stringDefaultPersist: stringDefaultPersist is String?
           ? stringDefaultPersist
           : this.stringDefaultPersist,
+      stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote:
+          stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote is String?
+              ? stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote
+              : this.stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
+      stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote:
+          stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote is String?
+              ? stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote
+              : this.stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
+      stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote:
+          stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote is String?
+              ? stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote
+              : this.stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
+      stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote:
+          stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote is String?
+              ? stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote
+              : this.stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
+      stringDefaultPersistSingleQuoteWithOneDoubleQuote:
+          stringDefaultPersistSingleQuoteWithOneDoubleQuote is String?
+              ? stringDefaultPersistSingleQuoteWithOneDoubleQuote
+              : this.stringDefaultPersistSingleQuoteWithOneDoubleQuote,
+      stringDefaultPersistSingleQuoteWithTwoDoubleQuote:
+          stringDefaultPersistSingleQuoteWithTwoDoubleQuote is String?
+              ? stringDefaultPersistSingleQuoteWithTwoDoubleQuote
+              : this.stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
+      stringDefaultPersistDoubleQuoteWithOneSingleQuote:
+          stringDefaultPersistDoubleQuoteWithOneSingleQuote is String?
+              ? stringDefaultPersistDoubleQuoteWithOneSingleQuote
+              : this.stringDefaultPersistDoubleQuoteWithOneSingleQuote,
+      stringDefaultPersistDoubleQuoteWithTwoSingleQuote:
+          stringDefaultPersistDoubleQuoteWithTwoSingleQuote is String?
+              ? stringDefaultPersistDoubleQuoteWithTwoSingleQuote
+              : this.stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
     );
   }
 }
@@ -125,14 +309,82 @@ class StringDefaultPersistTable extends _i1.Table {
       this,
       hasDefault: true,
     );
+    stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote = _i1.ColumnString(
+      'stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote',
+      this,
+      hasDefault: true,
+    );
+    stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote = _i1.ColumnString(
+      'stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote',
+      this,
+      hasDefault: true,
+    );
+    stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote = _i1.ColumnString(
+      'stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote',
+      this,
+      hasDefault: true,
+    );
+    stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote = _i1.ColumnString(
+      'stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote',
+      this,
+      hasDefault: true,
+    );
+    stringDefaultPersistSingleQuoteWithOneDoubleQuote = _i1.ColumnString(
+      'stringDefaultPersistSingleQuoteWithOneDoubleQuote',
+      this,
+      hasDefault: true,
+    );
+    stringDefaultPersistSingleQuoteWithTwoDoubleQuote = _i1.ColumnString(
+      'stringDefaultPersistSingleQuoteWithTwoDoubleQuote',
+      this,
+      hasDefault: true,
+    );
+    stringDefaultPersistDoubleQuoteWithOneSingleQuote = _i1.ColumnString(
+      'stringDefaultPersistDoubleQuoteWithOneSingleQuote',
+      this,
+      hasDefault: true,
+    );
+    stringDefaultPersistDoubleQuoteWithTwoSingleQuote = _i1.ColumnString(
+      'stringDefaultPersistDoubleQuoteWithTwoSingleQuote',
+      this,
+      hasDefault: true,
+    );
   }
 
   late final _i1.ColumnString stringDefaultPersist;
+
+  late final _i1.ColumnString
+      stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote;
+
+  late final _i1.ColumnString
+      stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote;
+
+  late final _i1.ColumnString
+      stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote;
+
+  late final _i1.ColumnString
+      stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote;
+
+  late final _i1.ColumnString stringDefaultPersistSingleQuoteWithOneDoubleQuote;
+
+  late final _i1.ColumnString stringDefaultPersistSingleQuoteWithTwoDoubleQuote;
+
+  late final _i1.ColumnString stringDefaultPersistDoubleQuoteWithOneSingleQuote;
+
+  late final _i1.ColumnString stringDefaultPersistDoubleQuoteWithTwoSingleQuote;
 
   @override
   List<_i1.Column> get columns => [
         id,
         stringDefaultPersist,
+        stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
+        stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
+        stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
+        stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
+        stringDefaultPersistSingleQuoteWithOneDoubleQuote,
+        stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
+        stringDefaultPersistDoubleQuoteWithOneSingleQuote,
+        stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
       ];
 }
 

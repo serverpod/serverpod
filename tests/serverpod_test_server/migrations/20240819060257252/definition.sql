@@ -390,7 +390,10 @@ CREATE TABLE "object_with_object" (
     "dataList" json NOT NULL,
     "nullableDataList" json,
     "listWithNullableData" json NOT NULL,
-    "nullableListWithNullableData" json
+    "nullableListWithNullableData" json,
+    "nestedDataList" json,
+    "nestedDataListInMap" json,
+    "nestedDataMap" json
 );
 
 --
@@ -662,47 +665,6 @@ CREATE TABLE "user_note_with_a_long_name" (
     "id" bigserial PRIMARY KEY,
     "name" text NOT NULL,
     "_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId" bigint
-);
-
---
--- Class UuidDefault as table uuid_default
---
-CREATE TABLE "uuid_default" (
-    "id" bigserial PRIMARY KEY,
-    "uuidDefaultRandom" uuid NOT NULL DEFAULT gen_random_uuid(),
-    "uuidDefaultRandomNull" uuid DEFAULT gen_random_uuid(),
-    "uuidDefaultStr" uuid NOT NULL DEFAULT '550e8400-e29b-41d4-a716-446655440000'::uuid,
-    "uuidDefaultStrNull" uuid DEFAULT '3f2504e0-4f89-11d3-9a0c-0305e82c3301'::uuid
-);
-
---
--- Class UuidDefaultMix as table uuid_default_mix
---
-CREATE TABLE "uuid_default_mix" (
-    "id" bigserial PRIMARY KEY,
-    "uuidDefaultAndDefaultModel" uuid NOT NULL DEFAULT '3f2504e0-4f89-11d3-9a0c-0305e82c3301'::uuid,
-    "uuidDefaultAndDefaultPersist" uuid NOT NULL DEFAULT '9e107d9d-372b-4d97-9b27-2f0907d0b1d4'::uuid,
-    "uuidDefaultModelAndDefaultPersist" uuid NOT NULL DEFAULT 'f47ac10b-58cc-4372-a567-0e02b2c3d479'::uuid
-);
-
---
--- Class UuidDefaultModel as table uuid_default_model
---
-CREATE TABLE "uuid_default_model" (
-    "id" bigserial PRIMARY KEY,
-    "uuidDefaultModelRandom" uuid NOT NULL,
-    "uuidDefaultModelRandomNull" uuid,
-    "uuidDefaultModelStr" uuid NOT NULL,
-    "uuidDefaultModelStrNull" uuid
-);
-
---
--- Class UuidDefaultPersist as table uuid_default_persist
---
-CREATE TABLE "uuid_default_persist" (
-    "id" bigserial PRIMARY KEY,
-    "uuidDefaultPersistRandom" uuid DEFAULT gen_random_uuid(),
-    "uuidDefaultPersistStr" uuid DEFAULT '550e8400-e29b-41d4-a716-446655440000'::uuid
 );
 
 --
@@ -1348,9 +1310,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20240814074110381', now())
+    VALUES ('serverpod_test', '20240819060257252', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240814074110381', "timestamp" = now();
+    DO UPDATE SET "version" = '20240819060257252', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth

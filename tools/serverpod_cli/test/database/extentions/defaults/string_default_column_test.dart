@@ -117,5 +117,83 @@ void main() {
         );
       });
     });
+
+    group('with "defaultPersist" that includes single quotes', () {
+      ColumnDefinition defaultColumn = ColumnDefinition(
+        name: 'stringDefaultSingleQuote',
+        columnType: ColumnType.text,
+        isNullable: false,
+        columnDefault: '\'This is a \'\'default\'\' value\'',
+        dartType: 'String',
+      );
+
+      test(
+          'when converting to PostgreSQL SQL code, then it should include the single quotes in the default value',
+          () {
+        expect(
+          defaultColumn.toPgSqlFragment(),
+          '"stringDefaultSingleQuote" text NOT NULL DEFAULT \'This is a \'\'default\'\' value\'',
+        );
+      });
+    });
+
+    group('with "defaultPersist" that includes double quotes', () {
+      ColumnDefinition defaultColumn = ColumnDefinition(
+        name: 'stringDefaultDoubleQuote',
+        columnType: ColumnType.text,
+        isNullable: false,
+        columnDefault: '\'This is a "default" value\'',
+        dartType: 'String',
+      );
+
+      test(
+          'when converting to PostgreSQL SQL code, then it should include the double quotes in the default value',
+          () {
+        expect(
+          defaultColumn.toPgSqlFragment(),
+          '"stringDefaultDoubleQuote" text NOT NULL DEFAULT \'This is a "default" value\'',
+        );
+      });
+    });
+
+    group('with nullable column and "defaultPersist" including single quotes',
+        () {
+      ColumnDefinition defaultColumn = ColumnDefinition(
+        name: 'stringDefaultSingleQuote',
+        columnType: ColumnType.text,
+        isNullable: true,
+        columnDefault: '\'This is a \'\'default\'\' value\'',
+        dartType: 'String',
+      );
+
+      test(
+          'when converting to PostgreSQL SQL code, then it should be nullable and include the single quotes in the default value',
+          () {
+        expect(
+          defaultColumn.toPgSqlFragment(),
+          '"stringDefaultSingleQuote" text DEFAULT \'This is a \'\'default\'\' value\'',
+        );
+      });
+    });
+
+    group('with nullable column and "defaultPersist" including double quotes',
+        () {
+      ColumnDefinition defaultColumn = ColumnDefinition(
+        name: 'stringDefaultDoubleQuote',
+        columnType: ColumnType.text,
+        isNullable: true,
+        columnDefault: '\'This is a "default" value\'',
+        dartType: 'String',
+      );
+
+      test(
+          'when converting to PostgreSQL SQL code, then it should be nullable and include the double quotes in the default value',
+          () {
+        expect(
+          defaultColumn.toPgSqlFragment(),
+          '"stringDefaultDoubleQuote" text DEFAULT \'This is a "default" value\'',
+        );
+      });
+    });
   });
 }
