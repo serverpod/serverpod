@@ -1,6 +1,5 @@
 version: 2
 updates:
-  # Pub dependencies
   - package-ecosystem: "pub"
     directories:
       - packages/**/*
@@ -11,8 +10,9 @@ updates:
     schedule:
       interval: "daily"
     versioning-strategy: "widen"
-    # Since we are using a monorepo, we want to update the same package
+    # Since this is a library monorepo, it is important that the same package is updated
     # in all directories at the same time.
-    # Currently dependabot does not support this, so we limit the number of
-    # open pull requests to 1 to avoid conflicts.
+    # Currently dependabot does not support this type of grouping, therefore the number
+    # of open pull requests is limited to 1. This prevents multiple pull requests
+    # from being opened for the same dependency.
     open-pull-requests-limit: 1
