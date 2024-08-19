@@ -39,12 +39,9 @@ const _noneMutableTypes = [
   UuidValue,
 ];
 
-/// Keyword helper for the `cloneTrivial` function
-const cloneTrivialFunctionName = 'cloneTrivial';
-
 /// Clones all types except `List` and `Map`, which can't be deep copied in a type safe manner.
 /// See https://github.com/serverpod/serverpod/pull/2612 for more information.
-T cloneTrivial<T>(T element) {
+T strictShallowClone<T>(T element) {
   if (_noneMutableTypes.contains(element.runtimeType)) {
     return element;
   }

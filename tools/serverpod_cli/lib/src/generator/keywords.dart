@@ -11,4 +11,5 @@ class MapKeyword {
 class Keyword {
   static const mapFunctionName = 'map';
   static const thisKeyword = 'this';
+  static const strictShallowCloneFunctionName = 'strictShallowClone';
 }

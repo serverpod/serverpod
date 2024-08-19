@@ -19,14 +19,14 @@ class SimpleData {
 }
 
 void main() {
-  group('Given ByteData when calling $cloneTrivialFunctionName', () {
+  group('Given ByteData when calling strictShallowClone', () {
     test(
         'when modifying the original after creating a copy then the copy is left unmodified',
         () {
       ByteData byteData =
           Uint8List.fromList([0, 1, 2, 3, 4]).buffer.asByteData();
 
-      var copy = cloneTrivial(byteData);
+      var copy = strictShallowClone(byteData);
 
       byteData.setUint8(0, 9);
 
@@ -50,7 +50,7 @@ void main() {
         lengthInBytes,
       );
 
-      var clone = cloneTrivial(byteDataView);
+      var clone = strictShallowClone(byteDataView);
 
       buffer.asByteData().setUint8(0, 9);
 
@@ -72,48 +72,47 @@ void main() {
     });
   });
 
-  test(
-      'Given an Enum when calling $cloneTrivialFunctionName then a clone is returned',
+  test('Given an Enum when calling strictShallowClone then a clone is returned',
       () {
     var original = TestEnum.one;
 
-    var clone = cloneTrivial(original);
+    var clone = strictShallowClone(original);
 
     expect(clone, equals(original));
   });
 
-  test(
-      'Given a Model when calling $cloneTrivialFunctionName then a clone is returned',
+  test('Given a Model when calling strictShallowClone then a clone is returned',
       () {
     var original = SimpleData(num: 1);
 
-    SimpleData clone = cloneTrivial(original);
+    SimpleData clone = strictShallowClone(original);
 
     expect(clone, isNot(equals(original)));
     expect(clone.num, equals(original.num));
   });
 
   test(
-      'Given a Model when the copyWith method is not defined and calling $cloneTrivialFunctionName then an exception is thrown',
+      'Given a Model when the copyWith method is not defined and calling strictShallowClone then an exception is thrown',
       () {
     Object missingCopyWith = Object();
 
-    expect(() => cloneTrivial(missingCopyWith), throwsA(isA<Exception>()));
+    expect(
+        () => strictShallowClone(missingCopyWith), throwsA(isA<Exception>()));
   });
 
   test(
-      'Given a List when calling $cloneTrivialFunctionName then an exception is thrown',
+      'Given a List when calling strictShallowClone then an exception is thrown',
       () {
     var original = [SimpleData(num: 1), SimpleData(num: 2)];
 
-    expect(() => cloneTrivial(original), throwsA(isA<Exception>()));
+    expect(() => strictShallowClone(original), throwsA(isA<Exception>()));
   });
 
   test(
-      'Given a Map when calling $cloneTrivialFunctionName then an exception is thrown',
+      'Given a Map when calling strictShallowClone then an exception is thrown',
       () {
     var original = {'one': SimpleData(num: 1)};
 
-    expect(() => cloneTrivial(original), throwsA(isA<Exception>()));
+    expect(() => strictShallowClone(original), throwsA(isA<Exception>()));
   });
 }

@@ -347,7 +347,7 @@ void main() {
         () {
       var sourceCode = copyWithMethod?.body.toSource();
       expect(sourceCode,
-          '{return Example(names: names ?? this.names.map((e0) => _i1.$cloneTrivialFunctionName(e0)).toList());}');
+          '{return Example(names: names ?? this.names.map((e0) => _i1.strictShallowClone(e0)).toList());}');
     }, skip: copyWithMethod == null);
   });
 
@@ -385,7 +385,7 @@ void main() {
         () {
       var sourceCode = copyWithMethod?.body.toSource();
       expect(sourceCode,
-          '{return Example(map: map ?? this.map.map((key0, value0) => MapEntry(_i1.$cloneTrivialFunctionName(key0), _i1.$cloneTrivialFunctionName(value0))));}');
+          '{return Example(map: map ?? this.map.map((key0, value0) => MapEntry(_i1.strictShallowClone(key0), _i1.strictShallowClone(value0))));}');
     }, skip: copyWithMethod == null);
   });
 

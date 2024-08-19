@@ -469,7 +469,8 @@ class SerializableModelLibraryGenerator {
     var shouldDeepClone = field.type.isListType || field.type.isMapType;
 
     if (!shouldDeepClone) {
-      return refer(cloneTrivialFunctionName, serverpodUrl(serverCode))
+      return refer(
+              Keyword.strictShallowCloneFunctionName, serverpodUrl(serverCode))
           .call([refer(Keyword.thisKeyword).property(field.name)]);
     }
 
@@ -484,7 +485,8 @@ class SerializableModelLibraryGenerator {
       {int depth = 0, bool root = false}) {
     var isLeafNode = type.generics.isEmpty;
     if (isLeafNode) {
-      return refer(cloneTrivialFunctionName, serverpodUrl(serverCode))
+      return refer(
+              Keyword.strictShallowCloneFunctionName, serverpodUrl(serverCode))
           .call([refer(variableName)]);
     }
 
