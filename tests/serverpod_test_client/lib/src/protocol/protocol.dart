@@ -1150,6 +1150,43 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List).map((e) => deserialize<_i94.SimpleData?>(e)).toList()
           : null) as dynamic;
     }
+    if (t == _i1.getType<List<List<_i94.SimpleData>>?>()) {
+      return (data != null
+          ? (data as List)
+              .map((e) => deserialize<List<_i94.SimpleData>>(e))
+              .toList()
+          : null) as dynamic;
+    }
+    if (t ==
+        _i1.getType<Map<String, List<List<Map<int, _i94.SimpleData>>?>>?>()) {
+      return (data != null
+          ? (data as Map).map((k, v) => MapEntry(deserialize<String>(k),
+              deserialize<List<List<Map<int, _i94.SimpleData>>?>>(v)))
+          : null) as dynamic;
+    }
+    if (t == List<List<Map<int, _i94.SimpleData>>?>) {
+      return (data as List)
+          .map((e) => deserialize<List<Map<int, _i94.SimpleData>>?>(e))
+          .toList() as dynamic;
+    }
+    if (t == _i1.getType<List<Map<int, _i94.SimpleData>>?>()) {
+      return (data != null
+          ? (data as List)
+              .map((e) => deserialize<Map<int, _i94.SimpleData>>(e))
+              .toList()
+          : null) as dynamic;
+    }
+    if (t == Map<int, _i94.SimpleData>) {
+      return Map.fromEntries((data as List).map((e) => MapEntry(
+              deserialize<int>(e['k']), deserialize<_i94.SimpleData>(e['v']))))
+          as dynamic;
+    }
+    if (t == _i1.getType<Map<String, Map<int, _i94.SimpleData>>?>()) {
+      return (data != null
+          ? (data as Map).map((k, v) => MapEntry(deserialize<String>(k),
+              deserialize<Map<int, _i94.SimpleData>>(v)))
+          : null) as dynamic;
+    }
     if (t == _i1.getType<List<int>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<int>(e)).toList()

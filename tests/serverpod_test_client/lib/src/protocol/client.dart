@@ -621,6 +621,32 @@ class EndpointTransactionsDatabase extends _i1.EndpointRef {
       );
 }
 
+/// A simple endpoint for testing deprecated endpoint methods.
+/// {@category Endpoint}
+class EndpointDeprecation extends _i1.EndpointRef {
+  EndpointDeprecation(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'deprecation';
+
+  /// A method with a simple "@deprecated" annotation.
+  @deprecated
+  _i2.Future<void> setGlobalDouble(double? value) =>
+      caller.callServerEndpoint<void>(
+        'deprecation',
+        'setGlobalDouble',
+        {'value': value},
+      );
+
+  /// A method with a "@Deprecated(..)" annotation.
+  @Deprecated('Marking endpoint method as deprecated')
+  _i2.Future<double> getGlobalDouble() => caller.callServerEndpoint<double>(
+        'deprecation',
+        'getGlobalDouble',
+        {},
+      );
+}
+
 /// {@category Endpoint}
 class EndpointEmailAuthTestMethods extends _i1.EndpointRef {
   EndpointEmailAuthTestMethods(_i1.EndpointCaller caller) : super(caller);
@@ -2000,6 +2026,7 @@ class Client extends _i1.ServerpodClient {
     customTypes = EndpointCustomTypes(this);
     basicDatabase = EndpointBasicDatabase(this);
     transactionsDatabase = EndpointTransactionsDatabase(this);
+    deprecation = EndpointDeprecation(this);
     emailAuthTestMethods = EndpointEmailAuthTestMethods(this);
     exceptionTest = EndpointExceptionTest(this);
     failedCalls = EndpointFailedCalls(this);
@@ -2045,6 +2072,8 @@ class Client extends _i1.ServerpodClient {
   late final EndpointBasicDatabase basicDatabase;
 
   late final EndpointTransactionsDatabase transactionsDatabase;
+
+  late final EndpointDeprecation deprecation;
 
   late final EndpointEmailAuthTestMethods emailAuthTestMethods;
 
@@ -2109,6 +2138,7 @@ class Client extends _i1.ServerpodClient {
         'customTypes': customTypes,
         'basicDatabase': basicDatabase,
         'transactionsDatabase': transactionsDatabase,
+        'deprecation': deprecation,
         'emailAuthTestMethods': emailAuthTestMethods,
         'exceptionTest': exceptionTest,
         'failedCalls': failedCalls,

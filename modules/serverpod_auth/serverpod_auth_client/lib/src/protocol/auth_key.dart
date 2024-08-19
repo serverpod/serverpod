@@ -123,7 +123,7 @@ class _AuthKeyImpl extends AuthKey {
       userId: userId ?? this.userId,
       hash: hash ?? this.hash,
       key: key is String? ? key : this.key,
-      scopeNames: scopeNames ?? this.scopeNames.clone(),
+      scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toList(),
       method: method ?? this.method,
     );
   }

@@ -99,11 +99,12 @@ class _MemberImpl extends Member {
     return Member(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      blocking:
-          blocking is List<_i2.Blocking>? ? blocking : this.blocking?.clone(),
+      blocking: blocking is List<_i2.Blocking>?
+          ? blocking
+          : this.blocking?.map((e0) => e0.copyWith()).toList(),
       blockedBy: blockedBy is List<_i2.Blocking>?
           ? blockedBy
-          : this.blockedBy?.clone(),
+          : this.blockedBy?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

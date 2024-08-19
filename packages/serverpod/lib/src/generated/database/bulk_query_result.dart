@@ -102,7 +102,7 @@ class _BulkQueryResultImpl extends BulkQueryResult {
     Duration? duration,
   }) {
     return BulkQueryResult(
-      headers: headers ?? this.headers.clone(),
+      headers: headers ?? this.headers.map((e0) => e0.copyWith()).toList(),
       data: data ?? this.data,
       numAffectedRows: numAffectedRows ?? this.numAffectedRows,
       duration: duration ?? this.duration,

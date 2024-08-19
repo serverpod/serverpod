@@ -7,3 +7,6 @@ fields:
   nullableDataList: List<SimpleData>?
   listWithNullableData: List<SimpleData?>
   nullableListWithNullableData: List<SimpleData?>?
+  nestedDataList: List<List<SimpleData>>?
+  nestedDataListInMap: Map<String, List<List<Map<int, SimpleData>>?>>?
+  nestedDataMap: Map<String, Map<int, SimpleData>>?

@@ -819,7 +819,9 @@ class LibraryGenerator {
             ..body = refer('endpoints')
                 .index(literalString(endpoint.name))
                 .asA(refer(endpoint.className, _endpointPath(endpoint)))
-                .property(method.name)
+                .property(
+                  '${_getMethodCallComment(method) ?? ''}${method.name}',
+                )
                 .call([
               refer('session'),
               for (var param in [
@@ -835,6 +837,15 @@ class LibraryGenerator {
       });
     }
     return methodConnectors;
+  }
+
+  String? _getMethodCallComment(MethodCallDefinition m) {
+    for (var a in m.annotations) {
+      if (a.methodCallAnalyzerIgnoreRule != null) {
+        return '\n// ignore: ${a.methodCallAnalyzerIgnoreRule}\n';
+      }
+    }
+    return null;
   }
 
   Map<Object, Object> _buildMethodStreamConnectors(

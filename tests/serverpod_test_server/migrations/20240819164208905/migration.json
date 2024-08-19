@@ -895,6 +895,40 @@
       }
     },
     {
+      "type": "alterTable",
+      "alterTable": {
+        "name": "object_with_object",
+        "schema": "public",
+        "addColumns": [
+          {
+            "name": "nestedDataList",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "List<List<protocol:SimpleData>>?"
+          },
+          {
+            "name": "nestedDataListInMap",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<String,List<List<Map<int,protocol:SimpleData>>?>>?"
+          },
+          {
+            "name": "nestedDataMap",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<String,Map<int,protocol:SimpleData>>?"
+          }
+        ],
+        "deleteColumns": [],
+        "modifyColumns": [],
+        "addIndexes": [],
+        "deleteIndexes": [],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": []
+      }
+    },
+    {
       "type": "createTable",
       "createTable": {
         "name": "string_default",

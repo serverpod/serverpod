@@ -3139,6 +3139,62 @@
           "isNullable": true,
           "columnDefault": "'This is a default persist value'::text",
           "dartType": "String?"
+        },
+        {
+          "name": "stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'This is a ''default persist value'::text",
+          "dartType": "String?"
+        },
+        {
+          "name": "stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'This is a ''default'' persist value'::text",
+          "dartType": "String?"
+        },
+        {
+          "name": "stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'This is a \"default persist value'::text",
+          "dartType": "String?"
+        },
+        {
+          "name": "stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'This is a \"default\" persist value'::text",
+          "dartType": "String?"
+        },
+        {
+          "name": "stringDefaultPersistSingleQuoteWithOneDoubleQuote",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'This is a \"default persist value'::text",
+          "dartType": "String?"
+        },
+        {
+          "name": "stringDefaultPersistSingleQuoteWithTwoDoubleQuote",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'This is a \"default\" persist value'::text",
+          "dartType": "String?"
+        },
+        {
+          "name": "stringDefaultPersistDoubleQuoteWithOneSingleQuote",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'This is a ''default persist value'::text",
+          "dartType": "String?"
+        },
+        {
+          "name": "stringDefaultPersistDoubleQuoteWithTwoSingleQuote",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": "'This is a ''default'' persist value'::text",
+          "dartType": "String?"
         }
       ],
       "foreignKeys": [],
@@ -3642,6 +3698,217 @@
       "indexes": [
         {
           "indexName": "user_note_with_a_long_name_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "uuid_default",
+      "dartName": "UuidDefault",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('uuid_default_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "uuidDefaultRandom",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "gen_random_uuid()",
+          "dartType": "UuidValue"
+        },
+        {
+          "name": "uuidDefaultRandomNull",
+          "columnType": 7,
+          "isNullable": true,
+          "columnDefault": "gen_random_uuid()",
+          "dartType": "UuidValue?"
+        },
+        {
+          "name": "uuidDefaultStr",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "'550e8400-e29b-41d4-a716-446655440000'::uuid",
+          "dartType": "UuidValue"
+        },
+        {
+          "name": "uuidDefaultStrNull",
+          "columnType": 7,
+          "isNullable": true,
+          "columnDefault": "'3f2504e0-4f89-11d3-9a0c-0305e82c3301'::uuid",
+          "dartType": "UuidValue?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "uuid_default_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "uuid_default_mix",
+      "dartName": "UuidDefaultMix",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('uuid_default_mix_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "uuidDefaultAndDefaultModel",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "'3f2504e0-4f89-11d3-9a0c-0305e82c3301'::uuid",
+          "dartType": "UuidValue"
+        },
+        {
+          "name": "uuidDefaultAndDefaultPersist",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "'9e107d9d-372b-4d97-9b27-2f0907d0b1d4'::uuid",
+          "dartType": "UuidValue"
+        },
+        {
+          "name": "uuidDefaultModelAndDefaultPersist",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "'f47ac10b-58cc-4372-a567-0e02b2c3d479'::uuid",
+          "dartType": "UuidValue"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "uuid_default_mix_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "uuid_default_model",
+      "dartName": "UuidDefaultModel",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('uuid_default_model_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "uuidDefaultModelRandom",
+          "columnType": 7,
+          "isNullable": false,
+          "dartType": "UuidValue"
+        },
+        {
+          "name": "uuidDefaultModelRandomNull",
+          "columnType": 7,
+          "isNullable": true,
+          "dartType": "UuidValue?"
+        },
+        {
+          "name": "uuidDefaultModelStr",
+          "columnType": 7,
+          "isNullable": false,
+          "dartType": "UuidValue"
+        },
+        {
+          "name": "uuidDefaultModelStrNull",
+          "columnType": 7,
+          "isNullable": true,
+          "dartType": "UuidValue?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "uuid_default_model_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "uuid_default_persist",
+      "dartName": "UuidDefaultPersist",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('uuid_default_persist_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "uuidDefaultPersistRandom",
+          "columnType": 7,
+          "isNullable": true,
+          "columnDefault": "gen_random_uuid()",
+          "dartType": "UuidValue?"
+        },
+        {
+          "name": "uuidDefaultPersistStr",
+          "columnType": 7,
+          "isNullable": true,
+          "columnDefault": "'550e8400-e29b-41d4-a716-446655440000'::uuid",
+          "dartType": "UuidValue?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "uuid_default_persist_pkey",
           "elements": [
             {
               "type": 0,

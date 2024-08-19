@@ -186,12 +186,20 @@ abstract class EndpointMethodAnalyzer {
             AnnotationDefinition(
               name: annotationName,
               arguments: _parseAnnotationStringArgument(annotation, 'message'),
-            )
+              methodCallAnalyzerIgnoreRule:
+                  'deprecated_member_use_from_same_package',
+            ),
           ],
         'deprecated' =>
           // @deprecated is a shorthand for @Deprecated(..)
           // see https://api.flutter.dev/flutter/dart-core/deprecated-constant.html
-          [AnnotationDefinition(name: annotationName)],
+          [
+            AnnotationDefinition(
+              name: annotationName,
+              methodCallAnalyzerIgnoreRule:
+                  'deprecated_member_use_from_same_package',
+            ),
+          ],
         _ => [],
       };
     }).toList();
