@@ -3,6 +3,7 @@ import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
+import 'package:serverpod_cli/src/test_util/builders/annotation_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/endpoint_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/method_definition_builder.dart';
@@ -146,10 +147,9 @@ void main() {
             .withName(endpointName)
             .withMethods([
           MethodDefinitionBuilder().withName(methodName).withAnnotations([
-            const AnnotationDefinition(
-              name: 'Deprecated',
-              arguments: ["'This method is deprecated.'"],
-            )
+            AnnotationDefinitionBuilder()
+                .withName('Deprecated')
+                .withArguments(["'This method is deprecated.'"]).build(),
           ]).buildMethodCallDefinition(),
         ]).build(),
       ],
@@ -189,7 +189,7 @@ void main() {
             .withName(endpointName)
             .withMethods([
           MethodDefinitionBuilder().withName(methodName).withAnnotations([
-            const AnnotationDefinition(name: 'deprecated')
+            AnnotationDefinitionBuilder().withName('deprecated').build(),
           ]).buildMethodCallDefinition(),
         ]).build(),
       ],
@@ -228,10 +228,9 @@ void main() {
             .withName(endpointName)
             .withMethods([
           MethodDefinitionBuilder().withName(methodName).withAnnotations([
-            const AnnotationDefinition(
-              name: 'TestCustomAnnotation',
-              arguments: ["'a string literal argument'", '42'],
-            )
+            AnnotationDefinitionBuilder()
+                .withName('TestCustomAnnotation')
+                .withArguments(["'a string literal argument'", '42']).build(),
           ]).buildMethodCallDefinition(),
         ]).build(),
       ],
