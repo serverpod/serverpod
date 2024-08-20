@@ -89,6 +89,13 @@ class _TestSerializableException
 
 void main() {
   test(
+      'Given message that has no data when building websocket message then data keyword is not included',
+      () {
+    var message = PingCommand.buildMessage();
+    expect(message, isNot(contains('data')));
+  });
+
+  test(
       'Given a Ping command message when building websocket message from string then PingCommand is returned.',
       () {
     var message = PingCommand.buildMessage();

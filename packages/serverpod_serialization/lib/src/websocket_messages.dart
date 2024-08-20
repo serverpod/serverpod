@@ -16,7 +16,7 @@ sealed class WebSocketMessage {
   ]) {
     return SerializationManager.encodeForProtocol({
       messageTypeKeyword: messageType,
-      messageDataKeyword: data,
+      if (data != null) messageDataKeyword: data,
     });
   }
 
