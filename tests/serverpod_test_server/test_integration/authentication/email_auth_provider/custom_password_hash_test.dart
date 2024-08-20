@@ -5,6 +5,7 @@ import 'package:test/test.dart';
 
 void main() async {
   var session = await IntegrationTestServer().session();
+
   AuthConfig.set(
     AuthConfig(
       sendValidationEmail: (session, email, validationCode) async {
@@ -17,14 +18,18 @@ void main() async {
         hash, {
         onError,
         onValidationFailure,
-      }) =>
-          Future.value(true),
-      passwordHashGenerator: (password) => Future.value(password),
+      }) async =>
+          // Always return true to allow the test to proceed
+          true,
+      // Custom password hash generator that does not hash the password
+      passwordHashGenerator: (password) async => password,
       extraSaltyHash: false,
     ),
   );
 
-  group('Given create account request without hashing generator', () {
+  group(
+      'Given a custom non-hashing password hash generator and a create account request',
+      () {
     var userName = 'test';
     var email = 'test8@serverpod.dev';
     var password = 'password';
@@ -35,11 +40,11 @@ void main() async {
     });
 
     setUp(() async {
-      await Emails.createUser(session, userName, email, password);
+      await Emails.createAccountRequest(session, userName, email, password);
     });
 
     test('when inspecting password hash then password is not hashed', () async {
-      var emailAuth = await EmailAuth.db.findFirstRow(
+      var emailAuth = await EmailCreateAccountRequest.db.findFirstRow(
         session,
         where: (t) => t.email.equals(email),
       );
@@ -57,9 +62,32 @@ void main() async {
         reason: 'Password hash is not the same as password',
       );
     });
+  });
 
-    test('then user can authenticate', () async {
-      var authResponse = await Emails.authenticate(session, email, password);
+  group('Given a custom always true password hash validator and a created user',
+      () {
+    var userName = 'test';
+    var email = 'test8@serverpod.dev';
+    var password = 'password';
+
+    tearDown(() async {
+      await Future.wait([
+        UserInfo.db.deleteWhere(session, where: (t) => Constant.bool(true)),
+        EmailAuth.db.deleteWhere(session, where: (t) => Constant.bool(true)),
+        UserImage.db.deleteWhere(session, where: (t) => Constant.bool(true)),
+      ]);
+    });
+
+    setUp(() async {
+      await Emails.createUser(session, userName, email, password);
+    });
+
+    test(
+        'when authenticating with incorrect password then user can authenticate',
+        () async {
+      var incorrectPassword = '$password-incorrect';
+      var authResponse =
+          await Emails.authenticate(session, email, incorrectPassword);
       expect(authResponse.success, isTrue,
           reason: 'Failed to authenticate user.');
     });
@@ -71,6 +99,7 @@ void main() async {
     var userName = 'test';
     var email = 'test@serverpod.dev';
     var password = 'hunter2';
+    // Legacy hash of the password 'hunter2'
     var legacyHash =
         '0713234b3cb6a6f98f6978f17a55a54578c580698dc1d56371502be6abb457eb';
 
@@ -94,13 +123,7 @@ void main() async {
       await EmailAuth.db.updateRow(session, withLegacyHash);
     });
 
-    test('then user can authenticate', () async {
-      var authResponse = await Emails.authenticate(session, email, password);
-      expect(authResponse.success, isTrue,
-          reason: 'Failed to authenticate user.');
-    });
-
-    test('then hash is not migrated.', () async {
+    test('when authenticating then hash is not migrated.', () async {
       await Emails.authenticate(session, email, password);
       var emailAuth = await EmailAuth.db.findFirstRow(
         session,
@@ -116,7 +139,7 @@ void main() async {
       expect(
         passwordHash,
         legacyHash,
-        reason: 'Password hash was migrated to Argon2id.',
+        reason: 'Password hash was altered during authentication.',
       );
     });
   });
