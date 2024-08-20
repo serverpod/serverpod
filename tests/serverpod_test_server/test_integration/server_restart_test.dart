@@ -17,18 +17,17 @@ void main() {
   });
 
   test(
-      'Given running Serverpod server when it is shutdown and started then it can be successfully started again.',
+      'Given a running Serverpod server when it is shutdown and restarted then it can be successfully started again.',
       () async {
     await serverpod.start();
 
     await serverpod.shutdown(exitProcess: false);
-    var start = serverpod.start();
 
-    await expectLater(start, completes);
+    await expectLater(serverpod.start(), completes);
   });
 
   test(
-      'Given running Serverpod server when it is shutdown and started then database request can be made.',
+      'Given a running Serverpod server when it is shutdown and started then database request can be made.',
       () async {
     await serverpod.start();
 
@@ -40,16 +39,15 @@ void main() {
   });
 
   test(
-      'Given running Serverpod server when it is shutdown and started then no error is written to stderr.',
+      'Given a running Serverpod server when it is shutdown and started then no error is written to stderr.',
       () async {
     var record = MockStdout();
     await IOOverrides.runZoned(() async {
       await serverpod.start();
 
       await serverpod.shutdown(exitProcess: false);
-      var start = serverpod.start();
 
-      await expectLater(start, completes);
+      await expectLater(serverpod.start(), completes);
     }, stderr: () => record);
 
     expect(record.output, isEmpty);
