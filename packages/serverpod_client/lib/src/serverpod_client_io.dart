@@ -14,7 +14,6 @@ import 'serverpod_client_shared_private.dart';
 /// (for Flutter native apps).
 abstract class ServerpodClient extends ServerpodClientShared {
   late HttpClient _httpClient;
-  bool _initialized = false;
 
   /// Creates a new ServerpodClient.
   ServerpodClient(
@@ -37,65 +36,32 @@ abstract class ServerpodClient extends ServerpodClientShared {
     _httpClient.connectionTimeout = connectionTimeout;
   }
 
-  Future<void> _initialize() async {
-    _initialized = true;
-  }
-
   @override
-  Future<T> callServerEndpoint<T>(
-      String endpoint, String method, Map<String, dynamic> args) async {
-    if (!_initialized) await _initialize();
+  Future<String> callServerEndpointImpl<T>(
+    Uri url, {
+    required String body,
+  }) async {
+    var request = await _httpClient.postUrl(url);
+    request.headers.contentType =
+        ContentType('application', 'json', charset: 'utf-8');
+    request.contentLength = utf8.encode(body).length;
+    request.write(body);
 
-    var callContext = MethodCallContext(
-      endpointName: endpoint,
-      methodName: method,
-      arguments: args,
-    );
-    try {
-      var body =
-          formatArgs(args, await authenticationKeyManager?.get(), method);
+    await request.flush();
 
-      var url = Uri.parse('$host$endpoint');
+    var response = await request.close().timeout(connectionTimeout);
 
-      var request = await _httpClient.postUrl(url);
-      request.headers.contentType =
-          ContentType('application', 'json', charset: 'utf-8');
-      request.contentLength = utf8.encode(body).length;
-      request.write(body);
+    var data = await _readResponse(response);
 
-      await request.flush();
-
-      var response = await request.close().timeout(connectionTimeout);
-
-      var data = await _readResponse(response);
-
-      if (response.statusCode != HttpStatus.ok) {
-        throw getExceptionFrom(
-          data: data,
-          serializationManager: serializationManager,
-          statusCode: response.statusCode,
-        );
-      }
-
-      T result;
-      if (T == getType<void>()) {
-        result = returnVoid() as T;
-      } else {
-        result = parseData<T>(data, T, serializationManager);
-      }
-
-      onSucceededCall?.call(callContext);
-      return result;
-    } catch (e, s) {
-      onFailedCall?.call(callContext, e, s);
-
-      if (logFailedCalls) {
-        print('Failed call: $endpoint.$method');
-        print('$e');
-      }
-
-      rethrow;
+    if (response.statusCode != HttpStatus.ok) {
+      throw getExceptionFrom(
+        data: data,
+        serializationManager: serializationManager,
+        statusCode: response.statusCode,
+      );
     }
+
+    return data;
   }
 
   Future<String> _readResponse(HttpClientResponse response) {

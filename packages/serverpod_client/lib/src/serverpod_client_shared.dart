@@ -7,6 +7,8 @@ import 'package:serverpod_client/src/method_stream/method_stream_connection_deta
 import 'package:serverpod_client/src/method_stream/method_stream_manager_exceptions.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import 'serverpod_client_shared_private.dart';
+
 /// A callback with no parameters or return value.
 typedef VoidCallback = void Function();
 
@@ -426,6 +428,54 @@ abstract class ServerpodClientShared extends EndpointCaller {
       return;
     }
     await _sendControlCommandToStream('auth', {'key': authKey});
+  }
+
+  /// Performs the actual call to the server.
+  /// Subclasses implement bespoke logic for e.g. web / io clients.
+  Future<String> callServerEndpointImpl<T>(
+    Uri url, {
+    required String body,
+  });
+
+  @override
+  Future<T> callServerEndpoint<T>(
+      String endpoint, String method, Map<String, dynamic> args) async {
+    var callContext = MethodCallContext(
+      endpointName: endpoint,
+      methodName: method,
+      arguments: args,
+    );
+
+    try {
+      var body =
+          formatArgs(args, await authenticationKeyManager?.get(), method);
+      var url = Uri.parse('$host$endpoint');
+
+      var data = await callServerEndpointImpl(
+        url,
+        body: body,
+      );
+
+      T result;
+      if (T == getType<void>()) {
+        result = returnVoid() as T;
+      } else {
+        result = parseData<T>(data, T, serializationManager);
+      }
+
+      onSucceededCall?.call(callContext);
+      return result;
+    } catch (e, s) {
+      onFailedCall?.call(callContext, e, s);
+
+      if (logFailedCalls) {
+        // ignore: avoid_print
+        print('Failed call: $endpoint.$method');
+        // ignore: avoid_print
+        print('$e');
+      }
+      rethrow;
+    }
   }
 
   @override

@@ -1,9 +1,6 @@
-// ignore_for_file: avoid_print
-
 import 'dart:async';
 
 import 'package:http/http.dart' as http;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'serverpod_client_exception.dart';
 import 'serverpod_client_shared.dart';
@@ -15,7 +12,6 @@ import 'serverpod_client_shared_private.dart';
 /// (for Flutter web).
 abstract class ServerpodClient extends ServerpodClientShared {
   late http.Client _httpClient;
-  bool _initialized = false;
 
   /// Creates a new ServerpodClient.
   ServerpodClient(
@@ -33,26 +29,12 @@ abstract class ServerpodClient extends ServerpodClientShared {
     _httpClient = http.Client();
   }
 
-  Future<void> _initialize() async {
-    _initialized = true;
-  }
-
   @override
-  Future<T> callServerEndpoint<T>(
-      String endpoint, String method, Map<String, dynamic> args) async {
-    if (!_initialized) await _initialize();
-
-    var callContext = MethodCallContext(
-      endpointName: endpoint,
-      methodName: method,
-      arguments: args,
-    );
-    String? data;
+  Future<String> callServerEndpointImpl<T>(
+    Uri url, {
+    required String body,
+  }) async {
     try {
-      var body =
-          formatArgs(args, await authenticationKeyManager?.get(), method);
-      var url = Uri.parse('$host$endpoint');
-
       var response = await _httpClient
           .post(
             url,
@@ -60,7 +42,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
           )
           .timeout(connectionTimeout);
 
-      data = response.body;
+      var data = response.body;
 
       if (response.statusCode != 200) {
         throw getExceptionFrom(
@@ -70,28 +52,10 @@ abstract class ServerpodClient extends ServerpodClientShared {
         );
       }
 
-      T result;
-      if (T == getType<void>()) {
-        result = returnVoid() as T;
-      } else {
-        result = parseData<T>(data, T, serializationManager);
-      }
-
-      onSucceededCall?.call(callContext);
-      return result;
-    } catch (e, s) {
-      onFailedCall?.call(callContext, e, s);
-
-      if (e is http.ClientException) {
-        var message = data ?? 'Unknown server response code. ($e)';
-        throw (ServerpodClientException(message, -1));
-      }
-
-      if (logFailedCalls) {
-        print('Failed call: $endpoint.$method');
-        print('$e');
-      }
-      rethrow;
+      return data;
+    } on http.ClientException catch (e) {
+      var message = 'Unknown server response code. ($e)';
+      throw (ServerpodClientException(message, -1));
     }
   }
 
