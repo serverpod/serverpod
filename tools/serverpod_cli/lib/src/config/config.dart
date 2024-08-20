@@ -153,41 +153,33 @@ class GeneratorConfig {
   /// All the modules including my self and internal modules.
   List<ModuleConfig> get modulesAll => _modules;
 
-  /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
-  static Future<GeneratorConfig> load([String dir = '']) async {
-    var serverPackageDirectoryPathParts = p.split(dir);
+  /// Create a new [GeneratorConfig] by loading the configuration in the [serverRootDir].
+  static Future<GeneratorConfig> load([String serverRootDir = '']) async {
+    var serverPackageDirectoryPathParts = p.split(serverRootDir);
 
     Pubspec? pubspec;
     try {
-      pubspec = parsePubspec(File(p.join(dir, 'pubspec.yaml')));
+      pubspec = parsePubspec(File(p.join(serverRootDir, 'pubspec.yaml')));
     } catch (_) {}
 
     if (pubspec == null) {
-      log.error(
-        'Failed to load pubspec.yaml. Are you running serverpod from your '
-        'projects root directory?',
-      );
-
       throw const ServerpodProjectNotFoundException(
-        'Failed to load valid pubspec.yaml',
+        'Failed to load pubspec.yaml. Are you running serverpod from your '
+        'projects server root directory?',
       );
     }
 
-    if (!isServerDirectory(Directory(dir))) {
-      log.error(
+    if (!isServerDirectory(Directory(serverRootDir))) {
+      throw const ServerpodProjectNotFoundException(
         'Could not find the Serverpod dependency. Are you running serverpod from your '
         'projects root directory?',
-      );
-
-      throw const ServerpodProjectNotFoundException(
-        'Serverpod dependency not found.',
       );
     }
 
     var serverPackage = pubspec.name;
     var name = _stripPackage(serverPackage);
 
-    var file = File(p.join(dir, 'config', 'generator.yaml'));
+    var file = File(p.join(serverRootDir, 'config', 'generator.yaml'));
     Map generatorConfig = {};
     try {
       var yamlStr = file.readAsStringSync();
@@ -218,16 +210,13 @@ class GeneratorConfig {
       dartClientDependsOnServiceClient =
           yaml['dependencies'].containsKey('serverpod_service_client');
     } catch (_) {
-      log.error(
+      throw const ServerpodProjectNotFoundException(
         'Failed to load client pubspec.yaml. If you are using a none default '
         'path it has to be specified in the config/generator.yaml file!',
       );
-      throw const ServerpodProjectNotFoundException(
-        'Failed to load client pubspec.yaml',
-      );
     }
 
-    await _warnIfDependenciesAreNotInstalled(dir, pubspec);
+    await _warnIfDependenciesAreNotInstalled(serverRootDir, pubspec);
 
     var manualModules = <String, String?>{};
     if (generatorConfig['modules'] != null) {
@@ -239,7 +228,7 @@ class GeneratorConfig {
     }
 
     var modules = await locateModules(
-      directory: Directory(dir),
+      directory: Directory(serverRootDir),
       manualModules: manualModules,
     );
 

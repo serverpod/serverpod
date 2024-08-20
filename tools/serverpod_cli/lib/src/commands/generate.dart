@@ -36,7 +36,8 @@ class GenerateCommand extends ServerpodCommand {
     GeneratorConfig config;
     try {
       config = await GeneratorConfig.load();
-    } catch (_) {
+    } catch (e) {
+      log.error('An error occurred while parsing the server config file: $e');
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
 
