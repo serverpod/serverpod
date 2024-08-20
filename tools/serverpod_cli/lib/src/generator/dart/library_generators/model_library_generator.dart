@@ -1032,6 +1032,8 @@ class SerializableModelLibraryGenerator {
 
     switch (defaultValueType) {
       case DefaultValueAllowedType.dateTime:
+        if (defaultValue is! String) return null;
+
         if (defaultValue == defaultDateTimeValueNow) {
           return refer(field.type.className).property('now').call([]).code;
         }
