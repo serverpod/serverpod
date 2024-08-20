@@ -70,7 +70,7 @@ class Server {
   /// True if the server is currently running.
   bool get running => _running;
 
-  late final HttpServer _httpServer;
+  late HttpServer _httpServer;
 
   /// The [HttpServer] responsible for handling calls.
   HttpServer get httpServer => _httpServer;
