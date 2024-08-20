@@ -5,7 +5,6 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_client/src/method_stream/method_stream_connection_details.dart';
-import 'package:serverpod_client/src/method_stream/method_stream_manager_exceptions.dart';
 import 'package:serverpod_client/src/util/lock.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
