@@ -9,7 +9,6 @@ import 'dart:io';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_client/src/client_method_stream_manager.dart';
 import 'package:serverpod_client/src/method_stream/method_stream_connection_details.dart';
-import 'package:serverpod_client/src/method_stream/method_stream_manager_exceptions.dart';
 import 'package:test/test.dart';
 
 import '../test_utils/method_stream_connection_details_builder.dart';
