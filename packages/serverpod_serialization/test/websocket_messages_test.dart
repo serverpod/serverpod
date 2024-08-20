@@ -234,7 +234,7 @@ void main() {
       inputStreams: ['input1'],
     );
 
-    // This message is missing the mandatory endpoint field.
+    // This message uses an unsupported type for input stream.
     message = message.replaceAll('"input1"', '1');
 
     expect(
