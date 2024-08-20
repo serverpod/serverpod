@@ -5,6 +5,25 @@ import 'package:test/test.dart';
 
 void main() async {
   var session = await IntegrationTestServer().session();
+  AuthConfig.set(
+    AuthConfig(
+      sendValidationEmail: (session, email, validationCode) async {
+        print('Sending validation email to $email with code $validationCode');
+        return true;
+      },
+      passwordHashValidator: (
+        password,
+        email,
+        hash, {
+        onError,
+        onValidationFailure,
+      }) =>
+          Future.value(true),
+      passwordHashGenerator: (password) => Future.value(password),
+      extraSaltyHash: false,
+    ),
+  );
+
   group('Given create account request without hashing generator', () {
     var userName = 'test';
     var email = 'test8@serverpod.dev';
@@ -16,26 +35,6 @@ void main() async {
     });
 
     setUp(() async {
-      AuthConfig.set(
-        AuthConfig(
-          sendValidationEmail: (session, email, validationCode) async {
-            print(
-                'Sending validation email to $email with code $validationCode');
-            return true;
-          },
-          passwordHashValidator: (
-            password,
-            email,
-            hash, {
-            onError,
-            onValidationFailure,
-          }) =>
-              Future.value(true),
-          passwordHashGenerator: (password) => Future.value(password),
-          extraSaltyHash: false,
-        ),
-      );
-
       await Emails.createUser(session, userName, email, password);
     });
 
@@ -84,26 +83,6 @@ void main() async {
     });
 
     setUp(() async {
-      AuthConfig.set(
-        AuthConfig(
-          sendValidationEmail: (session, email, validationCode) async {
-            print(
-                'Sending validation email to $email with code $validationCode');
-            return true;
-          },
-          passwordHashValidator: (
-            password,
-            email,
-            hash, {
-            onError,
-            onValidationFailure,
-          }) =>
-              Future.value(true),
-          passwordHashGenerator: (password) => Future.value(password),
-          extraSaltyHash: false,
-        ),
-      );
-
       await Emails.createUser(session, userName, email, password);
       var entry = await EmailAuth.db
           .findFirstRow(session, where: (t) => t.email.equals(email));
