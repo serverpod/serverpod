@@ -6,36 +6,29 @@ import 'package:serverpod_client/serverpod_client.dart';
 
 import 'serverpod_client_shared_private.dart';
 
-/// Handles communication with the server. Is typically overridden by
-/// generated code to provide implementations of methods for calling the server.
+/// Handles communication with the server.
 /// This is the concrete implementation using the io library
 /// (for Flutter native apps).
-abstract class ServerpodClient extends ServerpodClientShared {
+class ServerpodClientRequestDelegateImpl
+    extends ServerpodClientRequestDelegate {
+  final ServerpodClientShared _client;
   late HttpClient _httpClient;
 
-  /// Creates a new ServerpodClient.
-  ServerpodClient(
-    super.host,
-    super.serializationManager, {
-    dynamic securityContext,
-    super.authenticationKeyManager,
-    super.logFailedCalls,
-    super.streamingConnectionTimeout,
-    super.connectionTimeout,
-    super.onFailedCall,
-    super.onSucceededCall,
-    super.disconnectStreamsOnLostInternetConnection,
-  }) {
-    assert(securityContext == null || securityContext is SecurityContext,
+  /// Creates a new ServerpodClientRequestDelegateImpl.
+  ServerpodClientRequestDelegateImpl(ServerpodClientShared client)
+      : _client = client {
+    assert(
+        _client.securityContext == null ||
+            _client.securityContext is SecurityContext,
         'Context must be of type SecurityContext');
 
     // Setup client
-    _httpClient = HttpClient(context: securityContext);
-    _httpClient.connectionTimeout = connectionTimeout;
+    _httpClient = HttpClient(context: _client.securityContext);
+    _httpClient.connectionTimeout = _client.connectionTimeout;
   }
 
   @override
-  Future<String> callServerEndpointImpl<T>(
+  Future<String> serverRequest<T>(
     Uri url, {
     required String body,
   }) async {
@@ -47,14 +40,14 @@ abstract class ServerpodClient extends ServerpodClientShared {
 
     await request.flush();
 
-    var response = await request.close().timeout(connectionTimeout);
+    var response = await request.close().timeout(_client.connectionTimeout);
 
     var data = await _readResponse(response);
 
     if (response.statusCode != HttpStatus.ok) {
       throw getExceptionFrom(
         data: data,
-        serializationManager: serializationManager,
+        serializationManager: _client.serializationManager,
         statusCode: response.statusCode,
       );
     }
@@ -77,6 +70,5 @@ abstract class ServerpodClient extends ServerpodClientShared {
   @override
   void close() {
     _httpClient.close();
-    super.close();
   }
 }

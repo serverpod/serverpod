@@ -6,31 +6,22 @@ import 'serverpod_client_exception.dart';
 import 'serverpod_client_shared.dart';
 import 'serverpod_client_shared_private.dart';
 
-/// Handles communication with the server. Is typically overridden by
-/// generated code to provide implementations of methods for calling the server.
+/// Handles communication with the server.
 /// This is the concrete implementation using the http library
 /// (for Flutter web).
-abstract class ServerpodClient extends ServerpodClientShared {
+class ServerpodClientRequestDelegateImpl
+    extends ServerpodClientRequestDelegate {
+  final ServerpodClientShared _client;
   late http.Client _httpClient;
 
-  /// Creates a new ServerpodClient.
-  ServerpodClient(
-    super.host,
-    super.serializationManager, {
-    super.securityContext,
-    super.authenticationKeyManager,
-    super.logFailedCalls,
-    super.streamingConnectionTimeout,
-    super.connectionTimeout,
-    super.onFailedCall,
-    super.onSucceededCall,
-    super.disconnectStreamsOnLostInternetConnection,
-  }) {
+  /// Creates a new ServerpodClientRequestDelegateImpl.
+  ServerpodClientRequestDelegateImpl(ServerpodClientShared client)
+      : _client = client {
     _httpClient = http.Client();
   }
 
   @override
-  Future<String> callServerEndpointImpl<T>(
+  Future<String> serverRequest<T>(
     Uri url, {
     required String body,
   }) async {
@@ -40,14 +31,14 @@ abstract class ServerpodClient extends ServerpodClientShared {
             url,
             body: body,
           )
-          .timeout(connectionTimeout);
+          .timeout(_client.connectionTimeout);
 
       var data = response.body;
 
       if (response.statusCode != 200) {
         throw getExceptionFrom(
           data: data,
-          serializationManager: serializationManager,
+          serializationManager: _client.serializationManager,
           statusCode: response.statusCode,
         );
       }
@@ -60,9 +51,10 @@ abstract class ServerpodClient extends ServerpodClientShared {
   }
 
   /// Sets the authorization key to manage user sign-ins.
+  // FIXME: investigate usage
   Future<void> setAuthorizationKey(String authorizationKey) async {
-    if (authenticationKeyManager != null) {
-      await authenticationKeyManager!.put(authorizationKey);
+    if (_client.authenticationKeyManager != null) {
+      await _client.authenticationKeyManager!.put(authorizationKey);
     }
   }
 
@@ -70,6 +62,5 @@ abstract class ServerpodClient extends ServerpodClientShared {
   @override
   void close() {
     _httpClient.close();
-    super.close();
   }
 }

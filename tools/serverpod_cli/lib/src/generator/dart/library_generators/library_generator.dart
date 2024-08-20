@@ -471,7 +471,7 @@ class LibraryGenerator {
         (c) => c
           ..name = config.type != PackageType.module ? 'Client' : 'Caller'
           ..extend = config.type != PackageType.module
-              ? refer('ServerpodClient', serverpodUrl(false))
+              ? refer('ServerpodClientShared', serverpodUrl(false))
               : refer('ModuleEndpointCaller', serverpodUrl(false))
           ..fields.addAll([
             for (var endpointDef in protocolDefinition.endpoints)

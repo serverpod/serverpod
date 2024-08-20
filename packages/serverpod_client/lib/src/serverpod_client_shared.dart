@@ -8,6 +8,10 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'serverpod_client_shared_private.dart';
 
+import 'serverpod_client_io.dart'
+    if (dart.library.js) 'serverpod_client_browser.dart'
+    if (dart.library.io) 'serverpod_client_io.dart';
+
 /// A callback with no parameters or return value.
 typedef VoidCallback = void Function();
 
@@ -45,12 +49,30 @@ class MethodCallContext {
   });
 }
 
-/// Superclass with shared methods for handling communication with the server.
-/// It's overridden i two different versions depending on if the dart:io library
+/// Defines the interface of the delegate that performs the actual request to the server
+/// and returns the response data.
+/// The delegate is used by [ServerpodClientShared] to perform the actual request.
+/// It's overridden in different versions depending on if the dart:io library
 /// is available.
+abstract class ServerpodClientRequestDelegate {
+  /// Performs the actual request to the server and returns the response data.
+  Future<String> serverRequest<T>(
+    Uri url, {
+    required String body,
+  });
+
+  /// Closes the connection to the server.
+  /// This delegate should not be used after calling this.
+  void close();
+}
+
+/// Superclass with shared methods for handling communication with the server.
+/// Is typically overridden by generated code to provide implementations of methods for calling the server.
 abstract class ServerpodClientShared extends EndpointCaller {
   /// Full url to the Serverpod server. E.g. "https://example.com/"
   final String host;
+
+  late final ServerpodClientRequestDelegate _requestDelegate;
 
   WebSocketChannel? _webSocket;
 
@@ -111,6 +133,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   /// The [SerializationManager] used to serialize objects sent to the server.
   final SerializationManager serializationManager;
+
+  /// Security context for the server connection, if any.
+  final dynamic securityContext;
 
   /// If true, the client will log any failed calls to stdout.
   final bool logFailedCalls;
@@ -183,11 +208,11 @@ abstract class ServerpodClientShared extends EndpointCaller {
     }
   }
 
-  /// Creates a new ServerpodClient.
+  /// Creates a new ServerpodClientShared.
   ServerpodClientShared(
     this.host,
     this.serializationManager, {
-    dynamic securityContext,
+    this.securityContext,
     required this.authenticationKeyManager,
     this.logFailedCalls = true,
     required Duration? streamingConnectionTimeout,
@@ -202,6 +227,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
         'host must end with a slash, eg: https://example.com/');
     assert(host.startsWith('http://') || host.startsWith('https://'),
         'host must include protocol, eg: https://example.com/');
+    _requestDelegate = ServerpodClientRequestDelegateImpl(this);
     disconnectStreamsOnLostInternetConnection ??= false;
     _disconnectMethodStreamsOnLostInternetConnection =
         disconnectStreamsOnLostInternetConnection;
@@ -270,6 +296,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   /// Closes all open connections to the server.
   void close() {
+    _requestDelegate.close();
     closeStreamingConnection();
     closeStreamingMethodConnections();
   }
@@ -429,16 +456,12 @@ abstract class ServerpodClientShared extends EndpointCaller {
     await _sendControlCommandToStream('auth', {'key': authKey});
   }
 
-  /// Performs the actual call to the server.
-  /// Subclasses implement bespoke logic for e.g. web / io clients.
-  Future<String> callServerEndpointImpl<T>(
-    Uri url, {
-    required String body,
-  });
-
   @override
   Future<T> callServerEndpoint<T>(
-      String endpoint, String method, Map<String, dynamic> args) async {
+    String endpoint,
+    String method,
+    Map<String, dynamic> args,
+  ) async {
     var callContext = MethodCallContext(
       endpointName: endpoint,
       methodName: method,
@@ -450,7 +473,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
           formatArgs(args, await authenticationKeyManager?.get(), method);
       var url = Uri.parse('$host$endpoint');
 
-      var data = await callServerEndpointImpl(
+      var data = await _requestDelegate.serverRequest(
         url,
         body: body,
       );

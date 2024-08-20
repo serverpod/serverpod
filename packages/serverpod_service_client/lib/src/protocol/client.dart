@@ -231,7 +231,7 @@ class EndpointInsights extends _i1.EndpointRef {
       );
 }
 
-class Client extends _i1.ServerpodClient {
+class Client extends _i1.ServerpodClientShared {
   Client(
     String host, {
     dynamic securityContext,
