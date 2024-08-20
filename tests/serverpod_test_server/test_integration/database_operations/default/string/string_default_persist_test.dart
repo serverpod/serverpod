@@ -20,8 +20,10 @@ void main() async {
           session,
           object,
         );
-        expect(databaseObject.stringDefaultPersist,
-            equals('This is a default persist value'));
+        expect(
+          databaseObject.stringDefaultPersist,
+          equals('This is a default persist value'),
+        );
       },
     );
 
@@ -36,8 +38,10 @@ void main() async {
         );
         var databaseObject =
             await StringDefaultPersist.db.findFirstRow(session);
-        expect(databaseObject?.stringDefaultPersist,
-            equals('This is a default persist value'));
+        expect(
+          databaseObject?.stringDefaultPersist,
+          equals('This is a default persist value'),
+        );
       },
     );
 
@@ -51,8 +55,10 @@ void main() async {
           session,
           specificObject,
         );
-        expect(specificDatabaseObject.stringDefaultPersist,
-            equals('A specific persist value'));
+        expect(
+          specificDatabaseObject.stringDefaultPersist,
+          equals('A specific persist value'),
+        );
       },
     );
 
@@ -67,9 +73,10 @@ void main() async {
           object,
         );
         expect(
-            databaseObject
-                .stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
-            equals('This is a \'default persist value'));
+          databaseObject
+              .stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
+          equals('This is a \'default persist value'),
+        );
       },
     );
 
@@ -85,9 +92,10 @@ void main() async {
         var databaseObject =
             await StringDefaultPersist.db.findFirstRow(session);
         expect(
-            databaseObject
-                ?.stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
-            equals('This is a \'default persist value'));
+          databaseObject
+              ?.stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
+          equals('This is a \'default persist value'),
+        );
       },
     );
 
@@ -103,9 +111,10 @@ void main() async {
           specificObject,
         );
         expect(
-            specificDatabaseObject
-                .stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
-            equals('A \'specific\' value'));
+          specificDatabaseObject
+              .stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
+          equals('A \'specific\' value'),
+        );
       },
     );
 
@@ -118,9 +127,10 @@ void main() async {
           object,
         );
         expect(
-            databaseObject
-                .stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
-            equals('This is a \'default\' persist value'));
+          databaseObject
+              .stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
+          equals('This is a \'default\' persist value'),
+        );
       },
     );
 
@@ -136,9 +146,10 @@ void main() async {
         var databaseObject =
             await StringDefaultPersist.db.findFirstRow(session);
         expect(
-            databaseObject
-                ?.stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
-            equals('This is a \'default\' persist value'));
+          databaseObject
+              ?.stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
+          equals('This is a \'default\' persist value'),
+        );
       },
     );
 
@@ -154,9 +165,10 @@ void main() async {
           specificObject,
         );
         expect(
-            specificDatabaseObject
-                .stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
-            equals('A \'specific\' value'));
+          specificDatabaseObject
+              .stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
+          equals('A \'specific\' value'),
+        );
       },
     );
 
@@ -169,9 +181,10 @@ void main() async {
           object,
         );
         expect(
-            databaseObject
-                .stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
-            equals('This is a "default persist value'));
+          databaseObject
+              .stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
+          equals('This is a "default persist value'),
+        );
       },
     );
 
@@ -187,13 +200,15 @@ void main() async {
         var databaseObject =
             await StringDefaultPersist.db.findFirstRow(session);
         expect(
-            databaseObject
-                ?.stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
-            equals('This is a "default persist value'));
+          databaseObject
+              ?.stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
+          equals('This is a "default persist value'),
+        );
         expect(
-            databaseObject
-                ?.stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
-            equals("This is a \"default persist value"));
+          databaseObject
+              ?.stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
+          equals("This is a \"default persist value"),
+        );
       },
     );
 
@@ -209,9 +224,10 @@ void main() async {
           specificObject,
         );
         expect(
-            specificDatabaseObject
-                .stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
-            equals('A "specific" value'));
+          specificDatabaseObject
+              .stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
+          equals('A "specific" value'),
+        );
       },
     );
 
@@ -224,9 +240,10 @@ void main() async {
           object,
         );
         expect(
-            databaseObject
-                .stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
-            equals('This is a "default" persist value'));
+          databaseObject
+              .stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
+          equals('This is a "default" persist value'),
+        );
       },
     );
 
@@ -242,9 +259,10 @@ void main() async {
         var databaseObject =
             await StringDefaultPersist.db.findFirstRow(session);
         expect(
-            databaseObject
-                ?.stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
-            equals('This is a "default" persist value'));
+          databaseObject
+              ?.stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
+          equals('This is a "default" persist value'),
+        );
       },
     );
 
@@ -260,9 +278,10 @@ void main() async {
           specificObject,
         );
         expect(
-            specificDatabaseObject
-                .stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
-            equals('A "specific" value'));
+          specificDatabaseObject
+              .stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
+          equals('A "specific" value'),
+        );
       },
     );
 
@@ -274,8 +293,10 @@ void main() async {
           session,
           object,
         );
-        expect(databaseObject.stringDefaultPersistSingleQuoteWithOneDoubleQuote,
-            equals('This is a "default persist value'));
+        expect(
+          databaseObject.stringDefaultPersistSingleQuoteWithOneDoubleQuote,
+          equals('This is a "default persist value'),
+        );
       },
     );
 
@@ -291,8 +312,9 @@ void main() async {
         var databaseObject =
             await StringDefaultPersist.db.findFirstRow(session);
         expect(
-            databaseObject?.stringDefaultPersistSingleQuoteWithOneDoubleQuote,
-            equals('This is a "default persist value'));
+          databaseObject?.stringDefaultPersistSingleQuoteWithOneDoubleQuote,
+          equals('This is a "default persist value'),
+        );
       },
     );
 
@@ -308,9 +330,10 @@ void main() async {
           specificObject,
         );
         expect(
-            specificDatabaseObject
-                .stringDefaultPersistSingleQuoteWithOneDoubleQuote,
-            equals('A "specific" value'));
+          specificDatabaseObject
+              .stringDefaultPersistSingleQuoteWithOneDoubleQuote,
+          equals('A "specific" value'),
+        );
       },
     );
 
@@ -322,8 +345,10 @@ void main() async {
           session,
           object,
         );
-        expect(databaseObject.stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
-            equals('This is a "default" persist value'));
+        expect(
+          databaseObject.stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
+          equals('This is a "default" persist value'),
+        );
       },
     );
 
@@ -339,8 +364,9 @@ void main() async {
         var databaseObject =
             await StringDefaultPersist.db.findFirstRow(session);
         expect(
-            databaseObject?.stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
-            equals('This is a "default" persist value'));
+          databaseObject?.stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
+          equals('This is a "default" persist value'),
+        );
       },
     );
 
@@ -356,9 +382,10 @@ void main() async {
           specificObject,
         );
         expect(
-            specificDatabaseObject
-                .stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
-            equals('A "specific" value'));
+          specificDatabaseObject
+              .stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
+          equals('A "specific" value'),
+        );
       },
     );
 
@@ -370,8 +397,10 @@ void main() async {
           session,
           object,
         );
-        expect(databaseObject.stringDefaultPersistDoubleQuoteWithOneSingleQuote,
-            equals('This is a \'default persist value'));
+        expect(
+          databaseObject.stringDefaultPersistDoubleQuoteWithOneSingleQuote,
+          equals('This is a \'default persist value'),
+        );
       },
     );
 
@@ -387,8 +416,9 @@ void main() async {
         var databaseObject =
             await StringDefaultPersist.db.findFirstRow(session);
         expect(
-            databaseObject?.stringDefaultPersistDoubleQuoteWithOneSingleQuote,
-            equals('This is a \'default persist value'));
+          databaseObject?.stringDefaultPersistDoubleQuoteWithOneSingleQuote,
+          equals('This is a \'default persist value'),
+        );
       },
     );
 
@@ -404,9 +434,10 @@ void main() async {
           specificObject,
         );
         expect(
-            specificDatabaseObject
-                .stringDefaultPersistDoubleQuoteWithOneSingleQuote,
-            equals('A \'specific\' value'));
+          specificDatabaseObject
+              .stringDefaultPersistDoubleQuoteWithOneSingleQuote,
+          equals('A \'specific\' value'),
+        );
       },
     );
 
@@ -418,8 +449,10 @@ void main() async {
           session,
           object,
         );
-        expect(databaseObject.stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
-            equals('This is a \'default\' persist value'));
+        expect(
+          databaseObject.stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
+          equals('This is a \'default\' persist value'),
+        );
       },
     );
 
@@ -435,8 +468,9 @@ void main() async {
         var databaseObject =
             await StringDefaultPersist.db.findFirstRow(session);
         expect(
-            databaseObject?.stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
-            equals('This is a \'default\' persist value'));
+          databaseObject?.stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
+          equals('This is a \'default\' persist value'),
+        );
       },
     );
 
@@ -452,9 +486,10 @@ void main() async {
           specificObject,
         );
         expect(
-            specificDatabaseObject
-                .stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
-            equals('A \'specific\' value'));
+          specificDatabaseObject
+              .stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
+          equals('A \'specific\' value'),
+        );
       },
     );
   });

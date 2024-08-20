@@ -27,8 +27,10 @@ void main() async {
         'when the field has both "defaultModel" and "defaultPersist", then the field value should be the "defaultModel" value',
         () {
           var object = StringDefaultMix();
-          expect(object.stringDefaultModelAndDefaultPersist,
-              equals('This is a default value'));
+          expect(
+            object.stringDefaultModelAndDefaultPersist,
+            equals('This is a default value'),
+          );
         },
       );
 
@@ -38,7 +40,9 @@ void main() async {
           var object = StringDefaultMix(
               stringDefaultAndDefaultModel: 'A specific value');
           expect(
-              object.stringDefaultAndDefaultModel, equals('A specific value'));
+            object.stringDefaultAndDefaultModel,
+            equals('A specific value'),
+          );
         },
       );
 
@@ -47,8 +51,10 @@ void main() async {
         () {
           var object = StringDefaultMix(
               stringDefaultAndDefaultPersist: 'Another specific value');
-          expect(object.stringDefaultAndDefaultPersist,
-              equals('Another specific value'));
+          expect(
+            object.stringDefaultAndDefaultPersist,
+            equals('Another specific value'),
+          );
         },
       );
 
@@ -58,8 +64,10 @@ void main() async {
           var object = StringDefaultMix(
               stringDefaultModelAndDefaultPersist:
                   'Yet another specific value');
-          expect(object.stringDefaultModelAndDefaultPersist,
-              equals('Yet another specific value'));
+          expect(
+            object.stringDefaultModelAndDefaultPersist,
+            equals('Yet another specific value'),
+          );
         },
       );
     },

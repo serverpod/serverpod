@@ -9,7 +9,10 @@ void main() async {
         'when an object of the class is created, then the "stringDefault" field should match the default value',
         () {
           var object = StringDefault();
-          expect(object.stringDefault, equals('This is a default value'));
+          expect(
+            object.stringDefault,
+            equals('This is a default value'),
+          );
         },
       );
 
@@ -18,7 +21,9 @@ void main() async {
         () {
           var object = StringDefault();
           expect(
-              object.stringDefaultNull, equals('This is a default null value'));
+            object.stringDefaultNull,
+            equals('This is a default null value'),
+          );
         },
       );
 
@@ -26,7 +31,10 @@ void main() async {
         'when an object of the class is created with a specific value for "stringDefault", then the field value should match the provided value',
         () {
           var object = StringDefault(stringDefault: 'A specific value');
-          expect(object.stringDefault, equals('A specific value'));
+          expect(
+            object.stringDefault,
+            equals('A specific value'),
+          );
         },
       );
 
@@ -35,7 +43,10 @@ void main() async {
         () {
           var object =
               StringDefault(stringDefaultNull: 'A specific null value');
-          expect(object.stringDefaultNull, equals('A specific null value'));
+          expect(
+            object.stringDefaultNull,
+            equals('A specific null value'),
+          );
         },
       );
     },
