@@ -90,7 +90,7 @@ class _UserNoteCollectionImpl extends UserNoteCollection {
       name: name ?? this.name,
       userNotesPropertyName: userNotesPropertyName is List<_i2.UserNote>?
           ? userNotesPropertyName
-          : this.userNotesPropertyName?.clone(),
+          : this.userNotesPropertyName?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

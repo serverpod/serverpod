@@ -127,9 +127,11 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
       testEnum: testEnum ?? this.testEnum,
       nullableEnum:
           nullableEnum is _i2.TestEnum? ? nullableEnum : this.nullableEnum,
-      enumList: enumList ?? this.enumList.clone(),
-      nullableEnumList: nullableEnumList ?? this.nullableEnumList.clone(),
-      enumListList: enumListList ?? this.enumListList.clone(),
+      enumList: enumList ?? this.enumList.map((e0) => e0).toList(),
+      nullableEnumList:
+          nullableEnumList ?? this.nullableEnumList.map((e0) => e0).toList(),
+      enumListList: enumListList ??
+          this.enumListList.map((e0) => e0.map((e1) => e1).toList()).toList(),
     );
   }
 }

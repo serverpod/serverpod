@@ -167,6 +167,12 @@ CREATE TABLE "int_default_persist" (
 );
 
 --
+-- ACTION ALTER TABLE
+--
+ALTER TABLE "object_with_object" ADD COLUMN "nestedDataList" json;
+ALTER TABLE "object_with_object" ADD COLUMN "nestedDataListInMap" json;
+ALTER TABLE "object_with_object" ADD COLUMN "nestedDataMap" json;
+--
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "string_default" (
@@ -221,9 +227,9 @@ ALTER TABLE ONLY "empty_model_relation_item"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20240725082303667', now())
+    VALUES ('serverpod_test', '20240819060257252', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240725082303667', "timestamp" = now();
+    DO UPDATE SET "version" = '20240819060257252', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth
