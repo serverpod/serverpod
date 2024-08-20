@@ -443,21 +443,25 @@ abstract class ServerpodClientShared extends EndpointCaller {
       authenticationProvider: () async => authenticationKeyManager?.get(),
     );
 
-    _methodStreamManager
-        .openMethodStream(connectionDetails)
-        .onError<OpenMethodStreamException>((e, _) {
-      var error = switch (e.responseType) {
-        OpenMethodStreamResponseType.endpointNotFound =>
-          ServerpodClientNotFound(),
-        OpenMethodStreamResponseType.authenticationFailed =>
-          ServerpodClientUnauthorized(),
-        OpenMethodStreamResponseType.authorizationDeclined =>
-          ServerpodClientForbidden(),
-        OpenMethodStreamResponseType.invalidArguments =>
-          ServerpodClientBadRequest(),
-        OpenMethodStreamResponseType.success =>
-          ServerpodClientException('Unknown error, data: $e', -1),
-      };
+    _methodStreamManager.openMethodStream(connectionDetails).catchError((e, _) {
+      Object error;
+      if (e is OpenMethodStreamException) {
+        error = switch (e.responseType) {
+          OpenMethodStreamResponseType.endpointNotFound =>
+            ServerpodClientNotFound(),
+          OpenMethodStreamResponseType.authenticationFailed =>
+            ServerpodClientUnauthorized(),
+          OpenMethodStreamResponseType.authorizationDeclined =>
+            ServerpodClientForbidden(),
+          OpenMethodStreamResponseType.invalidArguments =>
+            ServerpodClientBadRequest(),
+          OpenMethodStreamResponseType.success =>
+            ServerpodClientException('Unknown error, data: $e', -1),
+        };
+      } else {
+        error = e;
+      }
+
       connectionDetails.outputController.addError(error);
       connectionDetails.outputController.close();
     });
