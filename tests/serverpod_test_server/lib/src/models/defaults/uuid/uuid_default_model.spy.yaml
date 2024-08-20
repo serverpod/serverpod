@@ -1,0 +1,7 @@
+class: UuidDefaultModel
+table: uuid_default_model
+fields:
+  uuidDefaultModelRandom: UuidValue, defaultModel=random
+  uuidDefaultModelRandomNull: UuidValue?, defaultModel=random
+  uuidDefaultModelStr: UuidValue, defaultModel='550e8400-e29b-41d4-a716-446655440000'
+  uuidDefaultModelStrNull: UuidValue?, defaultModel='3f2504e0-4f89-11d3-9a0c-0305e82c3301'

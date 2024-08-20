@@ -454,6 +454,8 @@ class TypeDefinition {
         return DefaultValueAllowedType.double;
       case ValueType.string:
         return DefaultValueAllowedType.string;
+      case ValueType.uuidValue:
+        return DefaultValueAllowedType.uuidValue;
       default:
         return null;
     }
@@ -552,4 +554,5 @@ enum DefaultValueAllowedType {
   int,
   double,
   string,
+  uuidValue,
 }

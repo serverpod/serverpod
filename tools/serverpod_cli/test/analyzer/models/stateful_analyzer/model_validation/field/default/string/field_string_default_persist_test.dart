@@ -68,7 +68,7 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the defaultPersist is set to "This \'is\' a default persist value", then the field should have a "default persist" value',
+      'when the field is of type String and the defaultPersist is set to \'This \\\'is\\\' a default persist value\', then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -76,7 +76,7 @@ void main() {
           class: Example
           table: example
           fields:
-            stringType: String?, defaultPersist="This 'is' a default persist value"
+            stringType: String?, defaultPersist='This \\'is\\' a default persist value'
           ''',
           ).build()
         ];
@@ -91,7 +91,7 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultPersistValue,
-          '"This \'is\' a default persist value"',
+          '\'This \\\'is\\\' a default persist value\'',
         );
       },
     );
@@ -153,7 +153,7 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the defaultPersist is set to "This \\"is\\" a default persist value", then the field should have a "default persist" value',
+      'when the field is of type String and the defaultPersist is set to \'This \\"is\\" a default persist value\', then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -161,7 +161,7 @@ void main() {
           class: Example
           table: example
           fields:
-            stringType: String?, defaultPersist="This \\"is\\" a default persist value"
+            stringType: String?, defaultPersist='This \\"is\\" a default persist value'
           ''',
           ).build()
         ];
@@ -175,12 +175,12 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultPersistValue,
-            '"This \\"is\\" a default persist value"');
+            '\'This \\"is\\" a default persist value\'');
       },
     );
 
     test(
-      'when the field is of type String and the defaultPersist is set to "This, is a default persist value", then the field should have a "default persist" value',
+      'when the field is of type String and the defaultPersist is set to \'This, is a default persist value\', then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -207,7 +207,7 @@ void main() {
     );
 
     test(
-      'when the field is of type String and the defaultPersist is set to "This \\"is\\", a default persist value", then the field should have a "default persist" value',
+      'when the field is of type String and the defaultPersist is set to \'This \\"is\\", a default persist value\', then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -215,7 +215,7 @@ void main() {
           class: Example
           table: example
           fields:
-            stringType: String?, defaultPersist="This \\"is\\", a default persist value"
+            stringType: String?, defaultPersist='This \\"is\\", a default persist value'
           ''',
           ).build()
         ];
@@ -229,7 +229,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultPersistValue,
-            '"This \\"is\\", a default persist value"');
+            '\'This \\"is\\", a default persist value\'');
       },
     );
 

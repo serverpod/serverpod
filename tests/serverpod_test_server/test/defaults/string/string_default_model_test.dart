@@ -9,8 +9,10 @@ void main() async {
         'when an object of the class is created, then the "stringDefaultModel" field should match the default value',
         () {
           var object = StringDefaultModel();
-          expect(object.stringDefaultModel,
-              equals('This is a default model value'));
+          expect(
+            object.stringDefaultModel,
+            equals('This is a default model value'),
+          );
         },
       );
 
@@ -18,17 +20,23 @@ void main() async {
         'when an object of the class is created, then the "stringDefaultModelNull" field should match the default value',
         () {
           var object = StringDefaultModel();
-          expect(object.stringDefaultModelNull,
-              equals('This is a default model null value'));
+          expect(
+            object.stringDefaultModelNull,
+            equals('This is a default model null value'),
+          );
         },
       );
 
       test(
         'when an object of the class is created with a specific value for "stringDefaultModel", then the field value should match the provided value',
         () {
-          var object =
-              StringDefaultModel(stringDefaultModel: 'A specific value');
-          expect(object.stringDefaultModel, equals('A specific value'));
+          var object = StringDefaultModel(
+            stringDefaultModel: 'A specific value',
+          );
+          expect(
+            object.stringDefaultModel,
+            equals('A specific value'),
+          );
         },
       );
 
@@ -36,9 +44,12 @@ void main() async {
         'when an object of the class is created with a specific value for "stringDefaultModelNull", then the field value should match the provided value',
         () {
           var object = StringDefaultModel(
-              stringDefaultModelNull: 'Another specific value');
+            stringDefaultModelNull: 'Another specific value',
+          );
           expect(
-              object.stringDefaultModelNull, equals('Another specific value'));
+            object.stringDefaultModelNull,
+            equals('Another specific value'),
+          );
         },
       );
     },

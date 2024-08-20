@@ -59,7 +59,6 @@ void main() {
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
-
         expect(definition.fields.last.defaultModelValue,
             '\'Another default model value\'');
       },
@@ -115,7 +114,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultModelValue,
-            '"This \\"is\\" a default model value"');
+            '\'This \\"is\\" a default model value\'');
       },
     );
 
@@ -169,7 +168,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultModelValue,
-            '"This \\"is\\", a default model value"');
+            '\'This \\"is\\", a default model value\'');
       },
     );
 
@@ -197,7 +196,7 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          '"This \'is\' a default model value"',
+          '\'This \\\'is\\\' a default model value\'',
         );
       },
     );

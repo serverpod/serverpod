@@ -16,9 +16,13 @@ void main() async {
       test(
         'when an object of the class is created with a specific value for "stringDefaultPersist", then the field value should match the provided value',
         () {
-          var object =
-              StringDefaultPersist(stringDefaultPersist: 'A specific value');
-          expect(object.stringDefaultPersist, equals('A specific value'));
+          var object = StringDefaultPersist(
+            stringDefaultPersist: 'A specific value',
+          );
+          expect(
+            object.stringDefaultPersist,
+            equals('A specific value'),
+          );
         },
       );
     },

@@ -441,7 +441,12 @@ const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;
 
 const String defaultPrimaryKeyName = 'id';
 
+/// DateTime
 const String defaultDateTimeValueNow = 'now';
 
+/// bool
 const String defaultBooleanTrue = 'true';
 const String defaultBooleanFalse = 'false';
+
+/// UuidValue
+const String defaultUuidValueRandom = 'random';

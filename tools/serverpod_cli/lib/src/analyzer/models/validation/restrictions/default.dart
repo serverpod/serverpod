@@ -1,8 +1,10 @@
 import 'package:intl/intl.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:source_span/source_span.dart';
 
 class DefaultValueRestriction extends ValueRestriction {
@@ -37,6 +39,8 @@ class DefaultValueRestriction extends ValueRestriction {
         return _doubleValidation(value, span);
       case DefaultValueAllowedType.string:
         return _stringValidation(value, span);
+      case DefaultValueAllowedType.uuidValue:
+        return _uuidValueValidation(value, span);
     }
   }
 
@@ -176,8 +180,8 @@ class DefaultValueRestriction extends ValueRestriction {
       return errors;
     }
 
-    bool validDoubleQuote = RegExp(r'^"(\\.|[^"\\])*"$').hasMatch(value);
-    bool validSingleQuote = RegExp(r"^'(\\.|[^'\\])*'$").hasMatch(value);
+    bool validDoubleQuote = isValidDoubleQuote(value);
+    bool validSingleQuote = isValidSingleQuote(value);
 
     if (validDoubleQuote || validSingleQuote) {
       return errors;
@@ -201,6 +205,94 @@ class DefaultValueRestriction extends ValueRestriction {
       errors.add(
         SourceSpanSeverityException(
           'The "$key" must be a quoted string (e.g., "$key"=\'This is a string\' or "$key"="This is a string").',
+          span,
+        ),
+      );
+    }
+
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> _uuidValueValidation(
+    dynamic value,
+    SourceSpan? span,
+  ) {
+    var errors = <SourceSpanSeverityException>[];
+
+    if (value is UuidValue) {
+      try {
+        value.validate();
+        return [];
+      } catch (e) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The "$key" contains an invalid UUID value.',
+            span,
+          ),
+        );
+        return errors;
+      }
+    }
+
+    String invalidValueError =
+        'The "$key" value must be a "random" or valid UUID string (e.g., "$key"=random or "$key"=\'550e8400-e29b-41d4-a716-446655440000\').';
+
+    if (value is! String || value.isEmpty) {
+      errors.add(
+        SourceSpanSeverityException(
+          invalidValueError,
+          span,
+        ),
+      );
+      return errors;
+    }
+
+    bool invalidDefaultValue = value != defaultUuidValueRandom &&
+        !value.startsWith("'") &&
+        !value.startsWith('"');
+
+    if (invalidDefaultValue) {
+      errors.add(
+        SourceSpanSeverityException(
+          invalidValueError,
+          span,
+        ),
+      );
+      return errors;
+    }
+
+    if (value == defaultUuidValueRandom) return [];
+
+    bool validSingleQuote = isValidSingleQuote(value);
+    bool validDoubleQuote = isValidDoubleQuote(value);
+
+    if (value.startsWith("'") && !validSingleQuote) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "$key" must be a quoted string (e.g., "$key"=\'550e8400-e29b-41d4-a716-446655440000\').',
+          span,
+        ),
+      );
+      return errors;
+    } else if (value.startsWith('"') && !validDoubleQuote) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "$key" must be a quoted string (e.g., "$key"="550e8400-e29b-41d4-a716-446655440000").',
+          span,
+        ),
+      );
+      return errors;
+    }
+
+    /// Extract the actual UUID string by removing quotes
+    String uuidString = value.substring(1, value.length - 1);
+    UuidValue uuidValue = UuidValue.fromString(uuidString);
+    try {
+      uuidValue.validate();
+    } catch (_) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "$key" value must be a valid UUID (e.g., \'550e8400-e29b-41d4-a716-446655440000\').',
           span,
         ),
       );

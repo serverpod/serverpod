@@ -1032,6 +1032,8 @@ class SerializableModelLibraryGenerator {
 
     switch (defaultValueType) {
       case DefaultValueAllowedType.dateTime:
+        if (defaultValue is! String) return null;
+
         if (defaultValue == defaultDateTimeValueNow) {
           return refer(field.type.className).property('now').call([]).code;
         }
@@ -1050,6 +1052,18 @@ class SerializableModelLibraryGenerator {
         return literalNum(double.parse(defaultValue)).code;
       case DefaultValueAllowedType.string:
         return Code(defaultValue);
+      case DefaultValueAllowedType.uuidValue:
+        if (defaultValue is! String) return null;
+
+        if (defaultUuidValueRandom == defaultValue) {
+          return refer('Uuid()', 'package:uuid/uuid.dart')
+              .property('v4obj')
+              .call([]).code;
+        }
+
+        return refer(field.type.className, serverpodUrl(serverCode))
+            .property('fromString')
+            .call([CodeExpression(Code(defaultValue))]).code;
     }
   }
 
