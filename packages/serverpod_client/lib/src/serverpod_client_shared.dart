@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_client/src/client_method_stream_manager.dart';
 import 'package:serverpod_client/src/method_stream/method_stream_connection_details.dart';
-import 'package:serverpod_client/src/method_stream/method_stream_manager_exceptions.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 /// A callback with no parameters or return value.
@@ -444,21 +443,25 @@ abstract class ServerpodClientShared extends EndpointCaller {
       authenticationProvider: () async => authenticationKeyManager?.get(),
     );
 
-    _methodStreamManager
-        .openMethodStream(connectionDetails)
-        .onError<OpenMethodStreamException>((e, _) {
-      var error = switch (e.responseType) {
-        OpenMethodStreamResponseType.endpointNotFound =>
-          ServerpodClientNotFound(),
-        OpenMethodStreamResponseType.authenticationFailed =>
-          ServerpodClientUnauthorized(),
-        OpenMethodStreamResponseType.authorizationDeclined =>
-          ServerpodClientForbidden(),
-        OpenMethodStreamResponseType.invalidArguments =>
-          ServerpodClientBadRequest(),
-        OpenMethodStreamResponseType.success =>
-          ServerpodClientException('Unknown error, data: $e', -1),
-      };
+    _methodStreamManager.openMethodStream(connectionDetails).catchError((e, _) {
+      Object error;
+      if (e is OpenMethodStreamException) {
+        error = switch (e.responseType) {
+          OpenMethodStreamResponseType.endpointNotFound =>
+            ServerpodClientNotFound(),
+          OpenMethodStreamResponseType.authenticationFailed =>
+            ServerpodClientUnauthorized(),
+          OpenMethodStreamResponseType.authorizationDeclined =>
+            ServerpodClientForbidden(),
+          OpenMethodStreamResponseType.invalidArguments =>
+            ServerpodClientBadRequest(),
+          OpenMethodStreamResponseType.success =>
+            ServerpodClientException('Unknown error, data: $e', -1),
+        };
+      } else {
+        error = e;
+      }
+
       connectionDetails.outputController.addError(error);
       connectionDetails.outputController.close();
     });
