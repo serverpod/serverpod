@@ -494,10 +494,11 @@ final class ClientMethodStreamManager {
       /// Attempt to send close message to server if connection is still open.
       await webSocket.sink.close();
     } finally {
-      /// Close any still open streams with an exception.
-      await _closeAllStreams(closeException);
       _cancelConnectionTimer();
       _webSocketListenerCompleter.complete();
+
+      /// Close any still open streams with an exception.
+      await closeAllConnections(closeException);
     }
   }
 
