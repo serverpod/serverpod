@@ -1,13 +1,13 @@
 import 'package:serverpod_client/serverpod_client.dart';
 
 /// Exceptions thrown by the [ClientMethodStreamManager].
-abstract class MethodStreamExceptions implements Exception {
-  /// Creates a new [MethodStreamExceptions].
-  const MethodStreamExceptions();
+abstract class MethodStreamException implements Exception {
+  /// Creates a new [MethodStreamException].
+  const MethodStreamException();
 }
 
 /// Thrown if the WebSocket connection fails.
-class WebSocketConnectException extends MethodStreamExceptions {
+class WebSocketConnectException extends MethodStreamException {
   /// The error that caused the exception.
   final Object? error;
 
@@ -19,10 +19,10 @@ class WebSocketConnectException extends MethodStreamExceptions {
 }
 
 /// Thrown if connection attempt timed out.
-class ConnectionAttemptTimedOutException extends MethodStreamExceptions {}
+class ConnectionAttemptTimedOutException extends MethodStreamException {}
 
 /// Thrown if an error occurs when listening to the WebSocket connection.
-class WebSocketListenException extends MethodStreamExceptions {
+class WebSocketListenException extends MethodStreamException {
   /// The error that caused the exception.
   final Object? error;
 
@@ -34,13 +34,13 @@ class WebSocketListenException extends MethodStreamExceptions {
 }
 
 /// Thrown if the WebSocket connection is closed.
-class WebSocketClosedException extends MethodStreamExceptions {
+class WebSocketClosedException extends MethodStreamException {
   /// Creates a new [WebSocketClosedException].
   const WebSocketClosedException();
 }
 
 /// Thrown if opening a method stream fails.
-class OpenMethodStreamException extends MethodStreamExceptions {
+class OpenMethodStreamException extends MethodStreamException {
   /// The response type that caused the exception.
   final OpenMethodStreamResponseType responseType;
 

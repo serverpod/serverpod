@@ -435,7 +435,7 @@ final class ClientMethodStreamManager {
 
   Future<void> _listenToWebSocketStream(WebSocketChannel webSocket) async {
     _webSocketListenerCompleter = Completer();
-    MethodStreamExceptions closeException = const WebSocketClosedException();
+    MethodStreamException closeException = const WebSocketClosedException();
     try {
       await for (String jsonData in webSocket.stream) {
         if (!_handshakeComplete.isCompleted) {
