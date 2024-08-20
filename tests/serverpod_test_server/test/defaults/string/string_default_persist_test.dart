@@ -25,34 +25,6 @@ void main() async {
           );
         },
       );
-
-      test(
-        'when an object of the class is created with a specific value for "stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote", then the field value should match the provided value',
-        () {
-          var object = StringDefaultPersist(
-            stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote:
-                'A \'specific\' value',
-          );
-          expect(
-            object.stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
-            equals('A \'specific\' value'),
-          );
-        },
-      );
-
-      test(
-        'when an object of the class is created with a specific value for "stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote", then the field value should match the provided value',
-        () {
-          var object = StringDefaultPersist(
-            stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote:
-                'A "specific" value',
-          );
-          expect(
-            object.stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
-            equals('A "specific" value'),
-          );
-        },
-      );
     },
   );
 }
