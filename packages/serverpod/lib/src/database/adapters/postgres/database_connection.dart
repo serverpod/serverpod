@@ -27,13 +27,12 @@ class DatabaseConnection {
   final DatabasePoolManager _poolManager;
 
   /// Access to the raw Postgresql connection pool.
-  final pg.Pool _postgresConnection;
+  pg.Pool get _postgresConnection => _poolManager.pool;
 
   /// Creates a new database connection from the configuration. For most cases
   /// this shouldn't be called directly, use the db object in the [Session] to
   /// access the database.
-  DatabaseConnection(this._poolManager)
-      : _postgresConnection = _poolManager.pool;
+  DatabaseConnection(this._poolManager);
 
   /// Tests the database connection.
   /// Throws an exception if the connection is not working.
