@@ -389,10 +389,26 @@ class DatabaseConnection {
       );
       return result;
     } catch (exception, trace) {
-      if (exception is pg.PgException) {
-        var serverpodException = DatabaseException(
-          exception.message,
+      if (exception is pg.ServerException) {
+        var message = switch (exception.code) {
+          ('42P01') =>
+            'Table not found, have you applied the database migration? (${exception.message})',
+          (_) => exception.message,
+        };
+
+        var serverpodException = DatabaseException(message);
+        _logQuery(
+          session,
+          query,
+          startTime,
+          exception: serverpodException,
+          trace: trace,
         );
+        throw serverpodException;
+      }
+
+      if (exception is pg.PgException) {
+        var serverpodException = DatabaseException(exception.message);
         _logQuery(
           session,
           query,
