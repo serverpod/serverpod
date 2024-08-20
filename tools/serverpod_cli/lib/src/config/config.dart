@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:package_config/package_config.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
@@ -226,6 +227,8 @@ class GeneratorConfig {
       );
     }
 
+    await _warnIfDependenciesAreNotInstalled(dir, pubspec);
+
     var manualModules = <String, String?>{};
     if (generatorConfig['modules'] != null) {
       Map modulesData = generatorConfig['modules'];
@@ -281,6 +284,25 @@ class GeneratorConfig {
       extraClasses: extraClasses,
       enabledFeatures: enabledFeatures,
     );
+  }
+
+  static Future<void> _warnIfDependenciesAreNotInstalled(
+      String serverRootDir, Pubspec pubspec) async {
+    var packageConfig = await findPackageConfig(Directory(serverRootDir));
+
+    if (packageConfig == null) {
+      throw const ServerpodProjectNotFoundException(
+        'Failed to read your server\'s package configuration. Have you run '
+        '`dart pub get` in your server directory?',
+      );
+    }
+
+    var allPackagesAreInstalled = pubspec.dependencies.keys
+        .every((dependencyName) => packageConfig[dependencyName] != null);
+    if (!allPackagesAreInstalled) {
+      log.warning(
+          'Not all dependencies are installed, which might cause errors in your Serverpod code. Run `dart pub get`.');
+    }
   }
 
   static List<ServerpodFeature> _enabledFeatures(File file, Map config) {
