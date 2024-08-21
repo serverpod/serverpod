@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -8,26 +6,24 @@ import 'package:serverpod_client/serverpod_client.dart';
 
 import 'serverpod_client_shared_private.dart';
 
-/// Handles communication with the server. Is typically overridden by
-/// generated code to provide implementations of methods for calling the server.
+/// Handles communication with the server.
 /// This is the concrete implementation using the io library
 /// (for Flutter native apps).
-abstract class ServerpodClient extends ServerpodClientShared {
-  late HttpClient _httpClient;
-  bool _initialized = false;
+class ServerpodClientRequestDelegateImpl
+    extends ServerpodClientRequestDelegate {
+  /// The timeout for the connection and the requests.
+  final Duration connectionTimeout;
 
-  /// Creates a new ServerpodClient.
-  ServerpodClient(
-    super.host,
-    super.serializationManager, {
+  /// The serialization manager used to serialize and deserialize data.
+  final SerializationManager serializationManager;
+
+  late HttpClient _httpClient;
+
+  /// Creates a new ServerpodClientRequestDelegateImpl.
+  ServerpodClientRequestDelegateImpl({
+    required this.connectionTimeout,
+    required this.serializationManager,
     dynamic securityContext,
-    super.authenticationKeyManager,
-    super.logFailedCalls,
-    super.streamingConnectionTimeout,
-    super.connectionTimeout,
-    super.onFailedCall,
-    super.onSucceededCall,
-    super.disconnectStreamsOnLostInternetConnection,
   }) {
     assert(securityContext == null || securityContext is SecurityContext,
         'Context must be of type SecurityContext');
@@ -37,65 +33,32 @@ abstract class ServerpodClient extends ServerpodClientShared {
     _httpClient.connectionTimeout = connectionTimeout;
   }
 
-  Future<void> _initialize() async {
-    _initialized = true;
-  }
-
   @override
-  Future<T> callServerEndpoint<T>(
-      String endpoint, String method, Map<String, dynamic> args) async {
-    if (!_initialized) await _initialize();
+  Future<String> serverRequest<T>(
+    Uri url, {
+    required String body,
+  }) async {
+    var request = await _httpClient.postUrl(url);
+    request.headers.contentType =
+        ContentType('application', 'json', charset: 'utf-8');
+    request.contentLength = utf8.encode(body).length;
+    request.write(body);
 
-    var callContext = MethodCallContext(
-      endpointName: endpoint,
-      methodName: method,
-      arguments: args,
-    );
-    try {
-      var body =
-          formatArgs(args, await authenticationKeyManager?.get(), method);
+    await request.flush();
 
-      var url = Uri.parse('$host$endpoint');
+    var response = await request.close().timeout(connectionTimeout);
 
-      var request = await _httpClient.postUrl(url);
-      request.headers.contentType =
-          ContentType('application', 'json', charset: 'utf-8');
-      request.contentLength = utf8.encode(body).length;
-      request.write(body);
+    var data = await _readResponse(response);
 
-      await request.flush();
-
-      var response = await request.close().timeout(connectionTimeout);
-
-      var data = await _readResponse(response);
-
-      if (response.statusCode != HttpStatus.ok) {
-        throw getExceptionFrom(
-          data: data,
-          serializationManager: serializationManager,
-          statusCode: response.statusCode,
-        );
-      }
-
-      T result;
-      if (T == getType<void>()) {
-        result = returnVoid() as T;
-      } else {
-        result = parseData<T>(data, T, serializationManager);
-      }
-
-      onSucceededCall?.call(callContext);
-      return result;
-    } catch (e, s) {
-      onFailedCall?.call(callContext, e, s);
-
-      if (logFailedCalls) {
-        print('Failed call: $endpoint.$method');
-        print('$e');
-      }
-
-      rethrow;
+    if (response.statusCode != HttpStatus.ok) {
+      throw getExceptionFrom(
+        data: data,
+        serializationManager: serializationManager,
+        statusCode: response.statusCode,
+      );
     }
+
+    return data;
   }
 
   Future<String> _readResponse(HttpClientResponse response) {
@@ -113,6 +76,5 @@ abstract class ServerpodClient extends ServerpodClientShared {
   @override
   void close() {
     _httpClient.close();
-    super.close();
   }
 }

@@ -41,7 +41,7 @@ class _Modules {
   late final _i5.Caller chat;
 }
 
-class Client extends _i1.ServerpodClient {
+class Client extends _i1.ServerpodClientShared {
   Client(
     String host, {
     dynamic securityContext,
