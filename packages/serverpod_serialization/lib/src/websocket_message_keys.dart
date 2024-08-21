@@ -8,30 +8,27 @@ abstract class WebSocketMessageKey {
 
 /// Keys used to identify message types.
 abstract class WebSocketMessageTypeKey {
-  static const String badRequestMessageTypeKey = 'bad_request_message';
-  static const String closeMethodStreamCommandTypeKey =
-      'close_method_stream_command';
-  static const String methodStreamMessageTypeKey = 'method_message';
-  static const String methodStreamSerializableExceptionTypeKey =
-      'method_stream_serializable_exception';
-  static const String openMethodStreamCommandTypeKey =
-      'open_method_stream_command';
-  static const String pingCommandTypeKey = 'ping_command';
-  static const String pongCommandTypeKey = 'pong_command';
+  static const String badRequestMessageTypeKey = 'brm';
+  static const String closeMethodStreamCommandTypeKey = 'cmsc';
+  static const String methodStreamMessageTypeKey = 'msm';
+  static const String methodStreamSerializableExceptionTypeKey = 'msse';
+  static const String openMethodStreamCommandTypeKey = 'omsc';
+  static const String pingCommandTypeKey = 'ping';
+  static const String pongCommandTypeKey = 'pong';
 }
 
 /// Keys used inside the "data" part of messages.
 abstract class WebSocketMessageDataKey {
   static const String argsKey = 'args';
-  static const String authenticationKey = 'authentication';
-  static const String closeReasonKey = 'reason';
-  static const String connectionIdKey = 'connectionId';
-  static const String endpointKey = 'endpoint';
-  static const String exceptionKey = 'exception';
-  static const String inputStreamsKey = 'inputStreams';
-  static const String methodKey = 'method';
-  static const String objectKey = 'object';
-  static const String parameterKey = 'parameter';
-  static const String requestKey = 'request';
-  static const String responseTypeKey = 'responseType';
+  static const String authenticationKey = 'auth';
+  static const String closeReasonKey = 'cr';
+  static const String connectionIdKey = 'cid';
+  static const String endpointKey = 'en';
+  static const String exceptionKey = 'ex';
+  static const String inputStreamsKey = 'is';
+  static const String methodKey = 'm';
+  static const String objectKey = 'o';
+  static const String parameterKey = 'p';
+  static const String requestKey = 'req';
+  static const String responseTypeKey = 'res';
 }
