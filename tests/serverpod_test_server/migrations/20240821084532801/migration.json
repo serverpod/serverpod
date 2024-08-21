@@ -613,6 +613,196 @@
     {
       "type": "createTable",
       "createTable": {
+        "name": "duration_default",
+        "dartName": "DurationDefault",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('duration_default_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "durationDefault",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "94230100",
+            "dartType": "Duration"
+          },
+          {
+            "name": "durationDefaultNull",
+            "columnType": 6,
+            "isNullable": true,
+            "columnDefault": "177640100",
+            "dartType": "Duration?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "duration_default_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "duration_default_mix",
+        "dartName": "DurationDefaultMix",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('duration_default_mix_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "durationDefaultAndDefaultModel",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "94230100",
+            "dartType": "Duration"
+          },
+          {
+            "name": "durationDefaultAndDefaultPersist",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "177640100",
+            "dartType": "Duration"
+          },
+          {
+            "name": "durationDefaultModelAndDefaultPersist",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "177640100",
+            "dartType": "Duration"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "duration_default_mix_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "duration_default_model",
+        "dartName": "DurationDefaultModel",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('duration_default_model_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "durationDefaultModel",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "Duration"
+          },
+          {
+            "name": "durationDefaultModelNull",
+            "columnType": 6,
+            "isNullable": true,
+            "dartType": "Duration?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "duration_default_model_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "duration_default_persist",
+        "dartName": "DurationDefaultPersist",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('duration_default_persist_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "durationDefaultPersist",
+            "columnType": 6,
+            "isNullable": true,
+            "columnDefault": "94230100",
+            "dartType": "Duration?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "duration_default_persist_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
         "name": "empty_model",
         "dartName": "EmptyModel",
         "module": "serverpod_test",
