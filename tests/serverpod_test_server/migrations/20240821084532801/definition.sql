@@ -216,6 +216,42 @@ CREATE TABLE "double_default_persist" (
 );
 
 --
+-- Class DurationDefault as table duration_default
+--
+CREATE TABLE "duration_default" (
+    "id" bigserial PRIMARY KEY,
+    "durationDefault" bigint NOT NULL DEFAULT 94230100,
+    "durationDefaultNull" bigint DEFAULT 177640100
+);
+
+--
+-- Class DurationDefaultMix as table duration_default_mix
+--
+CREATE TABLE "duration_default_mix" (
+    "id" bigserial PRIMARY KEY,
+    "durationDefaultAndDefaultModel" bigint NOT NULL DEFAULT 94230100,
+    "durationDefaultAndDefaultPersist" bigint NOT NULL DEFAULT 177640100,
+    "durationDefaultModelAndDefaultPersist" bigint NOT NULL DEFAULT 177640100
+);
+
+--
+-- Class DurationDefaultModel as table duration_default_model
+--
+CREATE TABLE "duration_default_model" (
+    "id" bigserial PRIMARY KEY,
+    "durationDefaultModel" bigint NOT NULL,
+    "durationDefaultModelNull" bigint
+);
+
+--
+-- Class DurationDefaultPersist as table duration_default_persist
+--
+CREATE TABLE "duration_default_persist" (
+    "id" bigserial PRIMARY KEY,
+    "durationDefaultPersist" bigint DEFAULT 94230100
+);
+
+--
 -- Class EmptyModel as table empty_model
 --
 CREATE TABLE "empty_model" (
@@ -1359,9 +1395,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20240819164208905', now())
+    VALUES ('serverpod_test', '20240821084532801', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240819164208905', "timestamp" = now();
+    DO UPDATE SET "version" = '20240821084532801', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth
