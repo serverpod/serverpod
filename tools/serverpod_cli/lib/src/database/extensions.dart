@@ -122,10 +122,11 @@ String removeNullability(String type) {
 
 extension IndexComparisons on IndexDefinition {
   bool like(IndexDefinition other) {
-    return other.isPrimary == isPrimary &&
+    return other.indexName == indexName &&
+        other.isPrimary == isPrimary &&
         other.isUnique == isUnique &&
-        other.indexName == indexName &&
-        other.predicate == predicate &&
+        (other.isNotNull ?? false) == (isNotNull ?? false) &&
+        (other.predicate ?? '') == (predicate ?? '') &&
         other.tableSpace == tableSpace &&
         other.type == type;
   }
@@ -371,11 +372,20 @@ extension IndexDefinitionPgSqlGeneration on IndexDefinition {
 
     var uniqueStr = isUnique ? ' UNIQUE' : '';
     var elementStrs = elements.map((e) => '"${e.definition}"');
+    var elementsExpr = ' (${elementStrs.join(', ')})';
     var ifNotExistsStr = ifNotExists ? ' IF NOT EXISTS' : '';
+    var elementIsNotNullStrs =
+        elements.map((e) => '("${e.definition}" IS NOT NULL)');
+    var isNotNullExpr =
+        (isNotNull ?? false) ? elementIsNotNullStrs.join(' AND ') : null;
+    var isNotNullWhereExpr = isNotNullExpr == null
+        ? ''
+        : elements.length > 1
+            ? ' WHERE ($isNotNullExpr)'
+            : ' WHERE $isNotNullExpr';
 
-    out +=
-        'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" USING $type'
-        ' (${elementStrs.join(', ')});\n';
+    out += 'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" '
+        'USING $type$elementsExpr$isNotNullWhereExpr;\n';
 
     return out;
   }

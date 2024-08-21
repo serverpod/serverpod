@@ -192,7 +192,8 @@ extension IndexComparisons on IndexDefinition {
 
     return other.isPrimary == isPrimary &&
         other.isUnique == isUnique &&
-        other.predicate == predicate &&
+        (other.isNotNull ?? false) == (isNotNull ?? false) &&
+        (other.predicate ?? '') == (predicate ?? '') &&
         other.tableSpace == tableSpace &&
         other.type == type;
   }
