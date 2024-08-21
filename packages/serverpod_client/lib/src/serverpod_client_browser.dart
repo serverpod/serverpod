@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:http/http.dart' as http;
 
-import 'serverpod_client_exception.dart';
-import 'serverpod_client_shared.dart';
+import 'package:serverpod_client/serverpod_client.dart';
+
 import 'serverpod_client_shared_private.dart';
 
 /// Handles communication with the server.
@@ -11,12 +11,20 @@ import 'serverpod_client_shared_private.dart';
 /// (for Flutter web).
 class ServerpodClientRequestDelegateImpl
     extends ServerpodClientRequestDelegate {
-  final ServerpodClientShared _client;
+  /// The timeout for the connection and the requests.
+  final Duration connectionTimeout;
+
+  /// The serialization manager used to serialize and deserialize data.
+  final SerializationManager serializationManager;
+
   late http.Client _httpClient;
 
   /// Creates a new ServerpodClientRequestDelegateImpl.
-  ServerpodClientRequestDelegateImpl(ServerpodClientShared client)
-      : _client = client {
+  ServerpodClientRequestDelegateImpl({
+    required this.connectionTimeout,
+    required this.serializationManager,
+    dynamic securityContext,
+  }) {
     _httpClient = http.Client();
   }
 
@@ -31,14 +39,14 @@ class ServerpodClientRequestDelegateImpl
             url,
             body: body,
           )
-          .timeout(_client.connectionTimeout);
+          .timeout(connectionTimeout);
 
       var data = response.body;
 
       if (response.statusCode != 200) {
         throw getExceptionFrom(
           data: data,
-          serializationManager: _client.serializationManager,
+          serializationManager: serializationManager,
           statusCode: response.statusCode,
         );
       }

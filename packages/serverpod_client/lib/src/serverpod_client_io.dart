@@ -11,20 +11,26 @@ import 'serverpod_client_shared_private.dart';
 /// (for Flutter native apps).
 class ServerpodClientRequestDelegateImpl
     extends ServerpodClientRequestDelegate {
-  final ServerpodClientShared _client;
+  /// The timeout for the connection and the requests.
+  final Duration connectionTimeout;
+
+  /// The serialization manager used to serialize and deserialize data.
+  final SerializationManager serializationManager;
+
   late HttpClient _httpClient;
 
   /// Creates a new ServerpodClientRequestDelegateImpl.
-  ServerpodClientRequestDelegateImpl(ServerpodClientShared client)
-      : _client = client {
-    assert(
-        _client.securityContext == null ||
-            _client.securityContext is SecurityContext,
+  ServerpodClientRequestDelegateImpl({
+    required this.connectionTimeout,
+    required this.serializationManager,
+    dynamic securityContext,
+  }) {
+    assert(securityContext == null || securityContext is SecurityContext,
         'Context must be of type SecurityContext');
 
     // Setup client
-    _httpClient = HttpClient(context: _client.securityContext);
-    _httpClient.connectionTimeout = _client.connectionTimeout;
+    _httpClient = HttpClient(context: securityContext);
+    _httpClient.connectionTimeout = connectionTimeout;
   }
 
   @override
@@ -40,14 +46,14 @@ class ServerpodClientRequestDelegateImpl
 
     await request.flush();
 
-    var response = await request.close().timeout(_client.connectionTimeout);
+    var response = await request.close().timeout(connectionTimeout);
 
     var data = await _readResponse(response);
 
     if (response.statusCode != HttpStatus.ok) {
       throw getExceptionFrom(
         data: data,
-        serializationManager: _client.serializationManager,
+        serializationManager: serializationManager,
         statusCode: response.statusCode,
       );
     }

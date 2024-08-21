@@ -134,9 +134,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// The [SerializationManager] used to serialize objects sent to the server.
   final SerializationManager serializationManager;
 
-  /// Security context for the server connection, if any.
-  final dynamic securityContext;
-
   /// If true, the client will log any failed calls to stdout.
   final bool logFailedCalls;
 
@@ -212,7 +209,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
   ServerpodClientShared(
     this.host,
     this.serializationManager, {
-    this.securityContext,
+    dynamic securityContext,
     required this.authenticationKeyManager,
     this.logFailedCalls = true,
     required Duration? streamingConnectionTimeout,
@@ -227,7 +224,11 @@ abstract class ServerpodClientShared extends EndpointCaller {
         'host must end with a slash, eg: https://example.com/');
     assert(host.startsWith('http://') || host.startsWith('https://'),
         'host must include protocol, eg: https://example.com/');
-    _requestDelegate = ServerpodClientRequestDelegateImpl(this);
+    _requestDelegate = ServerpodClientRequestDelegateImpl(
+      connectionTimeout: this.connectionTimeout,
+      serializationManager: serializationManager,
+      securityContext: securityContext,
+    );
     disconnectStreamsOnLostInternetConnection ??= false;
     _disconnectMethodStreamsOnLostInternetConnection =
         disconnectStreamsOnLostInternetConnection;
