@@ -50,14 +50,6 @@ class ServerpodClientRequestDelegateImpl
     }
   }
 
-  /// Sets the authorization key to manage user sign-ins.
-  // FIXME: investigate usage
-  Future<void> setAuthorizationKey(String authorizationKey) async {
-    if (_client.authenticationKeyManager != null) {
-      await _client.authenticationKeyManager!.put(authorizationKey);
-    }
-  }
-
   /// Closes the connection to the server.
   @override
   void close() {
