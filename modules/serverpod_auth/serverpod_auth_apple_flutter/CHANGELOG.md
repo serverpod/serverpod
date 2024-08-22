@@ -1,3 +1,12 @@
+## 2.1.0-beta.2
+ - feat: Adds support for default values for `UuidValue` and `Duration` in models.
+ - fix: Fixes `copyWith` method for nested `List` and `Map` in models.
+ - fix: Fixes Dart version and other issues in AWS deployment templates.
+ - fix: Correctly delivers method stream exceptions through the output stream.
+ - fix: Improved error message if there are missing tables.
+ - fix: Method streams now correctly reconnects if websocket connection is lost.
+ - fix: Better error message if an error occurs when parsing the config files in CLI.
+
 ## 2.1.0-beta.1
  - feat: Adds DevTools extension.
  - feat: Adds support for `Stream` as parameters and return type in endpoint methods.
