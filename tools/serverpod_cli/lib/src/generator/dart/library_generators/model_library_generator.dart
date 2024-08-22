@@ -2,6 +2,7 @@ import 'package:code_builder/code_builder.dart';
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/utils/duration_utils.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/class_generators/repository_classes.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
 import 'package:serverpod_cli/src/generator/keywords.dart';
@@ -1064,6 +1065,15 @@ class SerializableModelLibraryGenerator {
         return refer(field.type.className, serverpodUrl(serverCode))
             .property('fromString')
             .call([CodeExpression(Code(defaultValue))]).code;
+      case DefaultValueAllowedType.duration:
+        Duration parsedDuration = parseDuration(defaultValue);
+        return refer(field.type.className).call([], {
+          'days': literalNum(parsedDuration.days),
+          'hours': literalNum(parsedDuration.hours),
+          'minutes': literalNum(parsedDuration.minutes),
+          'seconds': literalNum(parsedDuration.seconds),
+          'milliseconds': literalNum(parsedDuration.milliseconds),
+        }).code;
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/utils/duration_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
@@ -41,6 +42,8 @@ class DefaultValueRestriction extends ValueRestriction {
         return _stringValidation(value, span);
       case DefaultValueAllowedType.uuidValue:
         return _uuidValueValidation(value, span);
+      case DefaultValueAllowedType.duration:
+        return _durationValidation(value, span);
     }
   }
 
@@ -296,6 +299,27 @@ class DefaultValueRestriction extends ValueRestriction {
           span,
         ),
       );
+    }
+
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> _durationValidation(
+    dynamic value,
+    SourceSpan? span,
+  ) {
+    if (value is Duration) return [];
+
+    var errors = <SourceSpanSeverityException>[];
+
+    if (value is! String || value.isEmpty || !isValidDuration(value)) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "$key" value must be a valid duration in the format "Xd Xh Xmin Xs Xms" (e.g., "$key"=1d 2h 30min 45s 100ms).',
+          span,
+        ),
+      );
+      return errors;
     }
 
     return errors;
