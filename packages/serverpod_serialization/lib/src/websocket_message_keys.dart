@@ -2,7 +2,12 @@
 
 /// Keys used in the top level of messages.
 abstract class WebSocketMessageKey {
+  /// Contains the type of the message described by
+  /// the [WebSocketMessageTypeKey].
   static const String type = 'type';
+
+  /// Contains a json structure with the data of the message.
+  /// If no data is included with the message this field is omitted.
   static const String data = 'data';
 }
 

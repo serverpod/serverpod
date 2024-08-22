@@ -5,19 +5,13 @@ import 'package:serverpod_serialization/src/websocket_message_keys.dart';
 
 /// Base class for messages sent over a WebSocket connection.
 sealed class WebSocketMessage {
-  /// The keyword used for the message type in the websocket message.
-  static const String _messageTypeKeyword = WebSocketMessageKey.type;
-
-  /// The keyword used for the message data in the websocket message.
-  static const String _messageDataKeyword = WebSocketMessageKey.data;
-
   static String _buildMessage(
     String messageType, [
     Map<String, dynamic>? data,
   ]) {
     return SerializationManager.encodeForProtocol({
-      _messageTypeKeyword: messageType,
-      if (data != null) _messageDataKeyword: data,
+      WebSocketMessageKey.type: messageType,
+      if (data != null) WebSocketMessageKey.data: data,
     });
   }
 
@@ -31,8 +25,8 @@ sealed class WebSocketMessage {
     try {
       Map data = jsonDecode(jsonString) as Map;
 
-      var messageType = data[_messageTypeKeyword];
-      var messageData = data[_messageDataKeyword];
+      var messageType = data[WebSocketMessageKey.type];
+      var messageData = data[WebSocketMessageKey.data];
 
       switch (messageType) {
         case PingCommand._messageType:
