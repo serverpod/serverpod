@@ -13,7 +13,7 @@ abstract class WebSocketMessageTypeKey {
   static const String methodStreamMessage = 'msm';
   static const String methodStreamSerializableException = 'msse';
   static const String openMethodStreamCommand = 'omsc';
-  static const String openMethodStreamResponse = 'open_method_stream_response';
+  static const String openMethodStreamResponse = 'omsr';
   static const String pingCommand = 'ping';
   static const String pongCommand = 'pong';
 }
