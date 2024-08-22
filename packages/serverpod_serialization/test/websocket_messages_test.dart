@@ -93,7 +93,7 @@ void main() {
       'Given message that has no data when building websocket message then data keyword is not included',
       () {
     var message = PingCommand.buildMessage();
-    expect(message, isNot(contains(WebSocketMessageKey.messageDataKey)));
+    expect(message, isNot(contains(WebSocketMessageKey.data)));
   });
 
   test(
@@ -136,7 +136,7 @@ void main() {
 
     /// Missing mandatory field 'request'
     message = message.replaceAll(
-        '"${WebSocketMessageDataKey.requestKey}":"testRequest"', '');
+        '"${WebSocketMessageDataKey.request}":"testRequest"', '');
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
@@ -166,7 +166,7 @@ void main() {
       'Given an unknown command json String when building websocket message from string then UnknownMessageException is thrown.',
       () {
     var message =
-        '{"${WebSocketMessageKey.messageTypeKey}": "this is not a known message type"}';
+        '{"${WebSocketMessageKey.type}": "this is not a known message type"}';
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
@@ -196,7 +196,7 @@ void main() {
   test(
       'Given a null messageType when building websocket message from string then UnknownMessageException is thrown.',
       () {
-    var message = '{"${WebSocketMessageKey.messageTypeKey}": null}';
+    var message = '{"${WebSocketMessageKey.type}": null}';
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
@@ -265,7 +265,7 @@ void main() {
 
     // This message is missing the mandatory endpoint field.
     message = message.replaceAll(
-        '"${WebSocketMessageDataKey.endpointKey}":"endpoint",', '');
+        '"${WebSocketMessageDataKey.endpoint}":"endpoint",', '');
 
     expect(
       () => WebSocketMessage.fromJsonString(
@@ -350,7 +350,7 @@ void main() {
 
     // This message is missing the mandatory connectionId field.
     message = message.replaceAll(
-      '"${WebSocketMessageDataKey.connectionIdKey}":${SerializationManager.encodeForProtocol(connectionId)},',
+      '"${WebSocketMessageDataKey.connectionId}":${SerializationManager.encodeForProtocol(connectionId)},',
       '',
     );
 
@@ -438,7 +438,7 @@ void main() {
 
     // This message is missing the mandatory endpoint field.
     message = message.replaceAll(
-        '"${WebSocketMessageDataKey.endpointKey}":"endpoint",', '');
+        '"${WebSocketMessageDataKey.endpoint}":"endpoint",', '');
 
     expect(
       () => WebSocketMessage.fromJsonString(
@@ -499,7 +499,7 @@ void main() {
 
     // This message is missing the mandatory endpoint field.
     message = message.replaceAll(
-        '"${WebSocketMessageDataKey.endpointKey}":"endpoint",', '');
+        '"${WebSocketMessageDataKey.endpoint}":"endpoint",', '');
 
     expect(
       () => WebSocketMessage.fromJsonString(

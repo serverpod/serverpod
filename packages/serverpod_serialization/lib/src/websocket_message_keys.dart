@@ -2,33 +2,33 @@
 
 /// Keys used in the top level of messages.
 abstract class WebSocketMessageKey {
-  static const String messageTypeKey = 'type';
-  static const String messageDataKey = 'data';
+  static const String type = 'type';
+  static const String data = 'data';
 }
 
 /// Keys used to identify message types.
 abstract class WebSocketMessageTypeKey {
-  static const String badRequestMessageTypeKey = 'brm';
-  static const String closeMethodStreamCommandTypeKey = 'cmsc';
-  static const String methodStreamMessageTypeKey = 'msm';
-  static const String methodStreamSerializableExceptionTypeKey = 'msse';
-  static const String openMethodStreamCommandTypeKey = 'omsc';
-  static const String pingCommandTypeKey = 'ping';
-  static const String pongCommandTypeKey = 'pong';
+  static const String badRequestMessage = 'brm';
+  static const String closeMethodStreamCommand = 'cmsc';
+  static const String methodStreamMessage = 'msm';
+  static const String methodStreamSerializableException = 'msse';
+  static const String openMethodStreamCommand = 'omsc';
+  static const String pingCommand = 'ping';
+  static const String pongCommand = 'pong';
 }
 
 /// Keys used inside the "data" part of messages.
 abstract class WebSocketMessageDataKey {
-  static const String argsKey = 'args';
-  static const String authenticationKey = 'auth';
-  static const String closeReasonKey = 'cr';
-  static const String connectionIdKey = 'cid';
-  static const String endpointKey = 'en';
-  static const String exceptionKey = 'ex';
-  static const String inputStreamsKey = 'is';
-  static const String methodKey = 'm';
-  static const String objectKey = 'o';
-  static const String parameterKey = 'p';
-  static const String requestKey = 'req';
-  static const String responseTypeKey = 'res';
+  static const String args = 'args';
+  static const String authentication = 'auth';
+  static const String closeReason = 'cr';
+  static const String connectionId = 'cid';
+  static const String endpoint = 'en';
+  static const String exception = 'ex';
+  static const String inputStreams = 'is';
+  static const String method = 'm';
+  static const String object = 'o';
+  static const String parameter = 'p';
+  static const String request = 'req';
+  static const String responseType = 'res';
 }
