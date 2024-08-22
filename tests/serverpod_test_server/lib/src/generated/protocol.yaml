@@ -203,6 +203,7 @@ methodStreaming:
   - didInputStreamHaveSerializableExceptionError:
 authenticatedMethodStreaming:
   - simpleStream:
+  - intEchoStream:
 moduleSerialization:
   - serializeModuleObject:
   - modifyModuleObject:

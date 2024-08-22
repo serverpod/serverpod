@@ -3737,7 +3737,29 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['authenticatedMethodStreaming']
                       as _i21.AuthenticatedMethodStreaming)
                   .simpleStream(session),
-        )
+        ),
+        'intEchoStream': _i1.MethodStreamConnector(
+          name: 'intEchoStream',
+          params: {},
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<int>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['authenticatedMethodStreaming']
+                      as _i21.AuthenticatedMethodStreaming)
+                  .intEchoStream(
+            session,
+            streamParams['stream']!.cast<int>(),
+          ),
+        ),
       },
     );
     connectors['moduleSerialization'] = _i1.EndpointConnector(
