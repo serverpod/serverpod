@@ -1,0 +1,5 @@
+### Message sent when authentication scopes for a user are revoked.
+class: RevokedAuthenticationScope
+serverOnly: true
+fields:
+    scopes: List<String>
