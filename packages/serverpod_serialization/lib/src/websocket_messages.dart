@@ -101,7 +101,8 @@ enum OpenMethodStreamResponseType {
 /// A message sent over a websocket connection to respond to an
 /// [OpenMethodStreamCommand].
 class OpenMethodStreamResponse extends WebSocketMessage {
-  static const String _messageType = 'open_method_stream_response';
+  static const String _messageType =
+      WebSocketMessageTypeKey.openMethodStreamResponse;
 
   /// The connection id that uniquely identifies the stream.
   final UuidValue connectionId;
