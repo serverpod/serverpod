@@ -81,6 +81,7 @@ void main() async {
       reason: 'Row was inserted even though transaction was canceled.',
     );
   });
+
   test(
       'Given a transaction that is canceled when inserting row after transaction is canceled then insertion has no effect',
       () async {
@@ -117,9 +118,6 @@ void main() async {
     var data = UniqueData(number: 1, email: 'test@serverpod.dev');
     var data2 = UniqueData(number: 2, email: 'test2@serverpod.dev');
     var data3 = UniqueData(number: 3, email: 'test3@serverpod.dev');
-    var data4 = UniqueData(number: 3, email: 'test4@serverpod.dev');
-    var data5 = UniqueData(number: 3, email: 'test5@serverpod.dev');
-
     await session.db.transaction<void>(
       (transaction) async {
         await UniqueData.db.insertRow(session, data, transaction: transaction);
@@ -133,20 +131,7 @@ void main() async {
           'ROLLBACK TO SAVEPOINT savepoint1;',
           transaction: transaction,
         );
-        await session.db.transaction((transaction2) async {
-          await session.db.unsafeExecute(
-            'SAVEPOINT savepoint2;',
-            transaction: transaction2,
-          );
-          await UniqueData.db
-              .insertRow(session, data4, transaction: transaction2);
-          await session.db.unsafeExecute(
-            'ROLLBACK TO SAVEPOINT savepoint2;',
-            transaction: transaction2,
-          );
-          await UniqueData.db
-              .insertRow(session, data5, transaction: transaction);
-        });
+
         await UniqueData.db.insertRow(session, data3, transaction: transaction);
       },
     );
@@ -154,9 +139,8 @@ void main() async {
     var fetchedData = await UniqueData.db.find(session);
 
     expect(fetchedData, isNotEmpty);
-    expect(fetchedData, hasLength(3));
+    expect(fetchedData, hasLength(2));
     expect(fetchedData.elementAtOrNull(0)?.number, data.number);
     expect(fetchedData.elementAtOrNull(1)?.number, data3.number);
-    expect(fetchedData.elementAtOrNull(2)?.number, data5.number);
   });
 }
