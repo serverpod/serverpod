@@ -187,6 +187,12 @@ class LibraryGenerator {
           for (var classInfo in models)
             Code.scope((a) =>
                 'if(data is ${a(refer(classInfo.className, classInfo.fileRef()))}) {return \'${classInfo.className}\';}'),
+          if (config.name != 'serverpod' && serverCode)
+            Block.of([
+              Code.scope((a) =>
+                  'className = ${a(refer('Protocol', serverpodProtocolUrl(serverCode)))}().getClassNameForObject(data);'),
+              Code('if(className != null){return \'serverpod.\$className\';}'),
+            ]),
           for (var module in config.modules)
             Block.of([
               Code.scope((a) =>
@@ -212,6 +218,14 @@ class LibraryGenerator {
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${classInfo.className}\'){'
                 'return deserialize<${a(refer(classInfo.className, classInfo.fileRef()))}>(data[\'data\']);}'),
+          if (config.name != 'serverpod' && serverCode)
+            Block.of([
+              Code('if(data[\'className\'].startsWith(\'serverpod.\')){'
+                  'data[\'className\'] = data[\'className\'].substring(${'serverpod'.length + 1});'),
+              Code.scope((a) =>
+                  'return ${a(refer('Protocol', serverpodProtocolUrl(serverCode)))}().deserializeByClassName(data);'),
+              const Code('}'),
+            ]),
           for (var module in config.modules)
             Block.of([
               Code('if(data[\'className\'].startsWith(\'${module.name}.\')){'
