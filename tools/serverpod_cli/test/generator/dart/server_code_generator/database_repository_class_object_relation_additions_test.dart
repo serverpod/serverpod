@@ -264,10 +264,12 @@ void main() {
         expect(companyMethod, isNotNull, reason: 'Missing company method.');
       });
 
-      test('company method has the input params of session, example', () {
+      test(
+          'company method has the input params of session, example, transaction',
+          () {
         expect(
           companyMethod?.parameters?.toSource(),
-          '(_i1.Session session, Example example)',
+          '(_i1.Session session, Example example, {_i1.Transaction? transaction})',
         );
       }, skip: companyMethod == null);
 

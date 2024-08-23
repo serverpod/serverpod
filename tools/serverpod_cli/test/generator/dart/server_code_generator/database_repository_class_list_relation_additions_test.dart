@@ -261,10 +261,11 @@ void main() {
         expect(peopleMethod, isNotNull, reason: 'Missing people method.');
       });
 
-      test('people method has the input params of session, person', () {
+      test('people method has the input params of session, person, transaction',
+          () {
         expect(
           peopleMethod?.parameters?.toSource(),
-          '(_i1.Session session, Person person)',
+          '(_i1.Session session, Person person, {_i1.Transaction? transaction})',
         );
       }, skip: peopleMethod == null);
     }, skip: repositoryClass == null);
@@ -462,10 +463,12 @@ void main() {
         expect(citizenMethod, isNotNull, reason: 'Missing citizens method.');
       });
 
-      test('citizens method has the input params of session, person', () {
+      test(
+          'citizens method has the input params of session, person, transaction',
+          () {
         expect(
           citizenMethod?.parameters?.toSource(),
-          '(_i1.Session session, Person person)',
+          '(_i1.Session session, Person person, {_i1.Transaction? transaction})',
         );
       }, skip: citizenMethod == null);
     });
