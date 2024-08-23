@@ -69,7 +69,7 @@ class ModelDependencyResolver {
 
     if (enumDefinitionList.isEmpty) return;
 
-    typeDefinition.serializeEnum = enumDefinitionList.first.serialized;
+    typeDefinition.enumDefinition = enumDefinitionList.first;
   }
 
   static void _resolveObjectRelationReference(
