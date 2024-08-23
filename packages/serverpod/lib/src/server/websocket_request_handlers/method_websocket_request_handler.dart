@@ -314,6 +314,7 @@ class _MethodStreamManager {
       }
 
       // Immediate close of the stream
+      _updateCloseReason(streamKey, reason);
       await context.controller.onCancel?.call();
       unawaited(context.subscription.cancel());
     } else {
