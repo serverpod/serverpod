@@ -776,6 +776,10 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i16.UserSettingsConfig) {
       return 'UserSettingsConfig';
     }
+    className = _i2.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod.$className';
+    }
     return null;
   }
 
@@ -822,6 +826,10 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (data['className'] == 'UserSettingsConfig') {
       return deserialize<_i16.UserSettingsConfig>(data['data']);
+    }
+    if (data['className'].startsWith('serverpod.')) {
+      data['className'] = data['className'].substring(10);
+      return _i2.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
