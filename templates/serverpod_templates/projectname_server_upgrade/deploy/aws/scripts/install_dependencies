@@ -1,4 +1,26 @@
 #!/bin/bash
+DART_VERSION=3.5.1
+
+## Uncomment the following code if you have already generated the project with the older version of serverpod cli
+## What this code do is to remove our previous way of setting dart version in the launch template
+#if [ -f "/etc/profile.d/script.sh" ]; then
+#    sudo rm /etc/profile.d/script.sh
+#fi
+
+## install specified dart version if it is not present on the machine
+
+if [ ! -d "/usr/lib/dart$DART_VERSION" ]; then
+  wget -q https://storage.googleapis.com/dart-archive/channels/stable/release/$DART_VERSION/sdk/dartsdk-linux-x64-release.zip -P /tmp
+  cd /tmp || exit
+  unzip -q dartsdk-linux-x64-release.zip
+  sudo mv dart-sdk/ /usr/lib/dart$DART_VERSION/
+  sudo chmod -R 755 /usr/lib/dart$DART_VERSION/
+  rm -rf dartsdk-linux-x64-release.zip
+fi
+
+## make symlink to use this dart as default
+sudo ln -sf "/usr/lib/dart$DART_VERSION/bin/dart" /usr/local/bin/dart
+
 cat > /lib/systemd/system/serverpod.service << EOF
 [Unit]
 Description=Serverpod server
