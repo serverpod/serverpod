@@ -35,6 +35,13 @@ class FieldDefinitionBuilder {
     return this;
   }
 
+  FieldDefinitionBuilder withEnumDefinition(
+    EnumDefinition enumDefinition,
+  ) {
+    _type.enumDefinition = enumDefinition;
+    return this;
+  }
+
   FieldDefinitionBuilder withTypeDefinition(
     String className, [
     bool nullable = false,

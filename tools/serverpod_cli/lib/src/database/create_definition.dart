@@ -160,6 +160,15 @@ String? _getColumnDefault(
     case DefaultValueAllowedType.duration:
       Duration parsedDuration = parseDuration(defaultValue);
       return '${parsedDuration.toJson()}';
+    case DefaultValueAllowedType.isEnum:
+      var enumDefinition = column.type.enumDefinition;
+      if (enumDefinition == null) return null;
+      var values = enumDefinition.values;
+      int index = values.indexWhere((e) => e.name == defaultValue);
+      return switch (enumDefinition.serialized) {
+        EnumSerialization.byIndex => '$index',
+        EnumSerialization.byName => '\'$defaultValue\'::text',
+      };
   }
 }
 
