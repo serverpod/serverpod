@@ -457,8 +457,9 @@ class OrderAttachRepository {
   Future<void> comments(
     _i1.Session session,
     Order order,
-    List<_i2.Comment> comment,
-  ) async {
+    List<_i2.Comment> comment, {
+    _i1.Transaction? transaction,
+  }) async {
     if (comment.any((e) => e.id == null)) {
       throw ArgumentError.notNull('comment.id');
     }
@@ -470,6 +471,7 @@ class OrderAttachRepository {
     await session.db.update<_i2.Comment>(
       $comment,
       columns: [_i2.Comment.t.orderId],
+      transaction: transaction,
     );
   }
 }
@@ -480,8 +482,9 @@ class OrderAttachRowRepository {
   Future<void> customer(
     _i1.Session session,
     Order order,
-    _i2.Customer customer,
-  ) async {
+    _i2.Customer customer, {
+    _i1.Transaction? transaction,
+  }) async {
     if (order.id == null) {
       throw ArgumentError.notNull('order.id');
     }
@@ -493,14 +496,16 @@ class OrderAttachRowRepository {
     await session.db.updateRow<Order>(
       $order,
       columns: [Order.t.customerId],
+      transaction: transaction,
     );
   }
 
   Future<void> comments(
     _i1.Session session,
     Order order,
-    _i2.Comment comment,
-  ) async {
+    _i2.Comment comment, {
+    _i1.Transaction? transaction,
+  }) async {
     if (comment.id == null) {
       throw ArgumentError.notNull('comment.id');
     }
@@ -512,6 +517,7 @@ class OrderAttachRowRepository {
     await session.db.updateRow<_i2.Comment>(
       $comment,
       columns: [_i2.Comment.t.orderId],
+      transaction: transaction,
     );
   }
 }

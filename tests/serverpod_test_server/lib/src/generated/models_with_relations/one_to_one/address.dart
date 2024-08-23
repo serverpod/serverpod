@@ -386,8 +386,9 @@ class AddressAttachRowRepository {
   Future<void> inhabitant(
     _i1.Session session,
     Address address,
-    _i2.Citizen inhabitant,
-  ) async {
+    _i2.Citizen inhabitant, {
+    _i1.Transaction? transaction,
+  }) async {
     if (address.id == null) {
       throw ArgumentError.notNull('address.id');
     }
@@ -399,6 +400,7 @@ class AddressAttachRowRepository {
     await session.db.updateRow<Address>(
       $address,
       columns: [Address.t.inhabitantId],
+      transaction: transaction,
     );
   }
 }
@@ -408,8 +410,9 @@ class AddressDetachRowRepository {
 
   Future<void> inhabitant(
     _i1.Session session,
-    Address address,
-  ) async {
+    Address address, {
+    _i1.Transaction? transaction,
+  }) async {
     if (address.id == null) {
       throw ArgumentError.notNull('address.id');
     }
@@ -418,6 +421,7 @@ class AddressDetachRowRepository {
     await session.db.updateRow<Address>(
       $address,
       columns: [Address.t.inhabitantId],
+      transaction: transaction,
     );
   }
 }

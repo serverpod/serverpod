@@ -493,8 +493,9 @@ class CitizenAttachRowRepository {
   Future<void> address(
     _i1.Session session,
     Citizen citizen,
-    _i2.Address address,
-  ) async {
+    _i2.Address address, {
+    _i1.Transaction? transaction,
+  }) async {
     if (address.id == null) {
       throw ArgumentError.notNull('address.id');
     }
@@ -506,14 +507,16 @@ class CitizenAttachRowRepository {
     await session.db.updateRow<_i2.Address>(
       $address,
       columns: [_i2.Address.t.inhabitantId],
+      transaction: transaction,
     );
   }
 
   Future<void> company(
     _i1.Session session,
     Citizen citizen,
-    _i2.Company company,
-  ) async {
+    _i2.Company company, {
+    _i1.Transaction? transaction,
+  }) async {
     if (citizen.id == null) {
       throw ArgumentError.notNull('citizen.id');
     }
@@ -525,14 +528,16 @@ class CitizenAttachRowRepository {
     await session.db.updateRow<Citizen>(
       $citizen,
       columns: [Citizen.t.companyId],
+      transaction: transaction,
     );
   }
 
   Future<void> oldCompany(
     _i1.Session session,
     Citizen citizen,
-    _i2.Company oldCompany,
-  ) async {
+    _i2.Company oldCompany, {
+    _i1.Transaction? transaction,
+  }) async {
     if (citizen.id == null) {
       throw ArgumentError.notNull('citizen.id');
     }
@@ -544,6 +549,7 @@ class CitizenAttachRowRepository {
     await session.db.updateRow<Citizen>(
       $citizen,
       columns: [Citizen.t.oldCompanyId],
+      transaction: transaction,
     );
   }
 }
@@ -553,8 +559,9 @@ class CitizenDetachRowRepository {
 
   Future<void> address(
     _i1.Session session,
-    Citizen citizen,
-  ) async {
+    Citizen citizen, {
+    _i1.Transaction? transaction,
+  }) async {
     var $address = citizen.address;
 
     if ($address == null) {
@@ -571,13 +578,15 @@ class CitizenDetachRowRepository {
     await session.db.updateRow<_i2.Address>(
       $$address,
       columns: [_i2.Address.t.inhabitantId],
+      transaction: transaction,
     );
   }
 
   Future<void> oldCompany(
     _i1.Session session,
-    Citizen citizen,
-  ) async {
+    Citizen citizen, {
+    _i1.Transaction? transaction,
+  }) async {
     if (citizen.id == null) {
       throw ArgumentError.notNull('citizen.id');
     }
@@ -586,6 +595,7 @@ class CitizenDetachRowRepository {
     await session.db.updateRow<Citizen>(
       $citizen,
       columns: [Citizen.t.oldCompanyId],
+      transaction: transaction,
     );
   }
 }

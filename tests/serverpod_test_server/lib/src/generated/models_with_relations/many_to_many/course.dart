@@ -395,8 +395,9 @@ class CourseAttachRepository {
   Future<void> enrollments(
     _i1.Session session,
     Course course,
-    List<_i2.Enrollment> enrollment,
-  ) async {
+    List<_i2.Enrollment> enrollment, {
+    _i1.Transaction? transaction,
+  }) async {
     if (enrollment.any((e) => e.id == null)) {
       throw ArgumentError.notNull('enrollment.id');
     }
@@ -409,6 +410,7 @@ class CourseAttachRepository {
     await session.db.update<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.courseId],
+      transaction: transaction,
     );
   }
 }
@@ -419,8 +421,9 @@ class CourseAttachRowRepository {
   Future<void> enrollments(
     _i1.Session session,
     Course course,
-    _i2.Enrollment enrollment,
-  ) async {
+    _i2.Enrollment enrollment, {
+    _i1.Transaction? transaction,
+  }) async {
     if (enrollment.id == null) {
       throw ArgumentError.notNull('enrollment.id');
     }
@@ -432,6 +435,7 @@ class CourseAttachRowRepository {
     await session.db.updateRow<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.courseId],
+      transaction: transaction,
     );
   }
 }
@@ -441,8 +445,9 @@ class CourseDetachRepository {
 
   Future<void> enrollments(
     _i1.Session session,
-    List<_i2.Enrollment> enrollment,
-  ) async {
+    List<_i2.Enrollment> enrollment, {
+    _i1.Transaction? transaction,
+  }) async {
     if (enrollment.any((e) => e.id == null)) {
       throw ArgumentError.notNull('enrollment.id');
     }
@@ -452,6 +457,7 @@ class CourseDetachRepository {
     await session.db.update<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.courseId],
+      transaction: transaction,
     );
   }
 }
@@ -461,8 +467,9 @@ class CourseDetachRowRepository {
 
   Future<void> enrollments(
     _i1.Session session,
-    _i2.Enrollment enrollment,
-  ) async {
+    _i2.Enrollment enrollment, {
+    _i1.Transaction? transaction,
+  }) async {
     if (enrollment.id == null) {
       throw ArgumentError.notNull('enrollment.id');
     }
@@ -471,6 +478,7 @@ class CourseDetachRowRepository {
     await session.db.updateRow<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.courseId],
+      transaction: transaction,
     );
   }
 }

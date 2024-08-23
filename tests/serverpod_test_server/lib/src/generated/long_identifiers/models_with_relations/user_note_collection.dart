@@ -404,8 +404,9 @@ class UserNoteCollectionAttachRepository {
   Future<void> userNotesPropertyName(
     _i1.Session session,
     UserNoteCollection userNoteCollection,
-    List<_i2.UserNote> userNote,
-  ) async {
+    List<_i2.UserNote> userNote, {
+    _i1.Transaction? transaction,
+  }) async {
     if (userNote.any((e) => e.id == null)) {
       throw ArgumentError.notNull('userNote.id');
     }
@@ -426,6 +427,7 @@ class UserNoteCollectionAttachRepository {
         _i2.UserNote.t
             .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
       ],
+      transaction: transaction,
     );
   }
 }
@@ -436,8 +438,9 @@ class UserNoteCollectionAttachRowRepository {
   Future<void> userNotesPropertyName(
     _i1.Session session,
     UserNoteCollection userNoteCollection,
-    _i2.UserNote userNote,
-  ) async {
+    _i2.UserNote userNote, {
+    _i1.Transaction? transaction,
+  }) async {
     if (userNote.id == null) {
       throw ArgumentError.notNull('userNote.id');
     }
@@ -456,6 +459,7 @@ class UserNoteCollectionAttachRowRepository {
         _i2.UserNote.t
             .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
       ],
+      transaction: transaction,
     );
   }
 }
@@ -465,8 +469,9 @@ class UserNoteCollectionDetachRepository {
 
   Future<void> userNotesPropertyName(
     _i1.Session session,
-    List<_i2.UserNote> userNote,
-  ) async {
+    List<_i2.UserNote> userNote, {
+    _i1.Transaction? transaction,
+  }) async {
     if (userNote.any((e) => e.id == null)) {
       throw ArgumentError.notNull('userNote.id');
     }
@@ -484,6 +489,7 @@ class UserNoteCollectionDetachRepository {
         _i2.UserNote.t
             .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
       ],
+      transaction: transaction,
     );
   }
 }
@@ -493,8 +499,9 @@ class UserNoteCollectionDetachRowRepository {
 
   Future<void> userNotesPropertyName(
     _i1.Session session,
-    _i2.UserNote userNote,
-  ) async {
+    _i2.UserNote userNote, {
+    _i1.Transaction? transaction,
+  }) async {
     if (userNote.id == null) {
       throw ArgumentError.notNull('userNote.id');
     }
@@ -509,6 +516,7 @@ class UserNoteCollectionDetachRowRepository {
         _i2.UserNote.t
             .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
       ],
+      transaction: transaction,
     );
   }
 }
