@@ -280,6 +280,47 @@ CREATE TABLE "enrollment" (
 CREATE UNIQUE INDEX "enrollment_index_idx" ON "enrollment" USING btree ("studentId", "courseId");
 
 --
+-- Class EnumDefault as table enum_default
+--
+CREATE TABLE "enum_default" (
+    "id" bigserial PRIMARY KEY,
+    "byNameEnumDefault" text NOT NULL DEFAULT 'byName1'::text,
+    "byNameEnumDefaultNull" text DEFAULT 'byName2'::text,
+    "byIndexEnumDefault" bigint NOT NULL DEFAULT 0,
+    "byIndexEnumDefaultNull" bigint DEFAULT 1
+);
+
+--
+-- Class EnumDefaultMix as table enum_default_mix
+--
+CREATE TABLE "enum_default_mix" (
+    "id" bigserial PRIMARY KEY,
+    "byNameEnumDefaultAndDefaultModel" text NOT NULL DEFAULT 'byName1'::text,
+    "byNameEnumDefaultAndDefaultPersist" text NOT NULL DEFAULT 'byName2'::text,
+    "byNameEnumDefaultModelAndDefaultPersist" text NOT NULL DEFAULT 'byName2'::text
+);
+
+--
+-- Class EnumDefaultModel as table enum_default_model
+--
+CREATE TABLE "enum_default_model" (
+    "id" bigserial PRIMARY KEY,
+    "byNameEnumDefaultModel" text NOT NULL,
+    "byNameEnumDefaultModelNull" text,
+    "byIndexEnumDefaultModel" bigint NOT NULL,
+    "byIndexEnumDefaultModelNull" bigint
+);
+
+--
+-- Class EnumDefaultPersist as table enum_default_persist
+--
+CREATE TABLE "enum_default_persist" (
+    "id" bigserial PRIMARY KEY,
+    "byNameEnumDefaultPersist" text DEFAULT 'byName1'::text,
+    "byIndexEnumDefaultPersist" bigint DEFAULT 0
+);
+
+--
 -- Class IntDefault as table int_default
 --
 CREATE TABLE "int_default" (
@@ -1395,9 +1436,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20240821084532801', now())
+    VALUES ('serverpod_test', '20240823081352370', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240821084532801', "timestamp" = now();
+    DO UPDATE SET "version" = '20240823081352370', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth
