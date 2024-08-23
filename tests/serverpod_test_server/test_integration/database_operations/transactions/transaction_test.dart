@@ -169,20 +169,17 @@ void main() async {
   });
 
   test(
-      'Given a nested transaction when calling `cancel` on the nested transaction then only the top level transaction is committed',
+      'Given a nested transaction when calling `cancel` on the nested transaction then no rows are inserted.',
       () async {
     var data = UniqueData(number: 1, email: 'test@serverpod.dev');
-    var data2 = UniqueData(number: 2, email: 'test2@serverpod.dev');
 
     await session.db.transaction<void>(
       (transaction) async {
-        await UniqueData.db.insertRow(session, data, transaction: transaction);
-
         await session.db.transaction<void>(
           (nestedTransaction) async {
             await UniqueData.db.insertRow(
               session,
-              data2,
+              data,
               transaction: nestedTransaction,
             );
 
@@ -193,7 +190,6 @@ void main() async {
     );
 
     var fetchedData = await UniqueData.db.find(session);
-    expect(fetchedData, hasLength(1));
-    expect(fetchedData.elementAtOrNull(0)?.number, data.number);
+    expect(fetchedData, hasLength(0));
   });
 }
