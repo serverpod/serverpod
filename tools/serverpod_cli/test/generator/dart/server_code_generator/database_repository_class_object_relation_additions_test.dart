@@ -182,7 +182,7 @@ void main() {
       });
 
       test(
-          'the address method has the input params of session, example and address',
+          'the address method has the input params of session, example, address and named param transaction',
           () {
         expect(
           addressMethod?.parameters?.toSource(),
