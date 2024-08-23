@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:serverpod/protocol.dart' as serverpod;
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart' as server;
 import 'package:test/test.dart';
@@ -220,5 +221,16 @@ void main() {
     var typesMap = Protocol().decode<TypesMap>(encodedString);
 
     expect(typesMap.anObjectKey, {});
+  });
+
+  test(
+      'Given a Serverpod defined model when encoding it with type then it is encoded',
+      () {
+    var serverProtocol = server.Protocol();
+    var serverpodDefinedModel =
+        serverpod.ClusterServerInfo(serverId: 'Hello World');
+    var encoded = serverProtocol.encodeWithType(serverpodDefinedModel);
+
+    expect(encoded, isA<String>());
   });
 }

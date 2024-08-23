@@ -338,6 +338,10 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i14.ChatRequestMessageChunk) {
       return 'ChatRequestMessageChunk';
     }
+    className = _i2.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod.$className';
+    }
     className = _i3.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
@@ -380,6 +384,10 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (data['className'] == 'ChatRequestMessageChunk') {
       return deserialize<_i14.ChatRequestMessageChunk>(data['data']);
+    }
+    if (data['className'].startsWith('serverpod.')) {
+      data['className'] = data['className'].substring(10);
+      return _i2.Protocol().deserializeByClassName(data);
     }
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);

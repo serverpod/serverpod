@@ -187,13 +187,12 @@ class LibraryGenerator {
           for (var classInfo in models)
             Code.scope((a) =>
                 'if(data is ${a(refer(classInfo.className, classInfo.fileRef()))}) {return \'${classInfo.className}\';}'),
+          if (config.name != 'serverpod' && serverCode)
+            _buildGetClassNameForObjectDelegation(
+                serverpodProtocolUrl(serverCode), 'serverpod'),
           for (var module in config.modules)
-            Block.of([
-              Code.scope((a) =>
-                  'className = ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().getClassNameForObject(data);'),
-              Code(
-                  'if(className != null){return \'${module.name}.\$className\';}'),
-            ]),
+            _buildGetClassNameForObjectDelegation(
+                module.dartImportUrl(serverCode), module.name),
           const Code('return null;'),
         ])),
       Method((m) => m
@@ -212,14 +211,16 @@ class LibraryGenerator {
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${classInfo.className}\'){'
                 'return deserialize<${a(refer(classInfo.className, classInfo.fileRef()))}>(data[\'data\']);}'),
+          if (config.name != 'serverpod' && serverCode)
+            _buildDeserializeByClassNameDelegation(
+              serverpodProtocolUrl(serverCode),
+              'serverpod',
+            ),
           for (var module in config.modules)
-            Block.of([
-              Code('if(data[\'className\'].startsWith(\'${module.name}.\')){'
-                  'data[\'className\'] = data[\'className\'].substring(${module.name.length + 1});'),
-              Code.scope((a) =>
-                  'return ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().deserializeByClassName(data);'),
-              const Code('}'),
-            ]),
+            _buildDeserializeByClassNameDelegation(
+              module.dartImportUrl(serverCode),
+              module.name,
+            ),
           const Code('return super.deserializeByClassName(data);'),
         ])),
       if (serverCode)
@@ -284,6 +285,30 @@ class LibraryGenerator {
     library.body.add(protocol.build());
 
     return library.build();
+  }
+
+  Block _buildGetClassNameForObjectDelegation(
+    String protocolImportPath,
+    String projectName,
+  ) {
+    return Block.of([
+      Code.scope((a) =>
+          'className = ${a(refer('Protocol', protocolImportPath))}().getClassNameForObject(data);'),
+      Code('if(className != null){return \'$projectName.\$className\';}'),
+    ]);
+  }
+
+  Block _buildDeserializeByClassNameDelegation(
+    String protocolImportPath,
+    String projectName,
+  ) {
+    return Block.of([
+      Code('if(data[\'className\'].startsWith(\'$projectName.\')){'
+          'data[\'className\'] = data[\'className\'].substring(${projectName.length + 1});'),
+      Code.scope((a) =>
+          'return ${a(refer('Protocol', protocolImportPath))}().deserializeByClassName(data);'),
+      const Code('}'),
+    ]);
   }
 
   /// Generates the EndpointDispatch for the server side.
