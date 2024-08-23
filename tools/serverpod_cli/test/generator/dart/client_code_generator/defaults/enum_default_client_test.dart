@@ -15,7 +15,7 @@ final config = GeneratorConfigBuilder().withName(projectName).build();
 const generator = DartClientCodeGenerator();
 
 void main() {
-    var enumDefinition = EnumDefinitionBuilder()
+  var enumDefinition = EnumDefinitionBuilder()
       .withClassName('ByNameEnum')
       .withFileName('by_name_enum')
       .withValues([
