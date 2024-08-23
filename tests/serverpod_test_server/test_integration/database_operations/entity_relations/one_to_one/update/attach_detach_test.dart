@@ -156,7 +156,7 @@ void main() async {
     tearDown(() async => await deleteAll(session));
 
     test(
-        'when attaching an address from the none foreign key side the object holding the foreign key is updated in the database',
+        'when attaching an address from the non foreign key side the object holding the foreign key is updated in the database',
         () async {
       var alice = citizens.first;
       var address = Address(street: 'Street');
@@ -170,7 +170,7 @@ void main() async {
     });
 
     test(
-        'when detaching an address from the none foreign key side the object holding the foreign key has the foreign key set to null.',
+        'when detaching an address from the non foreign key side the object holding the foreign key has the foreign key set to null.',
         () async {
       var bob = citizens.last;
 
@@ -186,6 +186,48 @@ void main() async {
       var bobCopy = bob.copyWith(address: address);
 
       await Citizen.db.detachRow.address(session, bobCopy);
+
+      var updatedAddress = await Address.db.findById(session, address.id!);
+
+      expect(updatedAddress?.inhabitantId, null);
+    });
+
+    test(
+        'when inside a transaction and attaching an address from the non foreign key side the object holding the foreign key is updated in the database',
+        () async {
+      var alice = citizens.first;
+      var address = Address(street: 'Street');
+      address = await Address.db.insertRow(session, address);
+
+      await session.db.transaction((transaction) async {
+        await Citizen.db.attachRow
+            .address(session, alice, address, transaction: transaction);
+      });
+      var updatedAddress = await Address.db.findById(session, address.id!);
+
+      expect(updatedAddress?.inhabitantId, alice.id);
+    });
+
+    test(
+        'when inside a transaction and detaching an address from the non foreign key side the object holding the foreign key has the foreign key set to null.',
+        () async {
+      var bob = citizens.last;
+
+      var addresses = await Address.db.find(
+        session,
+        orderBy: (t) => t.id,
+        include: Address.include(
+          inhabitant: Citizen.include(),
+        ),
+      );
+      var address = addresses.first;
+
+      var bobCopy = bob.copyWith(address: address);
+
+      await session.db.transaction((transaction) async {
+        await Citizen.db.detachRow
+            .address(session, bobCopy, transaction: transaction);
+      });
 
       var updatedAddress = await Address.db.findById(session, address.id!);
 
