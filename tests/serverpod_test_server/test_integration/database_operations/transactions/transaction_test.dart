@@ -143,4 +143,57 @@ void main() async {
     expect(fetchedData.elementAtOrNull(0)?.number, data.number);
     expect(fetchedData.elementAtOrNull(1)?.number, data3.number);
   });
+
+  test(
+      'Given a nested transaction when inserting and then fetching row then the row is found.',
+      () async {
+    var data = UniqueData(number: 1, email: 'test@serverpod.dev');
+
+    await session.db.transaction<void>(
+      (transaction) async {
+        await session.db.transaction<void>(
+          (nestedTransaction) async {
+            await UniqueData.db.insertRow(
+              session,
+              data,
+              transaction: nestedTransaction,
+            );
+          },
+        );
+      },
+    );
+
+    var fetchedData = await UniqueData.db.find(session);
+    expect(fetchedData, hasLength(1));
+    expect(fetchedData.elementAtOrNull(0)?.number, data.number);
+  });
+
+  test(
+      'Given a nested transaction when calling `cancel` on the nested transaction then only the top level transaction is committed',
+      () async {
+    var data = UniqueData(number: 1, email: 'test@serverpod.dev');
+    var data2 = UniqueData(number: 2, email: 'test2@serverpod.dev');
+
+    await session.db.transaction<void>(
+      (transaction) async {
+        await UniqueData.db.insertRow(session, data, transaction: transaction);
+
+        await session.db.transaction<void>(
+          (nestedTransaction) async {
+            await UniqueData.db.insertRow(
+              session,
+              data2,
+              transaction: nestedTransaction,
+            );
+
+            await nestedTransaction.cancel();
+          },
+        );
+      },
+    );
+
+    var fetchedData = await UniqueData.db.find(session);
+    expect(fetchedData, hasLength(1));
+    expect(fetchedData.elementAtOrNull(0)?.number, data.number);
+  });
 }
