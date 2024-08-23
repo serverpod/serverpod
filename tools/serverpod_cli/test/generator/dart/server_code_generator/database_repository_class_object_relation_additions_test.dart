@@ -164,13 +164,11 @@ void main() {
       });
 
       test(
-          'company method has the input params of session, example and company',
+          'company method has the input params of session, example, company and named param transaction',
           () {
         expect(
           companyMethod?.parameters?.toSource(),
-          matches(
-            r'(_i\d.Session session, Example example, Company company)',
-          ),
+          '(_i1.Session session, Example example, Company company, {_i1.Transaction? transaction})',
         );
       }, skip: companyMethod == null);
 
@@ -188,9 +186,7 @@ void main() {
           () {
         expect(
           addressMethod?.parameters?.toSource(),
-          matches(
-            r'(_i\d.Session session, Example example, Address address)',
-          ),
+          r'(_i1.Session session, Example example, Address address, {_i1.Transaction? transaction})',
         );
       }, skip: addressMethod == null);
 
@@ -265,7 +261,7 @@ void main() {
       });
 
       test(
-          'company method has the input params of session, example, transaction',
+          'company method has the input params of session, example and named param transaction',
           () {
         expect(
           companyMethod?.parameters?.toSource(),
