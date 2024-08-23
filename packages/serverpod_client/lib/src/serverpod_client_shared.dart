@@ -59,6 +59,7 @@ abstract class ServerpodClientRequestDelegate {
   Future<String> serverRequest<T>(
     Uri url, {
     required String body,
+    String? authenticationValue,
   });
 
   /// Closes the connection to the server.
@@ -114,19 +115,19 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   /// Full host name of the web socket endpoint.
   /// E.g. "wss://example.com/websocket"
-  ///
-  /// This string also includes the authentication key if one is available.
+//  ///
+//  /// This string also includes the authentication key if one is available.
   Future<String> get websocketHost async {
     var uri = _webSocketHost;
-
-    var auth = await authenticationKeyManager?.get();
-    if (auth != null) {
-      uri = uri.replace(
-        queryParameters: {
-          'auth': auth,
-        },
-      );
-    }
+    // FIXME
+    // var auth = await authenticationKeyManager?.getHeaderValue();
+    // if (auth != null) {
+    //   uri = uri.replace(
+    //     queryParameters: {
+    //       'auth': auth,
+    //     },
+    //   );
+    // }
 
     return uri.toString();
   }
@@ -448,13 +449,16 @@ abstract class ServerpodClientShared extends EndpointCaller {
   }
 
   /// Updates the authentication key if the streaming connection is open.
+  /// Note, the provided key will be converted/wrapped as a proper authentication header value
+  /// when sent to the server.
   Future<void> updateStreamingConnectionAuthenticationKey(
     String? authKey,
   ) async {
     if (streamingConnectionStatus == StreamingConnectionStatus.disconnected) {
       return;
     }
-    await _sendControlCommandToStream('auth', {'key': authKey});
+    var authValue = await authenticationKeyManager?.toHeaderValue(authKey);
+    await _sendControlCommandToStream('auth', {'key': authValue});
   }
 
   @override
@@ -470,13 +474,15 @@ abstract class ServerpodClientShared extends EndpointCaller {
     );
 
     try {
-      var body =
-          formatArgs(args, await authenticationKeyManager?.get(), method);
+      var authenticationValue =
+          await authenticationKeyManager?.getHeaderValue();
+      var body = formatArgs(args, method);
       var url = Uri.parse('$host$endpoint');
 
       var data = await _requestDelegate.serverRequest(
         url,
         body: body,
+        authenticationValue: authenticationValue,
       );
 
       T result;
@@ -514,7 +520,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
       args: args,
       parameterStreams: streams,
       outputController: StreamController<G>(),
-      authenticationProvider: () async => authenticationKeyManager?.get(),
+      authenticationProvider: () async =>
+          authenticationKeyManager?.getHeaderValue(),
     );
 
     _methodStreamManager.openMethodStream(connectionDetails).catchError((e, _) {
