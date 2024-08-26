@@ -383,8 +383,9 @@ class CompanyAttachRowRepository {
   Future<void> town(
     _i1.Session session,
     Company company,
-    _i2.Town town,
-  ) async {
+    _i2.Town town, {
+    _i1.Transaction? transaction,
+  }) async {
     if (company.id == null) {
       throw ArgumentError.notNull('company.id');
     }
@@ -396,6 +397,7 @@ class CompanyAttachRowRepository {
     await session.db.updateRow<Company>(
       $company,
       columns: [Company.t.townId],
+      transaction: transaction,
     );
   }
 }

@@ -460,8 +460,9 @@ class TeamAttachRepository {
   Future<void> players(
     _i1.Session session,
     Team team,
-    List<_i2.Player> player,
-  ) async {
+    List<_i2.Player> player, {
+    _i1.Transaction? transaction,
+  }) async {
     if (player.any((e) => e.id == null)) {
       throw ArgumentError.notNull('player.id');
     }
@@ -473,6 +474,7 @@ class TeamAttachRepository {
     await session.db.update<_i2.Player>(
       $player,
       columns: [_i2.Player.t.teamId],
+      transaction: transaction,
     );
   }
 }
@@ -483,8 +485,9 @@ class TeamAttachRowRepository {
   Future<void> arena(
     _i1.Session session,
     Team team,
-    _i2.Arena arena,
-  ) async {
+    _i2.Arena arena, {
+    _i1.Transaction? transaction,
+  }) async {
     if (team.id == null) {
       throw ArgumentError.notNull('team.id');
     }
@@ -496,14 +499,16 @@ class TeamAttachRowRepository {
     await session.db.updateRow<Team>(
       $team,
       columns: [Team.t.arenaId],
+      transaction: transaction,
     );
   }
 
   Future<void> players(
     _i1.Session session,
     Team team,
-    _i2.Player player,
-  ) async {
+    _i2.Player player, {
+    _i1.Transaction? transaction,
+  }) async {
     if (player.id == null) {
       throw ArgumentError.notNull('player.id');
     }
@@ -515,6 +520,7 @@ class TeamAttachRowRepository {
     await session.db.updateRow<_i2.Player>(
       $player,
       columns: [_i2.Player.t.teamId],
+      transaction: transaction,
     );
   }
 }
@@ -524,8 +530,9 @@ class TeamDetachRepository {
 
   Future<void> players(
     _i1.Session session,
-    List<_i2.Player> player,
-  ) async {
+    List<_i2.Player> player, {
+    _i1.Transaction? transaction,
+  }) async {
     if (player.any((e) => e.id == null)) {
       throw ArgumentError.notNull('player.id');
     }
@@ -534,6 +541,7 @@ class TeamDetachRepository {
     await session.db.update<_i2.Player>(
       $player,
       columns: [_i2.Player.t.teamId],
+      transaction: transaction,
     );
   }
 }
@@ -543,8 +551,9 @@ class TeamDetachRowRepository {
 
   Future<void> arena(
     _i1.Session session,
-    Team team,
-  ) async {
+    Team team, {
+    _i1.Transaction? transaction,
+  }) async {
     if (team.id == null) {
       throw ArgumentError.notNull('team.id');
     }
@@ -553,13 +562,15 @@ class TeamDetachRowRepository {
     await session.db.updateRow<Team>(
       $team,
       columns: [Team.t.arenaId],
+      transaction: transaction,
     );
   }
 
   Future<void> players(
     _i1.Session session,
-    _i2.Player player,
-  ) async {
+    _i2.Player player, {
+    _i1.Transaction? transaction,
+  }) async {
     if (player.id == null) {
       throw ArgumentError.notNull('player.id');
     }
@@ -568,6 +579,7 @@ class TeamDetachRowRepository {
     await session.db.updateRow<_i2.Player>(
       $player,
       columns: [_i2.Player.t.teamId],
+      transaction: transaction,
     );
   }
 }

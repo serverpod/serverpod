@@ -432,8 +432,9 @@ class PostAttachRowRepository {
   Future<void> previous(
     _i1.Session session,
     Post post,
-    _i2.Post previous,
-  ) async {
+    _i2.Post previous, {
+    _i1.Transaction? transaction,
+  }) async {
     if (previous.id == null) {
       throw ArgumentError.notNull('previous.id');
     }
@@ -445,14 +446,16 @@ class PostAttachRowRepository {
     await session.db.updateRow<_i2.Post>(
       $previous,
       columns: [_i2.Post.t.nextId],
+      transaction: transaction,
     );
   }
 
   Future<void> next(
     _i1.Session session,
     Post post,
-    _i2.Post next,
-  ) async {
+    _i2.Post next, {
+    _i1.Transaction? transaction,
+  }) async {
     if (post.id == null) {
       throw ArgumentError.notNull('post.id');
     }
@@ -464,6 +467,7 @@ class PostAttachRowRepository {
     await session.db.updateRow<Post>(
       $post,
       columns: [Post.t.nextId],
+      transaction: transaction,
     );
   }
 }
@@ -473,8 +477,9 @@ class PostDetachRowRepository {
 
   Future<void> previous(
     _i1.Session session,
-    Post post,
-  ) async {
+    Post post, {
+    _i1.Transaction? transaction,
+  }) async {
     var $previous = post.previous;
 
     if ($previous == null) {
@@ -491,13 +496,15 @@ class PostDetachRowRepository {
     await session.db.updateRow<_i2.Post>(
       $$previous,
       columns: [_i2.Post.t.nextId],
+      transaction: transaction,
     );
   }
 
   Future<void> next(
     _i1.Session session,
-    Post post,
-  ) async {
+    Post post, {
+    _i1.Transaction? transaction,
+  }) async {
     if (post.id == null) {
       throw ArgumentError.notNull('post.id');
     }
@@ -506,6 +513,7 @@ class PostDetachRowRepository {
     await session.db.updateRow<Post>(
       $post,
       columns: [Post.t.nextId],
+      transaction: transaction,
     );
   }
 }

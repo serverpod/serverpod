@@ -462,8 +462,9 @@ class MemberAttachRepository {
   Future<void> blocking(
     _i1.Session session,
     Member member,
-    List<_i2.Blocking> blocking,
-  ) async {
+    List<_i2.Blocking> blocking, {
+    _i1.Transaction? transaction,
+  }) async {
     if (blocking.any((e) => e.id == null)) {
       throw ArgumentError.notNull('blocking.id');
     }
@@ -476,14 +477,16 @@ class MemberAttachRepository {
     await session.db.update<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedById],
+      transaction: transaction,
     );
   }
 
   Future<void> blockedBy(
     _i1.Session session,
     Member member,
-    List<_i2.Blocking> blocking,
-  ) async {
+    List<_i2.Blocking> blocking, {
+    _i1.Transaction? transaction,
+  }) async {
     if (blocking.any((e) => e.id == null)) {
       throw ArgumentError.notNull('blocking.id');
     }
@@ -496,6 +499,7 @@ class MemberAttachRepository {
     await session.db.update<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedId],
+      transaction: transaction,
     );
   }
 }
@@ -506,8 +510,9 @@ class MemberAttachRowRepository {
   Future<void> blocking(
     _i1.Session session,
     Member member,
-    _i2.Blocking blocking,
-  ) async {
+    _i2.Blocking blocking, {
+    _i1.Transaction? transaction,
+  }) async {
     if (blocking.id == null) {
       throw ArgumentError.notNull('blocking.id');
     }
@@ -519,14 +524,16 @@ class MemberAttachRowRepository {
     await session.db.updateRow<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedById],
+      transaction: transaction,
     );
   }
 
   Future<void> blockedBy(
     _i1.Session session,
     Member member,
-    _i2.Blocking blocking,
-  ) async {
+    _i2.Blocking blocking, {
+    _i1.Transaction? transaction,
+  }) async {
     if (blocking.id == null) {
       throw ArgumentError.notNull('blocking.id');
     }
@@ -538,6 +545,7 @@ class MemberAttachRowRepository {
     await session.db.updateRow<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedId],
+      transaction: transaction,
     );
   }
 }

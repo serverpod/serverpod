@@ -465,8 +465,9 @@ class CityAttachRepository {
   Future<void> citizens(
     _i1.Session session,
     City city,
-    List<_i2.Person> person,
-  ) async {
+    List<_i2.Person> person, {
+    _i1.Transaction? transaction,
+  }) async {
     if (person.any((e) => e.id == null)) {
       throw ArgumentError.notNull('person.id');
     }
@@ -483,14 +484,16 @@ class CityAttachRepository {
     await session.db.update<_i2.Person>(
       $person,
       columns: [_i2.Person.t.$_cityCitizensCityId],
+      transaction: transaction,
     );
   }
 
   Future<void> organizations(
     _i1.Session session,
     City city,
-    List<_i2.Organization> organization,
-  ) async {
+    List<_i2.Organization> organization, {
+    _i1.Transaction? transaction,
+  }) async {
     if (organization.any((e) => e.id == null)) {
       throw ArgumentError.notNull('organization.id');
     }
@@ -503,6 +506,7 @@ class CityAttachRepository {
     await session.db.update<_i2.Organization>(
       $organization,
       columns: [_i2.Organization.t.cityId],
+      transaction: transaction,
     );
   }
 }
@@ -513,8 +517,9 @@ class CityAttachRowRepository {
   Future<void> citizens(
     _i1.Session session,
     City city,
-    _i2.Person person,
-  ) async {
+    _i2.Person person, {
+    _i1.Transaction? transaction,
+  }) async {
     if (person.id == null) {
       throw ArgumentError.notNull('person.id');
     }
@@ -529,14 +534,16 @@ class CityAttachRowRepository {
     await session.db.updateRow<_i2.Person>(
       $person,
       columns: [_i2.Person.t.$_cityCitizensCityId],
+      transaction: transaction,
     );
   }
 
   Future<void> organizations(
     _i1.Session session,
     City city,
-    _i2.Organization organization,
-  ) async {
+    _i2.Organization organization, {
+    _i1.Transaction? transaction,
+  }) async {
     if (organization.id == null) {
       throw ArgumentError.notNull('organization.id');
     }
@@ -548,6 +555,7 @@ class CityAttachRowRepository {
     await session.db.updateRow<_i2.Organization>(
       $organization,
       columns: [_i2.Organization.t.cityId],
+      transaction: transaction,
     );
   }
 }
@@ -557,8 +565,9 @@ class CityDetachRepository {
 
   Future<void> citizens(
     _i1.Session session,
-    List<_i2.Person> person,
-  ) async {
+    List<_i2.Person> person, {
+    _i1.Transaction? transaction,
+  }) async {
     if (person.any((e) => e.id == null)) {
       throw ArgumentError.notNull('person.id');
     }
@@ -572,13 +581,15 @@ class CityDetachRepository {
     await session.db.update<_i2.Person>(
       $person,
       columns: [_i2.Person.t.$_cityCitizensCityId],
+      transaction: transaction,
     );
   }
 
   Future<void> organizations(
     _i1.Session session,
-    List<_i2.Organization> organization,
-  ) async {
+    List<_i2.Organization> organization, {
+    _i1.Transaction? transaction,
+  }) async {
     if (organization.any((e) => e.id == null)) {
       throw ArgumentError.notNull('organization.id');
     }
@@ -588,6 +599,7 @@ class CityDetachRepository {
     await session.db.update<_i2.Organization>(
       $organization,
       columns: [_i2.Organization.t.cityId],
+      transaction: transaction,
     );
   }
 }
@@ -597,8 +609,9 @@ class CityDetachRowRepository {
 
   Future<void> citizens(
     _i1.Session session,
-    _i2.Person person,
-  ) async {
+    _i2.Person person, {
+    _i1.Transaction? transaction,
+  }) async {
     if (person.id == null) {
       throw ArgumentError.notNull('person.id');
     }
@@ -610,13 +623,15 @@ class CityDetachRowRepository {
     await session.db.updateRow<_i2.Person>(
       $person,
       columns: [_i2.Person.t.$_cityCitizensCityId],
+      transaction: transaction,
     );
   }
 
   Future<void> organizations(
     _i1.Session session,
-    _i2.Organization organization,
-  ) async {
+    _i2.Organization organization, {
+    _i1.Transaction? transaction,
+  }) async {
     if (organization.id == null) {
       throw ArgumentError.notNull('organization.id');
     }
@@ -625,6 +640,7 @@ class CityDetachRowRepository {
     await session.db.updateRow<_i2.Organization>(
       $organization,
       columns: [_i2.Organization.t.cityId],
+      transaction: transaction,
     );
   }
 }

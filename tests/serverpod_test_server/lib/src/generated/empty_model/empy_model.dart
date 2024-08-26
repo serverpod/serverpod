@@ -373,8 +373,9 @@ class EmptyModelAttachRepository {
   Future<void> items(
     _i1.Session session,
     EmptyModel emptyModel,
-    List<_i2.EmptyModelRelationItem> emptyModelRelationItem,
-  ) async {
+    List<_i2.EmptyModelRelationItem> emptyModelRelationItem, {
+    _i1.Transaction? transaction,
+  }) async {
     if (emptyModelRelationItem.any((e) => e.id == null)) {
       throw ArgumentError.notNull('emptyModelRelationItem.id');
     }
@@ -391,6 +392,7 @@ class EmptyModelAttachRepository {
     await session.db.update<_i2.EmptyModelRelationItem>(
       $emptyModelRelationItem,
       columns: [_i2.EmptyModelRelationItem.t.$_emptyModelItemsEmptyModelId],
+      transaction: transaction,
     );
   }
 }
@@ -401,8 +403,9 @@ class EmptyModelAttachRowRepository {
   Future<void> items(
     _i1.Session session,
     EmptyModel emptyModel,
-    _i2.EmptyModelRelationItem emptyModelRelationItem,
-  ) async {
+    _i2.EmptyModelRelationItem emptyModelRelationItem, {
+    _i1.Transaction? transaction,
+  }) async {
     if (emptyModelRelationItem.id == null) {
       throw ArgumentError.notNull('emptyModelRelationItem.id');
     }
@@ -417,6 +420,7 @@ class EmptyModelAttachRowRepository {
     await session.db.updateRow<_i2.EmptyModelRelationItem>(
       $emptyModelRelationItem,
       columns: [_i2.EmptyModelRelationItem.t.$_emptyModelItemsEmptyModelId],
+      transaction: transaction,
     );
   }
 }
@@ -426,8 +430,9 @@ class EmptyModelDetachRepository {
 
   Future<void> items(
     _i1.Session session,
-    List<_i2.EmptyModelRelationItem> emptyModelRelationItem,
-  ) async {
+    List<_i2.EmptyModelRelationItem> emptyModelRelationItem, {
+    _i1.Transaction? transaction,
+  }) async {
     if (emptyModelRelationItem.any((e) => e.id == null)) {
       throw ArgumentError.notNull('emptyModelRelationItem.id');
     }
@@ -441,6 +446,7 @@ class EmptyModelDetachRepository {
     await session.db.update<_i2.EmptyModelRelationItem>(
       $emptyModelRelationItem,
       columns: [_i2.EmptyModelRelationItem.t.$_emptyModelItemsEmptyModelId],
+      transaction: transaction,
     );
   }
 }
@@ -450,8 +456,9 @@ class EmptyModelDetachRowRepository {
 
   Future<void> items(
     _i1.Session session,
-    _i2.EmptyModelRelationItem emptyModelRelationItem,
-  ) async {
+    _i2.EmptyModelRelationItem emptyModelRelationItem, {
+    _i1.Transaction? transaction,
+  }) async {
     if (emptyModelRelationItem.id == null) {
       throw ArgumentError.notNull('emptyModelRelationItem.id');
     }
@@ -463,6 +470,7 @@ class EmptyModelDetachRowRepository {
     await session.db.updateRow<_i2.EmptyModelRelationItem>(
       $emptyModelRelationItem,
       columns: [_i2.EmptyModelRelationItem.t.$_emptyModelItemsEmptyModelId],
+      transaction: transaction,
     );
   }
 }

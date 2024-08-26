@@ -319,4 +319,76 @@ void main() async {
       ),
     );
   });
+
+  test(
+      'Given using `attachRow` and `detachRow` inside a transaction when attaching two persons and detaching one then the city list contains the remaining person',
+      () async {
+    var city = await City.db.insertRow(session, City(name: 'Stockholm'));
+    var person1 = await Person.db.insertRow(session, Person(name: 'Person1'));
+    var person2 = await Person.db.insertRow(session, Person(name: 'Person2'));
+
+    await session.db.transaction((Transaction transaction) async {
+      await City.db.attachRow
+          .citizens(session, city, person1, transaction: transaction);
+      await City.db.attachRow
+          .citizens(session, city, person2, transaction: transaction);
+      await City.db.detachRow
+          .citizens(session, person2, transaction: transaction);
+    });
+
+    var updatedCity = await City.db.findById(
+      session,
+      city.id!,
+      include: City.include(
+        citizens: Person.includeList(),
+      ),
+    );
+
+    expect(
+      updatedCity?.citizens?.toJson(
+        valueToJson: (el) => jsonEncode(el.toJson()),
+      ),
+      allOf(
+        contains(jsonEncode(person1.toJson())),
+        isNot(
+          contains(jsonEncode(person2.toJson())),
+        ),
+      ),
+    );
+  });
+
+  test(
+      'Given using `attach` and `detach` inside a transaction when attaching two persons and detaching one then the city list contains the remaining person',
+      () async {
+    var city = await City.db.insertRow(session, City(name: 'Stockholm'));
+    var person1 = await Person.db.insertRow(session, Person(name: 'Person1'));
+    var person2 = await Person.db.insertRow(session, Person(name: 'Person2'));
+
+    await session.db.transaction((Transaction transaction) async {
+      await City.db.attach.citizens(session, city, [person1, person2],
+          transaction: transaction);
+      await City.db.detach
+          .citizens(session, [person2], transaction: transaction);
+    });
+
+    var updatedCity = await City.db.findById(
+      session,
+      city.id!,
+      include: City.include(
+        citizens: Person.includeList(),
+      ),
+    );
+
+    expect(
+      updatedCity?.citizens?.toJson(
+        valueToJson: (el) => jsonEncode(el.toJson()),
+      ),
+      allOf(
+        contains(jsonEncode(person1.toJson())),
+        isNot(
+          contains(jsonEncode(person2.toJson())),
+        ),
+      ),
+    );
+  });
 }
