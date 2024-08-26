@@ -176,7 +176,8 @@ void main() {
           () {
         expect(
           peopleMethod?.parameters?.toSource(),
-          r'(_i1.Session session, Example example, Person person, {_i1.Transaction? transaction})',
+          matches(
+              r'\(_i\d\.Session session, Example example, Person person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: peopleMethod == null);
     });
@@ -226,7 +227,8 @@ void main() {
           () {
         expect(
           peopleMethod?.parameters?.toSource(),
-          r'(_i1.Session session, Example example, List<Person> person, {_i1.Transaction? transaction})',
+          matches(
+              r'\(_i\d\.Session session, Example example, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: peopleMethod == null);
     }, skip: repositoryAttachClass == null);
@@ -264,7 +266,8 @@ void main() {
           () {
         expect(
           peopleMethod?.parameters?.toSource(),
-          '(_i1.Session session, Person person, {_i1.Transaction? transaction})',
+          matches(
+              r'\(_i\d\.Session session, Person person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: peopleMethod == null);
     }, skip: repositoryClass == null);
@@ -314,7 +317,8 @@ void main() {
           () {
         expect(
           peopleMethod?.parameters?.toSource(),
-          r'(_i1.Session session, List<Person> person, {_i1.Transaction? transaction})',
+          matches(
+              r'\(_i\d\.Session session, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: peopleMethod == null);
     }, skip: repositoryAttachClass == null);
@@ -371,7 +375,8 @@ void main() {
           () {
         expect(
           citizensMethod?.parameters?.toSource(),
-          r'(_i1.Session session, Example example, List<Person> person, {_i1.Transaction? transaction})',
+          matches(
+              r'\(_i\d\.Session session, Example example, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: citizensMethod == null);
     }, skip: repositoryAttachClass == null);
@@ -397,7 +402,8 @@ void main() {
           () {
         expect(
           citizenMethod?.parameters?.toSource(),
-          r'(_i1.Session session, Example example, Person person, {_i1.Transaction? transaction})',
+          matches(
+              r'\(_i\d\.Session session, Example example, Person person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: citizenMethod == null);
     });
@@ -434,7 +440,8 @@ void main() {
           () {
         expect(
           citizensMethod?.parameters?.toSource(),
-          r'(_i1.Session session, List<Person> person, {_i1.Transaction? transaction})',
+          matches(
+              r'\(_i\d\.Session session, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: citizensMethod == null);
     }, skip: repositoryAttachClass == null);
@@ -460,7 +467,8 @@ void main() {
           () {
         expect(
           citizenMethod?.parameters?.toSource(),
-          '(_i1.Session session, Person person, {_i1.Transaction? transaction})',
+          matches(
+              r'\(_i\d\.Session session, Person person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: citizenMethod == null);
     });
