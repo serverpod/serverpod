@@ -192,4 +192,34 @@ void main() async {
     var fetchedData = await UniqueData.db.find(session);
     expect(fetchedData, hasLength(0));
   });
+
+  test(
+      'Given a nested transaction when calling `cancel` on the nested transaction then the outer transaction is not cancelled.',
+      () async {
+    var outerData = UniqueData(number: 1, email: 'test@serverpod.dev');
+    var nestedData = UniqueData(number: 2, email: 'test2@serverpod.dev');
+
+    await session.db.transaction<void>(
+      (transaction) async {
+        await UniqueData.db
+            .insertRow(session, outerData, transaction: transaction);
+
+        await session.db.transaction<void>(
+          (nestedTransaction) async {
+            await UniqueData.db.insertRow(
+              session,
+              nestedData,
+              transaction: nestedTransaction,
+            );
+
+            await nestedTransaction.cancel();
+          },
+        );
+      },
+    );
+
+    var fetchedData = await UniqueData.db.find(session);
+    expect(fetchedData, hasLength(1));
+    expect(fetchedData.elementAtOrNull(0)?.number, outerData.number);
+  });
 }
