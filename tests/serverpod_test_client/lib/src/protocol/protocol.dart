@@ -39,7 +39,7 @@ import 'defaults/uuid/uuid_default_mix.dart' as _i27;
 import 'defaults/uuid/uuid_default_model.dart' as _i28;
 import 'defaults/uuid/uuid_default_persist.dart' as _i29;
 import 'empty_model/empty_model_relation_item.dart' as _i30;
-import 'empty_model/empy_model.dart' as _i31;
+import 'empty_model/relation_empy_model.dart' as _i31;
 import 'exception_with_data.dart' as _i32;
 import 'long_identifiers/deep_includes/city_with_long_table_name.dart' as _i33;
 import 'long_identifiers/deep_includes/organization_with_long_table_name.dart'
@@ -154,7 +154,7 @@ export 'defaults/uuid/uuid_default_mix.dart';
 export 'defaults/uuid/uuid_default_model.dart';
 export 'defaults/uuid/uuid_default_persist.dart';
 export 'empty_model/empty_model_relation_item.dart';
-export 'empty_model/empy_model.dart';
+export 'empty_model/relation_empy_model.dart';
 export 'exception_with_data.dart';
 export 'long_identifiers/deep_includes/city_with_long_table_name.dart';
 export 'long_identifiers/deep_includes/organization_with_long_table_name.dart';
@@ -323,8 +323,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i30.EmptyModelRelationItem) {
       return _i30.EmptyModelRelationItem.fromJson(data) as T;
     }
-    if (t == _i31.EmptyModel) {
-      return _i31.EmptyModel.fromJson(data) as T;
+    if (t == _i31.RelationEmptyModel) {
+      return _i31.RelationEmptyModel.fromJson(data) as T;
     }
     if (t == _i32.ExceptionWithData) {
       return _i32.ExceptionWithData.fromJson(data) as T;
@@ -622,8 +622,9 @@ class Protocol extends _i1.SerializationManager {
       return (data != null ? _i30.EmptyModelRelationItem.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i31.EmptyModel?>()) {
-      return (data != null ? _i31.EmptyModel.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i31.RelationEmptyModel?>()) {
+      return (data != null ? _i31.RelationEmptyModel.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i32.ExceptionWithData?>()) {
       return (data != null ? _i32.ExceptionWithData.fromJson(data) : null) as T;
@@ -1897,8 +1898,8 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i30.EmptyModelRelationItem) {
       return 'EmptyModelRelationItem';
     }
-    if (data is _i31.EmptyModel) {
-      return 'EmptyModel';
+    if (data is _i31.RelationEmptyModel) {
+      return 'RelationEmptyModel';
     }
     if (data is _i32.ExceptionWithData) {
       return 'ExceptionWithData';
@@ -2213,8 +2214,8 @@ class Protocol extends _i1.SerializationManager {
     if (data['className'] == 'EmptyModelRelationItem') {
       return deserialize<_i30.EmptyModelRelationItem>(data['data']);
     }
-    if (data['className'] == 'EmptyModel') {
-      return deserialize<_i31.EmptyModel>(data['data']);
+    if (data['className'] == 'RelationEmptyModel') {
+      return deserialize<_i31.RelationEmptyModel>(data['data']);
     }
     if (data['className'] == 'ExceptionWithData') {
       return deserialize<_i32.ExceptionWithData>(data['data']);

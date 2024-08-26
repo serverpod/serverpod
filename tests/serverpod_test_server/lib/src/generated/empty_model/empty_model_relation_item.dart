@@ -36,7 +36,7 @@ abstract class EmptyModelRelationItem extends _i1.TableRow
 
   String name;
 
-  int? _emptyModelItemsEmptyModelId;
+  int? _relationEmptyModelItemsRelationEmptyModelId;
 
   @override
   _i1.Table get table => t;
@@ -50,8 +50,9 @@ abstract class EmptyModelRelationItem extends _i1.TableRow
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (_emptyModelItemsEmptyModelId != null)
-        '_emptyModelItemsEmptyModelId': _emptyModelItemsEmptyModelId,
+      if (_relationEmptyModelItemsRelationEmptyModelId != null)
+        '_relationEmptyModelItemsRelationEmptyModelId':
+            _relationEmptyModelItemsRelationEmptyModelId,
     };
   }
 
@@ -120,7 +121,7 @@ class EmptyModelRelationItemImplicit extends _EmptyModelRelationItemImpl {
   EmptyModelRelationItemImplicit._({
     int? id,
     required String name,
-    this.$_emptyModelItemsEmptyModelId,
+    this.$_relationEmptyModelItemsRelationEmptyModelId,
   }) : super(
           id: id,
           name: name,
@@ -128,22 +129,25 @@ class EmptyModelRelationItemImplicit extends _EmptyModelRelationItemImpl {
 
   factory EmptyModelRelationItemImplicit(
     EmptyModelRelationItem emptyModelRelationItem, {
-    int? $_emptyModelItemsEmptyModelId,
+    int? $_relationEmptyModelItemsRelationEmptyModelId,
   }) {
     return EmptyModelRelationItemImplicit._(
       id: emptyModelRelationItem.id,
       name: emptyModelRelationItem.name,
-      $_emptyModelItemsEmptyModelId: $_emptyModelItemsEmptyModelId,
+      $_relationEmptyModelItemsRelationEmptyModelId:
+          $_relationEmptyModelItemsRelationEmptyModelId,
     );
   }
 
-  int? $_emptyModelItemsEmptyModelId;
+  int? $_relationEmptyModelItemsRelationEmptyModelId;
 
   @override
   Map<String, dynamic> toJson() {
     var jsonMap = super.toJson();
-    jsonMap.addAll(
-        {'_emptyModelItemsEmptyModelId': $_emptyModelItemsEmptyModelId});
+    jsonMap.addAll({
+      '_relationEmptyModelItemsRelationEmptyModelId':
+          $_relationEmptyModelItemsRelationEmptyModelId
+    });
     return jsonMap;
   }
 }
@@ -155,21 +159,21 @@ class EmptyModelRelationItemTable extends _i1.Table {
       'name',
       this,
     );
-    $_emptyModelItemsEmptyModelId = _i1.ColumnInt(
-      '_emptyModelItemsEmptyModelId',
+    $_relationEmptyModelItemsRelationEmptyModelId = _i1.ColumnInt(
+      '_relationEmptyModelItemsRelationEmptyModelId',
       this,
     );
   }
 
   late final _i1.ColumnString name;
 
-  late final _i1.ColumnInt $_emptyModelItemsEmptyModelId;
+  late final _i1.ColumnInt $_relationEmptyModelItemsRelationEmptyModelId;
 
   @override
   List<_i1.Column> get columns => [
         id,
         name,
-        $_emptyModelItemsEmptyModelId,
+        $_relationEmptyModelItemsRelationEmptyModelId,
       ];
 }
 

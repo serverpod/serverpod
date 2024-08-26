@@ -43,7 +43,7 @@ import 'defaults/uuid/uuid_default_mix.dart' as _i30;
 import 'defaults/uuid/uuid_default_model.dart' as _i31;
 import 'defaults/uuid/uuid_default_persist.dart' as _i32;
 import 'empty_model/empty_model_relation_item.dart' as _i33;
-import 'empty_model/empy_model.dart' as _i34;
+import 'empty_model/relation_empy_model.dart' as _i34;
 import 'exception_with_data.dart' as _i35;
 import 'long_identifiers/deep_includes/city_with_long_table_name.dart' as _i36;
 import 'long_identifiers/deep_includes/organization_with_long_table_name.dart'
@@ -157,7 +157,7 @@ export 'defaults/uuid/uuid_default_mix.dart';
 export 'defaults/uuid/uuid_default_model.dart';
 export 'defaults/uuid/uuid_default_persist.dart';
 export 'empty_model/empty_model_relation_item.dart';
-export 'empty_model/empy_model.dart';
+export 'empty_model/relation_empy_model.dart';
 export 'exception_with_data.dart';
 export 'long_identifiers/deep_includes/city_with_long_table_name.dart';
 export 'long_identifiers/deep_includes/organization_with_long_table_name.dart';
@@ -1583,38 +1583,6 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
-      name: 'empty_model',
-      dartName: 'EmptyModel',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'empty_model_id_seq\'::regclass)',
-        )
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'empty_model_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
       name: 'empty_model_relation_item',
       dartName: 'EmptyModelRelationItem',
       schema: 'public',
@@ -1635,7 +1603,7 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'String',
         ),
         _i2.ColumnDefinition(
-          name: '_emptyModelItemsEmptyModelId',
+          name: '_relationEmptyModelItemsRelationEmptyModelId',
           columnType: _i2.ColumnType.bigint,
           isNullable: true,
           dartType: 'int?',
@@ -1644,8 +1612,8 @@ class Protocol extends _i1.SerializationManagerServer {
       foreignKeys: [
         _i2.ForeignKeyDefinition(
           constraintName: 'empty_model_relation_item_fk_0',
-          columns: ['_emptyModelItemsEmptyModelId'],
-          referenceTable: 'empty_model',
+          columns: ['_relationEmptyModelItemsRelationEmptyModelId'],
+          referenceTable: 'relation_empty_model',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
           onUpdate: _i2.ForeignKeyAction.noAction,
@@ -3250,6 +3218,38 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'relation_empty_model',
+      dartName: 'RelationEmptyModel',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'relation_empty_model_id_seq\'::regclass)',
+        )
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'relation_empty_model_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'relation_to_multiple_max_field_name',
       dartName: 'RelationToMultipleMaxFieldName',
       schema: 'public',
@@ -4457,8 +4457,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i33.EmptyModelRelationItem) {
       return _i33.EmptyModelRelationItem.fromJson(data) as T;
     }
-    if (t == _i34.EmptyModel) {
-      return _i34.EmptyModel.fromJson(data) as T;
+    if (t == _i34.RelationEmptyModel) {
+      return _i34.RelationEmptyModel.fromJson(data) as T;
     }
     if (t == _i35.ExceptionWithData) {
       return _i35.ExceptionWithData.fromJson(data) as T;
@@ -4763,8 +4763,9 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data != null ? _i33.EmptyModelRelationItem.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i34.EmptyModel?>()) {
-      return (data != null ? _i34.EmptyModel.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i34.RelationEmptyModel?>()) {
+      return (data != null ? _i34.RelationEmptyModel.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i35.ExceptionWithData?>()) {
       return (data != null ? _i35.ExceptionWithData.fromJson(data) : null) as T;
@@ -6068,8 +6069,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i33.EmptyModelRelationItem) {
       return 'EmptyModelRelationItem';
     }
-    if (data is _i34.EmptyModel) {
-      return 'EmptyModel';
+    if (data is _i34.RelationEmptyModel) {
+      return 'RelationEmptyModel';
     }
     if (data is _i35.ExceptionWithData) {
       return 'ExceptionWithData';
@@ -6394,8 +6395,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data['className'] == 'EmptyModelRelationItem') {
       return deserialize<_i33.EmptyModelRelationItem>(data['data']);
     }
-    if (data['className'] == 'EmptyModel') {
-      return deserialize<_i34.EmptyModel>(data['data']);
+    if (data['className'] == 'RelationEmptyModel') {
+      return deserialize<_i34.RelationEmptyModel>(data['data']);
     }
     if (data['className'] == 'ExceptionWithData') {
       return deserialize<_i35.ExceptionWithData>(data['data']);
@@ -6695,8 +6696,8 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i32.UuidDefaultPersist.t;
       case _i33.EmptyModelRelationItem:
         return _i33.EmptyModelRelationItem.t;
-      case _i34.EmptyModel:
-        return _i34.EmptyModel.t;
+      case _i34.RelationEmptyModel:
+        return _i34.RelationEmptyModel.t;
       case _i36.CityWithLongTableName:
         return _i36.CityWithLongTableName.t;
       case _i37.OrganizationWithLongTableName:
