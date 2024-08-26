@@ -221,6 +221,9 @@ redis:
   - listenToChannel:
   - postToChannel:
   - countSubscribedChannels:
+reflection:
+  - reflectAuthenticationKey:
+  - reflectHttpHeader:
 serverOnlyScopedFieldModel:
   - getScopeServerOnlyField:
 signInRequired:

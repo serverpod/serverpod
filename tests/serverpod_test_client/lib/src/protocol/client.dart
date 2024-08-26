@@ -1849,6 +1849,33 @@ class EndpointRedis extends _i1.EndpointRef {
       );
 }
 
+/// This class is meant for reflecting the received headers, auth keys in endpoint invocations.
+/// {@category Endpoint}
+class EndpointReflection extends _i1.EndpointRef {
+  EndpointReflection(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'reflection';
+
+  /// Reflects the authentication key of the session.
+  /// Returns null if the key is not set.
+  _i2.Future<String?> reflectAuthenticationKey() =>
+      caller.callServerEndpoint<String?>(
+        'reflection',
+        'reflectAuthenticationKey',
+        {},
+      );
+
+  /// Reflects a specified header of the HTTP request.
+  /// Returns null of the header is not set.
+  _i2.Future<List<String>?> reflectHttpHeader(String headerName) =>
+      caller.callServerEndpoint<List<String>?>(
+        'reflection',
+        'reflectHttpHeader',
+        {'headerName': headerName},
+      );
+}
+
 /// {@category Endpoint}
 class EndpointServerOnlyScopedFieldModel extends _i1.EndpointRef {
   EndpointServerOnlyScopedFieldModel(_i1.EndpointCaller caller) : super(caller);
@@ -2044,6 +2071,7 @@ class Client extends _i1.ServerpodClientShared {
     namedParameters = EndpointNamedParameters(this);
     optionalParameters = EndpointOptionalParameters(this);
     redis = EndpointRedis(this);
+    reflection = EndpointReflection(this);
     serverOnlyScopedFieldModel = EndpointServerOnlyScopedFieldModel(this);
     signInRequired = EndpointSignInRequired(this);
     adminScopeRequired = EndpointAdminScopeRequired(this);
@@ -2109,6 +2137,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointRedis redis;
 
+  late final EndpointReflection reflection;
+
   late final EndpointServerOnlyScopedFieldModel serverOnlyScopedFieldModel;
 
   late final EndpointSignInRequired signInRequired;
@@ -2156,6 +2186,7 @@ class Client extends _i1.ServerpodClientShared {
         'namedParameters': namedParameters,
         'optionalParameters': optionalParameters,
         'redis': redis,
+        'reflection': reflection,
         'serverOnlyScopedFieldModel': serverOnlyScopedFieldModel,
         'signInRequired': signInRequired,
         'adminScopeRequired': adminScopeRequired,
