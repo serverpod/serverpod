@@ -164,9 +164,9 @@ String? _getColumnDefault(
       var enumDefinition = column.type.enumDefinition;
       if (enumDefinition == null) return null;
       var values = enumDefinition.values;
-      int index = values.indexWhere((e) => e.name == defaultValue);
       return switch (enumDefinition.serialized) {
-        EnumSerialization.byIndex => '$index',
+        EnumSerialization.byIndex =>
+          '${values.indexWhere((e) => e.name == defaultValue)}',
         EnumSerialization.byName => '\'$defaultValue\'::text',
       };
   }
