@@ -92,7 +92,7 @@ abstract class EndpointWebsocketRequestHandler {
                   .deserializeByClassName(serialization);
 
               if (message == null) throw Exception('Streamed message was null');
-
+              // OLD WAY
               await endpointConnector.endpoint
                   .handleStreamMessage(session, message);
             } catch (e, s) {

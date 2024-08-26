@@ -52,6 +52,41 @@ abstract class EndpointDispatch {
     return connector;
   }
 
+  Future<(MethodConnector, Map<String, dynamic>)> tryGetEndpointMethod({
+    required Session session,
+    required String endpointPath,
+    required String methodName,
+    required String body,
+    required SerializationManager serializationManager,
+    Map<String, dynamic> additionalParameters = const {},
+  }) async {
+    var connector = getConnectorByName(endpointPath);
+    if (connector == null) {
+      throw EndpointNotFoundException('Endpoint $endpointPath not found');
+    }
+
+    var authenticationFailedResult = await canUserAccessEndpoint(
+      () => session.authenticated,
+      connector.endpoint.requireLogin,
+      connector.endpoint.requiredScopes,
+    );
+    if (authenticationFailedResult != null) {
+      throw NotAuthorizedException(authenticationFailedResult);
+    }
+
+    var method = connector.methodConnectors[methodName];
+    if (method is! MethodConnector) {
+      throw MethodNotFoundException(
+          'Method "$methodName" not found in endpoint: $endpointPath');
+    }
+
+    var paramMap = parseParameters(
+        body.isEmpty ? null : body, method.params, serializationManager,
+        additionalParameters: additionalParameters);
+
+    return (method, paramMap);
+  }
+
   String _endpointFromName(String name) {
     var components = name.split('/');
     return components[0];
@@ -70,12 +105,6 @@ abstract class EndpointDispatch {
     var endpointComponents = path.split('.');
     if (endpointComponents.isEmpty || endpointComponents.length > 2) {
       return ResultInvalidParams('Endpoint $path is not a valid endpoint name');
-    }
-
-    // Find correct connector
-    var connector = getConnectorByName(path);
-    if (connector == null) {
-      return ResultInvalidParams('Endpoint $path does not exist');
     }
 
     // Read query parameters
@@ -115,6 +144,12 @@ abstract class EndpointDispatch {
     // Get the the authentication key, if any
     String? authenticationKey = queryParameters['auth'];
 
+    // Find correct connector
+    var connector = getConnectorByName(path);
+    if (connector == null) {
+      return ResultInvalidParams('Endpoint $path does not exist');
+    }
+
     MethodCallSession session = MethodCallSession(
       server: server,
       uri: uri,
@@ -129,33 +164,14 @@ abstract class EndpointDispatch {
     );
 
     try {
-      var endpoint = connector.endpoint;
-      var authFailed = await canUserAccessEndpoint(
-        () => session.authenticated,
-        endpoint.requireLogin,
-        endpoint.requiredScopes,
+      var (method, paramMap) = await tryGetEndpointMethod(
+        session: session,
+        endpointPath: endpointName,
+        methodName: methodName,
+        body: body,
+        serializationManager: server.serializationManager,
+        additionalParameters: uri.queryParameters,
       );
-      if (authFailed != null) {
-        return authFailed;
-      }
-
-      var method = connector.methodConnectors[methodName];
-      if (method is! MethodConnector) {
-        await session.close();
-        return ResultInvalidParams(
-            'Method $methodName not found in call: $uri');
-      }
-
-      // TODO: Check parameters and check null safety
-
-      var paramMap = <String, dynamic>{};
-      for (var paramName in queryParameters.keys) {
-        var type = method.params[paramName]?.type;
-        if (type == null) continue;
-        var formatted = _formatArg(
-            queryParameters[paramName], type, server.serializationManager);
-        paramMap[paramName] = formatted;
-      }
 
       var result = await method.call(session, paramMap);
 
@@ -165,6 +181,13 @@ abstract class EndpointDispatch {
       );
     } on SerializableException catch (exception) {
       return ExceptionResult(model: exception);
+    } on MethodNotFoundException catch (e) {
+      return ResultInvalidParams(e.message);
+    } on EndpointNotFoundException catch (e) {
+      return ResultInvalidParams(e.message);
+    } on NotAuthorizedException catch (e) {
+      print('Not authorized: ${e.message}');
+      return e.authenticationFailedResult;
     } on Exception catch (e, stackTrace) {
       var sessionLogId = await session.close(error: e, stackTrace: stackTrace);
       return ResultInternalServerError(
@@ -228,7 +251,7 @@ abstract class EndpointDispatch {
     Map<String, dynamic> additionalParameters = const {},
   }) {
     if (descriptions.isEmpty) return {};
-
+    print('Parsing parameters: $paramString');
     var decodedParams = paramString == null
         ? {}
         : jsonDecode(paramString) as Map<String, dynamic>;
@@ -432,6 +455,30 @@ class ResultInvalidParams extends Result {
   String toString() {
     return errorDescription;
   }
+}
+
+abstract class TryGetMethodException implements Exception {
+  String get message;
+}
+
+class NotAuthorizedException implements TryGetMethodException {
+  @override
+  String message;
+  ResultAuthenticationFailed authenticationFailedResult;
+  NotAuthorizedException(this.authenticationFailedResult,
+      {this.message = 'Not authorized'});
+}
+
+class EndpointNotFoundException implements TryGetMethodException {
+  @override
+  String message = 'Endpoint not found';
+  EndpointNotFoundException(this.message);
+}
+
+class MethodNotFoundException implements TryGetMethodException {
+  @override
+  String message = 'Method not found';
+  MethodNotFoundException(this.message);
 }
 
 /// The type of failures that can occur during authentication.
