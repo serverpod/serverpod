@@ -1398,6 +1398,37 @@
       "managed": true
     },
     {
+      "name": "empty_model_with_table",
+      "dartName": "EmptyModelWithTable",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('empty_model_with_table_id_seq'::regclass)",
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "empty_model_with_table_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
       "name": "enrollment",
       "dartName": "Enrollment",
       "module": "serverpod_test",
@@ -5793,7 +5824,7 @@
   "installedModules": [
     {
       "module": "serverpod_test",
-      "version": "20240826140440307"
+      "version": "20240826150228261"
     },
     {
       "module": "serverpod_auth",

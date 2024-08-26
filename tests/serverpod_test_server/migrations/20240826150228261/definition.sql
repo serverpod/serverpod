@@ -261,6 +261,13 @@ CREATE TABLE "empty_model_relation_item" (
 );
 
 --
+-- Class EmptyModelWithTable as table empty_model_with_table
+--
+CREATE TABLE "empty_model_with_table" (
+    "id" bigserial PRIMARY KEY
+);
+
+--
 -- Class Enrollment as table enrollment
 --
 CREATE TABLE "enrollment" (
@@ -1395,9 +1402,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20240826140440307', now())
+    VALUES ('serverpod_test', '20240826150228261', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240826140440307', "timestamp" = now();
+    DO UPDATE SET "version" = '20240826150228261', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth
