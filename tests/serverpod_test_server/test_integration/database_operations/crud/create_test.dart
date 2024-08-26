@@ -82,4 +82,15 @@ void main() async {
     expect(inserted.id, isNotNull);
     expect(inserted.num, 1);
   });
+
+  test('Given a model without fields when inserting then the model is created.',
+      () async {
+    var emptyModel = EmptyModelWithTable();
+    var inserted = await EmptyModelWithTable.db.insertRow(
+      session,
+      emptyModel,
+    );
+
+    expect(inserted.id, isNotNull);
+  });
 }
