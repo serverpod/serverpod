@@ -357,7 +357,7 @@ class DefaultValueRestriction extends ValueRestriction {
     if (value is! String || value.isEmpty || !enumNameValues.contains(value)) {
       errors.add(
         SourceSpanSeverityException(
-          'The "$key" value must be a valid enum value from the set: ${enumNameValues.join(', ')}.',
+          'The "$key" value must be a valid enum value from the set: (${enumNameValues.join(', ')}).',
           span,
         ),
       );

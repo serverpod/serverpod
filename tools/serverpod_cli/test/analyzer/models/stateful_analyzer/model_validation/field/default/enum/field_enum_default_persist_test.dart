@@ -107,7 +107,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultPersist" value must be a valid enum value from the set: byName1, byName2.',
+          'The "defaultPersist" value must be a valid enum value from the set: (byName1, byName2).',
         );
       },
     );
@@ -136,7 +136,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultPersist" value must be a valid enum value from the set: byName1, byName2.',
+          'The "defaultPersist" value must be a valid enum value from the set: (byName1, byName2).',
         );
       },
     );
@@ -165,7 +165,7 @@ void main() {
         var error = collector.errors.first as SourceSpanSeverityException;
         expect(
           error.message,
-          'The "defaultPersist" value must be a valid enum value from the set: byName1, byName2.',
+          'The "defaultPersist" value must be a valid enum value from the set: (byName1, byName2).',
         );
       },
     );
