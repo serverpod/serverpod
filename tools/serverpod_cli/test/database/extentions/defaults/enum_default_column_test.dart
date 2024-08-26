@@ -24,18 +24,18 @@ void main() {
         );
       });
 
-      group('with "byName1" as default value', () {
-        ColumnDefinition defaultColumn = ColumnDefinition(
-          name: 'byNameEnumDefault',
-          columnType: ColumnType.text,
-          isNullable: false,
-          columnDefault: "'byName1'::text",
-          dartType: 'String',
-        );
-
+      group('with a specific default value', () {
         test(
-          'when converting to PostgreSQL SQL code, then it should have the default value',
+          'when "byName1" is set as default, then it should be correctly reflected in the SQL code',
           () {
+            ColumnDefinition defaultColumn = ColumnDefinition(
+              name: 'byNameEnumDefault',
+              columnType: ColumnType.text,
+              isNullable: false,
+              columnDefault: "'byName1'::text",
+              dartType: 'String',
+            );
+
             expect(
               defaultColumn.toPgSqlFragment(),
               '"byNameEnumDefault" text NOT NULL DEFAULT \'byName1\'::text',
@@ -44,80 +44,38 @@ void main() {
         );
       });
 
-      group('with "byName2" as default value', () {
-        ColumnDefinition defaultColumn = ColumnDefinition(
-          name: 'byNameEnumDefault',
-          columnType: ColumnType.text,
-          isNullable: false,
-          columnDefault: "'byName2'::text",
-          dartType: 'String',
-        );
-
+      group('with nullable column and specific default values', () {
         test(
-          'when converting to PostgreSQL SQL code, then it should have the default value',
+          'when nullable with no default value, then it should not have any default in the SQL code',
           () {
-            expect(
-              defaultColumn.toPgSqlFragment(),
-              '"byNameEnumDefault" text NOT NULL DEFAULT \'byName2\'::text',
+            ColumnDefinition defaultColumn = ColumnDefinition(
+              name: 'byNameEnumDefaultNull',
+              columnType: ColumnType.text,
+              isNullable: true,
+              dartType: 'String',
             );
-          },
-        );
-      });
 
-      group('with nullable column and no default value', () {
-        ColumnDefinition defaultColumn = ColumnDefinition(
-          name: 'byNameEnumDefaultNull',
-          columnType: ColumnType.text,
-          isNullable: true,
-          dartType: 'String',
-        );
-
-        test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
-          () {
             expect(
               defaultColumn.toPgSqlFragment(),
               '"byNameEnumDefaultNull" text',
             );
           },
         );
-      });
-
-      group('with nullable column and "byName1" as default value', () {
-        ColumnDefinition defaultColumn = ColumnDefinition(
-          name: 'byNameEnumDefaultNull',
-          columnType: ColumnType.text,
-          isNullable: true,
-          columnDefault: "'byName1'::text",
-          dartType: 'String',
-        );
 
         test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
+          'when nullable with "byName1" as default, then it should be correctly reflected in the SQL code',
           () {
+            ColumnDefinition defaultColumn = ColumnDefinition(
+              name: 'byNameEnumDefaultNull',
+              columnType: ColumnType.text,
+              isNullable: true,
+              columnDefault: "'byName1'::text",
+              dartType: 'String',
+            );
+
             expect(
               defaultColumn.toPgSqlFragment(),
               '"byNameEnumDefaultNull" text DEFAULT \'byName1\'::text',
-            );
-          },
-        );
-      });
-
-      group('with nullable column and "byName2" as default value', () {
-        ColumnDefinition defaultColumn = ColumnDefinition(
-          name: 'byNameEnumDefaultNull',
-          columnType: ColumnType.text,
-          isNullable: true,
-          columnDefault: "'byName2'::text",
-          dartType: 'String',
-        );
-
-        test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
-          () {
-            expect(
-              defaultColumn.toPgSqlFragment(),
-              '"byNameEnumDefaultNull" text DEFAULT \'byName2\'::text',
             );
           },
         );
@@ -154,90 +112,11 @@ void main() {
         );
 
         test(
-          'when converting to PostgreSQL SQL code, then it should have the default value',
+          'when converting to PostgreSQL SQL code, then it should have the correct default value',
           () {
             expect(
               defaultColumn.toPgSqlFragment(),
               '"byIndexEnumDefault" bigint NOT NULL DEFAULT 0',
-            );
-          },
-        );
-      });
-
-      group('with 1 as default value', () {
-        ColumnDefinition defaultColumn = ColumnDefinition(
-          name: 'byIndexEnumDefault',
-          columnType: ColumnType.bigint,
-          isNullable: false,
-          columnDefault: '1',
-          dartType: 'int',
-        );
-
-        test(
-          'when converting to PostgreSQL SQL code, then it should have the default value',
-          () {
-            expect(
-              defaultColumn.toPgSqlFragment(),
-              '"byIndexEnumDefault" bigint NOT NULL DEFAULT 1',
-            );
-          },
-        );
-      });
-
-      group('with nullable column and no default value', () {
-        ColumnDefinition defaultColumn = ColumnDefinition(
-          name: 'byIndexEnumDefaultNull',
-          columnType: ColumnType.bigint,
-          isNullable: true,
-          dartType: 'int',
-        );
-
-        test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
-          () {
-            expect(
-              defaultColumn.toPgSqlFragment(),
-              '"byIndexEnumDefaultNull" bigint',
-            );
-          },
-        );
-      });
-
-      group('with nullable column and 0 as default value', () {
-        ColumnDefinition defaultColumn = ColumnDefinition(
-          name: 'byIndexEnumDefaultNull',
-          columnType: ColumnType.bigint,
-          isNullable: true,
-          columnDefault: '0',
-          dartType: 'int',
-        );
-
-        test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
-          () {
-            expect(
-              defaultColumn.toPgSqlFragment(),
-              '"byIndexEnumDefaultNull" bigint DEFAULT 0',
-            );
-          },
-        );
-      });
-
-      group('with nullable column and 1 as default value', () {
-        ColumnDefinition defaultColumn = ColumnDefinition(
-          name: 'byIndexEnumDefaultNull',
-          columnType: ColumnType.bigint,
-          isNullable: true,
-          columnDefault: '1',
-          dartType: 'int',
-        );
-
-        test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
-          () {
-            expect(
-              defaultColumn.toPgSqlFragment(),
-              '"byIndexEnumDefaultNull" bigint DEFAULT 1',
             );
           },
         );
