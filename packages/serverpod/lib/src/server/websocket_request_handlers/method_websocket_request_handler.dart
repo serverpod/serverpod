@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:meta/meta.dart';
+import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -240,6 +241,23 @@ class MethodWebsocketRequestHandler {
       };
     }
 
+    var authenticationRequired = endpointConnector.endpoint.requireLogin ||
+        endpointConnector.endpoint.requiredScopes.isNotEmpty;
+    _RequiredAuthentication? requiredAuthentication;
+    if (authenticationRequired) {
+      var authenticationInfo = await session.authenticated;
+      if (authenticationInfo == null) {
+        throw StateError(
+          'Authentication was required and passed but no authentication info could be retrieved.',
+        );
+      }
+
+      requiredAuthentication = _RequiredAuthentication(
+        endpointConnector.endpoint.requiredScopes,
+        authenticationInfo,
+      );
+    }
+
     _methodStreamManager.createStream(
       methodConnector: endpointMethodConnector,
       requestedInputStreams: requestedInputStreams,
@@ -248,6 +266,7 @@ class MethodWebsocketRequestHandler {
       message: message,
       serializationManager: server.serializationManager,
       webSocket: webSocket,
+      requiredAuthentication: requiredAuthentication,
     );
 
     return OpenMethodStreamResponse.buildMessage(
@@ -342,6 +361,7 @@ class _MethodStreamManager {
     required OpenMethodStreamCommand message,
     required SerializationManager serializationManager,
     required WebSocket webSocket,
+    _RequiredAuthentication? requiredAuthentication,
   }) {
     var outputStreamContext = _createOutputController(
       message,
@@ -349,6 +369,7 @@ class _MethodStreamManager {
       webSocket,
       session,
       serializationManager,
+      requiredAuthentication,
     );
 
     var inputStreams = _createInputStreams(
@@ -392,7 +413,44 @@ class _MethodStreamManager {
     WebSocket webSocket,
     Session session,
     SerializationManager serializationManager,
+    _RequiredAuthentication? requiredAuthentication,
   ) {
+    late void Function(SerializableModel) authenticationRevokedCallback;
+
+    if (requiredAuthentication != null) {
+      // If authentication was required, a listener is registered that closes
+      // the stream if the authentication token is revoked.
+      authenticationRevokedCallback = (event) async {
+        var authenticationRevoked = switch (event) {
+          RevokedAuthenticationUser _ => true,
+          RevokedAuthenticationAuthId revokedAuthId =>
+            revokedAuthId.authId == requiredAuthentication.authInfo.authId,
+          RevokedAuthenticationScope revokedScopes => revokedScopes.scopes.any(
+              (s) => requiredAuthentication.requiredScopes
+                  .map((s) => s.name)
+                  .contains(s),
+            ),
+          _ => false,
+        };
+
+        if (authenticationRevoked) {
+          await closeStream(
+            endpoint: message.endpoint,
+            method: message.method,
+            connectionId: message.connectionId,
+            reason: CloseReason.error,
+          );
+        }
+      };
+
+      session.messages.addListener(
+        MessageCentralServerpodChannels.revokedAuthentication(
+          requiredAuthentication.authInfo.userId,
+        ),
+        authenticationRevokedCallback,
+      );
+    }
+
     bool isCanceled = false;
     var outputController = StreamController(onCancel: () async {
       /// Guard against multiple calls to onCancel
@@ -401,6 +459,14 @@ class _MethodStreamManager {
       /// or a request from the client.
       if (isCanceled) return;
       isCanceled = true;
+      if (requiredAuthentication != null) {
+        session.messages.removeListener(
+          MessageCentralServerpodChannels.revokedAuthentication(
+            requiredAuthentication.authInfo.userId,
+          ),
+          authenticationRevokedCallback,
+        );
+      }
       await _closeOutboundStream(webSocket, message);
       await session.close();
       await tryCloseWebsocket(webSocket);
@@ -720,4 +786,11 @@ class _OutputStreamContext implements _StreamContext {
 
 abstract interface class _StreamContext {
   StreamController get controller;
+}
+
+class _RequiredAuthentication {
+  final AuthenticationInfo authInfo;
+  final Set<Scope> requiredScopes;
+
+  _RequiredAuthentication(this.requiredScopes, this.authInfo);
 }
