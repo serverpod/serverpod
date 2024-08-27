@@ -119,4 +119,22 @@ void main() async {
     expect(retrieved.first.id, inserted1.id);
     expect(retrieved.last.id, inserted2.id);
   });
+
+  test(
+      'Given an inserted empty model when retrieving it then the model is returned.',
+      () async {
+    var emptyModel = EmptyModelWithTable();
+    var inserted = await EmptyModelWithTable.db.insertRow(
+      session,
+      emptyModel,
+    );
+
+    var retrieved = await EmptyModelWithTable.db.findById(
+      session,
+      inserted.id!,
+    );
+
+    expect(retrieved, isNotNull);
+    expect(inserted.id, retrieved!.id);
+  });
 }

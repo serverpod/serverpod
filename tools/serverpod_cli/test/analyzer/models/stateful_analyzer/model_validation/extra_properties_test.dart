@@ -124,6 +124,30 @@ void main() {
   });
 
   group('table property tests', () {
+    group('Given an empty class with a table defined', () {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      var models =
+          StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+              .validateAll();
+
+      var model = models.first as ClassDefinition;
+      test('then the table is set in the definition', () {
+        expect(model.tableName, 'example');
+      });
+      test('then the id field is added', () {
+        expect(model.fields, hasLength(1));
+        expect(model.fields.first.name, 'id');
+      });
+    });
     test(
         'Given a class with a table defined, then the tableName is set in the definition.',
         () {
