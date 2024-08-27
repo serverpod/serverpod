@@ -6035,7 +6035,7 @@
   "installedModules": [
     {
       "module": "serverpod_test",
-      "version": "20240827080004999"
+      "version": "20240827093851370"
     },
     {
       "module": "serverpod_auth",

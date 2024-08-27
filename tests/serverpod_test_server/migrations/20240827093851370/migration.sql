@@ -360,9 +360,9 @@ ALTER TABLE ONLY "empty_model_relation_item"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20240827080004999', now())
+    VALUES ('serverpod_test', '20240827093851370', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240827080004999', "timestamp" = now();
+    DO UPDATE SET "version" = '20240827093851370', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth
