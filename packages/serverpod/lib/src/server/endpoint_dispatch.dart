@@ -547,7 +547,7 @@ class ResultInvalidParams extends Result {
   }
 }
 
-/// The result of a failed [EndpointDispatch.tryGetEndpointMethodStreamConnector] or [EndpointDispatch.tryGetEndpointMethodConnector] call.
+/// The result of a failed [EndpointDispatch.tryGetEndpointMethodStreamConnector], [EndpointDispatch.tryGetEndpointMethodConnector] or [EndpointDispatch.tryGetEndpoint] call.
 abstract class TryGetMethodException implements Exception {
   /// Description of the error.
   String get message;
