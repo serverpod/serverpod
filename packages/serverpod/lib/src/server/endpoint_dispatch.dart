@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:meta/meta.dart';
 import 'package:serverpod/src/authentication/authentication_info.dart';
 import 'package:serverpod/src/authentication/scope.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -332,6 +333,7 @@ abstract class EndpointDispatch {
   ///
   /// Throws an exception if required parameters are missing or if the
   /// paramString can't be jsonDecoded.
+  @visibleForTesting
   static Map<String, dynamic> parseParameters(
     String? paramString,
     Map<String, ParameterDescription> descriptions,
