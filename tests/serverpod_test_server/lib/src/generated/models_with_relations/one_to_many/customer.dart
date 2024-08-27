@@ -394,8 +394,9 @@ class CustomerAttachRepository {
   Future<void> orders(
     _i1.Session session,
     Customer customer,
-    List<_i2.Order> order,
-  ) async {
+    List<_i2.Order> order, {
+    _i1.Transaction? transaction,
+  }) async {
     if (order.any((e) => e.id == null)) {
       throw ArgumentError.notNull('order.id');
     }
@@ -407,6 +408,7 @@ class CustomerAttachRepository {
     await session.db.update<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
+      transaction: transaction,
     );
   }
 }
@@ -417,8 +419,9 @@ class CustomerAttachRowRepository {
   Future<void> orders(
     _i1.Session session,
     Customer customer,
-    _i2.Order order,
-  ) async {
+    _i2.Order order, {
+    _i1.Transaction? transaction,
+  }) async {
     if (order.id == null) {
       throw ArgumentError.notNull('order.id');
     }
@@ -430,6 +433,7 @@ class CustomerAttachRowRepository {
     await session.db.updateRow<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
+      transaction: transaction,
     );
   }
 }
@@ -439,8 +443,9 @@ class CustomerDetachRepository {
 
   Future<void> orders(
     _i1.Session session,
-    List<_i2.Order> order,
-  ) async {
+    List<_i2.Order> order, {
+    _i1.Transaction? transaction,
+  }) async {
     if (order.any((e) => e.id == null)) {
       throw ArgumentError.notNull('order.id');
     }
@@ -449,6 +454,7 @@ class CustomerDetachRepository {
     await session.db.update<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
+      transaction: transaction,
     );
   }
 }
@@ -458,8 +464,9 @@ class CustomerDetachRowRepository {
 
   Future<void> orders(
     _i1.Session session,
-    _i2.Order order,
-  ) async {
+    _i2.Order order, {
+    _i1.Transaction? transaction,
+  }) async {
     if (order.id == null) {
       throw ArgumentError.notNull('order.id');
     }
@@ -468,6 +475,7 @@ class CustomerDetachRowRepository {
     await session.db.updateRow<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
+      transaction: transaction,
     );
   }
 }

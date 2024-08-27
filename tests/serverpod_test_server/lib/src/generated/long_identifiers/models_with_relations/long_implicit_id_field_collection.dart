@@ -441,8 +441,9 @@ class LongImplicitIdFieldCollectionAttachRepository {
   Future<void> thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
     _i1.Session session,
     LongImplicitIdFieldCollection longImplicitIdFieldCollection,
-    List<_i2.LongImplicitIdField> longImplicitIdField,
-  ) async {
+    List<_i2.LongImplicitIdField> longImplicitIdField, {
+    _i1.Transaction? transaction,
+  }) async {
     if (longImplicitIdField.any((e) => e.id == null)) {
       throw ArgumentError.notNull('longImplicitIdField.id');
     }
@@ -463,6 +464,7 @@ class LongImplicitIdFieldCollectionAttachRepository {
         _i2.LongImplicitIdField.t
             .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id
       ],
+      transaction: transaction,
     );
   }
 }
@@ -473,8 +475,9 @@ class LongImplicitIdFieldCollectionAttachRowRepository {
   Future<void> thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
     _i1.Session session,
     LongImplicitIdFieldCollection longImplicitIdFieldCollection,
-    _i2.LongImplicitIdField longImplicitIdField,
-  ) async {
+    _i2.LongImplicitIdField longImplicitIdField, {
+    _i1.Transaction? transaction,
+  }) async {
     if (longImplicitIdField.id == null) {
       throw ArgumentError.notNull('longImplicitIdField.id');
     }
@@ -493,6 +496,7 @@ class LongImplicitIdFieldCollectionAttachRowRepository {
         _i2.LongImplicitIdField.t
             .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id
       ],
+      transaction: transaction,
     );
   }
 }
@@ -502,8 +506,9 @@ class LongImplicitIdFieldCollectionDetachRepository {
 
   Future<void> thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
     _i1.Session session,
-    List<_i2.LongImplicitIdField> longImplicitIdField,
-  ) async {
+    List<_i2.LongImplicitIdField> longImplicitIdField, {
+    _i1.Transaction? transaction,
+  }) async {
     if (longImplicitIdField.any((e) => e.id == null)) {
       throw ArgumentError.notNull('longImplicitIdField.id');
     }
@@ -521,6 +526,7 @@ class LongImplicitIdFieldCollectionDetachRepository {
         _i2.LongImplicitIdField.t
             .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id
       ],
+      transaction: transaction,
     );
   }
 }
@@ -530,8 +536,9 @@ class LongImplicitIdFieldCollectionDetachRowRepository {
 
   Future<void> thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
     _i1.Session session,
-    _i2.LongImplicitIdField longImplicitIdField,
-  ) async {
+    _i2.LongImplicitIdField longImplicitIdField, {
+    _i1.Transaction? transaction,
+  }) async {
     if (longImplicitIdField.id == null) {
       throw ArgumentError.notNull('longImplicitIdField.id');
     }
@@ -546,6 +553,7 @@ class LongImplicitIdFieldCollectionDetachRowRepository {
         _i2.LongImplicitIdField.t
             .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id
       ],
+      transaction: transaction,
     );
   }
 }

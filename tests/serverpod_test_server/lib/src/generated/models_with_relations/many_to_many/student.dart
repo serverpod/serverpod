@@ -391,8 +391,9 @@ class StudentAttachRepository {
   Future<void> enrollments(
     _i1.Session session,
     Student student,
-    List<_i2.Enrollment> enrollment,
-  ) async {
+    List<_i2.Enrollment> enrollment, {
+    _i1.Transaction? transaction,
+  }) async {
     if (enrollment.any((e) => e.id == null)) {
       throw ArgumentError.notNull('enrollment.id');
     }
@@ -405,6 +406,7 @@ class StudentAttachRepository {
     await session.db.update<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.studentId],
+      transaction: transaction,
     );
   }
 }
@@ -415,8 +417,9 @@ class StudentAttachRowRepository {
   Future<void> enrollments(
     _i1.Session session,
     Student student,
-    _i2.Enrollment enrollment,
-  ) async {
+    _i2.Enrollment enrollment, {
+    _i1.Transaction? transaction,
+  }) async {
     if (enrollment.id == null) {
       throw ArgumentError.notNull('enrollment.id');
     }
@@ -428,6 +431,7 @@ class StudentAttachRowRepository {
     await session.db.updateRow<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.studentId],
+      transaction: transaction,
     );
   }
 }

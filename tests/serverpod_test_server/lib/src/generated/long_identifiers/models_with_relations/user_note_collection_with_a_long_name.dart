@@ -404,8 +404,9 @@ class UserNoteCollectionWithALongNameAttachRepository {
   Future<void> notes(
     _i1.Session session,
     UserNoteCollectionWithALongName userNoteCollectionWithALongName,
-    List<_i2.UserNoteWithALongName> userNoteWithALongName,
-  ) async {
+    List<_i2.UserNoteWithALongName> userNoteWithALongName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (userNoteWithALongName.any((e) => e.id == null)) {
       throw ArgumentError.notNull('userNoteWithALongName.id');
     }
@@ -426,6 +427,7 @@ class UserNoteCollectionWithALongNameAttachRepository {
         _i2.UserNoteWithALongName.t
             .$_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId
       ],
+      transaction: transaction,
     );
   }
 }
@@ -436,8 +438,9 @@ class UserNoteCollectionWithALongNameAttachRowRepository {
   Future<void> notes(
     _i1.Session session,
     UserNoteCollectionWithALongName userNoteCollectionWithALongName,
-    _i2.UserNoteWithALongName userNoteWithALongName,
-  ) async {
+    _i2.UserNoteWithALongName userNoteWithALongName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (userNoteWithALongName.id == null) {
       throw ArgumentError.notNull('userNoteWithALongName.id');
     }
@@ -456,6 +459,7 @@ class UserNoteCollectionWithALongNameAttachRowRepository {
         _i2.UserNoteWithALongName.t
             .$_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId
       ],
+      transaction: transaction,
     );
   }
 }
@@ -465,8 +469,9 @@ class UserNoteCollectionWithALongNameDetachRepository {
 
   Future<void> notes(
     _i1.Session session,
-    List<_i2.UserNoteWithALongName> userNoteWithALongName,
-  ) async {
+    List<_i2.UserNoteWithALongName> userNoteWithALongName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (userNoteWithALongName.any((e) => e.id == null)) {
       throw ArgumentError.notNull('userNoteWithALongName.id');
     }
@@ -484,6 +489,7 @@ class UserNoteCollectionWithALongNameDetachRepository {
         _i2.UserNoteWithALongName.t
             .$_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId
       ],
+      transaction: transaction,
     );
   }
 }
@@ -493,8 +499,9 @@ class UserNoteCollectionWithALongNameDetachRowRepository {
 
   Future<void> notes(
     _i1.Session session,
-    _i2.UserNoteWithALongName userNoteWithALongName,
-  ) async {
+    _i2.UserNoteWithALongName userNoteWithALongName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (userNoteWithALongName.id == null) {
       throw ArgumentError.notNull('userNoteWithALongName.id');
     }
@@ -509,6 +516,7 @@ class UserNoteCollectionWithALongNameDetachRowRepository {
         _i2.UserNoteWithALongName.t
             .$_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId
       ],
+      transaction: transaction,
     );
   }
 }

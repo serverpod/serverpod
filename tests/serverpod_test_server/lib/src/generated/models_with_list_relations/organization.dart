@@ -461,8 +461,9 @@ class OrganizationAttachRepository {
   Future<void> people(
     _i1.Session session,
     Organization organization,
-    List<_i2.Person> person,
-  ) async {
+    List<_i2.Person> person, {
+    _i1.Transaction? transaction,
+  }) async {
     if (person.any((e) => e.id == null)) {
       throw ArgumentError.notNull('person.id');
     }
@@ -475,6 +476,7 @@ class OrganizationAttachRepository {
     await session.db.update<_i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],
+      transaction: transaction,
     );
   }
 }
@@ -485,8 +487,9 @@ class OrganizationAttachRowRepository {
   Future<void> city(
     _i1.Session session,
     Organization organization,
-    _i2.City city,
-  ) async {
+    _i2.City city, {
+    _i1.Transaction? transaction,
+  }) async {
     if (organization.id == null) {
       throw ArgumentError.notNull('organization.id');
     }
@@ -498,14 +501,16 @@ class OrganizationAttachRowRepository {
     await session.db.updateRow<Organization>(
       $organization,
       columns: [Organization.t.cityId],
+      transaction: transaction,
     );
   }
 
   Future<void> people(
     _i1.Session session,
     Organization organization,
-    _i2.Person person,
-  ) async {
+    _i2.Person person, {
+    _i1.Transaction? transaction,
+  }) async {
     if (person.id == null) {
       throw ArgumentError.notNull('person.id');
     }
@@ -517,6 +522,7 @@ class OrganizationAttachRowRepository {
     await session.db.updateRow<_i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],
+      transaction: transaction,
     );
   }
 }
@@ -526,8 +532,9 @@ class OrganizationDetachRepository {
 
   Future<void> people(
     _i1.Session session,
-    List<_i2.Person> person,
-  ) async {
+    List<_i2.Person> person, {
+    _i1.Transaction? transaction,
+  }) async {
     if (person.any((e) => e.id == null)) {
       throw ArgumentError.notNull('person.id');
     }
@@ -536,6 +543,7 @@ class OrganizationDetachRepository {
     await session.db.update<_i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],
+      transaction: transaction,
     );
   }
 }
@@ -545,8 +553,9 @@ class OrganizationDetachRowRepository {
 
   Future<void> city(
     _i1.Session session,
-    Organization organization,
-  ) async {
+    Organization organization, {
+    _i1.Transaction? transaction,
+  }) async {
     if (organization.id == null) {
       throw ArgumentError.notNull('organization.id');
     }
@@ -555,13 +564,15 @@ class OrganizationDetachRowRepository {
     await session.db.updateRow<Organization>(
       $organization,
       columns: [Organization.t.cityId],
+      transaction: transaction,
     );
   }
 
   Future<void> people(
     _i1.Session session,
-    _i2.Person person,
-  ) async {
+    _i2.Person person, {
+    _i1.Transaction? transaction,
+  }) async {
     if (person.id == null) {
       throw ArgumentError.notNull('person.id');
     }
@@ -570,6 +581,7 @@ class OrganizationDetachRowRepository {
     await session.db.updateRow<_i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],
+      transaction: transaction,
     );
   }
 }

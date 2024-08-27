@@ -127,20 +127,9 @@ class ModelParser {
     List<TypeDefinition> extraClasses,
     bool serverOnlyClass,
   ) {
-    var fieldsNode = documentContents.nodes[Keyword.fields];
-    if (fieldsNode is! YamlMap) return [];
-
-    var fields = fieldsNode.nodes.entries.expand((fieldNode) {
-      return _parseModelFieldDefinition(
-        fieldNode,
-        docsExtractor,
-        extraClasses,
-        serverOnlyClass,
-      );
-    }).toList();
-
+    List<SerializableModelFieldDefinition> fields = [];
     if (hasTable) {
-      fields = [
+      fields.add(
         SerializableModelFieldDefinition(
           name: 'id',
           type: TypeDefinition.int.asNullable,
@@ -152,9 +141,20 @@ class ModelParser {
             '/// the id will be null.',
           ],
         ),
-        ...fields,
-      ];
+      );
     }
+
+    var fieldsNode = documentContents.nodes[Keyword.fields];
+    if (fieldsNode is! YamlMap) return fields;
+
+    fields.addAll(fieldsNode.nodes.entries.expand((fieldNode) {
+      return _parseModelFieldDefinition(
+        fieldNode,
+        docsExtractor,
+        extraClasses,
+        serverOnlyClass,
+      );
+    }).toList());
 
     return fields;
   }

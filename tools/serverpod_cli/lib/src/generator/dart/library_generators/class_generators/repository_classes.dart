@@ -915,8 +915,17 @@ class BuildRepositoryClass {
                 subDirParts: classDefinition.subDirParts,
                 config: config,
               );
-          })
+          }),
         ])
+        ..optionalParameters.add(
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        )
         ..modifier = MethodModifier.async
         ..body = relation.implicitForeignField
             ? _buildAttachImplementationBlockImplicitListRelation(
@@ -974,8 +983,17 @@ class BuildRepositoryClass {
             parameterBuilder
               ..name = otherClassFieldName
               ..type = foreignType;
-          })
+          }),
         ])
+        ..optionalParameters.add(
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        )
         ..modifier = MethodModifier.async
         ..body = relation.implicitForeignField
             ? _buildAttachRowImplementationBlockImplicit(
@@ -1032,8 +1050,17 @@ class BuildRepositoryClass {
             parameterBuilder
               ..name = otherClassFieldName
               ..type = foreignType;
-          })
+          }),
         ])
+        ..optionalParameters.add(
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        )
         ..modifier = MethodModifier.async
         ..body = relation.isForeignKeyOrigin
             ? _buildAttachRowImplementationBlockExplicit(
@@ -1235,8 +1262,17 @@ class BuildRepositoryClass {
                 config: config,
               );
             refer(classFieldName, 'package:serverpod/serverpod.dart');
-          })
+          }),
         ])
+        ..optionalParameters.add(
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        )
         ..returns = refer('Future<void>')
         ..modifier = MethodModifier.async
         ..body = relation.implicitForeignField
@@ -1292,8 +1328,17 @@ class BuildRepositoryClass {
                 subDirParts: classDefinition.subDirParts,
                 config: config,
               );
-          })
+          }),
         ])
+        ..optionalParameters.add(
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        )
         ..returns = refer('Future<void>')
         ..modifier = MethodModifier.async
         ..body = relation.implicitForeignField
@@ -1336,8 +1381,17 @@ class BuildRepositoryClass {
             parameterBuilder
               ..name = classFieldName
               ..type = refer(className);
-          })
+          }),
         ])
+        ..optionalParameters.add(
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        )
         ..returns = refer('Future<void>')
         ..modifier = MethodModifier.async
         ..body = relation.isForeignKeyOrigin
@@ -1730,7 +1784,8 @@ class BuildRepositoryClass {
                 ], {
                   'columns': literalList(
                     [classReference.property('t').property(fieldName)],
-                  )
+                  ),
+                  'transaction': refer('transaction'),
                 }, [
                   classReference,
                 ])

@@ -11,19 +11,19 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-abstract class EmptyModel implements _i1.SerializableModel {
-  EmptyModel._({
+abstract class RelationEmptyModel implements _i1.SerializableModel {
+  RelationEmptyModel._({
     this.id,
     this.items,
   });
 
-  factory EmptyModel({
+  factory RelationEmptyModel({
     int? id,
     List<_i2.EmptyModelRelationItem>? items,
-  }) = _EmptyModelImpl;
+  }) = _RelationEmptyModelImpl;
 
-  factory EmptyModel.fromJson(Map<String, dynamic> jsonSerialization) {
-    return EmptyModel(
+  factory RelationEmptyModel.fromJson(Map<String, dynamic> jsonSerialization) {
+    return RelationEmptyModel(
       id: jsonSerialization['id'] as int?,
       items: (jsonSerialization['items'] as List?)
           ?.map((e) =>
@@ -39,7 +39,7 @@ abstract class EmptyModel implements _i1.SerializableModel {
 
   List<_i2.EmptyModelRelationItem>? items;
 
-  EmptyModel copyWith({
+  RelationEmptyModel copyWith({
     int? id,
     List<_i2.EmptyModelRelationItem>? items,
   });
@@ -59,8 +59,8 @@ abstract class EmptyModel implements _i1.SerializableModel {
 
 class _Undefined {}
 
-class _EmptyModelImpl extends EmptyModel {
-  _EmptyModelImpl({
+class _RelationEmptyModelImpl extends RelationEmptyModel {
+  _RelationEmptyModelImpl({
     int? id,
     List<_i2.EmptyModelRelationItem>? items,
   }) : super._(
@@ -69,11 +69,11 @@ class _EmptyModelImpl extends EmptyModel {
         );
 
   @override
-  EmptyModel copyWith({
+  RelationEmptyModel copyWith({
     Object? id = _Undefined,
     Object? items = _Undefined,
   }) {
-    return EmptyModel(
+    return RelationEmptyModel(
       id: id is int? ? id : this.id,
       items: items is List<_i2.EmptyModelRelationItem>?
           ? items

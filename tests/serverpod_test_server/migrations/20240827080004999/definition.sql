@@ -252,19 +252,19 @@ CREATE TABLE "duration_default_persist" (
 );
 
 --
--- Class EmptyModel as table empty_model
---
-CREATE TABLE "empty_model" (
-    "id" bigserial PRIMARY KEY
-);
-
---
 -- Class EmptyModelRelationItem as table empty_model_relation_item
 --
 CREATE TABLE "empty_model_relation_item" (
     "id" bigserial PRIMARY KEY,
     "name" text NOT NULL,
-    "_emptyModelItemsEmptyModelId" bigint
+    "_relationEmptyModelItemsRelationEmptyModelId" bigint
+);
+
+--
+-- Class EmptyModelWithTable as table empty_model_with_table
+--
+CREATE TABLE "empty_model_with_table" (
+    "id" bigserial PRIMARY KEY
 );
 
 --
@@ -582,6 +582,13 @@ CREATE TABLE "related_unique_data" (
     "id" bigserial PRIMARY KEY,
     "uniqueDataId" bigint NOT NULL,
     "number" bigint NOT NULL
+);
+
+--
+-- Class RelationEmptyModel as table relation_empty_model
+--
+CREATE TABLE "relation_empty_model" (
+    "id" bigserial PRIMARY KEY
 );
 
 --
@@ -1188,8 +1195,8 @@ ALTER TABLE ONLY "company"
 --
 ALTER TABLE ONLY "empty_model_relation_item"
     ADD CONSTRAINT "empty_model_relation_item_fk_0"
-    FOREIGN KEY("_emptyModelItemsEmptyModelId")
-    REFERENCES "empty_model"("id")
+    FOREIGN KEY("_relationEmptyModelItemsRelationEmptyModelId")
+    REFERENCES "relation_empty_model"("id")
     ON DELETE NO ACTION
     ON UPDATE NO ACTION;
 
@@ -1436,9 +1443,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20240823081352370', now())
+    VALUES ('serverpod_test', '20240827080004999', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240823081352370', "timestamp" = now();
+    DO UPDATE SET "version" = '20240827080004999', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth

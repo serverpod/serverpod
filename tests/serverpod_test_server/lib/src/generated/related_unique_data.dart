@@ -386,8 +386,9 @@ class RelatedUniqueDataAttachRowRepository {
   Future<void> uniqueData(
     _i1.Session session,
     RelatedUniqueData relatedUniqueData,
-    _i2.UniqueData uniqueData,
-  ) async {
+    _i2.UniqueData uniqueData, {
+    _i1.Transaction? transaction,
+  }) async {
     if (relatedUniqueData.id == null) {
       throw ArgumentError.notNull('relatedUniqueData.id');
     }
@@ -400,6 +401,7 @@ class RelatedUniqueDataAttachRowRepository {
     await session.db.updateRow<RelatedUniqueData>(
       $relatedUniqueData,
       columns: [RelatedUniqueData.t.uniqueDataId],
+      transaction: transaction,
     );
   }
 }

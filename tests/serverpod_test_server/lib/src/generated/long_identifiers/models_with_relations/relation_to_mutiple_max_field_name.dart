@@ -409,8 +409,9 @@ class RelationToMultipleMaxFieldNameAttachRepository {
   Future<void> multipleMaxFieldNames(
     _i1.Session session,
     RelationToMultipleMaxFieldName relationToMultipleMaxFieldName,
-    List<_i2.MultipleMaxFieldName> multipleMaxFieldName,
-  ) async {
+    List<_i2.MultipleMaxFieldName> multipleMaxFieldName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (multipleMaxFieldName.any((e) => e.id == null)) {
       throw ArgumentError.notNull('multipleMaxFieldName.id');
     }
@@ -431,6 +432,7 @@ class RelationToMultipleMaxFieldNameAttachRepository {
         _i2.MultipleMaxFieldName.t
             .$_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId
       ],
+      transaction: transaction,
     );
   }
 }
@@ -441,8 +443,9 @@ class RelationToMultipleMaxFieldNameAttachRowRepository {
   Future<void> multipleMaxFieldNames(
     _i1.Session session,
     RelationToMultipleMaxFieldName relationToMultipleMaxFieldName,
-    _i2.MultipleMaxFieldName multipleMaxFieldName,
-  ) async {
+    _i2.MultipleMaxFieldName multipleMaxFieldName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (multipleMaxFieldName.id == null) {
       throw ArgumentError.notNull('multipleMaxFieldName.id');
     }
@@ -461,6 +464,7 @@ class RelationToMultipleMaxFieldNameAttachRowRepository {
         _i2.MultipleMaxFieldName.t
             .$_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId
       ],
+      transaction: transaction,
     );
   }
 }
@@ -470,8 +474,9 @@ class RelationToMultipleMaxFieldNameDetachRepository {
 
   Future<void> multipleMaxFieldNames(
     _i1.Session session,
-    List<_i2.MultipleMaxFieldName> multipleMaxFieldName,
-  ) async {
+    List<_i2.MultipleMaxFieldName> multipleMaxFieldName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (multipleMaxFieldName.any((e) => e.id == null)) {
       throw ArgumentError.notNull('multipleMaxFieldName.id');
     }
@@ -489,6 +494,7 @@ class RelationToMultipleMaxFieldNameDetachRepository {
         _i2.MultipleMaxFieldName.t
             .$_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId
       ],
+      transaction: transaction,
     );
   }
 }
@@ -498,8 +504,9 @@ class RelationToMultipleMaxFieldNameDetachRowRepository {
 
   Future<void> multipleMaxFieldNames(
     _i1.Session session,
-    _i2.MultipleMaxFieldName multipleMaxFieldName,
-  ) async {
+    _i2.MultipleMaxFieldName multipleMaxFieldName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (multipleMaxFieldName.id == null) {
       throw ArgumentError.notNull('multipleMaxFieldName.id');
     }
@@ -514,6 +521,7 @@ class RelationToMultipleMaxFieldNameDetachRowRepository {
         _i2.MultipleMaxFieldName.t
             .$_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId
       ],
+      transaction: transaction,
     );
   }
 }

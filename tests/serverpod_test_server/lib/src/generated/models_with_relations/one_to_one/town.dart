@@ -384,8 +384,9 @@ class TownAttachRowRepository {
   Future<void> mayor(
     _i1.Session session,
     Town town,
-    _i2.Citizen mayor,
-  ) async {
+    _i2.Citizen mayor, {
+    _i1.Transaction? transaction,
+  }) async {
     if (town.id == null) {
       throw ArgumentError.notNull('town.id');
     }
@@ -397,6 +398,7 @@ class TownAttachRowRepository {
     await session.db.updateRow<Town>(
       $town,
       columns: [Town.t.mayorId],
+      transaction: transaction,
     );
   }
 }
@@ -406,8 +408,9 @@ class TownDetachRowRepository {
 
   Future<void> mayor(
     _i1.Session session,
-    Town town,
-  ) async {
+    Town town, {
+    _i1.Transaction? transaction,
+  }) async {
     if (town.id == null) {
       throw ArgumentError.notNull('town.id');
     }
@@ -416,6 +419,7 @@ class TownDetachRowRepository {
     await session.db.updateRow<Town>(
       $town,
       columns: [Town.t.mayorId],
+      transaction: transaction,
     );
   }
 }

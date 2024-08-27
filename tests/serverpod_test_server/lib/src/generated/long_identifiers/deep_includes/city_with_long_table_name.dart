@@ -474,8 +474,9 @@ class CityWithLongTableNameAttachRepository {
   Future<void> citizens(
     _i1.Session session,
     CityWithLongTableName cityWithLongTableName,
-    List<_i2.PersonWithLongTableName> personWithLongTableName,
-  ) async {
+    List<_i2.PersonWithLongTableName> personWithLongTableName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (personWithLongTableName.any((e) => e.id == null)) {
       throw ArgumentError.notNull('personWithLongTableName.id');
     }
@@ -496,14 +497,16 @@ class CityWithLongTableNameAttachRepository {
         _i2.PersonWithLongTableName.t
             .$_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id
       ],
+      transaction: transaction,
     );
   }
 
   Future<void> organizations(
     _i1.Session session,
     CityWithLongTableName cityWithLongTableName,
-    List<_i2.OrganizationWithLongTableName> organizationWithLongTableName,
-  ) async {
+    List<_i2.OrganizationWithLongTableName> organizationWithLongTableName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (organizationWithLongTableName.any((e) => e.id == null)) {
       throw ArgumentError.notNull('organizationWithLongTableName.id');
     }
@@ -517,6 +520,7 @@ class CityWithLongTableNameAttachRepository {
     await session.db.update<_i2.OrganizationWithLongTableName>(
       $organizationWithLongTableName,
       columns: [_i2.OrganizationWithLongTableName.t.cityId],
+      transaction: transaction,
     );
   }
 }
@@ -527,8 +531,9 @@ class CityWithLongTableNameAttachRowRepository {
   Future<void> citizens(
     _i1.Session session,
     CityWithLongTableName cityWithLongTableName,
-    _i2.PersonWithLongTableName personWithLongTableName,
-  ) async {
+    _i2.PersonWithLongTableName personWithLongTableName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (personWithLongTableName.id == null) {
       throw ArgumentError.notNull('personWithLongTableName.id');
     }
@@ -547,14 +552,16 @@ class CityWithLongTableNameAttachRowRepository {
         _i2.PersonWithLongTableName.t
             .$_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id
       ],
+      transaction: transaction,
     );
   }
 
   Future<void> organizations(
     _i1.Session session,
     CityWithLongTableName cityWithLongTableName,
-    _i2.OrganizationWithLongTableName organizationWithLongTableName,
-  ) async {
+    _i2.OrganizationWithLongTableName organizationWithLongTableName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (organizationWithLongTableName.id == null) {
       throw ArgumentError.notNull('organizationWithLongTableName.id');
     }
@@ -567,6 +574,7 @@ class CityWithLongTableNameAttachRowRepository {
     await session.db.updateRow<_i2.OrganizationWithLongTableName>(
       $organizationWithLongTableName,
       columns: [_i2.OrganizationWithLongTableName.t.cityId],
+      transaction: transaction,
     );
   }
 }
@@ -576,8 +584,9 @@ class CityWithLongTableNameDetachRepository {
 
   Future<void> citizens(
     _i1.Session session,
-    List<_i2.PersonWithLongTableName> personWithLongTableName,
-  ) async {
+    List<_i2.PersonWithLongTableName> personWithLongTableName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (personWithLongTableName.any((e) => e.id == null)) {
       throw ArgumentError.notNull('personWithLongTableName.id');
     }
@@ -595,13 +604,15 @@ class CityWithLongTableNameDetachRepository {
         _i2.PersonWithLongTableName.t
             .$_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id
       ],
+      transaction: transaction,
     );
   }
 
   Future<void> organizations(
     _i1.Session session,
-    List<_i2.OrganizationWithLongTableName> organizationWithLongTableName,
-  ) async {
+    List<_i2.OrganizationWithLongTableName> organizationWithLongTableName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (organizationWithLongTableName.any((e) => e.id == null)) {
       throw ArgumentError.notNull('organizationWithLongTableName.id');
     }
@@ -612,6 +623,7 @@ class CityWithLongTableNameDetachRepository {
     await session.db.update<_i2.OrganizationWithLongTableName>(
       $organizationWithLongTableName,
       columns: [_i2.OrganizationWithLongTableName.t.cityId],
+      transaction: transaction,
     );
   }
 }
@@ -621,8 +633,9 @@ class CityWithLongTableNameDetachRowRepository {
 
   Future<void> citizens(
     _i1.Session session,
-    _i2.PersonWithLongTableName personWithLongTableName,
-  ) async {
+    _i2.PersonWithLongTableName personWithLongTableName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (personWithLongTableName.id == null) {
       throw ArgumentError.notNull('personWithLongTableName.id');
     }
@@ -637,13 +650,15 @@ class CityWithLongTableNameDetachRowRepository {
         _i2.PersonWithLongTableName.t
             .$_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id
       ],
+      transaction: transaction,
     );
   }
 
   Future<void> organizations(
     _i1.Session session,
-    _i2.OrganizationWithLongTableName organizationWithLongTableName,
-  ) async {
+    _i2.OrganizationWithLongTableName organizationWithLongTableName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (organizationWithLongTableName.id == null) {
       throw ArgumentError.notNull('organizationWithLongTableName.id');
     }
@@ -653,6 +668,7 @@ class CityWithLongTableNameDetachRowRepository {
     await session.db.updateRow<_i2.OrganizationWithLongTableName>(
       $organizationWithLongTableName,
       columns: [_i2.OrganizationWithLongTableName.t.cityId],
+      transaction: transaction,
     );
   }
 }

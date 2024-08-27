@@ -432,8 +432,9 @@ class BlockingAttachRowRepository {
   Future<void> blocked(
     _i1.Session session,
     Blocking blocking,
-    _i2.Member blocked,
-  ) async {
+    _i2.Member blocked, {
+    _i1.Transaction? transaction,
+  }) async {
     if (blocking.id == null) {
       throw ArgumentError.notNull('blocking.id');
     }
@@ -445,14 +446,16 @@ class BlockingAttachRowRepository {
     await session.db.updateRow<Blocking>(
       $blocking,
       columns: [Blocking.t.blockedId],
+      transaction: transaction,
     );
   }
 
   Future<void> blockedBy(
     _i1.Session session,
     Blocking blocking,
-    _i2.Member blockedBy,
-  ) async {
+    _i2.Member blockedBy, {
+    _i1.Transaction? transaction,
+  }) async {
     if (blocking.id == null) {
       throw ArgumentError.notNull('blocking.id');
     }
@@ -464,6 +467,7 @@ class BlockingAttachRowRepository {
     await session.db.updateRow<Blocking>(
       $blocking,
       columns: [Blocking.t.blockedById],
+      transaction: transaction,
     );
   }
 }

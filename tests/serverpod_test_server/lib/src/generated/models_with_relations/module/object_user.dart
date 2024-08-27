@@ -384,8 +384,9 @@ class ObjectUserAttachRowRepository {
   Future<void> userInfo(
     _i1.Session session,
     ObjectUser objectUser,
-    _i2.UserInfo userInfo,
-  ) async {
+    _i2.UserInfo userInfo, {
+    _i1.Transaction? transaction,
+  }) async {
     if (objectUser.id == null) {
       throw ArgumentError.notNull('objectUser.id');
     }
@@ -397,6 +398,7 @@ class ObjectUserAttachRowRepository {
     await session.db.updateRow<ObjectUser>(
       $objectUser,
       columns: [ObjectUser.t.userInfoId],
+      transaction: transaction,
     );
   }
 }

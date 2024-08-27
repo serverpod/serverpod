@@ -1341,37 +1341,6 @@
       "managed": true
     },
     {
-      "name": "empty_model",
-      "dartName": "EmptyModel",
-      "module": "serverpod_test",
-      "schema": "public",
-      "columns": [
-        {
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "nextval('empty_model_id_seq'::regclass)",
-          "dartType": "int?"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [
-        {
-          "indexName": "empty_model_pkey",
-          "elements": [
-            {
-              "type": 0,
-              "definition": "id"
-            }
-          ],
-          "type": "btree",
-          "isUnique": true,
-          "isPrimary": true
-        }
-      ],
-      "managed": true
-    },
-    {
       "name": "empty_model_relation_item",
       "dartName": "EmptyModelRelationItem",
       "module": "serverpod_test",
@@ -1391,7 +1360,7 @@
           "dartType": "String"
         },
         {
-          "name": "_emptyModelItemsEmptyModelId",
+          "name": "_relationEmptyModelItemsRelationEmptyModelId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -1401,9 +1370,9 @@
         {
           "constraintName": "empty_model_relation_item_fk_0",
           "columns": [
-            "_emptyModelItemsEmptyModelId"
+            "_relationEmptyModelItemsRelationEmptyModelId"
           ],
-          "referenceTable": "empty_model",
+          "referenceTable": "relation_empty_model",
           "referenceTableSchema": "public",
           "referenceColumns": [
             "id"
@@ -1415,6 +1384,37 @@
       "indexes": [
         {
           "indexName": "empty_model_relation_item_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "empty_model_with_table",
+      "dartName": "EmptyModelWithTable",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('empty_model_with_table_id_seq'::regclass)",
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "empty_model_with_table_pkey",
           "elements": [
             {
               "type": 0,
@@ -3208,6 +3208,37 @@
       "indexes": [
         {
           "indexName": "related_unique_data_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "relation_empty_model",
+      "dartName": "RelationEmptyModel",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('relation_empty_model_id_seq'::regclass)",
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "relation_empty_model_pkey",
           "elements": [
             {
               "type": 0,

@@ -467,8 +467,9 @@ class OrganizationWithLongTableNameAttachRepository {
   Future<void> people(
     _i1.Session session,
     OrganizationWithLongTableName organizationWithLongTableName,
-    List<_i2.PersonWithLongTableName> personWithLongTableName,
-  ) async {
+    List<_i2.PersonWithLongTableName> personWithLongTableName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (personWithLongTableName.any((e) => e.id == null)) {
       throw ArgumentError.notNull('personWithLongTableName.id');
     }
@@ -483,6 +484,7 @@ class OrganizationWithLongTableNameAttachRepository {
     await session.db.update<_i2.PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [_i2.PersonWithLongTableName.t.organizationId],
+      transaction: transaction,
     );
   }
 }
@@ -493,8 +495,9 @@ class OrganizationWithLongTableNameAttachRowRepository {
   Future<void> city(
     _i1.Session session,
     OrganizationWithLongTableName organizationWithLongTableName,
-    _i2.CityWithLongTableName city,
-  ) async {
+    _i2.CityWithLongTableName city, {
+    _i1.Transaction? transaction,
+  }) async {
     if (organizationWithLongTableName.id == null) {
       throw ArgumentError.notNull('organizationWithLongTableName.id');
     }
@@ -507,14 +510,16 @@ class OrganizationWithLongTableNameAttachRowRepository {
     await session.db.updateRow<OrganizationWithLongTableName>(
       $organizationWithLongTableName,
       columns: [OrganizationWithLongTableName.t.cityId],
+      transaction: transaction,
     );
   }
 
   Future<void> people(
     _i1.Session session,
     OrganizationWithLongTableName organizationWithLongTableName,
-    _i2.PersonWithLongTableName personWithLongTableName,
-  ) async {
+    _i2.PersonWithLongTableName personWithLongTableName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (personWithLongTableName.id == null) {
       throw ArgumentError.notNull('personWithLongTableName.id');
     }
@@ -527,6 +532,7 @@ class OrganizationWithLongTableNameAttachRowRepository {
     await session.db.updateRow<_i2.PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [_i2.PersonWithLongTableName.t.organizationId],
+      transaction: transaction,
     );
   }
 }
@@ -536,8 +542,9 @@ class OrganizationWithLongTableNameDetachRepository {
 
   Future<void> people(
     _i1.Session session,
-    List<_i2.PersonWithLongTableName> personWithLongTableName,
-  ) async {
+    List<_i2.PersonWithLongTableName> personWithLongTableName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (personWithLongTableName.any((e) => e.id == null)) {
       throw ArgumentError.notNull('personWithLongTableName.id');
     }
@@ -548,6 +555,7 @@ class OrganizationWithLongTableNameDetachRepository {
     await session.db.update<_i2.PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [_i2.PersonWithLongTableName.t.organizationId],
+      transaction: transaction,
     );
   }
 }
@@ -557,8 +565,9 @@ class OrganizationWithLongTableNameDetachRowRepository {
 
   Future<void> city(
     _i1.Session session,
-    OrganizationWithLongTableName organizationwithlongtablename,
-  ) async {
+    OrganizationWithLongTableName organizationwithlongtablename, {
+    _i1.Transaction? transaction,
+  }) async {
     if (organizationwithlongtablename.id == null) {
       throw ArgumentError.notNull('organizationwithlongtablename.id');
     }
@@ -568,13 +577,15 @@ class OrganizationWithLongTableNameDetachRowRepository {
     await session.db.updateRow<OrganizationWithLongTableName>(
       $organizationwithlongtablename,
       columns: [OrganizationWithLongTableName.t.cityId],
+      transaction: transaction,
     );
   }
 
   Future<void> people(
     _i1.Session session,
-    _i2.PersonWithLongTableName personWithLongTableName,
-  ) async {
+    _i2.PersonWithLongTableName personWithLongTableName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (personWithLongTableName.id == null) {
       throw ArgumentError.notNull('personWithLongTableName.id');
     }
@@ -584,6 +595,7 @@ class OrganizationWithLongTableNameDetachRowRepository {
     await session.db.updateRow<_i2.PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [_i2.PersonWithLongTableName.t.organizationId],
+      transaction: transaction,
     );
   }
 }

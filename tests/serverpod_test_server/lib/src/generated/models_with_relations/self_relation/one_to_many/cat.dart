@@ -460,8 +460,9 @@ class CatAttachRepository {
   Future<void> kittens(
     _i1.Session session,
     Cat cat,
-    List<_i2.Cat> nestedCat,
-  ) async {
+    List<_i2.Cat> nestedCat, {
+    _i1.Transaction? transaction,
+  }) async {
     if (nestedCat.any((e) => e.id == null)) {
       throw ArgumentError.notNull('nestedCat.id');
     }
@@ -474,6 +475,7 @@ class CatAttachRepository {
     await session.db.update<_i2.Cat>(
       $nestedCat,
       columns: [_i2.Cat.t.motherId],
+      transaction: transaction,
     );
   }
 }
@@ -484,8 +486,9 @@ class CatAttachRowRepository {
   Future<void> mother(
     _i1.Session session,
     Cat cat,
-    _i2.Cat mother,
-  ) async {
+    _i2.Cat mother, {
+    _i1.Transaction? transaction,
+  }) async {
     if (cat.id == null) {
       throw ArgumentError.notNull('cat.id');
     }
@@ -497,14 +500,16 @@ class CatAttachRowRepository {
     await session.db.updateRow<Cat>(
       $cat,
       columns: [Cat.t.motherId],
+      transaction: transaction,
     );
   }
 
   Future<void> kittens(
     _i1.Session session,
     Cat cat,
-    _i2.Cat nestedCat,
-  ) async {
+    _i2.Cat nestedCat, {
+    _i1.Transaction? transaction,
+  }) async {
     if (nestedCat.id == null) {
       throw ArgumentError.notNull('nestedCat.id');
     }
@@ -516,6 +521,7 @@ class CatAttachRowRepository {
     await session.db.updateRow<_i2.Cat>(
       $nestedCat,
       columns: [_i2.Cat.t.motherId],
+      transaction: transaction,
     );
   }
 }
@@ -525,8 +531,9 @@ class CatDetachRepository {
 
   Future<void> kittens(
     _i1.Session session,
-    List<_i2.Cat> cat,
-  ) async {
+    List<_i2.Cat> cat, {
+    _i1.Transaction? transaction,
+  }) async {
     if (cat.any((e) => e.id == null)) {
       throw ArgumentError.notNull('cat.id');
     }
@@ -535,6 +542,7 @@ class CatDetachRepository {
     await session.db.update<_i2.Cat>(
       $cat,
       columns: [_i2.Cat.t.motherId],
+      transaction: transaction,
     );
   }
 }
@@ -544,8 +552,9 @@ class CatDetachRowRepository {
 
   Future<void> mother(
     _i1.Session session,
-    Cat cat,
-  ) async {
+    Cat cat, {
+    _i1.Transaction? transaction,
+  }) async {
     if (cat.id == null) {
       throw ArgumentError.notNull('cat.id');
     }
@@ -554,13 +563,15 @@ class CatDetachRowRepository {
     await session.db.updateRow<Cat>(
       $cat,
       columns: [Cat.t.motherId],
+      transaction: transaction,
     );
   }
 
   Future<void> kittens(
     _i1.Session session,
-    _i2.Cat cat,
-  ) async {
+    _i2.Cat cat, {
+    _i1.Transaction? transaction,
+  }) async {
     if (cat.id == null) {
       throw ArgumentError.notNull('cat.id');
     }
@@ -569,6 +580,7 @@ class CatDetachRowRepository {
     await session.db.updateRow<_i2.Cat>(
       $cat,
       columns: [_i2.Cat.t.motherId],
+      transaction: transaction,
     );
   }
 }

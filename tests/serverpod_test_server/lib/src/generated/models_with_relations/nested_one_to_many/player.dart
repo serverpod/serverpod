@@ -385,8 +385,9 @@ class PlayerAttachRowRepository {
   Future<void> team(
     _i1.Session session,
     Player player,
-    _i2.Team team,
-  ) async {
+    _i2.Team team, {
+    _i1.Transaction? transaction,
+  }) async {
     if (player.id == null) {
       throw ArgumentError.notNull('player.id');
     }
@@ -398,6 +399,7 @@ class PlayerAttachRowRepository {
     await session.db.updateRow<Player>(
       $player,
       columns: [Player.t.teamId],
+      transaction: transaction,
     );
   }
 }
@@ -407,8 +409,9 @@ class PlayerDetachRowRepository {
 
   Future<void> team(
     _i1.Session session,
-    Player player,
-  ) async {
+    Player player, {
+    _i1.Transaction? transaction,
+  }) async {
     if (player.id == null) {
       throw ArgumentError.notNull('player.id');
     }
@@ -417,6 +420,7 @@ class PlayerDetachRowRepository {
     await session.db.updateRow<Player>(
       $player,
       columns: [Player.t.teamId],
+      transaction: transaction,
     );
   }
 }

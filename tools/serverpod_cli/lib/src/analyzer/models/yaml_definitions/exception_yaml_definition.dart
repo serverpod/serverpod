@@ -26,7 +26,7 @@ class ExceptionYamlDefinition {
       ),
       ValidateNode(
         Keyword.fields,
-        isRequired: true,
+        isRequired: false,
         nested: {
           ValidateNode(
             Keyword.any,

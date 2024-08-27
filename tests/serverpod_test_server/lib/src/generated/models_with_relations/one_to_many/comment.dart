@@ -383,8 +383,9 @@ class CommentAttachRowRepository {
   Future<void> order(
     _i1.Session session,
     Comment comment,
-    _i2.Order order,
-  ) async {
+    _i2.Order order, {
+    _i1.Transaction? transaction,
+  }) async {
     if (comment.id == null) {
       throw ArgumentError.notNull('comment.id');
     }
@@ -396,6 +397,7 @@ class CommentAttachRowRepository {
     await session.db.updateRow<Comment>(
       $comment,
       columns: [Comment.t.orderId],
+      transaction: transaction,
     );
   }
 }

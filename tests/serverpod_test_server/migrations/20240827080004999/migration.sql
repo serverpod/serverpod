@@ -153,17 +153,17 @@ CREATE TABLE "duration_default_persist" (
 --
 -- ACTION CREATE TABLE
 --
-CREATE TABLE "empty_model" (
-    "id" bigserial PRIMARY KEY
+CREATE TABLE "empty_model_relation_item" (
+    "id" bigserial PRIMARY KEY,
+    "name" text NOT NULL,
+    "_relationEmptyModelItemsRelationEmptyModelId" bigint
 );
 
 --
 -- ACTION CREATE TABLE
 --
-CREATE TABLE "empty_model_relation_item" (
-    "id" bigserial PRIMARY KEY,
-    "name" text NOT NULL,
-    "_emptyModelItemsEmptyModelId" bigint
+CREATE TABLE "empty_model_with_table" (
+    "id" bigserial PRIMARY KEY
 );
 
 --
@@ -249,6 +249,13 @@ CREATE TABLE "int_default_persist" (
 ALTER TABLE "object_with_object" ADD COLUMN "nestedDataList" json;
 ALTER TABLE "object_with_object" ADD COLUMN "nestedDataListInMap" json;
 ALTER TABLE "object_with_object" ADD COLUMN "nestedDataMap" json;
+--
+-- ACTION CREATE TABLE
+--
+CREATE TABLE "relation_empty_model" (
+    "id" bigserial PRIMARY KEY
+);
+
 --
 -- ACTION CREATE TABLE
 --
@@ -343,8 +350,8 @@ ALTER TABLE "serverpod_user_info" ALTER COLUMN "userName" DROP NOT NULL;
 --
 ALTER TABLE ONLY "empty_model_relation_item"
     ADD CONSTRAINT "empty_model_relation_item_fk_0"
-    FOREIGN KEY("_emptyModelItemsEmptyModelId")
-    REFERENCES "empty_model"("id")
+    FOREIGN KEY("_relationEmptyModelItemsRelationEmptyModelId")
+    REFERENCES "relation_empty_model"("id")
     ON DELETE NO ACTION
     ON UPDATE NO ACTION;
 
@@ -353,9 +360,9 @@ ALTER TABLE ONLY "empty_model_relation_item"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20240823081352370', now())
+    VALUES ('serverpod_test', '20240827080004999', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240823081352370', "timestamp" = now();
+    DO UPDATE SET "version" = '20240827080004999', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth
