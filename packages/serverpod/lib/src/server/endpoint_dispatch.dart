@@ -57,7 +57,7 @@ abstract class EndpointDispatch {
   /// If the endpoint is not found, an [EndpointNotFoundException] is thrown.
   /// If the user is not authorized to access the endpoint, a [NotAuthorizedException] is thrown.
   /// If the input parameters are invalid, an [InvalidParametersException] is thrown.
-  Future<(MethodConnector, Map<String, dynamic>)>
+  Future<(Endpoint, MethodConnector, Map<String, dynamic>)>
       tryGetEndpointMethodConnector({
     required Session session,
     required String endpointPath,
@@ -66,7 +66,7 @@ abstract class EndpointDispatch {
     required SerializationManager serializationManager,
     Map<String, dynamic> additionalParameters = const {},
   }) async {
-    var (method, paramMap) = await _tryGetEndpointConnector(
+    var (endpoint, method, paramMap) = await _tryGetEndpointConnector(
       session: session,
       endpointPath: endpointPath,
       methodName: methodName,
@@ -80,7 +80,7 @@ abstract class EndpointDispatch {
           'Method "$methodName" not found in endpoint: $endpointPath');
     }
 
-    return (method, paramMap);
+    return (endpoint, method, paramMap);
   }
 
   /// Tries to get a [MethodStreamConnector] for a given endpoint and method name.
@@ -103,7 +103,7 @@ abstract class EndpointDispatch {
     required List<String> requestedInputStreams,
     Map<String, dynamic> additionalParameters = const {},
   }) async {
-    var (method, paramMap) = await _tryGetEndpointConnector(
+    var (_, method, paramMap) = await _tryGetEndpointConnector(
       session: session,
       endpointPath: endpointPath,
       methodName: methodName,
@@ -125,7 +125,7 @@ abstract class EndpointDispatch {
     return (method, paramMap, inputStreams);
   }
 
-  Future<(EndpointMethodConnector, Map<String, dynamic>)>
+  Future<(Endpoint, EndpointMethodConnector, Map<String, dynamic>)>
       _tryGetEndpointConnector({
     required Session session,
     required String endpointPath,
@@ -138,6 +138,8 @@ abstract class EndpointDispatch {
     if (connector == null) {
       throw EndpointNotFoundException('Endpoint $endpointPath not found');
     }
+
+    if (connector.endpoint.logSessions) session.startLogging();
 
     var authenticationFailedResult = await canUserAccessEndpoint(
       () => session.authenticated,
@@ -158,7 +160,7 @@ abstract class EndpointDispatch {
         body.isEmpty ? null : body, method.params, serializationManager,
         additionalParameters: additionalParameters);
 
-    return (method, paramMap);
+    return (connector.endpoint, method, paramMap);
   }
 
   String _endpointFromName(String name) {
@@ -218,12 +220,6 @@ abstract class EndpointDispatch {
     // Get the the authentication key, if any
     String? authenticationKey = queryParameters['auth'];
 
-    // Find correct connector
-    var connector = getConnectorByName(path);
-    if (connector == null) {
-      return ResultInvalidParams('Endpoint $path does not exist');
-    }
-
     MethodCallSession session = MethodCallSession(
       server: server,
       uri: uri,
@@ -234,13 +230,13 @@ abstract class EndpointDispatch {
       endpoint: endpointName,
       queryParameters: queryParameters,
       authenticationKey: authenticationKey,
-      enableLogging: connector.endpoint.logSessions,
     );
 
+    Endpoint endpoint;
     MethodConnector method;
     Map<String, dynamic> paramMap;
     try {
-      (method, paramMap) = await tryGetEndpointMethodConnector(
+      (endpoint, method, paramMap) = await tryGetEndpointMethodConnector(
         session: session,
         endpointPath: endpointName,
         methodName: methodName,
@@ -265,7 +261,7 @@ abstract class EndpointDispatch {
 
       return ResultSuccess(
         result,
-        sendByteDataAsRaw: connector.endpoint.sendByteDataAsRaw,
+        sendByteDataAsRaw: endpoint.sendByteDataAsRaw,
       );
     } on SerializableException catch (exception) {
       return ExceptionResult(model: exception);

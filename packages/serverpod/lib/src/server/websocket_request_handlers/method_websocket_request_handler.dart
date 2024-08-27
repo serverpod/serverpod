@@ -122,25 +122,8 @@ class MethodWebsocketRequestHandler {
     WebSocket webSocket,
     OpenMethodStreamCommand message,
   ) async {
-    // Validate targeted endpoint method
-    var endpointConnector =
-        server.endpoints.getConnectorByName(message.endpoint);
-    if (endpointConnector == null) {
-      server.serverpod.logVerbose(
-        'Endpoint not found for open stream request: $message',
-      );
-      return OpenMethodStreamResponse.buildMessage(
-        connectionId: message.connectionId,
-        endpoint: message.endpoint,
-        method: message.method,
-        responseType: OpenMethodStreamResponseType.endpointNotFound,
-      );
-    }
-
-    // Create session
     var session = MethodStreamSession(
       server: server,
-      enableLogging: endpointConnector.endpoint.logSessions,
       authenticationKey: message.authentication,
       endpoint: message.endpoint,
       method: message.method,

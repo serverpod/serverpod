@@ -111,11 +111,7 @@ abstract class Session {
 
   bool _closed = false;
 
-  /// True if logging is enabled for this session. Normally, logging should be
-  /// enabled but it will be disabled for internal sessions used by Serverpod.
-  final bool enableLogging;
-
-  late final SessionLogManager? _logManager;
+  SessionLogManager? _logManager;
 
   /// Endpoint that triggered this session.
   final String endpoint;
@@ -130,7 +126,7 @@ abstract class Session {
     String? authenticationKey,
     HttpRequest? httpRequest,
     WebSocket? webSocket,
-    required this.enableLogging,
+    enableLogging = false,
     required this.endpoint,
     int? messageId,
     this.method,
@@ -147,22 +143,26 @@ abstract class Session {
     }
 
     if (enableLogging) {
-      var logWriter = _createLogWriter(
-        this,
-        server.serverpod.logSettingsManager,
-      );
-      _logManager = SessionLogManager(
-        logWriter,
-        session: this,
-        settingsForSession: (Session session) => server
-            .serverpod.logSettingsManager
-            .getLogSettingsForSession(session),
-        disableLoggingSlowSessions: _isLongLived(this),
-        serverId: server.serverId,
-      );
-    } else {
-      _logManager = null;
+      startLogging();
     }
+  }
+
+  /// Turns on logging for the session if it was not already turned on.
+  void startLogging() {
+    if (_logManager != null) return;
+
+    var logWriter = _createLogWriter(
+      this,
+      server.serverpod.logSettingsManager,
+    );
+    _logManager = SessionLogManager(
+      logWriter,
+      session: this,
+      settingsForSession: (Session session) =>
+          server.serverpod.logSettingsManager.getLogSettingsForSession(session),
+      disableLoggingSlowSessions: _isLongLived(this),
+      serverId: server.serverId,
+    );
   }
 
   LogWriter _createLogWriter(Session session, LogSettingsManager settings) {
@@ -324,7 +324,7 @@ class MethodCallSession extends Session {
     required String method,
     required this.queryParameters,
     required super.authenticationKey,
-    super.enableLogging = true,
+    super.enableLogging,
   })  : _method = method,
         super(method: method);
 }
@@ -358,7 +358,7 @@ class MethodStreamSession extends Session {
   /// Creates a new [MethodStreamSession].
   MethodStreamSession({
     required super.server,
-    required super.enableLogging,
+    super.enableLogging,
     required super.authenticationKey,
     required super.endpoint,
     required String method,
