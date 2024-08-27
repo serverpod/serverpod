@@ -237,8 +237,10 @@ abstract class EndpointDispatch {
       enableLogging: connector.endpoint.logSessions,
     );
 
+    MethodConnector method;
+    Map<String, dynamic> paramMap;
     try {
-      var (method, paramMap) = await tryGetEndpointMethodConnector(
+      (method, paramMap) = await tryGetEndpointMethodConnector(
         session: session,
         endpointPath: endpointName,
         methodName: methodName,
@@ -246,7 +248,19 @@ abstract class EndpointDispatch {
         serializationManager: server.serializationManager,
         additionalParameters: uri.queryParameters,
       );
+    } on MethodNotFoundException catch (e) {
+      return ResultInvalidParams(e.message);
+    } on EndpointNotFoundException catch (e) {
+      return ResultInvalidParams(e.message);
+    } on NotAuthorizedException catch (e) {
+      return e.authenticationFailedResult;
+    } on InvalidParametersException catch (e, stackTrace) {
+      var sessionLogId = await session.close(error: e, stackTrace: stackTrace);
+      return ResultInternalServerError(
+          e.toString(), stackTrace, sessionLogId ?? 0);
+    }
 
+    try {
       var result = await method.call(session, paramMap);
 
       return ResultSuccess(
@@ -255,12 +269,6 @@ abstract class EndpointDispatch {
       );
     } on SerializableException catch (exception) {
       return ExceptionResult(model: exception);
-    } on MethodNotFoundException catch (e) {
-      return ResultInvalidParams(e.message);
-    } on EndpointNotFoundException catch (e) {
-      return ResultInvalidParams(e.message);
-    } on NotAuthorizedException catch (e) {
-      return e.authenticationFailedResult;
     } on Exception catch (e, stackTrace) {
       var sessionLogId = await session.close(error: e, stackTrace: stackTrace);
       return ResultInternalServerError(
