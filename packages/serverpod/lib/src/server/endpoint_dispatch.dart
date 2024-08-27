@@ -57,37 +57,6 @@ abstract class EndpointDispatch {
   /// If the endpoint is not found, an [EndpointNotFoundException] is thrown.
   /// If the user is not authorized to access the endpoint, a [NotAuthorizedException] is thrown.
   /// If the input parameters are invalid, an [InvalidParametersException] is thrown.
-  Future<(Endpoint, MethodConnector, Map<String, dynamic>)>
-      tryGetEndpointMethodConnector({
-    required Session session,
-    required String endpointPath,
-    required String methodName,
-    required String body,
-    required SerializationManager serializationManager,
-    Map<String, dynamic> additionalParameters = const {},
-  }) async {
-    var (endpoint, method, paramMap) = await _tryGetEndpointConnector(
-      session: session,
-      endpointPath: endpointPath,
-      methodName: methodName,
-      body: body,
-      serializationManager: serializationManager,
-      additionalParameters: additionalParameters,
-    );
-
-    if (method is! MethodConnector) {
-      throw MethodNotFoundException(
-          'Method "$methodName" not found in endpoint: $endpointPath');
-    }
-
-    return (endpoint, method, paramMap);
-  }
-
-  /// Tries to get a [MethodStreamConnector] for a given endpoint and method name.
-  /// If the method is not found, a [MethodNotFoundException] is thrown.
-  /// If the endpoint is not found, an [EndpointNotFoundException] is thrown.
-  /// If the user is not authorized to access the endpoint, a [NotAuthorizedException] is thrown.
-  /// If the input parameters are invalid, an [InvalidParametersException] is thrown.
   /// If the found method is not a [MethodStreamConnector], an [InvalidEndpointMethodTypeException] is thrown.
   Future<
       (
@@ -103,7 +72,7 @@ abstract class EndpointDispatch {
     required List<String> requestedInputStreams,
     Map<String, dynamic> additionalParameters = const {},
   }) async {
-    var (_, method, paramMap) = await _tryGetEndpointConnector(
+    var (_, method, paramMap) = await _tryGetEndpointMethodConnector(
       session: session,
       endpointPath: endpointPath,
       methodName: methodName,
@@ -125,8 +94,23 @@ abstract class EndpointDispatch {
     return (method, paramMap, inputStreams);
   }
 
-  Future<(Endpoint, EndpointMethodConnector, Map<String, dynamic>)>
-      _tryGetEndpointConnector({
+  /// Tries to get an [EndpointConnector] for a given endpoint and method name.
+  /// If the endpoint is not found, an [EndpointNotFoundException] is thrown.
+  /// If the user is not authorized to access the endpoint, a [NotAuthorizedException] is thrown.
+  Future<EndpointConnector> tryGetEndpoint({
+    required Session session,
+    required String endpointPath,
+  }) async {
+    return _tryGetEndpoint(endpointPath, session);
+  }
+
+  /// Tries to get a [MethodConnector] for a given endpoint and method name.
+  /// If the method is not found, a [MethodNotFoundException] is thrown.
+  /// If the endpoint is not found, an [EndpointNotFoundException] is thrown.
+  /// If the user is not authorized to access the endpoint, a [NotAuthorizedException] is thrown.
+  /// If the input parameters are invalid, an [InvalidParametersException] is thrown.
+  Future<(Endpoint, MethodConnector, Map<String, dynamic>)>
+      tryGetEndpointMethodConnector({
     required Session session,
     required String endpointPath,
     required String methodName,
@@ -134,6 +118,49 @@ abstract class EndpointDispatch {
     required SerializationManager serializationManager,
     Map<String, dynamic> additionalParameters = const {},
   }) async {
+    var (endpoint, method, paramMap) = await _tryGetEndpointMethodConnector(
+      session: session,
+      endpointPath: endpointPath,
+      methodName: methodName,
+      body: body,
+      serializationManager: serializationManager,
+      additionalParameters: additionalParameters,
+    );
+
+    if (method is! MethodConnector) {
+      throw MethodNotFoundException(
+          'Method "$methodName" not found in endpoint: $endpointPath');
+    }
+
+    return (endpoint, method, paramMap);
+  }
+
+  Future<(Endpoint, EndpointMethodConnector, Map<String, dynamic>)>
+      _tryGetEndpointMethodConnector({
+    required Session session,
+    required String endpointPath,
+    required String methodName,
+    required String body,
+    required SerializationManager serializationManager,
+    Map<String, dynamic> additionalParameters = const {},
+  }) async {
+    var endpointConnector = await _tryGetEndpoint(endpointPath, session);
+
+    var method = endpointConnector.methodConnectors[methodName];
+    if (method == null) {
+      throw MethodNotFoundException(
+          'Method "$methodName" not found in endpoint: $endpointPath');
+    }
+
+    var paramMap = parseParameters(
+        body.isEmpty ? null : body, method.params, serializationManager,
+        additionalParameters: additionalParameters);
+
+    return (endpointConnector.endpoint, method, paramMap);
+  }
+
+  Future<EndpointConnector> _tryGetEndpoint(
+      String endpointPath, Session session) async {
     var connector = getConnectorByName(endpointPath);
     if (connector == null) {
       throw EndpointNotFoundException('Endpoint $endpointPath not found');
@@ -149,18 +176,7 @@ abstract class EndpointDispatch {
     if (authenticationFailedResult != null) {
       throw NotAuthorizedException(authenticationFailedResult);
     }
-
-    var method = connector.methodConnectors[methodName];
-    if (method == null) {
-      throw MethodNotFoundException(
-          'Method "$methodName" not found in endpoint: $endpointPath');
-    }
-
-    var paramMap = parseParameters(
-        body.isEmpty ? null : body, method.params, serializationManager,
-        additionalParameters: additionalParameters);
-
-    return (connector.endpoint, method, paramMap);
+    return connector;
   }
 
   String _endpointFromName(String name) {

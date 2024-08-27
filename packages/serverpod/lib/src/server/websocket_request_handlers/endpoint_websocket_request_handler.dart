@@ -65,55 +65,50 @@ abstract class EndpointWebsocketRequestHandler {
           var endpointName = data['endpoint'] as String;
           var serialization = data['object'] as Map<String, dynamic>;
 
-          var endpointConnector =
-              server.endpoints.getConnectorByName(endpointName);
-          if (endpointConnector == null) {
+          EndpointConnector endpointConnector;
+          try {
+            endpointConnector = await server.endpoints
+                .tryGetEndpoint(session: session, endpointPath: endpointName);
+          } on NotAuthorizedException {
+            continue;
+          } on EndpointNotFoundException {
             throw Exception('Endpoint not found: $endpointName');
           }
 
-          var endpoint = endpointConnector.endpoint;
-          var authFailed = await EndpointDispatch.canUserAccessEndpoint(
-            () => session.authenticated,
-            endpoint.requireLogin,
-            endpoint.requiredScopes,
-          );
+          // Process the message.
+          var startTime = DateTime.now();
+          dynamic messageError;
+          StackTrace? messageStackTrace;
 
-          if (authFailed == null) {
-            // Process the message.
-            var startTime = DateTime.now();
-            dynamic messageError;
-            StackTrace? messageStackTrace;
+          SerializableModel? message;
+          try {
+            session.endpoint = endpointName;
 
-            SerializableModel? message;
-            try {
-              session.endpoint = endpointName;
+            message = server.serializationManager
+                .deserializeByClassName(serialization);
 
-              message = server.serializationManager
-                  .deserializeByClassName(serialization);
+            if (message == null) throw Exception('Streamed message was null');
 
-              if (message == null) throw Exception('Streamed message was null');
-              // OLD WAY
-              await endpointConnector.endpoint
-                  .handleStreamMessage(session, message);
-            } catch (e, s) {
-              messageError = e;
-              messageStackTrace = s;
-              stderr.writeln('${DateTime.now().toUtc()} Internal server error. '
-                  'Uncaught exception in handleStreamMessage.');
-              stderr.writeln('$e');
-              stderr.writeln('$s');
-            }
-
-            var duration = DateTime.now().difference(startTime);
-            unawaited(session.logManager?.logMessage(
-              messageId: session.nextMessageId(),
-              endpointName: endpointName,
-              messageName: serialization['className'],
-              duration: duration,
-              error: messageError?.toString(),
-              stackTrace: messageStackTrace,
-            ));
+            await endpointConnector.endpoint
+                .handleStreamMessage(session, message);
+          } catch (e, s) {
+            messageError = e;
+            messageStackTrace = s;
+            stderr.writeln('${DateTime.now().toUtc()} Internal server error. '
+                'Uncaught exception in handleStreamMessage.');
+            stderr.writeln('$e');
+            stderr.writeln('$s');
           }
+
+          var duration = DateTime.now().difference(startTime);
+          unawaited(session.logManager?.logMessage(
+            messageId: session.nextMessageId(),
+            endpointName: endpointName,
+            messageName: serialization['className'],
+            duration: duration,
+            error: messageError?.toString(),
+            stackTrace: messageStackTrace,
+          ));
         }
       } catch (e, s) {
         error = e;
