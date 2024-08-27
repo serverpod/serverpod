@@ -26,283 +26,247 @@ void main() {
   ]).build();
 
   group('Given a class definition with an enum field', () {
-    group('when no "defaultPersist" is set', () {
-      var field = FieldDefinitionBuilder()
-          .withName('enumDefault')
-          .withEnumDefinition(byNameEnumDefinition, true)
-          .build();
+    group('when the enum is serialized by name', () {
+      group('and no "defaultPersist" is set', () {
+        var field = FieldDefinitionBuilder()
+            .withName('enumDefault')
+            .withEnumDefinition(byNameEnumDefinition, true)
+            .build();
 
-      var model = ClassDefinitionBuilder()
-          .withTableName('example')
-          .withField(field)
-          .build();
+        var model = ClassDefinitionBuilder()
+            .withTableName('example')
+            .withField(field)
+            .build();
 
-      var databaseDefinition = createDatabaseDefinitionFromModels(
-        [model],
-        'example',
-        [],
-      );
-
-      test('then the table should have one table', () {
-        expect(
-          databaseDefinition.tables,
-          hasLength(1),
-        );
-      });
-
-      test('then the table should have the correct name', () {
-        var table = databaseDefinition.tables.first;
-        expect(
-          table.name,
+        var databaseDefinition = createDatabaseDefinitionFromModels(
+          [model],
           'example',
+          [],
         );
+
+        test('then the table should contain a single entry', () {
+          expect(
+            databaseDefinition.tables,
+            hasLength(1),
+          );
+        });
+
+        test('then the table should be named correctly', () {
+          var table = databaseDefinition.tables.first;
+          expect(
+            table.name,
+            'example',
+          );
+        });
+
+        test('then the table should contain two columns: id and enumDefault',
+            () {
+          var table = databaseDefinition.tables.first;
+          expect(
+            table.columns,
+            hasLength(2),
+          );
+        });
+
+        test('then the enumDefault column should not have a default value', () {
+          var table = databaseDefinition.tables.first;
+          var column = table.columns.last;
+          expect(
+            column.columnDefault,
+            isNull,
+          );
+        });
       });
 
-      test('then the table should have two columns', () {
-        var table = databaseDefinition.tables.first;
-        expect(
-          table.columns,
-          hasLength(2),
+      group('and a "defaultPersist" value is set', () {
+        var field = FieldDefinitionBuilder()
+            .withName('enumDefault')
+            .withEnumDefinition(byNameEnumDefinition, true)
+            .withDefaults(defaultPersistValue: 'byName2')
+            .build();
+
+        var model = ClassDefinitionBuilder()
+            .withTableName('example')
+            .withField(field)
+            .build();
+
+        var databaseDefinition = createDatabaseDefinitionFromModels(
+          [model],
+          'example',
+          [],
         );
+
+        test('then the table should contain a single entry', () {
+          expect(
+            databaseDefinition.tables,
+            hasLength(1),
+          );
+        });
+
+        test('then the table should be named correctly', () {
+          var table = databaseDefinition.tables.first;
+          expect(
+            table.name,
+            'example',
+          );
+        });
+
+        test('then the table should contain two columns: id and enumDefault',
+            () {
+          var table = databaseDefinition.tables.first;
+          expect(
+            table.columns,
+            hasLength(2),
+          );
+        });
+
+        test(
+            'then the enumDefault column should store the enum name as the default value',
+            () {
+          var table = databaseDefinition.tables.first;
+          var column = table.columns.last;
+          expect(
+            column.columnDefault,
+            "'byName2'::text",
+          );
+        });
+
+        test('then the enumDefault column should be nullable', () {
+          var table = databaseDefinition.tables.first;
+          var column = table.columns.last;
+          expect(
+            column.isNullable,
+            isTrue,
+          );
+        });
       });
 
-      test('then the last column should not have a default value', () {
-        var table = databaseDefinition.tables.first;
-        var column = table.columns.last;
-        expect(
-          column.columnDefault,
-          isNull,
+      group('and "defaultModelValue" is set', () {
+        var field = FieldDefinitionBuilder()
+            .withName('enumDefault')
+            .withEnumDefinition(byNameEnumDefinition, true)
+            .withDefaults(defaultModelValue: 'byName1')
+            .build();
+
+        var model = ClassDefinitionBuilder()
+            .withTableName('example')
+            .withField(field)
+            .build();
+
+        var databaseDefinition = createDatabaseDefinitionFromModels(
+          [model],
+          'example',
+          [],
         );
+
+        test('then the table should contain a single entry', () {
+          expect(
+            databaseDefinition.tables,
+            hasLength(1),
+          );
+        });
+
+        test('then the table should be named correctly', () {
+          var table = databaseDefinition.tables.first;
+          expect(
+            table.name,
+            'example',
+          );
+        });
+
+        test('then the table should contain two columns: id and enumDefault',
+            () {
+          var table = databaseDefinition.tables.first;
+          expect(
+            table.columns,
+            hasLength(2),
+          );
+        });
+
+        test(
+            'then the enumDefault column should not have a default value persisted in the database',
+            () {
+          var table = databaseDefinition.tables.first;
+          var column = table.columns.last;
+          expect(
+            column.columnDefault,
+            isNull,
+          );
+        });
+
+        test('then the enumDefault column should be nullable', () {
+          var table = databaseDefinition.tables.first;
+          var column = table.columns.last;
+          expect(
+            column.isNullable,
+            isTrue,
+          );
+        });
       });
     });
 
-    group('when the field is nullable and has a "defaultPersist" value', () {
-      var field = FieldDefinitionBuilder()
-          .withName('enumDefault')
-          .withEnumDefinition(byIndexEnumDefinition, true)
-          .withDefaults(defaultPersistValue: 'byIndex2')
-          .build();
+    group('when the enum is serialized by index', () {
+      group('and a "defaultPersist" value is set', () {
+        var field = FieldDefinitionBuilder()
+            .withName('enumDefault')
+            .withEnumDefinition(byIndexEnumDefinition, true)
+            .withDefaults(defaultPersistValue: 'byIndex2')
+            .build();
 
-      var model = ClassDefinitionBuilder()
-          .withTableName('example')
-          .withField(field)
-          .build();
+        var model = ClassDefinitionBuilder()
+            .withTableName('example')
+            .withField(field)
+            .build();
 
-      var databaseDefinition = createDatabaseDefinitionFromModels(
-        [model],
-        'example',
-        [],
-      );
-
-      test('then the table should have one table', () {
-        expect(
-          databaseDefinition.tables,
-          hasLength(1),
-        );
-      });
-
-      test('then the table should have the correct name', () {
-        var table = databaseDefinition.tables.first;
-        expect(
-          table.name,
+        var databaseDefinition = createDatabaseDefinitionFromModels(
+          [model],
           'example',
+          [],
         );
-      });
 
-      test('then the table should have two columns', () {
-        var table = databaseDefinition.tables.first;
-        expect(
-          table.columns,
-          hasLength(2),
-        );
-      });
+        test('then the table should contain a single entry', () {
+          expect(
+            databaseDefinition.tables,
+            hasLength(1),
+          );
+        });
 
-      test('then the last column should have the correct default value', () {
-        var table = databaseDefinition.tables.first;
-        var column = table.columns.last;
-        expect(
-          column.columnDefault,
-          '1',
-        );
-      });
+        test('then the table should be named correctly', () {
+          var table = databaseDefinition.tables.first;
+          expect(
+            table.name,
+            'example',
+          );
+        });
 
-      test('then the last column should be nullable', () {
-        var table = databaseDefinition.tables.first;
-        var column = table.columns.last;
-        expect(
-          column.isNullable,
-          isTrue,
-        );
-      });
-    });
+        test('then the table should contain two columns: id and enumDefault',
+            () {
+          var table = databaseDefinition.tables.first;
+          expect(
+            table.columns,
+            hasLength(2),
+          );
+        });
 
-    group('when the field is nullable and has no "defaultPersist" value', () {
-      var field = FieldDefinitionBuilder()
-          .withName('enumDefault')
-          .withEnumDefinition(byNameEnumDefinition, true)
-          .build();
+        test(
+            'then the enumDefault column should store the index of the enum value as the default',
+            () {
+          var table = databaseDefinition.tables.first;
+          var column = table.columns.last;
+          expect(
+            column.columnDefault,
+            '1',
+          );
+        });
 
-      var model = ClassDefinitionBuilder()
-          .withTableName('example')
-          .withField(field)
-          .build();
-
-      var databaseDefinition = createDatabaseDefinitionFromModels(
-        [model],
-        'example',
-        [],
-      );
-
-      test('then the table should have one table', () {
-        expect(
-          databaseDefinition.tables,
-          hasLength(1),
-        );
-      });
-
-      test('then the table should have the correct name', () {
-        var table = databaseDefinition.tables.first;
-        expect(
-          table.name,
-          'example',
-        );
-      });
-
-      test('then the table should have two columns', () {
-        var table = databaseDefinition.tables.first;
-        expect(
-          table.columns,
-          hasLength(2),
-        );
-      });
-
-      test('then the last column should not have a default value', () {
-        var table = databaseDefinition.tables.first;
-        var column = table.columns.last;
-        expect(
-          column.columnDefault,
-          isNull,
-        );
-      });
-
-      test('then the last column should be nullable', () {
-        var table = databaseDefinition.tables.first;
-        var column = table.columns.last;
-        expect(
-          column.isNullable,
-          isTrue,
-        );
-      });
-    });
-
-    group('when "defaultModelValue" is set', () {
-      var field = FieldDefinitionBuilder()
-          .withName('enumDefault')
-          .withEnumDefinition(byNameEnumDefinition, true)
-          .withDefaults(defaultModelValue: 'byName1')
-          .build();
-
-      var model = ClassDefinitionBuilder()
-          .withTableName('example')
-          .withField(field)
-          .build();
-
-      var databaseDefinition = createDatabaseDefinitionFromModels(
-        [model],
-        'example',
-        [],
-      );
-
-      test('then the table should have one table', () {
-        expect(
-          databaseDefinition.tables,
-          hasLength(1),
-        );
-      });
-
-      test('then the table should have the correct name', () {
-        var table = databaseDefinition.tables.first;
-        expect(
-          table.name,
-          'example',
-        );
-      });
-
-      test('then the table should have two columns', () {
-        var table = databaseDefinition.tables.first;
-        expect(
-          table.columns,
-          hasLength(2),
-        );
-      });
-
-      test('then the last column should not have a default value', () {
-        var table = databaseDefinition.tables.first;
-        var column = table.columns.last;
-        expect(
-          column.columnDefault,
-          isNull,
-        );
-      });
-    });
-
-    group('when the field is nullable and "defaultModelValue" is set', () {
-      var field = FieldDefinitionBuilder()
-          .withName('enumDefault')
-          .withEnumDefinition(byNameEnumDefinition, true)
-          .withDefaults(defaultModelValue: 'byName1')
-          .build();
-
-      var model = ClassDefinitionBuilder()
-          .withTableName('example')
-          .withField(field)
-          .build();
-
-      var databaseDefinition = createDatabaseDefinitionFromModels(
-        [model],
-        'example',
-        [],
-      );
-
-      test('then the table should have one table', () {
-        expect(
-          databaseDefinition.tables,
-          hasLength(1),
-        );
-      });
-
-      test('then the table should have the correct name', () {
-        var table = databaseDefinition.tables.first;
-        expect(
-          table.name,
-          'example',
-        );
-      });
-
-      test('then the table should have two columns', () {
-        var table = databaseDefinition.tables.first;
-        expect(
-          table.columns,
-          hasLength(2),
-        );
-      });
-
-      test('then the last column should not have a default value', () {
-        var table = databaseDefinition.tables.first;
-        var column = table.columns.last;
-        expect(
-          column.columnDefault,
-          isNull,
-        );
-      });
-
-      test('then the last column should be nullable', () {
-        var table = databaseDefinition.tables.first;
-        var column = table.columns.last;
-        expect(
-          column.isNullable,
-          isTrue,
-        );
+        test('then the enumDefault column should be nullable', () {
+          var table = databaseDefinition.tables.first;
+          var column = table.columns.last;
+          expect(
+            column.isNullable,
+            isTrue,
+          );
+        });
       });
     });
   });
