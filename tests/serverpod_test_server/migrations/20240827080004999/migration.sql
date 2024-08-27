@@ -169,6 +169,47 @@ CREATE TABLE "empty_model_with_table" (
 --
 -- ACTION CREATE TABLE
 --
+CREATE TABLE "enum_default" (
+    "id" bigserial PRIMARY KEY,
+    "byNameEnumDefault" text NOT NULL DEFAULT 'byName1'::text,
+    "byNameEnumDefaultNull" text DEFAULT 'byName2'::text,
+    "byIndexEnumDefault" bigint NOT NULL DEFAULT 0,
+    "byIndexEnumDefaultNull" bigint DEFAULT 1
+);
+
+--
+-- ACTION CREATE TABLE
+--
+CREATE TABLE "enum_default_mix" (
+    "id" bigserial PRIMARY KEY,
+    "byNameEnumDefaultAndDefaultModel" text NOT NULL DEFAULT 'byName1'::text,
+    "byNameEnumDefaultAndDefaultPersist" text NOT NULL DEFAULT 'byName2'::text,
+    "byNameEnumDefaultModelAndDefaultPersist" text NOT NULL DEFAULT 'byName2'::text
+);
+
+--
+-- ACTION CREATE TABLE
+--
+CREATE TABLE "enum_default_model" (
+    "id" bigserial PRIMARY KEY,
+    "byNameEnumDefaultModel" text NOT NULL,
+    "byNameEnumDefaultModelNull" text,
+    "byIndexEnumDefaultModel" bigint NOT NULL,
+    "byIndexEnumDefaultModelNull" bigint
+);
+
+--
+-- ACTION CREATE TABLE
+--
+CREATE TABLE "enum_default_persist" (
+    "id" bigserial PRIMARY KEY,
+    "byNameEnumDefaultPersist" text DEFAULT 'byName1'::text,
+    "byIndexEnumDefaultPersist" bigint DEFAULT 0
+);
+
+--
+-- ACTION CREATE TABLE
+--
 CREATE TABLE "int_default" (
     "id" bigserial PRIMARY KEY,
     "intDefault" bigint NOT NULL DEFAULT 10,
@@ -319,9 +360,9 @@ ALTER TABLE ONLY "empty_model_relation_item"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20240826150228261', now())
+    VALUES ('serverpod_test', '20240827080004999', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240826150228261', "timestamp" = now();
+    DO UPDATE SET "version" = '20240827080004999', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth

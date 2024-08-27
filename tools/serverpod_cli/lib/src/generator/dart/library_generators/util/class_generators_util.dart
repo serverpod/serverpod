@@ -137,7 +137,7 @@ Expression _buildFromJson(
         serverCode,
       );
     case ValueType.isEnum:
-      EnumSerialization? enumSerialization = type.serializeEnum;
+      EnumSerialization? enumSerialization = type.enumDefinition?.serialized;
       if (enumSerialization == null) {
         throw StateError("Expected 'enumSerialization' not to be null!");
       }

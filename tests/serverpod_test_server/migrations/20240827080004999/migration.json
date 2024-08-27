@@ -897,6 +897,229 @@
     {
       "type": "createTable",
       "createTable": {
+        "name": "enum_default",
+        "dartName": "EnumDefault",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('enum_default_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "byNameEnumDefault",
+            "columnType": 0,
+            "isNullable": false,
+            "columnDefault": "'byName1'::text",
+            "dartType": "protocol:ByNameEnum"
+          },
+          {
+            "name": "byNameEnumDefaultNull",
+            "columnType": 0,
+            "isNullable": true,
+            "columnDefault": "'byName2'::text",
+            "dartType": "protocol:ByNameEnum?"
+          },
+          {
+            "name": "byIndexEnumDefault",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "0",
+            "dartType": "protocol:ByIndexEnum"
+          },
+          {
+            "name": "byIndexEnumDefaultNull",
+            "columnType": 6,
+            "isNullable": true,
+            "columnDefault": "1",
+            "dartType": "protocol:ByIndexEnum?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "enum_default_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "enum_default_mix",
+        "dartName": "EnumDefaultMix",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('enum_default_mix_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "byNameEnumDefaultAndDefaultModel",
+            "columnType": 0,
+            "isNullable": false,
+            "columnDefault": "'byName1'::text",
+            "dartType": "protocol:ByNameEnum"
+          },
+          {
+            "name": "byNameEnumDefaultAndDefaultPersist",
+            "columnType": 0,
+            "isNullable": false,
+            "columnDefault": "'byName2'::text",
+            "dartType": "protocol:ByNameEnum"
+          },
+          {
+            "name": "byNameEnumDefaultModelAndDefaultPersist",
+            "columnType": 0,
+            "isNullable": false,
+            "columnDefault": "'byName2'::text",
+            "dartType": "protocol:ByNameEnum"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "enum_default_mix_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "enum_default_model",
+        "dartName": "EnumDefaultModel",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('enum_default_model_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "byNameEnumDefaultModel",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "protocol:ByNameEnum"
+          },
+          {
+            "name": "byNameEnumDefaultModelNull",
+            "columnType": 0,
+            "isNullable": true,
+            "dartType": "protocol:ByNameEnum?"
+          },
+          {
+            "name": "byIndexEnumDefaultModel",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "protocol:ByIndexEnum"
+          },
+          {
+            "name": "byIndexEnumDefaultModelNull",
+            "columnType": 6,
+            "isNullable": true,
+            "dartType": "protocol:ByIndexEnum?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "enum_default_model_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "enum_default_persist",
+        "dartName": "EnumDefaultPersist",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('enum_default_persist_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "byNameEnumDefaultPersist",
+            "columnType": 0,
+            "isNullable": true,
+            "columnDefault": "'byName1'::text",
+            "dartType": "protocol:ByNameEnum?"
+          },
+          {
+            "name": "byIndexEnumDefaultPersist",
+            "columnType": 6,
+            "isNullable": true,
+            "columnDefault": "0",
+            "dartType": "protocol:ByIndexEnum?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "enum_default_persist_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
         "name": "int_default",
         "dartName": "IntDefault",
         "module": "serverpod_test",

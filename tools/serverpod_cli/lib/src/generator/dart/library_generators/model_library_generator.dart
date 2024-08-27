@@ -925,7 +925,10 @@ class SerializableModelLibraryGenerator {
       for (SerializableModelFieldDefinition field in fields) {
         if (!field.hasDefauls) continue;
 
-        Code? defaultCode = _getDefaultValue(field);
+        Code? defaultCode = _getDefaultValue(
+          classDefinition,
+          field,
+        );
         if (defaultCode == null) continue;
 
         c.initializers.add(Block.of([
@@ -1022,6 +1025,7 @@ class SerializableModelLibraryGenerator {
   }
 
   Code? _getDefaultValue(
+    ClassDefinition classDefinition,
     SerializableModelFieldDefinition field,
   ) {
     var defaultValue = field.defaultModelValue;
@@ -1074,6 +1078,16 @@ class SerializableModelLibraryGenerator {
           'seconds': literalNum(parsedDuration.seconds),
           'milliseconds': literalNum(parsedDuration.milliseconds),
         }).code;
+      case DefaultValueAllowedType.isEnum:
+        var enumDefinition = field.type.enumDefinition;
+        if (enumDefinition == null) return null;
+        var reference = field.type.reference(
+          serverCode,
+          config: config,
+          nullable: false,
+          subDirParts: classDefinition.subDirParts,
+        );
+        return reference.property(defaultValue).code;
     }
   }
 
@@ -1554,7 +1568,7 @@ class SerializableModelLibraryGenerator {
     var enumType = refer('EnumSerialization', serverpodUrl(serverCode));
     Expression serializedAs;
 
-    switch (field.type.serializeEnum) {
+    switch (field.type.enumDefinition?.serialized) {
       case null:
       case EnumSerialization.byIndex:
         serializedAs = enumType.property('byIndex');

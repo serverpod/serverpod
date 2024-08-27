@@ -1,0 +1,7 @@
+class: EnumDefault
+table: enum_default
+fields:
+  byNameEnumDefault: ByNameEnum, default=byName1
+  byNameEnumDefaultNull: ByNameEnum?, default=byName2
+  byIndexEnumDefault: ByIndexEnum, default=byIndex1
+  byIndexEnumDefaultNull: ByIndexEnum?, default=byIndex2

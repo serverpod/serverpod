@@ -2,7 +2,7 @@ import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
@@ -32,7 +32,7 @@ class TypeDefinition {
   /// True if this type references a custom class.
   final bool customClass;
 
-  EnumSerialization? serializeEnum;
+  EnumDefinition? enumDefinition;
 
   TypeDefinition({
     required this.className,
@@ -41,7 +41,7 @@ class TypeDefinition {
     this.url,
     this.dartType,
     this.customClass = false,
-    this.serializeEnum,
+    this.enumDefinition,
   });
 
   bool get isSerializedValue => autoSerializedTypes.contains(className);
@@ -64,7 +64,7 @@ class TypeDefinition {
   bool get isModuleType =>
       url == 'serverpod' || (url?.startsWith(_moduleRef) ?? false);
 
-  bool get isEnumType => serializeEnum != null;
+  bool get isEnumType => enumDefinition != null;
 
   String? get moduleAlias {
     if (url == defaultModuleAlias) return url;
@@ -135,7 +135,7 @@ class TypeDefinition {
         customClass: customClass,
         dartType: dartType,
         generics: generics,
-        serializeEnum: serializeEnum,
+        enumDefinition: enumDefinition,
       );
 
   /// Get this [TypeDefinition], but non nullable.
@@ -146,7 +146,7 @@ class TypeDefinition {
         customClass: customClass,
         dartType: dartType,
         generics: generics,
-        serializeEnum: serializeEnum,
+        enumDefinition: enumDefinition,
       );
 
   /// Generate a [TypeReference] from this definition.
@@ -227,7 +227,7 @@ class TypeDefinition {
   /// Get the pgsql type that represents this [TypeDefinition] in the database.
   String get databaseType {
     // TODO: add all supported types here
-    var enumSerialization = serializeEnum;
+    var enumSerialization = enumDefinition?.serialized;
     if (enumSerialization != null && isEnumType) {
       switch (enumSerialization) {
         case EnumSerialization.byName:
@@ -417,7 +417,7 @@ class TypeDefinition {
         generics: generics
             .map((e) => e.applyProtocolReferences(classDefinitions))
             .toList(),
-        serializeEnum: serializeEnum,
+        enumDefinition: enumDefinition,
         url:
             url == null && classDefinitions.any((c) => c.className == className)
                 ? defaultModuleAlias
@@ -458,6 +458,8 @@ class TypeDefinition {
         return DefaultValueAllowedType.uuidValue;
       case ValueType.duration:
         return DefaultValueAllowedType.duration;
+      case ValueType.isEnum:
+        return DefaultValueAllowedType.isEnum;
       default:
         return null;
     }
@@ -558,4 +560,5 @@ enum DefaultValueAllowedType {
   string,
   uuidValue,
   duration,
+  isEnum,
 }

@@ -12,7 +12,10 @@ class DefaultValueRestriction extends ValueRestriction {
   final String key;
   final SerializableModelDefinition? documentDefinition;
 
-  DefaultValueRestriction(this.key, this.documentDefinition);
+  DefaultValueRestriction(
+    this.key,
+    this.documentDefinition,
+  );
 
   @override
   List<SourceSpanSeverityException> validate(
@@ -44,6 +47,8 @@ class DefaultValueRestriction extends ValueRestriction {
         return _uuidValueValidation(value, span);
       case DefaultValueAllowedType.duration:
         return _durationValidation(value, span);
+      case DefaultValueAllowedType.isEnum:
+        return _enumValidation(value, span, field);
     }
   }
 
@@ -320,6 +325,42 @@ class DefaultValueRestriction extends ValueRestriction {
         ),
       );
       return errors;
+    }
+
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> _enumValidation(
+    dynamic value,
+    SourceSpan? span,
+    SerializableModelFieldDefinition field,
+  ) {
+    var errors = <SourceSpanSeverityException>[];
+
+    var enumDefinition = field.type.enumDefinition;
+
+    /// This check ensures that the field is indeed an enum type.
+    /// Although this method should only be called for enum types,
+    /// we include this check as a safeguard.
+    if (enumDefinition == null) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "${field.name}" field is not an enum type, but an enum value was expected.',
+          span,
+        ),
+      );
+      return errors;
+    }
+
+    var enumNameValues = enumDefinition.values.map((e) => e.name).toSet();
+
+    if (value is! String || value.isEmpty || !enumNameValues.contains(value)) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "$key" value must be a valid enum value from the set: (${enumNameValues.join(', ')}).',
+          span,
+        ),
+      );
     }
 
     return errors;
