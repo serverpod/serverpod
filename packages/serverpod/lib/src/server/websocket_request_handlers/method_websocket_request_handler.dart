@@ -137,9 +137,30 @@ class MethodWebsocketRequestHandler {
       );
     }
 
-    var endpointMethodConnector =
-        endpointConnector.methodConnectors[message.method];
-    if (endpointMethodConnector == null) {
+    // Create session
+    var session = MethodStreamSession(
+      server: server,
+      enableLogging: endpointConnector.endpoint.logSessions,
+      authenticationKey: message.authentication,
+      endpoint: message.endpoint,
+      method: message.method,
+      connectionId: message.connectionId,
+    );
+
+    MethodStreamConnector method;
+    Map<String, dynamic> args;
+    List<StreamParameterDescription> requestedInputStreams;
+    try {
+      (method, args, requestedInputStreams) =
+          await server.endpoints.tryGetEndpointMethodStreamConnector(
+        session: session,
+        endpointPath: message.endpoint,
+        methodName: message.method,
+        body: message.args,
+        serializationManager: server.serializationManager,
+        requestedInputStreams: message.inputStreams,
+      );
+    } on MethodNotFoundException {
       server.serverpod.logVerbose(
         'Endpoint method not found for open stream request: $message',
       );
@@ -149,9 +170,17 @@ class MethodWebsocketRequestHandler {
         method: message.method,
         responseType: OpenMethodStreamResponseType.endpointNotFound,
       );
-    }
-
-    if (endpointMethodConnector is! MethodStreamConnector) {
+    } on EndpointNotFoundException {
+      server.serverpod.logVerbose(
+        'Endpoint not found for open stream request: $message',
+      );
+      return OpenMethodStreamResponse.buildMessage(
+        connectionId: message.connectionId,
+        endpoint: message.endpoint,
+        method: message.method,
+        responseType: OpenMethodStreamResponseType.endpointNotFound,
+      );
+    } on InvalidEndpointMethodTypeException {
       server.serverpod.logVerbose(
         'Endpoint method is not a valid stream method: $message',
       );
@@ -161,19 +190,9 @@ class MethodWebsocketRequestHandler {
         connectionId: message.connectionId,
         responseType: OpenMethodStreamResponseType.endpointNotFound,
       );
-    }
-
-    // Parse arguments
-    Map<String, dynamic> args;
-    try {
-      args = EndpointDispatch.parseParameters(
-        message.args,
-        endpointMethodConnector.params,
-        server.serializationManager,
-      );
-    } catch (e) {
+    } on InvalidParametersException catch (e) {
       server.serverpod.logVerbose(
-        'Failed to parse parameters for open stream request: $message',
+        'Failed to parse parameters or input streams for open stream request: $message (${e.message})',
       );
       return OpenMethodStreamResponse.buildMessage(
         endpoint: message.endpoint,
@@ -181,49 +200,12 @@ class MethodWebsocketRequestHandler {
         connectionId: message.connectionId,
         responseType: OpenMethodStreamResponseType.invalidArguments,
       );
-    }
-
-    List<StreamParameterDescription> requestedInputStreams;
-    try {
-      requestedInputStreams = EndpointDispatch.parseRequestedInputStreams(
-        descriptions: endpointMethodConnector.streamParams,
-        requestedInputStreams: message.inputStreams,
-      );
-    } catch (e) {
-      server.serverpod.logVerbose(
-        'Failed to parse input streams for open stream request: $message',
-      );
-      return OpenMethodStreamResponse.buildMessage(
-        endpoint: message.endpoint,
-        method: message.method,
-        connectionId: message.connectionId,
-        responseType: OpenMethodStreamResponseType.invalidArguments,
-      );
-    }
-
-    // Create session
-    var session = MethodStreamSession(
-      server: server,
-      enableLogging: endpointConnector.endpoint.logSessions,
-      authenticationKey: message.authentication,
-      endpoint: endpointConnector.name,
-      method: endpointMethodConnector.name,
-      connectionId: message.connectionId,
-    );
-
-    // Check authentication
-    var authFailed = await EndpointDispatch.canUserAccessEndpoint(
-      () => session.authenticated,
-      endpointConnector.endpoint.requireLogin,
-      endpointConnector.endpoint.requiredScopes,
-    );
-
-    if (authFailed != null) {
+    } on NotAuthorizedException catch (e) {
       server.serverpod.logVerbose(
         'Authentication failed for open stream request: $message',
       );
       await session.close();
-      return switch (authFailed.reason) {
+      return switch (e.authenticationFailedResult.reason) {
         AuthenticationFailureReason.insufficientAccess =>
           OpenMethodStreamResponse.buildMessage(
             endpoint: message.endpoint,
@@ -259,7 +241,7 @@ class MethodWebsocketRequestHandler {
     }
 
     _methodStreamManager.createStream(
-      methodConnector: endpointMethodConnector,
+      methodConnector: method,
       requestedInputStreams: requestedInputStreams,
       session: session,
       args: args,
