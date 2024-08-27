@@ -1,0 +1,5 @@
+exception: DefaultException
+fields:
+    defaultMessage: String, default='Default error message'
+    defaultModelMessage: String, defaultModel='Default model error message'
+    defaultMixMessage: String, default='Default error message', defaultModel='Default model error message'
