@@ -413,6 +413,31 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['authentication'] as _i3.AuthenticationEndpoint)
                   .signOut(session),
         ),
+        'updateScopes': _i1.MethodConnector(
+          name: 'updateScopes',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'scopes': _i1.ParameterDescription(
+              name: 'scopes',
+              type: _i1.getType<List<String>>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['authentication'] as _i3.AuthenticationEndpoint)
+                  .updateScopes(
+            session,
+            params['userId'],
+            params['scopes'],
+          ),
+        ),
       },
     );
     connectors['basicTypes'] = _i1.EndpointConnector(
