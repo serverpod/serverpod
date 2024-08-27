@@ -104,7 +104,7 @@ void main() {
         'when calling an authenticated streaming method then access is granted and the expected integers are received.',
         () async {
       var streamComplete = Completer();
-      var stream = await client.methodStreaming.simpleStream();
+      var stream = await client.authenticatedMethodStreaming.simpleStream();
       var received = <int>[];
       stream.listen((event) {
         received.add(event);
@@ -114,6 +114,55 @@ void main() {
 
       await streamComplete.future;
       expect(received, List.generate(10, (index) => index++));
+    });
+  });
+
+  group('Given an authenticated user with a connection to a streaming method',
+      () {
+    setUp(() async {
+      // Admin scope required by the endpoint
+      var response = await client.authentication.authenticate(
+        'test@foo.bar',
+        'password',
+        [Scope.admin.name!],
+      );
+      assert(response.success, 'Failed to authenticate user');
+      await client.authenticationKeyManager
+          ?.put('${response.keyId}:${response.key}');
+      assert(
+          await client.modules.auth.status.isSignedIn(), 'Failed to sign in');
+    });
+
+    tearDown(() async {
+      await client.authenticationKeyManager?.remove();
+      await client.authentication.removeAllUsers();
+      await client.authentication.signOut();
+      assert(
+        await client.modules.auth.status.isSignedIn() == false,
+        'Still signed in after teardown',
+      );
+    });
+
+    test('when the user signs out then the stream is closed with an exception',
+        () async {
+      var streamErrorCompleter = Completer();
+      var inStream = StreamController<int>();
+      var stream = await client.authenticatedMethodStreaming
+          .intEchoStream(inStream.stream);
+      var valueReceivedCompleter = Completer<int>();
+      stream.listen((event) {
+        if (valueReceivedCompleter.isCompleted) return;
+
+        valueReceivedCompleter.complete(event);
+      }, onError: (e) => streamErrorCompleter.complete(e));
+      inStream.add(1);
+      // Verify connection is established.
+      await expectLater(valueReceivedCompleter.future, completion(1));
+
+      await client.authentication.signOut();
+
+      await expectLater(streamErrorCompleter.future,
+          completion(isA<ServerpodClientException>()));
     });
   });
 }

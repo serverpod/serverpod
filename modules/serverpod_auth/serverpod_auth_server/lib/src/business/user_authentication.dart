@@ -1,3 +1,4 @@
+import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
 import 'package:serverpod_auth_server/src/business/authentication_util.dart';
@@ -9,8 +10,12 @@ class UserAuthentication {
   /// before signing them in. Send the AuthKey.id and key to the client and
   /// use that to authenticate in future calls. In most situations you should
   /// use one of the auth providers instead of this method.
-  static Future<AuthKey> signInUser(Session session, int userId, String method,
-      {Set<Scope> scopes = const {}}) async {
+  static Future<AuthKey> signInUser(
+    Session session,
+    int userId,
+    String method, {
+    Set<Scope> scopes = const {},
+  }) async {
     var signInSalt = session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
 
     var key = generateRandomString();
@@ -42,6 +47,8 @@ class UserAuthentication {
 
     await session.db
         .deleteWhere<AuthKey>(where: AuthKey.t.userId.equals(userId));
+    await session.messages
+        .revokedAuthentication(userId, RevokedAuthenticationUser());
     session.updateAuthenticated(null);
   }
 }
