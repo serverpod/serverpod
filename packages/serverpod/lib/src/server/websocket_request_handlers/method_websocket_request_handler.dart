@@ -211,8 +211,8 @@ class MethodWebsocketRequestHandler {
       };
     }
 
-    var authenticationIsRequired = endpointConnector.endpoint.requireLogin ||
-        endpointConnector.endpoint.requiredScopes.isNotEmpty;
+    var authenticationIsRequired =
+        method.requireLogin || method.requiredScopes.isNotEmpty;
     _AuthenticationContext? authenticationContext;
     if (authenticationIsRequired) {
       var authenticationInfo = await session.authenticated;
@@ -223,7 +223,7 @@ class MethodWebsocketRequestHandler {
       }
 
       authenticationContext = _AuthenticationContext(
-        endpointConnector.endpoint.requiredScopes,
+        method.requiredScopes,
         authenticationInfo,
       );
     }

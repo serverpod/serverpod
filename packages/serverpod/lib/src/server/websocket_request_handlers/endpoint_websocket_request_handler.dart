@@ -142,7 +142,6 @@ abstract class EndpointWebsocketRequestHandler {
       } catch (e) {
         return;
       }
-      // file://Users/hampuslavin/repos/serverpod/hl_test_framework_part1/packages/serverpod/lib/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart
     }
   }
 

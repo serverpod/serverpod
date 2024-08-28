@@ -153,6 +153,9 @@ abstract class EndpointDispatch {
           'Method "$methodName" not found in endpoint: $endpointPath');
     }
 
+    method.requireLogin = endpointConnector.endpoint.requireLogin;
+    method.requiredScopes = endpointConnector.endpoint.requiredScopes;
+
     var paramMap = parseParameters(
       parameters,
       method.params,
@@ -385,8 +388,20 @@ abstract class EndpointMethodConnector {
   /// List of parameters used by the method.
   final Map<String, ParameterDescription> params;
 
+  /// List of [Scope]s that are required to access this [EndpointMethodConnector].
+  Set<Scope> requiredScopes;
+
+  /// States if the [EndpointMethodConnector] only should accept users that are authenticated.
+  /// Default value is false
+  bool requireLogin;
+
   /// Creates a new [EndpointMethodConnector].
-  EndpointMethodConnector({required this.name, required this.params});
+  EndpointMethodConnector({
+    required this.name,
+    required this.params,
+    this.requireLogin = false,
+    this.requiredScopes = const {},
+  });
 }
 
 /// The [MethodConnector] hooks up a method with its name and the actual call
