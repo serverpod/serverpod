@@ -84,7 +84,7 @@ void main() {
           'when the authenticated user is revoked then the stream is closed with error.',
           () async {
         await expectLater(
-          session.messages.revokedAuthentication(
+          session.messages.authenticationRevoked(
             authenticatedUserId,
             RevokedAuthenticationUser(),
           ),
@@ -100,7 +100,7 @@ void main() {
           'when the authentication id is revoked then the stream is closed with error.',
           () async {
         await expectLater(
-          session.messages.revokedAuthentication(
+          session.messages.authenticationRevoked(
             authenticatedUserId,
             RevokedAuthenticationAuthId(authId: 'token-$tokenCounter'),
           ),
@@ -116,7 +116,7 @@ void main() {
           'when an unrelated authentication id is revoked then the stream can still be used.',
           () async {
         await expectLater(
-          session.messages.revokedAuthentication(
+          session.messages.authenticationRevoked(
             authenticatedUserId,
             RevokedAuthenticationAuthId(authId: 'token-${tokenCounter + 100}'),
           ),
@@ -135,7 +135,7 @@ void main() {
           'when the required scope for endpoint is revoked the stream is closed with error.',
           () async {
         await expectLater(
-          session.messages.revokedAuthentication(
+          session.messages.authenticationRevoked(
             authenticatedUserId,
             RevokedAuthenticationScope(scopes: [Scope.admin.name!]),
           ),
@@ -151,7 +151,7 @@ void main() {
           'when a scope not required for the endpoint is revoked then the stream can still be used.',
           () async {
         await expectLater(
-          session.messages.revokedAuthentication(
+          session.messages.authenticationRevoked(
             authenticatedUserId,
             RevokedAuthenticationScope(scopes: ['unrelated-scope']),
           ),
@@ -222,7 +222,7 @@ void main() {
           'when the authenticated user is revoked then the authenticated stream is closed',
           () async {
         await expectLater(
-          session.messages.revokedAuthentication(
+          session.messages.authenticationRevoked(
             authenticatedUserId,
             RevokedAuthenticationUser(),
           ),
@@ -236,7 +236,7 @@ void main() {
           'when the authenticated user is revoked then the unauthenticated stream can still be used',
           () async {
         await expectLater(
-          session.messages.revokedAuthentication(
+          session.messages.authenticationRevoked(
             authenticatedUserId,
             RevokedAuthenticationUser(),
           ),

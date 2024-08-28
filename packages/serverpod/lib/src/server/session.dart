@@ -631,7 +631,7 @@ class MessageCentralAccess {
   ///
   /// [RevokedAuthenticationScope] is used to communicate that a specific
   /// scope or scopes have been revoked for the user.
-  Future<bool> revokedAuthentication(
+  Future<bool> authenticationRevoked(
     int userId,
     SerializableModel message,
   ) async {

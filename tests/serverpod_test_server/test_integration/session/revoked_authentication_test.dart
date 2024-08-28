@@ -25,7 +25,7 @@ void main() async {
       'Given a non valid message type when broadcasting revoked authentication event then exception is thrown',
       () {
     expect(
-      () => session.messages.revokedAuthentication(1, EmptyModel()),
+      () => session.messages.authenticationRevoked(1, EmptyModel()),
       throwsA(isA<ArgumentError>()),
     );
   });
@@ -41,7 +41,7 @@ void main() async {
         );
 
     var message = RevokedAuthenticationUser();
-    var event = await session.messages.revokedAuthentication(1, message);
+    var event = await session.messages.authenticationRevoked(1, message);
 
     expect(event, isTrue);
     await expectLater(

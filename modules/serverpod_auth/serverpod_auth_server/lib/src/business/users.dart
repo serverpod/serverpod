@@ -128,7 +128,7 @@ class Users {
     if (removedScopes.isNotEmpty) {
       var removedScopesList =
           removedScopes.map((s) => s.name).whereType<String>().toList();
-      await session.messages.revokedAuthentication(
+      await session.messages.authenticationRevoked(
         userId,
         RevokedAuthenticationScope(
           scopes: removedScopesList,

@@ -48,7 +48,7 @@ class UserAuthentication {
     await session.db
         .deleteWhere<AuthKey>(where: AuthKey.t.userId.equals(userId));
     await session.messages
-        .revokedAuthentication(userId, RevokedAuthenticationUser());
+        .authenticationRevoked(userId, RevokedAuthenticationUser());
     session.updateAuthenticated(null);
   }
 }
