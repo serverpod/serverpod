@@ -64,7 +64,8 @@ abstract class EndpointDispatch {
         Map<String, dynamic>,
         List<StreamParameterDescription>
       )> getAuthorizedEndpointMethodStreamConnector({
-    required Session session,
+    required Session Function(EndpointConnector connector)
+        createSessionCallback,
     required String endpointPath,
     required String methodName,
     required Map<String, dynamic> parameters,
@@ -72,7 +73,7 @@ abstract class EndpointDispatch {
     required List<String> requestedInputStreams,
   }) async {
     var (_, method, paramMap) = await _getAuthorizedEndpointMethodConnector(
-      session: session,
+      createSessionCallback: createSessionCallback,
       endpointPath: endpointPath,
       methodName: methodName,
       parameters: parameters,
@@ -99,7 +100,7 @@ abstract class EndpointDispatch {
     required Session session,
     required String endpointPath,
   }) async {
-    return _getAuthorizedEndpoint(endpointPath, session);
+    return _getAuthorizedEndpoint(endpointPath, (_) => session);
   }
 
   /// Tries to get a [MethodConnector] for a given endpoint and method name.
@@ -109,7 +110,8 @@ abstract class EndpointDispatch {
   /// If the input parameters are invalid, an [InvalidParametersException] is thrown.
   Future<(Endpoint, MethodConnector, Map<String, dynamic>)>
       getAuthorizedEndpointMethodConnector({
-    required Session session,
+    required Session Function(EndpointConnector connector)
+        createSessionCallback,
     required String endpointPath,
     required String methodName,
     required Map<String, dynamic> parameters,
@@ -118,7 +120,7 @@ abstract class EndpointDispatch {
   }) async {
     var (endpoint, method, paramMap) =
         await _getAuthorizedEndpointMethodConnector(
-      session: session,
+      createSessionCallback: createSessionCallback,
       endpointPath: endpointPath,
       methodName: methodName,
       parameters: parameters,
@@ -135,13 +137,15 @@ abstract class EndpointDispatch {
 
   Future<(Endpoint, EndpointMethodConnector, Map<String, dynamic>)>
       _getAuthorizedEndpointMethodConnector({
-    required Session session,
+    required Session Function(EndpointConnector connector)
+        createSessionCallback,
     required String endpointPath,
     required String methodName,
     required Map<String, dynamic> parameters,
     required SerializationManager serializationManager,
   }) async {
-    var endpointConnector = await _getAuthorizedEndpoint(endpointPath, session);
+    var endpointConnector =
+        await _getAuthorizedEndpoint(endpointPath, createSessionCallback);
 
     var method = endpointConnector.methodConnectors[methodName];
     if (method == null) {
@@ -159,13 +163,15 @@ abstract class EndpointDispatch {
   }
 
   Future<EndpointConnector> _getAuthorizedEndpoint(
-      String endpointPath, Session session) async {
+      String endpointPath,
+      Session Function(EndpointConnector connector)
+          createSessionCallback) async {
     var connector = getConnectorByName(endpointPath);
     if (connector == null) {
       throw EndpointNotFoundException('Endpoint $endpointPath not found');
     }
 
-    //var session = await createSessionCallback(connector);
+    var session = createSessionCallback(connector);
 
     var authenticationFailedResult = await canUserAccessEndpoint(
       () => session.authenticated,
@@ -230,24 +236,28 @@ abstract class EndpointDispatch {
     // Get the the authentication key, if any
     String? authenticationKey = queryParameters['auth'];
 
-    MethodCallSession session = MethodCallSession(
-      server: server,
-      uri: uri,
-      body: body,
-      path: path,
-      httpRequest: request,
-      method: methodName,
-      endpoint: endpointName,
-      queryParameters: queryParameters,
-      authenticationKey: authenticationKey,
-    );
+    late MethodCallSession session;
 
     Endpoint endpoint;
     MethodConnector method;
     Map<String, dynamic> paramMap;
     try {
       (endpoint, method, paramMap) = await getAuthorizedEndpointMethodConnector(
-        session: session,
+        createSessionCallback: (connector) {
+          session = MethodCallSession(
+            server: server,
+            uri: uri,
+            body: body,
+            path: path,
+            httpRequest: request,
+            method: methodName,
+            endpoint: endpointName,
+            queryParameters: queryParameters,
+            authenticationKey: authenticationKey,
+            enableLogging: connector.endpoint.logSessions,
+          );
+          return session;
+        },
         endpointPath: endpointName,
         methodName: methodName,
         parameters: queryParameters,

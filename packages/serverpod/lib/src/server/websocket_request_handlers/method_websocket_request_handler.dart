@@ -123,13 +123,7 @@ class MethodWebsocketRequestHandler {
     WebSocket webSocket,
     OpenMethodStreamCommand message,
   ) async {
-    var session = MethodStreamSession(
-      server: server,
-      authenticationKey: message.authentication,
-      endpoint: message.endpoint,
-      method: message.method,
-      connectionId: message.connectionId,
-    );
+    late MethodStreamSession session;
 
     Map<String, dynamic> args;
     MethodStreamConnector method;
@@ -137,7 +131,17 @@ class MethodWebsocketRequestHandler {
     try {
       (method, args, requestedInputStreams) =
           await server.endpoints.getAuthorizedEndpointMethodStreamConnector(
-        session: session,
+        createSessionCallback: (connector) {
+          session = MethodStreamSession(
+            server: server,
+            authenticationKey: message.authentication,
+            endpoint: message.endpoint,
+            method: message.method,
+            connectionId: message.connectionId,
+            enableLogging: connector.endpoint.logSessions,
+          );
+          return session;
+        },
         endpointPath: message.endpoint,
         methodName: message.method,
         parameters: decodeParameters(message.args),
