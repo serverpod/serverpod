@@ -241,10 +241,10 @@ class MethodWebsocketRequestHandler {
       };
     }
 
-    var authenticationRequired = endpointConnector.endpoint.requireLogin ||
+    var authenticationIsRequired = endpointConnector.endpoint.requireLogin ||
         endpointConnector.endpoint.requiredScopes.isNotEmpty;
     _RequiredAuthentication? requiredAuthentication;
-    if (authenticationRequired) {
+    if (authenticationIsRequired) {
       var authenticationInfo = await session.authenticated;
       if (authenticationInfo == null) {
         throw StateError(
@@ -415,13 +415,11 @@ class _MethodStreamManager {
     SerializationManager serializationManager,
     _RequiredAuthentication? requiredAuthentication,
   ) {
-    late void Function(SerializableModel) authenticationRevokedCallback;
+    late void Function(SerializableModel) revokedAuthenticationCallback;
 
     if (requiredAuthentication != null) {
-      // If authentication was required, a listener is registered that closes
-      // the stream if the authentication token is revoked.
-      authenticationRevokedCallback = (event) async {
-        var authenticationRevoked = switch (event) {
+      revokedAuthenticationCallback = (event) async {
+        var authenticationWasRevoked = switch (event) {
           RevokedAuthenticationUser _ => true,
           RevokedAuthenticationAuthId revokedAuthId =>
             revokedAuthId.authId == requiredAuthentication.authInfo.authId,
@@ -433,7 +431,7 @@ class _MethodStreamManager {
           _ => false,
         };
 
-        if (authenticationRevoked) {
+        if (authenticationWasRevoked) {
           await closeStream(
             endpoint: message.endpoint,
             method: message.method,
@@ -447,7 +445,7 @@ class _MethodStreamManager {
         MessageCentralServerpodChannels.revokedAuthentication(
           requiredAuthentication.authInfo.userId,
         ),
-        authenticationRevokedCallback,
+        revokedAuthenticationCallback,
       );
     }
 
@@ -464,7 +462,7 @@ class _MethodStreamManager {
           MessageCentralServerpodChannels.revokedAuthentication(
             requiredAuthentication.authInfo.userId,
           ),
-          authenticationRevokedCallback,
+          revokedAuthenticationCallback,
         );
       }
       await _closeOutboundStream(webSocket, message);
