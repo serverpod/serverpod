@@ -35,9 +35,9 @@ void main() {
     var stream = Stream<int>.fromIterable([1, 2, 3]);
     var responseFuture = client.methodStreaming.throwsException(stream);
     await expectLater(
-        responseFuture,
-        throwsA(isA<ServerpodClientException>()
-            .having((e) => e.statusCode, 'statusCode', -1)));
+      responseFuture,
+      throwsA(isA<ConnectionClosedException>()),
+    );
   });
 
   test(
@@ -55,9 +55,9 @@ void main() {
     var stream = Stream<int>.fromIterable([1, 2, 3]);
     var responseFuture = client.methodStreaming.throwsExceptionVoid(stream);
     await expectLater(
-        responseFuture,
-        throwsA(isA<ServerpodClientException>()
-            .having((e) => e.statusCode, 'statusCode', -1)));
+      responseFuture,
+      throwsA(isA<ConnectionClosedException>()),
+    );
   });
 
   test(

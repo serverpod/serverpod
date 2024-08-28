@@ -17,6 +17,9 @@ class AuthenticationInfo {
   /// The scopes that the user can access.
   final Set<Scope> scopes;
 
+  /// The authentication key id.
+  final String? authId;
+
   /// Creates a new [AuthenticationInfo].
-  AuthenticationInfo(this.userId, this.scopes);
+  AuthenticationInfo(this.userId, this.scopes, {this.authId});
 }
