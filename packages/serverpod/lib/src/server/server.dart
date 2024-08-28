@@ -407,7 +407,10 @@ class Server {
   }
 
   Future<Result> _handleUriCall(
-      Uri uri, String body, HttpRequest request) async {
+    Uri uri,
+    String body,
+    HttpRequest request,
+  ) async {
     var path = uri.pathSegments.join('/');
     var endpointComponents = path.split('.');
     if (endpointComponents.isEmpty || endpointComponents.length > 2) {

@@ -33,30 +33,6 @@ void main() {
       );
     });
 
-    // test('when parsing null parameter string then an exception is thrown.', () {
-    //   expect(
-    //     () => parseParameters(
-    //       null,
-    //       parameterDescriptions,
-    //       Protocol(),
-    //     ),
-    //     throwsA(isA<Exception>()),
-    //   );
-    // });
-
-    // test(
-    //     'when parsing a non json decodable param string then an exception is thrown.',
-    //     () {
-    //   expect(
-    //     () => parseParameters(
-    //       'not a json string',
-    //       parameterDescriptions,
-    //       Protocol(),
-    //     ),
-    //     throwsA(isA<FormatException>()),
-    //   );
-    // });
-
     test(
         'when parsing param with different argument name then an exception is thrown.',
         () {

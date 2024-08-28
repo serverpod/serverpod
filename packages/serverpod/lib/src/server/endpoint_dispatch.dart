@@ -114,7 +114,6 @@ abstract class EndpointDispatch {
     required String methodName,
     required Map<String, dynamic> parameters,
     required SerializationManager serializationManager,
-    Map<String, dynamic> additionalParameters = const {},
   }) async {
     var (endpoint, method, paramMap) =
         await _getAuthorizedEndpointMethodConnector(

@@ -2,11 +2,9 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'endpoint_dispatch.dart';
 
-/// Parses query parameters from a raw map of parameters to a formatted map
+/// Parses parameters from a map of parameters to a formatted map
 /// according to the provided [ParameterDescription]s.
-///
-/// Throws an exception if required parameters are missing or if the
-/// paramString can't be jsonDecoded.
+/// Throws a [InvalidParametersException] if required parameters are missing.
 Map<String, dynamic> parseParameters(
   Map<String, dynamic> decodedParams,
   Map<String, ParameterDescription> descriptions,
