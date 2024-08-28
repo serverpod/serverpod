@@ -165,7 +165,7 @@ void main() {
 
       await expectLater(
         streamErrorCompleter.future,
-        completion(isA<ServerpodClientException>()),
+        completion(isA<ConnectionClosedException>()),
       );
     });
 
@@ -190,7 +190,7 @@ void main() {
 
       await expectLater(
         streamErrorCompleter.future,
-        completion(isA<ServerpodClientException>()),
+        completion(isA<ConnectionClosedException>()),
       );
     });
 

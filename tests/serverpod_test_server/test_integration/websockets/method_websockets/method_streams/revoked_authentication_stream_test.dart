@@ -93,7 +93,7 @@ void main() {
 
         await expectLater(streamClosedCompleter.future, completes);
         var exception = await streamClosedCompleter.future;
-        expect(exception, isA<ServerpodClientException>());
+        expect(exception, isA<ConnectionClosedException>());
       });
 
       test(
@@ -109,7 +109,7 @@ void main() {
 
         await expectLater(streamClosedCompleter.future, completes);
         var exception = await streamClosedCompleter.future;
-        expect(exception, isA<ServerpodClientException>());
+        expect(exception, isA<ConnectionClosedException>());
       });
 
       test(
@@ -144,7 +144,7 @@ void main() {
 
         await expectLater(streamClosedCompleter.future, completes);
         var exception = await streamClosedCompleter.future;
-        expect(exception, isA<ServerpodClientException>());
+        expect(exception, isA<c.ConnectionClosedException>());
       });
 
       test(
