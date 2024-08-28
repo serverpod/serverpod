@@ -1,10 +1,9 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:meta/meta.dart';
 import 'package:serverpod/src/authentication/authentication_info.dart';
 import 'package:serverpod/src/authentication/scope.dart';
+import 'package:serverpod/src/server/endpoint_parameter_helper.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'endpoint.dart';
@@ -68,18 +67,16 @@ abstract class EndpointDispatch {
     required Session session,
     required String endpointPath,
     required String methodName,
-    required String body,
+    required Map<String, dynamic> parameters,
     required SerializationManager serializationManager,
     required List<String> requestedInputStreams,
-    Map<String, dynamic> additionalParameters = const {},
   }) async {
     var (_, method, paramMap) = await _tryGetEndpointMethodConnector(
       session: session,
       endpointPath: endpointPath,
       methodName: methodName,
-      body: body,
+      parameters: parameters,
       serializationManager: serializationManager,
-      additionalParameters: additionalParameters,
     );
 
     if (method is! MethodStreamConnector) {
@@ -115,7 +112,7 @@ abstract class EndpointDispatch {
     required Session session,
     required String endpointPath,
     required String methodName,
-    required String body,
+    required Map<String, dynamic> parameters,
     required SerializationManager serializationManager,
     Map<String, dynamic> additionalParameters = const {},
   }) async {
@@ -123,9 +120,8 @@ abstract class EndpointDispatch {
       session: session,
       endpointPath: endpointPath,
       methodName: methodName,
-      body: body,
+      parameters: parameters,
       serializationManager: serializationManager,
-      additionalParameters: additionalParameters,
     );
 
     if (method is! MethodConnector) {
@@ -141,9 +137,8 @@ abstract class EndpointDispatch {
     required Session session,
     required String endpointPath,
     required String methodName,
-    required String body,
+    required Map<String, dynamic> parameters,
     required SerializationManager serializationManager,
-    Map<String, dynamic> additionalParameters = const {},
   }) async {
     var endpointConnector = await _tryGetEndpoint(endpointPath, session);
 
@@ -154,8 +149,10 @@ abstract class EndpointDispatch {
     }
 
     var paramMap = parseParameters(
-        body.isEmpty ? null : body, method.params, serializationManager,
-        additionalParameters: additionalParameters);
+      parameters,
+      method.params,
+      serializationManager,
+    );
 
     return (endpointConnector.endpoint, method, paramMap);
   }
@@ -201,14 +198,9 @@ abstract class EndpointDispatch {
     }
 
     // Read query parameters
-    var queryParameters = <String, dynamic>{};
-    if (body != '' && body != 'null') {
-      try {
-        queryParameters = jsonDecode(body).cast<String, dynamic>();
-      } catch (_) {
-        return ResultInvalidParams('Invalid JSON in body: $body');
-      }
-    }
+    var isValidBody = body != '' && body != 'null';
+    Map<String, dynamic> queryParameters =
+        isValidBody ? decodeParameters(body) : {};
 
     // Add query parameters from uri
     queryParameters.addAll(uri.queryParameters);
@@ -257,9 +249,8 @@ abstract class EndpointDispatch {
         session: session,
         endpointPath: endpointName,
         methodName: methodName,
-        body: body,
+        parameters: queryParameters,
         serializationManager: server.serializationManager,
-        additionalParameters: uri.queryParameters,
       );
     } on MethodNotFoundException catch (e) {
       return ResultInvalidParams(e.message);
@@ -326,43 +317,6 @@ abstract class EndpointDispatch {
     }
 
     return null;
-  }
-
-  /// Parses query parameters from a string into a map of parameters formatted
-  /// according to the provided [ParameterDescription]s.
-  ///
-  /// Throws an exception if required parameters are missing or if the
-  /// paramString can't be jsonDecoded.
-  @visibleForTesting
-  static Map<String, dynamic> parseParameters(
-    String? paramString,
-    Map<String, ParameterDescription> descriptions,
-    SerializationManager serializationManager, {
-    Map<String, dynamic> additionalParameters = const {},
-  }) {
-    if (descriptions.isEmpty) return {};
-    var decodedParams = paramString == null
-        ? {}
-        : jsonDecode(paramString) as Map<String, dynamic>;
-    decodedParams.addAll(additionalParameters);
-
-    var deserializedParams = <String, dynamic>{};
-    for (var description in descriptions.values) {
-      var name = description.name;
-      var serializedParam = decodedParams[name];
-
-      if (serializedParam != null) {
-        deserializedParams[name] = serializationManager.deserialize(
-          serializedParam,
-          description.type,
-        );
-      } else if (!description.nullable) {
-        throw InvalidParametersException(
-            'Missing required query parameter: $name');
-      }
-    }
-
-    return deserializedParams;
   }
 
   /// Parses a list of requested input stream parameter descriptions and returns

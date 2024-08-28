@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/server/endpoint_parameter_helper.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// This class is used by the [Server] to handle incoming websocket requests
@@ -130,8 +131,8 @@ class MethodWebsocketRequestHandler {
       connectionId: message.connectionId,
     );
 
-    MethodStreamConnector method;
     Map<String, dynamic> args;
+    MethodStreamConnector method;
     List<StreamParameterDescription> requestedInputStreams;
     try {
       (method, args, requestedInputStreams) =
@@ -139,7 +140,7 @@ class MethodWebsocketRequestHandler {
         session: session,
         endpointPath: message.endpoint,
         methodName: message.method,
-        body: message.args,
+        parameters: decodeParameters(message.args),
         serializationManager: server.serializationManager,
         requestedInputStreams: message.inputStreams,
       );
