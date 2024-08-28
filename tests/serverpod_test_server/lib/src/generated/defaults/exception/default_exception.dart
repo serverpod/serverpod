@@ -9,6 +9,9 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import '../../protocol.dart' as _i2;
+import 'package:uuid/uuid.dart' as _i3;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class DefaultException
     implements
@@ -16,54 +19,127 @@ abstract class DefaultException
         _i1.SerializableModel,
         _i1.ProtocolSerialization {
   DefaultException._({
-    String? defaultMessage,
-    String? defaultModelMessage,
-    String? defaultMixMessage,
-  })  : defaultMessage = defaultMessage ?? 'Default error message',
-        defaultModelMessage =
-            defaultModelMessage ?? 'Default model error message',
-        defaultMixMessage = defaultMixMessage ?? 'Default model error message';
+    bool? defaultBoolean,
+    DateTime? defaultDateTime,
+    double? defaultDouble,
+    Duration? defaultDuration,
+    _i2.ByNameEnum? defaultEnum,
+    int? defaultInteger,
+    String? defaultString,
+    _i1.UuidValue? defaultUuid,
+    String? defaultModelField,
+    String? defaultMixField,
+  })  : defaultBoolean = defaultBoolean ?? true,
+        defaultDateTime = defaultDateTime ?? DateTime.now(),
+        defaultDouble = defaultDouble ?? 10.5,
+        defaultDuration = defaultDuration ??
+            Duration(
+              days: 1,
+              hours: 2,
+              minutes: 30,
+              seconds: 0,
+              milliseconds: 0,
+            ),
+        defaultEnum = defaultEnum ?? _i2.ByNameEnum.byName1,
+        defaultInteger = defaultInteger ?? 10,
+        defaultString = defaultString ?? 'Default error message',
+        defaultUuid = defaultUuid ?? _i3.Uuid().v4obj(),
+        defaultModelField = defaultModelField ?? 'Model specific message',
+        defaultMixField = defaultMixField ?? 'Model specific mix message';
 
   factory DefaultException({
-    String? defaultMessage,
-    String? defaultModelMessage,
-    String? defaultMixMessage,
+    bool? defaultBoolean,
+    DateTime? defaultDateTime,
+    double? defaultDouble,
+    Duration? defaultDuration,
+    _i2.ByNameEnum? defaultEnum,
+    int? defaultInteger,
+    String? defaultString,
+    _i1.UuidValue? defaultUuid,
+    String? defaultModelField,
+    String? defaultMixField,
   }) = _DefaultExceptionImpl;
 
   factory DefaultException.fromJson(Map<String, dynamic> jsonSerialization) {
     return DefaultException(
-      defaultMessage: jsonSerialization['defaultMessage'] as String,
-      defaultModelMessage: jsonSerialization['defaultModelMessage'] as String,
-      defaultMixMessage: jsonSerialization['defaultMixMessage'] as String,
+      defaultBoolean: jsonSerialization['defaultBoolean'] as bool,
+      defaultDateTime: _i1.DateTimeJsonExtension.fromJson(
+          jsonSerialization['defaultDateTime']),
+      defaultDouble: (jsonSerialization['defaultDouble'] as num).toDouble(),
+      defaultDuration: _i1.DurationJsonExtension.fromJson(
+          jsonSerialization['defaultDuration']),
+      defaultEnum:
+          _i2.ByNameEnum.fromJson((jsonSerialization['defaultEnum'] as String)),
+      defaultInteger: jsonSerialization['defaultInteger'] as int,
+      defaultString: jsonSerialization['defaultString'] as String,
+      defaultUuid:
+          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['defaultUuid']),
+      defaultModelField: jsonSerialization['defaultModelField'] as String,
+      defaultMixField: jsonSerialization['defaultMixField'] as String,
     );
   }
 
-  String defaultMessage;
+  bool defaultBoolean;
 
-  String defaultModelMessage;
+  DateTime defaultDateTime;
 
-  String defaultMixMessage;
+  double defaultDouble;
+
+  Duration defaultDuration;
+
+  _i2.ByNameEnum defaultEnum;
+
+  int defaultInteger;
+
+  String defaultString;
+
+  _i1.UuidValue defaultUuid;
+
+  String defaultModelField;
+
+  String defaultMixField;
 
   DefaultException copyWith({
-    String? defaultMessage,
-    String? defaultModelMessage,
-    String? defaultMixMessage,
+    bool? defaultBoolean,
+    DateTime? defaultDateTime,
+    double? defaultDouble,
+    Duration? defaultDuration,
+    _i2.ByNameEnum? defaultEnum,
+    int? defaultInteger,
+    String? defaultString,
+    _i1.UuidValue? defaultUuid,
+    String? defaultModelField,
+    String? defaultMixField,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'defaultMessage': defaultMessage,
-      'defaultModelMessage': defaultModelMessage,
-      'defaultMixMessage': defaultMixMessage,
+      'defaultBoolean': defaultBoolean,
+      'defaultDateTime': defaultDateTime.toJson(),
+      'defaultDouble': defaultDouble,
+      'defaultDuration': defaultDuration.toJson(),
+      'defaultEnum': defaultEnum.toJson(),
+      'defaultInteger': defaultInteger,
+      'defaultString': defaultString,
+      'defaultUuid': defaultUuid.toJson(),
+      'defaultModelField': defaultModelField,
+      'defaultMixField': defaultMixField,
     };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      'defaultMessage': defaultMessage,
-      'defaultModelMessage': defaultModelMessage,
-      'defaultMixMessage': defaultMixMessage,
+      'defaultBoolean': defaultBoolean,
+      'defaultDateTime': defaultDateTime.toJson(),
+      'defaultDouble': defaultDouble,
+      'defaultDuration': defaultDuration.toJson(),
+      'defaultEnum': defaultEnum.toJson(),
+      'defaultInteger': defaultInteger,
+      'defaultString': defaultString,
+      'defaultUuid': defaultUuid.toJson(),
+      'defaultModelField': defaultModelField,
+      'defaultMixField': defaultMixField,
     };
   }
 
@@ -75,25 +151,53 @@ abstract class DefaultException
 
 class _DefaultExceptionImpl extends DefaultException {
   _DefaultExceptionImpl({
-    String? defaultMessage,
-    String? defaultModelMessage,
-    String? defaultMixMessage,
+    bool? defaultBoolean,
+    DateTime? defaultDateTime,
+    double? defaultDouble,
+    Duration? defaultDuration,
+    _i2.ByNameEnum? defaultEnum,
+    int? defaultInteger,
+    String? defaultString,
+    _i1.UuidValue? defaultUuid,
+    String? defaultModelField,
+    String? defaultMixField,
   }) : super._(
-          defaultMessage: defaultMessage,
-          defaultModelMessage: defaultModelMessage,
-          defaultMixMessage: defaultMixMessage,
+          defaultBoolean: defaultBoolean,
+          defaultDateTime: defaultDateTime,
+          defaultDouble: defaultDouble,
+          defaultDuration: defaultDuration,
+          defaultEnum: defaultEnum,
+          defaultInteger: defaultInteger,
+          defaultString: defaultString,
+          defaultUuid: defaultUuid,
+          defaultModelField: defaultModelField,
+          defaultMixField: defaultMixField,
         );
 
   @override
   DefaultException copyWith({
-    String? defaultMessage,
-    String? defaultModelMessage,
-    String? defaultMixMessage,
+    bool? defaultBoolean,
+    DateTime? defaultDateTime,
+    double? defaultDouble,
+    Duration? defaultDuration,
+    _i2.ByNameEnum? defaultEnum,
+    int? defaultInteger,
+    String? defaultString,
+    _i1.UuidValue? defaultUuid,
+    String? defaultModelField,
+    String? defaultMixField,
   }) {
     return DefaultException(
-      defaultMessage: defaultMessage ?? this.defaultMessage,
-      defaultModelMessage: defaultModelMessage ?? this.defaultModelMessage,
-      defaultMixMessage: defaultMixMessage ?? this.defaultMixMessage,
+      defaultBoolean: defaultBoolean ?? this.defaultBoolean,
+      defaultDateTime: defaultDateTime ?? this.defaultDateTime,
+      defaultDouble: defaultDouble ?? this.defaultDouble,
+      defaultDuration: defaultDuration ?? this.defaultDuration,
+      defaultEnum: defaultEnum ?? this.defaultEnum,
+      defaultInteger: defaultInteger ?? this.defaultInteger,
+      defaultString: defaultString ?? this.defaultString,
+      defaultUuid: defaultUuid ?? this.defaultUuid,
+      defaultModelField: defaultModelField ?? this.defaultModelField,
+      defaultMixField: defaultMixField ?? this.defaultMixField,
     );
   }
 }
