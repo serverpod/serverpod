@@ -124,8 +124,8 @@ class Users {
       await AuthConfig.current.onUserUpdated!(session, userInfo);
     }
 
-    // Notify if any scopes are revoked for user.
-    if (removedScopes.isNotEmpty) {
+    var scopesHaveBeenRevoked = removedScopes.isNotEmpty;
+    if (scopesHaveBeenRevoked) {
       var removedScopesList =
           removedScopes.map((s) => s.name).whereType<String>().toList();
       await session.messages.authenticationRevoked(
