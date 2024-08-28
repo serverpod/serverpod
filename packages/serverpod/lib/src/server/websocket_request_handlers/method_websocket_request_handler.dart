@@ -415,7 +415,7 @@ class _MethodStreamManager {
     SerializationManager serializationManager,
     _RequiredAuthentication? requiredAuthentication,
   ) {
-    late void Function(SerializableModel) revokedAuthenticationCallback;
+    void Function(SerializableModel)? revokedAuthenticationCallback;
 
     if (requiredAuthentication != null) {
       revokedAuthenticationCallback = (event) async {
@@ -457,7 +457,8 @@ class _MethodStreamManager {
       /// or a request from the client.
       if (isCanceled) return;
       isCanceled = true;
-      if (requiredAuthentication != null) {
+      if (requiredAuthentication != null &&
+          revokedAuthenticationCallback != null) {
         session.messages.removeListener(
           MessageCentralServerpodChannels.revokedAuthentication(
             requiredAuthentication.authInfo.userId,
