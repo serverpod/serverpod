@@ -94,6 +94,281 @@ void main() {
     );
 
     test(
+      'when the field is of type bool and the default is set to true, then the field should have a "default model" value',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          exception: DefaultException
+          fields:
+            defaultBoolean: bool, default=true
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        var definitions =
+            StatefulAnalyzer(config, models, onErrorsCollector(collector))
+                .validateAll();
+
+        expect(collector.errors, isEmpty);
+
+        var definition = definitions.first as ClassDefinition;
+        expect(
+          definition.fields.last.defaultModelValue,
+          'true',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type bool and an invalid default is set, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          exception: DefaultException
+          fields:
+            defaultBoolean: bool, default=invalidBool
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          'The "default" value must be a valid boolean: "true" or "false"',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type int and the default is set to 10, then the field should have a "default model" value',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          exception: DefaultException
+          fields:
+            defaultInteger: int, default=10
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        var definitions =
+            StatefulAnalyzer(config, models, onErrorsCollector(collector))
+                .validateAll();
+
+        expect(collector.errors, isEmpty);
+
+        var definition = definitions.first as ClassDefinition;
+        expect(
+          definition.fields.last.defaultModelValue,
+          '10',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type int and an invalid default is set, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          exception: DefaultException
+          fields:
+            defaultInteger: int, default=invalidInt
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          'The "default" value must be a valid integer (e.g., "default"=10).',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type double and the default is set to 20.5, then the field should have a "default model" value',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          exception: DefaultException
+          fields:
+            defaultDouble: double, default=20.5
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        var definitions =
+            StatefulAnalyzer(config, models, onErrorsCollector(collector))
+                .validateAll();
+
+        expect(collector.errors, isEmpty);
+
+        var definition = definitions.first as ClassDefinition;
+        expect(
+          definition.fields.last.defaultModelValue,
+          '20.5',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type double and an invalid default is set, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          exception: DefaultException
+          fields:
+            defaultDouble: double, default=invalidDouble
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          'The "default" value must be a valid double (e.g., "default"=10.5).',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type UuidValue and the default is set to a specific UUID, then the field should have a "default model" value',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          exception: DefaultException
+          fields:
+            defaultUuid: UuidValue, default='550e8400-e29b-41d4-a716-446655440000'
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        var definitions =
+            StatefulAnalyzer(config, models, onErrorsCollector(collector))
+                .validateAll();
+
+        expect(collector.errors, isEmpty);
+
+        var definition = definitions.first as ClassDefinition;
+        expect(
+          definition.fields.last.defaultModelValue,
+          '\'550e8400-e29b-41d4-a716-446655440000\'',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type UuidValue and an invalid UUID is set as default, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          exception: DefaultException
+          fields:
+            defaultUuid: UuidValue, default='invalid-uuid'
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          'The "default" value must be a valid UUID (e.g., \'550e8400-e29b-41d4-a716-446655440000\').',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type Duration and the default is set to "1d 2h 30min", then the field should have a "default model" value',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          exception: DefaultException
+          fields:
+            defaultDuration: Duration, default=1d 2h 30min
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        var definitions =
+            StatefulAnalyzer(config, models, onErrorsCollector(collector))
+                .validateAll();
+
+        expect(collector.errors, isEmpty);
+
+        var definition = definitions.first as ClassDefinition;
+        expect(
+          definition.fields.last.defaultModelValue,
+          '1d 2h 30min',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type Duration and an invalid duration is set as default, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          exception: DefaultException
+          fields:
+            defaultDuration: Duration, default='invalid-duration'
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          'The "default" value must be a valid duration in the format "Xd Xh Xmin Xs Xms" (e.g., "default"=1d 2h 30min 45s 100ms).',
+        );
+      },
+    );
+
+    test(
       'when the field is of type String and the defaultPersist is set, then an error is generated indicating that defaultPersist is not supported for exceptions',
       () {
         var models = [
