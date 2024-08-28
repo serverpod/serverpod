@@ -67,8 +67,8 @@ abstract class EndpointWebsocketRequestHandler {
 
           EndpointConnector endpointConnector;
           try {
-            endpointConnector = await server.endpoints
-                .tryGetEndpoint(session: session, endpointPath: endpointName);
+            endpointConnector = await server.endpoints.getAuthorizedEndpoint(
+                session: session, endpointPath: endpointName);
           } on NotAuthorizedException {
             continue;
           } on EndpointNotFoundException {

@@ -63,7 +63,7 @@ abstract class EndpointDispatch {
         MethodStreamConnector,
         Map<String, dynamic>,
         List<StreamParameterDescription>
-      )> tryGetEndpointMethodStreamConnector({
+      )> getAuthorizedEndpointMethodStreamConnector({
     required Session session,
     required String endpointPath,
     required String methodName,
@@ -71,7 +71,7 @@ abstract class EndpointDispatch {
     required SerializationManager serializationManager,
     required List<String> requestedInputStreams,
   }) async {
-    var (_, method, paramMap) = await _tryGetEndpointMethodConnector(
+    var (_, method, paramMap) = await _getAuthorizedEndpointMethodConnector(
       session: session,
       endpointPath: endpointPath,
       methodName: methodName,
@@ -95,11 +95,11 @@ abstract class EndpointDispatch {
   /// Tries to get an [EndpointConnector] for a given endpoint and method name.
   /// If the endpoint is not found, an [EndpointNotFoundException] is thrown.
   /// If the user is not authorized to access the endpoint, a [NotAuthorizedException] is thrown.
-  Future<EndpointConnector> tryGetEndpoint({
+  Future<EndpointConnector> getAuthorizedEndpoint({
     required Session session,
     required String endpointPath,
   }) async {
-    return _tryGetEndpoint(endpointPath, session);
+    return _getAuthorizedEndpoint(endpointPath, session);
   }
 
   /// Tries to get a [MethodConnector] for a given endpoint and method name.
@@ -108,7 +108,7 @@ abstract class EndpointDispatch {
   /// If the user is not authorized to access the endpoint, a [NotAuthorizedException] is thrown.
   /// If the input parameters are invalid, an [InvalidParametersException] is thrown.
   Future<(Endpoint, MethodConnector, Map<String, dynamic>)>
-      tryGetEndpointMethodConnector({
+      getAuthorizedEndpointMethodConnector({
     required Session session,
     required String endpointPath,
     required String methodName,
@@ -116,7 +116,8 @@ abstract class EndpointDispatch {
     required SerializationManager serializationManager,
     Map<String, dynamic> additionalParameters = const {},
   }) async {
-    var (endpoint, method, paramMap) = await _tryGetEndpointMethodConnector(
+    var (endpoint, method, paramMap) =
+        await _getAuthorizedEndpointMethodConnector(
       session: session,
       endpointPath: endpointPath,
       methodName: methodName,
@@ -133,14 +134,14 @@ abstract class EndpointDispatch {
   }
 
   Future<(Endpoint, EndpointMethodConnector, Map<String, dynamic>)>
-      _tryGetEndpointMethodConnector({
+      _getAuthorizedEndpointMethodConnector({
     required Session session,
     required String endpointPath,
     required String methodName,
     required Map<String, dynamic> parameters,
     required SerializationManager serializationManager,
   }) async {
-    var endpointConnector = await _tryGetEndpoint(endpointPath, session);
+    var endpointConnector = await _getAuthorizedEndpoint(endpointPath, session);
 
     var method = endpointConnector.methodConnectors[methodName];
     if (method == null) {
@@ -157,14 +158,14 @@ abstract class EndpointDispatch {
     return (endpointConnector.endpoint, method, paramMap);
   }
 
-  Future<EndpointConnector> _tryGetEndpoint(
+  Future<EndpointConnector> _getAuthorizedEndpoint(
       String endpointPath, Session session) async {
     var connector = getConnectorByName(endpointPath);
     if (connector == null) {
       throw EndpointNotFoundException('Endpoint $endpointPath not found');
     }
 
-    if (connector.endpoint.logSessions) session.startLogging();
+    //var session = await createSessionCallback(connector);
 
     var authenticationFailedResult = await canUserAccessEndpoint(
       () => session.authenticated,
@@ -245,7 +246,7 @@ abstract class EndpointDispatch {
     MethodConnector method;
     Map<String, dynamic> paramMap;
     try {
-      (endpoint, method, paramMap) = await tryGetEndpointMethodConnector(
+      (endpoint, method, paramMap) = await getAuthorizedEndpointMethodConnector(
         session: session,
         endpointPath: endpointName,
         methodName: methodName,
@@ -501,14 +502,14 @@ class ResultInvalidParams extends Result {
   }
 }
 
-/// The result of a failed [EndpointDispatch.tryGetEndpointMethodStreamConnector], [EndpointDispatch.tryGetEndpointMethodConnector] or [EndpointDispatch.tryGetEndpoint] call.
-abstract class TryGetMethodException implements Exception {
+/// The result of a failed [EndpointDispatch.getAuthorizedEndpointMethodStreamConnector], [EndpointDispatch.getAuthorizedEndpointMethodConnector] or [EndpointDispatch.getAuthorizedEndpoint] call.
+abstract class GetAuthorizedMethodException implements Exception {
   /// Description of the error.
   String get message;
 }
 
 /// The user is not authorized to access the endpoint.
-class NotAuthorizedException implements TryGetMethodException {
+class NotAuthorizedException implements GetAuthorizedMethodException {
   @override
   String message;
 
@@ -521,7 +522,7 @@ class NotAuthorizedException implements TryGetMethodException {
 }
 
 /// The endpoint was not found.
-class EndpointNotFoundException implements TryGetMethodException {
+class EndpointNotFoundException implements GetAuthorizedMethodException {
   @override
   String message = 'Endpoint not found';
 
@@ -530,7 +531,7 @@ class EndpointNotFoundException implements TryGetMethodException {
 }
 
 /// The endpoint method was not found.
-class MethodNotFoundException implements TryGetMethodException {
+class MethodNotFoundException implements GetAuthorizedMethodException {
   @override
   String message = 'Method not found';
 
@@ -539,7 +540,8 @@ class MethodNotFoundException implements TryGetMethodException {
 }
 
 /// The found endpoint method was not of the expected type.
-class InvalidEndpointMethodTypeException implements TryGetMethodException {
+class InvalidEndpointMethodTypeException
+    implements GetAuthorizedMethodException {
   @override
   String message = 'Wrong endpoint type';
 
@@ -548,7 +550,7 @@ class InvalidEndpointMethodTypeException implements TryGetMethodException {
 }
 
 /// The input parameters were invalid.
-class InvalidParametersException implements TryGetMethodException {
+class InvalidParametersException implements GetAuthorizedMethodException {
   @override
   String message = 'Invalid parameters';
 

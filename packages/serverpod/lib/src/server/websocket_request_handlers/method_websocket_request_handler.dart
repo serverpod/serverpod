@@ -136,7 +136,7 @@ class MethodWebsocketRequestHandler {
     List<StreamParameterDescription> requestedInputStreams;
     try {
       (method, args, requestedInputStreams) =
-          await server.endpoints.tryGetEndpointMethodStreamConnector(
+          await server.endpoints.getAuthorizedEndpointMethodStreamConnector(
         session: session,
         endpointPath: message.endpoint,
         methodName: message.method,
