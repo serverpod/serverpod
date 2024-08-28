@@ -18,8 +18,6 @@ void main() async {
     late Completer<String> tokenInspectionCompleter;
 
     setUp(() async {
-      tokenInspectionCompleter = Completer();
-
       Future<AuthenticationInfo?> authenticationHandler(
         Session session,
         String token,
@@ -42,8 +40,9 @@ void main() async {
         'then endpoint method should receive plain auth key (i.e. in original format)',
         () async {
       var key = 'username-4711:password-4711';
-      authKeyManager.put(key);
+      await authKeyManager.put(key);
 
+      tokenInspectionCompleter = Completer();
       var reflectedKey = await client.reflection.reflectAuthenticationKey();
       expect(reflectedKey, key);
 
@@ -54,21 +53,78 @@ void main() async {
     test(
         'then endpoint method request should contain properly formatted "authorization" header with Basic scheme',
         () async {
-      var key = 'username-4711:password-4711';
-      authKeyManager.put(key);
+      var key = 'username-4712:password-4712';
+      await authKeyManager.put(key);
 
+      tokenInspectionCompleter = Completer();
       var reflectedHeader =
           await client.reflection.reflectHttpHeader('authorization');
       expect(reflectedHeader, isNotNull);
-      expect(reflectedHeader!.length, 1);
-      expect(isValidAuthHeaderValue(reflectedHeader.first), true);
-      expect(isWrappedAuthValue(reflectedHeader.first), true);
+      expect(reflectedHeader!, isNotEmpty);
+      expect(isValidAuthHeaderValue(reflectedHeader.first), isTrue);
+      expect(isWrappedAuthValue(reflectedHeader.first), isTrue);
 
       var scheme = reflectedHeader.first.split(' ')[0];
       expect(scheme, 'Basic');
 
       var unwrappedKey = unwrapAuthValue(reflectedHeader.first);
       expect(unwrappedKey, key);
+
+      var receivedToken = await tokenInspectionCompleter.future;
+      expect(receivedToken, key);
+    });
+
+    test(
+        'then old clients passing keys in body should still work with new server code',
+        () async {
+      var key = 'username-4713:password-4713';
+
+      // Intentionally clearing the authKeyManager so that auth is not passed in header.
+      await authKeyManager.remove();
+
+      // Verify that by calling it this way, the key is not passed in the header.
+      // This validates this unit test's approach.
+      tokenInspectionCompleter = Completer();
+      var reflectedHeader =
+          await client.reflection.caller.callServerEndpoint<List<String>?>(
+        'reflection',
+        'reflectHttpHeader',
+        {
+          'headerName': 'authorization',
+          'auth': key,
+        },
+      );
+      expect(reflectedHeader, isNull);
+
+      // Verify that auth is required by this endpoint method.
+      tokenInspectionCompleter = Completer();
+      int? statusCode;
+      try {
+        reflectedHeader =
+            await client.reflection.caller.callServerEndpoint<List<String>?>(
+          'reflection',
+          'reflectHttpHeader',
+          {
+            'headerName': 'authorization',
+          },
+        );
+      } catch (e) {
+        if (e is ServerpodClientException) {
+          statusCode = e.statusCode;
+        }
+      }
+      expect(statusCode, equals(401));
+
+      // This emulates how the old formatArgs(), called by callServerEndpoint(),
+      // would pass the key
+      tokenInspectionCompleter = Completer();
+      var reflectedKey =
+          await client.reflection.caller.callServerEndpoint<String?>(
+        'reflection',
+        'reflectAuthenticationKey',
+        {'auth': key},
+      );
+      expect(reflectedKey, key);
 
       var receivedToken = await tokenInspectionCompleter.future;
       expect(receivedToken, key);

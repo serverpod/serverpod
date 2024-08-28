@@ -413,6 +413,8 @@ class StreamingSession extends Session {
     this.queryParameters = queryParameters;
 
     // Get the the authentication key, if any
+    // TODO: This is insecure, the auth key should be passed in a message after stream connection instead.
+    // See issue #2681 https://github.com/orgs/serverpod/projects/4/views/1?pane=issue&itemId=76663913
     _authenticationKey = unwrapAuthValue(queryParameters['auth']);
   }
 

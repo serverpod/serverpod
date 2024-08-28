@@ -8,10 +8,6 @@ class ReflectionEndpoint extends Endpoint {
   /// Reflects the authentication key of the session.
   /// Returns null if the key is not set.
   Future<String?> reflectAuthenticationKey(Session session) async {
-    var ms = session as MethodCallSession;
-    ms.httpRequest.headers.forEach((key, value) {
-      print('Header: $key: $value');
-    });
     return session.authenticationKey;
   }
 

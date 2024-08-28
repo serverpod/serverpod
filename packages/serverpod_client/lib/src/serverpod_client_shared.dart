@@ -115,20 +115,20 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   /// Full host name of the web socket endpoint.
   /// E.g. "wss://example.com/websocket"
-//  ///
-//  /// This string also includes the authentication key if one is available.
+  @Deprecated('This is only for internal use and may be removed in the future.')
   Future<String> get websocketHost async {
     var uri = _webSocketHost;
-    // FIXME
-    // var auth = await authenticationKeyManager?.getHeaderValue();
-    // if (auth != null) {
-    //   uri = uri.replace(
-    //     queryParameters: {
-    //       'auth': auth,
-    //     },
-    //   );
-    // }
 
+    var auth = await authenticationKeyManager?.get();
+    if (auth != null) {
+      // TODO: This is insecure, the auth key should be passed in a message after stream connection instead.
+      // See issue #2681 https://github.com/orgs/serverpod/projects/4/views/1?pane=issue&itemId=76663913
+      uri = uri.replace(
+        queryParameters: {
+          'auth': auth,
+        },
+      );
+    }
     return uri.toString();
   }
 
