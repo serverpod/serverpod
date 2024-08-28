@@ -528,13 +528,13 @@ class ResultInvalidParams extends Result {
 }
 
 /// The result of a failed [EndpointDispatch.getAuthorizedEndpointMethodStreamConnector], [EndpointDispatch.getAuthorizedEndpointMethodConnector] or [EndpointDispatch.getAuthorizedEndpoint] call.
-abstract class GetAuthorizedMethodException implements Exception {
+abstract class GetAuthorizedEndpointMethodException implements Exception {
   /// Description of the error.
   String get message;
 }
 
 /// The user is not authorized to access the endpoint.
-class NotAuthorizedException implements GetAuthorizedMethodException {
+class NotAuthorizedException implements GetAuthorizedEndpointMethodException {
   @override
   String message;
 
@@ -547,7 +547,8 @@ class NotAuthorizedException implements GetAuthorizedMethodException {
 }
 
 /// The endpoint was not found.
-class EndpointNotFoundException implements GetAuthorizedMethodException {
+class EndpointNotFoundException
+    implements GetAuthorizedEndpointMethodException {
   @override
   String message = 'Endpoint not found';
 
@@ -556,7 +557,7 @@ class EndpointNotFoundException implements GetAuthorizedMethodException {
 }
 
 /// The endpoint method was not found.
-class MethodNotFoundException implements GetAuthorizedMethodException {
+class MethodNotFoundException implements GetAuthorizedEndpointMethodException {
   @override
   String message = 'Method not found';
 
@@ -566,7 +567,7 @@ class MethodNotFoundException implements GetAuthorizedMethodException {
 
 /// The found endpoint method was not of the expected type.
 class InvalidEndpointMethodTypeException
-    implements GetAuthorizedMethodException {
+    implements GetAuthorizedEndpointMethodException {
   @override
   String message = 'Wrong endpoint type';
 
@@ -575,7 +576,8 @@ class InvalidEndpointMethodTypeException
 }
 
 /// The input parameters were invalid.
-class InvalidParametersException implements GetAuthorizedMethodException {
+class InvalidParametersException
+    implements GetAuthorizedEndpointMethodException {
   @override
   String message = 'Invalid parameters';
 
