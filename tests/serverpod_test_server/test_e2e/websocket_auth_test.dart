@@ -39,7 +39,7 @@ void main() {
     test('Access restricted endpoint with authentication', () async {
       var response =
           await client.authentication.authenticate('test@foo.bar', 'password');
-      expect(response.success, equals(true));
+      expect(response.success, isTrue);
       expect(response.userInfo, isNotNull);
       expect(response.key, isNotNull);
       expect(response.keyId, isNotNull);
