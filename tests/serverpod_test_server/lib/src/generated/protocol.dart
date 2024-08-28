@@ -5960,6 +5960,10 @@ class Protocol extends _i1.SerializationManagerServer {
           ? (data as List).map((e) => deserialize<String>(e)).toList()
           : null) as dynamic;
     }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList()
+          as dynamic;
+    }
     if (t == List<_i114.SimpleData>) {
       return (data as List)
           .map((e) => deserialize<_i114.SimpleData>(e))
@@ -6034,10 +6038,6 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == List<bool?>) {
       return (data as List).map((e) => deserialize<bool?>(e)).toList()
-          as dynamic;
-    }
-    if (t == List<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toList()
           as dynamic;
     }
     if (t == List<String?>) {

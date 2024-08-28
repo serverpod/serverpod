@@ -1,0 +1,5 @@
+### Message sent when an authentication key id is revoked.
+class: RevokedAuthenticationAuthId
+serverOnly: true
+fields:
+    authId: String

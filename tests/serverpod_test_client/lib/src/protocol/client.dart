@@ -116,6 +116,19 @@ class EndpointAuthentication extends _i1.EndpointRef {
         'signOut',
         {},
       );
+
+  _i2.Future<void> updateScopes(
+    int userId,
+    List<String> scopes,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'authentication',
+        'updateScopes',
+        {
+          'userId': userId,
+          'scopes': scopes,
+        },
+      );
 }
 
 /// {@category Endpoint}
@@ -1685,6 +1698,15 @@ class EndpointAuthenticatedMethodStreaming extends _i1.EndpointRef {
         'simpleStream',
         {},
         {},
+      );
+
+  /// Warning: Streaming methods are still experimental.
+  _i2.Stream<int> intEchoStream(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'authenticatedMethodStreaming',
+        'intEchoStream',
+        {},
+        {'stream': stream},
       );
 }
 

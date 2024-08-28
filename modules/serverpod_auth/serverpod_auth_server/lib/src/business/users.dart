@@ -1,3 +1,4 @@
+import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/src/business/config.dart';
 import 'package:serverpod_auth_server/src/business/user_authentication.dart';
@@ -109,10 +110,8 @@ class Users {
     var userInfo = await findUserByUserId(session, userId, useCache: false);
     if (userInfo == null) return null;
 
-    var scopeStrs = <String>[];
-    for (var scope in newScopes) {
-      if (scope.name != null) scopeStrs.add(scope.name!);
-    }
+    var removedScopes = userInfo.scopes.difference(newScopes);
+    var scopeStrs = newScopes.map((s) => s.name).whereType<String>().toList();
     userInfo.scopeNames = scopeStrs;
     await UserInfo.db.updateRow(session, userInfo);
 
@@ -123,6 +122,18 @@ class Users {
 
     if (AuthConfig.current.onUserUpdated != null) {
       await AuthConfig.current.onUserUpdated!(session, userInfo);
+    }
+
+    var scopesHaveBeenRevoked = removedScopes.isNotEmpty;
+    if (scopesHaveBeenRevoked) {
+      var removedScopesList =
+          removedScopes.map((s) => s.name).whereType<String>().toList();
+      await session.messages.authenticationRevoked(
+        userId,
+        RevokedAuthenticationScope(
+          scopes: removedScopesList,
+        ),
+      );
     }
 
     await invalidateCacheForUser(session, userId);

@@ -1,0 +1,3 @@
+### Message sent when all authentication for a user is revoked.
+class: RevokedAuthenticationUser
+serverOnly: true
