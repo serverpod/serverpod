@@ -81,8 +81,7 @@ abstract class EndpointDispatch {
     );
 
     if (method is! MethodStreamConnector) {
-      throw InvalidEndpointMethodTypeException(
-          'Method "$methodName" not found in endpoint: $endpointPath');
+      throw InvalidEndpointMethodTypeException(methodName, endpointPath);
     }
 
     List<StreamParameterDescription> inputStreams = parseRequestedInputStreams(
@@ -128,8 +127,7 @@ abstract class EndpointDispatch {
     );
 
     if (method is! MethodConnector) {
-      throw MethodNotFoundException(
-          'Method "$methodName" not found in endpoint: $endpointPath');
+      throw InvalidEndpointMethodTypeException(methodName, endpointPath);
     }
 
     return (endpoint, method, paramMap);
@@ -267,6 +265,8 @@ abstract class EndpointDispatch {
         serializationManager: server.serializationManager,
       );
     } on MethodNotFoundException catch (e) {
+      return ResultInvalidParams(e.message);
+    } on InvalidEndpointMethodTypeException catch (e) {
       return ResultInvalidParams(e.message);
     } on EndpointNotFoundException catch (e) {
       return ResultInvalidParams(e.message);
@@ -569,10 +569,15 @@ class MethodNotFoundException implements GetAuthorizedEndpointMethodException {
 class InvalidEndpointMethodTypeException
     implements GetAuthorizedEndpointMethodException {
   @override
-  String message = 'Wrong endpoint type';
+  String get message =>
+      'Endpoint method $_methodName in $_endpointPath is not of the expected type.';
+
+  final String _methodName;
+  final String _endpointPath;
 
   /// Creates a new [InvalidEndpointMethodTypeException].
-  InvalidEndpointMethodTypeException(this.message);
+
+  InvalidEndpointMethodTypeException(this._methodName, this._endpointPath);
 }
 
 /// The input parameters were invalid.
