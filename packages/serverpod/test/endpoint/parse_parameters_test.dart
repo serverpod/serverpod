@@ -5,42 +5,6 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-      'Given null parameter string when decoding parameters then empty map is returned.',
-      () {
-    expect(
-      decodeParameters(null),
-      {},
-    );
-  });
-
-  test(
-      'Given empty parameter string when decoding parameters then empty map is returned.',
-      () {
-    expect(
-      decodeParameters(''),
-      {},
-    );
-  });
-
-  test(
-      'Given valid parameter input when decoding parameters then parameters are decoded.',
-      () {
-    expect(
-      decodeParameters('{"arg1": 42}'),
-      {'arg1': 42},
-    );
-  });
-
-  test(
-      'Given invalid parameter string when decoding parameters then an exception is thrown.',
-      () {
-    expect(
-      () => decodeParameters('not a json string'),
-      throwsA(isA<FormatException>()),
-    );
-  });
-
-  test(
       'Given no parameter descriptions when parsing null parameter string then empty map is returned.',
       () {
     expect(

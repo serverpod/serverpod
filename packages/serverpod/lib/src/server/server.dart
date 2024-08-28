@@ -5,9 +5,8 @@ import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/caches.dart';
-import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/database.dart';
-import 'package:serverpod/src/server/endpoint_parameter_helper.dart';
+import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
@@ -416,8 +415,8 @@ class Server {
     }
 
     // Read query parameters
-    Map<String, dynamic> queryParameters =
-        body != 'null' ? decodeParameters(body) : {};
+    var isValidBody = body != 'null' && body.isNotEmpty;
+    Map<String, dynamic> queryParameters = isValidBody ? jsonDecode(body) : {};
 
     // Add query parameters from uri
     queryParameters.addAll(uri.queryParameters);

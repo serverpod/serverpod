@@ -1,15 +1,6 @@
-import 'dart:convert';
-
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'endpoint_dispatch.dart';
-
-/// Parses query parameters from a raw string to a map.
-Map<String, dynamic> decodeParameters(String? paramString) {
-  return paramString == null || paramString.isEmpty
-      ? {}
-      : jsonDecode(paramString) as Map<String, dynamic>;
-}
 
 /// Parses query parameters from a raw map of parameters to a formatted map
 /// according to the provided [ParameterDescription]s.

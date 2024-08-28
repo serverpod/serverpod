@@ -1,10 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/server/endpoint_parameter_helper.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// This class is used by the [Server] to handle incoming websocket requests
@@ -144,7 +144,7 @@ class MethodWebsocketRequestHandler {
         },
         endpointPath: message.endpoint,
         methodName: message.method,
-        parameters: decodeParameters(message.args),
+        parameters: jsonDecode(message.args),
         serializationManager: server.serializationManager,
         requestedInputStreams: message.inputStreams,
       );
