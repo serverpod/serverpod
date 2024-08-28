@@ -81,7 +81,7 @@ void main() {
       });
 
       test(
-          'when the authenticated user is revoked then the stream is closed with error.',
+          'when the authenticated user is revoked then the stream is closed with an error.',
           () async {
         await expectLater(
           session.messages.authenticationRevoked(
@@ -97,7 +97,7 @@ void main() {
       });
 
       test(
-          'when the authentication id is revoked then the stream is closed with error.',
+          'when the authentication id is revoked then the stream is closed with an error.',
           () async {
         await expectLater(
           session.messages.authenticationRevoked(
@@ -132,7 +132,7 @@ void main() {
       });
 
       test(
-          'when the required scope for endpoint is revoked the stream is closed with error.',
+          'when the required scope for an endpoint is revoked then the stream is closed with an error.',
           () async {
         await expectLater(
           session.messages.authenticationRevoked(
@@ -148,7 +148,7 @@ void main() {
       });
 
       test(
-          'when a scope not required for the endpoint is revoked then the stream can still be used.',
+          'when a scope not required for an endpoint is revoked then the stream can still be used.',
           () async {
         await expectLater(
           session.messages.authenticationRevoked(
@@ -168,7 +168,7 @@ void main() {
     });
 
     group(
-        'connected to both an authenticated an unauthenticated streaming method',
+        'connected to both an authenticated and an unauthenticated streaming method',
         () {
       late Completer authenticatedStreamClosedCompleter;
       late Completer<int> unauthenticatedValueReceivedCompleter;
