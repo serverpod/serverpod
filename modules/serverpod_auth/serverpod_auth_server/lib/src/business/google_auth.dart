@@ -24,33 +24,24 @@ class GoogleAuth {
       var data = jsonDecode(jsonData);
 
       if (data['web'] == null) {
-        throw const FormatException(
-          'Missing "web" section in $_configFilePath',
-        );
+        throw const FormatException('Missing "web" section');
       }
 
       Map web = data['web'];
 
       var clientId = web['client_id'];
-
       if (clientId == null) {
-        throw const FormatException(
-          'Missing "client_id" in $_configFilePath',
-        );
+        throw const FormatException('Missing "client_id"');
       }
 
       var clientSecret = web['client_secret'];
       if (clientSecret == null) {
-        throw const FormatException(
-          'Missing "client_secret" in $_configFilePath',
-        );
+        throw const FormatException('Missing "client_secret"');
       }
 
       var redirectUris = web['redirect_uris'];
       if (redirectUris == null) {
-        throw const FormatException(
-          'Missing "redirect_uris" in $_configFilePath',
-        );
+        throw const FormatException('Missing "redirect_uris"');
       }
 
       return GoogleClientSecret._(
@@ -59,7 +50,7 @@ class GoogleAuth {
         redirectUris: (redirectUris as List).cast<String>(),
       );
     } catch (e) {
-      stdout.writeln(
+      stderr.writeln(
         'serverpod_auth_server: Failed to load $_configFilePath. Sign in with Google will be disabled. Error: $e',
       );
       return null;
