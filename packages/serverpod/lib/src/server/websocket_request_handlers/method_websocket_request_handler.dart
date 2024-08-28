@@ -243,7 +243,7 @@ class MethodWebsocketRequestHandler {
 
     var authenticationIsRequired = endpointConnector.endpoint.requireLogin ||
         endpointConnector.endpoint.requiredScopes.isNotEmpty;
-    _RequiredAuthentication? requiredAuthentication;
+    _AuthenticationContext? authenticationContext;
     if (authenticationIsRequired) {
       var authenticationInfo = await session.authenticated;
       if (authenticationInfo == null) {
@@ -252,7 +252,7 @@ class MethodWebsocketRequestHandler {
         );
       }
 
-      requiredAuthentication = _RequiredAuthentication(
+      authenticationContext = _AuthenticationContext(
         endpointConnector.endpoint.requiredScopes,
         authenticationInfo,
       );
@@ -266,7 +266,7 @@ class MethodWebsocketRequestHandler {
       message: message,
       serializationManager: server.serializationManager,
       webSocket: webSocket,
-      requiredAuthentication: requiredAuthentication,
+      authenticationContext: authenticationContext,
     );
 
     return OpenMethodStreamResponse.buildMessage(
@@ -361,7 +361,7 @@ class _MethodStreamManager {
     required OpenMethodStreamCommand message,
     required SerializationManager serializationManager,
     required WebSocket webSocket,
-    _RequiredAuthentication? requiredAuthentication,
+    _AuthenticationContext? authenticationContext,
   }) {
     var outputStreamContext = _createOutputController(
       message,
@@ -369,7 +369,7 @@ class _MethodStreamManager {
       webSocket,
       session,
       serializationManager,
-      requiredAuthentication,
+      authenticationContext,
     );
 
     var inputStreams = _createInputStreams(
@@ -413,18 +413,18 @@ class _MethodStreamManager {
     WebSocket webSocket,
     Session session,
     SerializationManager serializationManager,
-    _RequiredAuthentication? requiredAuthentication,
+    _AuthenticationContext? authenticationContext,
   ) {
     void Function(SerializableModel)? revokedAuthenticationCallback;
 
-    if (requiredAuthentication != null) {
+    if (authenticationContext != null) {
       revokedAuthenticationCallback = (event) async {
         var authenticationWasRevoked = switch (event) {
           RevokedAuthenticationUser _ => true,
           RevokedAuthenticationAuthId revokedAuthId =>
-            revokedAuthId.authId == requiredAuthentication.authInfo.authId,
+            revokedAuthId.authId == authenticationContext.authInfo.authId,
           RevokedAuthenticationScope revokedScopes => revokedScopes.scopes.any(
-              (s) => requiredAuthentication.requiredScopes
+              (s) => authenticationContext.requiredScopes
                   .map((s) => s.name)
                   .contains(s),
             ),
@@ -443,7 +443,7 @@ class _MethodStreamManager {
 
       session.messages.addListener(
         MessageCentralServerpodChannels.revokedAuthentication(
-          requiredAuthentication.authInfo.userId,
+          authenticationContext.authInfo.userId,
         ),
         revokedAuthenticationCallback,
       );
@@ -457,11 +457,11 @@ class _MethodStreamManager {
       /// or a request from the client.
       if (isCanceled) return;
       isCanceled = true;
-      if (requiredAuthentication != null &&
+      if (authenticationContext != null &&
           revokedAuthenticationCallback != null) {
         session.messages.removeListener(
           MessageCentralServerpodChannels.revokedAuthentication(
-            requiredAuthentication.authInfo.userId,
+            authenticationContext.authInfo.userId,
           ),
           revokedAuthenticationCallback,
         );
@@ -787,9 +787,9 @@ abstract interface class _StreamContext {
   StreamController get controller;
 }
 
-class _RequiredAuthentication {
+class _AuthenticationContext {
   final AuthenticationInfo authInfo;
   final Set<Scope> requiredScopes;
 
-  _RequiredAuthentication(this.requiredScopes, this.authInfo);
+  _AuthenticationContext(this.requiredScopes, this.authInfo);
 }
