@@ -27,9 +27,9 @@ abstract class EndpointWebsocketRequestHandler {
         webSocket: webSocket,
       );
 
-      await _callStreamOpened(session, server.endpoints);
+      await _callStreamOpenedOnAll(session, server.endpoints);
       for (var module in server.endpoints.modules.values) {
-        await _callStreamOpened(session, module);
+        await _callStreamOpenedOnAll(session, module);
       }
 
       dynamic error;
@@ -112,9 +112,9 @@ abstract class EndpointWebsocketRequestHandler {
       }
 
       // TODO: Possibly keep a list of open streams instead
-      await _callStreamClosed(session, server.endpoints);
+      await _callStreamClosedOnAll(session, server.endpoints);
       for (var module in server.endpoints.modules.values) {
-        await _callStreamClosed(session, module);
+        await _callStreamClosedOnAll(session, module);
       }
       await session.close(error: error, stackTrace: stackTrace);
     } catch (e, stackTrace) {
@@ -126,7 +126,7 @@ abstract class EndpointWebsocketRequestHandler {
     }
   }
 
-  static Future<void> _callStreamOpened(
+  static Future<void> _callStreamOpenedOnAll(
     StreamingSession session,
     EndpointDispatch endpointDispatch,
   ) async {
@@ -145,7 +145,7 @@ abstract class EndpointWebsocketRequestHandler {
     }
   }
 
-  static Future<void> _callStreamClosed(
+  static Future<void> _callStreamClosedOnAll(
     StreamingSession session,
     EndpointDispatch endpointDispatch,
   ) async {
