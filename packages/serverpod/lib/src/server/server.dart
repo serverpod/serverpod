@@ -485,8 +485,6 @@ class Server {
       var sessionLogId = await session.close(error: e, stackTrace: stackTrace);
       return ResultInternalServerError(
           e.toString(), stackTrace, sessionLogId ?? 0);
-    } finally {
-      await session.close();
     }
 
     try {
