@@ -27,13 +27,9 @@ abstract class EndpointWebsocketRequestHandler {
         webSocket: webSocket,
       );
 
-      for (var endpointConnector in server.endpoints.connectors.values) {
-        await _callStreamOpened(session, endpointConnector.endpoint);
-      }
+      await _callStreamOpened(session, server.endpoints);
       for (var module in server.endpoints.modules.values) {
-        for (var endpointConnector in module.connectors.values) {
-          await _callStreamOpened(session, endpointConnector.endpoint);
-        }
+        await _callStreamOpened(session, module);
       }
 
       dynamic error;
@@ -116,13 +112,9 @@ abstract class EndpointWebsocketRequestHandler {
       }
 
       // TODO: Possibly keep a list of open streams instead
-      for (var endpointConnector in server.endpoints.connectors.values) {
-        await _callStreamClosed(session, endpointConnector.endpoint);
-      }
+      await _callStreamClosed(session, server.endpoints);
       for (var module in server.endpoints.modules.values) {
-        for (var endpointConnector in module.connectors.values) {
-          await _callStreamClosed(session, endpointConnector.endpoint);
-        }
+        await _callStreamClosed(session, module);
       }
       await session.close(error: error, stackTrace: stackTrace);
     } catch (e, stackTrace) {
@@ -136,35 +128,40 @@ abstract class EndpointWebsocketRequestHandler {
 
   static Future<void> _callStreamOpened(
     StreamingSession session,
-    Endpoint endpoint,
+    EndpointDispatch endpointDispatch,
   ) async {
-    try {
-      session.endpoint = endpoint.name;
-      var authFailed = await EndpointDispatch.canUserAccessEndpoint(
-        () => session.authenticated,
-        endpoint.requireLogin,
-        endpoint.requiredScopes,
-      );
-      if (authFailed == null) await endpoint.streamOpened(session);
-    } catch (e) {
-      return;
+    for (var endpointConnector in endpointDispatch.connectors.values) {
+      EndpointConnector connector;
+      try {
+        session.endpoint = endpointConnector.name;
+        connector = await endpointDispatch.getAuthorizedEndpoint(
+            session: session, endpointPath: endpointConnector.name);
+        await connector.endpoint.streamOpened(session);
+      } on NotAuthorizedException {
+        continue;
+      } catch (e) {
+        return;
+      }
+      // file://Users/hampuslavin/repos/serverpod/hl_test_framework_part1/packages/serverpod/lib/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart
     }
   }
 
   static Future<void> _callStreamClosed(
     StreamingSession session,
-    Endpoint endpoint,
+    EndpointDispatch endpointDispatch,
   ) async {
-    try {
-      session.endpoint = endpoint.name;
-      var authFailed = await EndpointDispatch.canUserAccessEndpoint(
-        () => session.authenticated,
-        endpoint.requireLogin,
-        endpoint.requiredScopes,
-      );
-      if (authFailed == null) await endpoint.streamClosed(session);
-    } catch (e) {
-      return;
+    for (var endpointConnector in endpointDispatch.connectors.values) {
+      EndpointConnector connector;
+      try {
+        session.endpoint = endpointConnector.name;
+        connector = await endpointDispatch.getAuthorizedEndpoint(
+            session: session, endpointPath: endpointConnector.name);
+        await connector.endpoint.streamClosed(session);
+      } on NotAuthorizedException {
+        continue;
+      } catch (e) {
+        return;
+      }
     }
   }
 }
