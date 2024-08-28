@@ -19,13 +19,51 @@ class GoogleAuth {
 
   static GoogleClientSecret? _loadClientSecret() {
     try {
-      return GoogleClientSecret._(_configFilePath);
+      var file = File(_configFilePath);
+      var jsonData = file.readAsStringSync();
+      var data = jsonDecode(jsonData);
+
+      if (data['web'] == null) {
+        throw const FormatException(
+          'Missing "web" section in $_configFilePath',
+        );
+      }
+
+      Map web = data['web'];
+
+      var clientId = web['client_id'];
+
+      if (clientId == null) {
+        throw const FormatException(
+          'Missing "client_id" in $_configFilePath',
+        );
+      }
+
+      var clientSecret = web['client_secret'];
+      if (clientSecret == null) {
+        throw const FormatException(
+          'Missing "client_secret" in $_configFilePath',
+        );
+      }
+
+      var redirectUris = web['redirect_uris'];
+      if (redirectUris == null) {
+        throw const FormatException(
+          'Missing "redirect_uris" in $_configFilePath',
+        );
+      }
+
+      return GoogleClientSecret._(
+        clientId: clientId,
+        clientSecret: clientSecret,
+        redirectUris: (redirectUris as List).cast<String>(),
+      );
     } catch (e) {
       stdout.writeln(
-        'serverpod_auth_server: Failed to load $_configFilePath. Sign in with  Google will be disabled.',
+        'serverpod_auth_server: Failed to load $_configFilePath. Sign in with Google will be disabled. Error: $e',
       );
+      return null;
     }
-    return null;
   }
 
   /// Returns an authenticated client for a specific, authenticated user. The
@@ -73,8 +111,6 @@ class GoogleAuth {
 /// `config/google_client_secret.json`. The file can be downloaded from Google's
 /// cloud console.
 class GoogleClientSecret {
-  final String _path;
-
   /// The client identifier.
   late final String clientId;
 
@@ -84,15 +120,10 @@ class GoogleClientSecret {
   /// List of redirect uris.
   late List<String> redirectUris;
 
-  /// Loads the google client secrets from the provided path.
-  GoogleClientSecret._(this._path) {
-    var file = File(_path);
-    var jsonData = file.readAsStringSync();
-    var data = jsonDecode(jsonData);
-
-    Map web = data['web'];
-    clientId = web['client_id'];
-    clientSecret = web['client_secret'];
-    redirectUris = (web['redirect_uris'] as List).cast<String>();
-  }
+  /// Private constructor to initialize the object.
+  GoogleClientSecret._({
+    required this.clientId,
+    required this.clientSecret,
+    required this.redirectUris,
+  });
 }
