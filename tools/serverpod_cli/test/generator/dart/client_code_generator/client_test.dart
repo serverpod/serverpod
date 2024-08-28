@@ -59,14 +59,6 @@ void main() {
     });
     var endpointsFile = codeMap[expectedFileName];
 
-    test('then client file contains experimental warning for method.', () {
-      expect(
-        endpointsFile,
-        contains(
-          '/// Warning: Streaming methods are still experimental.',
-        ),
-      );
-    });
     test(
         'then client file contains endpoint method for the streaming endpoint.',
         () {
@@ -113,15 +105,6 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
     var endpointsFile = codeMap[expectedFileName];
-
-    test('then client file contains experimental warning for method.', () {
-      expect(
-        endpointsFile,
-        contains(
-          '/// Warning: Streaming methods are still experimental.',
-        ),
-      );
-    });
 
     test('then client file endpoint method for the streaming endpoint.', () {
       expect(

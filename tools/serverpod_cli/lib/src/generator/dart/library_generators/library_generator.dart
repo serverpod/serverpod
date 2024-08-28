@@ -408,7 +408,7 @@ class LibraryGenerator {
             endpoint.methods.add(
               Method(
                 (m) => m
-                  ..docs.add(_buildEndpointCallDocumentation(methodDef))
+                  ..docs.add(methodDef.documentationComment ?? '')
                   ..annotations.addAll(_buildEndpointCallAnnotations(methodDef))
                   ..returns = returnType.reference(false, config: config)
                   ..name = methodDef.name
@@ -664,21 +664,6 @@ class LibraryGenerator {
     );
 
     return library.build();
-  }
-
-  String _buildEndpointCallDocumentation(MethodDefinition methodDef) {
-    if (methodDef is! MethodStreamDefinition) {
-      return methodDef.documentationComment ?? '';
-    }
-
-    const experimentalWarning =
-        '/// Warning: Streaming methods are still experimental.';
-    var documentationComment = methodDef.documentationComment;
-    if (documentationComment == null) {
-      return experimentalWarning;
-    }
-
-    return '$experimentalWarning\n///\n$documentationComment';
   }
 
   Iterable<Expression> _buildEndpointCallAnnotations(
