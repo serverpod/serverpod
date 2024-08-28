@@ -1664,7 +1664,6 @@ class EndpointAuthenticatedMethodStreaming extends _i1.EndpointRef {
         {},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Stream<int> intEchoStream(_i2.Stream<int> stream) =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'authenticatedMethodStreaming',
