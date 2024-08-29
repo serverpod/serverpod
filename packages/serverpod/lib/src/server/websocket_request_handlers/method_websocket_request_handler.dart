@@ -128,7 +128,7 @@ class MethodWebsocketRequestHandler {
     MethodStreamCallContext methodStreamCallContext;
     try {
       methodStreamCallContext =
-          await server.endpoints.getAuthorizedEndpointMethodStreamConnector(
+          await server.endpoints.getMethodStreamCallContext(
         createSessionCallback: (connector) {
           session = MethodStreamSession(
             server: server,

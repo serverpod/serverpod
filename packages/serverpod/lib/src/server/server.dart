@@ -450,8 +450,7 @@ class Server {
 
     MethodCallSession? maybeSession;
     try {
-      var methodCallContext =
-          await endpoints.getAuthorizedEndpointMethodConnector(
+      var methodCallContext = await endpoints.getMethodCallContext(
         createSessionCallback: (connector) {
           maybeSession = MethodCallSession(
             server: this,

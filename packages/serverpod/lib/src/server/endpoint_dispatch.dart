@@ -51,13 +51,13 @@ abstract class EndpointDispatch {
     return connector;
   }
 
-  /// Tries to get a [MethodConnector] for a given endpoint and method name.
+  /// Tries to get a [MethodStreamCallContext] for a given endpoint and method name.
   /// If the method is not found, a [MethodNotFoundException] is thrown.
   /// If the endpoint is not found, an [EndpointNotFoundException] is thrown.
   /// If the user is not authorized to access the endpoint, a [NotAuthorizedException] is thrown.
   /// If the input parameters are invalid, an [InvalidParametersException] is thrown.
   /// If the found method is not a [MethodStreamConnector], an [InvalidEndpointMethodTypeException] is thrown.
-  Future<MethodStreamCallContext> getAuthorizedEndpointMethodStreamConnector({
+  Future<MethodStreamCallContext> getMethodStreamCallContext({
     required Session Function(EndpointConnector connector)
         createSessionCallback,
     required String endpointPath,
@@ -66,8 +66,8 @@ abstract class EndpointDispatch {
     required SerializationManager serializationManager,
     required List<String> requestedInputStreams,
   }) async {
-    var (endpoint, method, parsedParameters) =
-        await _getAuthorizedEndpointMethodConnector(
+    var (methodConnector, endpoint, parsedParameters) =
+        await _getEndpointMethodConnector(
       createSessionCallback: createSessionCallback,
       endpointPath: endpointPath,
       methodName: methodName,
@@ -75,17 +75,17 @@ abstract class EndpointDispatch {
       serializationManager: serializationManager,
     );
 
-    if (method is! MethodStreamConnector) {
+    if (methodConnector is! MethodStreamConnector) {
       throw InvalidEndpointMethodTypeException(methodName, endpointPath);
     }
 
     List<StreamParameterDescription> inputStreams = parseRequestedInputStreams(
-      descriptions: method.streamParams,
+      descriptions: methodConnector.streamParams,
       requestedInputStreams: requestedInputStreams,
     );
 
     return MethodStreamCallContext(
-      method: method,
+      method: methodConnector,
       parameters: parsedParameters,
       inputStreams: inputStreams,
       endpoint: endpoint,
@@ -95,11 +95,11 @@ abstract class EndpointDispatch {
   /// Tries to get an [EndpointConnector] for a given endpoint and method name.
   /// If the endpoint is not found, an [EndpointNotFoundException] is thrown.
   /// If the user is not authorized to access the endpoint, a [NotAuthorizedException] is thrown.
-  Future<EndpointConnector> getAuthorizedEndpoint({
+  Future<EndpointConnector> getEndpointConnector({
     required Session session,
     required String endpointPath,
   }) async {
-    return _getAuthorizedEndpoint(endpointPath, (_) => session);
+    return _getEndpointConnector(endpointPath, (_) => session);
   }
 
   /// Tries to get a [MethodConnector] for a given endpoint and method name.
@@ -107,7 +107,8 @@ abstract class EndpointDispatch {
   /// If the endpoint is not found, an [EndpointNotFoundException] is thrown.
   /// If the user is not authorized to access the endpoint, a [NotAuthorizedException] is thrown.
   /// If the input parameters are invalid, an [InvalidParametersException] is thrown.
-  Future<MethodCallContext> getAuthorizedEndpointMethodConnector({
+  /// If the found method is not a [MethodConnector], an [InvalidEndpointMethodTypeException] is thrown.
+  Future<MethodCallContext> getMethodCallContext({
     required Session Function(EndpointConnector connector)
         createSessionCallback,
     required String endpointPath,
@@ -115,8 +116,8 @@ abstract class EndpointDispatch {
     required Map<String, dynamic> parameters,
     required SerializationManager serializationManager,
   }) async {
-    var (endpoint, method, parsedParameters) =
-        await _getAuthorizedEndpointMethodConnector(
+    var (methodConnector, endpoint, parsedParameters) =
+        await _getEndpointMethodConnector(
       createSessionCallback: createSessionCallback,
       endpointPath: endpointPath,
       methodName: methodName,
@@ -124,19 +125,19 @@ abstract class EndpointDispatch {
       serializationManager: serializationManager,
     );
 
-    if (method is! MethodConnector) {
+    if (methodConnector is! MethodConnector) {
       throw InvalidEndpointMethodTypeException(methodName, endpointPath);
     }
 
     return MethodCallContext(
-      method: method,
+      method: methodConnector,
       parameters: parsedParameters,
       endpoint: endpoint,
     );
   }
 
-  Future<(Endpoint, EndpointMethodConnector, Map<String, dynamic>)>
-      _getAuthorizedEndpointMethodConnector({
+  Future<(EndpointMethodConnector, Endpoint, Map<String, dynamic>)>
+      _getEndpointMethodConnector({
     required Session Function(EndpointConnector connector)
         createSessionCallback,
     required String endpointPath,
@@ -145,24 +146,24 @@ abstract class EndpointDispatch {
     required SerializationManager serializationManager,
   }) async {
     var endpointConnector =
-        await _getAuthorizedEndpoint(endpointPath, createSessionCallback);
+        await _getEndpointConnector(endpointPath, createSessionCallback);
 
-    var method = endpointConnector.methodConnectors[methodName];
-    if (method == null) {
+    var methodConnector = endpointConnector.methodConnectors[methodName];
+    if (methodConnector == null) {
       throw MethodNotFoundException(
           'Method "$methodName" not found in endpoint: $endpointPath');
     }
 
-    var paramMap = parseParameters(
+    var parsedParameters = parseParameters(
       parameters,
-      method.params,
+      methodConnector.params,
       serializationManager,
     );
 
-    return (endpointConnector.endpoint, method, paramMap);
+    return (methodConnector, endpointConnector.endpoint, parsedParameters);
   }
 
-  Future<EndpointConnector> _getAuthorizedEndpoint(
+  Future<EndpointConnector> _getEndpointConnector(
       String endpointPath,
       Session Function(EndpointConnector connector)
           createSessionCallback) async {
@@ -448,7 +449,7 @@ class ResultInvalidParams extends Result {
   }
 }
 
-/// The result of a failed [EndpointDispatch.getAuthorizedEndpointMethodStreamConnector], [EndpointDispatch.getAuthorizedEndpointMethodConnector] or [EndpointDispatch.getAuthorizedEndpoint] call.
+/// The result of a failed [EndpointDispatch.getMethodStreamCallContext], [EndpointDispatch.getMethodCallContext] or [EndpointDispatch.getEndpointConnector] call.
 abstract class GetAuthorizedEndpointMethodException implements Exception {
   /// Description of the error.
   String get message;

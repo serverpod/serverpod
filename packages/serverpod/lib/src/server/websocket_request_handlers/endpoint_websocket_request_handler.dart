@@ -70,7 +70,7 @@ abstract class EndpointWebsocketRequestHandler {
 
           EndpointConnector endpointConnector;
           try {
-            endpointConnector = await server.endpoints.getAuthorizedEndpoint(
+            endpointConnector = await server.endpoints.getEndpointConnector(
                 session: session, endpointPath: endpointName);
           } on NotAuthorizedException {
             continue;
@@ -146,7 +146,7 @@ abstract class EndpointWebsocketRequestHandler {
   ) async {
     try {
       session.endpoint = endpointName;
-      var connector = await endpointDispatch.getAuthorizedEndpoint(
+      var connector = await endpointDispatch.getEndpointConnector(
         session: session,
         endpointPath: endpointName,
       );
@@ -165,7 +165,7 @@ abstract class EndpointWebsocketRequestHandler {
   ) async {
     try {
       session.endpoint = endpointName;
-      var connector = await endpointDispatch.getAuthorizedEndpoint(
+      var connector = await endpointDispatch.getEndpointConnector(
         session: session,
         endpointPath: endpointName,
       );
