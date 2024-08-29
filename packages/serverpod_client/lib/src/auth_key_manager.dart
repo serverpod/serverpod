@@ -31,6 +31,6 @@ abstract class AuthenticationKeyManager {
   /// https://httpwg.org/specs/rfc9110.html#field.authorization
   Future<String?> toHeaderValue(String? key) async {
     if (key == null) return null;
-    return wrapAuthValue(key);
+    return wrapAuthHeaderValue(key);
   }
 }

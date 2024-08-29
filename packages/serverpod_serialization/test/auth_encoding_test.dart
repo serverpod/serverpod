@@ -116,13 +116,13 @@ void main() {
           'Given auth key ${_stripControlCharacters(key)}'
           'then wrapping should result in an HTTP "authorization" compliant value format',
           () {
-        var wrapped = wrapAuthValue(key);
+        var wrapped = wrapAuthHeaderValue(key);
         expect(isValidAuthHeaderValue(wrapped), isTrue);
       });
 
       test('then wrapping and unwrapping should result in the same value', () {
-        var wrapped = wrapAuthValue(key);
-        var unwrapped = unwrapAuthValue(wrapped);
+        var wrapped = wrapAuthHeaderValue(key);
+        var unwrapped = unwrapAuthHeaderValue(wrapped);
         expect(unwrapped, key);
       });
     }

@@ -118,7 +118,7 @@ abstract class EndpointDispatch {
     var authHeaderValue =
         request.headers.value(HttpHeaders.authorizationHeader);
     String? authenticationKey = authHeaderValue != null
-        ? unwrapAuthValue(authHeaderValue)
+        ? unwrapAuthHeaderValue(authHeaderValue)
         : queryParameters['auth'];
 
     MethodCallSession session = MethodCallSession(

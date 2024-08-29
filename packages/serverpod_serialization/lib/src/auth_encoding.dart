@@ -40,16 +40,16 @@ bool isWrappedAuthValue(String value) =>
 
 /// Returns a value that is compliant with the HTTP auth header format
 /// by encoding and wrapping the provided auth key as a Basic auth value.
-String wrapAuthValue(String key) {
+String wrapAuthHeaderValue(String key) {
   // Encode the key as Base64 and prepend the default scheme name.
   var encodedKey = base64.encode(utf8.encode(key));
   return '$serverpodDefaultAuthSchemeName $encodedKey';
 }
 
 /// Returns the auth key from an auth value that has potentially been wrapped.
-/// This operation is the inverse of [wrapAuthValue].
+/// This operation is the inverse of [wrapAuthHeaderValue].
 /// If null is provided, null is returned.
-String? unwrapAuthValue(String? authValue) {
+String? unwrapAuthHeaderValue(String? authValue) {
   if (authValue == null) return null;
   if (isWrappedAuthValue(authValue)) {
     // auth value was wrapped, unbake

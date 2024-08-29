@@ -91,7 +91,7 @@ void main() async {
       var reflectedHeader =
           await client.requestReflection.reflectHttpHeader('authorization');
 
-      var unwrappedKey = unwrapAuthValue(reflectedHeader!.first);
+      var unwrappedKey = unwrapAuthHeaderValue(reflectedHeader!.first);
       expect(unwrappedKey, key);
     });
   });
