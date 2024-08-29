@@ -21,7 +21,7 @@ void main() {
       client.close();
     });
 
-    test('Access restricted endpoint without authentication', () async {
+    test('then access restricted endpoint without authentication', () async {
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );
@@ -31,12 +31,12 @@ void main() {
       var streamingStream = client.signInRequired.stream.timeout(
         const Duration(seconds: 2),
       );
-      var receivedDataF = streamingStream.single;
+      var receivedData = streamingStream.single;
 
-      expect(receivedDataF, throwsA(isA<TimeoutException>()));
+      expect(receivedData, throwsA(isA<TimeoutException>()));
     });
 
-    test('Access restricted endpoint with authentication', () async {
+    test('then access restricted endpoint with authentication', () async {
       var response =
           await client.authentication.authenticate('test@foo.bar', 'password');
       expect(response.success, isTrue);
@@ -55,9 +55,9 @@ void main() {
       var streamingStream = client.signInRequired.stream.timeout(
         const Duration(seconds: 2),
       );
-      var receivedDataF = streamingStream.first;
+      var receivedData = streamingStream.first;
 
-      var message = await receivedDataF;
+      var message = await receivedData;
       var simpleData = message as SimpleData;
       expect(simpleData.num, 666);
     });

@@ -1851,17 +1851,17 @@ class EndpointRedis extends _i1.EndpointRef {
 
 /// This class is meant for reflecting the received headers, auth keys in endpoint invocations.
 /// {@category Endpoint}
-class EndpointReflection extends _i1.EndpointRef {
-  EndpointReflection(_i1.EndpointCaller caller) : super(caller);
+class EndpointRequestReflection extends _i1.EndpointRef {
+  EndpointRequestReflection(_i1.EndpointCaller caller) : super(caller);
 
   @override
-  String get name => 'reflection';
+  String get name => 'requestReflection';
 
   /// Reflects the authentication key of the session.
   /// Returns null if the key is not set.
   _i2.Future<String?> reflectAuthenticationKey() =>
       caller.callServerEndpoint<String?>(
-        'reflection',
+        'requestReflection',
         'reflectAuthenticationKey',
         {},
       );
@@ -1870,7 +1870,7 @@ class EndpointReflection extends _i1.EndpointRef {
   /// Returns null of the header is not set.
   _i2.Future<List<String>?> reflectHttpHeader(String headerName) =>
       caller.callServerEndpoint<List<String>?>(
-        'reflection',
+        'requestReflection',
         'reflectHttpHeader',
         {'headerName': headerName},
       );
@@ -2071,7 +2071,7 @@ class Client extends _i1.ServerpodClientShared {
     namedParameters = EndpointNamedParameters(this);
     optionalParameters = EndpointOptionalParameters(this);
     redis = EndpointRedis(this);
-    reflection = EndpointReflection(this);
+    requestReflection = EndpointRequestReflection(this);
     serverOnlyScopedFieldModel = EndpointServerOnlyScopedFieldModel(this);
     signInRequired = EndpointSignInRequired(this);
     adminScopeRequired = EndpointAdminScopeRequired(this);
@@ -2137,7 +2137,7 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointRedis redis;
 
-  late final EndpointReflection reflection;
+  late final EndpointRequestReflection requestReflection;
 
   late final EndpointServerOnlyScopedFieldModel serverOnlyScopedFieldModel;
 
@@ -2186,7 +2186,7 @@ class Client extends _i1.ServerpodClientShared {
         'namedParameters': namedParameters,
         'optionalParameters': optionalParameters,
         'redis': redis,
-        'reflection': reflection,
+        'requestReflection': requestReflection,
         'serverOnlyScopedFieldModel': serverOnlyScopedFieldModel,
         'signInRequired': signInRequired,
         'adminScopeRequired': adminScopeRequired,

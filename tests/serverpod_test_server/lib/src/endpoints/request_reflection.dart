@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
 /// This class is meant for reflecting the received headers, auth keys in endpoint invocations.
-class ReflectionEndpoint extends Endpoint {
+class RequestReflectionEndpoint extends Endpoint {
   @override
   bool get requireLogin => true;
 

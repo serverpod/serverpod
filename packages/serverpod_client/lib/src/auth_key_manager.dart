@@ -20,6 +20,8 @@ abstract class AuthenticationKeyManager {
 
   /// Converts an authentication key to a format that can be used in a transport header.
   /// The default implementation encodes and wraps the key in a 'Basic' scheme.
+  /// (This will automatically be unwrapped again on the server side
+  /// before being handed to the authentication handler.)
   ///
   /// To use a different scheme, override this method.
   /// The value must be compliant with the HTTP header format defined in

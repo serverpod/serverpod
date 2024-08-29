@@ -121,8 +121,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
     var auth = await authenticationKeyManager?.get();
     if (auth != null) {
-      // TODO: This is insecure, the auth key should be passed in a message after stream connection instead.
-      // See issue #2681 https://github.com/orgs/serverpod/projects/4/views/1?pane=issue&itemId=76663913
       uri = uri.replace(
         queryParameters: {
           'auth': auth,

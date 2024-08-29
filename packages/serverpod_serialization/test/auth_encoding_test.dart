@@ -55,19 +55,16 @@ void main() {
     }),
   ];
 
-  group('isValidAuthHeaderValue()', () {
+  group('When using isValidAuthHeaderValue()', () {
     for (var key in [
       ...standardBasicAuthKeys,
       ...standardNonBasicAuthKeys,
     ]) {
-      group(
-          'Given an auth key in valid HTTP auth header format ${_stripControlCharacters(key)}',
+      test(
+          'Given an auth key in valid HTTP auth header format ${_stripControlCharacters(key)} '
+          'then isValidAuthHeaderValue should correctly recognize it as valid',
           () {
-        test(
-            'then isValidAuthHeaderValue should correctly recognize it as valid',
-            () {
-          expect(isValidAuthHeaderValue(key), true);
-        });
+        expect(isValidAuthHeaderValue(key), isTrue);
       });
     }
 
@@ -75,28 +72,22 @@ void main() {
       ...conventionalAuthKeys,
       ...arbitraryAuthKeys,
     ]) {
-      group(
-          'Given an auth key in invalid HTTP auth header format ${_stripControlCharacters(key)}',
+      test(
+          'Given an auth key in invalid HTTP auth header format ${_stripControlCharacters(key)} '
+          'then isValidAuthHeaderValue should correctly recognize it as invalid',
           () {
-        test(
-            'then isValidAuthHeaderValue should correctly recognize it as invalid',
-            () {
-          expect(isValidAuthHeaderValue(key), false);
-        });
+        expect(isValidAuthHeaderValue(key), isFalse);
       });
     }
   });
 
-  group('isWrappedAuthValue()', () {
+  group('When using isWrappedAuthValue()', () {
     for (var key in standardBasicAuthKeys) {
-      group(
-          'Given an auth key in "Basic" HTTP auth header format ${_stripControlCharacters(key)}',
+      test(
+          'Given an auth key in "Basic" HTTP auth header format ${_stripControlCharacters(key)} '
+          'then isWrappedAuthValue should correctly recognize it as a wrapped auth key',
           () {
-        test(
-            'then isWrappedAuthValue should correctly recognize it as a wrapped auth key',
-            () {
-          expect(isWrappedAuthValue(key), true);
-        });
+        expect(isWrappedAuthValue(key), isTrue);
       });
     }
 
@@ -105,39 +96,34 @@ void main() {
       ...standardNonBasicAuthKeys,
       ...arbitraryAuthKeys,
     ]) {
-      group(
-          'Given an auth key not in "Basic" HTTP auth header format ${_stripControlCharacters(key)}',
+      test(
+          'Given an auth key not in "Basic" HTTP auth header format ${_stripControlCharacters(key)} '
+          'then isWrappedAuthValue should correctly recognize it as not wrapped',
           () {
-        test(
-            'then isWrappedAuthValue should correctly recognize it as not wrapped',
-            () {
-          expect(isWrappedAuthValue(key), false);
-        });
+        expect(isWrappedAuthValue(key), isFalse);
       });
     }
   });
 
-  group('Auth key wrapping and unwrapping', () {
+  group('When using auth key wrapping and unwrapping', () {
     for (var key in [
       ...conventionalAuthKeys,
       ...standardBasicAuthKeys,
       ...standardNonBasicAuthKeys,
       ...arbitraryAuthKeys,
     ]) {
-      group('Given auth key ${_stripControlCharacters(key)}', () {
-        test(
-            'then wrapping should result in an HTTP "authorization" compliant value format',
-            () {
-          var wrapped = wrapAuthValue(key);
-          expect(isValidAuthHeaderValue(wrapped), true);
-        });
+      test(
+          'Given auth key ${_stripControlCharacters(key)}'
+          'then wrapping should result in an HTTP "authorization" compliant value format',
+          () {
+        var wrapped = wrapAuthValue(key);
+        expect(isValidAuthHeaderValue(wrapped), isTrue);
+      });
 
-        test('then wrapping and unwrapping should result in the same value',
-            () {
-          var wrapped = wrapAuthValue(key);
-          var unwrapped = unwrapAuthValue(wrapped);
-          expect(unwrapped, key);
-        });
+      test('then wrapping and unwrapping should result in the same value', () {
+        var wrapped = wrapAuthValue(key);
+        var unwrapped = unwrapAuthValue(wrapped);
+        expect(unwrapped, key);
       });
     }
   });

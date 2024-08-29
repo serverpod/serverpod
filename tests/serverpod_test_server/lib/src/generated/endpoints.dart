@@ -33,7 +33,7 @@ import '../endpoints/module_serialization.dart' as _i22;
 import '../endpoints/named_parameters.dart' as _i23;
 import '../endpoints/optional_parameters.dart' as _i24;
 import '../endpoints/redis.dart' as _i25;
-import '../endpoints/reflection.dart' as _i26;
+import '../endpoints/request_reflection.dart' as _i26;
 import '../endpoints/server_only_scoped_field_model.dart' as _i27;
 import '../endpoints/signin_required.dart' as _i28;
 import '../endpoints/simple.dart' as _i29;
@@ -225,10 +225,10 @@ class Endpoints extends _i1.EndpointDispatch {
           'redis',
           null,
         ),
-      'reflection': _i26.ReflectionEndpoint()
+      'requestReflection': _i26.RequestReflectionEndpoint()
         ..initialize(
           server,
-          'reflection',
+          'requestReflection',
           null,
         ),
       'serverOnlyScopedFieldModel': _i27.ServerOnlyScopedFieldModelEndpoint()
@@ -4042,9 +4042,9 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    connectors['reflection'] = _i1.EndpointConnector(
-      name: 'reflection',
-      endpoint: endpoints['reflection']!,
+    connectors['requestReflection'] = _i1.EndpointConnector(
+      name: 'requestReflection',
+      endpoint: endpoints['requestReflection']!,
       methodConnectors: {
         'reflectAuthenticationKey': _i1.MethodConnector(
           name: 'reflectAuthenticationKey',
@@ -4053,7 +4053,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['reflection'] as _i26.ReflectionEndpoint)
+              (endpoints['requestReflection'] as _i26.RequestReflectionEndpoint)
                   .reflectAuthenticationKey(session),
         ),
         'reflectHttpHeader': _i1.MethodConnector(
@@ -4069,7 +4069,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['reflection'] as _i26.ReflectionEndpoint)
+              (endpoints['requestReflection'] as _i26.RequestReflectionEndpoint)
                   .reflectHttpHeader(
             session,
             params['headerName'],
