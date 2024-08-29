@@ -448,16 +448,12 @@ class Server {
     // Get the the authentication key, if any
     String? authenticationKey = queryParameters['auth'];
 
-    late MethodCallSession session;
-
-    Endpoint endpoint;
-    MethodConnector method;
-    Map<String, dynamic> paramMap;
+    MethodCallSession? maybeSession;
     try {
-      (endpoint, method, paramMap) =
+      var (endpoint, method, paramMap) =
           await endpoints.getAuthorizedEndpointMethodConnector(
         createSessionCallback: (connector) {
-          session = MethodCallSession(
+          maybeSession = MethodCallSession(
             server: this,
             uri: uri,
             body: body,
@@ -469,12 +465,25 @@ class Server {
             authenticationKey: authenticationKey,
             enableLogging: connector.endpoint.logSessions,
           );
-          return session;
+          return maybeSession!;
         },
         endpointPath: endpointName,
         methodName: methodName,
         parameters: queryParameters,
         serializationManager: serializationManager,
+      );
+
+      MethodCallSession? session = maybeSession;
+      if (session == null) {
+        return ResultInternalServerError(
+            'Session was not created', StackTrace.current, 0);
+      }
+
+      var result = await method.call(session, paramMap);
+
+      return ResultSuccess(
+        result,
+        sendByteDataAsRaw: endpoint.sendByteDataAsRaw,
       );
     } on MethodNotFoundException catch (e) {
       return ResultInvalidParams(e.message);
@@ -485,31 +494,25 @@ class Server {
     } on NotAuthorizedException catch (e) {
       return e.authenticationFailedResult;
     } on InvalidParametersException catch (e, stackTrace) {
-      var sessionLogId = await session.close(error: e, stackTrace: stackTrace);
+      var sessionLogId =
+          await maybeSession?.close(error: e, stackTrace: stackTrace);
       return ResultInternalServerError(
           e.toString(), stackTrace, sessionLogId ?? 0);
-    }
-
-    try {
-      var result = await method.call(session, paramMap);
-
-      return ResultSuccess(
-        result,
-        sendByteDataAsRaw: endpoint.sendByteDataAsRaw,
-      );
     } on SerializableException catch (exception) {
       return ExceptionResult(model: exception);
     } on Exception catch (e, stackTrace) {
-      var sessionLogId = await session.close(error: e, stackTrace: stackTrace);
+      var sessionLogId =
+          await maybeSession?.close(error: e, stackTrace: stackTrace);
       return ResultInternalServerError(
           e.toString(), stackTrace, sessionLogId ?? 0);
     } catch (e, stackTrace) {
       // Something did not work out
-      var sessionLogId = await session.close(error: e, stackTrace: stackTrace);
+      var sessionLogId =
+          await maybeSession?.close(error: e, stackTrace: stackTrace);
       return ResultInternalServerError(
           e.toString(), stackTrace, sessionLogId ?? 0);
     } finally {
-      await session.close();
+      await maybeSession?.close();
     }
   }
 
