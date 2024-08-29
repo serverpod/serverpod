@@ -1,8 +1,8 @@
-import 'dart:collection';
-import 'dart:convert';
 import 'dart:io' as io;
 
-import 'package:http_parser/http_parser.dart';
+import 'package:relic/src/headers/authorization_header.dart';
+import 'package:relic/src/headers/custom_headers.dart';
+import 'package:relic/src/util.dart';
 
 import 'body.dart';
 
@@ -10,6 +10,7 @@ abstract class Headers {
   // TODO: Add properties for all supported headers below.
 
   // static const _acceptHeader = "accept";
+
   // static const _acceptCharsetHeader = "accept-charset";
   // static const _acceptEncodingHeader = "accept-encoding";
   // static const _acceptLanguageHeader = "accept-language";
@@ -26,7 +27,7 @@ abstract class Headers {
   //     'access-control-request-method';
   // static const _ageHeader = "age";
   // static const _allowHeader = "allow";
-  // static const _authorizationHeader = "authorization";
+
   // static const _cacheControlHeader = "cache-control";
   // static const _connectionHeader = "connection";
   // static const _contentEncodingHeader = "content-encoding";
@@ -79,6 +80,7 @@ abstract class Headers {
   final int? port;
   final Uri? location;
   final String? xPoweredBy;
+  final AuthorizationHeader? authorization;
   final CustomHeaders custom;
 
   static const _managedHeaders = <String>{
@@ -89,6 +91,7 @@ abstract class Headers {
     _contentTypeHeader,
     _locationHeader,
     _xPoweredByHeader,
+    authorizationHeaderKey,
   };
 
   Headers._({
@@ -100,8 +103,9 @@ abstract class Headers {
     this.port,
     this.location,
     this.xPoweredBy,
+    this.authorization,
     CustomHeaders? custom,
-  }) : custom = custom ?? _emptyCustomHeaders;
+  }) : custom = custom ?? CustomHeaders.empty();
 
   factory Headers.fromHttpRequest(io.HttpRequest request) {
     var headers = request.headers;
@@ -129,7 +133,8 @@ abstract class Headers {
       from: headers.value(_fromHeader),
       host: headers.host,
       port: headers.port,
-      custom: CustomHeaders.fromEntries(custom),
+      custom: CustomHeaders.fromHttpRequestEntries(custom),
+      authorization: AuthorizationHeader.tryParse(custom),
     );
   }
 
@@ -178,7 +183,7 @@ abstract class Headers {
       port: port,
       location: location,
       xPoweredBy: xPoweredBy,
-      custom: custom ?? _emptyCustomHeaders,
+      custom: custom ?? CustomHeaders.empty(),
     );
   }
 
@@ -202,7 +207,7 @@ abstract class Headers {
       port: port,
       location: location,
       xPoweredBy: xPoweredBy,
-      custom: custom ?? _emptyCustomHeaders,
+      custom: custom ?? CustomHeaders.empty(),
     );
   }
 
@@ -237,6 +242,7 @@ abstract class Headers {
     Uri? location,
     String? xPoweredBy,
     CustomHeaders? custom,
+    AuthorizationHeader? authorization,
   });
 
   @override
@@ -249,8 +255,9 @@ abstract class Headers {
       if (host != null) '$_hostHeader: $host${port != null ? ':$port' : ''}',
       if (location != null) '$_locationHeader: $location',
       if (xPoweredBy != null) '$_xPoweredByHeader: $xPoweredBy',
-      // TODO: Add custom headers
-      // ...customHeaders.map((e) => e.toString()),
+      if (authorization != null) '$authorization',
+      ...custom.httpRequestEntries
+          .map((entry) => '${entry.key}:${entry.value}'),
     ];
 
     return strings.join('\n');
@@ -268,6 +275,7 @@ class _HeadersImpl extends Headers {
     super.location,
     super.xPoweredBy,
     super.custom,
+    super.authorization,
   }) : super._();
 
   @override
@@ -281,6 +289,7 @@ class _HeadersImpl extends Headers {
     Object? port = _Undefined,
     Object? xPoweredBy = _Undefined,
     CustomHeaders? custom,
+    AuthorizationHeader? authorization,
   }) {
     return _HeadersImpl(
       date: date is DateTime? ? date : this.date,
@@ -293,6 +302,7 @@ class _HeadersImpl extends Headers {
       location: location is Uri? ? location : this.location,
       xPoweredBy: xPoweredBy is String? ? xPoweredBy : this.xPoweredBy,
       custom: custom ?? this.custom,
+      authorization: authorization ?? this.authorization,
     );
   }
 }
@@ -333,152 +343,4 @@ class _Undefined {}
 //   String get formattedValue => value;
 // }
 
-final _emptyCustomHeaders = CustomHeaders._empty();
 
-/// Unmodifiable, key-insensitive header map.
-class CustomHeaders extends UnmodifiableMapView<String, List<String>> {
-  late final Map<String, String> singleValues = UnmodifiableMapView(
-    CaseInsensitiveMap.from(
-      map((key, value) => MapEntry(key, _joinHeaderValues(value)!)),
-    ),
-  );
-
-  factory CustomHeaders(Map<String, String> values) {
-    return CustomHeaders._(
-      values.entries.map((e) => MapEntry(e.key, [e.value])),
-    );
-  }
-
-  factory CustomHeaders.from(Map<String, List<String>>? values) {
-    if (values == null || values.isEmpty) {
-      return _emptyCustomHeaders;
-    } else if (values is CustomHeaders) {
-      return values;
-    } else {
-      return CustomHeaders._(values.entries);
-    }
-  }
-
-  factory CustomHeaders.fromEntries(
-    Iterable<MapEntry<String, List<String>>>? entries,
-  ) {
-    if (entries == null || (entries is List && entries.isEmpty)) {
-      return _emptyCustomHeaders;
-    } else {
-      return CustomHeaders._(entries);
-    }
-  }
-
-  CustomHeaders._(Iterable<MapEntry<String, List<String>>> entries)
-      : super(
-          CaseInsensitiveMap.from(_entriesToMap(
-            entries
-                .where((e) => e.value.isNotEmpty)
-                .map((e) => MapEntry(e.key, List.unmodifiable(e.value))),
-          )),
-        );
-
-  CustomHeaders._empty() : super(const {});
-
-  factory CustomHeaders.empty() => _emptyCustomHeaders;
-
-  static Map<String, List<String>> _entriesToMap(
-    Iterable<MapEntry<String, List<String>>> entries,
-  ) {
-    var map = Map.fromEntries(entries);
-    return map;
-  }
-
-  static String? _joinHeaderValues(List<String>? values) {
-    if (values == null) return null;
-    if (values.isEmpty) return '';
-    if (values.length == 1) return values.single;
-    return values.join(',');
-  }
-}
-
-class BodyType {
-  // Text
-
-  static const plainText = BodyType(
-    mimeType: MimeType('text', 'plain'),
-    encoding: utf8,
-  );
-
-  static const html = BodyType(
-    mimeType: MimeType('text', 'html'),
-    encoding: utf8,
-  );
-
-  static const css = BodyType(
-    mimeType: MimeType('text', 'css'),
-    encoding: utf8,
-  );
-
-  static const csv = BodyType(
-    mimeType: MimeType('text', 'csv'),
-    encoding: utf8,
-  );
-
-  static const javaScript = BodyType(
-    mimeType: MimeType('text', 'javascript'),
-    encoding: utf8,
-  );
-
-  static const json = BodyType(
-    mimeType: MimeType('application', 'json'),
-    encoding: utf8,
-  );
-
-  static const xml = BodyType(
-    mimeType: MimeType('application', 'xml'),
-    encoding: utf8,
-  );
-
-  // Binary
-
-  static const binary = BodyType(
-    mimeType: MimeType('application', 'octet-stream'),
-  );
-
-  static const pdf = BodyType(
-    mimeType: MimeType('application', 'pdf'),
-  );
-
-  static const rtf = BodyType(
-    mimeType: MimeType('application', 'rtf'),
-  );
-
-  final MimeType mimeType;
-  final Encoding? encoding;
-
-  const BodyType({
-    required this.mimeType,
-    this.encoding,
-  });
-}
-
-class MimeType {
-  final String primaryType;
-  final String subType;
-
-  const MimeType(this.primaryType, this.subType);
-
-  factory MimeType.parse(String type) {
-    var parts = type.split('/');
-    if (parts.length != 2) {
-      throw FormatException('Invalid mime type $type');
-    }
-
-    var primaryType = parts[0];
-    var subType = parts[1];
-
-    if (primaryType.isEmpty || subType.isEmpty) {
-      throw FormatException('Invalid mime type $type');
-    }
-    return MimeType(primaryType, subType);
-  }
-
-  @override
-  String toString() => '$primaryType/$subType';
-}

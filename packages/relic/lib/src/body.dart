@@ -6,7 +6,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:relic/src/headers.dart';
+import 'package:relic/src/headers/types/body_type.dart';
 
 /// The body of a request or response.
 ///
