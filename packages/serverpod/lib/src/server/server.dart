@@ -450,7 +450,7 @@ class Server {
 
     MethodCallSession? maybeSession;
     try {
-      var (endpoint, method, paramMap) =
+      var methodCallContext =
           await endpoints.getAuthorizedEndpointMethodConnector(
         createSessionCallback: (connector) {
           maybeSession = MethodCallSession(
@@ -479,11 +479,14 @@ class Server {
             'Session was not created', StackTrace.current, 0);
       }
 
-      var result = await method.call(session, paramMap);
+      var result = await methodCallContext.method.call(
+        session,
+        methodCallContext.parameters,
+      );
 
       return ResultSuccess(
         result,
-        sendByteDataAsRaw: endpoint.sendByteDataAsRaw,
+        sendByteDataAsRaw: methodCallContext.endpoint.sendByteDataAsRaw,
       );
     } on MethodNotFoundException catch (e) {
       return ResultInvalidParams(e.message);

@@ -57,12 +57,7 @@ abstract class EndpointDispatch {
   /// If the user is not authorized to access the endpoint, a [NotAuthorizedException] is thrown.
   /// If the input parameters are invalid, an [InvalidParametersException] is thrown.
   /// If the found method is not a [MethodStreamConnector], an [InvalidEndpointMethodTypeException] is thrown.
-  Future<
-      (
-        MethodStreamConnector,
-        Map<String, dynamic>,
-        List<StreamParameterDescription>
-      )> getAuthorizedEndpointMethodStreamConnector({
+  Future<MethodStreamCallContext> getAuthorizedEndpointMethodStreamConnector({
     required Session Function(EndpointConnector connector)
         createSessionCallback,
     required String endpointPath,
@@ -71,7 +66,8 @@ abstract class EndpointDispatch {
     required SerializationManager serializationManager,
     required List<String> requestedInputStreams,
   }) async {
-    var (_, method, paramMap) = await _getAuthorizedEndpointMethodConnector(
+    var (endpoint, method, parsedParameters) =
+        await _getAuthorizedEndpointMethodConnector(
       createSessionCallback: createSessionCallback,
       endpointPath: endpointPath,
       methodName: methodName,
@@ -88,7 +84,12 @@ abstract class EndpointDispatch {
       requestedInputStreams: requestedInputStreams,
     );
 
-    return (method, paramMap, inputStreams);
+    return MethodStreamCallContext(
+      method: method,
+      parameters: parsedParameters,
+      inputStreams: inputStreams,
+      endpoint: endpoint,
+    );
   }
 
   /// Tries to get an [EndpointConnector] for a given endpoint and method name.
@@ -106,8 +107,7 @@ abstract class EndpointDispatch {
   /// If the endpoint is not found, an [EndpointNotFoundException] is thrown.
   /// If the user is not authorized to access the endpoint, a [NotAuthorizedException] is thrown.
   /// If the input parameters are invalid, an [InvalidParametersException] is thrown.
-  Future<(Endpoint, MethodConnector, Map<String, dynamic>)>
-      getAuthorizedEndpointMethodConnector({
+  Future<MethodCallContext> getAuthorizedEndpointMethodConnector({
     required Session Function(EndpointConnector connector)
         createSessionCallback,
     required String endpointPath,
@@ -115,7 +115,7 @@ abstract class EndpointDispatch {
     required Map<String, dynamic> parameters,
     required SerializationManager serializationManager,
   }) async {
-    var (endpoint, method, paramMap) =
+    var (endpoint, method, parsedParameters) =
         await _getAuthorizedEndpointMethodConnector(
       createSessionCallback: createSessionCallback,
       endpointPath: endpointPath,
@@ -128,7 +128,11 @@ abstract class EndpointDispatch {
       throw InvalidEndpointMethodTypeException(methodName, endpointPath);
     }
 
-    return (endpoint, method, paramMap);
+    return MethodCallContext(
+      method: method,
+      parameters: parsedParameters,
+      endpoint: endpoint,
+    );
   }
 
   Future<(Endpoint, EndpointMethodConnector, Map<String, dynamic>)>
@@ -148,9 +152,6 @@ abstract class EndpointDispatch {
       throw MethodNotFoundException(
           'Method "$methodName" not found in endpoint: $endpointPath');
     }
-
-    method.requireLogin = endpointConnector.endpoint.requireLogin;
-    method.requiredScopes = endpointConnector.endpoint.requiredScopes;
 
     var paramMap = parseParameters(
       parameters,
@@ -275,19 +276,10 @@ abstract class EndpointMethodConnector {
   /// List of parameters used by the method.
   final Map<String, ParameterDescription> params;
 
-  /// List of [Scope]s that are required to access this [EndpointMethodConnector].
-  Set<Scope> requiredScopes;
-
-  /// States if the [EndpointMethodConnector] only should accept users that are authenticated.
-  /// Default value is false
-  bool requireLogin;
-
   /// Creates a new [EndpointMethodConnector].
   EndpointMethodConnector({
     required this.name,
     required this.params,
-    this.requireLogin = false,
-    this.requiredScopes = const {},
   });
 }
 
@@ -307,6 +299,48 @@ class MethodConnector extends EndpointMethodConnector {
     required super.params,
     required this.call,
     this.returnsVoid,
+  });
+}
+
+/// Context for a [MethodConnector] call
+class MethodCallContext {
+  /// The method to call.
+  final MethodConnector method;
+
+  /// The parameters to pass to the method.
+  final Map<String, dynamic> parameters;
+
+  /// The endpoint the method is called on.
+  final Endpoint endpoint;
+
+  /// Creates a new [MethodCallContext].
+  MethodCallContext({
+    required this.method,
+    required this.parameters,
+    required this.endpoint,
+  });
+}
+
+/// Context for a [MethodStreamConnector] call
+class MethodStreamCallContext {
+  /// The method to call.
+  final MethodStreamConnector method;
+
+  /// The parameters to pass to the method.
+  final Map<String, dynamic> parameters;
+
+  /// The endpoint the method is called on.
+  final Endpoint endpoint;
+
+  /// The input streams to pass to the method.
+  final List<StreamParameterDescription> inputStreams;
+
+  /// Creates a new [MethodStreamCallContext].
+  MethodStreamCallContext({
+    required this.method,
+    required this.parameters,
+    required this.inputStreams,
+    required this.endpoint,
   });
 }
 

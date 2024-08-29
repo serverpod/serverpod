@@ -125,11 +125,9 @@ class MethodWebsocketRequestHandler {
   ) async {
     late MethodStreamSession session;
 
-    Map<String, dynamic> args;
-    MethodStreamConnector method;
-    List<StreamParameterDescription> requestedInputStreams;
+    MethodStreamCallContext methodStreamCallContext;
     try {
-      (method, args, requestedInputStreams) =
+      methodStreamCallContext =
           await server.endpoints.getAuthorizedEndpointMethodStreamConnector(
         createSessionCallback: (connector) {
           session = MethodStreamSession(
@@ -212,7 +210,8 @@ class MethodWebsocketRequestHandler {
     }
 
     var authenticationIsRequired =
-        method.requireLogin || method.requiredScopes.isNotEmpty;
+        methodStreamCallContext.endpoint.requireLogin ||
+            methodStreamCallContext.endpoint.requiredScopes.isNotEmpty;
     _AuthenticationContext? authenticationContext;
     if (authenticationIsRequired) {
       var authenticationInfo = await session.authenticated;
@@ -223,16 +222,16 @@ class MethodWebsocketRequestHandler {
       }
 
       authenticationContext = _AuthenticationContext(
-        method.requiredScopes,
+        methodStreamCallContext.endpoint.requiredScopes,
         authenticationInfo,
       );
     }
 
     _methodStreamManager.createStream(
-      methodConnector: method,
-      requestedInputStreams: requestedInputStreams,
+      methodConnector: methodStreamCallContext.method,
+      requestedInputStreams: methodStreamCallContext.inputStreams,
       session: session,
-      args: args,
+      args: methodStreamCallContext.parameters,
       message: message,
       serializationManager: server.serializationManager,
       webSocket: webSocket,
