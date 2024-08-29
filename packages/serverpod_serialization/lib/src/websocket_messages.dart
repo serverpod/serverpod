@@ -170,7 +170,7 @@ class OpenMethodStreamCommand extends WebSocketMessage {
   /// The connection id that uniquely identifies the stream.
   final UuidValue connectionId;
 
-  /// The authentication token.
+  /// The authentication value as it is sent across the transport layer.
   final String? authentication;
 
   /// Creates a new [OpenMethodStreamCommand] message.
@@ -181,8 +181,7 @@ class OpenMethodStreamCommand extends WebSocketMessage {
         connectionId = UuidValueJsonExtension.fromJson(
             data[WebSocketMessageDataKey.connectionId]),
         // unwraps auth upon deserialization of this message:
-        authentication =
-            unwrapAuthHeaderValue(data[WebSocketMessageDataKey.authentication]),
+        authentication = data[WebSocketMessageDataKey.authentication],
         inputStreams =
             List<String>.from(data[WebSocketMessageDataKey.inputStreams]);
 
@@ -203,7 +202,6 @@ class OpenMethodStreamCommand extends WebSocketMessage {
           SerializationManager.encodeForProtocol(args),
       WebSocketMessageDataKey.inputStreams: inputStreams,
       if (authentication != null)
-        // Note, the originating authenticationProvider provides the wrapped auth value.
         WebSocketMessageDataKey.authentication: authentication,
     });
   }

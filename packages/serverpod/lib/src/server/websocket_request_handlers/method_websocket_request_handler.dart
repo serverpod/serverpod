@@ -204,7 +204,7 @@ class MethodWebsocketRequestHandler {
     var session = MethodStreamSession(
       server: server,
       enableLogging: endpointConnector.endpoint.logSessions,
-      authenticationKey: message.authentication,
+      authenticationKey: unwrapAuthHeaderValue(message.authentication),
       endpoint: endpointConnector.name,
       method: endpointMethodConnector.name,
       connectionId: message.connectionId,
