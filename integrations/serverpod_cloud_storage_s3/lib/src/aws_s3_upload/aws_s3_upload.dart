@@ -156,35 +156,24 @@ class AwsS3Uploader {
 
     /// The filename to upload as. If null, defaults to the given file's current filename.
     required String uploadDst,
+    Duration expires = const Duration(minutes: 10),
+    int maxFileSize = 10 * 1024 * 1024,
     bool public = true,
   }) async {
     final endpoint = 'https://$bucket.s3-$region.amazonaws.com';
-    // final uploadDest = '$destDir/${filename ?? path.basename(file.path)}';
-
-    // final stream = http.ByteStream.fromBytes(data.buffer.asUint8List());
-
-    // final stream = http.ByteStream(Stream.castFrom(file.openRead()));
-    // final length = data.lengthInBytes;
-
-    // final uri = Uri.parse(endpoint);
-    // final req = http.MultipartRequest("POST", uri);
-    // final multipartFile = http.MultipartFile('file', stream, length, filename: path.basename(uploadDst));
 
     final policy = Policy.fromS3PresignedPost(
-        uploadDst, bucket, accessKey, 15, 10 * 1024 * 1024,
-        region: region, public: public);
+      uploadDst,
+      bucket,
+      accessKey,
+      expires.inMinutes,
+      maxFileSize,
+      region: region,
+      public: public,
+    );
     final key =
         SigV4.calculateSigningKey(secretKey, policy.datetime, region, 's3');
     final signature = SigV4.calculateSignature(key, policy.encode());
-
-    // req.files.add(multipartFile);
-    // req.fields['key'] = policy.key;
-    // req.fields['acl'] = public ? 'public-read' : 'private';
-    // req.fields['X-Amz-Credential'] = policy.credential;
-    // req.fields['X-Amz-Algorithm'] = 'AWS4-HMAC-SHA256';
-    // req.fields['X-Amz-Date'] = policy.datetime;
-    // req.fields['Policy'] = policy.encode();
-    // req.fields['X-Amz-Signature'] = signature;
 
     var uploadDescriptionData = {
       'url': endpoint,
@@ -203,15 +192,5 @@ class AwsS3Uploader {
     };
 
     return jsonEncode(uploadDescriptionData);
-
-    // try {
-    //   final res = await req.send();
-    //
-    //   if (res.statusCode == 204) return '$endpoint/$uploadDst';
-    // } catch (e) {
-    //   print('Failed to upload to AWS, with exception:');
-    //   print(e);
-    //   return null;
-    // }
   }
 }
