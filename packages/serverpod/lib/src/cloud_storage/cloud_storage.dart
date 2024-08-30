@@ -70,6 +70,7 @@ abstract class CloudStorage {
     required Session session,
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
+    int maxFileSize = 10 * 1024 * 1024,
   });
 
   /// Call this method once a direct file upload is completed. Failure to call
