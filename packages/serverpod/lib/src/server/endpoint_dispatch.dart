@@ -102,7 +102,7 @@ abstract class EndpointDispatch {
     return _getEndpointConnector(endpointPath, (_) => session);
   }
 
-  /// Tries to get a [MethodConnector] for a given endpoint and method name.
+  /// Tries to get a [MethodCallContext] for a given endpoint and method name.
   /// If the method is not found, a [MethodNotFoundException] is thrown.
   /// If the endpoint is not found, an [EndpointNotFoundException] is thrown.
   /// If the user is not authorized to access the endpoint, a [NotAuthorizedException] is thrown.
