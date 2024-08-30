@@ -115,11 +115,16 @@ abstract class EndpointDispatch {
     // Get the the authentication key, if any
     // If it is provided in the HTTP authorization header we use that,
     // otherwise we look for it in the query parameters (the old method).
-    var authHeaderValue =
-        request.headers.value(HttpHeaders.authorizationHeader);
-    String? authenticationKey = authHeaderValue != null
-        ? unwrapAuthHeaderValue(authHeaderValue)
-        : queryParameters['auth'];
+    String? authenticationKey;
+    try {
+      var authHeaderValue =
+          request.headers.value(HttpHeaders.authorizationHeader);
+      authenticationKey = authHeaderValue != null
+          ? unwrapAuthHeaderValue(authHeaderValue)
+          : queryParameters['auth'];
+    } on Exception catch (e) {
+      return ResultStatusCode(400, e.toString());
+    }
 
     MethodCallSession session = MethodCallSession(
       server: server,
@@ -503,17 +508,21 @@ class ResultInternalServerError extends Result {
   }
 }
 
-/// The result of a failed [Endpoint] method call, with a custom status code.
+/// The result of a failed [Endpoint] method call, with a custom status code,
+/// and an optional message.
 class ResultStatusCode extends Result {
   /// The status code to be returned to the client.
   final int statusCode;
 
+  /// Message / description of the error.
+  final String? message;
+
   /// Creates a new [ResultStatusCode].
-  ResultStatusCode(this.statusCode);
+  ResultStatusCode(this.statusCode, [this.message]);
 
   @override
   String toString() {
-    return 'Status Code: $statusCode';
+    return 'Status Code: $statusCode${message != null ? ': $message' : ''}';
   }
 }
 

@@ -15,13 +15,33 @@ void main() {
     'Basic dGVzd',
     'Basic dGVzd02348+/',
     'Basic dGVzd==',
+    'Basic ',
+    'basic dGVzd',
+    'BASIC dGVzd',
+    'basiC dGVzd',
   ];
 
   /// standard non-basic auth schemes' key formats
   var standardNonBasicAuthKeys = [
     'Bearer dGVzd ,;.<>_-/\\|"\'`~!@#\$%^&*()+=[]{}',
+    'bearer dGVzd ,;.<>_-/\\|"\'`~!@#\$%^&*()+=[]{}',
+    'BEARER dGVzd ,;.<>_-/\\|"\'`~!@#\$%^&*()+=[]{}',
     'Digest dGVzd ,;.<>_-/\\|"\'`~!@#\$%^&*()+=[]{}',
     'HOBA dGVzd ,;.<>_-/\\|"\'`~!@#\$%^&*()+=[]{}',
+  ];
+
+  /// basic auth schemes' keys with invalid content
+  var invalidBasicAuthKeys = [
+    'Basic dGVzd dGVzd dGVzd',
+    'Basic dGVzd dGVzd',
+    'Basic dGVzd ',
+    'Basic dGVzd*',
+    'Basic dGVz=d',
+    'Basic d#',
+    'Basic #',
+    'Basic \t',
+    'Basic  ',
+    'Basic',
   ];
 
   /// arbitrary auth key formats
@@ -81,13 +101,22 @@ void main() {
     }
   });
 
-  group('When using isWrappedAuthValue()', () {
+  group('When using isWrappedBasicAuthHeaderValue()', () {
     for (var key in standardBasicAuthKeys) {
       test(
           'Given an auth key in "Basic" HTTP auth header format ${_stripControlCharacters(key)} '
-          'then isWrappedAuthValue should correctly recognize it as a wrapped auth key',
+          'then isWrappedBasicAuthHeaderValue should correctly recognize it as a wrapped auth key',
           () {
-        expect(isWrappedAuthValue(key), isTrue);
+        expect(isWrappedBasicAuthHeaderValue(key), isTrue);
+      });
+    }
+
+    for (var key in invalidBasicAuthKeys) {
+      test(
+          'Given an auth key in "Basic" HTTP auth header with invalid format ${_stripControlCharacters(key)} '
+          'then isWrappedBasicAuthHeaderValue should reject it with an exception',
+          () {
+        expect(() => isWrappedBasicAuthHeaderValue(key), throwsException);
       });
     }
 
@@ -98,9 +127,9 @@ void main() {
     ]) {
       test(
           'Given an auth key not in "Basic" HTTP auth header format ${_stripControlCharacters(key)} '
-          'then isWrappedAuthValue should correctly recognize it as not wrapped',
+          'then isWrappedBasicAuthHeaderValue should correctly recognize it as not wrapped',
           () {
-        expect(isWrappedAuthValue(key), isFalse);
+        expect(isWrappedBasicAuthHeaderValue(key), isFalse);
       });
     }
   });
@@ -113,15 +142,17 @@ void main() {
       ...arbitraryAuthKeys,
     ]) {
       test(
-          'Given auth key ${_stripControlCharacters(key)}'
+          'Given auth key "${_stripControlCharacters(key)}" '
           'then wrapping should result in an HTTP "authorization" compliant value format',
           () {
-        var wrapped = wrapAuthHeaderValue(key);
+        var wrapped = wrapAsBasicAuthHeaderValue(key);
         expect(isValidAuthHeaderValue(wrapped), isTrue);
       });
 
-      test('then wrapping and unwrapping should result in the same value', () {
-        var wrapped = wrapAuthHeaderValue(key);
+      test(
+          'Given auth key "${_stripControlCharacters(key)}" '
+          'then wrapping and unwrapping should result in the same value', () {
+        var wrapped = wrapAsBasicAuthHeaderValue(key);
         var unwrapped = unwrapAuthHeaderValue(wrapped);
         expect(unwrapped, key);
       });
