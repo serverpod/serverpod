@@ -65,7 +65,10 @@ class Serverpod {
 
   /// The server configuration, as read from the config/ directory.
   late ServerpodConfig config;
+
   Map<String, String> _passwords = <String, String>{};
+
+  late PasswordManager _passwordManager;
 
   /// Custom [AuthenticationHandler] used to authenticate users.
   final AuthenticationHandler? authenticationHandler;
@@ -297,7 +300,8 @@ class Serverpod {
     serverId = commandLineArgs.serverId;
 
     // Load passwords
-    _passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
+    _passwordManager = PasswordManager(runMode: runMode);
+    _passwords = _passwordManager.loadPasswords() ?? {};
 
     // Load config
     this.config = config ??
@@ -727,6 +731,24 @@ class Serverpod {
   /// config/passwords.yaml file.
   String? getPassword(String key) {
     return _passwords[key];
+  }
+
+  /// Registers passwords to be loaded from the env variables.
+  /// The password can be accessed with the [getPassword] method.
+  /// The envName is the name of the environment variable that
+  /// contains the password. The alias is the key used to access the
+  /// the password with the [getPassword] method.
+  /// The alias also maps to the name in the config/passwords.yaml file.
+  /// This method may throw a [ArgumentError] if any Serverpod reserved passwords
+  /// are used as aliases or environment variables.
+  void loadCustomPasswords(
+    List<({String envName, String alias})> envPasswords,
+  ) {
+    _passwords = _passwordManager.mergePasswords(
+      envPasswords,
+      _passwords,
+      environment: Platform.environment,
+    );
   }
 
   /// Creates a new [InternalSession]. Used to access the database and do

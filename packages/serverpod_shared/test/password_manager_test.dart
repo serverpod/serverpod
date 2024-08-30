@@ -176,4 +176,144 @@ development:
       expect(passwords['mySharedPassword'], 'my password');
     });
   });
+
+  group(
+      'Given a reserved env variable when merging custom passwords then an ArgumentError is thrown for env',
+      () {
+    var passwordManager = PasswordManager(runMode: 'development');
+
+    test('SERVERPOD_DATABASE_PASSWORD', () {
+      expect(
+        () => passwordManager.mergePasswords(
+          [(envName: 'SERVERPOD_DATABASE_PASSWORD', alias: 'any')],
+          {},
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
+
+    test('SERVERPOD_SERVICE_SECRET', () {
+      expect(
+        () => passwordManager.mergePasswords(
+          [(envName: 'SERVERPOD_SERVICE_SECRET', alias: 'any')],
+          {},
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
+
+    test('SERVERPOD_REDIS_PASSWORD', () {
+      expect(
+        () => passwordManager.mergePasswords(
+          [(envName: 'SERVERPOD_REDIS_PASSWORD', alias: 'any')],
+          {},
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
+  });
+
+  group(
+      'Given a reserved alias when merging custom passwords then an ArgumentError is thrown for ',
+      () {
+    var passwordManager = PasswordManager(runMode: 'development');
+
+    test('database', () {
+      expect(
+        () => passwordManager.mergePasswords(
+          [(envName: 'ANY_CUSTOM_ENV', alias: 'database')],
+          {},
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
+
+    test('serviceSecret', () {
+      expect(
+        () => passwordManager.mergePasswords(
+          [(envName: 'ANY_CUSTOM_ENV', alias: 'serviceSecret')],
+          {},
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
+
+    test('redis', () {
+      expect(
+        () => passwordManager.mergePasswords(
+          [(envName: 'ANY_CUSTOM_ENV', alias: 'redis')],
+          {},
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
+  });
+
+  test(
+      'Given a custom password config and an environment variable then the env is loaded as the alias.',
+      () {
+    var passwordManager = PasswordManager(runMode: 'development');
+
+    var passwords = passwordManager.mergePasswords(
+      [(envName: 'CUSTOM_PASSWORD_1', alias: 'customPassword1')],
+      {},
+      environment: {
+        'CUSTOM_PASSWORD_1': 'password1',
+      },
+    );
+
+    expect(passwords['customPassword1'], 'password1');
+  });
+
+  test(
+      'Given a custom password config and an existing password but no environment variable when merging the custom password then the existing password is loaded.',
+      () {
+    var passwordManager = PasswordManager(runMode: 'development');
+
+    var passwords = passwordManager.mergePasswords(
+      [(envName: 'CUSTOM_PASSWORD_1', alias: 'customPassword1')],
+      {
+        'customPassword1': 'default',
+      },
+      environment: {},
+    );
+
+    expect(passwords['customPassword1'], 'default');
+  });
+
+  test(
+      'Given a custom password config and an existing password and an environment variable when merging the custom password then the env is loaded and override the existing password.',
+      () {
+    var passwordManager = PasswordManager(runMode: 'development');
+
+    var passwords = passwordManager.mergePasswords(
+      [(envName: 'CUSTOM_PASSWORD_1', alias: 'customPassword1')],
+      {
+        'customPassword1': 'default',
+      },
+      environment: {
+        'CUSTOM_PASSWORD_1': 'password1',
+      },
+    );
+
+    expect(passwords['customPassword1'], 'password1');
+  });
+
+  test(
+      'Given a custom password config and an existing password and an environment variable when merging the custom password then the existing passwords are kept unmodified.',
+      () {
+    var passwordManager = PasswordManager(runMode: 'development');
+
+    var passwords = passwordManager.mergePasswords(
+      [(envName: 'CUSTOM_PASSWORD_1', alias: 'customPassword1')],
+      {
+        'database': 'password',
+      },
+      environment: {
+        'CUSTOM_PASSWORD_1': 'password1',
+      },
+    );
+
+    expect(passwords['database'], 'password');
+  });
 }
