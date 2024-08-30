@@ -182,23 +182,35 @@ development:
       () {
     var passwordManager = PasswordManager(runMode: 'development');
 
-    var reservedEnvVariables = [
-      'SERVERPOD_DATABASE_PASSWORD',
-      'SERVERPOD_SERVICE_SECRET',
-      'SERVERPOD_REDIS_PASSWORD',
-    ];
+    test('SERVERPOD_DATABASE_PASSWORD', () {
+      expect(
+        () => passwordManager.mergeCustomPasswords(
+          [(envName: 'SERVERPOD_DATABASE_PASSWORD', alias: 'any')],
+          {},
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
 
-    for (var envName in reservedEnvVariables) {
-      test(envName, () {
-        expect(
-          () => passwordManager.mergeCustomPasswords(
-            [(envName: envName, alias: 'any')],
-            {},
-          ),
-          throwsA(isA<ArgumentError>()),
-        );
-      });
-    }
+    test('SERVERPOD_SERVICE_SECRET', () {
+      expect(
+        () => passwordManager.mergeCustomPasswords(
+          [(envName: 'SERVERPOD_SERVICE_SECRET', alias: 'any')],
+          {},
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
+
+    test('SERVERPOD_REDIS_PASSWORD', () {
+      expect(
+        () => passwordManager.mergeCustomPasswords(
+          [(envName: 'SERVERPOD_REDIS_PASSWORD', alias: 'any')],
+          {},
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
   });
 
   group(
@@ -206,23 +218,35 @@ development:
       () {
     var passwordManager = PasswordManager(runMode: 'development');
 
-    var reservedAliases = [
-      'database',
-      'serviceSecret',
-      'redis',
-    ];
+    test('database', () {
+      expect(
+        () => passwordManager.mergeCustomPasswords(
+          [(envName: 'ANY_CUSTOM_ENV', alias: 'database')],
+          {},
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
 
-    for (var alias in reservedAliases) {
-      test(alias, () {
-        expect(
-          () => passwordManager.mergeCustomPasswords(
-            [(envName: 'ANY_CUSTOM_ENV', alias: alias)],
-            {},
-          ),
-          throwsA(isA<ArgumentError>()),
-        );
-      });
-    }
+    test('serviceSecret', () {
+      expect(
+        () => passwordManager.mergeCustomPasswords(
+          [(envName: 'ANY_CUSTOM_ENV', alias: 'serviceSecret')],
+          {},
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
+
+    test('redis', () {
+      expect(
+        () => passwordManager.mergeCustomPasswords(
+          [(envName: 'ANY_CUSTOM_ENV', alias: 'redis')],
+          {},
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
   });
 
   test(
