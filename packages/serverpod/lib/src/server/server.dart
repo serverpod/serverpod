@@ -164,15 +164,7 @@ class Server {
           'received request: ${request.method} ${request.uri.path}',
         );
 
-        try {
-          _handleRequest(request);
-        } catch (e, stackTrace) {
-          stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. _handleRequest failed.',
-          );
-          stderr.writeln('$e');
-          stderr.writeln('$stackTrace');
-        }
+        _handleRequestWithErrorBoundary(request);
       }
     } catch (e, stackTrace) {
       stderr.writeln(
@@ -184,8 +176,24 @@ class Server {
     stdout.writeln('$name stopped');
   }
 
+  void _handleRequestWithErrorBoundary(HttpRequest request) async {
+    // [Future.sync] ensures no synchronous error is accidentally thrown from the handler
+    // https://dart.dev/libraries/async/futures-error-handling#solution-using-future-sync-to-wrap-your-code
+    await Future.sync(() {
+      return _handleRequest(request);
+    }).catchError((e, stackTrace) async {
+      stderr.writeln(
+        '${DateTime.now().toUtc()} Internal server error. _handleRequest failed with exception.',
+      );
+      stderr.writeln('$e');
+      stderr.writeln('$stackTrace');
+      request.response.statusCode = HttpStatus.internalServerError;
+      return request.response.close();
+    });
+  }
+
   //TODO: encode analyze
-  void _handleRequest(HttpRequest request) async {
+  Future<void> _handleRequest(HttpRequest request) async {
     serverpod
         .logVerbose('handleRequest: ${request.method} ${request.uri.path}');
 
