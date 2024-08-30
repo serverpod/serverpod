@@ -71,6 +71,9 @@ enum OpenMethodStreamResponseType {
   /// The stream was successfully opened.
   success,
 
+  /// Something unexpectedly failed.
+  unexpectedFailure,
+
   /// The endpoint was not found.
   endpointNotFound,
 

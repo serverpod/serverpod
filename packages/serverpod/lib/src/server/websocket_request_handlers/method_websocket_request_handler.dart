@@ -123,14 +123,14 @@ class MethodWebsocketRequestHandler {
     WebSocket webSocket,
     OpenMethodStreamCommand message,
   ) async {
-    late MethodStreamSession session;
+    MethodStreamSession? maybeSession;
 
     MethodStreamCallContext methodStreamCallContext;
     try {
       methodStreamCallContext =
           await server.endpoints.getMethodStreamCallContext(
         createSessionCallback: (connector) {
-          session = MethodStreamSession(
+          maybeSession = MethodStreamSession(
             server: server,
             authenticationKey: message.authentication,
             endpoint: message.endpoint,
@@ -138,7 +138,7 @@ class MethodWebsocketRequestHandler {
             connectionId: message.connectionId,
             enableLogging: connector.endpoint.logSessions,
           );
-          return session;
+          return maybeSession!;
         },
         endpointPath: message.endpoint,
         methodName: message.method,
@@ -190,7 +190,6 @@ class MethodWebsocketRequestHandler {
       server.serverpod.logVerbose(
         'Authentication failed for open stream request: $message',
       );
-      await session.close();
       return switch (e.authenticationFailedResult.reason) {
         AuthenticationFailureReason.insufficientAccess =>
           OpenMethodStreamResponse.buildMessage(
@@ -207,6 +206,18 @@ class MethodWebsocketRequestHandler {
             responseType: OpenMethodStreamResponseType.authenticationFailed,
           ),
       };
+    } finally {
+      await maybeSession?.close();
+    }
+
+    MethodStreamSession? session = maybeSession;
+    if (session == null) {
+      return OpenMethodStreamResponse.buildMessage(
+        endpoint: message.endpoint,
+        method: message.method,
+        connectionId: message.connectionId,
+        responseType: OpenMethodStreamResponseType.unexpectedFailure,
+      );
     }
 
     var authenticationIsRequired =
