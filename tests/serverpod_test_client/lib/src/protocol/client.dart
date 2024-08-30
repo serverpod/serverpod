@@ -116,6 +116,19 @@ class EndpointAuthentication extends _i1.EndpointRef {
         'signOut',
         {},
       );
+
+  _i2.Future<void> updateScopes(
+    int userId,
+    List<String> scopes,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'authentication',
+        'updateScopes',
+        {
+          'userId': userId,
+          'scopes': scopes,
+        },
+      );
 }
 
 /// {@category Endpoint}
@@ -1067,7 +1080,6 @@ class EndpointLogging extends _i1.EndpointRef {
         {},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Stream<int> streamEmpty(_i2.Stream<int> input) =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'logging',
@@ -1076,7 +1088,6 @@ class EndpointLogging extends _i1.EndpointRef {
         {'input': input},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Stream<int> streamLogging(_i2.Stream<int> input) =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'logging',
@@ -1085,7 +1096,6 @@ class EndpointLogging extends _i1.EndpointRef {
         {'input': input},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Stream<int> streamQueryLogging(_i2.Stream<int> input) =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'logging',
@@ -1328,8 +1338,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
   @override
   String get name => 'methodStreaming';
 
-  /// Warning: Streaming methods are still experimental.
-  ///
   /// Returns a simple stream of integers from 0 to 9.
   _i2.Stream<int> simpleStream() =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
@@ -1339,7 +1347,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Stream<int> neverEndingStreamWithDelay(int millisecondsDelay) =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'methodStreaming',
@@ -1354,7 +1361,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Future<int> intReturnFromStream(_i2.Stream<int> stream) =>
       caller.callStreamingServerEndpoint<_i2.Future<int>, int>(
         'methodStreaming',
@@ -1363,7 +1369,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'stream': stream},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Future<int?> nullableIntReturnFromStream(_i2.Stream<int?> stream) =>
       caller.callStreamingServerEndpoint<_i2.Future<int?>, int?>(
         'methodStreaming',
@@ -1372,7 +1377,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'stream': stream},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Stream<int> intStreamFromValue(int value) =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'methodStreaming',
@@ -1381,7 +1385,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Stream<int> intEchoStream(_i2.Stream<int> stream) =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'methodStreaming',
@@ -1390,7 +1393,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'stream': stream},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Stream<dynamic> dynamicEchoStream(_i2.Stream<dynamic> stream) =>
       caller.callStreamingServerEndpoint<_i2.Stream<dynamic>, dynamic>(
         'methodStreaming',
@@ -1399,7 +1401,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'stream': stream},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Stream<int?> nullableIntEchoStream(_i2.Stream<int?> stream) =>
       caller.callStreamingServerEndpoint<_i2.Stream<int?>, int?>(
         'methodStreaming',
@@ -1408,7 +1409,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'stream': stream},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Future<void> voidReturnAfterStream(_i2.Stream<int> stream) =>
       caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
         'methodStreaming',
@@ -1417,7 +1417,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'stream': stream},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Stream<int> multipleIntEchoStreams(
     _i2.Stream<int> stream1,
     _i2.Stream<int> stream2,
@@ -1432,7 +1431,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         },
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Future<void> directVoidReturnWithStreamInput(_i2.Stream<int> stream) =>
       caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
         'methodStreaming',
@@ -1441,7 +1439,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'stream': stream},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Future<int> directOneIntReturnWithStreamInput(_i2.Stream<int> stream) =>
       caller.callStreamingServerEndpoint<_i2.Future<int>, int>(
         'methodStreaming',
@@ -1450,7 +1447,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'stream': stream},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Future<int> simpleInputReturnStream(_i2.Stream<int> stream) =>
       caller.callStreamingServerEndpoint<_i2.Future<int>, int>(
         'methodStreaming',
@@ -1459,7 +1455,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'stream': stream},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Stream<int> simpleStreamWithParameter(int value) =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'methodStreaming',
@@ -1468,7 +1463,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Stream<_i10.SimpleData> simpleDataStream(int value) =>
       caller.callStreamingServerEndpoint<_i2.Stream<_i10.SimpleData>,
           _i10.SimpleData>(
@@ -1478,7 +1472,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Stream<_i10.SimpleData> simpleInOutDataStream(
           _i2.Stream<_i10.SimpleData> simpleDataStream) =>
       caller.callStreamingServerEndpoint<_i2.Stream<_i10.SimpleData>,
@@ -1517,7 +1510,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'delay': delay},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Stream<int> delayedStreamResponse(int delay) =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'methodStreaming',
@@ -1526,7 +1518,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Future<void> delayedNeverListenedInputStream(
     int delay,
     _i2.Stream<int> stream,
@@ -1538,7 +1529,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'stream': stream},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Future<void> delayedPausedInputStream(
     int delay,
     _i2.Stream<int> stream,
@@ -1559,7 +1549,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Future<void> inStreamThrowsException(_i2.Stream<int> stream) =>
       caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
         'methodStreaming',
@@ -1568,7 +1557,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'stream': stream},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Future<void> inStreamThrowsSerializableException(
           _i2.Stream<int> stream) =>
       caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
@@ -1578,7 +1566,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'stream': stream},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Stream<int> outStreamThrowsException() =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'methodStreaming',
@@ -1587,7 +1574,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Stream<int> outStreamThrowsSerializableException() =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'methodStreaming',
@@ -1596,7 +1582,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Future<void> throwsExceptionVoid(_i2.Stream<int> stream) =>
       caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
         'methodStreaming',
@@ -1605,7 +1590,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'stream': stream},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Future<void> throwsSerializableExceptionVoid(_i2.Stream<int> stream) =>
       caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
         'methodStreaming',
@@ -1614,7 +1598,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'stream': stream},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Future<int> throwsException(_i2.Stream<int> stream) =>
       caller.callStreamingServerEndpoint<_i2.Future<int>, int>(
         'methodStreaming',
@@ -1623,7 +1606,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'stream': stream},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Future<int> throwsSerializableException(_i2.Stream<int> stream) =>
       caller.callStreamingServerEndpoint<_i2.Future<int>, int>(
         'methodStreaming',
@@ -1632,7 +1614,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'stream': stream},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Stream<int> throwsExceptionStream() =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'methodStreaming',
@@ -1641,7 +1622,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Stream<int> throwsSerializableExceptionStream() =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'methodStreaming',
@@ -1650,7 +1630,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Future<bool> didInputStreamHaveError(_i2.Stream<int> stream) =>
       caller.callStreamingServerEndpoint<_i2.Future<bool>, bool>(
         'methodStreaming',
@@ -1659,7 +1638,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'stream': stream},
       );
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Future<bool> didInputStreamHaveSerializableExceptionError(
           _i2.Stream<int> stream) =>
       caller.callStreamingServerEndpoint<_i2.Future<bool>, bool>(
@@ -1678,13 +1656,20 @@ class EndpointAuthenticatedMethodStreaming extends _i1.EndpointRef {
   @override
   String get name => 'authenticatedMethodStreaming';
 
-  /// Warning: Streaming methods are still experimental.
   _i2.Stream<int> simpleStream() =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'authenticatedMethodStreaming',
         'simpleStream',
         {},
         {},
+      );
+
+  _i2.Stream<int> intEchoStream(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'authenticatedMethodStreaming',
+        'intEchoStream',
+        {},
+        {'stream': stream},
       );
 }
 

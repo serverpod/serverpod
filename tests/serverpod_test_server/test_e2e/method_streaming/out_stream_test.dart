@@ -56,8 +56,7 @@ void main() {
 
     await expectLater(
       await streamComplete.future,
-      isA<ServerpodClientException>()
-          .having((e) => e.statusCode, 'statusCode', -1),
+      isA<ConnectionClosedException>(),
     );
   });
 

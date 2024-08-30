@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/generated/protocol.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
@@ -612,6 +613,42 @@ class MessageCentralAccess {
   /// emit an error.
   Stream<T> createStream<T>(String channelName) =>
       _session.server.messageCentral.createStream<T>(_session, channelName);
+
+  /// Broadcasts revoked authentication events to the Serverpod framework.
+  /// This message ensures authenticated connections to the user are closed.
+  ///
+  /// The [userId] should be the [AuthenticationInfo.userId] for the concerned
+  /// user.
+  ///
+  /// The [message] must be of type [RevokedAuthenticationUser],
+  /// [RevokedAuthenticationAuthId], or [RevokedAuthenticationScope].
+  ///
+  /// [RevokedAuthenticationUser] is used to communicate that all the user's
+  /// authentication is revoked.
+  ///
+  /// [RevokedAuthenticationAuthId] is used to communicate that a specific
+  /// authentication id has been revoked for a user.
+  ///
+  /// [RevokedAuthenticationScope] is used to communicate that a specific
+  /// scope or scopes have been revoked for the user.
+  Future<bool> authenticationRevoked(
+    int userId,
+    SerializableModel message,
+  ) async {
+    if (message is! RevokedAuthenticationUser &&
+        message is! RevokedAuthenticationAuthId &&
+        message is! RevokedAuthenticationScope) {
+      throw ArgumentError(
+        'Message must be of type RevokedAuthenticationUser, '
+        'RevokedAuthenticationAuthId, or RevokedAuthenticationScope',
+      );
+    }
+    return _session.server.messageCentral.postMessage(
+      MessageCentralServerpodChannels.revokedAuthentication(userId),
+      message,
+      global: true,
+    );
+  }
 }
 
 /// Internal methods for [Session].

@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:meta/meta.dart';
+import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -121,24 +123,46 @@ class MethodWebsocketRequestHandler {
     WebSocket webSocket,
     OpenMethodStreamCommand message,
   ) async {
-    // Validate targeted endpoint method
-    var endpointConnector =
-        server.endpoints.getConnectorByName(message.endpoint);
-    if (endpointConnector == null) {
+    Map<String, dynamic> arguments;
+    try {
+      arguments = jsonDecode(message.encodedArgs);
+    } catch (e) {
       server.serverpod.logVerbose(
-        'Endpoint not found for open stream request: $message',
+        'Failed to parse arguments for open stream request: $message ($e)',
       );
       return OpenMethodStreamResponse.buildMessage(
-        connectionId: message.connectionId,
         endpoint: message.endpoint,
         method: message.method,
-        responseType: OpenMethodStreamResponseType.endpointNotFound,
+        connectionId: message.connectionId,
+        responseType: OpenMethodStreamResponseType.invalidArguments,
       );
     }
 
-    var endpointMethodConnector =
-        endpointConnector.methodConnectors[message.method];
-    if (endpointMethodConnector == null) {
+    MethodStreamSession? maybeSession;
+    MethodStreamCallContext methodStreamCallContext;
+    bool keepSessionOpen = false;
+    try {
+      methodStreamCallContext =
+          await server.endpoints.getMethodStreamCallContext(
+        createSessionCallback: (connector) {
+          maybeSession = MethodStreamSession(
+            server: server,
+            authenticationKey: message.authentication,
+            endpoint: message.endpoint,
+            method: message.method,
+            connectionId: message.connectionId,
+            enableLogging: connector.endpoint.logSessions,
+          );
+          return maybeSession!;
+        },
+        endpointPath: message.endpoint,
+        methodName: message.method,
+        arguments: arguments,
+        serializationManager: server.serializationManager,
+        requestedInputStreams: message.inputStreams,
+      );
+      keepSessionOpen = true;
+    } on MethodNotFoundException {
       server.serverpod.logVerbose(
         'Endpoint method not found for open stream request: $message',
       );
@@ -148,9 +172,17 @@ class MethodWebsocketRequestHandler {
         method: message.method,
         responseType: OpenMethodStreamResponseType.endpointNotFound,
       );
-    }
-
-    if (endpointMethodConnector is! MethodStreamConnector) {
+    } on EndpointNotFoundException {
+      server.serverpod.logVerbose(
+        'Endpoint not found for open stream request: $message',
+      );
+      return OpenMethodStreamResponse.buildMessage(
+        connectionId: message.connectionId,
+        endpoint: message.endpoint,
+        method: message.method,
+        responseType: OpenMethodStreamResponseType.endpointNotFound,
+      );
+    } on InvalidEndpointMethodTypeException {
       server.serverpod.logVerbose(
         'Endpoint method is not a valid stream method: $message',
       );
@@ -160,19 +192,9 @@ class MethodWebsocketRequestHandler {
         connectionId: message.connectionId,
         responseType: OpenMethodStreamResponseType.endpointNotFound,
       );
-    }
-
-    // Parse arguments
-    Map<String, dynamic> args;
-    try {
-      args = EndpointDispatch.parseParameters(
-        message.args,
-        endpointMethodConnector.params,
-        server.serializationManager,
-      );
-    } catch (e) {
+    } on InvalidParametersException catch (e) {
       server.serverpod.logVerbose(
-        'Failed to parse parameters for open stream request: $message',
+        'Failed to parse parameters or input streams for open stream request: $message (${e.message})',
       );
       return OpenMethodStreamResponse.buildMessage(
         endpoint: message.endpoint,
@@ -180,49 +202,11 @@ class MethodWebsocketRequestHandler {
         connectionId: message.connectionId,
         responseType: OpenMethodStreamResponseType.invalidArguments,
       );
-    }
-
-    List<StreamParameterDescription> requestedInputStreams;
-    try {
-      requestedInputStreams = EndpointDispatch.parseRequestedInputStreams(
-        descriptions: endpointMethodConnector.streamParams,
-        requestedInputStreams: message.inputStreams,
-      );
-    } catch (e) {
-      server.serverpod.logVerbose(
-        'Failed to parse input streams for open stream request: $message',
-      );
-      return OpenMethodStreamResponse.buildMessage(
-        endpoint: message.endpoint,
-        method: message.method,
-        connectionId: message.connectionId,
-        responseType: OpenMethodStreamResponseType.invalidArguments,
-      );
-    }
-
-    // Create session
-    var session = MethodStreamSession(
-      server: server,
-      enableLogging: endpointConnector.endpoint.logSessions,
-      authenticationKey: unwrapAuthHeaderValue(message.authentication),
-      endpoint: endpointConnector.name,
-      method: endpointMethodConnector.name,
-      connectionId: message.connectionId,
-    );
-
-    // Check authentication
-    var authFailed = await EndpointDispatch.canUserAccessEndpoint(
-      () => session.authenticated,
-      endpointConnector.endpoint.requireLogin,
-      endpointConnector.endpoint.requiredScopes,
-    );
-
-    if (authFailed != null) {
+    } on NotAuthorizedException catch (e) {
       server.serverpod.logVerbose(
         'Authentication failed for open stream request: $message',
       );
-      await session.close();
-      return switch (authFailed.reason) {
+      return switch (e.authenticationFailedResult.reason) {
         AuthenticationFailureReason.insufficientAccess =>
           OpenMethodStreamResponse.buildMessage(
             endpoint: message.endpoint,
@@ -238,16 +222,47 @@ class MethodWebsocketRequestHandler {
             responseType: OpenMethodStreamResponseType.authenticationFailed,
           ),
       };
+    } catch (e) {
+      server.serverpod.logVerbose(
+        'Unexpected error when opening stream: $e',
+      );
+      throw StateError('Unexpected error when opening stream: $e');
+    } finally {
+      if (!keepSessionOpen) await maybeSession?.close();
+    }
+
+    MethodStreamSession? session = maybeSession;
+    if (session == null) {
+      throw StateError('MethodStreamSession was not created.');
+    }
+
+    var authenticationIsRequired =
+        methodStreamCallContext.endpoint.requireLogin ||
+            methodStreamCallContext.endpoint.requiredScopes.isNotEmpty;
+    _AuthenticationContext? authenticationContext;
+    if (authenticationIsRequired) {
+      var authenticationInfo = await session.authenticated;
+      if (authenticationInfo == null) {
+        throw StateError(
+          'Authentication was required and passed but no authentication info could be retrieved.',
+        );
+      }
+
+      authenticationContext = _AuthenticationContext(
+        methodStreamCallContext.endpoint.requiredScopes,
+        authenticationInfo,
+      );
     }
 
     _methodStreamManager.createStream(
-      methodConnector: endpointMethodConnector,
-      requestedInputStreams: requestedInputStreams,
+      methodConnector: methodStreamCallContext.method,
+      requestedInputStreams: methodStreamCallContext.inputStreams,
       session: session,
-      args: args,
+      args: methodStreamCallContext.arguments,
       message: message,
       serializationManager: server.serializationManager,
       webSocket: webSocket,
+      authenticationContext: authenticationContext,
     );
 
     return OpenMethodStreamResponse.buildMessage(
@@ -314,6 +329,7 @@ class _MethodStreamManager {
       }
 
       // Immediate close of the stream
+      _updateCloseReason(streamKey, reason);
       await context.controller.onCancel?.call();
       unawaited(context.subscription.cancel());
     } else {
@@ -341,6 +357,7 @@ class _MethodStreamManager {
     required OpenMethodStreamCommand message,
     required SerializationManager serializationManager,
     required WebSocket webSocket,
+    _AuthenticationContext? authenticationContext,
   }) {
     var outputStreamContext = _createOutputController(
       message,
@@ -348,6 +365,7 @@ class _MethodStreamManager {
       webSocket,
       session,
       serializationManager,
+      authenticationContext,
     );
 
     var inputStreams = _createInputStreams(
@@ -391,7 +409,42 @@ class _MethodStreamManager {
     WebSocket webSocket,
     Session session,
     SerializationManager serializationManager,
+    _AuthenticationContext? authenticationContext,
   ) {
+    void Function(SerializableModel)? revokedAuthenticationCallback;
+
+    if (authenticationContext != null) {
+      revokedAuthenticationCallback = (event) async {
+        var authenticationWasRevoked = switch (event) {
+          RevokedAuthenticationUser _ => true,
+          RevokedAuthenticationAuthId revokedAuthId =>
+            revokedAuthId.authId == authenticationContext.authInfo.authId,
+          RevokedAuthenticationScope revokedScopes => revokedScopes.scopes.any(
+              (s) => authenticationContext.requiredScopes
+                  .map((s) => s.name)
+                  .contains(s),
+            ),
+          _ => false,
+        };
+
+        if (authenticationWasRevoked) {
+          await closeStream(
+            endpoint: message.endpoint,
+            method: message.method,
+            connectionId: message.connectionId,
+            reason: CloseReason.error,
+          );
+        }
+      };
+
+      session.messages.addListener(
+        MessageCentralServerpodChannels.revokedAuthentication(
+          authenticationContext.authInfo.userId,
+        ),
+        revokedAuthenticationCallback,
+      );
+    }
+
     bool isCanceled = false;
     var outputController = StreamController(onCancel: () async {
       /// Guard against multiple calls to onCancel
@@ -400,6 +453,15 @@ class _MethodStreamManager {
       /// or a request from the client.
       if (isCanceled) return;
       isCanceled = true;
+      if (authenticationContext != null &&
+          revokedAuthenticationCallback != null) {
+        session.messages.removeListener(
+          MessageCentralServerpodChannels.revokedAuthentication(
+            authenticationContext.authInfo.userId,
+          ),
+          revokedAuthenticationCallback,
+        );
+      }
       await _closeOutboundStream(webSocket, message);
       await session.close();
       await tryCloseWebsocket(webSocket);
@@ -719,4 +781,11 @@ class _OutputStreamContext implements _StreamContext {
 
 abstract interface class _StreamContext {
   StreamController get controller;
+}
+
+class _AuthenticationContext {
+  final AuthenticationInfo authInfo;
+  final Set<Scope> requiredScopes;
+
+  _AuthenticationContext(this.requiredScopes, this.authInfo);
 }

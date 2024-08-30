@@ -47,3 +47,9 @@ class OpenMethodStreamException extends MethodStreamException {
   /// Creates a new [OpenMethodStreamException].
   const OpenMethodStreamException(this.responseType);
 }
+
+/// Thrown if the connection is closed with an error.
+class ConnectionClosedException extends MethodStreamException {
+  /// Creates a new [ConnectionClosedException].
+  const ConnectionClosedException();
+}

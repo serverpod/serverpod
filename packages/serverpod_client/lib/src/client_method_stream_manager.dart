@@ -332,10 +332,7 @@ final class ClientMethodStreamManager {
 
     if (reason == CloseReason.error) {
       inboundStreamContext.controller.addError(
-        const ServerpodClientException(
-          'Stream closed with error reason',
-          -1,
-        ),
+        const ConnectionClosedException(),
       );
     }
 

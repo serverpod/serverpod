@@ -356,4 +356,10 @@ class AuthenticatedMethodStreaming extends Endpoint {
       yield i;
     }
   }
+
+  Stream<int> intEchoStream(Session session, Stream<int> stream) async* {
+    await for (var value in stream) {
+      yield value;
+    }
+  }
 }

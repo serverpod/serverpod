@@ -6,8 +6,8 @@ import '../aws_s3_upload/aws_s3_upload.dart';
 
 /// Concrete implementation of S3 cloud storage for use with Serverpod.
 class S3CloudStorage extends CloudStorage {
-  final String _awsAccessKeyId;
-  final String _awsSecretKey;
+  late final String _awsAccessKeyId;
+  late final String _awsSecretKey;
   final String region;
   final String bucket;
   final bool public;
@@ -23,13 +23,26 @@ class S3CloudStorage extends CloudStorage {
     required this.region,
     required this.bucket,
     String? publicHost,
-  })  : assert(serverpod.getPassword('AWSAccessKeyId') != null,
-            'AWSAccessKeyId must be present in your passwords.yaml file'),
-        assert(serverpod.getPassword('AWSSecretKey') != null,
-            'AWSSecretKey must be present in your passwords.yaml file'),
-        _awsAccessKeyId = serverpod.getPassword('AWSAccessKeyId')!,
-        _awsSecretKey = serverpod.getPassword('AWSSecretKey')!,
-        super(storageId) {
+  }) : super(storageId) {
+    serverpod.loadCustomPasswords([
+      (envName: 'SERVERPOD_AWS_ACCESS_KEY_ID', alias: 'AWSAccessKeyId'),
+      (envName: 'SERVERPOD_AWS_SECRET_KEY', alias: 'AWSSecretKey'),
+    ]);
+
+    var awsAccessKeyId = serverpod.getPassword('AWSAccessKeyId');
+    var awsSecretKey = serverpod.getPassword('AWSSecretKey');
+
+    if (awsAccessKeyId == null) {
+      throw StateError('HMACAccessKeyId must be configured in your passwords.');
+    }
+
+    if (awsSecretKey == null) {
+      throw StateError('HMACSecretKey must be configured in your passwords.');
+    }
+
+    _awsAccessKeyId = awsAccessKeyId;
+    _awsSecretKey = awsSecretKey;
+
     // Create client
     _s3Client = AwsS3Client(
       accessKey: _awsAccessKeyId,

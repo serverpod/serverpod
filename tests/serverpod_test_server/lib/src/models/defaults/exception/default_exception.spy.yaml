@@ -1,0 +1,12 @@
+exception: DefaultException
+fields:
+    defaultBoolean: bool, default=true
+    defaultDateTime: DateTime, default=now
+    defaultDouble: double, default=10.5
+    defaultDuration: Duration, default=1d 2h 30min
+    defaultEnum: ByNameEnum, default=byName1
+    defaultInteger: int, default=10
+    defaultString: String, default='Default error message'
+    defaultUuid: UuidValue, default=random
+    defaultModelField: String, defaultModel='Model specific message'
+    defaultMixField: String, default='Default mix message', defaultModel='Model specific mix message'

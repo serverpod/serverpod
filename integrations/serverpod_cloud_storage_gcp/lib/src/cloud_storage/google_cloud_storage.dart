@@ -6,8 +6,8 @@ import '../aws_s3_upload/aws_s3_upload.dart';
 
 /// Concrete implementation of S3 cloud storage for use with Serverpod.
 class GoogleCloudStorage extends CloudStorage {
-  final String _hmacAccessKeyId;
-  final String _hmacSecretKey;
+  late final String _hmacAccessKeyId;
+  late final String _hmacSecretKey;
   final String region;
   final String bucket;
   final bool public;
@@ -23,13 +23,26 @@ class GoogleCloudStorage extends CloudStorage {
     required this.region,
     required this.bucket,
     String? publicHost,
-  })  : assert(serverpod.getPassword('HMACAccessKeyId') != null,
-            'HMACAccessKeyId must be present in your passwords.yaml file'),
-        assert(serverpod.getPassword('HMACSecretKey') != null,
-            'HMACSecretKey must be present in your passwords.yaml file'),
-        _hmacAccessKeyId = serverpod.getPassword('HMACAccessKeyId')!,
-        _hmacSecretKey = serverpod.getPassword('HMACSecretKey')!,
-        super(storageId) {
+  }) : super(storageId) {
+    serverpod.loadCustomPasswords([
+      (envName: 'SERVERPOD_HMAC_ACCESS_KEY_ID', alias: 'HMACAccessKeyId'),
+      (envName: 'SERVERPOD_HMAC_SECRET_KEY', alias: 'HMACSecretKey'),
+    ]);
+
+    var hmacAccessKeyId = serverpod.getPassword('HMACAccessKeyId');
+    var hmacSecretKey = serverpod.getPassword('HMACSecretKey');
+
+    if (hmacAccessKeyId == null) {
+      throw StateError('HMACAccessKeyId must be configured in your passwords.');
+    }
+
+    if (hmacSecretKey == null) {
+      throw StateError('HMACSecretKey must be configured in your passwords.');
+    }
+
+    _hmacAccessKeyId = hmacAccessKeyId;
+    _hmacSecretKey = hmacSecretKey;
+
     // Create client
     _s3Client = GCPS3Client(
       accessKey: _hmacAccessKeyId,
