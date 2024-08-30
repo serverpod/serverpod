@@ -71,9 +71,6 @@ enum OpenMethodStreamResponseType {
   /// The stream was successfully opened.
   success,
 
-  /// Something unexpectedly failed.
-  unexpectedFailure,
-
   /// The endpoint was not found.
   endpointNotFound,
 
@@ -164,8 +161,8 @@ class OpenMethodStreamCommand extends WebSocketMessage {
   /// The method to call.
   final String method;
 
-  /// The arguments to pass to the method.
-  final String args;
+  /// The JSON encoded arguments to pass to the method.
+  final String encodedArgs;
 
   /// The input streams that should be opened.
   final List<String> inputStreams;
@@ -180,7 +177,7 @@ class OpenMethodStreamCommand extends WebSocketMessage {
   OpenMethodStreamCommand(Map data)
       : endpoint = data[WebSocketMessageDataKey.endpoint],
         method = data[WebSocketMessageDataKey.method],
-        args = data[WebSocketMessageDataKey.args],
+        encodedArgs = data[WebSocketMessageDataKey.args],
         connectionId = UuidValueJsonExtension.fromJson(
             data[WebSocketMessageDataKey.connectionId]),
         authentication = data[WebSocketMessageDataKey.authentication],
@@ -214,7 +211,7 @@ class OpenMethodStreamCommand extends WebSocketMessage {
         WebSocketMessageDataKey.method: method,
         WebSocketMessageDataKey.connectionId:
             SerializationManager.encodeForProtocol(connectionId),
-        WebSocketMessageDataKey.args: args,
+        WebSocketMessageDataKey.args: encodedArgs,
         WebSocketMessageDataKey.inputStreams: inputStreams,
         if (authentication != null)
           WebSocketMessageDataKey.authentication: authentication,

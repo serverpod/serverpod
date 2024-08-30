@@ -123,9 +123,24 @@ class MethodWebsocketRequestHandler {
     WebSocket webSocket,
     OpenMethodStreamCommand message,
   ) async {
-    MethodStreamSession? maybeSession;
+    Map<String, dynamic> parameters;
+    try {
+      parameters = jsonDecode(message.encodedArgs);
+    } catch (e) {
+      server.serverpod.logVerbose(
+        'Failed to parse parameters for open stream request: $message ($e)',
+      );
+      return OpenMethodStreamResponse.buildMessage(
+        endpoint: message.endpoint,
+        method: message.method,
+        connectionId: message.connectionId,
+        responseType: OpenMethodStreamResponseType.invalidArguments,
+      );
+    }
 
+    MethodStreamSession? maybeSession;
     MethodStreamCallContext methodStreamCallContext;
+    bool getMethodStreamCallContextFailed = true;
     try {
       methodStreamCallContext =
           await server.endpoints.getMethodStreamCallContext(
@@ -142,10 +157,11 @@ class MethodWebsocketRequestHandler {
         },
         endpointPath: message.endpoint,
         methodName: message.method,
-        parameters: jsonDecode(message.args),
+        parameters: parameters,
         serializationManager: server.serializationManager,
         requestedInputStreams: message.inputStreams,
       );
+      getMethodStreamCallContextFailed = false;
     } on MethodNotFoundException {
       server.serverpod.logVerbose(
         'Endpoint method not found for open stream request: $message',
@@ -206,18 +222,18 @@ class MethodWebsocketRequestHandler {
             responseType: OpenMethodStreamResponseType.authenticationFailed,
           ),
       };
+    } catch (e) {
+      server.serverpod.logVerbose(
+        'Unexpected error when opening stream: $e',
+      );
+      throw StateError('Unexpected error when opening stream: $e');
     } finally {
-      await maybeSession?.close();
+      if (getMethodStreamCallContextFailed) await maybeSession?.close();
     }
 
     MethodStreamSession? session = maybeSession;
     if (session == null) {
-      return OpenMethodStreamResponse.buildMessage(
-        endpoint: message.endpoint,
-        method: message.method,
-        connectionId: message.connectionId,
-        responseType: OpenMethodStreamResponseType.unexpectedFailure,
-      );
+      throw StateError('MethodStreamSession was not created.');
     }
 
     var authenticationIsRequired =

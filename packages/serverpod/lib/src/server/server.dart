@@ -418,8 +418,15 @@ class Server {
     }
 
     // Read query parameters
+    var queryParameters = <String, dynamic>{};
     var isValidBody = body != 'null' && body.isNotEmpty;
-    Map<String, dynamic> queryParameters = isValidBody ? jsonDecode(body) : {};
+    if (isValidBody) {
+      try {
+        queryParameters = jsonDecode(body);
+      } catch (_) {
+        return ResultInvalidParams('Invalid JSON in body: $body');
+      }
+    }
 
     // Add query parameters from uri
     queryParameters.addAll(uri.queryParameters);
