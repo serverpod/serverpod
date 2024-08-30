@@ -184,7 +184,7 @@ development:
 
     test('SERVERPOD_DATABASE_PASSWORD', () {
       expect(
-        () => passwordManager.mergeCustomPasswords(
+        () => passwordManager.mergePasswords(
           [(envName: 'SERVERPOD_DATABASE_PASSWORD', alias: 'any')],
           {},
         ),
@@ -194,7 +194,7 @@ development:
 
     test('SERVERPOD_SERVICE_SECRET', () {
       expect(
-        () => passwordManager.mergeCustomPasswords(
+        () => passwordManager.mergePasswords(
           [(envName: 'SERVERPOD_SERVICE_SECRET', alias: 'any')],
           {},
         ),
@@ -204,7 +204,7 @@ development:
 
     test('SERVERPOD_REDIS_PASSWORD', () {
       expect(
-        () => passwordManager.mergeCustomPasswords(
+        () => passwordManager.mergePasswords(
           [(envName: 'SERVERPOD_REDIS_PASSWORD', alias: 'any')],
           {},
         ),
@@ -220,7 +220,7 @@ development:
 
     test('database', () {
       expect(
-        () => passwordManager.mergeCustomPasswords(
+        () => passwordManager.mergePasswords(
           [(envName: 'ANY_CUSTOM_ENV', alias: 'database')],
           {},
         ),
@@ -230,7 +230,7 @@ development:
 
     test('serviceSecret', () {
       expect(
-        () => passwordManager.mergeCustomPasswords(
+        () => passwordManager.mergePasswords(
           [(envName: 'ANY_CUSTOM_ENV', alias: 'serviceSecret')],
           {},
         ),
@@ -240,7 +240,7 @@ development:
 
     test('redis', () {
       expect(
-        () => passwordManager.mergeCustomPasswords(
+        () => passwordManager.mergePasswords(
           [(envName: 'ANY_CUSTOM_ENV', alias: 'redis')],
           {},
         ),
@@ -254,7 +254,7 @@ development:
       () {
     var passwordManager = PasswordManager(runMode: 'development');
 
-    var passwords = passwordManager.mergeCustomPasswords(
+    var passwords = passwordManager.mergePasswords(
       [(envName: 'CUSTOM_PASSWORD_1', alias: 'customPassword1')],
       {},
       environment: {
@@ -270,7 +270,7 @@ development:
       () {
     var passwordManager = PasswordManager(runMode: 'development');
 
-    var passwords = passwordManager.mergeCustomPasswords(
+    var passwords = passwordManager.mergePasswords(
       [(envName: 'CUSTOM_PASSWORD_1', alias: 'customPassword1')],
       {
         'customPassword1': 'default',
@@ -286,7 +286,7 @@ development:
       () {
     var passwordManager = PasswordManager(runMode: 'development');
 
-    var passwords = passwordManager.mergeCustomPasswords(
+    var passwords = passwordManager.mergePasswords(
       [(envName: 'CUSTOM_PASSWORD_1', alias: 'customPassword1')],
       {
         'customPassword1': 'default',
@@ -304,7 +304,7 @@ development:
       () {
     var passwordManager = PasswordManager(runMode: 'development');
 
-    var passwords = passwordManager.mergeCustomPasswords(
+    var passwords = passwordManager.mergePasswords(
       [(envName: 'CUSTOM_PASSWORD_1', alias: 'customPassword1')],
       {
         'database': 'password',

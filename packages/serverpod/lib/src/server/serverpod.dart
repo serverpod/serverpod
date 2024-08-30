@@ -744,7 +744,7 @@ class Serverpod {
   void loadCustomPasswords(
     List<({String envName, String alias})> envPasswords,
   ) {
-    _passwords = _passwordManager.mergeCustomPasswords(
+    _passwords = _passwordManager.mergePasswords(
       envPasswords,
       _passwords,
       environment: Platform.environment,

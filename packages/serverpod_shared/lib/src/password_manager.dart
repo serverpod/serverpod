@@ -75,7 +75,7 @@ class PasswordManager {
   /// Merge custom passwords with the existing password collection.
   /// Custom passwords are loaded from the environment variables.
   /// Throws an [ArgumentError] if the custom password configuration contains reserved keywords
-  Map<String, String> mergeCustomPasswords(
+  Map<String, String> mergePasswords(
     List<({String envName, String alias})> config,
     Map<String, String> passwords, {
     Map<String, String> environment = const {},
