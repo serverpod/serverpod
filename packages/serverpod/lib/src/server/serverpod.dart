@@ -739,6 +739,8 @@ class Serverpod {
   /// contains the password. The alias is the key used to access the
   /// the password with the [getPassword] method.
   /// The alias also maps to the name in the config/passwords.yaml file.
+  /// This method may throw a [ArgumentError] if any Serverpod reserved passwords
+  /// are used as aliases or environment variables.
   void loadCustomPasswords(
     List<({String envName, String alias})> envPasswords,
   ) {
