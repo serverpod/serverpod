@@ -176,4 +176,120 @@ development:
       expect(passwords['mySharedPassword'], 'my password');
     });
   });
+
+  group(
+      'Given a reserved env variable when merging custom passwords then an ArgumentError is thrown for env',
+      () {
+    var passwordManager = PasswordManager(runMode: 'development');
+
+    var reservedEnvVariables = [
+      'SERVERPOD_DATABASE_PASSWORD',
+      'SERVERPOD_SERVICE_SECRET',
+      'SERVERPOD_REDIS_PASSWORD',
+    ];
+
+    for (var envName in reservedEnvVariables) {
+      test(envName, () {
+        expect(
+          () => passwordManager.mergeCustomPasswords(
+            [(envName: envName, alias: 'any')],
+            {},
+          ),
+          throwsA(isA<ArgumentError>()),
+        );
+      });
+    }
+  });
+
+  group(
+      'Given a reserved alias when merging custom passwords then an ArgumentError is thrown for ',
+      () {
+    var passwordManager = PasswordManager(runMode: 'development');
+
+    var reservedAliases = [
+      'database',
+      'serviceSecret',
+      'redis',
+    ];
+
+    for (var alias in reservedAliases) {
+      test(alias, () {
+        expect(
+          () => passwordManager.mergeCustomPasswords(
+            [(envName: 'ANY_CUSTOM_ENV', alias: alias)],
+            {},
+          ),
+          throwsA(isA<ArgumentError>()),
+        );
+      });
+    }
+  });
+
+  test(
+      'Given a custom password config and an environment variable then the env is loaded as the alias.',
+      () {
+    var passwordManager = PasswordManager(runMode: 'development');
+
+    var passwords = passwordManager.mergeCustomPasswords(
+      [(envName: 'CUSTOM_PASSWORD_1', alias: 'customPassword1')],
+      {},
+      environment: {
+        'CUSTOM_PASSWORD_1': 'password1',
+      },
+    );
+
+    expect(passwords['customPassword1'], 'password1');
+  });
+
+  test(
+      'Given a custom password config and an existing password but no environment variable when merging the custom password then the existing password is loaded.',
+      () {
+    var passwordManager = PasswordManager(runMode: 'development');
+
+    var passwords = passwordManager.mergeCustomPasswords(
+      [(envName: 'CUSTOM_PASSWORD_1', alias: 'customPassword1')],
+      {
+        'customPassword1': 'default',
+      },
+      environment: {},
+    );
+
+    expect(passwords['customPassword1'], 'default');
+  });
+
+  test(
+      'Given a custom password config and an existing password and an environment variable when merging the custom password then the env is loaded and override the existing password.',
+      () {
+    var passwordManager = PasswordManager(runMode: 'development');
+
+    var passwords = passwordManager.mergeCustomPasswords(
+      [(envName: 'CUSTOM_PASSWORD_1', alias: 'customPassword1')],
+      {
+        'customPassword1': 'default',
+      },
+      environment: {
+        'CUSTOM_PASSWORD_1': 'password1',
+      },
+    );
+
+    expect(passwords['customPassword1'], 'password1');
+  });
+
+  test(
+      'Given a custom password config and an existing password and an environment variable when merging the custom password then the existing passwords are kept unmodified.',
+      () {
+    var passwordManager = PasswordManager(runMode: 'development');
+
+    var passwords = passwordManager.mergeCustomPasswords(
+      [(envName: 'CUSTOM_PASSWORD_1', alias: 'customPassword1')],
+      {
+        'database': 'password',
+      },
+      environment: {
+        'CUSTOM_PASSWORD_1': 'password1',
+      },
+    );
+
+    expect(passwords['database'], 'password');
+  });
 }
