@@ -62,16 +62,16 @@ abstract class EndpointDispatch {
         createSessionCallback,
     required String endpointPath,
     required String methodName,
-    required Map<String, dynamic> parameters,
+    required Map<String, dynamic> arguments,
     required SerializationManager serializationManager,
     required List<String> requestedInputStreams,
   }) async {
-    var (methodConnector, endpoint, parsedParameters) =
+    var (methodConnector, endpoint, parsedArguments) =
         await _getEndpointMethodConnector(
       createSessionCallback: createSessionCallback,
       endpointPath: endpointPath,
       methodName: methodName,
-      parameters: parameters,
+      arguments: arguments,
       serializationManager: serializationManager,
     );
 
@@ -86,7 +86,7 @@ abstract class EndpointDispatch {
 
     return MethodStreamCallContext(
       method: methodConnector,
-      parameters: parsedParameters,
+      arguments: parsedArguments,
       inputStreams: inputStreams,
       endpoint: endpoint,
     );
@@ -116,12 +116,12 @@ abstract class EndpointDispatch {
     required Map<String, dynamic> parameters,
     required SerializationManager serializationManager,
   }) async {
-    var (methodConnector, endpoint, parsedParameters) =
+    var (methodConnector, endpoint, parsedArguments) =
         await _getEndpointMethodConnector(
       createSessionCallback: createSessionCallback,
       endpointPath: endpointPath,
       methodName: methodName,
-      parameters: parameters,
+      arguments: parameters,
       serializationManager: serializationManager,
     );
 
@@ -131,7 +131,7 @@ abstract class EndpointDispatch {
 
     return MethodCallContext(
       method: methodConnector,
-      parameters: parsedParameters,
+      arguments: parsedArguments,
       endpoint: endpoint,
     );
   }
@@ -142,7 +142,7 @@ abstract class EndpointDispatch {
         createSessionCallback,
     required String endpointPath,
     required String methodName,
-    required Map<String, dynamic> parameters,
+    required Map<String, dynamic> arguments,
     required SerializationManager serializationManager,
   }) async {
     var endpointConnector =
@@ -154,13 +154,13 @@ abstract class EndpointDispatch {
           'Method "$methodName" not found in endpoint: $endpointPath');
     }
 
-    var parsedParameters = parseParameters(
-      parameters,
+    var parsedArguments = parseParameters(
+      arguments,
       methodConnector.params,
       serializationManager,
     );
 
-    return (methodConnector, endpointConnector.endpoint, parsedParameters);
+    return (methodConnector, endpointConnector.endpoint, parsedArguments);
   }
 
   Future<EndpointConnector> _getEndpointConnector(
@@ -308,8 +308,8 @@ class MethodCallContext {
   /// The method to call.
   final MethodConnector method;
 
-  /// The parameters to pass to the method.
-  final Map<String, dynamic> parameters;
+  /// The arguments to pass to the method.
+  final Map<String, dynamic> arguments;
 
   /// The endpoint the method is called on.
   final Endpoint endpoint;
@@ -317,7 +317,7 @@ class MethodCallContext {
   /// Creates a new [MethodCallContext].
   MethodCallContext({
     required this.method,
-    required this.parameters,
+    required this.arguments,
     required this.endpoint,
   });
 }
@@ -327,8 +327,8 @@ class MethodStreamCallContext {
   /// The method to call.
   final MethodStreamConnector method;
 
-  /// The parameters to pass to the method.
-  final Map<String, dynamic> parameters;
+  /// The arguments to pass to the method.
+  final Map<String, dynamic> arguments;
 
   /// The endpoint the method is called on.
   final Endpoint endpoint;
@@ -339,7 +339,7 @@ class MethodStreamCallContext {
   /// Creates a new [MethodStreamCallContext].
   MethodStreamCallContext({
     required this.method,
-    required this.parameters,
+    required this.arguments,
     required this.inputStreams,
     required this.endpoint,
   });

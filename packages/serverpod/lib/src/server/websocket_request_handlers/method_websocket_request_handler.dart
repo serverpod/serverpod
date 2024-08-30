@@ -123,9 +123,9 @@ class MethodWebsocketRequestHandler {
     WebSocket webSocket,
     OpenMethodStreamCommand message,
   ) async {
-    Map<String, dynamic> parameters;
+    Map<String, dynamic> arguments;
     try {
-      parameters = jsonDecode(message.encodedArgs);
+      arguments = jsonDecode(message.encodedArgs);
     } catch (e) {
       server.serverpod.logVerbose(
         'Failed to parse parameters for open stream request: $message ($e)',
@@ -157,7 +157,7 @@ class MethodWebsocketRequestHandler {
         },
         endpointPath: message.endpoint,
         methodName: message.method,
-        parameters: parameters,
+        arguments: arguments,
         serializationManager: server.serializationManager,
         requestedInputStreams: message.inputStreams,
       );
@@ -258,7 +258,7 @@ class MethodWebsocketRequestHandler {
       methodConnector: methodStreamCallContext.method,
       requestedInputStreams: methodStreamCallContext.inputStreams,
       session: session,
-      args: methodStreamCallContext.parameters,
+      args: methodStreamCallContext.arguments,
       message: message,
       serializationManager: server.serializationManager,
       webSocket: webSocket,

@@ -487,7 +487,7 @@ class Server {
 
       var result = await methodCallContext.method.call(
         session,
-        methodCallContext.parameters,
+        methodCallContext.arguments,
       );
 
       return ResultSuccess(
