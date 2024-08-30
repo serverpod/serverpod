@@ -118,6 +118,7 @@ class GoogleCloudStorage extends CloudStorage {
     required Session session,
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
+    int maxFileSize = 10 * 1024 * 1024,
   }) async {
     return await GCPS3Uploader.getDirectUploadDescription(
       accessKey: _hmacAccessKeyId,
@@ -125,6 +126,8 @@ class GoogleCloudStorage extends CloudStorage {
       bucket: bucket,
       region: region,
       uploadDst: path,
+      expires: expirationDuration,
+      maxFileSize: maxFileSize,
     );
   }
 
