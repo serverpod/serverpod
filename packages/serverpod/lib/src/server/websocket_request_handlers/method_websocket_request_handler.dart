@@ -128,7 +128,7 @@ class MethodWebsocketRequestHandler {
       arguments = jsonDecode(message.encodedArgs);
     } catch (e) {
       server.serverpod.logVerbose(
-        'Failed to parse parameters for open stream request: $message ($e)',
+        'Failed to parse arguments for open stream request: $message ($e)',
       );
       return OpenMethodStreamResponse.buildMessage(
         endpoint: message.endpoint,
@@ -140,7 +140,7 @@ class MethodWebsocketRequestHandler {
 
     MethodStreamSession? maybeSession;
     MethodStreamCallContext methodStreamCallContext;
-    bool getMethodStreamCallContextFailed = true;
+    bool keepSessionOpen = false;
     try {
       methodStreamCallContext =
           await server.endpoints.getMethodStreamCallContext(
@@ -161,7 +161,7 @@ class MethodWebsocketRequestHandler {
         serializationManager: server.serializationManager,
         requestedInputStreams: message.inputStreams,
       );
-      getMethodStreamCallContextFailed = false;
+      keepSessionOpen = true;
     } on MethodNotFoundException {
       server.serverpod.logVerbose(
         'Endpoint method not found for open stream request: $message',
@@ -228,7 +228,7 @@ class MethodWebsocketRequestHandler {
       );
       throw StateError('Unexpected error when opening stream: $e');
     } finally {
-      if (getMethodStreamCallContextFailed) await maybeSession?.close();
+      if (!keepSessionOpen) await maybeSession?.close();
     }
 
     MethodStreamSession? session = maybeSession;
