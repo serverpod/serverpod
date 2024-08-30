@@ -5,8 +5,8 @@ import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/caches.dart';
-import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/database.dart';
+import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
@@ -407,9 +407,122 @@ class Server {
   }
 
   Future<Result> _handleUriCall(
-      Uri uri, String body, HttpRequest request) async {
+    Uri uri,
+    String body,
+    HttpRequest request,
+  ) async {
     var path = uri.pathSegments.join('/');
-    return endpoints.handleUriCall(this, path, uri, body, request);
+    var endpointComponents = path.split('.');
+    if (endpointComponents.isEmpty || endpointComponents.length > 2) {
+      return ResultInvalidParams('Endpoint $path is not a valid endpoint name');
+    }
+
+    // Read query parameters
+    var queryParameters = <String, dynamic>{};
+    var isValidBody = body != 'null' && body.isNotEmpty;
+    if (isValidBody) {
+      try {
+        queryParameters = jsonDecode(body);
+      } catch (_) {
+        return ResultInvalidParams('Invalid JSON in body: $body');
+      }
+    }
+
+    // Add query parameters from uri
+    queryParameters.addAll(uri.queryParameters);
+
+    String endpointName;
+    String methodName;
+
+    if (path.contains('/')) {
+      // Using the new path format (for OpenAPI)
+      var pathComponents = path.split('/');
+      endpointName = pathComponents[0];
+      methodName = pathComponents[1];
+    } else {
+      // Using the standard format with query parameters
+      endpointName = path;
+      var method = queryParameters['method'];
+      if (method is String) {
+        methodName = method;
+      } else {
+        return ResultInvalidParams(
+          'No method name specified in call to $endpointName',
+        );
+      }
+    }
+
+    // Get the the authentication key, if any
+    String? authenticationKey = queryParameters['auth'];
+
+    MethodCallSession? maybeSession;
+    try {
+      var methodCallContext = await endpoints.getMethodCallContext(
+        createSessionCallback: (connector) {
+          maybeSession = MethodCallSession(
+            server: this,
+            uri: uri,
+            body: body,
+            path: path,
+            httpRequest: request,
+            method: methodName,
+            endpoint: endpointName,
+            queryParameters: queryParameters,
+            authenticationKey: authenticationKey,
+            enableLogging: connector.endpoint.logSessions,
+          );
+          return maybeSession!;
+        },
+        endpointPath: endpointName,
+        methodName: methodName,
+        parameters: queryParameters,
+        serializationManager: serializationManager,
+      );
+
+      MethodCallSession? session = maybeSession;
+      if (session == null) {
+        return ResultInternalServerError(
+            'Session was not created', StackTrace.current, 0);
+      }
+
+      var result = await methodCallContext.method.call(
+        session,
+        methodCallContext.arguments,
+      );
+
+      return ResultSuccess(
+        result,
+        sendByteDataAsRaw: methodCallContext.endpoint.sendByteDataAsRaw,
+      );
+    } on MethodNotFoundException catch (e) {
+      return ResultInvalidParams(e.message);
+    } on InvalidEndpointMethodTypeException catch (e) {
+      return ResultInvalidParams(e.message);
+    } on EndpointNotFoundException catch (e) {
+      return ResultInvalidParams(e.message);
+    } on NotAuthorizedException catch (e) {
+      return e.authenticationFailedResult;
+    } on InvalidParametersException catch (e, stackTrace) {
+      var sessionLogId =
+          await maybeSession?.close(error: e, stackTrace: stackTrace);
+      return ResultInternalServerError(
+          e.toString(), stackTrace, sessionLogId ?? 0);
+    } on SerializableException catch (exception) {
+      return ExceptionResult(model: exception);
+    } on Exception catch (e, stackTrace) {
+      var sessionLogId =
+          await maybeSession?.close(error: e, stackTrace: stackTrace);
+      return ResultInternalServerError(
+          e.toString(), stackTrace, sessionLogId ?? 0);
+    } catch (e, stackTrace) {
+      // Something did not work out
+      var sessionLogId =
+          await maybeSession?.close(error: e, stackTrace: stackTrace);
+      return ResultInternalServerError(
+          e.toString(), stackTrace, sessionLogId ?? 0);
+    } finally {
+      await maybeSession?.close();
+    }
   }
 
   /// Shuts the server down.
