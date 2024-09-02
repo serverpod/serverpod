@@ -84,6 +84,7 @@ void main() {
   test(
       'Given a UuidValue as a key in a map when serializing and unpacking the original object remains unchanged.',
       () {
+    // ignore: deprecated_member_use
     var object = TypesMap(aUuidKey: {UuidValue.nil: 'value'});
 
     var encodedString = SerializationManager.encode(object);
@@ -91,6 +92,7 @@ void main() {
 
     expect(
       typesMap.aUuidKey?.entries.first.key,
+      // ignore: deprecated_member_use
       UuidValue.nil,
     );
   });

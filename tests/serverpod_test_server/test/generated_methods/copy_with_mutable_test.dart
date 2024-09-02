@@ -100,6 +100,7 @@ void main() {
     test(
         'Given an object with an Uuid and a copy of that object when mutating the original then the copy is unmodified.',
         () {
+      // ignore: deprecated_member_use
       var uuid = UuidValue.fromString(Uuid.NAMESPACE_NIL);
 
       var types = Types(aUuid: uuid);
@@ -107,7 +108,9 @@ void main() {
       types.aUuid = UuidValue.fromString(Uuid().v4());
 
       expect(
-          typesCopy.aUuid?.uuid, UuidValue.fromString(Uuid.NAMESPACE_NIL).uuid);
+          typesCopy.aUuid?.uuid,
+          // ignore: deprecated_member_use
+          UuidValue.fromString(Uuid.NAMESPACE_NIL).uuid);
     });
 
     test(
