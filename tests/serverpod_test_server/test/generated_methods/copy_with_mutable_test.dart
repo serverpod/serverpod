@@ -100,14 +100,13 @@ void main() {
     test(
         'Given an object with an Uuid and a copy of that object when mutating the original then the copy is unmodified.',
         () {
-      var uuid = UuidValue.fromString(Uuid.NAMESPACE_NIL);
+      var uuid = Namespace.nil.uuidValue;
 
       var types = Types(aUuid: uuid);
       var typesCopy = types.copyWith();
       types.aUuid = UuidValue.fromString(Uuid().v4());
 
-      expect(
-          typesCopy.aUuid?.uuid, UuidValue.fromString(Uuid.NAMESPACE_NIL).uuid);
+      expect(typesCopy.aUuid?.uuid, Namespace.nil.uuidValue.uuid);
     });
 
     test(
