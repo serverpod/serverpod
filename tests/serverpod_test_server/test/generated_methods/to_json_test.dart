@@ -78,7 +78,7 @@ void main() {
   test(
       'Given a class with only nullable fields with a Uuid defined when calling toJson then the key and value is set.',
       () {
-    var types = Types(aUuid: Namespace.nil.uuidValue);
+    var types = Types(aUuid: UuidValue.nil);
 
     var jsonMap = types.toJson();
 
@@ -215,7 +215,7 @@ void main() {
       'Given a class with a List with a nested Uuid when calling toJson the entire nested structure is converted.',
       () {
     var object = TypesList(
-      aUuid: [Namespace.nil.uuidValue],
+      aUuid: [UuidValue.nil],
     );
 
     var jsonMap = object.toJson();
@@ -358,7 +358,7 @@ void main() {
         'Given a class with a Map with a nested Uuid when calling toJson the entire nested structure is converted.',
         () {
       var object = TypesMap(
-        aUuidValue: {'key': Namespace.nil.uuidValue},
+        aUuidValue: {'key': UuidValue.nil},
       );
 
       var jsonMap = object.toJson();
@@ -515,7 +515,7 @@ void main() {
         'Given a class with a Map with a nested Uuid when calling toJson the entire nested structure is converted.',
         () {
       var object = TypesMap(
-        aUuidKey: {Namespace.nil.uuidValue: 'value'},
+        aUuidKey: {UuidValue.nil: 'value'},
       );
 
       var jsonMap = object.toJson();
