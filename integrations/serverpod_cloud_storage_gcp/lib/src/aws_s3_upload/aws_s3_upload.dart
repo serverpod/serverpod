@@ -153,13 +153,21 @@ class GCPS3Uploader {
 
     /// The filename to upload as. If null, defaults to the given file's current filename.
     required String uploadDst,
+    Duration expires = const Duration(minutes: 10),
+    int maxFileSize = 10 * 1024 * 1024,
     bool public = true,
   }) async {
     final endpoint = 'https://storage.googleapis.com/$bucket';
 
     final policy = Policy.fromS3PresignedPost(
-        uploadDst, bucket, accessKey, 15, 10 * 1024 * 1024,
-        region: region, public: public);
+      uploadDst,
+      bucket,
+      accessKey,
+      expires.inMinutes,
+      maxFileSize,
+      region: region,
+      public: public,
+    );
     final key =
         SigV4.calculateSigningKey(secretKey, policy.datetime, region, 's3');
     final signature = SigV4.calculateSignature(key, policy.encode());
