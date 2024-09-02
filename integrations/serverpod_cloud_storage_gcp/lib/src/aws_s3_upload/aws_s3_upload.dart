@@ -61,10 +61,15 @@ class GCPS3Uploader {
     try {
       final res = await req.send();
 
+      if (res.statusCode >= 400 && res.statusCode < 500) {
+        stderr.writeln(
+            'Failed to upload to GCP, with reason: ${res.reasonPhrase}');
+      }
+
       if (res.statusCode == 204) return '$endpoint/$uploadDst';
     } catch (e) {
-      print('Failed to upload to AWS, with exception:');
-      print(e);
+      stderr.writeln('Failed to upload to GCP, with exception:');
+      stderr.writeln(e);
       return null;
     }
     return null;
@@ -126,10 +131,15 @@ class GCPS3Uploader {
     try {
       final res = await req.send();
 
+      if (res.statusCode >= 400 && res.statusCode < 500) {
+        stderr.writeln(
+            'Failed to upload to GCP, with reason: ${res.reasonPhrase}');
+      }
+
       if (res.statusCode == 204) return '$endpoint/$uploadDst';
     } catch (e) {
-      print('Failed to upload to AWS, with exception:');
-      print(e);
+      stderr.writeln('Failed to upload to GCP, with exception:');
+      stderr.writeln(e);
       return null;
     }
     return null;
