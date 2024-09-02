@@ -12,7 +12,7 @@ abstract class AuthorizationHeader {
   /// Returns the full Authorization header in "key: value" format.
   /// This method constructs the complete header string for use in HTTP requests.
   @override
-  String toString() => '${Headers._authorizationHeaderKey}: ${headerValue()}';
+  String toString() => '${Headers._authorizationHeader}: ${headerValue()}';
 
   /// Safely parses and creates the appropriate [AuthorizationHeader]
   /// subclass based on the provided authorization string from HTTP headers.
@@ -24,7 +24,7 @@ abstract class AuthorizationHeader {
   static AuthorizationHeader? _tryParseHttpHeaders(
     io.HttpHeaders headers,
   ) {
-    var value = headers[Headers._authorizationHeaderKey]?.firstOrNull;
+    var value = headers[Headers._authorizationHeader]?.firstOrNull;
     if (value == null) return null;
 
     if (value.startsWith(BearerAuthorizationHeader.prefix)) {

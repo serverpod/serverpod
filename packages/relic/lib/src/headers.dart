@@ -12,9 +12,8 @@ part 'headers/authorization_header.dart';
 abstract class Headers {
   // TODO: Add properties for all supported headers below.
 
-  // static const _acceptHeader = "accept";
-
-  // static const _acceptCharsetHeader = "accept-charset";
+  static const _acceptHeader = "accept";
+  static const _acceptCharsetHeader = "accept-charset";
   // static const _acceptEncodingHeader = "accept-encoding";
   // static const _acceptLanguageHeader = "accept-language";
   // static const _acceptRangesHeader = "accept-ranges";
@@ -31,7 +30,7 @@ abstract class Headers {
   // static const _ageHeader = "age";
   // static const _allowHeader = "allow";
 
-  static const _authorizationHeaderKey = "authorization";
+  static const _authorizationHeader = "authorization";
 
   // static const _cacheControlHeader = "cache-control";
   // static const _connectionHeader = "connection";
@@ -85,6 +84,9 @@ abstract class Headers {
   final int? port;
   final Uri? location;
   final String? xPoweredBy;
+  final List<String>? accept;
+  final List<String>? acceptCharset;
+  final String? contentType;
   final AuthorizationHeader? authorization;
   final CustomHeaders custom;
 
@@ -96,7 +98,9 @@ abstract class Headers {
     _contentTypeHeader,
     _locationHeader,
     _xPoweredByHeader,
-    _authorizationHeaderKey,
+    _acceptHeader,
+    _authorizationHeader,
+    _acceptCharsetHeader,
   };
 
   Headers._({
@@ -108,6 +112,9 @@ abstract class Headers {
     this.port,
     this.location,
     this.xPoweredBy,
+    this.accept,
+    this.acceptCharset,
+    this.contentType,
     this.authorization,
     CustomHeaders? custom,
   }) : custom = custom ?? CustomHeaders.empty();
@@ -126,6 +133,9 @@ abstract class Headers {
       from: headers.value(_fromHeader),
       host: headers.host,
       port: headers.port,
+      accept: headers[_acceptHeader],
+      acceptCharset: headers[_acceptCharsetHeader],
+      contentType: headers.value(_contentTypeHeader),
       custom: CustomHeaders._fromHttpHeaders(
         headers,
         excludedHeaders: _managedHeaders,
@@ -136,31 +146,6 @@ abstract class Headers {
     );
   }
 
-  // factory Headers.fromHttpResponse(io.HttpResponse response) {
-  //   var headers = response.headers;
-
-  //   var custom = <CustomHeader>[];
-
-  //   headers.forEach((name, values) {
-  //     // Skip headers that we support natively.
-  //     if (_managedHeaders.contains(name.toLowerCase())) {
-  //       return;
-  //     }
-  //     for (var value in values) {
-  //       custom.add(_StringHeader(name, value));
-  //     }
-  //   });
-
-  //   return _HeadersImpl(
-  //     date: headers.date,
-  //     expires: headers.expires,
-  //     ifModifiedSince: headers.ifModifiedSince,
-  //     host: headers.host,
-  //     port: headers.port,
-  //     customHeaders: custom,
-  //   );
-  // }
-
   factory Headers.response({
     DateTime? date,
     DateTime? expires,
@@ -170,6 +155,8 @@ abstract class Headers {
     int? port,
     Uri? location,
     String? xPoweredBy,
+    List<String>? accept,
+    List<String>? acceptCharset,
     CustomHeaders? custom,
     AuthorizationHeader? authorization,
   }) {
@@ -182,6 +169,8 @@ abstract class Headers {
       port: port,
       location: location,
       xPoweredBy: xPoweredBy,
+      accept: accept,
+      acceptCharset: acceptCharset,
       custom: custom ?? CustomHeaders.empty(),
       authorization: authorization,
     );
@@ -196,6 +185,8 @@ abstract class Headers {
     int? port,
     Uri? location,
     String? xPoweredBy,
+    List<String>? accept,
+    List<String>? acceptCharset,
     CustomHeaders? custom,
     AuthorizationHeader? authorization,
   }) {
@@ -208,6 +199,8 @@ abstract class Headers {
       port: port,
       location: location,
       xPoweredBy: xPoweredBy,
+      accept: accept,
+      acceptCharset: acceptCharset,
       custom: custom ?? CustomHeaders.empty(),
       authorization: authorization,
     );
@@ -243,6 +236,8 @@ abstract class Headers {
     int? port,
     Uri? location,
     String? xPoweredBy,
+    List<String>? accept,
+    List<String>? acceptCharset,
     CustomHeaders? custom,
     AuthorizationHeader? authorization,
   });
@@ -256,6 +251,10 @@ abstract class Headers {
       if (from != null) '$_fromHeader: $from',
       if (host != null) '$_hostHeader: $host${port != null ? ':$port' : ''}',
       if (location != null) '$_locationHeader: $location',
+      if (xPoweredBy != null) '$_xPoweredByHeader: $xPoweredBy',
+      if (accept != null) ...accept!.map((value) => '$_acceptHeader: $value'),
+      if (acceptCharset != null)
+        ...acceptCharset!.map((value) => '$_acceptCharsetHeader: $value'),
       if (xPoweredBy != null) '$_xPoweredByHeader: $xPoweredBy',
       if (authorization != null) '$authorization',
       ...custom.entries.map((entry) => '${entry.key}:${entry.value}'),
@@ -275,6 +274,9 @@ class _HeadersImpl extends Headers {
     super.port,
     super.location,
     super.xPoweredBy,
+    super.accept,
+    super.acceptCharset,
+    super.contentType,
     super.custom,
     super.authorization,
   }) : super._();
@@ -289,6 +291,9 @@ class _HeadersImpl extends Headers {
     Object? location = _Undefined,
     Object? port = _Undefined,
     Object? xPoweredBy = _Undefined,
+    Object? accept = _Undefined,
+    Object? acceptCharset = _Undefined,
+    Object? contentType = _Undefined,
     CustomHeaders? custom,
     AuthorizationHeader? authorization,
   }) {
@@ -302,46 +307,14 @@ class _HeadersImpl extends Headers {
       port: port is int? ? port : this.port,
       location: location is Uri? ? location : this.location,
       xPoweredBy: xPoweredBy is String? ? xPoweredBy : this.xPoweredBy,
+      accept: accept is List<String> ? accept : this.accept,
+      acceptCharset:
+          acceptCharset is List<String> ? acceptCharset : this.acceptCharset,
+      contentType: contentType is String ? contentType : this.contentType,
       custom: custom ?? this.custom,
       authorization: authorization ?? this.authorization,
     );
   }
 }
 
-// abstract class CustomHeader {
-//   final String name;
-
-//   const CustomHeader(this.name);
-
-//   String get formattedValue;
-
-//   @override
-//   String toString() {
-//     return '$name: $formattedValue';
-//   }
-// }
-
 class _Undefined {}
-
-// // class _DateTimeEntry extends CustomHeader {
-// //   final DateTime value;
-
-// //   const _DateTimeEntry(
-// //     String name,
-// //     this.value,
-// //   ) : super(name);
-
-// //   @override
-// //   String get formattedValue => throw UnimplementedError();
-// // }
-
-// class _StringHeader extends CustomHeader {
-//   final String value;
-
-//   const _StringHeader(super.name, this.value);
-
-//   @override
-//   String get formattedValue => value;
-// }
-
-
