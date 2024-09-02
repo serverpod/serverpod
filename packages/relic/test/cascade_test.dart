@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:relic/relic.dart';
-import 'package:relic/src/headers/custom_headers.dart';
 import 'package:test/test.dart';
 
 import 'test_util.dart';

@@ -2,10 +2,13 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+library serverpod_relic;
+
 export 'src/body.dart' show Body;
 export 'src/cascade.dart' show Cascade;
 export 'src/handler.dart' show Handler;
-export 'src/headers.dart' show Headers, CustomHeaders, BodyType;
+export 'src/headers.dart' show Headers, CustomHeaders;
+export 'src/headers/types/body_type.dart' show BodyType;
 export 'src/hijack_exception.dart' show HijackException;
 export 'src/middleware.dart' show Middleware, createMiddleware;
 // export 'src/middleware/add_chunked_encoding.dart' show addChunkedEncoding;

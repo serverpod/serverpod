@@ -1,141 +1,94 @@
-import 'package:relic/src/headers/custom_headers.dart';
+import 'package:relic/relic.dart';
 import 'package:test/test.dart';
 
-const _customHeaderPrefix = 'custom-header-';
+import 'mocks/http_request_mock.dart';
 
 void main() {
   group('CustomHeaders', () {
-    test('from - should not require custom prefix in keys', () {
-      var header = CustomHeaders.from({
-        'FoO': ['x', 'y'],
-        'bAr': ['z'],
-      });
+    test(
+        'Given headers with multiple values, it should combine them correctly',
+        () {
+      var httpRequest = HttpRequestMock()
+        ..headers.add('FoO', 'x')
+        ..headers.add('FoO', 'y')
+        ..headers.add('bAr', 'z');
 
-      // Accessing headers should not include the prefix
-      expect(header['foo'], equals(['x', 'y']));
-      expect(header['bar'], equals(['z']));
+      var headers = Headers.fromHttpRequest(httpRequest);
+      var customHeaders = headers.custom;
 
-      // When retrieving httpRequestEntries, the prefix should be added back
-      var httpRequestEntries = header.httpRequestEntries.toList();
-      expect(httpRequestEntries.first.key, equals('custom-header-foo'));
-      expect(httpRequestEntries.first.value, equals(['x', 'y']));
-      expect(httpRequestEntries.last.key, equals('custom-header-bar'));
-      expect(httpRequestEntries.last.value, equals(['z']));
-
-      // Header should remain immutable
-      expect(() => header['foo'] = ['new_value'],
-          throwsA(isA<UnsupportedError>()));
-    });
-
-    test('fromEntries - should not require custom prefix in keys', () {
-      var header = CustomHeaders.fromEntries({
-        'FoO': ['x', 'y'],
-        'bAr': ['z'],
-      }.entries);
-
-      // Accessing headers should not include the prefix
-      expect(header['foo'], equals(['x', 'y']));
-      expect(header['bar'], equals(['z']));
-
-      // When retrieving httpRequestEntries, the prefix should be added back
-      var httpRequestEntries = header.httpRequestEntries.toList();
-      expect(httpRequestEntries.first.key, equals('custom-header-foo'));
-      expect(httpRequestEntries.first.value, equals(['x', 'y']));
-      expect(httpRequestEntries.last.key, equals('custom-header-bar'));
-      expect(httpRequestEntries.last.value, equals(['z']));
-
-      // Header should remain immutable
-      expect(() => header['foo'] = ['new_value'],
-          throwsA(isA<UnsupportedError>()));
+      // The 'foo' header should have combined values ['x', 'y']
+      expect(customHeaders['foo'], equals(['x', 'y']));
+      // 'bar' should have a single value
+      expect(customHeaders['bar'], equals(['z']));
     });
 
     test(
-        'fromHttpRequestEntries - should filter and require custom prefix in keys',
+        'Given headers with multiple values and empty lists, it should combine the non-empty ones and ignore the empty ones',
         () {
-      var header = CustomHeaders.fromHttpRequestEntries({
-        '${_customHeaderPrefix}FoO': ['x', 'y'],
-        '${_customHeaderPrefix}bAr': ['z'],
-        'CommonHeader': ['commonValue'], // This should be ignored
-      }.entries);
+      var httpRequest = HttpRequestMock()
+        ..headers.add('FoO', 'x')
+        ..headers.add('FoO', '') // Empty value, should be ignored
+        ..headers.add('bAr', 'z');
 
-      // Prefix should be removed in the map keys after parsing
-      expect(header['foo'], equals(['x', 'y']));
-      expect(header['bar'], equals(['z']));
-      expect(header.containsKey('CommonHeader'), isFalse);
+      var headers = Headers.fromHttpRequest(httpRequest);
+      var customHeaders = headers.custom;
 
-      // When retrieving httpRequestEntries, the prefix should be added back
-      var httpRequestEntries = header.httpRequestEntries.toList();
-      expect(httpRequestEntries.first.key, equals('custom-header-foo'));
-      expect(httpRequestEntries.first.value, equals(['x', 'y']));
-      expect(httpRequestEntries.last.key, equals('custom-header-bar'));
-      expect(httpRequestEntries.last.value, equals(['z']));
-
-      // Header should remain immutable
-      expect(() => header['foo'] = ['new_value'],
-          throwsA(isA<UnsupportedError>()));
+      // The 'foo' header should only include the non-empty value ['x']
+      expect(customHeaders['foo'], equals(['x']));
+      // 'bar' should have a single value
+      expect(customHeaders['bar'], equals(['z']));
     });
 
-    test('CustomHeaders should ignore empty lists', () {
-      var header = CustomHeaders.from({
-        'FoO': ['x', 'y'],
-        'bAr': [],
-      });
+    test(
+        'Given headers with multiple managed and custom values, it should correctly separate and handle them',
+        () {
+      var httpRequest = HttpRequestMock()
+        ..headers.add('Content-Type', 'application/json') // Managed header
+        ..headers.add('Content-Type', 'text/html') // Managed header, should be combined
+        ..headers.add('Custom-Header1', 'value1') // Custom header
+        ..headers.add('Custom-Header1', 'value2') // Custom header, should be combined
+        ..headers.add('bAr', 'z');
 
-      // 'bAr' should not be included since it has an empty list
-      expect(header['foo'], equals(['x', 'y']));
-      expect(header.containsKey('bar'), isFalse);
+      var headers = Headers.fromHttpRequest(httpRequest);
+      var customHeaders = headers.custom;
 
-      // Ensure httpRequestEntries behaves the same way
-      var httpRequestEntries = header.httpRequestEntries.toList();
-      expect(httpRequestEntries.length, equals(1));
-      expect(httpRequestEntries.first.key, equals('custom-header-foo'));
-      expect(httpRequestEntries.first.value, equals(['x', 'y']));
+      // Managed headers should be excluded from custom headers
+      expect(customHeaders['content-type'], isNull);
+      // Custom headers should have combined values
+      expect(customHeaders['custom-header1'], equals(['value1', 'value2']));
+      expect(customHeaders['bar'], equals(['z']));
     });
 
-    test('CustomHeaders should correctly remove prefix on decoding', () {
-      var headersWithPrefix = {
-        '${_customHeaderPrefix}FoO': ['x', 'y'],
-        '${_customHeaderPrefix}bAr': ['z'],
-      };
+    test(
+        'Given headers with a normal format and multiple values, it should handle all custom headers without interference',
+        () {
+      var httpRequest = HttpRequestMock()
+        ..headers.add('X-Custom-Header1', 'customValue1')
+        ..headers.add('X-Custom-Header1', 'customValue2');
 
-      var header =
-          CustomHeaders.fromHttpRequestEntries(headersWithPrefix.entries);
+      var headers = Headers.fromHttpRequest(httpRequest);
+      var customHeaders = headers.custom;
 
-      // Prefix should be removed in the parsed object
-      expect(header['foo'], equals(['x', 'y']));
-      expect(header['bar'], equals(['z']));
+      // All headers should be treated as custom and combined correctly
+      expect(customHeaders['x-custom-header1'], equals(['customValue1', 'customValue2']));
     });
 
-    test('httpRequestEntries should correctly add prefix', () {
-      var header = CustomHeaders.from({
-        'FoO': ['x', 'y'],
-        'bAr': ['z'],
-      });
+    test(
+        'Given headers with mixed cases and multiple values, it should normalize keys and combine values correctly',
+        () {
+      var httpRequest = HttpRequestMock()
+        ..headers.add('FoO', 'x')
+        ..headers.add('foo', 'y') // Same header as 'FoO', different case
+        ..headers.add('bAr', 'z')
+        ..headers.add('Bar', 'w'); // Same header as 'bAr', different case
 
-      // Check that httpRequestEntries adds the custom prefix correctly
-      var httpRequestEntries = header.httpRequestEntries.toList();
-      expect(httpRequestEntries.first.key, equals('custom-header-foo'));
-      expect(httpRequestEntries.first.value, equals(['x', 'y']));
-      expect(httpRequestEntries.last.key, equals('custom-header-bar'));
-      expect(httpRequestEntries.last.value, equals(['z']));
-    });
+      var headers = Headers.fromHttpRequest(httpRequest);
+      var customHeaders = headers.custom;
 
-    test('Normal case - without prefix involved', () {
-      var header = CustomHeaders.from({
-        'Content-Type': ['application/json'],
-        'Authorization': ['Bearer token'],
-      });
-
-      // Access headers normally without custom prefix
-      expect(header['content-type'], equals(['application/json']));
-      expect(header['authorization'], equals(['Bearer token']));
-
-      // No prefix should be added in httpRequestEntries since we're not using custom headers
-      var httpRequestEntries = header.entries.toList();
-      expect(httpRequestEntries.first.key, equals('content-type'));
-      expect(httpRequestEntries.first.value, equals(['application/json']));
-      expect(httpRequestEntries.last.key, equals('authorization'));
-      expect(httpRequestEntries.last.value, equals(['Bearer token']));
+      // The 'foo' header should have combined values ['x', 'y']
+      expect(customHeaders['foo'], equals(['x', 'y']));
+      // 'bar' should have combined values ['z', 'w']
+      expect(customHeaders['bar'], equals(['z', 'w']));
     });
   });
 }

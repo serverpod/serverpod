@@ -1,10 +1,13 @@
+import 'dart:collection';
+import 'dart:convert';
 import 'dart:io' as io;
 
-import 'package:relic/src/headers/authorization_header.dart';
-import 'package:relic/src/headers/custom_headers.dart';
-import 'package:relic/src/util.dart';
+import 'package:http_parser/http_parser.dart';
 
 import 'body.dart';
+
+part 'headers/custom_headers.dart';
+part 'headers/authorization_header.dart';
 
 abstract class Headers {
   // TODO: Add properties for all supported headers below.
@@ -27,6 +30,8 @@ abstract class Headers {
   //     'access-control-request-method';
   // static const _ageHeader = "age";
   // static const _allowHeader = "allow";
+
+  static const _authorizationHeaderKey = "authorization";
 
   // static const _cacheControlHeader = "cache-control";
   // static const _connectionHeader = "connection";
@@ -91,7 +96,7 @@ abstract class Headers {
     _contentTypeHeader,
     _locationHeader,
     _xPoweredByHeader,
-    authorizationHeaderKey,
+    _authorizationHeaderKey,
   };
 
   Headers._({
@@ -110,18 +115,6 @@ abstract class Headers {
   factory Headers.fromHttpRequest(io.HttpRequest request) {
     var headers = request.headers;
 
-    var custom = <MapEntry<String, List<String>>>[];
-
-    headers.forEach((name, values) {
-      // Skip headers that we support natively.
-      if (_managedHeaders.contains(name.toLowerCase())) {
-        return;
-      }
-      for (var value in values) {
-        custom.add(MapEntry(name, [value]));
-      }
-    });
-
     // TODO: When implementing other pre-defined headers, remove the
     // Transfer-Encoding header per the adapter requirements. (This is what
     // Shelf does, not sure the purpose.)
@@ -133,8 +126,13 @@ abstract class Headers {
       from: headers.value(_fromHeader),
       host: headers.host,
       port: headers.port,
-      custom: CustomHeaders.fromHttpRequestEntries(custom),
-      authorization: AuthorizationHeader.tryParse(custom),
+      custom: CustomHeaders._fromHttpHeaders(
+        headers,
+        excludedHeaders: _managedHeaders,
+      ),
+      authorization: AuthorizationHeader._tryParseHttpHeaders(
+        headers,
+      ),
     );
   }
 
@@ -173,6 +171,7 @@ abstract class Headers {
     Uri? location,
     String? xPoweredBy,
     CustomHeaders? custom,
+    AuthorizationHeader? authorization,
   }) {
     return _HeadersImpl(
       date: date ?? DateTime.now(),
@@ -184,6 +183,7 @@ abstract class Headers {
       location: location,
       xPoweredBy: xPoweredBy,
       custom: custom ?? CustomHeaders.empty(),
+      authorization: authorization,
     );
   }
 
@@ -197,6 +197,7 @@ abstract class Headers {
     Uri? location,
     String? xPoweredBy,
     CustomHeaders? custom,
+    AuthorizationHeader? authorization,
   }) {
     return _HeadersImpl(
       date: date ?? DateTime.now(),
@@ -208,6 +209,7 @@ abstract class Headers {
       location: location,
       xPoweredBy: xPoweredBy,
       custom: custom ?? CustomHeaders.empty(),
+      authorization: authorization,
     );
   }
 
@@ -256,8 +258,7 @@ abstract class Headers {
       if (location != null) '$_locationHeader: $location',
       if (xPoweredBy != null) '$_xPoweredByHeader: $xPoweredBy',
       if (authorization != null) '$authorization',
-      ...custom.httpRequestEntries
-          .map((entry) => '${entry.key}:${entry.value}'),
+      ...custom.entries.map((entry) => '${entry.key}:${entry.value}'),
     ];
 
     return strings.join('\n');

@@ -1,21 +1,9 @@
-import 'dart:collection';
-
-import 'package:http_parser/http_parser.dart';
+part of '../headers.dart';
 
 final _emptyCustomHeaders = CustomHeaders._empty();
 
 /// Unmodifiable, key-insensitive header map.
 class CustomHeaders extends UnmodifiableMapView<String, List<String>> {
-  static const _customHeaderPrefix = 'custom-header-';
-
-  Iterable<MapEntry<String, List<String>>> get httpRequestEntries =>
-      super.entries.map(
-            (entry) => MapEntry<String, List<String>>(
-              '$_customHeaderPrefix${entry.key}'.toLowerCase(),
-              entry.value,
-            ),
-          );
-
   late final Map<String, String> singleValues = UnmodifiableMapView(
     CaseInsensitiveMap.from(
       map(
@@ -27,69 +15,44 @@ class CustomHeaders extends UnmodifiableMapView<String, List<String>> {
     ),
   );
 
-  factory CustomHeaders(Map<String, String> values) {
+  factory CustomHeaders(
+    Map<String, String> values,
+  ) {
     return CustomHeaders._(
       values.entries.map((e) => MapEntry(e.key, [e.value])),
     );
   }
 
-  factory CustomHeaders.from(
-    Map<String, List<String>>? values,
-  ) {
-    if (values == null || values.isEmpty) {
-      return _emptyCustomHeaders;
-    } else if (values is CustomHeaders) {
-      return values;
-    } else {
-      return CustomHeaders._(values.entries);
-    }
-  }
+  factory CustomHeaders._fromHttpHeaders(
+    io.HttpHeaders headers, {
+    Set<String> excludedHeaders = const {},
+  }) {
+    var custom = <MapEntry<String, List<String>>>[];
 
-  factory CustomHeaders.fromHttpRequestEntries(
-    Iterable<MapEntry<String, List<String>>>? entries,
-  ) {
-    if (entries == null || (entries is List && entries.isEmpty)) {
-      return _emptyCustomHeaders;
-    } else {
-      return CustomHeaders._(
-        entries,
-        filterWithCustomPrefix: true,
-      );
-    }
-  }
+    headers.forEach((name, values) {
+      // Skip headers that we support natively.
+      if (excludedHeaders.contains(name.toLowerCase())) {
+        return;
+      }
+      custom.add(MapEntry(name, values));
+    });
 
-  factory CustomHeaders.fromEntries(
-    Iterable<MapEntry<String, List<String>>>? entries,
-  ) {
-    if (entries == null || (entries is List && entries.isEmpty)) {
-      return _emptyCustomHeaders;
-    } else {
-      return CustomHeaders._(
-        entries,
-      );
-    }
+    if (custom.isEmpty) return _emptyCustomHeaders;
+
+    return CustomHeaders._(custom);
   }
 
   CustomHeaders._(
-    Iterable<MapEntry<String, List<String>>> entries, {
-    bool filterWithCustomPrefix = false,
-  }) : super(
+    Iterable<MapEntry<String, List<String>>> entries,
+  ) : super(
           CaseInsensitiveMap.from(
             _entriesToMap(
               entries
-                  .where(
-                    (e) =>
-                        e.value.isNotEmpty &&
-
-                        /// Filtering all custom headers
-                        (!filterWithCustomPrefix ||
-                            e.key.startsWith(_customHeaderPrefix)),
-                  )
+                  .where((e) => e.value.where((e) => e.isNotEmpty).isNotEmpty)
                   .map(
                     (e) => MapEntry(
-                      /// removing the custom prefix
-                      e.key.replaceAll(_customHeaderPrefix, '').toLowerCase(),
-                      List.unmodifiable(e.value),
+                      e.key.toLowerCase(),
+                      List.unmodifiable(e.value.where((el) => el.isNotEmpty)),
                     ),
                   ),
             ),
