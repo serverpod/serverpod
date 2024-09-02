@@ -339,6 +339,9 @@ class Server {
       return;
     } else if (result is ResultStatusCode) {
       request.response.statusCode = result.statusCode;
+      if (result.message != null) {
+        request.response.writeln(result.message);
+      }
       await request.response.close();
       return;
     } else if (result is ExceptionResult) {
