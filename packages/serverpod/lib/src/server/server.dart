@@ -461,7 +461,18 @@ class Server {
     }
 
     // Get the the authentication key, if any
-    String? authenticationKey = queryParameters['auth'];
+    // If it is provided in the HTTP authorization header we use that,
+    // otherwise we look for it in the query parameters (the old method).
+    String? authenticationKey;
+    try {
+      var authHeaderValue =
+          request.headers.value(HttpHeaders.authorizationHeader);
+      authenticationKey = authHeaderValue != null
+          ? unwrapAuthHeaderValue(authHeaderValue)
+          : queryParameters['auth'];
+    } on Exception catch (e) {
+      return ResultStatusCode(400, e.toString());
+    }
 
     MethodCallSession? maybeSession;
     try {

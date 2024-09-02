@@ -147,7 +147,7 @@ class MethodWebsocketRequestHandler {
         createSessionCallback: (connector) {
           maybeSession = MethodStreamSession(
             server: server,
-            authenticationKey: message.authentication,
+            authenticationKey: unwrapAuthHeaderValue(message.authentication),
             endpoint: message.endpoint,
             method: message.method,
             connectionId: message.connectionId,

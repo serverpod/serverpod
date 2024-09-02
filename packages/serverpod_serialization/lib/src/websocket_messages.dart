@@ -180,7 +180,6 @@ class OpenMethodStreamCommand extends WebSocketMessage {
         encodedArgs = data[WebSocketMessageDataKey.args],
         connectionId = UuidValueJsonExtension.fromJson(
             data[WebSocketMessageDataKey.connectionId]),
-        // unwraps auth upon deserialization of this message:
         authentication = data[WebSocketMessageDataKey.authentication],
         inputStreams =
             List<String>.from(data[WebSocketMessageDataKey.inputStreams]);

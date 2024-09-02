@@ -33,7 +33,7 @@ void main() {
         'then a call to an authorizaed endpoint method with old style auth key should succeed',
         () async {
       var response = await http.post(
-        Uri.parse('${serverUrl}reflection'),
+        Uri.parse('${serverUrl}requestReflection'),
         body: jsonEncode({
           'method': 'reflectAuthenticationKey',
           'auth': authKey,
@@ -48,7 +48,7 @@ void main() {
         'then a call to an authorizaed endpoint method without auth key should fail',
         () async {
       var response = await http.post(
-        Uri.parse('${serverUrl}reflection'),
+        Uri.parse('${serverUrl}requestReflection'),
         body: jsonEncode({
           'method': 'reflectAuthenticationKey',
         }),
