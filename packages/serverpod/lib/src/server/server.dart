@@ -463,16 +463,18 @@ class Server {
     // Get the the authentication key, if any
     // If it is provided in the HTTP authorization header we use that,
     // otherwise we look for it in the query parameters (the old method).
+    var authHeaderValue =
+        request.headers.value(HttpHeaders.authorizationHeader);
     String? authenticationKey;
     try {
-      var authHeaderValue =
-          request.headers.value(HttpHeaders.authorizationHeader);
-      authenticationKey = authHeaderValue != null
-          ? unwrapAuthHeaderValue(authHeaderValue)
-          : queryParameters['auth'];
-    } on Exception catch (e) {
-      return ResultStatusCode(400, e.toString());
+      authenticationKey = unwrapAuthHeaderValue(authHeaderValue);
+    } on AuthHeaderEncodingException catch (_) {
+      return ResultStatusCode(
+        400,
+        'Request has invalid "authorization" header: $authHeaderValue',
+      );
     }
+    authenticationKey ??= queryParameters['auth'];
 
     MethodCallSession? maybeSession;
     try {

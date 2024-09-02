@@ -16,7 +16,7 @@ void main() async {
     return Future.value(AuthenticationInfo(1, {}));
   }
 
-  group('When passing auth key in HTTP header format', () {
+  group('Given auth key in valid HTTP header format', () {
     var authKeyManager = TestAuthKeyManager();
     var client = Client(
       'http://localhost:8080/',
@@ -40,13 +40,13 @@ void main() async {
     });
 
     test(
-        'then endpoint method reflectAuthenticationKey should receive plain auth key (i.e. in original format)',
+        'when calling an endpoint method without parameters '
+        'then it should receive plain auth key (i.e. in original format)',
         () async {
       var key = 'username-4711:password-4711';
       await authKeyManager.put(key);
 
-      var reflectedKey =
-          await client.requestReflection.reflectAuthenticationKey();
+      var reflectedKey = await client.echoRequest.echoAuthenticationKey();
       expect(reflectedKey, key);
 
       var receivedToken = await tokenInspectionCompleter.future;
@@ -54,25 +54,27 @@ void main() async {
     });
 
     test(
-        'then endpoint method reflectHttpHeader should receive plain auth key (i.e. in original format)',
+        'when calling an endpoint method with a parameter '
+        'then it should receive plain auth key (i.e. in original format)',
         () async {
       var key = 'username-4711:password-4711';
       await authKeyManager.put(key);
 
-      await client.requestReflection.reflectHttpHeader('authorization');
+      await client.echoRequest.echoHttpHeader('authorization');
 
       var receivedToken = await tokenInspectionCompleter.future;
       expect(receivedToken, key);
     });
 
     test(
+        'when calling an endpoint method '
         'then endpoint method request should contain properly formatted "authorization" header with Basic scheme',
         () async {
       var key = 'username-4712:password-4712';
       await authKeyManager.put(key);
 
       var reflectedHeader =
-          await client.requestReflection.reflectHttpHeader('authorization');
+          await client.echoRequest.echoHttpHeader('authorization');
 
       expect(reflectedHeader, isNotNull);
       expect(reflectedHeader!, isNotEmpty);
@@ -83,20 +85,21 @@ void main() async {
     });
 
     test(
+        'when calling an endpoint method '
         'then endpoint method request\'s "authorization" should when unwrapped contain the original key',
         () async {
       var key = 'username-4713:password-4713';
       await authKeyManager.put(key);
 
       var reflectedHeader =
-          await client.requestReflection.reflectHttpHeader('authorization');
+          await client.echoRequest.echoHttpHeader('authorization');
 
       var unwrappedKey = unwrapAuthHeaderValue(reflectedHeader!.first);
       expect(unwrappedKey, key);
     });
   });
 
-  group('When passing auth key in invalid Basic HTTP header format', () {
+  group('Given auth key in invalid Basic HTTP header format', () {
     var incorrectAuthKeyManager = TestIncorrectAuthKeyManager();
     var client = Client(
       'http://localhost:8080/',
@@ -120,14 +123,15 @@ void main() async {
     });
 
     test(
-        'then endpoint method reflectAuthenticationKey should return error corresponding to HTTP invalid request error (400)',
+        'when calling an endpoint method '
+        'then endpoint method should return error corresponding to HTTP invalid request error (400)',
         () async {
       var key = 'username-4711:password-4711';
       await incorrectAuthKeyManager.put(key);
 
       ServerpodClientException? clientException;
       try {
-        await client.requestReflection.reflectAuthenticationKey();
+        await client.echoRequest.echoAuthenticationKey();
       } catch (e) {
         clientException = e as ServerpodClientException?;
       }

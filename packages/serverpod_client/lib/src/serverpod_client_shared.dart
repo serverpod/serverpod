@@ -117,6 +117,10 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// E.g. "wss://example.com/websocket"
   @Deprecated('This is only for internal use and may be removed in the future.')
   Future<String> get websocketHost async {
+    return _webSocketHostWithAuth;
+  }
+
+  Future<String> get _webSocketHostWithAuth async {
     var uri = _webSocketHost;
 
     var auth = await authenticationKeyManager?.get();
@@ -323,8 +327,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     try {
       // Connect to the server.
       _firstMessageReceived = false;
-      // ignore: deprecated_member_use_from_same_package
-      var host = await websocketHost;
+      var host = await _webSocketHostWithAuth;
       _webSocket = WebSocketChannel.connect(Uri.parse(host));
       await _webSocket?.ready;
 

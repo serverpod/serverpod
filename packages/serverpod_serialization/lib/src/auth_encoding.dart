@@ -5,7 +5,7 @@ import 'dart:convert';
 
 /// The name of the default Serverpod scheme for HTTP "authorization" headers.
 /// Note, the scheme name is case-insensitive and should be compared in a case-insensitive manner.
-const serverpodDefaultAuthSchemeName = 'Basic';
+const basicAuthSchemeName = 'Basic';
 
 /// Regexp for a string adhering to the RFC 4648 base64 encoding alphabet.
 const _base64RegExpStr = r'[a-zA-Z0-9+/]*=*';
@@ -36,15 +36,14 @@ final _base64RegExp = RegExp('^$_base64RegExpStr\$');
 /// Returns true if the provided value is a Serverpod-wrapped auth key.
 bool isWrappedBasicAuthHeaderValue(String value) {
   var parts = value.split(' ');
-  if (parts[0].toLowerCase() == 'basic') {
-    // if the value starts with the basic scheme, it must be valid and wrapped or we throw for invalid query
-    if (parts.length == 2 && _base64RegExp.hasMatch(parts[1])) {
-      return true;
-    } else {
-      throw Exception('Invalid basic auth value "$value"');
-    }
+  if (parts[0].toLowerCase() != basicAuthSchemeName.toLowerCase()) return false;
+  // if the value starts with the basic scheme, it must be valid and wrapped or we throw for invalid query
+  if (parts.length == 2 && _base64RegExp.hasMatch(parts[1])) {
+    return true;
+  } else {
+    throw AuthHeaderEncodingException(
+        'Invalid "basic" auth scheme value "$value"');
   }
-  return false;
 }
 
 /// Returns a value that is compliant with the HTTP auth header format
@@ -52,7 +51,7 @@ bool isWrappedBasicAuthHeaderValue(String value) {
 String wrapAsBasicAuthHeaderValue(String key) {
   // Encode the key as Base64 and prepend the default scheme name.
   var encodedKey = base64.encode(utf8.encode(key));
-  return '$serverpodDefaultAuthSchemeName $encodedKey';
+  return '$basicAuthSchemeName $encodedKey';
 }
 
 /// Returns the auth key from an auth value that has potentially been wrapped.
@@ -67,5 +66,19 @@ String? unwrapAuthHeaderValue(String? authValue) {
   } else {
     // auth value was not wrapped, return as is
     return authValue;
+  }
+}
+
+/// An exception thrown upon erroneous encoding of an auth header.
+class AuthHeaderEncodingException implements Exception {
+  /// A message indicating the error.
+  final String message;
+
+  /// Creates a new [AuthHeaderEncodingException].
+  AuthHeaderEncodingException(this.message);
+
+  @override
+  String toString() {
+    return 'AuthHeaderEncodingException: $message';
   }
 }

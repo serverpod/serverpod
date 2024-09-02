@@ -16,7 +16,6 @@ class SignInRequiredEndpoint extends Endpoint {
     StreamingSession session,
     SerializableModel message,
   ) async {
-    print('Received message: $message');
     if (message is SimpleData) {
       unawaited(Future.delayed(const Duration(seconds: 1)).then((value) async {
         await sendStreamMessage(session, message);

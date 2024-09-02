@@ -8,7 +8,7 @@ import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 
 void main() {
-  group("Given a simulated legacy client with old authorization conventions, ",
+  group('Given a simulated legacy client with old authorization conventions, ',
       () {
     late Client client;
     late String authKey;
@@ -30,12 +30,12 @@ void main() {
     });
 
     test(
-        'then a call to an authorizaed endpoint method with old style auth key should succeed',
-        () async {
+        'when calling an authorized endpoint method with old style auth key '
+        'then it should succeed', () async {
       var response = await http.post(
-        Uri.parse('${serverUrl}requestReflection'),
+        Uri.parse('${serverUrl}echoRequest'),
         body: jsonEncode({
-          'method': 'reflectAuthenticationKey',
+          'method': 'echoAuthenticationKey',
           'auth': authKey,
         }),
       );
@@ -45,12 +45,12 @@ void main() {
     });
 
     test(
-        'then a call to an authorizaed endpoint method without auth key should fail',
-        () async {
+        'when calling an authorizaed endpoint method without auth key '
+        'then it should fail', () async {
       var response = await http.post(
-        Uri.parse('${serverUrl}requestReflection'),
+        Uri.parse('${serverUrl}echoRequest'),
         body: jsonEncode({
-          'method': 'reflectAuthenticationKey',
+          'method': 'echoAuthenticationKey',
         }),
       );
 

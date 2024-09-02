@@ -660,6 +660,34 @@ class EndpointDeprecation extends _i1.EndpointRef {
       );
 }
 
+/// This class is meant for echoing / reflecting the received headers,
+/// auth keys, parameters etc in endpoint invocations.
+/// {@category Endpoint}
+class EndpointEchoRequest extends _i1.EndpointRef {
+  EndpointEchoRequest(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'echoRequest';
+
+  /// Echo the authentication key of the session.
+  /// Returns null if the key is not set.
+  _i2.Future<String?> echoAuthenticationKey() =>
+      caller.callServerEndpoint<String?>(
+        'echoRequest',
+        'echoAuthenticationKey',
+        {},
+      );
+
+  /// Echo a specified header of the HTTP request.
+  /// Returns null of the header is not set.
+  _i2.Future<List<String>?> echoHttpHeader(String headerName) =>
+      caller.callServerEndpoint<List<String>?>(
+        'echoRequest',
+        'echoHttpHeader',
+        {'headerName': headerName},
+      );
+}
+
 /// {@category Endpoint}
 class EndpointEmailAuthTestMethods extends _i1.EndpointRef {
   EndpointEmailAuthTestMethods(_i1.EndpointCaller caller) : super(caller);
@@ -1834,33 +1862,6 @@ class EndpointRedis extends _i1.EndpointRef {
       );
 }
 
-/// This class is meant for reflecting the received headers, auth keys in endpoint invocations.
-/// {@category Endpoint}
-class EndpointRequestReflection extends _i1.EndpointRef {
-  EndpointRequestReflection(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'requestReflection';
-
-  /// Reflects the authentication key of the session.
-  /// Returns null if the key is not set.
-  _i2.Future<String?> reflectAuthenticationKey() =>
-      caller.callServerEndpoint<String?>(
-        'requestReflection',
-        'reflectAuthenticationKey',
-        {},
-      );
-
-  /// Reflects a specified header of the HTTP request.
-  /// Returns null of the header is not set.
-  _i2.Future<List<String>?> reflectHttpHeader(String headerName) =>
-      caller.callServerEndpoint<List<String>?>(
-        'requestReflection',
-        'reflectHttpHeader',
-        {'headerName': headerName},
-      );
-}
-
 /// {@category Endpoint}
 class EndpointServerOnlyScopedFieldModel extends _i1.EndpointRef {
   EndpointServerOnlyScopedFieldModel(_i1.EndpointCaller caller) : super(caller);
@@ -2039,6 +2040,7 @@ class Client extends _i1.ServerpodClientShared {
     basicDatabase = EndpointBasicDatabase(this);
     transactionsDatabase = EndpointTransactionsDatabase(this);
     deprecation = EndpointDeprecation(this);
+    echoRequest = EndpointEchoRequest(this);
     emailAuthTestMethods = EndpointEmailAuthTestMethods(this);
     exceptionTest = EndpointExceptionTest(this);
     failedCalls = EndpointFailedCalls(this);
@@ -2056,7 +2058,6 @@ class Client extends _i1.ServerpodClientShared {
     namedParameters = EndpointNamedParameters(this);
     optionalParameters = EndpointOptionalParameters(this);
     redis = EndpointRedis(this);
-    requestReflection = EndpointRequestReflection(this);
     serverOnlyScopedFieldModel = EndpointServerOnlyScopedFieldModel(this);
     signInRequired = EndpointSignInRequired(this);
     adminScopeRequired = EndpointAdminScopeRequired(this);
@@ -2087,6 +2088,8 @@ class Client extends _i1.ServerpodClientShared {
   late final EndpointTransactionsDatabase transactionsDatabase;
 
   late final EndpointDeprecation deprecation;
+
+  late final EndpointEchoRequest echoRequest;
 
   late final EndpointEmailAuthTestMethods emailAuthTestMethods;
 
@@ -2122,8 +2125,6 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointRedis redis;
 
-  late final EndpointRequestReflection requestReflection;
-
   late final EndpointServerOnlyScopedFieldModel serverOnlyScopedFieldModel;
 
   late final EndpointSignInRequired signInRequired;
@@ -2154,6 +2155,7 @@ class Client extends _i1.ServerpodClientShared {
         'basicDatabase': basicDatabase,
         'transactionsDatabase': transactionsDatabase,
         'deprecation': deprecation,
+        'echoRequest': echoRequest,
         'emailAuthTestMethods': emailAuthTestMethods,
         'exceptionTest': exceptionTest,
         'failedCalls': failedCalls,
@@ -2171,7 +2173,6 @@ class Client extends _i1.ServerpodClientShared {
         'namedParameters': namedParameters,
         'optionalParameters': optionalParameters,
         'redis': redis,
-        'requestReflection': requestReflection,
         'serverOnlyScopedFieldModel': serverOnlyScopedFieldModel,
         'signInRequired': signInRequired,
         'adminScopeRequired': adminScopeRequired,

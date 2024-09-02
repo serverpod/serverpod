@@ -77,6 +77,9 @@ transactionsDatabase:
 deprecation:
   - setGlobalDouble:
   - getGlobalDouble:
+echoRequest:
+  - echoAuthenticationKey:
+  - echoHttpHeader:
 emailAuthTestMethods:
   - findVerificationCode:
   - findResetCode:
@@ -223,9 +226,6 @@ redis:
   - listenToChannel:
   - postToChannel:
   - countSubscribedChannels:
-requestReflection:
-  - reflectAuthenticationKey:
-  - reflectHttpHeader:
 serverOnlyScopedFieldModel:
   - getScopeServerOnlyField:
 signInRequired:

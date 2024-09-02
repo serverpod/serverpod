@@ -21,7 +21,9 @@ void main() {
       client.close();
     });
 
-    test('then access restricted endpoint without authentication', () async {
+    test(
+        'when sending a message to a restricted endpoint without authentication '
+        'then the message should be ignored', () async {
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );
@@ -36,7 +38,9 @@ void main() {
       expect(receivedData, throwsA(isA<TimeoutException>()));
     });
 
-    test('then access restricted endpoint with authentication', () async {
+    test(
+        'when sending a message to a restricted endpoint with authentication '
+        'then the message should succeed', () async {
       var response =
           await client.authentication.authenticate('test@foo.bar', 'password');
       expect(response.success, isTrue);
