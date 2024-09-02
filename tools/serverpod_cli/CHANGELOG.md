@@ -1,3 +1,13 @@
+## 2.1.0-beta.3
+ - feat: Models can now be created without fields.
+ - feat: Implements default values for enums.
+ - feat: Allows default values in serializable exceptions.
+ - feat: Adds ability to register custom environment variables to loaded as passwords.
+ - fix: Allows Serverpod defined models to be encoded and decoded with type.
+ - fix: Allows AWS deployments to update Dart version.
+ - fix: Respects authentication changes in method streams.
+ - fix: Fixes top error handling on server's request handler to ensure proper error boundary.
+
 ## 2.1.0-beta.2
  - feat: Adds support for default values for `UuidValue` and `Duration` in models.
  - fix: Fixes `copyWith` method for nested `List` and `Map` in models.
