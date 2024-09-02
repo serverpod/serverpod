@@ -417,8 +417,11 @@ class Serverpod {
 
     await runZonedGuarded(() async {
       // Register cloud store endpoint if we're using the database cloud store
-      if (storage['public'] is DatabaseCloudStorage ||
-          storage['private'] is DatabaseCloudStorage) {
+      var hasDatabaseStorage = storage.entries.any(
+        (storage) => storage.value is DatabaseCloudStorage,
+      );
+
+      if (hasDatabaseStorage) {
         CloudStoragePublicEndpoint().register(this);
       }
 
