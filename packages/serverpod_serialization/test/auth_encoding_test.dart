@@ -97,7 +97,7 @@ void main() {
     ),
   ];
 
-  group('Auth header validity checking', () {
+  group('Auth header validity checking:', () {
     for (var (key, descr) in [
       ...standardBasicAuthKeys,
       ...standardNonBasicAuthKeys,
@@ -125,7 +125,7 @@ void main() {
     }
   });
 
-  group('Auth header wrapping checking', () {
+  group('Auth header wrapping checking:', () {
     for (var (key, descr) in standardBasicAuthKeys) {
       test(
           'Given an auth key in "Basic" HTTP auth header format '
@@ -164,7 +164,7 @@ void main() {
     }
   });
 
-  group('When using auth key wrapping and unwrapping', () {
+  group('When using auth key wrapping and unwrapping:', () {
     for (var (key, descr) in [
       ...conventionalAuthKeys,
       ...standardBasicAuthKeys,

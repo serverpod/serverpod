@@ -26,6 +26,13 @@ void main() {
     });
 
     tearDownAll(() async {
+      await client.authenticationKeyManager?.remove();
+      await client.authentication.removeAllUsers();
+      await client.authentication.signOut();
+      assert(
+        await client.modules.auth.status.isSignedIn() == false,
+        'Still signed in after teardown',
+      );
       client.close();
     });
 
