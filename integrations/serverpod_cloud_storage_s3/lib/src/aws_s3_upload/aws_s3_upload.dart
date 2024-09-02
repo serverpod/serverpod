@@ -62,13 +62,15 @@ class AwsS3Uploader {
       final res = await req.send();
 
       if (res.statusCode >= 400 && res.statusCode < 500) {
-        print('Failed to upload to AWS, with reason: ${res.reasonPhrase}');
+        stderr.writeln(
+          'Failed to upload to AWS, with reason: ${res.reasonPhrase}',
+        );
       }
 
       if (res.statusCode == 204) return '$endpoint/$uploadDst';
     } catch (e) {
-      print('Failed to upload to AWS, with exception:');
-      print(e);
+      stderr.writeln('Failed to upload to AWS, with exception:');
+      stderr.writeln(e);
       return null;
     }
     return null;
@@ -131,13 +133,14 @@ class AwsS3Uploader {
       final res = await req.send();
 
       if (res.statusCode >= 400 && res.statusCode < 500) {
-        print('Failed to upload to AWS, with reason: ${res.reasonPhrase}');
+        stderr.writeln(
+            'Failed to upload to AWS, with reason: ${res.reasonPhrase}');
       }
 
       if (res.statusCode == 204) return '$endpoint/$uploadDst';
     } catch (e) {
-      print('Failed to upload to AWS, with exception:');
-      print(e);
+      stderr.writeln('Failed to upload to AWS, with exception:');
+      stderr.writeln(e);
       return null;
     }
     return null;
