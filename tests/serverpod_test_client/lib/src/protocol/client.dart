@@ -660,6 +660,34 @@ class EndpointDeprecation extends _i1.EndpointRef {
       );
 }
 
+/// This class is meant for echoing / reflecting the received headers,
+/// auth keys, parameters etc in endpoint invocations.
+/// {@category Endpoint}
+class EndpointEchoRequest extends _i1.EndpointRef {
+  EndpointEchoRequest(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'echoRequest';
+
+  /// Echo the authentication key of the session.
+  /// Returns null if the key is not set.
+  _i2.Future<String?> echoAuthenticationKey() =>
+      caller.callServerEndpoint<String?>(
+        'echoRequest',
+        'echoAuthenticationKey',
+        {},
+      );
+
+  /// Echo a specified header of the HTTP request.
+  /// Returns null of the header is not set.
+  _i2.Future<List<String>?> echoHttpHeader(String headerName) =>
+      caller.callServerEndpoint<List<String>?>(
+        'echoRequest',
+        'echoHttpHeader',
+        {'headerName': headerName},
+      );
+}
+
 /// {@category Endpoint}
 class EndpointEmailAuthTestMethods extends _i1.EndpointRef {
   EndpointEmailAuthTestMethods(_i1.EndpointCaller caller) : super(caller);
@@ -2012,6 +2040,7 @@ class Client extends _i1.ServerpodClientShared {
     basicDatabase = EndpointBasicDatabase(this);
     transactionsDatabase = EndpointTransactionsDatabase(this);
     deprecation = EndpointDeprecation(this);
+    echoRequest = EndpointEchoRequest(this);
     emailAuthTestMethods = EndpointEmailAuthTestMethods(this);
     exceptionTest = EndpointExceptionTest(this);
     failedCalls = EndpointFailedCalls(this);
@@ -2059,6 +2088,8 @@ class Client extends _i1.ServerpodClientShared {
   late final EndpointTransactionsDatabase transactionsDatabase;
 
   late final EndpointDeprecation deprecation;
+
+  late final EndpointEchoRequest echoRequest;
 
   late final EndpointEmailAuthTestMethods emailAuthTestMethods;
 
@@ -2124,6 +2155,7 @@ class Client extends _i1.ServerpodClientShared {
         'basicDatabase': basicDatabase,
         'transactionsDatabase': transactionsDatabase,
         'deprecation': deprecation,
+        'echoRequest': echoRequest,
         'emailAuthTestMethods': emailAuthTestMethods,
         'exceptionTest': exceptionTest,
         'failedCalls': failedCalls,

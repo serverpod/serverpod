@@ -575,17 +575,21 @@ class ResultInternalServerError extends Result {
   }
 }
 
-/// The result of a failed [Endpoint] method call, with a custom status code.
+/// The result of a failed [Endpoint] method call, with a custom status code,
+/// and an optional message.
 class ResultStatusCode extends Result {
   /// The status code to be returned to the client.
   final int statusCode;
 
+  /// Message / description of the error.
+  final String? message;
+
   /// Creates a new [ResultStatusCode].
-  ResultStatusCode(this.statusCode);
+  ResultStatusCode(this.statusCode, [this.message]);
 
   @override
   String toString() {
-    return 'Status Code: $statusCode';
+    return 'Status Code: $statusCode${message != null ? ': $message' : ''}';
   }
 }
 

@@ -6,9 +6,9 @@ import 'http/http_status.dart';
 
 /// Encodes arguments for serialization.
 String formatArgs(
-    Map<String, dynamic> args, String? authorizationKey, String method) {
-  if (authorizationKey != null) args['auth'] = authorizationKey;
-
+  Map<String, dynamic> args,
+  String method,
+) {
   args['method'] = method;
 
   return SerializationManager.encode(args);

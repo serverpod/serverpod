@@ -170,7 +170,7 @@ class OpenMethodStreamCommand extends WebSocketMessage {
   /// The connection id that uniquely identifies the stream.
   final UuidValue connectionId;
 
-  /// The authentication token.
+  /// The authentication value as it is sent across the transport layer.
   final String? authentication;
 
   /// Creates a new [OpenMethodStreamCommand] message.

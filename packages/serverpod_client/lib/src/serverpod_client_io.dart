@@ -37,11 +37,15 @@ class ServerpodClientRequestDelegateImpl
   Future<String> serverRequest<T>(
     Uri url, {
     required String body,
+    String? authenticationValue,
   }) async {
     var request = await _httpClient.postUrl(url);
     request.headers.contentType =
         ContentType('application', 'json', charset: 'utf-8');
     request.contentLength = utf8.encode(body).length;
+    if (authenticationValue != null) {
+      request.headers.add(HttpHeaders.authorizationHeader, authenticationValue);
+    }
     request.write(body);
 
     await request.flush();

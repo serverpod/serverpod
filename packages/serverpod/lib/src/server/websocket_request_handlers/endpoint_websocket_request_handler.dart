@@ -59,7 +59,7 @@ abstract class EndpointWebsocketRequestHandler {
               );
             } else if (command == 'auth') {
               var authKey = args['key'] as String?;
-              session.updateAuthenticationKey(authKey);
+              session.updateAuthenticationKey(unwrapAuthHeaderValue(authKey));
             }
             continue;
           }
