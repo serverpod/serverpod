@@ -95,81 +95,6 @@ class ResourceManager {
     return null;
   }
 
-  Future<void> storeServerpodCloudData(
-    ServerpodCloudData cloudData, {
-    String? localStoragePath,
-  }) async {
-    localStoragePath ??= localStorageDirectory.path;
-
-    try {
-      await LocalStorageManager.storeJsonFile(
-        fileName: ResourceManagerConstants.serverpodCloudDataFilePath,
-        json: cloudData.toJson(),
-        localStoragePath: localStoragePath,
-      );
-    } on CreateException catch (e) {
-      throw Exception(
-        'Failed to store serverpod cloud data. error: ${e.error}',
-      );
-    } on SerializationException catch (e) {
-      throw Exception(
-        'Failed to store serverpod cloud data. error: ${e.error}',
-      );
-    } on WriteException catch (e) {
-      throw Exception(
-        'Failed to store serverpod cloud data. error: ${e.error}',
-      );
-    }
-  }
-
-  /// Removes the serverpod cloud data file from the local storage.
-  ///
-  /// Throws an exception if the file could not be removed.
-  Future<void> removeServerpodCloudData({String? localStoragePath}) async {
-    localStoragePath ??= localStorageDirectory.path;
-
-    try {
-      await LocalStorageManager.removeFile(
-        fileName: ResourceManagerConstants.serverpodCloudDataFilePath,
-        localStoragePath: localStoragePath,
-      );
-    } on DeleteException catch (e) {
-      throw Exception(
-        'Failed to remove serverpod cloud data. error: ${e.error}',
-      );
-    }
-  }
-
-  Future<ServerpodCloudData?> tryFetchServerpodCloudData({
-    String? localStoragePath,
-  }) async {
-    localStoragePath ??= localStorageDirectory.path;
-
-    void deleteFile(File file) {
-      try {
-        file.deleteSync();
-      } catch (deleteError) {
-        log.warning(
-          'Failed to delete stored serverpod cloud data file. Error: $deleteError',
-        );
-      }
-    }
-
-    try {
-      return await LocalStorageManager.tryFetchAndDeserializeJsonFile(
-        fileName: ResourceManagerConstants.serverpodCloudDataFilePath,
-        localStoragePath: localStoragePath,
-        fromJson: ServerpodCloudData.fromJson,
-      );
-    } on ReadException catch (e) {
-      deleteFile(e.file);
-    } on DeserializationException catch (e) {
-      deleteFile(e.file);
-    }
-
-    return null;
-  }
-
   String get packageDownloadUrl =>
       'https://pub.dev/packages/serverpod_templates/versions/$templateVersion.tar.gz';
 
@@ -204,18 +129,4 @@ class ResourceManager {
     }
     log.info('Download complete.');
   }
-}
-
-class ServerpodCloudData {
-  late final String token;
-
-  ServerpodCloudData(this.token);
-
-  factory ServerpodCloudData.fromJson(Map<String, dynamic> json) {
-    return ServerpodCloudData(json['token'] as String);
-  }
-
-  Map<String, dynamic> toJson() => {
-        'token': token,
-      };
 }
