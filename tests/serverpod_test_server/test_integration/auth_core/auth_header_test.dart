@@ -137,6 +137,10 @@ void main() async {
       }
       expect(clientException, isNotNull);
       expect(clientException!.statusCode, equals(400));
+      expect(
+        clientException.message,
+        startsWith('Bad request: '),
+      );
     });
   });
 }

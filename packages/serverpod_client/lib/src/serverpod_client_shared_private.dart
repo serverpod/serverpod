@@ -44,7 +44,7 @@ dynamic getExceptionFrom({
   }
 
   return switch (statusCode) {
-    HttpStatus.badRequest => ServerpodClientBadRequest(),
+    HttpStatus.badRequest => ServerpodClientBadRequest(data),
     HttpStatus.unauthorized => ServerpodClientUnauthorized(),
     HttpStatus.forbidden => ServerpodClientForbidden(),
     HttpStatus.notFound => ServerpodClientNotFound(),
