@@ -87,7 +87,7 @@ void main() {
     });
 
     test('then the message is a bad request', () {
-      expect(exception.message, 'Bad request');
+      expect(exception.message, 'Bad request: malformed data');
     });
   });
 

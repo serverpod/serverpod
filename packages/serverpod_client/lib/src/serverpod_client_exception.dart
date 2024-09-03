@@ -23,7 +23,7 @@ class ServerpodClientBadRequest extends ServerpodClientException {
   /// Creates a Bad Request Exception
   ServerpodClientBadRequest([String? message])
       : super(
-          message != null && message != '' ? message : 'Bad request',
+          'Bad request${message != null && message != '' ? ': $message' : ''}',
           HttpStatus.badRequest,
         );
 }
