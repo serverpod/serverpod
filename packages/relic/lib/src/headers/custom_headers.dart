@@ -4,16 +4,7 @@ final _emptyCustomHeaders = CustomHeaders._empty();
 
 /// Unmodifiable, key-insensitive header map.
 class CustomHeaders extends UnmodifiableMapView<String, List<String>> {
-  late final Map<String, String> singleValues = UnmodifiableMapView(
-    CaseInsensitiveMap.from(
-      map(
-        (key, value) => MapEntry(
-          key.toLowerCase(),
-          _joinHeaderValues(value)!,
-        ),
-      ),
-    ),
-  );
+  factory CustomHeaders.empty() => _emptyCustomHeaders;
 
   factory CustomHeaders(
     Map<String, String> values,
@@ -22,6 +13,8 @@ class CustomHeaders extends UnmodifiableMapView<String, List<String>> {
       values.entries.map((e) => MapEntry(e.key, [e.value])),
     );
   }
+
+  CustomHeaders._empty() : super(const {});
 
   factory CustomHeaders._fromHttpHeaders(
     io.HttpHeaders headers, {
@@ -44,36 +37,29 @@ class CustomHeaders extends UnmodifiableMapView<String, List<String>> {
 
   CustomHeaders._(
     Iterable<MapEntry<String, List<String>>> entries,
-  ) : super(
-          CaseInsensitiveMap.from(
-            _entriesToMap(
-              entries
-                  .where((e) => e.value.where((e) => e.isNotEmpty).isNotEmpty)
-                  .map(
-                    (e) => MapEntry(
-                      e.key.toLowerCase(),
-                      List.unmodifiable(e.value.where((el) => el.isNotEmpty)),
-                    ),
-                  ),
-            ),
-          ),
-        );
-
-  CustomHeaders._empty() : super(const {});
-
-  factory CustomHeaders.empty() => _emptyCustomHeaders;
-
-  static Map<String, List<String>> _entriesToMap(
-    Iterable<MapEntry<String, List<String>>> entries,
-  ) {
-    var map = Map.fromEntries(entries);
-    return map;
-  }
-
-  static String? _joinHeaderValues(List<String>? values) {
-    if (values == null) return null;
-    if (values.isEmpty) return '';
-    if (values.length == 1) return values.single;
-    return values.join(',');
-  }
+  ) : super(_toCaseInsensitiveMap(entries));
 }
+
+
+
+CaseInsensitiveMap<List<String>> _toCaseInsensitiveMap(
+  Iterable<MapEntry<String, List<String>>> entries,
+) {
+  final validEntries = entries
+      .where((entry) => entry.value.isNotEmpty)
+      .map((entry) => MapEntry(entry.key, _withNoEmptyValues(entry.value)));
+
+  return CaseInsensitiveMap.from(
+    Map.fromEntries(
+      validEntries.map(
+        (e) => MapEntry(
+          e.key,
+          List.unmodifiable(e.value),
+        ),
+      ),
+    ),
+  );
+}
+
+List<String> _withNoEmptyValues(List<String> values) =>
+    values.where((value) => value.isNotEmpty).toList();

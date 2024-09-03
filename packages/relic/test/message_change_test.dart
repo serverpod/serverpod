@@ -55,16 +55,25 @@ void _testChange(
 ) {
   group('body', () {
     test('with String', () async {
-      var request = factory(body: Body.fromString('Hello, world'));
-      var copy = request.change(body: Body.fromString('Goodbye, world'));
+      var request = factory(
+        body: Body.fromString('Hello, world'),
+      );
+      var copy = request.change(
+        body: Body.fromString('Goodbye, world'),
+      );
 
       var newBody = await copy.readAsString();
 
-      expect(newBody, equals('Goodbye, world'));
+      expect(
+        newBody,
+        equals('Goodbye, world'),
+      );
     });
 
     test('with Stream', () async {
-      var request = factory(body: Body.fromString('Hello, world'));
+      var request = factory(
+        body: Body.fromString('Hello, world'),
+      );
       var copy = request.change(
         body: Body.fromDataStream(
           Stream.fromIterable(['Goodbye, world'])
@@ -110,12 +119,13 @@ void _testChange(
       ),
     );
 
-    expect(copy.headers.toString(), {
-      'test': 'test value',
-      'test2': 'test2 value',
-      'content-length': '0',
-      'content-type': 'application/octet-stream; charset=utf-8',
-    });
+    expect(
+      copy.headers.toString(),
+      equals('test: test value\n'
+          'test2: test2 value\n'
+          'content-length: 0\n'
+          'content-type: application/octet-stream; charset=utf-8'),
+    );
   });
 
   test('existing header values are overwritten', () {
@@ -130,11 +140,10 @@ void _testChange(
       ),
     );
 
-    expect(copy.headers, {
-      'test': 'new test value',
-      'content-length': '0',
-      'content-type': 'application/octet-stream; charset=utf-8',
-    });
+    expect(
+      copy.headers.custom,
+      equals({'test: new test value'}),
+    );
   });
 
   test('new context values are added', () {
