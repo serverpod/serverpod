@@ -11,7 +11,6 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 import 'package:uuid/uuid.dart' as _i3;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class DefaultException
     implements
