@@ -22,6 +22,7 @@ class ClassDefinitionBuilder {
   List<_FieldBuilder> _fields;
   List<SerializableModelIndexDefinition> _indexes;
   List<String>? _documentation;
+  String? _extendsClass;
 
   ClassDefinitionBuilder()
       : _moduleAlias = defaultModuleAlias,
@@ -61,6 +62,7 @@ class ClassDefinitionBuilder {
       manageMigration: _managedMigration,
       indexes: _indexes,
       documentation: _documentation,
+      extendsClass: _extendsClass,
     );
   }
 
@@ -318,6 +320,11 @@ class ClassDefinitionBuilder {
 
   ClassDefinitionBuilder withIsException(bool isException) {
     _isException = isException;
+    return this;
+  }
+
+  ClassDefinitionBuilder withExtendsClass(String extendsClass) {
+    _extendsClass = extendsClass;
     return this;
   }
 }
