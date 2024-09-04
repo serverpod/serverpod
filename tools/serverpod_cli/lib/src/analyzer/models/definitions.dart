@@ -56,6 +56,9 @@ class ClassDefinition extends SerializableModelDefinition {
   /// `true` if this is an exception and not a class.
   final bool isException;
 
+  /// If set, the name of the class this class should extend.
+  final String? extendsClass;
+
   /// Create a new [ClassDefinition].
   ClassDefinition({
     required super.moduleAlias,
@@ -66,6 +69,7 @@ class ClassDefinition extends SerializableModelDefinition {
     required super.serverOnly,
     required this.manageMigration,
     required this.isException,
+    this.extendsClass,
     this.tableName,
     this.indexes = const [],
     super.subDirParts,

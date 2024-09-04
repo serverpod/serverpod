@@ -35,6 +35,8 @@ class ModelParser {
     var className = classNode.value;
     if (className is! String) return null;
 
+    var extendsClass = _parseExtendsClass(documentContents);
+
     var tableName = _parseTableName(documentContents);
     var serverOnly = _parseServerOnly(documentContents);
     var fields = _parseClassFields(
@@ -53,6 +55,7 @@ class ModelParser {
     return ClassDefinition(
       moduleAlias: protocolSource.moduleAlias,
       className: className,
+      extendsClass: extendsClass,
       sourceFileName: protocolSource.yamlSourceUri.path,
       tableName: tableName,
       manageMigration: manageMigration,
@@ -94,6 +97,13 @@ class ModelParser {
       subDirParts: protocolSource.protocolRootPathParts,
       serverOnly: serverOnly,
     );
+  }
+
+  static String? _parseExtendsClass(YamlMap documentContents) {
+    var extendsClass = documentContents.nodes[Keyword.extendsClass]?.value;
+    if (extendsClass is! String) return null;
+
+    return extendsClass;
   }
 
   static bool _parseServerOnly(YamlMap documentContents) {
