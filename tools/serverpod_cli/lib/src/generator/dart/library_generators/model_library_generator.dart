@@ -22,17 +22,25 @@ class SerializableModelLibraryGenerator {
   });
 
   /// Generate the file for a model.
-  Library generateModelLibrary(SerializableModelDefinition modelDefinition) {
+  Library generateModelLibrary(
+    SerializableModelDefinition modelDefinition,
+    bool isBaseClass,
+    ClassDefinition? baseClass,
+  ) {
     switch (modelDefinition) {
       case ClassDefinition():
-        return _generateClassLibrary(modelDefinition);
+        return _generateClassLibrary(modelDefinition, isBaseClass, baseClass);
       case EnumDefinition():
         return _generateEnumLibrary(modelDefinition);
     }
   }
 
   /// Handle ordinary classes for [generateModelLibrary].
-  Library _generateClassLibrary(ClassDefinition classDefinition) {
+  Library _generateClassLibrary(
+    ClassDefinition classDefinition,
+    bool isBaseClass,
+    ClassDefinition? baseClass,
+  ) {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
     var fields = classDefinition.fields;

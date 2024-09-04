@@ -1,8 +1,10 @@
+import 'package:path/path.dart' as p;
+
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
-import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/src/generator/dart/library_generators/model_library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/model_library_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_filter_util.dart';
 
 /// A [CodeGenerator] that generates the server side dart code of a
 /// serverpod project.
@@ -25,7 +27,11 @@ class DartServerCodeGenerator extends CodeGenerator {
           ...protocolFile.subDirParts,
           '${protocolFile.fileName}.dart'
         ]): serverSideGenerator
-            .generateModelLibrary(protocolFile)
+            .generateModelLibrary(
+              protocolFile,
+              isBaseClass(protocolFile, models),
+              getBaseClassOrNull(protocolFile, models),
+            )
             .generateCode(),
     };
   }
