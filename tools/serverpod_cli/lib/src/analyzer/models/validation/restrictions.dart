@@ -211,6 +211,69 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateExtendsClassKey(
+    String parentNodeName,
+    dynamic extendsClass,
+    SourceSpan? span,
+  ) {
+    if (extendsClass is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The "extends" key must be a String.',
+          span,
+        )
+      ];
+    }
+
+    if (documentContents['table'] != null) {
+      return [
+        SourceSpanSeverityException(
+          'The "extends" property cannot be used on a class with a table definition.',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateExtendingClassName(
+    String parentNodeName,
+    dynamic baseClassName,
+    SourceSpan? span,
+  ) {
+    if (baseClassName is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The "extends" property must be a String.',
+          span,
+        )
+      ];
+    }
+
+    var baseClass = parsedModels.findByClassName(baseClassName);
+
+    if (baseClass == null) {
+      return [
+        SourceSpanSeverityException(
+          'The class "$baseClassName" was not found in any model.',
+          span,
+        )
+      ];
+    }
+
+    if (baseClass is ClassDefinition && baseClass.tableName != null) {
+      return [
+        SourceSpanSeverityException(
+          'A base class cannot have a table definition. Please remove the "table" property from the class "$baseClassName".',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validateTableName(
     String parentNodeName,
     dynamic tableName,

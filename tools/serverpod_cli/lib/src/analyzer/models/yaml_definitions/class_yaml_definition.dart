@@ -25,6 +25,11 @@ class ClassYamlDefinition {
         valueRestriction: restrictions.validateClassName,
       ),
       ValidateNode(
+        Keyword.extendsClass,
+        keyRestriction: restrictions.validateExtendsClassKey,
+        valueRestriction: restrictions.validateExtendingClassName,
+      ),
+      ValidateNode(
         Keyword.table,
         keyRestriction: restrictions.validateTableNameKey,
         valueRestriction: restrictions.validateTableName,
