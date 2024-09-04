@@ -67,18 +67,21 @@ class SerializableModelLibraryGenerator {
             classDefinition,
             tableName,
             fields,
+            isBaseClass,
           ),
           // We need to generate the implementation class for the copyWith method
           // to support differentiating between null and undefined values.
           // https://stackoverflow.com/questions/68009392/dart-custom-copywith-method-with-nullable-properties
           if (_shouldCreateUndefinedClass(fields)) _buildUndefinedClass(),
-          _buildModelImplClass(
-            className,
-            classDefinition,
-            tableName,
-            fields,
-          ),
-          if (buildRepository.hasImplicitClassOperations(fields))
+          if (!isBaseClass)
+            _buildModelImplClass(
+              className,
+              classDefinition,
+              tableName,
+              [...baseClassFields, ...fields],
+            ),
+          if (buildRepository.hasImplicitClassOperations(fields) &&
+              !isBaseClass)
             _buildModelImplicitClass(className, classDefinition),
         ]);
 
@@ -140,6 +143,7 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
     String? tableName,
     List<SerializableModelFieldDefinition> fields,
+    bool isBaseClass,
   ) {
     var relationFields = fields.where((field) =>
         field.relation is ObjectRelationDefinition ||
@@ -150,6 +154,9 @@ class SerializableModelLibraryGenerator {
         ..name = className
         ..docs.addAll(classDefinition.documentation ?? []);
 
+      if (!isBaseClass) {
+        classBuilder.abstract = true;
+      }
       if (classDefinition.isException) {
         classBuilder.implements
             .add(refer('SerializableException', serverpodUrl(serverCode)));
@@ -190,15 +197,28 @@ class SerializableModelLibraryGenerator {
           fields,
           tableName,
         ),
-        _buildModelClassFromJsonConstructor(className, fields, classDefinition)
+        if (!isBaseClass)
+          _buildModelClassFactoryConstructor(
+            className,
+            classDefinition,
+            [...baseClassFields, ...fields],
+            tableName,
+          ),
+        _buildModelClassFromJsonConstructor(
+            className, [...baseClassFields, ...fields], classDefinition)
       ]);
 
-      classBuilder.methods.add(_buildAbstractCopyWithMethod(
-        className,
-        classDefinition,
-        fields,
-      ));
-
+      if (!isBaseClass) {
+        classBuilder.methods.add(_buildAbstractCopyWithMethod(
+          className,
+          classDefinition,
+          fields,
+          baseClass,
+        ));
+      } else {
+        classBuilder.methods
+            .add(_buildCopyWithMethod(classDefinition, fields, true));
+      }
       // Serialization
       classBuilder.methods.add(_buildModelClassToJsonMethod(fields));
 
@@ -387,44 +407,46 @@ class SerializableModelLibraryGenerator {
   Method _buildCopyWithMethod(
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
+    bool isBaseClass,
   ) {
     return Method(
       (m) {
-        m
-          ..name = 'copyWith'
-          ..annotations.add(refer('override'))
-          ..optionalParameters.addAll(
-            fields.where((field) => field.shouldIncludeField(serverCode)).map(
-              (field) {
-                var fieldType = field.type.reference(
-                  serverCode,
-                  nullable: true,
-                  subDirParts: classDefinition.subDirParts,
-                  config: config,
-                );
+        m.name = 'copyWith';
+        if (!isBaseClass) {
+          m.annotations.add(refer('override'));
+        }
+        m.optionalParameters.addAll(
+          fields.where((field) => field.shouldIncludeField(serverCode)).map(
+            (field) {
+              var fieldType = field.type.reference(
+                serverCode,
+                nullable: true,
+                subDirParts: classDefinition.subDirParts,
+                config: config,
+              );
 
-                var type = field.type.nullable ? refer('Object?') : fieldType;
-                var defaultValue =
-                    field.type.nullable ? const Code('_Undefined') : null;
+              var type = field.type.nullable ? refer('Object?') : fieldType;
+              var defaultValue =
+                  field.type.nullable ? const Code('_Undefined') : null;
 
-                return Parameter((p) {
-                  p
-                    ..name = field.name
-                    ..named = true
-                    ..type = type
-                    ..defaultTo = defaultValue;
-                });
-              },
-            ),
-          )
-          ..returns = refer(classDefinition.className)
-          ..body = refer(classDefinition.className)
-              .call(
-                [],
-                _buildCopyWithAssignment(classDefinition, fields),
-              )
-              .returned
-              .statement;
+              return Parameter((p) {
+                p
+                  ..name = field.name
+                  ..named = true
+                  ..type = type
+                  ..defaultTo = defaultValue;
+              });
+            },
+          ),
+        );
+        m.returns = refer(classDefinition.className);
+        m.body = refer(classDefinition.className)
+            .call(
+              [],
+              _buildCopyWithAssignment(classDefinition, fields),
+            )
+            .returned
+            .statement;
       },
     );
   }
@@ -920,9 +942,12 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
     String? tableName,
+    bool isBaseClass,
   ) {
     return Constructor((c) {
-      c.name = '_';
+      if (!isBaseClass) {
+        c.name = '_';
+      }
       c.optionalParameters.addAll(_buildModelClassConstructorParameters(
         classDefinition,
         fields,
