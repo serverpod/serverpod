@@ -273,24 +273,6 @@ class Server {
       return;
     }
 
-    // TODO: Limit check external calls
-//    bool checkLength = true;
-//    if (whitelistedExternalCalls != null && whitelistedExternalCalls.contains(uri.path))
-//      checkLength = false;
-//
-//    if (checkLength) {
-//      // Check size of the request
-//      int contentLength = request.contentLength;
-//      if (contentLength == -1 ||
-//          contentLength > serverpod.config.maxRequestSize) {
-//        if (serverpod.runtimeSettings.logMalformedCalls)
-//          logDebug('Malformed call, invalid content length ($contentLength): $uri');
-//        request.response.statusCode = HttpStatus.badRequest;
-//        request.response.close();
-//        return;
-//      }
-//    }
-
     String? body;
     if (readBody) {
       try {
