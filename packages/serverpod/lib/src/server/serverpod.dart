@@ -16,7 +16,6 @@ import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-import '../authentication/default_authentication_handler.dart';
 import '../authentication/service_authentication.dart';
 import '../cache/caches.dart';
 import '../generated/endpoints.dart' as internal;
@@ -357,12 +356,6 @@ class Serverpod {
       redisController,
     );
 
-    var authHandler = authenticationHandler;
-
-    if (Features.enableDefaultAuthenticationHandler) {
-      authHandler ??= defaultAuthenticationHandler;
-    }
-
     server = Server(
       serverpod: this,
       serverId: serverId,
@@ -372,7 +365,7 @@ class Serverpod {
       passwords: _passwords,
       runMode: _runMode,
       caches: caches,
-      authenticationHandler: authHandler,
+      authenticationHandler: authenticationHandler,
       whitelistedExternalCalls: whitelistedExternalCalls,
       endpoints: endpoints,
       httpResponseHeaders: httpResponseHeaders,
