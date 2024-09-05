@@ -188,7 +188,7 @@ abstract class Session {
   Future<void> _initialize() async {
     var authKey = _authenticationKey;
     if (authKey != null) {
-      _authenticated = await server.authenticationHandler?.call(this, authKey);
+      _authenticated = await server.authenticationHandler(this, authKey);
     }
 
     _initialized = true;

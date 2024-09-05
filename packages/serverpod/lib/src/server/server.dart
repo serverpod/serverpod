@@ -51,7 +51,7 @@ class Server {
   final SerializationManager serializationManager;
 
   /// [AuthenticationHandler] responsible for authenticating users.
-  final AuthenticationHandler? authenticationHandler;
+  final AuthenticationHandler authenticationHandler;
 
   /// Caches used by the server.
   final Caches caches;
@@ -101,7 +101,7 @@ class Server {
     required DatabasePoolManager? databasePoolManager,
     required this.passwords,
     required this.runMode,
-    this.authenticationHandler,
+    required this.authenticationHandler,
     String? name,
     required this.caches,
     this.securityContext,
