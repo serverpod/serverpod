@@ -1,7 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io' as io;
-import 'dart:math';
 
 import 'package:http_parser/http_parser.dart';
 
@@ -254,6 +253,8 @@ abstract class Headers {
     CustomHeaders? custom,
   }) : custom = custom ?? CustomHeaders.empty();
 
+  factory Headers.defaultHeaders() => _HeadersImpl(contentLength: '0');
+
   factory Headers.fromHttpRequest(io.HttpRequest request) {
     var headers = request.headers;
 
@@ -383,7 +384,7 @@ abstract class Headers {
     CustomHeaders? custom,
   }) {
     return _HeadersImpl(
-      date: date ?? DateTime.now(),
+      date: date,
       expires: expires,
       ifModifiedSince: ifModifiedSince,
       from: from,
@@ -572,11 +573,108 @@ abstract class Headers {
     headers.ifModifiedSince = ifModifiedSince;
     headers.host = host;
     headers.port = port;
+
     if (from != null) headers.set(_fromHeader, from!);
+    if (location != null) headers.set(_locationHeader, location!);
+    if (xPoweredBy != null) headers.set(_xPoweredByHeader, xPoweredBy!);
+    if (accept != null) headers.set(_acceptHeader, accept!);
+    if (acceptCharset != null) {
+      headers.set(_acceptCharsetHeader, acceptCharset!);
+    }
+    if (acceptEncoding != null) {
+      headers.set(_acceptEncodingHeader, acceptEncoding!);
+    }
+    if (acceptLanguage != null) {
+      headers.set(_acceptLanguageHeader, acceptLanguage!);
+    }
+    if (acceptRanges != null) headers.set(_acceptRangesHeader, acceptRanges!);
+    if (accessControlAllowCredentials != null) {
+      headers.set(
+          _accessControlAllowCredentialsHeader, accessControlAllowCredentials!);
+    }
+    if (accessControlAllowOrigin != null) {
+      headers.set(_accessControlAllowOriginHeader, accessControlAllowOrigin!);
+    }
+    if (accessControlExposeHeaders != null) {
+      headers.set(
+          _accessControlExposeHeadersHeader, accessControlExposeHeaders!);
+    }
+    if (accessControlMaxAge != null) {
+      headers.set(_accessControlMaxAgeHeader, accessControlMaxAge!);
+    }
+    if (accessControlRequestHeaders != null) {
+      headers.set(
+          _accessControlRequestHeadersHeader, accessControlRequestHeaders!);
+    }
+    if (accessControlRequestMethod != null) {
+      headers.set(
+          _accessControlRequestMethodHeader, accessControlRequestMethod!);
+    }
+    if (age != null) headers.set(_ageHeader, age!);
+    if (allow != null) headers.set(_allowHeader, allow!);
+    if (authorization != null) {
+      headers.set(_authorizationHeader, authorization.toString());
+    }
+    if (cacheControl != null) headers.set(_cacheControlHeader, cacheControl!);
+    if (connection != null) headers.set(_connectionHeader, connection!);
+    if (contentEncoding != null) {
+      headers.set(_contentEncodingHeader, contentEncoding!);
+    }
+    if (contentLanguage != null) {
+      headers.set(_contentLanguageHeader, contentLanguage!);
+    }
+    if (contentLength != null) {
+      headers.set(_contentLengthHeader, contentLength!);
+    }
+    if (contentLocation != null) {
+      headers.set(_contentLocationHeader, contentLocation!);
+    }
+    if (contentMD5 != null) headers.set(_contentMD5Header, contentMD5!);
+    if (contentRange != null) headers.set(_contentRangeHeader, contentRange!);
+    if (etag != null) headers.set(_etagHeader, etag!);
+    if (expect != null) headers.set(_expectHeader, expect!);
+    if (ifMatch != null) headers.set(_ifMatchHeader, ifMatch!);
+    if (ifNoneMatch != null) headers.set(_ifNoneMatchHeader, ifNoneMatch!);
+    if (ifRange != null) headers.set(_ifRangeHeader, ifRange!);
+    if (ifUnmodifiedSince != null) {
+      headers.set(_ifUnmodifiedSinceHeader, ifUnmodifiedSince!);
+    }
+    if (lastModified != null) headers.set(_lastModifiedHeader, lastModified!);
+    if (maxForwards != null) headers.set(_maxForwardsHeader, maxForwards!);
+    if (mPragma != null) headers.set(_pragmaHeader, mPragma!);
+    if (proxyAuthenticate != null) {
+      headers.set(_proxyAuthenticateHeader, proxyAuthenticate!);
+    }
+    if (proxyAuthorization != null) {
+      headers.set(_proxyAuthorizationHeader, proxyAuthorization!);
+    }
+    if (range != null) headers.set(_rangeHeader, range!);
+    if (referer != null) headers.set(_refererHeader, referer!);
+    if (retryAfter != null) headers.set(_retryAfterHeader, retryAfter!);
+    if (server != null) headers.set(_serverHeader, server!);
+    if (te != null) headers.set(_teHeader, te!);
+    if (trailer != null) headers.set(_trailerHeader, trailer!);
+    if (transferEncoding != null) {
+      headers.set(_transferEncodingHeader, transferEncoding!);
+    }
+    if (upgrade != null) headers.set(_upgradeHeader, upgrade!);
+    if (userAgent != null) headers.set(_userAgentHeader, userAgent!);
+    if (vary != null) headers.set(_varyHeader, vary!);
+    if (via != null) headers.set(_viaHeader, via!);
+    if (warning != null) headers.set(_warningHeader, warning!);
+    if (wwwAuthenticate != null) {
+      headers.set(_wwwAuthenticateHeader, wwwAuthenticate!);
+    }
+    if (contentDisposition != null) {
+      headers.set(_contentDispositionHeader, contentDisposition!);
+    }
 
-    headers.set(_xPoweredByHeader, xPoweredBy ?? _defaultXPoweredByHeader);
+    /// Set custom headers
+    for (var entry in custom.entries) {
+      headers.set(entry.key, entry.value);
+    }
 
-    // Set the content type from the Body
+    /// Set the content type from the Body
     headers.contentType = io.ContentType(
       body.contentType.mimeType.primaryType,
       body.contentType.mimeType.subType,
@@ -643,6 +741,8 @@ abstract class Headers {
     List<String>? wwwAuthenticate,
     CustomHeaders? custom,
   });
+
+  Headers withHeaders(Headers? other);
 
   @override
   String toString() {
@@ -799,6 +899,74 @@ abstract class Headers {
         _contentDispositionHeader: contentDisposition!,
       ...custom,
     };
+  }
+
+  bool get isEmpty {
+    /// Check if all managed fields are null or empty
+    bool managedHeadersEmpty = date == null &&
+        expires == null &&
+        ifModifiedSince == null &&
+        from == null &&
+        host == null &&
+        port == null &&
+        location == null &&
+        xPoweredBy == null &&
+        (accept == null || accept!.isEmpty) &&
+        (acceptCharset == null || acceptCharset!.isEmpty) &&
+        (acceptEncoding == null || acceptEncoding!.isEmpty) &&
+        (acceptLanguage == null || acceptLanguage!.isEmpty) &&
+        (acceptRanges == null || acceptRanges!.isEmpty) &&
+        accessControlAllowCredentials == null &&
+        accessControlAllowOrigin == null &&
+        (accessControlExposeHeaders == null ||
+            accessControlExposeHeaders!.isEmpty) &&
+        accessControlMaxAge == null &&
+        (accessControlRequestHeaders == null ||
+            accessControlRequestHeaders!.isEmpty) &&
+        accessControlRequestMethod == null &&
+        age == null &&
+        (allow == null || allow!.isEmpty) &&
+        authorization == null &&
+        (cacheControl == null || cacheControl!.isEmpty) &&
+        (connection == null || connection!.isEmpty) &&
+        (contentEncoding == null || contentEncoding!.isEmpty) &&
+        (contentLanguage == null || contentLanguage!.isEmpty) &&
+        contentLength == null &&
+        contentLocation == null &&
+        contentMD5 == null &&
+        contentRange == null &&
+        contentType == null &&
+        etag == null &&
+        expect == null &&
+        (ifMatch == null || ifMatch!.isEmpty) &&
+        (ifNoneMatch == null || ifNoneMatch!.isEmpty) &&
+        ifRange == null &&
+        ifUnmodifiedSince == null &&
+        lastModified == null &&
+        maxForwards == null &&
+        mPragma == null &&
+        (proxyAuthenticate == null || proxyAuthenticate!.isEmpty) &&
+        proxyAuthorization == null &&
+        range == null &&
+        referer == null &&
+        retryAfter == null &&
+        server == null &&
+        (te == null || te!.isEmpty) &&
+        (trailer == null || trailer!.isEmpty) &&
+        (transferEncoding == null || transferEncoding!.isEmpty) &&
+        (upgrade == null || upgrade!.isEmpty) &&
+        userAgent == null &&
+        (vary == null || vary!.isEmpty) &&
+        (via == null || via!.isEmpty) &&
+        (warning == null || warning!.isEmpty) &&
+        (wwwAuthenticate == null || wwwAuthenticate!.isEmpty) &&
+        contentDisposition == null;
+
+    /// Check if custom headers are empty
+    bool customHeadersEmpty = custom.isEmpty;
+
+    /// Return true if both managed and custom headers are empty
+    return managedHeadersEmpty && customHeadersEmpty;
   }
 }
 
@@ -1017,6 +1185,72 @@ class _HeadersImpl extends Headers {
           ? wwwAuthenticate
           : this.wwwAuthenticate,
       custom: custom ?? this.custom,
+    );
+  }
+
+  @override
+  @override
+  Headers withHeaders(Headers? other) {
+    if (other == null) return this;
+
+    return copyWith(
+      date: other.date,
+      expires: other.expires,
+      ifModifiedSince: other.ifModifiedSince,
+      from: other.from,
+      host: other.host,
+      port: other.port,
+      location: other.location,
+      xPoweredBy: other.xPoweredBy,
+      accept: other.accept,
+      acceptCharset: other.acceptCharset,
+      acceptEncoding: other.acceptEncoding,
+      acceptLanguage: other.acceptLanguage,
+      acceptRanges: other.acceptRanges,
+      accessControlAllowCredentials: other.accessControlAllowCredentials,
+      accessControlAllowOrigin: other.accessControlAllowOrigin,
+      accessControlExposeHeaders: other.accessControlExposeHeaders,
+      accessControlMaxAge: other.accessControlMaxAge,
+      accessControlRequestHeaders: other.accessControlRequestHeaders,
+      accessControlRequestMethod: other.accessControlRequestMethod,
+      age: other.age,
+      allow: other.allow,
+      contentDisposition: other.contentDisposition,
+      authorization: other.authorization,
+      cacheControl: other.cacheControl,
+      connection: other.connection,
+      contentEncoding: other.contentEncoding,
+      contentLanguage: other.contentLanguage,
+      contentLength: other.contentLength,
+      contentLocation: other.contentLocation,
+      contentMD5: other.contentMD5,
+      contentRange: other.contentRange,
+      contentType: other.contentType,
+      etag: other.etag,
+      expect: other.expect,
+      ifMatch: other.ifMatch,
+      ifNoneMatch: other.ifNoneMatch,
+      ifRange: other.ifRange,
+      ifUnmodifiedSince: other.ifUnmodifiedSince,
+      lastModified: other.lastModified,
+      maxForwards: other.maxForwards,
+      mPragma: other.mPragma,
+      proxyAuthenticate: other.proxyAuthenticate,
+      proxyAuthorization: other.proxyAuthorization,
+      range: other.range,
+      referer: other.referer,
+      retryAfter: other.retryAfter,
+      server: other.server,
+      te: other.te,
+      trailer: other.trailer,
+      transferEncoding: other.transferEncoding,
+      upgrade: other.upgrade,
+      userAgent: other.userAgent,
+      vary: other.vary,
+      via: other.via,
+      warning: other.warning,
+      wwwAuthenticate: other.wwwAuthenticate,
+      custom: custom._set(other.custom),
     );
   }
 }

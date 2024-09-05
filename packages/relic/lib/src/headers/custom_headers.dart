@@ -7,10 +7,10 @@ class CustomHeaders extends UnmodifiableMapView<String, List<String>> {
   factory CustomHeaders.empty() => _emptyCustomHeaders;
 
   factory CustomHeaders(
-    Map<String, String> values,
+    Map<String, List<String>> values,
   ) {
     return CustomHeaders._(
-      values.entries.map((e) => MapEntry(e.key, [e.value])),
+      values.entries.map((e) => MapEntry(e.key, e.value)),
     );
   }
 
@@ -23,7 +23,7 @@ class CustomHeaders extends UnmodifiableMapView<String, List<String>> {
     var custom = <MapEntry<String, List<String>>>[];
 
     headers.forEach((name, values) {
-      // Skip headers that we support natively.
+      /// Skip headers that we support natively.
       if (excludedHeaders.contains(name.toLowerCase())) {
         return;
       }
@@ -38,9 +38,48 @@ class CustomHeaders extends UnmodifiableMapView<String, List<String>> {
   CustomHeaders._(
     Iterable<MapEntry<String, List<String>>> entries,
   ) : super(_toCaseInsensitiveMap(entries));
+
+  CustomHeaders _set(CustomHeaders other) {
+    if (other.isEmpty) return this;
+
+    final mergedEntries = <MapEntry<String, List<String>>>[];
+
+    /// Add all entries from the current instance
+    for (var entry in entries) {
+      mergedEntries.add(
+        MapEntry(
+          entry.key,
+          List<String>.from(entry.value),
+        ),
+      );
+    }
+
+    /// Override entries from the other instance
+    for (var entry in other.entries) {
+      var index = mergedEntries.indexWhere(
+        (e) => e.key.toLowerCase() == entry.key.toLowerCase(),
+      );
+
+      if (index != -1) {
+        /// If the key exists, override the value
+        mergedEntries[index] = MapEntry(
+          entry.key,
+          List<String>.from(entry.value),
+        );
+      } else {
+        /// If the key doesn't exist, add the new entry
+        mergedEntries.add(
+          MapEntry(
+            entry.key,
+            List<String>.from(entry.value),
+          ),
+        );
+      }
+    }
+
+    return CustomHeaders._(mergedEntries);
+  }
 }
-
-
 
 CaseInsensitiveMap<List<String>> _toCaseInsensitiveMap(
   Iterable<MapEntry<String, List<String>>> entries,

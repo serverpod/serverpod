@@ -12,19 +12,19 @@ void main() {
     late Handler handler;
     setUp(() {
       handler = Cascade().add((request) {
-        if (request.headers.custom.singleValues['one'] == 'false') {
+        if (request.headers.custom['one']?.first == 'false') {
           return Response.notFound(body: Body.fromString('handler 1'));
         } else {
           return Response.ok(body: Body.fromString('handler 1'));
         }
       }).add((request) {
-        if (request.headers.custom.singleValues['two'] == 'false') {
+        if (request.headers.custom['two']?.first == 'false') {
           return Response.notFound(body: Body.fromString('handler 2'));
         } else {
           return Response.ok(body: Body.fromString('handler 2'));
         }
       }).add((request) {
-        if (request.headers.custom.singleValues['three'] == 'false') {
+        if (request.headers.custom['three']?.first == 'false') {
           return Response.notFound(body: Body.fromString('handler 3'));
         } else {
           return Response.ok(body: Body.fromString('handler 3'));
@@ -46,7 +46,9 @@ void main() {
           'GET',
           localhostUri,
           headers: Headers.response(
-            custom: CustomHeaders({'one': 'false'}),
+            custom: CustomHeaders({
+              'one': ['false']
+            }),
           ),
         ),
       );
@@ -62,7 +64,10 @@ void main() {
           'GET',
           localhostUri,
           headers: Headers.response(
-            custom: CustomHeaders({'one': 'false', 'two': 'false'}),
+            custom: CustomHeaders({
+              'one': ['false'],
+              'two': ['false']
+            }),
           ),
         ),
       );
@@ -79,7 +84,11 @@ void main() {
           localhostUri,
           headers: Headers.response(
             custom: CustomHeaders(
-              {'one': 'false', 'two': 'false', 'three': 'false'},
+              {
+                'one': ['false'],
+                'two': ['false'],
+                'three': ['false']
+              },
             ),
           ),
         ),

@@ -282,7 +282,7 @@ class Response extends Message {
   /// [body] is the response body. It may be either a [String], a [List<int>], a
   /// [Stream<List<int>>], or `<int>[]` (empty list) to indicate no body.
   @override
-  Response change({
+  Response copyWith({
     Headers? headers,
     Map<String, Object?>? context,
     Body? body,
@@ -292,7 +292,7 @@ class Response extends Message {
     return Response(
       statusCode,
       body: body ?? this.body,
-      headers: headers ?? this.headers,
+      headers: this.headers.withHeaders(headers),
       context: newContext,
     );
   }
@@ -314,45 +314,6 @@ class Response extends Message {
     httpResponse.headers.chunkedTransferEncoding = false;
 
     headers.applyHeaders(httpResponse, body);
-
-    // TODO: Support chunked transfer encoding
-    // var coding = headers['transfer-encoding'];
-    // if (coding != null && !equalsIgnoreAsciiCase(coding, 'identity')) {
-    //   // If the response is already in a chunked encoding, de-chunk it because
-    //   // otherwise `dart:io` will try to add another layer of chunking.
-    //   //
-    //   // TODO(nweiz): Do this more cleanly when sdk#27886 is fixed.
-    //   var body = Body.fromDataStream(
-    //     chunkedCoding.encoder
-    //         .bind(read())
-    //         .map((list) => Uint8List.fromList(list)),
-    //   );
-
-    //   // TODO: Fix
-    //   // ignore: unused_local_variable
-    //   var response = change(
-    //     body: body,
-    //   );
-    //   httpResponse.headers.set(HttpHeaders.transferEncodingHeader, 'chunked');
-    // } else if (statusCode >= 200 &&
-    //     statusCode != 204 &&
-    //     statusCode != 304 &&
-    //     contentLength == null &&
-    //     mimeType != 'multipart/byteranges') {
-    //   // If the response isn't chunked yet and there's no other way to tell its
-    //   // length, enable `dart:io`'s chunked encoding.
-    //   httpResponse.headers.set(HttpHeaders.transferEncodingHeader, 'chunked');
-    // }
-
-    // if (poweredByHeader != null &&
-    //     !headers.containsKey(_xPoweredByResponseHeader)) {
-    //   httpResponse.headers.set(_xPoweredByResponseHeader, poweredByHeader);
-    // }
-
-    // if (!headers.containsKey(HttpHeaders.dateHeader)) {
-    //   httpResponse.headers.date = DateTime.now().toUtc();
-    // }
-
     return httpResponse.addStream(read()).then((_) => httpResponse.close());
   }
 }

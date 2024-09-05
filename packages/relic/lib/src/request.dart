@@ -22,7 +22,7 @@ class Request extends Message {
   /// in preference to [requestedUri]. This allows handlers to do the right
   /// thing when they're mounted anywhere in the application. Routers should be
   /// sure to update this when dispatching to a nested handler, using the
-  /// `path` parameter to [change].
+  /// `path` parameter to [copyWith].
   ///
   /// [url]'s path is always relative. It may be empty, if [requestedUri] ends
   /// at this handler. [url] will always have the same query parameters as
@@ -38,7 +38,7 @@ class Request extends Message {
   ///
   /// This allows a handler to know its location within the URL-space of an
   /// application. Routers should be sure to update this when dispatching to a
-  /// nested handler, using the `path` parameter to [change].
+  /// nested handler, using the `path` parameter to [copyWith].
   ///
   /// [handlerPath] is always a root-relative URL path; that is, it always
   /// starts with `/`. It will also end with `/` whenever [url]'s path is
@@ -140,7 +140,6 @@ class Request extends Message {
     String? handlerPath,
     Uri? url,
     Body? body,
-    Encoding? encoding,
     Map<String, Object>? context,
     void Function(void Function(StreamChannel<List<int>>))? onHijack,
   }) : this._(
@@ -152,7 +151,6 @@ class Request extends Message {
           url: url,
           handlerPath: handlerPath,
           body: body,
-          encoding: encoding,
           context: context,
           onHijack: onHijack == null ? null : _OnHijack(onHijack),
         );
@@ -179,7 +177,7 @@ class Request extends Message {
   /// This constructor has the same signature as [Request.new] except that
   /// accepts [onHijack] as [_OnHijack].
   ///
-  /// Any [Request] created by calling [change] will pass [_onHijack] from the
+  /// Any [Request] created by calling [copyWith] will pass [_onHijack] from the
   /// source [Request] to ensure that [hijack] can only be called once, even
   /// from a changed [Request].
   Request._(
@@ -191,7 +189,6 @@ class Request extends Message {
     String? handlerPath,
     Uri? url,
     Body? body,
-    Encoding? encoding,
     Map<String, Object>? context,
     _OnHijack? onHijack,
   })  : protocolVersion = protocolVersion ?? '1.1',
@@ -271,7 +268,7 @@ class Request extends Message {
   ///     print(request.handlerPath); // => /static/dir/
   ///     print(request.url);        // => file.html
   @override
-  Request change({
+  Request copyWith({
     Headers? headers,
     Map<String, Object?>? context,
     String? path,
@@ -281,7 +278,6 @@ class Request extends Message {
     final newContext = updateMap<String, Object>(this.context, context);
 
     body ??= this.body;
-    headers ??= this.headers;
 
     var handlerPath = this.handlerPath;
     if (path != null) handlerPath += path;
@@ -290,7 +286,7 @@ class Request extends Message {
       method,
       requestedUri,
       connectionInfo,
-      headers!,
+      this.headers.withHeaders(headers),
       protocolVersion: protocolVersion,
       handlerPath: handlerPath,
       body: body,

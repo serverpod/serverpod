@@ -86,9 +86,10 @@ class RouteStaticDirectory extends Route {
         headers: Headers.response(
           custom: CustomHeaders(
             {
-              'Cache-Control': 'max-age=31536000',
-              'Content-Type':
-                  contentType?.mimeType ?? 'application/octet-stream',
+              'Cache-Control': ['max-age=31536000'],
+              'Content-Type': [
+                contentType?.mimeType ?? 'application/octet-stream'
+              ],
             },
           ),
         ),

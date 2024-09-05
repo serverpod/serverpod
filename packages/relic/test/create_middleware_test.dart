@@ -33,7 +33,7 @@ void main() {
           .addHandler(syncHandler);
 
       final response = await makeSimpleRequest(handler);
-      expect(response.headers.custom.singleValues['from'], isNull);
+      expect(response.headers.custom['from'], isNull);
     });
 
     test('async null response forwards to inner handler', () async {
