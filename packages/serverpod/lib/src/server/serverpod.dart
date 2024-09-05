@@ -357,11 +357,7 @@ class Serverpod {
       redisController,
     );
 
-    var authHandler = authenticationHandler;
-
-    if (Features.enableDefaultAuthenticationHandler) {
-      authHandler ??= defaultAuthenticationHandler;
-    }
+    var authHandler = authenticationHandler ?? defaultAuthenticationHandler;
 
     server = Server(
       serverpod: this,
