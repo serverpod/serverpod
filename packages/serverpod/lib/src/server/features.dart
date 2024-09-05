@@ -39,4 +39,7 @@ class Features {
 
   /// Returns true if the web server is enabled.
   static bool get enablePersistentLogging => enableDatabase;
+
+  /// Returns true if the web server is enabled.
+  static bool get enableDefaultAuthenticationHandler => enableDatabase;
 }
