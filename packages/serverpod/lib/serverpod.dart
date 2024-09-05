@@ -13,8 +13,7 @@ export 'package:serverpod/relic.dart';
 export 'package:serverpod/database.dart';
 
 // Serialization and logging
-export 'package:serverpod_serialization/serverpod_serialization.dart'
-    hide CloneByteData;
+export 'package:serverpod_serialization/serverpod_serialization.dart';
 export 'package:serverpod/src/util/http_request_extension.dart';
 export 'package:serverpod/src/generated/log_level.dart';
 
