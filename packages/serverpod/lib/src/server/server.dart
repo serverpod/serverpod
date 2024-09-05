@@ -51,7 +51,7 @@ class Server {
   final SerializationManager serializationManager;
 
   /// [AuthenticationHandler] responsible for authenticating users.
-  final AuthenticationHandler? authenticationHandler;
+  final AuthenticationHandler authenticationHandler;
 
   /// Caches used by the server.
   final Caches caches;
@@ -101,7 +101,7 @@ class Server {
     required DatabasePoolManager? databasePoolManager,
     required this.passwords,
     required this.runMode,
-    this.authenticationHandler,
+    required this.authenticationHandler,
     String? name,
     required this.caches,
     this.securityContext,
@@ -272,24 +272,6 @@ class Server {
       await request.response.close();
       return;
     }
-
-    // TODO: Limit check external calls
-//    bool checkLength = true;
-//    if (whitelistedExternalCalls != null && whitelistedExternalCalls.contains(uri.path))
-//      checkLength = false;
-//
-//    if (checkLength) {
-//      // Check size of the request
-//      int contentLength = request.contentLength;
-//      if (contentLength == -1 ||
-//          contentLength > serverpod.config.maxRequestSize) {
-//        if (serverpod.runtimeSettings.logMalformedCalls)
-//          logDebug('Malformed call, invalid content length ($contentLength): $uri');
-//        request.response.statusCode = HttpStatus.badRequest;
-//        request.response.close();
-//        return;
-//      }
-//    }
 
     String? body;
     if (readBody) {

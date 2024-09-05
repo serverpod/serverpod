@@ -186,16 +186,9 @@ abstract class Session {
   bool _initialized = false;
 
   Future<void> _initialize() async {
-    if (server.authenticationHandler == null) {
-      stderr.write(
-        'No authentication handler is set, authentication is disabled, '
-        'all requests to protected endpoints will be rejected.',
-      );
-    }
-
-    if (server.authenticationHandler != null && _authenticationKey != null) {
-      _authenticated =
-          await server.authenticationHandler!(this, _authenticationKey!);
+    var authKey = _authenticationKey;
+    if (authKey != null) {
+      _authenticated = await server.authenticationHandler(this, authKey);
     }
 
     _initialized = true;
