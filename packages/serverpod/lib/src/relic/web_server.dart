@@ -183,7 +183,10 @@ class WebServer {
   }
 
   Future<Response> _handleRouteCall(
-      Route route, Session session, Request request) async {
+    Route route,
+    Session session,
+    Request request,
+  ) async {
     try {
       return route.handleCall(session, request);
     } catch (e) {
@@ -305,25 +308,6 @@ abstract class WidgetRoute extends Route {
   @override
   Future<Response> handleCall(Session session, Request request) async {
     var widget = await build(session, request);
-
-    if (widget is WidgetJson) {
-      return Response.ok(
-        body: Body.fromString(
-          widget.toString(),
-          contentType: BodyType.json,
-        ),
-      );
-    } else if (widget is WidgetRedirectPermanently) {
-      return Response.movedPermanently(widget.url);
-    } else if (widget is WidgetRedirectTemporarily) {
-      return Response.seeOther(widget.url);
-    } else {
-      return Response.ok(
-        body: Body.fromString(
-          widget.toString(),
-          contentType: BodyType.html,
-        ),
-      );
-    }
+    return widget.handleResponse(session, request);
   }
 }

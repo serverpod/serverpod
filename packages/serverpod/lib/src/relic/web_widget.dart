@@ -5,7 +5,11 @@ import 'dart:convert';
 /// The base class for all web widgets. Override this class to create a custom
 /// widget type, or use one of the default types which covers most common use
 /// cases.
-abstract class AbstractWidget {}
+abstract class AbstractWidget {
+  /// Handles the HTTP response for the widget. Subclasses should override this
+  /// to return the appropriate [Response] based on the [session] and [request].
+  Future<Response> handleResponse(Session session, Request request);
+}
 
 /// A widget based on a HTML template. The [name] of the template should
 /// correspond to a template file in your server's web/templates directory.
@@ -35,8 +39,16 @@ class Widget extends AbstractWidget {
   }
 
   @override
-  String toString() {
-    return template.renderString(values);
+  Future<Response> handleResponse(
+    Session session,
+    Request request,
+  ) async {
+    return Response.ok(
+      body: Body.fromString(
+        template.renderString(values),
+        contentType: BodyType.xml,
+      ),
+    );
   }
 }
 
@@ -49,12 +61,20 @@ class WidgetList extends AbstractWidget {
   WidgetList({required this.widgets});
 
   @override
-  String toString() {
+  Future<Response> handleResponse(
+    Session session,
+    Request request,
+  ) async {
     var rendered = <String>[];
     for (var widget in widgets) {
       rendered.add(widget.toString());
     }
-    return rendered.join('\n');
+    return Response.ok(
+      body: Body.fromString(
+        rendered.join('\n'),
+        contentType: BodyType.xml,
+      ),
+    );
   }
 }
 
@@ -68,8 +88,16 @@ class WidgetJson extends AbstractWidget {
   WidgetJson({required this.object});
 
   @override
-  String toString() {
-    return SerializationManager.encode(object);
+  Future<Response> handleResponse(
+    Session session,
+    Request request,
+  ) async {
+    return Response.ok(
+      body: Body.fromString(
+        SerializationManager.encode(object),
+        contentType: BodyType.json,
+      ),
+    );
   }
 }
 
@@ -82,8 +110,11 @@ class WidgetRedirectPermanently extends AbstractWidget {
   WidgetRedirectPermanently({required this.url});
 
   @override
-  String toString() {
-    return '';
+  Future<Response> handleResponse(
+    Session session,
+    Request request,
+  ) async {
+    return Response.movedPermanently(url);
   }
 }
 
@@ -96,7 +127,10 @@ class WidgetRedirectTemporarily extends AbstractWidget {
   WidgetRedirectTemporarily({required this.url});
 
   @override
-  String toString() {
-    return '';
+  Future<Response> handleResponse(
+    Session session,
+    Request request,
+  ) async {
+    return Response.seeOther(url);
   }
 }
