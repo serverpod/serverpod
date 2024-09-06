@@ -8,7 +8,7 @@ import 'dart:io';
 import 'body.dart';
 import 'headers.dart';
 import 'message.dart';
-import 'util.dart';
+import 'util/util.dart';
 
 /// The response returned by a [Handler].
 class Response extends Message {

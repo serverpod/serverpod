@@ -27,7 +27,7 @@ import 'dart:io' as io;
 import 'package:stack_trace/stack_trace.dart';
 
 import 'relic.dart';
-import 'src/util.dart';
+import 'src/util/util.dart';
 
 export 'src/io_server.dart' show IOServer;
 

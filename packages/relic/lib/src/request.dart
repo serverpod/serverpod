@@ -2,7 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:convert';
 import 'dart:io' as io;
 
 import 'body.dart';
@@ -11,7 +10,7 @@ import 'package:stream_channel/stream_channel.dart';
 import 'hijack_exception.dart';
 import 'message.dart';
 import 'headers.dart';
-import 'util.dart';
+import 'util/util.dart';
 
 /// An HTTP request to be processed by a Shelf application.
 class Request extends Message {
