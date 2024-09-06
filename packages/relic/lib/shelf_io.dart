@@ -112,17 +112,26 @@ Future<void> handleRequest(
       // TODO: use a reduced log level when using package:logging
       _logTopLevelError('Error parsing request.\n$error', stackTrace);
       final response = Response.badRequest();
-      await response.writeHttpResponse(request.response, poweredByHeader);
+      await response.writeHttpResponse(
+        request.response,
+        poweredByHeader: poweredByHeader,
+      );
     } else {
       _logTopLevelError('Error parsing request.\n$error', stackTrace);
       final response = Response.internalServerError();
-      await response.writeHttpResponse(request.response, poweredByHeader);
+      await response.writeHttpResponse(
+        request.response,
+        poweredByHeader: poweredByHeader,
+      );
     }
     return;
   } catch (error, stackTrace) {
     _logTopLevelError('Error parsing request.\n$error', stackTrace);
     final response = Response.internalServerError();
-    await response.writeHttpResponse(request.response, poweredByHeader);
+    await response.writeHttpResponse(
+      request.response,
+      poweredByHeader: poweredByHeader,
+    );
     return;
   }
 
@@ -156,12 +165,15 @@ Future<void> handleRequest(
       StackTrace.current,
     ).writeHttpResponse(
       request.response,
-      poweredByHeader,
+      poweredByHeader: poweredByHeader,
     );
     return;
   }
   if (shelfRequest.canHijack) {
-    await response.writeHttpResponse(request.response, poweredByHeader);
+    await response.writeHttpResponse(
+      request.response,
+      poweredByHeader: poweredByHeader,
+    );
     return;
   }
 

@@ -1,4 +1,3 @@
-
 part of '../web_server.dart';
 
 /// Defines HTTP call methods for routes.
@@ -68,17 +67,23 @@ abstract class Route {
   }
 
   static Future<String?> _readBody(HttpRequest request) async {
-    // TODO: Find more efficient solution?
+
+    var builder = BytesBuilder();
     var len = 0;
-    var data = <int>[];
+
     await for (var segment in request) {
       len += segment.length;
       if (len > 10240) {
+        /// Limit exceeded
         return null;
       }
-      data += segment;
+      builder.add(segment);
     }
-    return const Utf8Decoder().convert(data);
+
+    /// Converts the accumulated bytes
+    return const Utf8Decoder().convert(
+      builder.takeBytes(),
+    );
   }
 }
 

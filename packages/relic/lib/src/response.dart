@@ -298,9 +298,9 @@ class Response extends Message {
   }
 
   Future<void> writeHttpResponse(
-    HttpResponse httpResponse,
+    HttpResponse httpResponse, {
     String? poweredByHeader,
-  ) {
+  }) async {
     if (context.containsKey('shelf.io.buffer_output')) {
       httpResponse.bufferOutput = context['shelf.io.buffer_output'] as bool;
     }
@@ -314,6 +314,7 @@ class Response extends Message {
     httpResponse.headers.chunkedTransferEncoding = false;
 
     headers.applyHeaders(httpResponse, body);
-    return httpResponse.addStream(read()).then((_) => httpResponse.close());
+    await httpResponse.addStream(read());
+    await httpResponse.close();
   }
 }

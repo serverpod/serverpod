@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
 import 'package:mustache_template/mustache.dart';
-import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/relic/util/log_utils.dart';
 
 part './routes/routes.dart';
 
@@ -75,40 +77,30 @@ class WebServer {
   /// is not found.
   Template? getTemplate(String name) => _templates[name];
 
-  /// Adds a [Route] to the server, together with a path that defines how
-  /// calls are routed.
-  void addRoute(Route route, String matchPath) {
-    route._matchPath = matchPath;
-    routes.add(route);
-  }
-
   /// Starts the webserver.
   /// Returns true if the webserver was started successfully.
   Future<bool> start() async {
-    var templatesDirectory = Directory(path.joinAll(['web', 'templates']));
-    await _templates.loadAll(templatesDirectory);
-    if (_templates.isEmpty) {
-      logDebug(
-          'No webserver relic templates found, template directory path: "${templatesDirectory.path}".');
-    }
+    await _templates.loadAll();
 
     try {
-      _httpServer = await (securityContext == null
-          ? HttpServer.bind(
-              address ?? InternetAddress.anyIPv6,
-              _port,
-            )
-          : HttpServer.bindSecure(
-              address ?? InternetAddress.anyIPv6,
-              _port,
-              securityContext!,
-            ));
+      _httpServer = await switch (securityContext != null) {
+        true => HttpServer.bindSecure(
+            address ?? InternetAddress.anyIPv6,
+            _port,
+            securityContext!,
+          ),
+        false => HttpServer.bind(
+            address ?? InternetAddress.anyIPv6,
+            _port,
+          ),
+      };
     } catch (e) {
+      var now = DateTime.now().toUtc();
       stderr.writeln(
-        '${DateTime.now().toUtc()} ERROR: Failed to bind socket, Webserver '
+        '$now ERROR: Failed to bind socket, Webserver '
         'port $_port may already be in use.',
       );
-      stderr.writeln('${DateTime.now().toUtc()} ERROR: $e');
+      stderr.writeln('$now ERROR: $e');
       return false;
     }
     httpServer.autoCompress = true;
@@ -123,6 +115,20 @@ class WebServer {
     );
 
     return true;
+  }
+
+  /// Stops the webserver.
+  Future<void> stop() async {
+    await _httpServer?.close();
+    _httpServer = null;
+    _running = false;
+  }
+
+  /// Adds a [Route] to the server, together with a path that defines how
+  /// calls are routed.
+  void addRoute(Route route, String matchPath) {
+    route._matchPath = matchPath;
+    routes.add(route);
   }
 
   void _start() async {
@@ -156,47 +162,44 @@ class WebServer {
       return;
     }
 
-    print('Handle: $uri');
+    // Check routes
+    var route = routes.firstWhereOrNull(
+      (route) => route._isMatch(uri.path),
+    );
 
-    String? authenticationKey;
-    for (var cookie in request.cookies) {
-      if (cookie.name == 'auth') {
-        authenticationKey = cookie.value;
-      }
+    if (route == null) {
+      // No matching route found
+      await _handleNotFound(request, uri);
+      return;
     }
 
-    var queryParameters = request.uri.queryParameters;
-    authenticationKey ??= queryParameters['auth'];
+    logDebug('Handle: $uri');
 
     WebCallSession session = WebCallSession(
       server: serverpod.server,
       endpoint: uri.path,
-      authenticationKey: authenticationKey,
+      authenticationKey: _findAuthenticationKey(request),
     );
 
-    // Check routes
-    for (var route in routes) {
-      if (route._isMatch(uri.path)) {
-        var response = await _handleRouteCall(
-          route,
-          session,
-          Request.fromHttpRequest(request),
-        );
-        if (response.statusCode == HttpStatus.notFound) {
-          continue;
-        }
-        print('Writing $uri');
-        await response.writeHttpResponse(request.response, 'serverpod-relic');
-        print('Finished $uri');
-        await session.close();
-        return;
-      }
+    var response = await _handleRouteCall(
+      route,
+      session,
+      Request.fromHttpRequest(request),
+    );
+
+    // If the route returned a "not found" response
+    if (response.statusCode == HttpStatus.notFound) {
+      await _handleNotFound(request, uri);
+      await session.close();
+      return;
     }
 
-    print('Not found. $uri');
-    // No matching patch found
-    request.response.statusCode = HttpStatus.notFound;
-    await request.response.close();
+    logDebug('Writing $uri');
+    await response.writeHttpResponse(
+      request.response,
+      poweredByHeader: 'serverpod-relic',
+    );
+    logDebug('Finished $uri');
     await session.close();
   }
 
@@ -206,31 +209,28 @@ class WebServer {
     Request request,
   ) async {
     try {
-      return route.handleCall(session, request);
+      return await route.handleCall(session, request);
     } catch (e) {
       return Response.internalServerError();
     }
   }
 
-  /// Logs an error to stderr.
-  void logError(var e, {StackTrace? stackTrace}) {
-    stderr.writeln('ERROR: $e');
-    if (stackTrace != null) {
-      stderr.writeln('$stackTrace');
-    }
+  /// Handles "not found" responses by logging and closing the request
+  Future<void> _handleNotFound(HttpRequest request, Uri uri) async {
+    logError('Route not found: $uri');
+    request.response.statusCode = HttpStatus.notFound;
+    await request.response.close();
   }
 
-  /// Logs a message to stdout.
-  void logDebug(String msg) {
-    stdout.writeln(msg);
-  }
-
-  /// Stops the webserver.
-  Future<void> stop() async {
-    var localHttpServer = _httpServer;
-    if (localHttpServer != null) {
-      await localHttpServer.close();
+  /// Extracts the authentication key from either cookies or query parameters
+  String? _findAuthenticationKey(HttpRequest request) {
+    // Check for the authentication key in cookies
+    for (var cookie in request.cookies) {
+      if (cookie.name == 'auth') {
+        return cookie.value;
+      }
     }
-    _running = false;
+
+    return request.uri.queryParameters['auth'];
   }
 }

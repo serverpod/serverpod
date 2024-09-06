@@ -72,8 +72,6 @@ abstract class Headers {
   static const _contentDispositionHeader = "content-disposition";
   static const _xPoweredByHeader = 'X-Powered-By';
 
-  static const _defaultXPoweredByHeader = 'Serverpod Relic';
-
   // Define header properties
   final DateTime? date;
   final DateTime? expires;
@@ -564,7 +562,11 @@ abstract class Headers {
     );
   }
 
-  void applyHeaders(io.HttpResponse response, Body body) {
+  void applyHeaders(
+    io.HttpResponse response,
+    Body body, {
+    String? poweredByHeader,
+  }) {
     var headers = response.headers;
     headers.clear();
 
@@ -576,7 +578,12 @@ abstract class Headers {
 
     if (from != null) headers.set(_fromHeader, from!);
     if (location != null) headers.set(_locationHeader, location!);
-    if (xPoweredBy != null) headers.set(_xPoweredByHeader, xPoweredBy!);
+
+    poweredByHeader ??= xPoweredBy;
+    if (poweredByHeader != null) {
+      headers.set(_xPoweredByHeader, poweredByHeader);
+    }
+
     if (accept != null) headers.set(_acceptHeader, accept!);
     if (acceptCharset != null) {
       headers.set(_acceptCharsetHeader, acceptCharset!);
