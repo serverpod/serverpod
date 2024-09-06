@@ -2,11 +2,16 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:mustache_template/mustache.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
 
+part './routes/routes.dart';
+
 /// The Serverpod webserver.
 class WebServer {
+  static WebServer? _currentInstance;
+
   /// Reference to the [Serverpod] this webserver is associated with.
   final Serverpod serverpod;
 
@@ -28,6 +33,9 @@ class WebServer {
   /// A list of [Route] which defines how to handle path passed to the server.
   final List<Route> routes = <Route>[];
 
+  /// Global access to all templates loaded when starting the webserver.
+  final Templates _templates = Templates();
+
   /// Creates a new webserver. If a security context is provided an HTTPS server
   /// will be started.
   WebServer({
@@ -35,6 +43,8 @@ class WebServer {
     this.securityContext,
     this.address,
   }) : serverId = serverpod.serverId {
+    _currentInstance = this;
+
     var config = serverpod.config.webServer;
 
     if (config == null) {
@@ -47,6 +57,10 @@ class WebServer {
     _port = config.port;
   }
 
+  /// Gets the current instance of the [WebServer]. Returns `null` if no instance
+  /// is running.
+  static WebServer? get currentInstance => _currentInstance;
+
   bool _running = false;
 
   /// Returns true if the webserver is currently running.
@@ -56,6 +70,10 @@ class WebServer {
 
   /// Returns the [HttpServer] this webserver is using to handle connections.
   HttpServer get httpServer => _httpServer!;
+
+  /// Retrieves a loaded template by its [name]. Returns `null` if the template
+  /// is not found.
+  Template? getTemplate(String name) => _templates[name];
 
   /// Adds a [Route] to the server, together with a path that defines how
   /// calls are routed.
@@ -68,8 +86,8 @@ class WebServer {
   /// Returns true if the webserver was started successfully.
   Future<bool> start() async {
     var templatesDirectory = Directory(path.joinAll(['web', 'templates']));
-    await templates.loadAll(templatesDirectory);
-    if (templates.isEmpty) {
+    await _templates.loadAll(templatesDirectory);
+    if (_templates.isEmpty) {
       logDebug(
           'No webserver relic templates found, template directory path: "${templatesDirectory.path}".');
     }
@@ -214,100 +232,5 @@ class WebServer {
       await localHttpServer.close();
     }
     _running = false;
-  }
-}
-
-/// Defines HTTP call methods for routes.
-enum RouteMethod {
-  /// HTTP get.
-  get,
-
-  /// HTTP post.
-  post,
-}
-
-/// A [Route] defines a destination in Serverpod's web server. It will handle
-/// a call and generate an appropriate response by manipulating the
-/// [HttpRequest] object. You override [Route], or more likely it's subclass
-/// [WidgetRoute] to create your own custom routes in your server.
-abstract class Route {
-  /// The method this route will respond to, i.e. HTTP get or post.
-  final RouteMethod method;
-  String? _matchPath;
-
-  /// Creates a new [Route].
-  Route({this.method = RouteMethod.get});
-
-  /// Handles a call to this route. This method is responsible for setting
-  /// a correct response headers, status code, and write the response body to
-  /// `request.response`.
-  Future<Response> handleCall(Session session, Request request);
-
-  bool _isMatch(String path) {
-    if (_matchPath == null) {
-      return false;
-    }
-    if (_matchPath!.endsWith('*')) {
-      var start = _matchPath!.substring(0, _matchPath!.length - 1);
-      return path.startsWith(start);
-    } else {
-      return _matchPath == path;
-    }
-  }
-
-  // TODO: May want to create another abstraction layer here, to handle other
-  // types of responses too. Or at least clarify the naming of the method.
-
-  /// Returns the body of the request, assuming it is standard URL encoded form
-  /// post request.
-  static Future<Map<String, String>> getBody(HttpRequest request) async {
-    var body = await _readBody(request);
-
-    var params = <String, String>{};
-
-    if (body != null) {
-      var encodedParams = body.split('&');
-      for (var encodedParam in encodedParams) {
-        var comps = encodedParam.split('=');
-        if (comps.length != 2) {
-          continue;
-        }
-
-        var name = Uri.decodeQueryComponent(comps[0]);
-        var value = Uri.decodeQueryComponent(comps[1]);
-
-        params[name] = value;
-      }
-    }
-
-    return params;
-  }
-
-  static Future<String?> _readBody(HttpRequest request) async {
-    // TODO: Find more efficient solution?
-    var len = 0;
-    var data = <int>[];
-    await for (var segment in request) {
-      len += segment.length;
-      if (len > 10240) {
-        return null;
-      }
-      data += segment;
-    }
-    return const Utf8Decoder().convert(data);
-  }
-}
-
-/// A [WidgetRoute] is the most convenient way to create routes in your server.
-/// Override the [build] method and return an appropriate [Widget].
-abstract class WidgetRoute extends Route {
-  /// Override this method to build your web [Widget] from the current [session]
-  /// and [request].
-  Future<AbstractWidget> build(Session session, Request request);
-
-  @override
-  Future<Response> handleCall(Session session, Request request) async {
-    var widget = await build(session, request);
-    return widget.handleResponse(session, request);
   }
 }

@@ -3,8 +3,7 @@ import 'dart:io';
 import 'package:mustache_template/mustache.dart';
 import 'package:path/path.dart';
 
-/// Global access to all templates loaded when starting the webserver.
-final Templates templates = Templates();
+
 
 /// Loads and caches templates.
 class Templates {

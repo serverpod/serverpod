@@ -8,6 +8,7 @@ void main() {
   test(
       'Given missing templates folder when loading templates then no templates are loaded',
       () async {
+    Templates templates = Templates();
     var uniqueUuid = const Uuid().v4();
     var nonExistingDirectory =
         Directory(path.joinAll([uniqueUuid, 'non-existing-directory']));

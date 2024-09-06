@@ -6,6 +6,19 @@ import 'dart:convert';
 /// widget type, or use one of the default types which covers most common use
 /// cases.
 abstract class AbstractWidget {
+  late final WebServer _webServer;
+
+  /// Creates an instance of [AbstractWidget] and ensures a running [WebServer]
+  /// is available. Throws an assertion error if no web server is running.
+  AbstractWidget() {
+    var webServer = WebServer.currentInstance;
+    assert(
+      webServer != null,
+      'Failed to initialize widget: no active WebServer instance.',
+    );
+    _webServer = webServer!;
+  }
+
   /// Handles the HTTP response for the widget. Subclasses should override this
   /// to return the appropriate [Response] based on the [session] and [request].
   Future<Response> handleResponse(Session session, Request request);
@@ -33,9 +46,9 @@ class Widget extends AbstractWidget {
   Widget({
     required this.name,
   }) {
-    assert(templates[name] != null,
-        'Template $name.html missing for $runtimeType');
-    template = templates[name]!;
+    var template = _webServer.getTemplate(name);
+    assert(template != null, 'Template $name.html missing for $runtimeType');
+    template = template;
   }
 
   @override
@@ -132,5 +145,28 @@ class WidgetRedirectTemporarily extends AbstractWidget {
     Request request,
   ) async {
     return Response.seeOther(url);
+  }
+}
+
+/// A widget that renders HTML content. The provided [html] will be returned
+/// in the HTTP response as HTML.
+class HtmlWidget extends AbstractWidget {
+  /// The HTML content to be rendered.
+  final String html;
+
+  /// Creates a new [HtmlWidget] with the provided [html].
+  HtmlWidget({required this.html});
+
+  @override
+  Future<Response> handleResponse(
+    Session session,
+    Request request,
+  ) async {
+    return Response.ok(
+      body: Body.fromString(
+        html,
+        contentType: BodyType.html,
+      ),
+    );
   }
 }
