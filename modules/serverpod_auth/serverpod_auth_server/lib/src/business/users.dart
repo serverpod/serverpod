@@ -101,6 +101,23 @@ class Users {
     return userInfo;
   }
 
+  /// Updates a users name, returns null if unsuccessful.
+  static Future<UserInfo?> changeFullName(
+      Session session, int userId, String newFullName) async {
+    var userInfo = await findUserByUserId(session, userId, useCache: false);
+    if (userInfo == null) return null;
+
+    userInfo.fullName = newFullName;
+    await UserInfo.db.updateRow(session, userInfo);
+
+    if (AuthConfig.current.onUserUpdated != null) {
+      await AuthConfig.current.onUserUpdated!(session, userInfo);
+    }
+
+    await invalidateCacheForUser(session, userId);
+    return userInfo;
+  }
+
   /// Updates the scopes a user can access.
   static Future<UserInfo?> updateUserScopes(
     Session session,
@@ -193,6 +210,17 @@ extension UserInfoMethods on UserInfo {
     if (id == null) return false;
 
     var updatedUser = await Users.changeUserName(session, id!, newUserName);
+    if (updatedUser == null) return false;
+
+    userName = newUserName;
+    return true;
+  }
+
+  /// Updates the full name of this user, returns true if successful.
+  Future<bool> changeFullName(Session session, String newUserName) async {
+    if (id == null) return false;
+
+    var updatedUser = await Users.changeFullName(session, id!, newUserName);
     if (updatedUser == null) return false;
 
     userName = newUserName;

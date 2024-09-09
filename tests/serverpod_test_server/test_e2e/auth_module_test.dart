@@ -172,4 +172,50 @@ void main() {
       expect(result, equals(true));
     });
   });
+
+  group('Given signed in user that wants to alter its user info', () {
+    setUp(() async {
+      var response = await client.authentication.authenticate(
+        'test@foo.bar',
+        'password',
+      );
+      assert(response.success, 'Failed to authenticate user');
+      await client.authenticationKeyManager
+          ?.put('${response.keyId}:${response.key}');
+      assert(
+          await client.modules.auth.status.isSignedIn(), 'Failed to sign in');
+    });
+
+    tearDown(() async {
+      await client.authenticationKeyManager?.remove();
+      await client.authentication.removeAllUsers();
+      await client.authentication.signOut();
+      assert(
+        await client.modules.auth.status.isSignedIn() == false,
+        'Still signed in after teardown',
+      );
+    });
+    test('when changing its user name it should succeed.', () async {
+      final String newUserName = 'newUserName';
+      var currentUserInfo = await client.modules.auth.status.getUserInfo();
+      var result = await client.modules.auth.user.changeUserName(newUserName);
+      var updatedUserInfo = await client.modules.auth.status.getUserInfo();
+      expect(result, equals(true));
+      expect(currentUserInfo?.userName, isNot(equals(newUserName)),
+          reason: 'The new name should not be the same as the current for the '
+              'test to acutally test something.');
+      expect(updatedUserInfo?.userName, equals(newUserName));
+    });
+    test('when changing its full name it should succeed.', () async {
+      final String newFullName = 'newFullName';
+      var currentUserInfo = await client.modules.auth.status.getUserInfo();
+      var result = await client.modules.auth.user.changeFullName(newFullName);
+      var updatedUserInfo = await client.modules.auth.status.getUserInfo();
+      expect(result, equals(true));
+      expect(currentUserInfo?.fullName, isNot(equals(newFullName)),
+          reason: 'The new name should not be the same as the current for the '
+              'test to acutally test something.');
+      expect(updatedUserInfo?.fullName, equals(newFullName));
+    });
+  });
 }
