@@ -80,7 +80,9 @@ class WidgetList extends AbstractWidget {
   ) async {
     var rendered = <String>[];
     for (var widget in widgets) {
-      rendered.add(widget.toString());
+      rendered.add(
+        widget.template.renderString(widget.values),
+      );
     }
     return Response.ok(
       body: Body.fromString(

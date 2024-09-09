@@ -76,6 +76,8 @@ abstract class Headers {
   final DateTime? date;
   final DateTime? expires;
   final DateTime? ifModifiedSince;
+  final DateTime? lastModified;
+
   final String? from;
   final String? host;
   final int? port;
@@ -109,8 +111,6 @@ abstract class Headers {
   final List<String>? ifMatch;
   final List<String>? ifNoneMatch;
   final String? ifRange;
-  final String? ifUnmodifiedSince;
-  final String? lastModified;
   final String? maxForwards;
 
   /// Renamed from `[pragma]` to `mPragma` to avoid conflict with Dart's `[pragma]` type.
@@ -229,7 +229,6 @@ abstract class Headers {
     this.ifMatch,
     this.ifNoneMatch,
     this.ifRange,
-    this.ifUnmodifiedSince,
     this.lastModified,
     this.maxForwards,
     this.mPragma,
@@ -260,6 +259,9 @@ abstract class Headers {
       date: headers.date,
       expires: headers.expires,
       ifModifiedSince: headers.ifModifiedSince,
+      lastModified: headers.value(_lastModifiedHeader) != null
+          ? parseHttpDate(headers.value(_lastModifiedHeader)!)
+          : null,
       from: headers.value(_fromHeader),
       host: headers.host,
       port: headers.port,
@@ -293,8 +295,6 @@ abstract class Headers {
       ifMatch: headers[_ifMatchHeader],
       ifNoneMatch: headers[_ifNoneMatchHeader],
       ifRange: headers.value(_ifRangeHeader),
-      ifUnmodifiedSince: headers.value(_ifUnmodifiedSinceHeader),
-      lastModified: headers.value(_lastModifiedHeader),
       maxForwards: headers.value(_maxForwardsHeader),
       mPragma: headers.value(_pragmaHeader),
       proxyAuthenticate: headers[_proxyAuthenticateHeader],
@@ -360,8 +360,7 @@ abstract class Headers {
     List<String>? ifMatch,
     List<String>? ifNoneMatch,
     String? ifRange,
-    String? ifUnmodifiedSince,
-    String? lastModified,
+    DateTime? lastModified,
     String? maxForwards,
     String? mPragma,
     List<String>? proxyAuthenticate,
@@ -419,7 +418,6 @@ abstract class Headers {
       ifMatch: ifMatch,
       ifNoneMatch: ifNoneMatch,
       ifRange: ifRange,
-      ifUnmodifiedSince: ifUnmodifiedSince,
       lastModified: lastModified,
       maxForwards: maxForwards,
       mPragma: mPragma,
@@ -480,8 +478,7 @@ abstract class Headers {
     List<String>? ifMatch,
     List<String>? ifNoneMatch,
     String? ifRange,
-    String? ifUnmodifiedSince,
-    String? lastModified,
+    DateTime? lastModified,
     String? maxForwards,
     String? mPragma,
     List<String>? proxyAuthenticate,
@@ -539,7 +536,6 @@ abstract class Headers {
       ifMatch: ifMatch,
       ifNoneMatch: ifNoneMatch,
       ifRange: ifRange,
-      ifUnmodifiedSince: ifUnmodifiedSince,
       lastModified: lastModified,
       maxForwards: maxForwards,
       mPragma: mPragma,
@@ -573,6 +569,11 @@ abstract class Headers {
     headers.date = date?.toUtc() ?? DateTime.now().toUtc();
     headers.expires = expires;
     headers.ifModifiedSince = ifModifiedSince;
+
+    if (lastModified != null) {
+      headers.set(_lastModifiedHeader, formatHttpDate(lastModified!));
+    }
+
     headers.host = host;
     headers.port = port;
 
@@ -643,10 +644,7 @@ abstract class Headers {
     if (ifMatch != null) headers.set(_ifMatchHeader, ifMatch!);
     if (ifNoneMatch != null) headers.set(_ifNoneMatchHeader, ifNoneMatch!);
     if (ifRange != null) headers.set(_ifRangeHeader, ifRange!);
-    if (ifUnmodifiedSince != null) {
-      headers.set(_ifUnmodifiedSinceHeader, ifUnmodifiedSince!);
-    }
-    if (lastModified != null) headers.set(_lastModifiedHeader, lastModified!);
+
     if (maxForwards != null) headers.set(_maxForwardsHeader, maxForwards!);
     if (mPragma != null) headers.set(_pragmaHeader, mPragma!);
     if (proxyAuthenticate != null) {
@@ -727,7 +725,6 @@ abstract class Headers {
     List<String>? ifMatch,
     List<String>? ifNoneMatch,
     String? ifRange,
-    String? ifUnmodifiedSince,
     String? lastModified,
     String? maxForwards,
     String? mPragma,
@@ -803,8 +800,6 @@ abstract class Headers {
       if (ifNoneMatch != null)
         '$_ifNoneMatchHeader: ${ifNoneMatch!.join(', ')}',
       if (ifRange != null) '$_ifRangeHeader: $ifRange',
-      if (ifUnmodifiedSince != null)
-        '$_ifUnmodifiedSinceHeader: $ifUnmodifiedSince',
       if (lastModified != null) '$_lastModifiedHeader: $lastModified',
       if (maxForwards != null) '$_maxForwardsHeader: $maxForwards',
       if (mPragma != null) '$_pragmaHeader: $mPragma',
@@ -880,8 +875,6 @@ abstract class Headers {
       if (ifMatch != null) _ifMatchHeader: ifMatch!,
       if (ifNoneMatch != null) _ifNoneMatchHeader: ifNoneMatch!,
       if (ifRange != null) _ifRangeHeader: ifRange!,
-      if (ifUnmodifiedSince != null)
-        _ifUnmodifiedSinceHeader: ifUnmodifiedSince!,
       if (lastModified != null) _lastModifiedHeader: lastModified!,
       if (maxForwards != null) _maxForwardsHeader: maxForwards!,
       if (mPragma != null) _pragmaHeader: mPragma!,
@@ -948,7 +941,6 @@ abstract class Headers {
         (ifMatch == null || ifMatch!.isEmpty) &&
         (ifNoneMatch == null || ifNoneMatch!.isEmpty) &&
         ifRange == null &&
-        ifUnmodifiedSince == null &&
         lastModified == null &&
         maxForwards == null &&
         mPragma == null &&
@@ -1016,7 +1008,6 @@ class _HeadersImpl extends Headers {
     super.ifMatch,
     super.ifNoneMatch,
     super.ifRange,
-    super.ifUnmodifiedSince,
     super.lastModified,
     super.maxForwards,
     super.mPragma,
@@ -1078,7 +1069,6 @@ class _HeadersImpl extends Headers {
     Object? ifMatch = _Undefined,
     Object? ifNoneMatch = _Undefined,
     Object? ifRange = _Undefined,
-    Object? ifUnmodifiedSince = _Undefined,
     Object? lastModified = _Undefined,
     Object? maxForwards = _Undefined,
     Object? mPragma = _Undefined,
@@ -1162,10 +1152,8 @@ class _HeadersImpl extends Headers {
       ifMatch: ifMatch is List<String> ? ifMatch : this.ifMatch,
       ifNoneMatch: ifNoneMatch is List<String> ? ifNoneMatch : this.ifNoneMatch,
       ifRange: ifRange is String ? ifRange : this.ifRange,
-      ifUnmodifiedSince: ifUnmodifiedSince is String
-          ? ifUnmodifiedSince
-          : this.ifUnmodifiedSince,
-      lastModified: lastModified is String ? lastModified : this.lastModified,
+
+      lastModified: lastModified is DateTime ? lastModified : this.lastModified,
       maxForwards: maxForwards is String ? maxForwards : this.maxForwards,
       mPragma: mPragma is String ? mPragma : this.mPragma,
       proxyAuthenticate: proxyAuthenticate is List<String>
@@ -1238,7 +1226,6 @@ class _HeadersImpl extends Headers {
       ifMatch: other.ifMatch,
       ifNoneMatch: other.ifNoneMatch,
       ifRange: other.ifRange,
-      ifUnmodifiedSince: other.ifUnmodifiedSince,
       lastModified: other.lastModified,
       maxForwards: other.maxForwards,
       mPragma: other.mPragma,

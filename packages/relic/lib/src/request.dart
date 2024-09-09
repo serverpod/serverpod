@@ -66,24 +66,6 @@ class Request extends Message {
   /// if the request has already been hijacked.
   bool get canHijack => _onHijack != null && !_onHijack.called;
 
-  /// If this is non-`null` and the requested resource hasn't been modified
-  /// since this date and time, the server should return a 304 Not Modified
-  /// response.
-  ///
-  /// This is parsed from the If-Modified-Since header in [headers]. If
-  /// [headers] doesn't have an If-Modified-Since header, this will be `null`.
-  ///
-  /// Throws [FormatException], if incoming HTTP request has an invalid
-  /// If-Modified-Since header.
-  // DateTime? get ifModifiedSince {
-  //   if (_ifModifiedSinceCache != null) return _ifModifiedSinceCache;
-  //   if (!headers.containsKey('if-modified-since')) return null;
-  //   _ifModifiedSinceCache = parseHttpDate(headers['if-modified-since']!);
-  //   return _ifModifiedSinceCache;
-  // }
-
-  // DateTime? _ifModifiedSinceCache;
-
   /// Creates a new [Request].
   ///
   /// [handlerPath] must be root-relative. [url]'s path must be fully relative,

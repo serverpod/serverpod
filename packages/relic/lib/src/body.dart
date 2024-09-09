@@ -128,6 +128,15 @@ class Body {
     return Body._(body, contentType, null);
   }
 
+  factory Body.fromIntStream(
+    Stream<List<int>> body, {
+    Encoding? encoding,
+    BodyType contentType = BodyType.plainText,
+  }) {
+    Stream<Uint8List> byteStream = body.map((list) => Uint8List.fromList(list));
+    return Body._(byteStream, contentType, null);
+  }
+
   factory Body.fromData(
     Uint8List body, {
     Encoding? encoding,
