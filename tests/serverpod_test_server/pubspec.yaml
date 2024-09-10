@@ -32,6 +32,7 @@ dev_dependencies:
     path: ../serverpod_test_client
   serverpod_test_module_client:
     path: ../serverpod_test_module/serverpod_test_module_client
+  serverpod_test: 2.1.1
 
 dependency_overrides:
   serverpod:
@@ -52,3 +53,5 @@ dependency_overrides:
     path: ../../packages/serverpod_serialization
   serverpod_shared:
     path: ../../packages/serverpod_shared
+  serverpod_test:
+    path: ../../packages/serverpod_test

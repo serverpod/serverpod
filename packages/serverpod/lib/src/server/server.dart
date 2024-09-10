@@ -44,7 +44,10 @@ class Server {
       throw ArgumentError('Database config not set');
     }
 
-    return Database(session: session, poolManager: databasePoolManager);
+    return DatabaseConstructor.create(
+      session: session,
+      poolManager: databasePoolManager,
+    );
   }
 
   /// The [SerializationManager] used by the server.
