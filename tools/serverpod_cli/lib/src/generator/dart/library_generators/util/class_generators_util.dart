@@ -380,7 +380,12 @@ Expression _buildClassTypeFromJson(
           config: config,
         )
         .property('fromJson')
-        .call([valueExpression.asA(refer('Map<String, dynamic>'))])
+        .call([
+          if (!type.customClass)
+            valueExpression.asA(refer('Map<String, dynamic>'))
+          else
+            valueExpression,
+        ])
         .checkIfNull(type, valueExpression: valueExpression)
         .code,
   );
