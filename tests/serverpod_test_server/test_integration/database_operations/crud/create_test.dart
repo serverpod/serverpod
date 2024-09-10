@@ -3,18 +3,28 @@ import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
-Future<void> deleteAll(Session session) async {
-  await RelatedUniqueData.db
-      .deleteWhere(session, where: (t) => Constant.bool(true));
-  await Types.db.deleteWhere(session, where: (t) => Constant.bool(true));
-  await UniqueData.db.deleteWhere(session, where: (t) => Constant.bool(true));
-}
-
 void main() async {
   var session = await IntegrationTestServer().session();
 
+  tearDownAll(() async {
+    await SimpleData.db.deleteWhere(
+      session,
+      where: (t) => Constant.bool(true),
+    );
+    await EmptyModelWithTable.db.deleteWhere(
+      session,
+      where: (t) => Constant.bool(true),
+    );
+  });
+
   group('Given an empty database', () {
-    tearDown(() async => await deleteAll(session));
+    tearDown(() async {
+      await RelatedUniqueData.db
+          .deleteWhere(session, where: (t) => Constant.bool(true));
+      await Types.db.deleteWhere(session, where: (t) => Constant.bool(true));
+      await UniqueData.db
+          .deleteWhere(session, where: (t) => Constant.bool(true));
+    });
     test(
         'when batch inserting then all the entries are created in the database.',
         () async {
