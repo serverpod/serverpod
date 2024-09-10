@@ -636,10 +636,22 @@ class MessageCentralAccess {
         'RevokedAuthenticationAuthId, or RevokedAuthenticationScope',
       );
     }
+
+    try {
+      return await _session.server.messageCentral.postMessage(
+        MessageCentralServerpodChannels.revokedAuthentication(userId),
+        message,
+        global: true,
+      );
+    } on StateError catch (_) {
+      // Throws StateError if Redis is not enabled that is ignored.
+    }
+
+    // If Redis is not enabled, send the message locally.
     return _session.server.messageCentral.postMessage(
       MessageCentralServerpodChannels.revokedAuthentication(userId),
       message,
-      global: true,
+      global: false,
     );
   }
 }
