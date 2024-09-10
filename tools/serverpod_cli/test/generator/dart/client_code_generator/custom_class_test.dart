@@ -15,7 +15,7 @@ const generator = DartClientCodeGenerator();
 void main() {
   var testClassName = 'Example';
   var testClassFileName = 'example';
-  var expectedFileName = path.join(
+  var expectedFilePath = path.join(
     '..',
     'example_project_client',
     'lib',
@@ -48,15 +48,14 @@ void main() {
       config: config,
     );
 
-    var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
 
     var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: testClassName,
     );
 
-    test(
-        'fromJson method should not contain "as Map<String, dynamic>" in client code',
+    test('fromJson method should pass data as dynamic to custom class fromJson',
         () {
       var fromJsonConstructor =
           CompilationUnitHelpers.tryFindConstructorDeclaration(
@@ -72,7 +71,7 @@ void main() {
         ),
         isTrue,
         reason:
-            'The client-side fromJson method does not correctly use CustomClass.fromJson without casting to Map<String, dynamic>.',
+            'The fromJson method should pass data as dynamic to CustomClass.fromJson but doesn\'t.',
       );
     });
   });

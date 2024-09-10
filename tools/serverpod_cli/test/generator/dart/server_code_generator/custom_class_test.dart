@@ -49,8 +49,7 @@ void main() {
       name: testClassName,
     );
 
-    test(
-        'fromJson method correctly uses CustomClass.fromJson without casting to Map<String, dynamic>.',
+    test('fromJson method should pass data as dynamic to custom class fromJson',
         () {
       var fromJsonConstructor =
           CompilationUnitHelpers.tryFindConstructorDeclaration(
@@ -66,7 +65,7 @@ void main() {
         ),
         isTrue,
         reason:
-            'The fromJson method does not correctly use CustomClass.fromJson without casting to Map<String, dynamic>.',
+            'The fromJson method should pass data as dynamic to CustomClass.fromJson but doesn\'t.',
       );
     });
   });

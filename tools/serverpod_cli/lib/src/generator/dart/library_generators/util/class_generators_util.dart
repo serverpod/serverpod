@@ -381,10 +381,10 @@ Expression _buildClassTypeFromJson(
         )
         .property('fromJson')
         .call([
-          if (!type.customClass)
-            valueExpression.asA(refer('Map<String, dynamic>'))
+          if (type.customClass)
+            valueExpression
           else
-            valueExpression,
+            valueExpression.asA(refer('Map<String, dynamic>')),
         ])
         .checkIfNull(type, valueExpression: valueExpression)
         .code,
