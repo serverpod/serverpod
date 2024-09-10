@@ -30,3 +30,21 @@ class CustomClass2 {
 
   dynamic toJson() => {'text': value};
 }
+
+class CustomClass3 implements SerializableModel, ProtocolSerialization {
+  final String value;
+
+  CustomClass3(this.value);
+
+  @override
+  String toJson() => value;
+
+  @override
+  String toJsonForProtocol() => value;
+
+  CustomClass3 copyWith() => this;
+
+  static CustomClass3 fromJson(dynamic data) {
+    return CustomClass3(data);
+  }
+}
