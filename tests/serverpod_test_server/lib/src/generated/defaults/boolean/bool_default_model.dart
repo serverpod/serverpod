@@ -208,7 +208,7 @@ class BoolDefaultModelRepository {
   const BoolDefaultModelRepository._();
 
   Future<List<BoolDefaultModel>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,
     int? limit,
     int? offset,
@@ -217,19 +217,19 @@ class BoolDefaultModelRepository {
     _i1.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<BoolDefaultModel>(
+    return databaseAccessor.db.find<BoolDefaultModel>(
       where: where?.call(BoolDefaultModel.t),
       orderBy: orderBy?.call(BoolDefaultModel.t),
       orderByList: orderByList?.call(BoolDefaultModel.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<BoolDefaultModel?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<BoolDefaultModelTable>? orderBy,
@@ -237,118 +237,118 @@ class BoolDefaultModelRepository {
     _i1.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<BoolDefaultModel>(
+    return databaseAccessor.db.findFirstRow<BoolDefaultModel>(
       where: where?.call(BoolDefaultModel.t),
       orderBy: orderBy?.call(BoolDefaultModel.t),
       orderByList: orderByList?.call(BoolDefaultModel.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<BoolDefaultModel?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<BoolDefaultModel>(
+    return databaseAccessor.db.findById<BoolDefaultModel>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<BoolDefaultModel>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<BoolDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<BoolDefaultModel>(
+    return databaseAccessor.db.insert<BoolDefaultModel>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<BoolDefaultModel> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     BoolDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<BoolDefaultModel>(
+    return databaseAccessor.db.insertRow<BoolDefaultModel>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<BoolDefaultModel>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<BoolDefaultModel> rows, {
     _i1.ColumnSelections<BoolDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<BoolDefaultModel>(
+    return databaseAccessor.db.update<BoolDefaultModel>(
       rows,
       columns: columns?.call(BoolDefaultModel.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<BoolDefaultModel> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     BoolDefaultModel row, {
     _i1.ColumnSelections<BoolDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<BoolDefaultModel>(
+    return databaseAccessor.db.updateRow<BoolDefaultModel>(
       row,
       columns: columns?.call(BoolDefaultModel.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<BoolDefaultModel>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<BoolDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<BoolDefaultModel>(
+    return databaseAccessor.db.delete<BoolDefaultModel>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<BoolDefaultModel> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     BoolDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<BoolDefaultModel>(
+    return databaseAccessor.db.deleteRow<BoolDefaultModel>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<BoolDefaultModel>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<BoolDefaultModelTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<BoolDefaultModel>(
+    return databaseAccessor.db.deleteWhere<BoolDefaultModel>(
       where: where(BoolDefaultModel.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<BoolDefaultModel>(
+    return databaseAccessor.db.count<BoolDefaultModel>(
       where: where?.call(BoolDefaultModel.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

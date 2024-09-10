@@ -281,7 +281,7 @@ class PersonRepository {
   final detachRow = const PersonDetachRowRepository._();
 
   Future<List<Person>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<PersonTable>? where,
     int? limit,
     int? offset,
@@ -291,20 +291,20 @@ class PersonRepository {
     _i1.Transaction? transaction,
     PersonInclude? include,
   }) async {
-    return session.db.find<Person>(
+    return databaseAccessor.db.find<Person>(
       where: where?.call(Person.t),
       orderBy: orderBy?.call(Person.t),
       orderByList: orderByList?.call(Person.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<Person?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<PersonTable>? where,
     int? offset,
     _i1.OrderByBuilder<PersonTable>? orderBy,
@@ -313,121 +313,121 @@ class PersonRepository {
     _i1.Transaction? transaction,
     PersonInclude? include,
   }) async {
-    return session.db.findFirstRow<Person>(
+    return databaseAccessor.db.findFirstRow<Person>(
       where: where?.call(Person.t),
       orderBy: orderBy?.call(Person.t),
       orderByList: orderByList?.call(Person.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<Person?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
     PersonInclude? include,
   }) async {
-    return session.db.findById<Person>(
+    return databaseAccessor.db.findById<Person>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<List<Person>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Person> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Person>(
+    return databaseAccessor.db.insert<Person>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Person> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Person row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Person>(
+    return databaseAccessor.db.insertRow<Person>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Person>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Person> rows, {
     _i1.ColumnSelections<PersonTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Person>(
+    return databaseAccessor.db.update<Person>(
       rows,
       columns: columns?.call(Person.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Person> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Person row, {
     _i1.ColumnSelections<PersonTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Person>(
+    return databaseAccessor.db.updateRow<Person>(
       row,
       columns: columns?.call(Person.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Person>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Person> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Person>(
+    return databaseAccessor.db.delete<Person>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Person> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Person row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Person>(
+    return databaseAccessor.db.deleteRow<Person>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Person>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<PersonTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Person>(
+    return databaseAccessor.db.deleteWhere<Person>(
       where: where(Person.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<PersonTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Person>(
+    return databaseAccessor.db.count<Person>(
       where: where?.call(Person.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -436,7 +436,7 @@ class PersonAttachRowRepository {
   const PersonAttachRowRepository._();
 
   Future<void> organization(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Person person,
     _i2.Organization organization, {
     _i1.Transaction? transaction,
@@ -449,10 +449,10 @@ class PersonAttachRowRepository {
     }
 
     var $person = person.copyWith(organizationId: organization.id);
-    await session.db.updateRow<Person>(
+    await databaseAccessor.db.updateRow<Person>(
       $person,
       columns: [Person.t.organizationId],
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -461,7 +461,7 @@ class PersonDetachRowRepository {
   const PersonDetachRowRepository._();
 
   Future<void> organization(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Person person, {
     _i1.Transaction? transaction,
   }) async {
@@ -470,10 +470,10 @@ class PersonDetachRowRepository {
     }
 
     var $person = person.copyWith(organizationId: null);
-    await session.db.updateRow<Person>(
+    await databaseAccessor.db.updateRow<Person>(
       $person,
       columns: [Person.t.organizationId],
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

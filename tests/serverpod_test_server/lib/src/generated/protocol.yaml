@@ -243,3 +243,15 @@ subSubDirTest:
   - testMethod:
 subDirTest:
   - testMethod:
+testTools:
+  - returnsString:
+  - returnsStream:
+  - returnsListFromInputStream:
+  - returnsStreamFromInputStream:
+  - pushNumberToSharedStream:
+  - listenForNumbersOnSharedStream:
+  - createSimpleData:
+  - getAllSimpleData:
+authenticatedTestTools:
+  - returnsString:
+  - returnsStream:

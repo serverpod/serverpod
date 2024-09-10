@@ -1994,6 +1994,97 @@ class EndpointSubDirTest extends _i1.EndpointRef {
       );
 }
 
+/// {@category Endpoint}
+class EndpointTestTools extends _i1.EndpointRef {
+  EndpointTestTools(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'testTools';
+
+  _i2.Future<String> returnsString(String string) =>
+      caller.callServerEndpoint<String>(
+        'testTools',
+        'returnsString',
+        {'string': string},
+      );
+
+  _i2.Stream<int> returnsStream(int n) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'testTools',
+        'returnsStream',
+        {'n': n},
+        {},
+      );
+
+  _i2.Future<List<int>> returnsListFromInputStream(_i2.Stream<int> numbers) =>
+      caller.callStreamingServerEndpoint<_i2.Future<List<int>>, List<int>>(
+        'testTools',
+        'returnsListFromInputStream',
+        {},
+        {'numbers': numbers},
+      );
+
+  _i2.Stream<int> returnsStreamFromInputStream(_i2.Stream<int> numbers) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'testTools',
+        'returnsStreamFromInputStream',
+        {},
+        {'numbers': numbers},
+      );
+
+  _i2.Future<void> pushNumberToSharedStream(int number) =>
+      caller.callServerEndpoint<void>(
+        'testTools',
+        'pushNumberToSharedStream',
+        {'number': number},
+      );
+
+  _i2.Stream<int> listenForNumbersOnSharedStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'testTools',
+        'listenForNumbersOnSharedStream',
+        {},
+        {},
+      );
+
+  _i2.Future<void> createSimpleData(int data) =>
+      caller.callServerEndpoint<void>(
+        'testTools',
+        'createSimpleData',
+        {'data': data},
+      );
+
+  _i2.Future<List<_i10.SimpleData>> getAllSimpleData() =>
+      caller.callServerEndpoint<List<_i10.SimpleData>>(
+        'testTools',
+        'getAllSimpleData',
+        {},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointAuthenticatedTestTools extends _i1.EndpointRef {
+  EndpointAuthenticatedTestTools(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'authenticatedTestTools';
+
+  _i2.Future<String> returnsString(String string) =>
+      caller.callServerEndpoint<String>(
+        'authenticatedTestTools',
+        'returnsString',
+        {'string': string},
+      );
+
+  _i2.Stream<int> returnsStream(int n) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'authenticatedTestTools',
+        'returnsStream',
+        {'n': n},
+        {},
+      );
+}
+
 class _Modules {
   _Modules(Client client) {
     auth = _i3.Caller(client);
@@ -2067,6 +2158,8 @@ class Client extends _i1.ServerpodClientShared {
     streamingLogging = EndpointStreamingLogging(this);
     subSubDirTest = EndpointSubSubDirTest(this);
     subDirTest = EndpointSubDirTest(this);
+    testTools = EndpointTestTools(this);
+    authenticatedTestTools = EndpointAuthenticatedTestTools(this);
     modules = _Modules(this);
   }
 
@@ -2142,6 +2235,10 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointSubDirTest subDirTest;
 
+  late final EndpointTestTools testTools;
+
+  late final EndpointAuthenticatedTestTools authenticatedTestTools;
+
   late final _Modules modules;
 
   @override
@@ -2182,6 +2279,8 @@ class Client extends _i1.ServerpodClientShared {
         'streamingLogging': streamingLogging,
         'subSubDirTest': subSubDirTest,
         'subDirTest': subDirTest,
+        'testTools': testTools,
+        'authenticatedTestTools': authenticatedTestTools,
       };
 
   @override

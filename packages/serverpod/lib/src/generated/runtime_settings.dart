@@ -238,7 +238,7 @@ class RuntimeSettingsRepository {
   const RuntimeSettingsRepository._();
 
   Future<List<RuntimeSettings>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? limit,
     int? offset,
@@ -247,19 +247,19 @@ class RuntimeSettingsRepository {
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<RuntimeSettings>(
+    return databaseAccessor.db.find<RuntimeSettings>(
       where: where?.call(RuntimeSettings.t),
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<RuntimeSettings?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? offset,
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
@@ -267,118 +267,118 @@ class RuntimeSettingsRepository {
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<RuntimeSettings>(
+    return databaseAccessor.db.findFirstRow<RuntimeSettings>(
       where: where?.call(RuntimeSettings.t),
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<RuntimeSettings?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<RuntimeSettings>(
+    return databaseAccessor.db.findById<RuntimeSettings>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<RuntimeSettings>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<RuntimeSettings> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<RuntimeSettings>(
+    return databaseAccessor.db.insert<RuntimeSettings>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<RuntimeSettings> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     RuntimeSettings row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<RuntimeSettings>(
+    return databaseAccessor.db.insertRow<RuntimeSettings>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<RuntimeSettings>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<RuntimeSettings> rows, {
     _i1.ColumnSelections<RuntimeSettingsTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<RuntimeSettings>(
+    return databaseAccessor.db.update<RuntimeSettings>(
       rows,
       columns: columns?.call(RuntimeSettings.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<RuntimeSettings> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     RuntimeSettings row, {
     _i1.ColumnSelections<RuntimeSettingsTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<RuntimeSettings>(
+    return databaseAccessor.db.updateRow<RuntimeSettings>(
       row,
       columns: columns?.call(RuntimeSettings.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<RuntimeSettings>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<RuntimeSettings> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<RuntimeSettings>(
+    return databaseAccessor.db.delete<RuntimeSettings>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<RuntimeSettings> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     RuntimeSettings row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<RuntimeSettings>(
+    return databaseAccessor.db.deleteRow<RuntimeSettings>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<RuntimeSettings>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<RuntimeSettings>(
+    return databaseAccessor.db.deleteWhere<RuntimeSettings>(
       where: where(RuntimeSettings.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<RuntimeSettings>(
+    return databaseAccessor.db.count<RuntimeSettings>(
       where: where?.call(RuntimeSettings.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

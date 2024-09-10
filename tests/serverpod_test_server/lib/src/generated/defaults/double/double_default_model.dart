@@ -188,7 +188,7 @@ class DoubleDefaultModelRepository {
   const DoubleDefaultModelRepository._();
 
   Future<List<DoubleDefaultModel>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? where,
     int? limit,
     int? offset,
@@ -197,19 +197,19 @@ class DoubleDefaultModelRepository {
     _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<DoubleDefaultModel>(
+    return databaseAccessor.db.find<DoubleDefaultModel>(
       where: where?.call(DoubleDefaultModel.t),
       orderBy: orderBy?.call(DoubleDefaultModel.t),
       orderByList: orderByList?.call(DoubleDefaultModel.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<DoubleDefaultModel?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
@@ -217,118 +217,118 @@ class DoubleDefaultModelRepository {
     _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<DoubleDefaultModel>(
+    return databaseAccessor.db.findFirstRow<DoubleDefaultModel>(
       where: where?.call(DoubleDefaultModel.t),
       orderBy: orderBy?.call(DoubleDefaultModel.t),
       orderByList: orderByList?.call(DoubleDefaultModel.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<DoubleDefaultModel?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<DoubleDefaultModel>(
+    return databaseAccessor.db.findById<DoubleDefaultModel>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<DoubleDefaultModel>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<DoubleDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<DoubleDefaultModel>(
+    return databaseAccessor.db.insert<DoubleDefaultModel>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<DoubleDefaultModel> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     DoubleDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<DoubleDefaultModel>(
+    return databaseAccessor.db.insertRow<DoubleDefaultModel>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<DoubleDefaultModel>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<DoubleDefaultModel> rows, {
     _i1.ColumnSelections<DoubleDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<DoubleDefaultModel>(
+    return databaseAccessor.db.update<DoubleDefaultModel>(
       rows,
       columns: columns?.call(DoubleDefaultModel.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<DoubleDefaultModel> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     DoubleDefaultModel row, {
     _i1.ColumnSelections<DoubleDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<DoubleDefaultModel>(
+    return databaseAccessor.db.updateRow<DoubleDefaultModel>(
       row,
       columns: columns?.call(DoubleDefaultModel.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<DoubleDefaultModel>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<DoubleDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<DoubleDefaultModel>(
+    return databaseAccessor.db.delete<DoubleDefaultModel>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<DoubleDefaultModel> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     DoubleDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<DoubleDefaultModel>(
+    return databaseAccessor.db.deleteRow<DoubleDefaultModel>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<DoubleDefaultModel>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<DoubleDefaultModelTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<DoubleDefaultModel>(
+    return databaseAccessor.db.deleteWhere<DoubleDefaultModel>(
       where: where(DoubleDefaultModel.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<DoubleDefaultModel>(
+    return databaseAccessor.db.count<DoubleDefaultModel>(
       where: where?.call(DoubleDefaultModel.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
