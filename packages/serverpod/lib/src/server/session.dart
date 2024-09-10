@@ -20,7 +20,7 @@ typedef WillCloseListener = FutureOr<void> Function(Session session);
 /// When a call is made to the [Server] a [Session] object is created. It
 /// contains all data associated with the current connection and provides
 /// easy access to the database.
-abstract class Session {
+abstract class Session implements DatabaseAccessor {
   final LinkedHashSet<WillCloseListener> _willCloseListeners = LinkedHashSet();
 
   /// Adds a listener that will be called when the session is about to close.
@@ -87,7 +87,12 @@ abstract class Session {
   /// Access to the database.
   Database? _db;
 
+  /// Optional transaction to use for all database queries.
+  @override
+  Transaction? transaction;
+
   /// Access to the database.
+  @override
   Database get db {
     var database = _db;
     if (database == null) {
