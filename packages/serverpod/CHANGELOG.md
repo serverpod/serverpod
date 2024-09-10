@@ -1,3 +1,7 @@
+## 2.1.1
+ - fix: Posts revoked authentication events locally if Redis is disabled.
+ - fix: Uses `dynamic` type for `fromJson` parameter in custom class serialization.
+
 ## 2.1.0
  - feat: Adds DevTools extension.
  - feat: Adds support for `Stream` as parameters and return type in endpoint methods.
