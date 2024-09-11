@@ -1,10 +1,12 @@
 import 'dart:math';
 
+import 'package:path/path.dart' as p;
+import 'package:super_string/super_string.dart';
+
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
-import 'package:super_string/super_string.dart';
 
 class ModelDependencyResolver {
   /// Resolves dependencies between models, this method mutates the input.
@@ -12,6 +14,7 @@ class ModelDependencyResolver {
     List<SerializableModelDefinition> modelDefinitions,
   ) {
     modelDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
+      _resolveInheritance(classDefinition, modelDefinitions);
       for (var fieldDefinition in classDefinition.fields) {
         _resolveFieldIndexes(fieldDefinition, classDefinition);
         _resolveProtocolReference(fieldDefinition, modelDefinitions);
@@ -28,6 +31,46 @@ class ModelDependencyResolver {
         );
       }
     });
+  }
+
+  static void _resolveInheritance(
+    ClassDefinition classDefinition,
+    List<SerializableModelDefinition> modelDefinitions,
+  ) {
+    if (classDefinition.extendsClass != null) {
+      try {
+        var baseClass = modelDefinitions
+            .whereType<ClassDefinition>()
+            .firstWhere((element) =>
+                element.className == classDefinition.extendsClass?.className);
+
+        classDefinition.extendsClass = ExtendsClassInheritanceDefinition(
+          baseClass.className,
+          baseClass.fields,
+          p.joinAll([
+            ...baseClass.subDirParts,
+            '${baseClass.fileName}.dart',
+          ]),
+        );
+      } catch (e) {
+        classDefinition.extendsClass = null;
+      }
+
+      try {
+        List<ClassDefinition?> subClasses = modelDefinitions
+            .whereType<ClassDefinition>()
+            .where((element) =>
+                element.extendsClass?.className == classDefinition.className)
+            .toList();
+
+        classDefinition.subClasses = BaseClassInheritanceDefinition(
+          classDefinition.className,
+          subClasses,
+        );
+      } catch (e) {
+        classDefinition.subClasses = null;
+      }
+    }
   }
 
   static void _resolveFieldIndexes(

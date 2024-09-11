@@ -1,10 +1,11 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
-import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
-import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
-import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
+import 'package:test/test.dart';
+
+import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
+import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -36,18 +37,46 @@ void main() {
   group(
       'Given a sub-class named $subClassName with one primitive var extending a base-class named $baseClassName with one primitive var when generating code',
       () {
+    var subClass = ClassDefinitionBuilder()
+        .withClassName(subClassName)
+        .withFileName(subClassFileName)
+        .withSimpleField('age', 'int', nullable: true)
+        .withExtendsClass(
+      baseClassName,
+      baseExpectedFilePath,
+      [
+        {
+          'name': 'name',
+          'type': 'String',
+          'nullable': false,
+        }
+      ],
+    ).build();
+
     var models = [
       ClassDefinitionBuilder()
           .withClassName(baseClassName)
           .withFileName(baseClassFileName)
           .withSimpleField('name', 'String')
-          .build(),
+          .withSubClasses(
+        baseClassName,
+        [subClass],
+      ).build(),
       ClassDefinitionBuilder()
           .withClassName(subClassName)
           .withFileName(subClassFileName)
           .withSimpleField('age', 'int', nullable: true)
-          .withExtendsClass(baseClassName)
-          .build()
+          .withExtendsClass(
+        baseClassName,
+        baseExpectedFilePath,
+        [
+          {
+            'name': 'name',
+            'type': 'String',
+            'nullable': false,
+          }
+        ],
+      ).build(),
     ];
 
     var codeMap = generator.generateSerializableModelsCode(

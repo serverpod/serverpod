@@ -56,8 +56,11 @@ class ClassDefinition extends SerializableModelDefinition {
   /// `true` if this is an exception and not a class.
   final bool isException;
 
-  /// If set, the name of the class this class should extend.
-  final String? extendsClass;
+  /// If set to [BaseClassInheritanceDefinition] the class is a base class and stores the sub classes.
+  InheritanceDefinition? subClasses;
+
+  /// If set to [ExtendsClassInheritanceDefinition] the class extends another class and stores the `name`, `path` and `fields` of the base class.
+  InheritanceDefinition? extendsClass;
 
   /// Create a new [ClassDefinition].
   ClassDefinition({
@@ -69,6 +72,7 @@ class ClassDefinition extends SerializableModelDefinition {
     required super.serverOnly,
     required this.manageMigration,
     required this.isException,
+    this.subClasses,
     this.extendsClass,
     this.tableName,
     this.indexes = const [],
@@ -255,6 +259,35 @@ class ProtocolEnumValueDefinition {
 
   /// Create a new [ProtocolEnumValueDefinition].
   ProtocolEnumValueDefinition(this.name, [this.documentation]);
+}
+
+abstract class InheritanceDefinition {
+  final String className;
+
+  InheritanceDefinition(this.className);
+}
+
+class UnresolvedInheritanceDefinition extends InheritanceDefinition {
+  UnresolvedInheritanceDefinition(super.className);
+}
+
+class BaseClassInheritanceDefinition extends InheritanceDefinition {
+  final List<ClassDefinition?> subClasses;
+
+  BaseClassInheritanceDefinition(
+    super.className,
+    this.subClasses,
+  );
+}
+
+class ExtendsClassInheritanceDefinition extends InheritanceDefinition {
+  final List<SerializableModelFieldDefinition> baseClassFields;
+  final String baseClassPath;
+  ExtendsClassInheritanceDefinition(
+    super.className,
+    this.baseClassFields,
+    this.baseClassPath,
+  );
 }
 
 abstract class RelationDefinition {

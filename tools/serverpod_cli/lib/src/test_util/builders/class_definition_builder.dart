@@ -22,7 +22,8 @@ class ClassDefinitionBuilder {
   List<_FieldBuilder> _fields;
   List<SerializableModelIndexDefinition> _indexes;
   List<String>? _documentation;
-  String? _extendsClass;
+  InheritanceDefinition? _subClass;
+  InheritanceDefinition? _baseClass;
 
   ClassDefinitionBuilder()
       : _moduleAlias = defaultModuleAlias,
@@ -62,7 +63,8 @@ class ClassDefinitionBuilder {
       manageMigration: _managedMigration,
       indexes: _indexes,
       documentation: _documentation,
-      extendsClass: _extendsClass,
+      subClasses: _subClass,
+      extendsClass: _baseClass,
     );
   }
 
@@ -323,8 +325,29 @@ class ClassDefinitionBuilder {
     return this;
   }
 
-  ClassDefinitionBuilder withExtendsClass(String extendsClass) {
-    _extendsClass = extendsClass;
+  ClassDefinitionBuilder withSubClasses(
+    String className,
+    List<ClassDefinition?> subClasses,
+  ) {
+    _subClass = BaseClassInheritanceDefinition(className, subClasses);
+    return this;
+  }
+
+  ClassDefinitionBuilder withExtendsClass(
+    String baseClassName,
+    String expectedFilePath,
+    List<Map> parentFields,
+  ) {
+    _baseClass = ExtendsClassInheritanceDefinition(
+      baseClassName,
+      parentFields.map((field) {
+        return FieldDefinitionBuilder()
+            .withName(field['name'])
+            .withTypeDefinition(field['type'], field['nullable'])
+            .build();
+      }).toList(),
+      expectedFilePath,
+    );
     return this;
   }
 }

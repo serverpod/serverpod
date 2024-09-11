@@ -99,11 +99,13 @@ class ModelParser {
     );
   }
 
-  static String? _parseExtendsClass(YamlMap documentContents) {
+  static UnresolvedInheritanceDefinition? _parseExtendsClass(
+    YamlMap documentContents,
+  ) {
     var extendsClass = documentContents.nodes[Keyword.extendsClass]?.value;
     if (extendsClass is! String) return null;
 
-    return extendsClass;
+    return UnresolvedInheritanceDefinition(extendsClass);
   }
 
   static bool _parseServerOnly(YamlMap documentContents) {

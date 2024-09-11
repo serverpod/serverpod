@@ -1,5 +1,4 @@
 import 'package:code_builder/code_builder.dart';
-import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 
 import 'package:serverpod_cli/analyzer.dart';
@@ -26,12 +25,10 @@ class SerializableModelLibraryGenerator {
   /// Generate the file for a model.
   Library generateModelLibrary(
     SerializableModelDefinition modelDefinition,
-    bool isBaseClass,
-    ClassDefinition? baseClass,
   ) {
     switch (modelDefinition) {
       case ClassDefinition():
-        return _generateClassLibrary(modelDefinition, isBaseClass, baseClass);
+        return _generateClassLibrary(modelDefinition);
       case EnumDefinition():
         return _generateEnumLibrary(modelDefinition);
     }
@@ -40,8 +37,6 @@ class SerializableModelLibraryGenerator {
   /// Handle ordinary classes for [generateModelLibrary].
   Library _generateClassLibrary(
     ClassDefinition classDefinition,
-    bool isBaseClass,
-    ClassDefinition? baseClass,
   ) {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
@@ -52,7 +47,16 @@ class SerializableModelLibraryGenerator {
       config: config,
     );
 
-    var baseClassFields = baseClass?.fields ?? [];
+    bool isBaseClass = classDefinition.subClasses != null &&
+        classDefinition.subClasses is BaseClassInheritanceDefinition;
+
+    var extendedClass =
+        classDefinition.extendsClass is ExtendsClassInheritanceDefinition
+            ? classDefinition.extendsClass as ExtendsClassInheritanceDefinition
+            : null;
+
+    var extendedClassPath = extendedClass?.baseClassPath;
+    var extendedClassFields = extendedClass?.baseClassFields ?? [];
 
     return Library(
       (libraryBuilder) {
@@ -65,11 +69,8 @@ class SerializableModelLibraryGenerator {
               'package:serverpod_serialization/serverpod_serialization.dart'));
         }
 
-        if (baseClass != null) {
-          libraryBuilder.directives.add(Directive.import(p.joinAll([
-            ...baseClass.subDirParts,
-            '${baseClass.fileName}.dart',
-          ])));
+        if (extendedClassPath != null) {
+          libraryBuilder.directives.add(Directive.import(extendedClassPath));
         }
 
         libraryBuilder.body.addAll([
@@ -79,7 +80,7 @@ class SerializableModelLibraryGenerator {
             tableName,
             fields,
             isBaseClass,
-            baseClass,
+            extendedClassFields,
           ),
           // We need to generate the implementation class for the copyWith method
           // to support differentiating between null and undefined values.
@@ -90,7 +91,7 @@ class SerializableModelLibraryGenerator {
               className,
               classDefinition,
               tableName,
-              [...baseClassFields, ...fields],
+              [...extendedClassFields, ...fields],
             ),
           if (buildRepository.hasImplicitClassOperations(fields) &&
               !isBaseClass)
@@ -156,8 +157,9 @@ class SerializableModelLibraryGenerator {
     String? tableName,
     List<SerializableModelFieldDefinition> fields,
     bool isBaseClass,
-    ClassDefinition? baseClass,
+    List<SerializableModelFieldDefinition> baseClassFields,
   ) {
+    print('$className $isBaseClass');
     var relationFields = fields.where((field) =>
         field.relation is ObjectRelationDefinition ||
         field.relation is ListRelationDefinition);
@@ -172,7 +174,7 @@ class SerializableModelLibraryGenerator {
       }
 
       if (classDefinition.extendsClass != null) {
-        classBuilder.extend = refer(classDefinition.extendsClass!);
+        classBuilder.extend = refer(classDefinition.extendsClass!.className);
       }
 
       if (classDefinition.isException) {
@@ -206,16 +208,14 @@ class SerializableModelLibraryGenerator {
         tableName,
         classDefinition.subDirParts,
       ));
-
-      var baseClassFields = baseClass?.fields ?? [];
-
+      print('$className $isBaseClass');
       classBuilder.constructors.addAll([
         _buildModelClassConstructor(
           classDefinition,
           fields,
           tableName,
           isBaseClass,
-          baseClass,
+          baseClassFields,
         ),
         if (!isBaseClass)
           _buildModelClassFactoryConstructor(
@@ -233,7 +233,6 @@ class SerializableModelLibraryGenerator {
           className,
           classDefinition,
           fields,
-          baseClass,
         ));
       } else {
         classBuilder.methods
@@ -414,9 +413,13 @@ class SerializableModelLibraryGenerator {
     String className,
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
-    ClassDefinition? baseClass,
   ) {
-    var baseClassFields = baseClass?.fields ?? [];
+    var baseClass =
+        classDefinition.extendsClass is ExtendsClassInheritanceDefinition
+            ? classDefinition.extendsClass as ExtendsClassInheritanceDefinition
+            : null;
+
+    var baseClassFields = baseClass?.baseClassFields ?? [];
 
     return Method((methodBuilder) {
       if (baseClass != null) {
@@ -972,7 +975,7 @@ class SerializableModelLibraryGenerator {
     List<SerializableModelFieldDefinition> fields,
     String? tableName,
     bool isBaseClass,
-    ClassDefinition? baseClass,
+    List<SerializableModelFieldDefinition> baseClassFields,
   ) {
     return Constructor((c) {
       if (!isBaseClass) {
@@ -983,7 +986,7 @@ class SerializableModelLibraryGenerator {
         fields,
         tableName,
         setAsToThis: true,
-        baseClass: baseClass,
+        baseClassFields: baseClassFields,
       ));
 
       for (SerializableModelFieldDefinition field in fields) {
@@ -1058,11 +1061,11 @@ class SerializableModelLibraryGenerator {
     List<SerializableModelFieldDefinition> fields,
     String? tableName, {
     required bool setAsToThis,
-    ClassDefinition? baseClass,
+    List<SerializableModelFieldDefinition>? baseClassFields,
   }) {
-    var baseClassFields = baseClass?.fields ?? [];
+    var parentClassFields = baseClassFields ?? [];
 
-    return [...baseClassFields, ...fields]
+    return [...parentClassFields, ...fields]
         .where((field) => field.shouldIncludeField(serverCode))
         .map((field) {
       bool hasPrimaryKey =
@@ -1086,7 +1089,7 @@ class SerializableModelLibraryGenerator {
           ..required = !(field.type.nullable || hasDefaults)
           ..type = shouldIncludeType ? type : null
           ..toThis = !shouldIncludeType && fields.contains(field)
-          ..toSuper = !shouldIncludeType && baseClassFields.contains(field)
+          ..toSuper = !shouldIncludeType && parentClassFields.contains(field)
           ..name = field.name,
       );
     }).toList();
