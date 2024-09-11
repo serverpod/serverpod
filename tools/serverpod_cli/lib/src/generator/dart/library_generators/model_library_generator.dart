@@ -159,7 +159,6 @@ class SerializableModelLibraryGenerator {
     bool isBaseClass,
     List<SerializableModelFieldDefinition> baseClassFields,
   ) {
-    print('$className $isBaseClass');
     var relationFields = fields.where((field) =>
         field.relation is ObjectRelationDefinition ||
         field.relation is ListRelationDefinition);
@@ -208,7 +207,7 @@ class SerializableModelLibraryGenerator {
         tableName,
         classDefinition.subDirParts,
       ));
-      print('$className $isBaseClass');
+
       classBuilder.constructors.addAll([
         _buildModelClassConstructor(
           classDefinition,

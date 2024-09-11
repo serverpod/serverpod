@@ -83,8 +83,6 @@ void main() {
         name: baseClassName,
       );
 
-      print(baseCompilationUnit);
-
       group('has a public constructor', () {
         var publicConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
