@@ -104,7 +104,7 @@ void main() {
       var error = collector.errors.first;
       expect(
         error.message,
-        'The "extends" property cannot be used on a class with a table definition.',
+        'The "extends" property is mutually exclusive with the "table" property.',
       );
     });
 

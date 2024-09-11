@@ -225,15 +225,6 @@ class Restrictions {
       ];
     }
 
-    if (documentContents['table'] != null) {
-      return [
-        SourceSpanSeverityException(
-          'The "extends" property cannot be used on a class with a table definition.',
-          span,
-        )
-      ];
-    }
-
     return [];
   }
 
@@ -245,7 +236,7 @@ class Restrictions {
     if (baseClassName is! String) {
       return [
         SourceSpanSeverityException(
-          'The "extends" property must be a String.',
+          'The "extends" type must be a String.',
           span,
         )
       ];
@@ -257,6 +248,15 @@ class Restrictions {
       return [
         SourceSpanSeverityException(
           'The class "$baseClassName" was not found in any model.',
+          span,
+        )
+      ];
+    }
+
+    if (baseClass.moduleAlias != 'protocol') {
+      return [
+        SourceSpanSeverityException(
+          'You can only extend classes from your own project.',
           span,
         )
       ];
