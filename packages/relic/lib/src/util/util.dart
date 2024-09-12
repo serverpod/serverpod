@@ -7,7 +7,6 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:relic/src/map/shelf_unmodifiable_map.dart';
 
-
 /// Run [callback] and capture any errors that would otherwise be top-leveled.
 ///
 /// If `this` is called in a non-root error zone, it will just run [callback]
