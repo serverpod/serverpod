@@ -42,8 +42,10 @@ void main() {
           descriptions: streamParameterDescription,
           requestedInputStreams: ['invalid_stream_name'],
         ),
-        throwsA(isA<Exception>().having((e) => e.toString(), 'exception',
-            'Exception: Missing required stream parameter: $streamParameterName')),
+        throwsA(isA<InvalidParametersException>().having(
+            (e) => e.message,
+            'exception',
+            'Missing required stream parameter: $streamParameterName')),
       );
     });
 
@@ -143,8 +145,10 @@ void main() {
           descriptions: streamParameterDescription,
           requestedInputStreams: [streamParameterName1],
         ),
-        throwsA(isA<Exception>().having((e) => e.toString(), 'exception',
-            'Exception: Missing required stream parameter: $streamParameterName2')),
+        throwsA(isA<InvalidParametersException>().having(
+            (e) => e.message,
+            'exception',
+            'Missing required stream parameter: $streamParameterName2')),
       );
     });
   });

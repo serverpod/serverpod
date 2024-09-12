@@ -186,16 +186,9 @@ abstract class Session {
   bool _initialized = false;
 
   Future<void> _initialize() async {
-    if (server.authenticationHandler == null) {
-      stderr.write(
-        'No authentication handler is set, authentication is disabled, '
-        'all requests to protected endpoints will be rejected.',
-      );
-    }
-
-    if (server.authenticationHandler != null && _authenticationKey != null) {
-      _authenticated =
-          await server.authenticationHandler!(this, _authenticationKey!);
+    var authKey = _authenticationKey;
+    if (authKey != null) {
+      _authenticated = await server.authenticationHandler(this, authKey);
     }
 
     _initialized = true;
@@ -414,7 +407,7 @@ class StreamingSession extends Session {
     this.queryParameters = queryParameters;
 
     // Get the the authentication key, if any
-    _authenticationKey = queryParameters['auth'];
+    _authenticationKey = unwrapAuthHeaderValue(queryParameters['auth']);
   }
 
   /// Updates the authentication key for the streaming session.
@@ -643,10 +636,22 @@ class MessageCentralAccess {
         'RevokedAuthenticationAuthId, or RevokedAuthenticationScope',
       );
     }
+
+    try {
+      return await _session.server.messageCentral.postMessage(
+        MessageCentralServerpodChannels.revokedAuthentication(userId),
+        message,
+        global: true,
+      );
+    } on StateError catch (_) {
+      // Throws StateError if Redis is not enabled that is ignored.
+    }
+
+    // If Redis is not enabled, send the message locally.
     return _session.server.messageCentral.postMessage(
       MessageCentralServerpodChannels.revokedAuthentication(userId),
       message,
-      global: true,
+      global: false,
     );
   }
 }

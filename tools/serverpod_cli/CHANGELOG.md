@@ -1,18 +1,13 @@
-## 2.1.0-beta.2
- - feat: Adds support for default values for `UuidValue` and `Duration` in models.
- - fix: Fixes `copyWith` method for nested `List` and `Map` in models.
- - fix: Fixes Dart version and other issues in AWS deployment templates.
- - fix: Correctly delivers method stream exceptions through the output stream.
- - fix: Improved error message if there are missing tables.
- - fix: Method streams now correctly reconnects if websocket connection is lost.
- - fix: Better error message if an error occurs when parsing the config files in CLI.
+## 2.1.1
+ - fix: Posts revoked authentication events locally if Redis is disabled.
+ - fix: Uses `dynamic` type for `fromJson` parameter in custom class serialization.
 
-## 2.1.0-beta.1
+## 2.1.0
  - feat: Adds DevTools extension.
  - feat: Adds support for `Stream` as parameters and return type in endpoint methods.
  - feat: Adds stream subscriptions to message central.
  - feat: Adds support for `willClose` listener on `Session`.
- - feat: Adds support for default values in model files (types supported are `String`, `int`, `double`, `bool`, `DateTime`)
+ - feat: Adds support for default values in model files (types supported are `String`, `int`, `double`, `bool`, `DateTime`, `UuidValue`, `Duration`, enums)
  - feat: Adds support for WASM compiled web apps.
  - feat: Endpoint methods with `@Deprecated` annotation are now also annotated in the client.
  - feat: Allows custom password hash generator in `AuthConfig`.
@@ -21,6 +16,18 @@
  - feat: Adds support for nullable types in `encodeWithType` and `decodeWithType`.
  - feat: Adds `Uuid` identifier to sessions.
  - feat: Supports configuration through environment variables instead of yaml.
+ - feat: Models can now be created without fields.
+ - feat: Adds ability to register custom environment variables to loaded as passwords.
+ - feat: Adds ability to modify `maxFileSize` and expiration time for GCP and AWS buckets.
+ - feat: Moves the auth key from the body of the request to the HTTP header in endpoint methods.
+ - feat: When sending a HTTP 400 Bad Request error message to the client, an error message may now be included in the client side exception.
+ - fix: Allows Serverpod defined models to be encoded and decoded with type.
+ - fix: Allows AWS deployments to update Dart version.
+ - fix: Fixes top error handling on server's request handler to ensure proper error boundary.
+ - fix: Fixes `copyWith` method for nested `List` and `Map` in models.
+ - fix: Fixes Dart version and other issues in AWS deployment templates.
+ - fix: Improved error message if there are missing tables.
+ - fix: Better error message if an error occurs when parsing the config files in CLI.
  - fix: Adds validation of custom class names to look for potential collisions.
  - fix: Only considers positional `Session` parameter when validating endpoint method.
  - fix: Updates example documentation. 
@@ -35,6 +42,10 @@
  - fix: Starts database pool manager on Serverpod instance creation.
  - fix: Adds mechanism for awaiting pending future calls on shutdown.
  - fix: Improvements to websocket lifecycle.
+ - fix: Registers cloud storage endpoint for any `storageId` with `db` storage.
+ - fix: Adds logging for when when uploads to buckets fail.
+ - fix: Removes redundant and non-prefixed `serverpod_serialization` import.
+ - fix: Sets the default authentication handler even when the database is disabled.
  - chore: Updates dependencies.
 
 ## 2.0.2

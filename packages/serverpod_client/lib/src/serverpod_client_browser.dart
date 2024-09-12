@@ -32,14 +32,16 @@ class ServerpodClientRequestDelegateImpl
   Future<String> serverRequest<T>(
     Uri url, {
     required String body,
+    String? authenticationValue,
   }) async {
     try {
-      var response = await _httpClient
-          .post(
-            url,
-            body: body,
-          )
-          .timeout(connectionTimeout);
+      var response = await _httpClient.post(
+        url,
+        body: body,
+        headers: {
+          if (authenticationValue != null) 'authorization': authenticationValue,
+        },
+      ).timeout(connectionTimeout);
 
       var data = response.body;
 

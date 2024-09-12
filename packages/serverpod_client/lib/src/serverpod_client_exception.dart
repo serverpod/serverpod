@@ -21,7 +21,11 @@ class ServerpodClientException implements Exception {
 /// to the server.
 class ServerpodClientBadRequest extends ServerpodClientException {
   /// Creates a Bad Request Exception
-  ServerpodClientBadRequest() : super('Bad request', HttpStatus.badRequest);
+  ServerpodClientBadRequest([String? message])
+      : super(
+          'Bad request${message != null && message != '' ? ': $message' : ''}',
+          HttpStatus.badRequest,
+        );
 }
 
 /// Thrown if the client fails to authenticate and is therefore

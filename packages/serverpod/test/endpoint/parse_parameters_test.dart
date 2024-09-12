@@ -1,5 +1,6 @@
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/server.dart';
+import 'package:serverpod/src/server/endpoint_parameter_helper.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -7,7 +8,7 @@ void main() {
       'Given no parameter descriptions when parsing null parameter string then empty map is returned.',
       () {
     expect(
-      EndpointDispatch.parseParameters(null, {}, Protocol()),
+      parseParameters({}, {}, Protocol()),
       {},
     );
   });
@@ -21,52 +22,14 @@ void main() {
       ),
     };
 
-    test('when parsing valid parameter string then parameter is parsed.', () {
+    test('when parsing valid input then parameter is parsed.', () {
       expect(
-        EndpointDispatch.parseParameters(
-          '{"arg1": 42}',
+        parseParameters(
+          {'arg1': 42},
           parameterDescriptions,
           Protocol(),
         ),
         {'arg1': 42},
-      );
-    });
-
-    test(
-        'when parsing parameter where required parameter is supplied as additional parameters then parameter is parsed.',
-        () {
-      expect(
-        EndpointDispatch.parseParameters(
-          null,
-          parameterDescriptions,
-          Protocol(),
-          additionalParameters: {'arg1': 42},
-        ),
-        {'arg1': 42},
-      );
-    });
-
-    test('when parsing null parameter string then an exception is thrown.', () {
-      expect(
-        () => EndpointDispatch.parseParameters(
-          null,
-          parameterDescriptions,
-          Protocol(),
-        ),
-        throwsA(isA<Exception>()),
-      );
-    });
-
-    test(
-        'when parsing a non json decodable param string then an exception is thrown.',
-        () {
-      expect(
-        () => EndpointDispatch.parseParameters(
-          'not a json string',
-          parameterDescriptions,
-          Protocol(),
-        ),
-        throwsA(isA<FormatException>()),
       );
     });
 
@@ -74,8 +37,8 @@ void main() {
         'when parsing param with different argument name then an exception is thrown.',
         () {
       expect(
-        () => EndpointDispatch.parseParameters(
-          '{"arg2": 42}',
+        () => parseParameters(
+          {'arg2': 42},
           parameterDescriptions,
           Protocol(),
         ),
@@ -87,8 +50,8 @@ void main() {
         'when parsing parameter string with additional parameter then additional parameter is ignored',
         () {
       expect(
-        EndpointDispatch.parseParameters(
-          '{"arg1": 42, "arg2": "ignored"}',
+        parseParameters(
+          {'arg1': 42, 'arg2': 'ignored'},
           parameterDescriptions,
           Protocol(),
         ),
@@ -106,10 +69,10 @@ void main() {
       ),
     };
 
-    test('when parsing valid parameter string then parameter is parsed.', () {
+    test('when parsing valid input then parameter is parsed.', () {
       expect(
-        EndpointDispatch.parseParameters(
-          '{"arg1": 42}',
+        parseParameters(
+          {'arg1': 42},
           parameterDescriptions,
           Protocol(),
         ),
@@ -117,10 +80,11 @@ void main() {
       );
     });
 
-    test('when parsing null parameter string then empty map is returned.', () {
+    test('when parsing empty parameter input then an empty map is returned.',
+        () {
       expect(
-        EndpointDispatch.parseParameters(
-          null,
+        parseParameters(
+          {},
           parameterDescriptions,
           Protocol(),
         ),
@@ -145,8 +109,8 @@ void main() {
 
     test('when parsing valid parameter string then parameters are parsed.', () {
       expect(
-        EndpointDispatch.parseParameters(
-          '{"arg1": 42, "arg2": "value"}',
+        parseParameters(
+          {'arg1': 42, 'arg2': 'value'},
           parameterDescriptions,
           Protocol(),
         ),
@@ -155,55 +119,13 @@ void main() {
     });
 
     test(
-        'when parsing parameter where required parameters are supplied as additional parameters then parameters are parsed.',
+        'when parsing parameter input is only containing one of the required parameters then an exception is thrown.',
         () {
       expect(
-        EndpointDispatch.parseParameters(
-          null,
+        () => parseParameters(
+          {'arg1': 42},
           parameterDescriptions,
           Protocol(),
-          additionalParameters: {'arg1': 42, 'arg2': 'value'},
-        ),
-        {'arg1': 42, 'arg2': 'value'},
-      );
-    });
-
-    test(
-        'when parsing parameter where parameter string contains one parameter and additional parameters contains the other then parameters are parsed.',
-        () {
-      expect(
-        EndpointDispatch.parseParameters(
-          '{"arg1": 42}',
-          parameterDescriptions,
-          Protocol(),
-          additionalParameters: {'arg2': 'value'},
-        ),
-        {'arg1': 42, 'arg2': 'value'},
-      );
-    });
-
-    test(
-        'when parsing parameter string only containing one of the required parameters then an exception is thrown.',
-        () {
-      expect(
-        () => EndpointDispatch.parseParameters(
-          "{'arg1': 42}",
-          parameterDescriptions,
-          Protocol(),
-        ),
-        throwsA(isA<Exception>()),
-      );
-    });
-
-    test(
-        'when parsing parameter where only one of the required parameters is passed as additional parameters then an exception is thrown.',
-        () {
-      expect(
-        () => EndpointDispatch.parseParameters(
-          null,
-          parameterDescriptions,
-          Protocol(),
-          additionalParameters: {'arg1': 42},
         ),
         throwsA(isA<Exception>()),
       );
