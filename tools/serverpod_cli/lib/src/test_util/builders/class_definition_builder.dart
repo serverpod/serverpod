@@ -22,7 +22,7 @@ class ClassDefinitionBuilder {
   List<_FieldBuilder> _fields;
   List<SerializableModelIndexDefinition> _indexes;
   List<String>? _documentation;
-  List<InheritanceDefinition> _subClasses;
+  List<InheritanceDefinition> _childClasses;
   InheritanceDefinition? _extendsClass;
 
   ClassDefinitionBuilder()
@@ -36,7 +36,7 @@ class ClassDefinitionBuilder {
         _serverOnly = false,
         _isException = false,
         _indexes = [],
-        _subClasses = [];
+        _childClasses = [];
 
   ClassDefinition build() {
     if (_tableName != null) {
@@ -64,7 +64,7 @@ class ClassDefinitionBuilder {
       manageMigration: _managedMigration,
       indexes: _indexes,
       documentation: _documentation,
-      subClasses: _subClasses,
+      childClasses: _childClasses,
       extendsClass: _extendsClass,
     );
   }
@@ -326,14 +326,14 @@ class ClassDefinitionBuilder {
     return this;
   }
 
-  ClassDefinitionBuilder withSubClasses(
+  ClassDefinitionBuilder withChildClasses(
     String className,
     String fileName,
     String fieldName,
     String fieldType,
     bool fieldNullable,
   ) {
-    _subClasses = [
+    _childClasses = [
       ResolvedInheritanceDefinition(
         ClassDefinitionBuilder()
             .withClassName(className)

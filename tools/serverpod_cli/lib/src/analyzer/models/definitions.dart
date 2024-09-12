@@ -56,8 +56,8 @@ class ClassDefinition extends SerializableModelDefinition {
   /// `true` if this is an exception and not a class.
   final bool isException;
 
-  /// If set to a List of [InheritanceDefinitions] the class is a base class and stores the sub classes.
-  List<InheritanceDefinition> subClasses;
+  /// If set to a List of [InheritanceDefinitions] the class is a parent class and stores the child classes.
+  List<InheritanceDefinition> childClasses;
 
   /// If set to [InheritanceDefinitions] the class extends another class and stores the [ClassDefinition] of it's parent.
   InheritanceDefinition? extendsClass;
@@ -72,13 +72,13 @@ class ClassDefinition extends SerializableModelDefinition {
     required super.serverOnly,
     required this.manageMigration,
     required this.isException,
-    subClasses,
+    childClasses,
     this.extendsClass,
     this.tableName,
     this.indexes = const [],
     super.subDirParts,
     this.documentation,
-  }) : subClasses = subClasses ?? [];
+  }) : childClasses = childClasses ?? [];
 
   SerializableModelFieldDefinition? findField(String name) {
     return fields

@@ -8,7 +8,8 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   group('Extends property tests', () {
-    test('Given a sub-class of an existing class, then no errors are collected',
+    test(
+        'Given a child-class of an existing class, then no errors are collected',
         () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -20,7 +21,7 @@ void main() {
         ).build(),
         ModelSourceBuilder().withFileName('example2').withYaml(
           '''
-          class: ExampleSubClass
+          class: ExampleChildClass
           extends: Example
           fields:
             age: int
@@ -39,7 +40,7 @@ void main() {
     });
 
     test(
-        'Given a sub-class of a not existing class, then collect an error that no class was found in models',
+        'Given a child-class of a not existing class, then collect an error that no class was found in models',
         () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -70,7 +71,7 @@ void main() {
     });
 
     test(
-        'Given a sub-class is defined with the table property, then an error is collected that sub-classes cannot have a table',
+        'Given a child-class is defined with the table property, then an error is collected that child-classes cannot have a table',
         () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -82,9 +83,9 @@ void main() {
         ).build(),
         ModelSourceBuilder().withFileName('example2').withYaml(
           '''
-          class: ExampleSubClass
+          class: ExampleChildClass
           extends: Example
-          table: example_sub_class
+          table: example_child_class
           fields:
             age: int
           ''',
@@ -109,7 +110,7 @@ void main() {
     });
 
     test(
-        'Given a sub-class extends a class with a table defined, then collect an error that parent class cannot have a table',
+        'Given a child-class extends a class with a table defined, then collect an error that parent class cannot have a table',
         () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -122,7 +123,7 @@ void main() {
         ).build(),
         ModelSourceBuilder().withFileName('example2').withYaml(
           '''
-          class: ExampleSubClass
+          class: ExampleChildClass
           extends: Example
           fields:
             age: int

@@ -53,7 +53,7 @@ class ModelDependencyResolver {
 
     extendedClass = ResolvedInheritanceDefinition(parentClass);
 
-    parentClass.subClasses.add(
+    parentClass.childClasses.add(
       ResolvedInheritanceDefinition(classDefinition),
     );
   }

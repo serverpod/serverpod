@@ -48,7 +48,7 @@ class SerializableModelLibraryGenerator {
       config: config,
     );
 
-    bool isParentClass = classDefinition.subClasses.isNotEmpty;
+    bool isParentClass = classDefinition.childClasses.isNotEmpty;
 
     var extendedClass =
         classDefinition.extendsClass is ResolvedInheritanceDefinition

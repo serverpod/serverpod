@@ -17,30 +17,30 @@ void main() {
   var parentExpectedFilePath =
       path.join('lib', 'src', 'generated', '$parentClassFileName.dart');
 
-  var subClassName = 'SubExample';
-  var subClassFileName = 'sub_example';
-  var subExpectedFilePath =
-      path.join('lib', 'src', 'generated', '$subClassFileName.dart');
+  var childClassName = 'ChildExample';
+  var childClassFileName = 'child_example';
+  var childExpectedFilePath =
+      path.join('lib', 'src', 'generated', '$childClassFileName.dart');
 
   group(
-      'Given a sub-class named $subClassName with one primitive var extending a parent-class named $parentClassName with one primitive var when generating code',
+      'Given a child-class named $childClassName with one primitive var extending a parent-class named $parentClassName with one primitive var when generating code',
       () {
     var models = [
       ClassDefinitionBuilder()
           .withClassName(parentClassName)
           .withFileName(parentClassFileName)
           .withSimpleField('name', 'String')
-          .withSubClasses(
-            subClassName,
-            subClassFileName,
+          .withChildClasses(
+            childClassName,
+            childClassFileName,
             'age',
             'int',
             true,
           )
           .build(),
       ClassDefinitionBuilder()
-          .withClassName(subClassName)
-          .withFileName(subClassFileName)
+          .withClassName(childClassName)
+          .withFileName(childClassFileName)
           .withSimpleField('age', 'int', nullable: true)
           .withExtendsClass(
             parentClassName,
@@ -59,8 +59,8 @@ void main() {
 
     var parentCompilationUnit =
         parseString(content: codeMap[parentExpectedFilePath]!).unit;
-    var subCompilationUnit =
-        parseString(content: codeMap[subExpectedFilePath]!).unit;
+    var childCompilationUnit =
+        parseString(content: codeMap[childExpectedFilePath]!).unit;
 
     group('Then the $parentClassName', () {
       var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
@@ -85,16 +85,16 @@ void main() {
       });
     });
 
-    group('Then the $subClassName', () {
-      var subClass = CompilationUnitHelpers.tryFindClassDeclaration(
-        subCompilationUnit,
-        name: subClassName,
+    group('Then the $childClassName', () {
+      var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        childCompilationUnit,
+        name: childClassName,
       );
 
       group('has a private constructor', () {
         var privateConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
-          subClass!,
+          childClass!,
           name: '_',
         );
 
@@ -113,7 +113,7 @@ void main() {
       group('has a factory constructor', () {
         var factoryConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
-          subClass!,
+          childClass!,
           name: null,
         );
 
@@ -125,14 +125,14 @@ void main() {
           expect(
             factoryConstructor?.factoryKeyword,
             isNotNull,
-            reason: 'No factory keyword found on $subClassName',
+            reason: 'No factory keyword found on $childClassName',
           );
         }, skip: factoryConstructor == null);
 
         test('passed to private implementing class', () {
           expect(
             factoryConstructor?.redirectedConstructor?.toSource(),
-            '_${subClassName}Impl',
+            '_${childClassName}Impl',
           );
         }, skip: factoryConstructor == null);
 
@@ -146,7 +146,7 @@ void main() {
 
       group('has a copyWith method', () {
         var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          subClass!,
+          childClass!,
           name: 'copyWith',
         );
 
@@ -154,12 +154,12 @@ void main() {
           expect(
             copyWithMethod,
             isNotNull,
-            reason: 'No copyWith method found on $subClassName',
+            reason: 'No copyWith method found on $childClassName',
           );
         });
 
-        test('with the return type of $subClassName.', () {
-          expect(copyWithMethod?.returnType?.toSource(), subClassName);
+        test('with the return type of $childClassName.', () {
+          expect(copyWithMethod?.returnType?.toSource(), childClassName);
         }, skip: copyWithMethod == null);
 
         test('with the named params set where all variables are nullable.', () {
@@ -173,21 +173,21 @@ void main() {
           var sourceCode = copyWithMethod?.body.toSource();
           expect(sourceCode, ';');
         }, skip: copyWithMethod == null);
-      }, skip: subClass == null);
+      }, skip: childClass == null);
     });
     var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
-      subCompilationUnit,
-      name: '_${subClassName}Impl',
+      childCompilationUnit,
+      name: '_${childClassName}Impl',
     );
-    test('then a class named _${subClassName}Impl is generated.', () {
+    test('then a class named _${childClassName}Impl is generated.', () {
       expect(
         copyWithClass,
         isNotNull,
-        reason: 'Missing definition for class named _${subClassName}Impl',
+        reason: 'Missing definition for class named _${childClassName}Impl',
       );
     });
 
-    group('then the class named _${subClassName}Impl', () {
+    group('then the class named _${childClassName}Impl', () {
       group('has a constructor', () {
         var defaultConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
