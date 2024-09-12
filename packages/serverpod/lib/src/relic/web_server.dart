@@ -1,19 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:collection/collection.dart';
-import 'package:mustache_template/mustache.dart';
+import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/relic/util/log_utils.dart';
-
-part './routes/routes.dart';
+import 'package:serverpod/src/relic/templates.dart';
+import 'package:serverpod/src/relic/web_widget.dart';
 
 /// The Serverpod webserver.
 class WebServer {
-  static WebServer? _currentInstance;
-
   /// Reference to the [Serverpod] this webserver is associated with.
   final Serverpod serverpod;
 
@@ -35,8 +30,8 @@ class WebServer {
   /// A list of [Route] which defines how to handle path passed to the server.
   final List<Route> routes = <Route>[];
 
-  /// Global access to all templates loaded when starting the webserver.
-  final Templates _templates = Templates();
+  /// A list of [Route] which defines how to handle path passed to the server.
+  late Handler _hander = _requestHandler;
 
   /// Creates a new webserver. If a security context is provided an HTTPS server
   /// will be started.
@@ -45,8 +40,6 @@ class WebServer {
     this.securityContext,
     this.address,
   }) : serverId = serverpod.serverId {
-    _currentInstance = this;
-
     var config = serverpod.config.webServer;
 
     if (config == null) {
@@ -59,10 +52,6 @@ class WebServer {
     _port = config.port;
   }
 
-  /// Gets the current instance of the [WebServer]. Returns `null` if no instance
-  /// is running.
-  static WebServer? get currentInstance => _currentInstance;
-
   bool _running = false;
 
   /// Returns true if the webserver is currently running.
@@ -73,34 +62,55 @@ class WebServer {
   /// Returns the [HttpServer] this webserver is using to handle connections.
   HttpServer get httpServer => _httpServer!;
 
-  /// Retrieves a loaded template by its [name]. Returns `null` if the template
-  /// is not found.
-  Template? getTemplate(String name) => _templates[name];
+  /// Adds a [Route] to the server, together with a path that defines how
+  /// calls are routed.
+  void addRoute(Route route, String matchPath) {
+    /// Check if the route is of type RouteStaticDirectory
+    if (route is RouteStaticDirectory) {
+      logDebug(
+        'WARNING: RouteStaticDirectory is deprecated. Use addStaticDirectory instead. This usage will be removed in future versions.',
+      );
+    }
+    route._matchPath = matchPath;
+    routes.add(route);
+  }
+
+  /// Adds a static file handler for serving files from [fileSystemPath].
+  /// The static handler is added before other route handlers, allowing static
+  /// files to be served first. If no file is found, the request proceeds to
+  /// other handlers.
+  void addStaticDirectory(String fileSystemPath) {
+    var staticHandler = createStaticHandler(fileSystemPath);
+    _hander = Cascade().add(staticHandler).add(_hander).handler;
+  }
 
   /// Starts the webserver.
   /// Returns true if the webserver was started successfully.
   Future<bool> start() async {
-    await _templates.loadAll();
+    var templatesDirectory = Directory(path.joinAll(['web', 'templates']));
+    await templates.loadAll(templatesDirectory);
+    if (templates.isEmpty) {
+      logDebug(
+          'No webserver relic templates found, template directory path: "${templatesDirectory.path}".');
+    }
 
     try {
-      _httpServer = await switch (securityContext != null) {
-        true => HttpServer.bindSecure(
-            address ?? InternetAddress.anyIPv6,
-            _port,
-            securityContext!,
-          ),
-        false => HttpServer.bind(
-            address ?? InternetAddress.anyIPv6,
-            _port,
-          ),
-      };
+      _httpServer = await (securityContext == null
+          ? HttpServer.bind(
+              address ?? InternetAddress.anyIPv6,
+              _port,
+            )
+          : HttpServer.bindSecure(
+              address ?? InternetAddress.anyIPv6,
+              _port,
+              securityContext!,
+            ));
     } catch (e) {
-      var now = DateTime.now().toUtc();
       stderr.writeln(
-        '$now ERROR: Failed to bind socket, Webserver '
+        '${DateTime.now().toUtc()} ERROR: Failed to bind socket, Webserver '
         'port $_port may already be in use.',
       );
-      stderr.writeln('$now ERROR: $e');
+      stderr.writeln('${DateTime.now().toUtc()} ERROR: $e');
       return false;
     }
     httpServer.autoCompress = true;
@@ -117,27 +127,20 @@ class WebServer {
     return true;
   }
 
-  /// Stops the webserver.
-  Future<void> stop() async {
-    await _httpServer?.close();
-    _httpServer = null;
-    _running = false;
-  }
-
-  /// Adds a [Route] to the server, together with a path that defines how
-  /// calls are routed.
-  void addRoute(Route route, String matchPath) {
-    route._matchPath = matchPath;
-    routes.add(route);
-  }
-
   void _start() async {
     stdout.writeln('Webserver listening on port $_port');
 
     try {
       await for (var request in httpServer) {
         try {
-          _handleRequest(request);
+          var response = await _hander(
+            Request.fromHttpRequest(request),
+          );
+          logDebug('Writing response!');
+          await response.writeHttpResponse(
+            request.response,
+            poweredByHeader: 'serverpod-relic',
+          );
         } catch (e, stackTrace) {
           logError(e, stackTrace: stackTrace);
         }
@@ -147,7 +150,7 @@ class WebServer {
     }
   }
 
-  void _handleRequest(HttpRequest request) async {
+  Future<Response> _requestHandler(Request request) async {
     Uri uri;
     try {
       uri = request.requestedUri;
@@ -156,81 +159,189 @@ class WebServer {
         'Malformed call, invalid uri from '
         '${request.connectionInfo?.remoteAddress.address}',
       );
-
-      request.response.statusCode = HttpStatus.badRequest;
-      await request.response.close();
-      return;
+      return Response.badRequest();
     }
 
-    // Check routes
-    var route = routes.firstWhereOrNull(
-      (route) => route._isMatch(uri.path),
-    );
-
-    if (route == null) {
-      // No matching route found
-      await _handleNotFound(request, uri);
-      return;
+    String? authenticationKey;
+    for (var cookie in request.cookies) {
+      if (cookie.name == 'auth') {
+        authenticationKey = cookie.value;
+      }
     }
 
-    logDebug('Handle: $uri');
+    var queryParameters = request.url.queryParameters;
+    authenticationKey ??= queryParameters['auth'];
 
     WebCallSession session = WebCallSession(
       server: serverpod.server,
       endpoint: uri.path,
-      authenticationKey: _findAuthenticationKey(request),
+      authenticationKey: authenticationKey,
     );
 
-    var response = await _handleRouteCall(
-      route,
-      session,
-      Request.fromHttpRequest(request),
-    );
-
-    // If the route returned a "not found" response
-    if (response.statusCode == HttpStatus.notFound) {
-      await _handleNotFound(request, uri);
-      await session.close();
-      return;
+    // Check routes
+    for (var route in routes) {
+      if (route._isMatch(uri.path)) {
+        var response = await _handleRouteCall(
+          route,
+          session,
+          request,
+        );
+        if (response.statusCode == HttpStatus.notFound) {
+          continue;
+        }
+        await session.close();
+        return response;
+      }
     }
 
-    logDebug('Writing $uri');
-    await response.writeHttpResponse(
-      request.response,
-      poweredByHeader: 'serverpod-relic',
-    );
-    logDebug('Finished $uri');
+    // No matching patch found
+    logDebug('Route not found!');
     await session.close();
+    return Response.notFound();
   }
 
   Future<Response> _handleRouteCall(
-    Route route,
-    Session session,
-    Request request,
-  ) async {
+      Route route, Session session, Request request) async {
     try {
-      return await route.handleCall(session, request);
+      return route.handleCall(session, request);
     } catch (e) {
       return Response.internalServerError();
     }
   }
 
-  /// Handles "not found" responses by logging and closing the request
-  Future<void> _handleNotFound(HttpRequest request, Uri uri) async {
-    logError('Route not found: $uri');
-    request.response.statusCode = HttpStatus.notFound;
-    await request.response.close();
+  /// Logs an error to stderr.
+  void logError(var e, {StackTrace? stackTrace}) {
+    stderr.writeln('ERROR: $e');
+    if (stackTrace != null) {
+      stderr.writeln('$stackTrace');
+    }
   }
 
-  /// Extracts the authentication key from either cookies or query parameters
-  String? _findAuthenticationKey(HttpRequest request) {
-    // Check for the authentication key in cookies
-    for (var cookie in request.cookies) {
-      if (cookie.name == 'auth') {
-        return cookie.value;
+  /// Logs a message to stdout.
+  void logDebug(String msg) {
+    stdout.writeln(msg);
+  }
+
+  /// Stops the webserver.
+  Future<void> stop() async {
+    var localHttpServer = _httpServer;
+    if (localHttpServer != null) {
+      await localHttpServer.close();
+    }
+    _running = false;
+  }
+}
+
+/// Defines HTTP call methods for routes.
+enum RouteMethod {
+  /// HTTP get.
+  get,
+
+  /// HTTP post.
+  post,
+}
+
+/// A [Route] defines a destination in Serverpod's web server. It will handle
+/// a call and generate an appropriate response by manipulating the
+/// [HttpRequest] object. You override [Route], or more likely it's subclass
+/// [WidgetRoute] to create your own custom routes in your server.
+abstract class Route {
+  /// The method this route will respond to, i.e. HTTP get or post.
+  final RouteMethod method;
+  String? _matchPath;
+
+  /// Creates a new [Route].
+  Route({this.method = RouteMethod.get});
+
+  /// Handles a call to this route. This method is responsible for setting
+  /// a correct response headers, status code, and write the response body to
+  /// `request.response`.
+  Future<Response> handleCall(Session session, Request request);
+
+  bool _isMatch(String path) {
+    if (_matchPath == null) {
+      return false;
+    }
+    if (_matchPath!.endsWith('*')) {
+      var start = _matchPath!.substring(0, _matchPath!.length - 1);
+      return path.startsWith(start);
+    } else {
+      return _matchPath == path;
+    }
+  }
+
+  // TODO: May want to create another abstraction layer here, to handle other
+  // types of responses too. Or at least clarify the naming of the method.
+
+  /// Returns the body of the request, assuming it is standard URL encoded form
+  /// post request.
+  static Future<Map<String, String>> getBody(HttpRequest request) async {
+    var body = await _readBody(request);
+
+    var params = <String, String>{};
+
+    if (body != null) {
+      var encodedParams = body.split('&');
+      for (var encodedParam in encodedParams) {
+        var comps = encodedParam.split('=');
+        if (comps.length != 2) {
+          continue;
+        }
+
+        var name = Uri.decodeQueryComponent(comps[0]);
+        var value = Uri.decodeQueryComponent(comps[1]);
+
+        params[name] = value;
       }
     }
 
-    return request.uri.queryParameters['auth'];
+    return params;
+  }
+
+  static Future<String?> _readBody(HttpRequest request) async {
+    // TODO: Find more efficient solution?
+    var len = 0;
+    var data = <int>[];
+    await for (var segment in request) {
+      len += segment.length;
+      if (len > 10240) {
+        return null;
+      }
+      data += segment;
+    }
+    return const Utf8Decoder().convert(data);
+  }
+}
+
+/// A [WidgetRoute] is the most convenient way to create routes in your server.
+/// Override the [build] method and return an appropriate [Widget].
+abstract class WidgetRoute extends Route {
+  /// Override this method to build your web [Widget] from the current [session]
+  /// and [request].
+  Future<AbstractWidget> build(Session session, Request request);
+
+  @override
+  Future<Response> handleCall(Session session, Request request) async {
+    var widget = await build(session, request);
+
+    if (widget is WidgetJson) {
+      return Response.ok(
+        body: Body.fromString(
+          widget.toString(),
+          contentType: BodyType.json,
+        ),
+      );
+    } else if (widget is WidgetRedirectPermanently) {
+      return Response.movedPermanently(widget.url);
+    } else if (widget is WidgetRedirectTemporarily) {
+      return Response.seeOther(widget.url);
+    } else {
+      return Response.ok(
+        body: Body.fromString(
+          widget.toString(),
+          contentType: BodyType.html,
+        ),
+      );
+    }
   }
 }

@@ -2,27 +2,12 @@ import 'package:mustache_template/mustache.dart';
 import 'package:serverpod/serverpod.dart';
 import 'dart:convert';
 
+import 'package:serverpod/src/relic/templates.dart';
+
 /// The base class for all web widgets. Override this class to create a custom
 /// widget type, or use one of the default types which covers most common use
 /// cases.
-abstract class AbstractWidget {
-  late final WebServer _webServer;
-
-  /// Creates an instance of [AbstractWidget] and ensures a running [WebServer]
-  /// is available. Throws an assertion error if no web server is running.
-  AbstractWidget() {
-    var webServer = WebServer.currentInstance;
-    assert(
-      webServer != null,
-      'Failed to initialize widget: no active WebServer instance.',
-    );
-    _webServer = webServer!;
-  }
-
-  /// Handles the HTTP response for the widget. Subclasses should override this
-  /// to return the appropriate [Response] based on the [session] and [request].
-  Future<Response> handleResponse(Session session, Request request);
-}
+abstract class AbstractWidget {}
 
 /// A widget based on a HTML template. The [name] of the template should
 /// correspond to a template file in your server's web/templates directory.
@@ -46,22 +31,14 @@ class Widget extends AbstractWidget {
   Widget({
     required this.name,
   }) {
-    var template = _webServer.getTemplate(name);
-    assert(template != null, 'Template $name.html missing for $runtimeType');
-    template = template;
+    assert(templates[name] != null,
+        'Template $name.html missing for $runtimeType');
+    template = templates[name]!;
   }
 
   @override
-  Future<Response> handleResponse(
-    Session session,
-    Request request,
-  ) async {
-    return Response.ok(
-      body: Body.fromString(
-        template.renderString(values),
-        contentType: BodyType.xml,
-      ),
-    );
+  String toString() {
+    return template.renderString(values);
   }
 }
 
@@ -74,22 +51,12 @@ class WidgetList extends AbstractWidget {
   WidgetList({required this.widgets});
 
   @override
-  Future<Response> handleResponse(
-    Session session,
-    Request request,
-  ) async {
+  String toString() {
     var rendered = <String>[];
     for (var widget in widgets) {
-      rendered.add(
-        widget.template.renderString(widget.values),
-      );
+      rendered.add(widget.toString());
     }
-    return Response.ok(
-      body: Body.fromString(
-        rendered.join('\n'),
-        contentType: BodyType.xml,
-      ),
-    );
+    return rendered.join('\n');
   }
 }
 
@@ -103,16 +70,8 @@ class WidgetJson extends AbstractWidget {
   WidgetJson({required this.object});
 
   @override
-  Future<Response> handleResponse(
-    Session session,
-    Request request,
-  ) async {
-    return Response.ok(
-      body: Body.fromString(
-        SerializationManager.encode(object),
-        contentType: BodyType.json,
-      ),
-    );
+  String toString() {
+    return SerializationManager.encode(object);
   }
 }
 
@@ -125,11 +84,8 @@ class WidgetRedirectPermanently extends AbstractWidget {
   WidgetRedirectPermanently({required this.url});
 
   @override
-  Future<Response> handleResponse(
-    Session session,
-    Request request,
-  ) async {
-    return Response.movedPermanently(url);
+  String toString() {
+    return '';
   }
 }
 
@@ -142,33 +98,7 @@ class WidgetRedirectTemporarily extends AbstractWidget {
   WidgetRedirectTemporarily({required this.url});
 
   @override
-  Future<Response> handleResponse(
-    Session session,
-    Request request,
-  ) async {
-    return Response.seeOther(url);
-  }
-}
-
-/// A widget that renders HTML content. The provided [html] will be returned
-/// in the HTTP response as HTML.
-class HtmlWidget extends AbstractWidget {
-  /// The HTML content to be rendered.
-  final String html;
-
-  /// Creates a new [HtmlWidget] with the provided [html].
-  HtmlWidget({required this.html});
-
-  @override
-  Future<Response> handleResponse(
-    Session session,
-    Request request,
-  ) async {
-    return Response.ok(
-      body: Body.fromString(
-        html,
-        contentType: BodyType.html,
-      ),
-    );
+  String toString() {
+    return '';
   }
 }

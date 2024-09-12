@@ -13,7 +13,7 @@ void main() {
     var nonExistingDirectory =
         Directory(path.joinAll([uniqueUuid, 'non-existing-directory']));
 
-    await templates.loadAll(directory: nonExistingDirectory);
+    await templates.loadAll(nonExistingDirectory);
 
     expect(templates, isEmpty);
   });

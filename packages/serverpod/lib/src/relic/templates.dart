@@ -2,23 +2,19 @@ import 'dart:io';
 
 import 'package:mustache_template/mustache.dart';
 import 'package:path/path.dart';
-import 'package:path/path.dart' as path;
-import 'package:serverpod/src/relic/util/log_utils.dart';
+
+/// Global access to all templates loaded when starting the webserver.
+final Templates templates = Templates();
 
 /// Loads and caches templates.
 class Templates {
   final Map<String, Template> _templates = {};
 
   /// Loads all templates from web/templates
-  Future<void> loadAll({
-    Directory? directory,
-  }) async {
-    var templatesDirectory =
-        directory ?? Directory(path.joinAll(['web', 'templates']));
+  Future<void> loadAll(Directory templateDirectory) async {
+    if (!await templateDirectory.exists()) return;
 
-    if (!await templatesDirectory.exists()) return;
-
-    for (var entity in await templatesDirectory.list().toList()) {
+    for (var entity in await templateDirectory.list().toList()) {
       if (entity is File && extension(entity.path).toLowerCase() == '.html') {
         var file = entity;
         var name = basenameWithoutExtension(file.path);
@@ -29,12 +25,6 @@ class Templates {
           name: name,
         );
       }
-    }
-
-    if (isEmpty) {
-      logDebug(
-        'No webserver relic templates found, template directory path: "${templatesDirectory.path}".',
-      );
     }
   }
 

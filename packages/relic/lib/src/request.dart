@@ -52,6 +52,9 @@ class Request extends Message {
   /// The original [Uri] for the request.
   final Uri requestedUri;
 
+  /// The cookies in the request, from the "Cookie" headers.
+  final List<io.Cookie> cookies;
+
   /// The [HttpConnectionInfo] info associated with this request, if available.
   final io.HttpConnectionInfo? connectionInfo;
 
@@ -115,6 +118,7 @@ class Request extends Message {
   Request(
     String method,
     Uri requestedUri, {
+    List<io.Cookie> cookies = const [],
     io.HttpConnectionInfo? connectionInfo,
     String? protocolVersion,
     Headers? headers,
@@ -126,6 +130,7 @@ class Request extends Message {
   }) : this._(
           method,
           requestedUri,
+          cookies,
           connectionInfo,
           headers ?? Headers.request(),
           protocolVersion: protocolVersion,
@@ -146,6 +151,7 @@ class Request extends Message {
     return Request(
       request.method,
       request.requestedUri,
+      cookies: request.cookies,
       connectionInfo: request.connectionInfo,
       protocolVersion: request.protocolVersion,
       headers: Headers.fromHttpRequest(request),
@@ -164,6 +170,7 @@ class Request extends Message {
   Request._(
     this.method,
     this.requestedUri,
+    this.cookies,
     this.connectionInfo,
     Headers headers, {
     String? protocolVersion,
@@ -266,6 +273,7 @@ class Request extends Message {
     return Request._(
       method,
       requestedUri,
+      cookies,
       connectionInfo,
       this.headers.withHeaders(headers),
       protocolVersion: protocolVersion,

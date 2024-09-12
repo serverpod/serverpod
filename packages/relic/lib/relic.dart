@@ -20,3 +20,5 @@ export 'src/response.dart' show Response;
 export 'src/server.dart' show Server;
 // ignore: deprecated_member_use_from_same_package
 export 'src/server_handler.dart' show ServerHandler;
+
+export 'src/static/static_handler.dart';

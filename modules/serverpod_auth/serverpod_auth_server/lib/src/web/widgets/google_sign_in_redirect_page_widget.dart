@@ -1,13 +1,11 @@
 import 'package:serverpod/serverpod.dart';
 
 ///
-class GoogleSignInRedirectPageWidget extends HtmlWidget {
-  /// Creates a [GoogleSignInRedirectPageWidget] that renders a redirect page
-  /// with JavaScript to handle Google sign-in and send the authorization code
-  /// back to the web client.
-  GoogleSignInRedirectPageWidget()
-      : super(
-          html: '''<html>
+class GoogleSignInRedirectPageWidget extends AbstractWidget {
+  @override
+  String toString() {
+    return '''<html>
+
 <head>
   <script>
     function findParam(name) {
@@ -35,6 +33,6 @@ class GoogleSignInRedirectPageWidget extends HtmlWidget {
 <body>
 </body>
 
-</html>''',
-        );
+</html>''';
+  }
 }

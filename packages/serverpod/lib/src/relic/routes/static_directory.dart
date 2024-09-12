@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/relic/util/log_utils.dart';
 
+// TODO: Add more content type mappings.
 final _contentTypeMapping = <String, ContentType>{
   '.js': ContentType('text', 'javascript'),
   '.json': ContentType('application', 'json'),
-  '.wasm': ContentType('application', 'wasm'),
+  '.wsam': ContentType('application', 'wasm'),
   '.css': ContentType('text', 'css'),
   '.png': ContentType('image', 'png'),
   '.jpg': ContentType('image', 'jpeg'),
@@ -17,10 +17,6 @@ final _contentTypeMapping = <String, ContentType>{
   '.woff': ContentType('application', 'x-font-woff'),
   '.mp3': ContentType('audio', 'mpeg'),
   '.pdf': ContentType('application', 'pdf'),
-  '.html': ContentType('text', 'html'),
-  '.htm': ContentType('text', 'html'),
-  '.gif': ContentType('image', 'gif'),
-  '.mp4': ContentType('video', 'mp4'),
 };
 
 /// Route for serving a directory of static files.
@@ -36,11 +32,10 @@ class RouteStaticDirectory extends Route {
 
   /// Creates a static directory with the [serverDirectory] as its root.
   RouteStaticDirectory({
-    required String serverDirectory,
-    String? basePath,
+    required this.serverDirectory,
+    this.basePath,
     this.serveAsRootPath,
-  })  : serverDirectory = p.normalize(serverDirectory),
-        basePath = basePath != null ? p.normalize(basePath) : null;
+  });
 
   @override
   Future<Response> handleCall(Session session, Request request) async {
@@ -52,11 +47,6 @@ class RouteStaticDirectory extends Route {
     }
 
     try {
-      // Normalize path to prevent directory traversal attacks, example:
-      // Original Path 1: /home/user/../documents/./file.txt
-      // Normalized Path 1: /home/documents/file.txt
-      path = p.normalize(path);
-
       // Remove version control string
       var dir = serverDirectory;
       var base = p.basenameWithoutExtension(path);
@@ -86,10 +76,6 @@ class RouteStaticDirectory extends Route {
       extension = extension.toLowerCase();
       var contentType = _contentTypeMapping[extension];
 
-      if (contentType == null) {
-        logDebug('Unknown content type for extension: $extension');
-      }
-
       var filePath = path.startsWith('/') ? path.substring(1) : path;
       filePath = 'web/$filePath';
 
@@ -102,15 +88,14 @@ class RouteStaticDirectory extends Route {
             {
               'Cache-Control': ['max-age=31536000'],
               'Content-Type': [
-                contentType?.mimeType ?? 'application/octet-stream',
+                contentType?.mimeType ?? 'application/octet-stream'
               ],
             },
           ),
         ),
       );
     } catch (e) {
-      // Log error and return not found response
-      logError('Error serving file $path: $e');
+      // Couldn't find or load file.
       return Response.notFound();
     }
   }

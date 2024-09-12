@@ -6,7 +6,6 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:relic/relic.dart';
-import 'package:relic/self_static.dart';
 import 'package:test/test.dart';
 
 import 'test_util.dart';
