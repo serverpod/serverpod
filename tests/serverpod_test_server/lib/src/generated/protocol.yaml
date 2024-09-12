@@ -248,7 +248,8 @@ testTools:
   - returnsStream:
   - returnsListFromInputStream:
   - returnsStreamFromInputStream:
-  - pushNumberToSharedStream:
+  - postNumberToSharedStream:
+  - postNumberToSharedStreamAndReturnStream:
   - listenForNumbersOnSharedStream:
   - createSimpleData:
   - getAllSimpleData:

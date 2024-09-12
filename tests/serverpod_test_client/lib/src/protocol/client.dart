@@ -2032,11 +2032,19 @@ class EndpointTestTools extends _i1.EndpointRef {
         {'numbers': numbers},
       );
 
-  _i2.Future<void> pushNumberToSharedStream(int number) =>
+  _i2.Future<void> postNumberToSharedStream(int number) =>
       caller.callServerEndpoint<void>(
         'testTools',
-        'pushNumberToSharedStream',
+        'postNumberToSharedStream',
         {'number': number},
+      );
+
+  _i2.Stream<int> postNumberToSharedStreamAndReturnStream(int number) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'testTools',
+        'postNumberToSharedStreamAndReturnStream',
+        {'number': number},
+        {},
       );
 
   _i2.Stream<int> listenForNumbersOnSharedStream() =>

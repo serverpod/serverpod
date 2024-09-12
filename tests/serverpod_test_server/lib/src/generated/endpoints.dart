@@ -4320,8 +4320,8 @@ class Endpoints extends _i1.EndpointDispatch {
             params['string'],
           ),
         ),
-        'pushNumberToSharedStream': _i1.MethodConnector(
-          name: 'pushNumberToSharedStream',
+        'postNumberToSharedStream': _i1.MethodConnector(
+          name: 'postNumberToSharedStream',
           params: {
             'number': _i1.ParameterDescription(
               name: 'number',
@@ -4334,7 +4334,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['testTools'] as _i34.TestToolsEndpoint)
-                  .pushNumberToSharedStream(
+                  .postNumberToSharedStream(
             session,
             params['number'],
           ),
@@ -4429,6 +4429,28 @@ class Endpoints extends _i1.EndpointDispatch {
                   .returnsStreamFromInputStream(
             session,
             streamParams['numbers']!.cast<int>(),
+          ),
+        ),
+        'postNumberToSharedStreamAndReturnStream': _i1.MethodStreamConnector(
+          name: 'postNumberToSharedStreamAndReturnStream',
+          params: {
+            'number': _i1.ParameterDescription(
+              name: 'number',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['testTools'] as _i34.TestToolsEndpoint)
+                  .postNumberToSharedStreamAndReturnStream(
+            session,
+            params['number'],
           ),
         ),
         'listenForNumbersOnSharedStream': _i1.MethodStreamConnector(

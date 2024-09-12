@@ -56,7 +56,8 @@ export 'package:serverpod_test/serverpod_test.dart'
         UnauthenticatedEndpointCallTestException,
         InsufficientEndpointAccessTestException,
         RollbackDatabase,
-        ResetTestSessions;
+        ResetTestSessions,
+        flushEventQueue;
 
 @_i1.isTestGroup
 withServerpod(
@@ -5091,7 +5092,7 @@ class _TestToolsEndpoint {
     return streamController.stream;
   }
 
-  _i3.Future<void> pushNumberToSharedStream(
+  _i3.Future<void> postNumberToSharedStream(
     _i1.TestSession session,
     int number,
   ) async {
@@ -5100,7 +5101,7 @@ class _TestToolsEndpoint {
         createSessionCallback: (_) =>
             (session as _i1.InternalTestSession).serverpodSession,
         endpointPath: 'testTools',
-        methodName: 'pushNumberToSharedStream',
+        methodName: 'postNumberToSharedStream',
         parameters: {'number': number},
         serializationManager: _serializationManager,
       );
@@ -5109,6 +5110,33 @@ class _TestToolsEndpoint {
         callContext.arguments,
       ) as _i3.Future<void>);
     });
+  }
+
+  _i3.Stream<int> postNumberToSharedStreamAndReturnStream(
+    _i1.TestSession session,
+    int number,
+  ) {
+    var streamController = _i3.StreamController<int>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var callContext = await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) =>
+              (session as _i1.InternalTestSession).serverpodSession,
+          endpointPath: 'testTools',
+          methodName: 'postNumberToSharedStreamAndReturnStream',
+          arguments: {'number': number},
+          requestedInputStreams: [],
+          serializationManager: _serializationManager,
+        );
+        return (callContext.method.call(
+          (session as _i1.InternalTestSession).serverpodSession,
+          callContext.arguments,
+          {},
+        ) as _i3.Stream<int>);
+      },
+      streamController,
+    );
+    return streamController.stream;
   }
 
   _i3.Stream<int> listenForNumbersOnSharedStream(_i1.TestSession session) {
