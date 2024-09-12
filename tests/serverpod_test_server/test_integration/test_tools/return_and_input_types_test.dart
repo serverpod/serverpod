@@ -38,7 +38,7 @@ void main() {
         });
 
         test(
-            'when calling pushNumberToSharedStream and listenForNumbersOnSharedStream with different sessions then number should be echoed',
+            'when calling postNumberToSharedStream and listenForNumbersOnSharedStream with different sessions then number should be echoed',
             () async {
           var userSession1 = await session.copyWith(
             getAuthenticationInfo: () => AuthenticationInfo(1, {}),
@@ -47,13 +47,26 @@ void main() {
             getAuthenticationInfo: () => AuthenticationInfo(2, {}),
           );
 
-          var stream = await endpoints.testTools
-              .listenForNumbersOnSharedStream(userSession1);
+          var stream =
+              endpoints.testTools.listenForNumbersOnSharedStream(userSession1);
+          await flushEventQueue();
 
-          await endpoints.testTools.pushNumberToSharedStream(userSession2, 111);
-          await endpoints.testTools.pushNumberToSharedStream(userSession2, 222);
+          await endpoints.testTools.postNumberToSharedStream(userSession2, 111);
+          await endpoints.testTools.postNumberToSharedStream(userSession2, 222);
 
           await expectLater(stream.take(2), emitsInOrder([111, 222]));
+        });
+
+        test(
+            'when calling postNumberToSharedStreamAndReturnStream without listening to the return stream then number should still be posted',
+            () async {
+          var stream =
+              endpoints.testTools.listenForNumbersOnSharedStream(session);
+
+          endpoints.testTools
+              .postNumberToSharedStreamAndReturnStream(session, 111);
+
+          await expectLater(stream.take(1), emitsInOrder([111]));
         });
       });
     },

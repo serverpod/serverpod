@@ -10,7 +10,14 @@ import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dar
 import 'package:test/test.dart';
 
 const projectName = 'example_project';
-final config = GeneratorConfigBuilder().withName(projectName).build();
+final config = GeneratorConfigBuilder()
+    .withName(projectName)
+    .withRelativeServerTestToolsPathParts(
+  [
+    'integration_test',
+    'test_tools',
+  ],
+).build();
 const generator = DartServerCodeGenerator();
 
 void main() {
@@ -48,7 +55,8 @@ void main() {
             r'UnauthenticatedEndpointCallTestException,\s+'
             r'InsufficientEndpointAccessTestException,\s+'
             r'RollbackDatabase,\s+'
-            r'ResetTestSessions;'),
+            r'ResetTestSessions,\s+'
+            r'flushEventQueue;'),
       );
     }, skip: testToolsFile == null);
 

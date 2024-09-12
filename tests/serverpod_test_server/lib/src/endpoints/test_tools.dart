@@ -25,9 +25,18 @@ class TestToolsEndpoint extends Endpoint {
   }
 
   static const sharedStreamName = 'shared-stream';
-  Future<void> pushNumberToSharedStream(Session session, int number) async {
+  Future<void> postNumberToSharedStream(Session session, int number) async {
     await session.messages
         .postMessage(sharedStreamName, SimpleData(num: number));
+  }
+
+  // This obscure scenario is to demonstrate that the stream is consumed right away by the test tools.
+  // The test code does not have to start to start listening to the returned stream for it to execute up to the yield.
+  Stream<int> postNumberToSharedStreamAndReturnStream(
+      Session session, int number) async* {
+    await session.messages
+        .postMessage(sharedStreamName, SimpleData(num: number));
+    yield 1;
   }
 
   Stream<int> listenForNumbersOnSharedStream(Session session) async* {

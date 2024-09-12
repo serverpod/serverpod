@@ -394,6 +394,7 @@ class ServerTestToolsGenerator {
         'InsufficientEndpointAccessTestException',
         'RollbackDatabase',
         'ResetTestSessions',
+        'flushEventQueue',
       ]),
     ]);
   }

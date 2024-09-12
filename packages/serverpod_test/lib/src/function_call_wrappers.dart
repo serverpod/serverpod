@@ -15,6 +15,8 @@ Future<T> callAwaitableFunctionAndHandleExceptions<T>(
 }
 
 /// Test tools helper to not leak exceptions from functions that return streams.
+/// The [streamController] is used to start executing the endpoint method immediately up to the first `yield`.
+/// This removes the need for the caller to start listening to the stream to start the execution.
 /// Used by the generated code.
 Future<void> callStreamFunctionAndHandleExceptions<T>(
   Future<Stream<T>> Function() call,
