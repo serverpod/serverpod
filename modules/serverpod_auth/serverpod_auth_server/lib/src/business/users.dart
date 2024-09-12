@@ -39,7 +39,9 @@ class Users {
 
   /// Finds a user by its email address. Returns null if no user is found.
   static Future<UserInfo?> findUserByEmail(
-      Session session, String email) async {
+    Session session,
+    String email,
+  ) async {
     return await UserInfo.db.findFirstRow(
       session,
       where: (t) => t.email.equals(email),
@@ -50,7 +52,9 @@ class Users {
   /// email address. For Apple sign ins, this is a unique identifying string.
   /// Returns null if no user is found.
   static Future<UserInfo?> findUserByIdentifier(
-      Session session, String identifier) async {
+    Session session,
+    String identifier,
+  ) async {
     return await UserInfo.db.findFirstRow(
       session,
       where: (t) => t.userIdentifier.equals(identifier),
@@ -86,7 +90,10 @@ class Users {
 
   /// Updates a users name, returns null if unsuccessful.
   static Future<UserInfo?> changeUserName(
-      Session session, int userId, String newUserName) async {
+    Session session,
+    int userId,
+    String newUserName,
+  ) async {
     var userInfo = await findUserByUserId(session, userId, useCache: false);
     if (userInfo == null) return null;
 
@@ -103,7 +110,10 @@ class Users {
 
   /// Updates a users name, returns null if unsuccessful.
   static Future<UserInfo?> changeFullName(
-      Session session, int userId, String newFullName) async {
+    Session session,
+    int userId,
+    String newFullName,
+  ) async {
     var userInfo = await findUserByUserId(session, userId, useCache: false);
     if (userInfo == null) return null;
 
@@ -159,7 +169,10 @@ class Users {
 
   /// Marks a user as blocked so that they can't log in, and invalidates the
   /// cache for the user, and signs the user out.
-  static Future<void> blockUser(Session session, int userId) async {
+  static Future<void> blockUser(
+    Session session,
+    int userId,
+  ) async {
     var userInfo = await findUserByUserId(session, userId);
     if (userInfo == null) {
       throw 'userId $userId not found';
@@ -175,7 +188,10 @@ class Users {
   }
 
   /// Unblocks a user so that they can log in again.
-  static Future<void> unblockUser(Session session, int userId) async {
+  static Future<void> unblockUser(
+    Session session,
+    int userId,
+  ) async {
     var userInfo = await findUserByUserId(session, userId);
     if (userInfo == null) {
       throw 'userId $userId not found';
@@ -189,7 +205,9 @@ class Users {
   /// Invalidates the cache for a user and makes sure the next time a user info
   /// is fetched it's fresh from the database.
   static Future<void> invalidateCacheForUser(
-      Session session, int userId) async {
+    Session session,
+    int userId,
+  ) async {
     var cacheKey = 'serverpod_auth_userinfo_$userId';
     await session.caches.local.invalidateKey(cacheKey);
   }
@@ -206,10 +224,14 @@ extension UserInfoMethods on UserInfo {
   }
 
   /// Updates the name of this user, returns true if successful.
-  Future<bool> changeUserName(Session session, String newUserName) async {
-    if (id == null) return false;
+  Future<bool> changeUserName(
+    Session session,
+    String newUserName,
+  ) async {
+    var userId = id;
+    if (userId == null) return false;
 
-    var updatedUser = await Users.changeUserName(session, id!, newUserName);
+    var updatedUser = await Users.changeUserName(session, userId, newUserName);
     if (updatedUser == null) return false;
 
     userName = newUserName;
@@ -217,10 +239,14 @@ extension UserInfoMethods on UserInfo {
   }
 
   /// Updates the full name of this user, returns true if successful.
-  Future<bool> changeFullName(Session session, String newUserName) async {
-    if (id == null) return false;
+  Future<bool> changeFullName(
+    Session session,
+    String newUserName,
+  ) async {
+    var userId = id;
+    if (userId == null) return false;
 
-    var updatedUser = await Users.changeFullName(session, id!, newUserName);
+    var updatedUser = await Users.changeFullName(session, userId, newUserName);
     if (updatedUser == null) return false;
 
     userName = newUserName;
@@ -237,7 +263,10 @@ extension UserInfoMethods on UserInfo {
   }
 
   /// Updates the scopes for a user, returns true if successful.
-  Future<bool> updateScopes(Session session, Set<Scope> newScopes) async {
+  Future<bool> updateScopes(
+    Session session,
+    Set<Scope> newScopes,
+  ) async {
     if (id == null) return false;
 
     var updatedUser = await Users.updateUserScopes(session, id!, newScopes);
