@@ -5,6 +5,40 @@ import 'package:test/test.dart';
 import 'serverpod_test_tools.dart';
 
 void main() {
+  group(
+      'Given no explicit rollbackDatabase configuration when having multiple test cases',
+      () {
+    withServerpod(
+      (endpoints, session) {
+        test(
+            'then first test creates objects in the database that should be rolled back because of default rollbackDatabase.afterEach configuration',
+            () async {
+          await SimpleData.db.insert(
+            session,
+            [
+              SimpleData(num: 111),
+              SimpleData(num: 222),
+            ],
+          );
+          final result = await SimpleData.db.find(session);
+
+          expect(result.length, 2);
+          expect(result[0].num, 111);
+          expect(result[1].num, 222);
+        });
+
+        test(
+            'then database is rolled back in the second test because of default rollbackDatabase.afterEach configuration',
+            () async {
+          final result = await SimpleData.db.find(session);
+
+          expect(result.length, 0);
+        });
+      },
+      runMode: ServerpodRunMode.production,
+    );
+  });
+
   group('Given rollbackDatabase set to afterEach', () {
     group('when creating objects in a setUpAll', () {
       withServerpod(

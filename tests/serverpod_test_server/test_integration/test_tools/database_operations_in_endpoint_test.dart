@@ -18,40 +18,42 @@ void main() {
           expect(result.first.num, 123);
         });
 
-        test(
-            'when two calls to createSimpleData with different sessions then all sessions can see the created data',
-            () async {
-          var firstSession = await session.copyWith(
-            getAuthenticationInfo: () => AuthenticationInfo(111, {}),
-          );
-          var secondSession = await session.copyWith(
-            getAuthenticationInfo: () => AuthenticationInfo(222, {}),
-          );
+        group('when two calls to createSimpleData with different sessions', () {
+          late TestSession firstSession;
+          late TestSession secondSession;
+          setUp(() async {
+            firstSession = await session.copyWith(
+              getAuthenticationInfo: () => AuthenticationInfo(111, {}),
+            );
+            secondSession = await session.copyWith(
+              getAuthenticationInfo: () => AuthenticationInfo(222, {}),
+            );
 
-          await endpoints.testTools.createSimpleData(firstSession, 111);
-          await endpoints.testTools.createSimpleData(secondSession, 222);
+            await endpoints.testTools.createSimpleData(firstSession, 111);
+            await endpoints.testTools.createSimpleData(secondSession, 222);
+          });
 
-          var fetchedSimpleDatas =
-              await endpoints.testTools.getAllSimpleData(firstSession);
-
-          expect(fetchedSimpleDatas.length, 2);
-          expect(fetchedSimpleDatas[0].num, 111);
-          expect(fetchedSimpleDatas[1].num, 222);
-
-          final firstSessionResult = await SimpleData.db.find(firstSession);
-          expect(firstSessionResult.length, 2);
-          expect(firstSessionResult[0].num, 111);
-          expect(firstSessionResult[1].num, 222);
-
-          final secondSessionResult = await SimpleData.db.find(secondSession);
-          expect(secondSessionResult.length, 2);
-          expect(secondSessionResult[0].num, 111);
-          expect(secondSessionResult[1].num, 222);
-
-          final originalSessionResult = await SimpleData.db.find(session);
-          expect(originalSessionResult.length, 2);
-          expect(originalSessionResult[0].num, 111);
-          expect(originalSessionResult[1].num, 222);
+          test('then the first session can see the created data', () async {
+            var fetchedSimpleDatas =
+                await endpoints.testTools.getAllSimpleData(firstSession);
+            expect(fetchedSimpleDatas.length, 2);
+            expect(fetchedSimpleDatas[0].num, 111);
+            expect(fetchedSimpleDatas[1].num, 222);
+          });
+          test('then the second session can see the created data', () async {
+            var fetchedSimpleDatas =
+                await endpoints.testTools.getAllSimpleData(secondSession);
+            expect(fetchedSimpleDatas.length, 2);
+            expect(fetchedSimpleDatas[0].num, 111);
+            expect(fetchedSimpleDatas[1].num, 222);
+          });
+          test('then the original session can see the created data', () async {
+            var fetchedSimpleDatas =
+                await endpoints.testTools.getAllSimpleData(session);
+            expect(fetchedSimpleDatas.length, 2);
+            expect(fetchedSimpleDatas[0].num, 111);
+            expect(fetchedSimpleDatas[1].num, 222);
+          });
         });
 
         group('when calling getAllSimpleData', () {

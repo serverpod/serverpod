@@ -4,6 +4,34 @@ import 'package:test/test.dart';
 import 'serverpod_test_tools.dart';
 
 void main() {
+  group(
+      'Given no explicit resetTestSessions configuration when having multiple test cases',
+      () {
+    withServerpod(
+      (endpoints, session) {
+        group('when copying the session in the first test', () {
+          late TestSession newSession;
+
+          test(
+              'then first test has modified newSession that should be reset due to default resetTestSessions.afterEach configuration',
+              () async {
+            newSession = await session.copyWith(
+                getAuthenticationInfo: () => AuthenticationInfo(123, {}));
+
+            expect(newSession.authenticationInfo!.userId, 123);
+          });
+
+          test(
+              'then the second test has the reset newSession due to default resetTestSessions.afterEach configuration',
+              () async {
+            expect(newSession.authenticationInfo, isNull);
+          });
+        });
+      },
+      runMode: ServerpodRunMode.production,
+    );
+  });
+
   group('Given resetTestSessions set to afterEach', () {
     withServerpod(
       (endpoints, session) {
