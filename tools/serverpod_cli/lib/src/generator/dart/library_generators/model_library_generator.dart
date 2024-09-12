@@ -48,7 +48,7 @@ class SerializableModelLibraryGenerator {
       config: config,
     );
 
-    bool isBaseClass = classDefinition.subClasses.isNotEmpty;
+    bool isParentClass = classDefinition.subClasses.isNotEmpty;
 
     var extendedClass =
         classDefinition.extendsClass is ResolvedInheritanceDefinition
@@ -83,14 +83,14 @@ class SerializableModelLibraryGenerator {
             classDefinition,
             tableName,
             fields,
-            isBaseClass,
+            isParentClass,
             extendedClass,
           ),
           // We need to generate the implementation class for the copyWith method
           // to support differentiating between null and undefined values.
           // https://stackoverflow.com/questions/68009392/dart-custom-copywith-method-with-nullable-properties
           if (_shouldCreateUndefinedClass(fields)) _buildUndefinedClass(),
-          if (!isBaseClass)
+          if (!isParentClass)
             _buildModelImplClass(
               className,
               classDefinition,
@@ -98,7 +98,7 @@ class SerializableModelLibraryGenerator {
               [...extendedClassFields, ...fields],
             ),
           if (buildRepository.hasImplicitClassOperations(fields) &&
-              !isBaseClass)
+              !isParentClass)
             _buildModelImplicitClass(className, classDefinition),
         ]);
 
@@ -160,21 +160,21 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
     String? tableName,
     List<SerializableModelFieldDefinition> fields,
-    bool isBaseClass,
+    bool isParentClass,
     ClassDefinition? extendedClass,
   ) {
     var relationFields = fields.where((field) =>
         field.relation is ObjectRelationDefinition ||
         field.relation is ListRelationDefinition);
 
-    var baseClassFields = extendedClass?.fields ?? [];
+    var parentClassFields = extendedClass?.fields ?? [];
 
     return Class((classBuilder) {
       classBuilder
         ..name = className
         ..docs.addAll(classDefinition.documentation ?? []);
 
-      if (!isBaseClass) {
+      if (!isParentClass) {
         classBuilder.abstract = true;
       }
 
@@ -219,21 +219,21 @@ class SerializableModelLibraryGenerator {
           classDefinition,
           fields,
           tableName,
-          isBaseClass,
-          baseClassFields,
+          isParentClass,
+          parentClassFields,
         ),
-        if (!isBaseClass)
+        if (!isParentClass)
           _buildModelClassFactoryConstructor(
             className,
             classDefinition,
-            [...baseClassFields, ...fields],
+            [...parentClassFields, ...fields],
             tableName,
           ),
         _buildModelClassFromJsonConstructor(
-            className, [...baseClassFields, ...fields], classDefinition)
+            className, [...parentClassFields, ...fields], classDefinition)
       ]);
 
-      if (!isBaseClass) {
+      if (!isParentClass) {
         classBuilder.methods.add(_buildAbstractCopyWithMethod(
           className,
           classDefinition,
@@ -245,12 +245,12 @@ class SerializableModelLibraryGenerator {
       }
       // Serialization
       classBuilder.methods
-          .add(_buildModelClassToJsonMethod([...baseClassFields, ...fields]));
+          .add(_buildModelClassToJsonMethod([...parentClassFields, ...fields]));
 
       // Serialization for database and everything
       if (serverCode) {
         classBuilder.methods.add(_buildModelClassToJsonForProtocolMethod(
-            [...baseClassFields, ...fields]));
+            [...parentClassFields, ...fields]));
 
         if (tableName != null) {
           classBuilder.methods.addAll([
@@ -419,16 +419,16 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
-    var baseClass =
+    var parentClass =
         classDefinition.extendsClass is ResolvedInheritanceDefinition
             ? (classDefinition.extendsClass as ResolvedInheritanceDefinition)
                 .classDefinition
             : null;
 
-    var baseClassFields = baseClass?.fields ?? [];
+    var parentClassFields = parentClass?.fields ?? [];
 
     return Method((methodBuilder) {
-      if (baseClass != null) {
+      if (parentClass != null) {
         methodBuilder.annotations.add(refer('override'));
       }
 
@@ -436,7 +436,7 @@ class SerializableModelLibraryGenerator {
         ..name = 'copyWith'
         ..optionalParameters.addAll(
           _buildAbstractCopyWithParameters(
-              classDefinition, [...baseClassFields, ...fields]),
+              classDefinition, [...parentClassFields, ...fields]),
         )
         ..returns = refer(className);
     });
@@ -445,12 +445,12 @@ class SerializableModelLibraryGenerator {
   Method _buildCopyWithMethod(
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
-    bool isBaseClass,
+    bool isParentClass,
   ) {
     return Method(
       (m) {
         m.name = 'copyWith';
-        if (!isBaseClass) {
+        if (!isParentClass) {
           m.annotations.add(refer('override'));
         }
         m.optionalParameters.addAll(
@@ -980,11 +980,11 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
     String? tableName,
-    bool isBaseClass,
-    List<SerializableModelFieldDefinition> baseClassFields,
+    bool isParentClass,
+    List<SerializableModelFieldDefinition> parentClassFields,
   ) {
     return Constructor((c) {
-      if (!isBaseClass) {
+      if (!isParentClass) {
         c.name = '_';
       }
       c.optionalParameters.addAll(_buildModelClassConstructorParameters(
@@ -992,7 +992,7 @@ class SerializableModelLibraryGenerator {
         fields,
         tableName,
         setAsToThis: true,
-        baseClassFields: baseClassFields,
+        parentClassFields: parentClassFields,
       ));
 
       for (SerializableModelFieldDefinition field in fields) {
@@ -1067,11 +1067,11 @@ class SerializableModelLibraryGenerator {
     List<SerializableModelFieldDefinition> fields,
     String? tableName, {
     required bool setAsToThis,
-    List<SerializableModelFieldDefinition>? baseClassFields,
+    List<SerializableModelFieldDefinition>? parentClassFields,
   }) {
-    var parentClassFields = baseClassFields ?? [];
+    var inheritedFields = parentClassFields ?? [];
 
-    return [...parentClassFields, ...fields]
+    return [...inheritedFields, ...fields]
         .where((field) => field.shouldIncludeField(serverCode))
         .map((field) {
       bool hasPrimaryKey =
@@ -1095,7 +1095,7 @@ class SerializableModelLibraryGenerator {
           ..required = !(field.type.nullable || hasDefaults)
           ..type = shouldIncludeType ? type : null
           ..toThis = !shouldIncludeType && fields.contains(field)
-          ..toSuper = !shouldIncludeType && parentClassFields.contains(field)
+          ..toSuper = !shouldIncludeType && inheritedFields.contains(field)
           ..name = field.name,
       );
     }).toList();

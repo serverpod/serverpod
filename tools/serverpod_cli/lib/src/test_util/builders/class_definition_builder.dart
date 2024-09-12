@@ -23,7 +23,7 @@ class ClassDefinitionBuilder {
   List<SerializableModelIndexDefinition> _indexes;
   List<String>? _documentation;
   List<InheritanceDefinition> _subClasses;
-  InheritanceDefinition? _baseClass;
+  InheritanceDefinition? _extendsClass;
 
   ClassDefinitionBuilder()
       : _moduleAlias = defaultModuleAlias,
@@ -65,7 +65,7 @@ class ClassDefinitionBuilder {
       indexes: _indexes,
       documentation: _documentation,
       subClasses: _subClasses,
-      extendsClass: _baseClass,
+      extendsClass: _extendsClass,
     );
   }
 
@@ -356,7 +356,7 @@ class ClassDefinitionBuilder {
     String fieldType,
     bool fieldNullable,
   ) {
-    _baseClass = ResolvedInheritanceDefinition(
+    _extendsClass = ResolvedInheritanceDefinition(
       ClassDefinitionBuilder()
           .withClassName(className)
           .withFileName(fileName)

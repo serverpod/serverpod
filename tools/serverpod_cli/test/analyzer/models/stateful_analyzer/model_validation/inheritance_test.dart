@@ -109,7 +109,7 @@ void main() {
     });
 
     test(
-        'Given a sub-class extends a class with a table defined, then collect an error that base class cannot have a table',
+        'Given a sub-class extends a class with a table defined, then collect an error that parent class cannot have a table',
         () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -143,7 +143,7 @@ void main() {
       var error = collector.errors.first;
       expect(
         error.message,
-        'A base class cannot have a table definition. Please remove the "table" property from the class "Example".',
+        'A parent class cannot have a table definition. Please remove the "table" property from the class "Example".',
       );
     });
   });

@@ -231,10 +231,10 @@ class Restrictions {
 
   List<SourceSpanSeverityException> validateExtendingClassName(
     String parentNodeName,
-    dynamic baseClassName,
+    dynamic parentClassName,
     SourceSpan? span,
   ) {
-    if (baseClassName is! String) {
+    if (parentClassName is! String) {
       return [
         SourceSpanSeverityException(
           'The "${Keyword.extendsClass} type must be a String.',
@@ -243,18 +243,18 @@ class Restrictions {
       ];
     }
 
-    var baseClass = parsedModels.findByClassName(baseClassName);
+    var parentClass = parsedModels.findByClassName(parentClassName);
 
-    if (baseClass == null) {
+    if (parentClass == null) {
       return [
         SourceSpanSeverityException(
-          'The class "$baseClassName" was not found in any model.',
+          'The class "$parentClassName" was not found in any model.',
           span,
         )
       ];
     }
 
-    if (baseClass.moduleAlias != 'protocol') {
+    if (parentClass.moduleAlias != 'protocol') {
       return [
         SourceSpanSeverityException(
           'You can only extend classes from your own project.',
@@ -263,10 +263,10 @@ class Restrictions {
       ];
     }
 
-    if (baseClass is ClassDefinition && baseClass.tableName != null) {
+    if (parentClass is ClassDefinition && parentClass.tableName != null) {
       return [
         SourceSpanSeverityException(
-          'A base class cannot have a table definition. Please remove the "table" property from the class "$baseClassName".',
+          'A parent class cannot have a table definition. Please remove the "table" property from the class "$parentClassName".',
           span,
         )
       ];

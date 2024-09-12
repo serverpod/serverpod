@@ -12,10 +12,10 @@ final config = GeneratorConfigBuilder().withName(projectName).build();
 const generator = DartServerCodeGenerator();
 
 void main() {
-  var baseClassName = 'Example';
-  var baseClassFileName = 'example';
-  var baseExpectedFilePath =
-      path.join('lib', 'src', 'generated', '$baseClassFileName.dart');
+  var parentClassName = 'Example';
+  var parentClassFileName = 'example';
+  var parentExpectedFilePath =
+      path.join('lib', 'src', 'generated', '$parentClassFileName.dart');
 
   var subClassName = 'SubExample';
   var subClassFileName = 'sub_example';
@@ -23,12 +23,12 @@ void main() {
       path.join('lib', 'src', 'generated', '$subClassFileName.dart');
 
   group(
-      'Given a sub-class named $subClassName with one primitive var extending a base-class named $baseClassName with one primitive var when generating code',
+      'Given a sub-class named $subClassName with one primitive var extending a parent-class named $parentClassName with one primitive var when generating code',
       () {
     var models = [
       ClassDefinitionBuilder()
-          .withClassName(baseClassName)
-          .withFileName(baseClassFileName)
+          .withClassName(parentClassName)
+          .withFileName(parentClassFileName)
           .withSimpleField('name', 'String')
           .withSubClasses(
             subClassName,
@@ -43,8 +43,8 @@ void main() {
           .withFileName(subClassFileName)
           .withSimpleField('age', 'int', nullable: true)
           .withExtendsClass(
-            baseClassName,
-            baseClassFileName,
+            parentClassName,
+            parentClassFileName,
             'name',
             'String',
             false,
@@ -57,21 +57,21 @@ void main() {
       config: config,
     );
 
-    var baseCompilationUnit =
-        parseString(content: codeMap[baseExpectedFilePath]!).unit;
+    var parentCompilationUnit =
+        parseString(content: codeMap[parentExpectedFilePath]!).unit;
     var subCompilationUnit =
         parseString(content: codeMap[subExpectedFilePath]!).unit;
 
-    group('Then the $baseClassName', () {
-      var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
-        baseCompilationUnit,
-        name: baseClassName,
+    group('Then the $parentClassName', () {
+      var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        parentCompilationUnit,
+        name: parentClassName,
       );
 
       group('has a public constructor', () {
         var publicConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
-          baseClass!,
+          parentClass!,
           name: null,
         );
 
@@ -203,7 +203,7 @@ void main() {
           );
         });
 
-        test('with the params set to the same as the base class.', () {
+        test('with the params set to the same as the parent-class.', () {
           expect(
             defaultConstructor?.parameters.toSource(),
             '({required String name, int? age})',
