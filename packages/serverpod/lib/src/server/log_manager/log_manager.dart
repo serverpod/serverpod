@@ -127,8 +127,7 @@ class SessionLogManager {
       order: _nextLogOrderId,
     );
 
-    if (_session.serverpod.runMode == ServerpodRunMode.development ||
-        _session.serverpod.runMode == ServerpodRunMode.test) {
+    if (_session.serverpod.runMode == ServerpodRunMode.development) {
       stdout.writeln('${entry.logLevel.name.toUpperCase()}: ${entry.message}');
       if (entry.error != null) stdout.writeln(entry.error);
       if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);

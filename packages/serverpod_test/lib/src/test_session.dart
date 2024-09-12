@@ -3,6 +3,7 @@ import 'package:serverpod/serverpod.dart';
 import 'test_serverpod.dart';
 
 /// A test specific session that is used to call database methods or pass to endpoints.
+/// This is the public interface exposed to developers.
 abstract class TestSession implements DatabaseAccessor {
   /// AuthenticationInfo for the session.
   AuthenticationInfo? get authenticationInfo;

@@ -4,11 +4,11 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 
-class TestToolsGenerator {
+class ServerTestToolsGenerator {
   final ProtocolDefinition protocolDefinition;
   final GeneratorConfig config;
 
-  TestToolsGenerator({
+  ServerTestToolsGenerator({
     required this.protocolDefinition,
     required this.config,
   });

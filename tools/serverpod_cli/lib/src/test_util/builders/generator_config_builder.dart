@@ -16,7 +16,7 @@ class GeneratorConfigBuilder {
   List<ModuleConfig> _modules;
   List<TypeDefinition> _extraClasses;
   List<ServerpodFeature> _enabledFeatures;
-  List<String> _relativeServerTestToolsPathParts;
+  List<String>? _relativeServerTestToolsPathParts;
 
   GeneratorConfigBuilder()
       : _name = _defaultName,
@@ -43,8 +43,7 @@ class GeneratorConfigBuilder {
           ),
         ],
         _extraClasses = [],
-        _enabledFeatures = [ServerpodFeature.database],
-        _relativeServerTestToolsPathParts = ['integration_test', 'test_tools'];
+        _enabledFeatures = [ServerpodFeature.database];
 
   GeneratorConfigBuilder withName(String name) {
     _name = name;
@@ -106,7 +105,8 @@ class GeneratorConfigBuilder {
   }
 
   GeneratorConfigBuilder withRelativeServerTestToolsPathParts(
-      List<String> relativeServerTestToolsPathParts) {
+    List<String>? relativeServerTestToolsPathParts,
+  ) {
     _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts;
     return this;
   }

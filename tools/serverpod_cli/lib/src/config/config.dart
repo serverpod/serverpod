@@ -54,7 +54,7 @@ class GeneratorConfig {
     required this.dartClientPackage,
     required this.dartClientDependsOnServiceClient,
     required this.serverPackageDirectoryPathParts,
-    relativeServerTestToolsPathParts,
+    List<String>? relativeServerTestToolsPathParts,
     required List<String> relativeDartClientPackagePathParts,
     required List<ModuleConfig> modules,
     required this.extraClasses,

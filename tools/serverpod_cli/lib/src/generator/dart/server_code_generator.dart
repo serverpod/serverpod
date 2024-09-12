@@ -3,7 +3,7 @@ import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/generator/dart/library_generators/model_library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
-import 'package:serverpod_cli/src/generator/dart/library_generators/test_tools_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/server_test_tools_generator.dart';
 
 /// A [CodeGenerator] that generates the server side dart code of a
 /// serverpod project.
@@ -52,7 +52,7 @@ class DartServerCodeGenerator extends CodeGenerator {
     var generatedServerTestToolsPathParts =
         config.generatedServerTestToolsPathParts;
     if (generatedServerTestToolsPathParts != null) {
-      var testToolsGenerator = TestToolsGenerator(
+      var testToolsGenerator = ServerTestToolsGenerator(
         protocolDefinition: protocolDefinition,
         config: config,
       );
