@@ -30,8 +30,10 @@ class WebServer {
   /// A list of [Route] which defines how to handle path passed to the server.
   final List<Route> routes = <Route>[];
 
-  /// A list of [Route] which defines how to handle path passed to the server.
-  late Handler _hander = _requestHandler;
+  /// The main handler for processing requests, which combines all registered
+  /// routes and middleware. Static file handlers or other middleware can be
+  /// added dynamically to this handler pipeline.
+  late Handler _handler = _requestHandler;
 
   /// Creates a new webserver. If a security context is provided an HTTPS server
   /// will be started.
@@ -81,7 +83,7 @@ class WebServer {
   /// other handlers.
   void addStaticDirectory(String fileSystemPath) {
     var staticHandler = createStaticHandler(fileSystemPath);
-    _hander = Cascade().add(staticHandler).add(_hander).handler;
+    _handler = Cascade().add(staticHandler).add(_handler).handler;
   }
 
   /// Starts the webserver.
@@ -133,7 +135,7 @@ class WebServer {
     try {
       await for (var request in httpServer) {
         try {
-          var response = await _hander(
+          var response = await _handler(
             Request.fromHttpRequest(request),
           );
           logDebug('Writing response!');
