@@ -22,7 +22,7 @@ class ClassDefinitionBuilder {
   List<_FieldBuilder> _fields;
   List<SerializableModelIndexDefinition> _indexes;
   List<String>? _documentation;
-  InheritanceDefinition? _subClass;
+  List<InheritanceDefinition> _subClasses;
   InheritanceDefinition? _baseClass;
 
   ClassDefinitionBuilder()
@@ -35,7 +35,8 @@ class ClassDefinitionBuilder {
         _managedMigration = true,
         _serverOnly = false,
         _isException = false,
-        _indexes = [];
+        _indexes = [],
+        _subClasses = [];
 
   ClassDefinition build() {
     if (_tableName != null) {
@@ -63,7 +64,7 @@ class ClassDefinitionBuilder {
       manageMigration: _managedMigration,
       indexes: _indexes,
       documentation: _documentation,
-      subClasses: _subClass,
+      subClasses: _subClasses,
       extendsClass: _baseClass,
     );
   }
@@ -327,26 +328,44 @@ class ClassDefinitionBuilder {
 
   ClassDefinitionBuilder withSubClasses(
     String className,
-    List<ClassDefinition?> subClasses,
+    String fileName,
+    String fieldName,
+    String fieldType,
+    bool fieldNullable,
   ) {
-    _subClass = BaseClassInheritanceDefinition(className, subClasses);
+    _subClasses = [
+      ResolvedInheritanceDefinition(
+        ClassDefinitionBuilder()
+            .withClassName(className)
+            .withFileName(fileName)
+            .withSimpleField(
+              fieldName,
+              fieldType,
+              nullable: fieldNullable,
+            )
+            .build(),
+      )
+    ];
     return this;
   }
 
   ClassDefinitionBuilder withExtendsClass(
-    String baseClassName,
-    String expectedFilePath,
-    List<Map> parentFields,
+    String className,
+    String fileName,
+    String fieldName,
+    String fieldType,
+    bool fieldNullable,
   ) {
-    _baseClass = ExtendsClassInheritanceDefinition(
-      baseClassName,
-      parentFields.map((field) {
-        return FieldDefinitionBuilder()
-            .withName(field['name'])
-            .withTypeDefinition(field['type'], field['nullable'])
-            .build();
-      }).toList(),
-      expectedFilePath,
+    _baseClass = ResolvedInheritanceDefinition(
+      ClassDefinitionBuilder()
+          .withClassName(className)
+          .withFileName(fileName)
+          .withSimpleField(
+            fieldName,
+            fieldType,
+            nullable: fieldNullable,
+          )
+          .build(),
     );
     return this;
   }

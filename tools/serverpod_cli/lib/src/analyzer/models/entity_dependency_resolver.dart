@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:path/path.dart' as p;
 import 'package:super_string/super_string.dart';
 
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
@@ -37,40 +36,26 @@ class ModelDependencyResolver {
     ClassDefinition classDefinition,
     List<SerializableModelDefinition> modelDefinitions,
   ) {
-    if (classDefinition.extendsClass != null) {
-      try {
-        var baseClass = modelDefinitions
-            .whereType<ClassDefinition>()
-            .firstWhere((element) =>
-                element.className == classDefinition.extendsClass?.className);
-
-        classDefinition.extendsClass = ExtendsClassInheritanceDefinition(
-          baseClass.className,
-          baseClass.fields,
-          p.joinAll([
-            ...baseClass.subDirParts,
-            '${baseClass.fileName}.dart',
-          ]),
-        );
-      } catch (e) {
-        classDefinition.extendsClass = null;
-      }
-
-      try {
-        List<ClassDefinition?> subClasses = modelDefinitions
-            .whereType<ClassDefinition>()
-            .where((element) =>
-                element.extendsClass?.className == classDefinition.className)
-            .toList();
-
-        classDefinition.subClasses = BaseClassInheritanceDefinition(
-          classDefinition.className,
-          subClasses,
-        );
-      } catch (e) {
-        classDefinition.subClasses = null;
-      }
+    var extendedClass = classDefinition.extendsClass;
+    if (extendedClass is! UnresolvedInheritanceDefinition) {
+      return;
     }
+    var parentClassName = extendedClass.className;
+
+    var parentClass = modelDefinitions
+        .whereType<ClassDefinition>()
+        .where((element) => element.className == parentClassName)
+        .firstOrNull;
+
+    if (parentClass == null) {
+      return;
+    }
+
+    extendedClass = ResolvedInheritanceDefinition(parentClass);
+
+    parentClass.subClasses.add(
+      ResolvedInheritanceDefinition(classDefinition),
+    );
   }
 
   static void _resolveFieldIndexes(

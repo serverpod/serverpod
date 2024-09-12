@@ -10,6 +10,7 @@ import 'package:serverpod_cli/src/generator/keywords.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:path/path.dart' as p;
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 /// Generates the dart libraries for [SerializableModelDefinition]s.
@@ -47,16 +48,16 @@ class SerializableModelLibraryGenerator {
       config: config,
     );
 
-    bool isBaseClass = classDefinition.subClasses != null &&
-        classDefinition.subClasses is BaseClassInheritanceDefinition;
+    bool isBaseClass = classDefinition.subClasses.isNotEmpty;
 
     var extendedClass =
-        classDefinition.extendsClass is ExtendsClassInheritanceDefinition
-            ? classDefinition.extendsClass as ExtendsClassInheritanceDefinition
+        classDefinition.extendsClass is ResolvedInheritanceDefinition
+            ? (classDefinition.extendsClass as ResolvedInheritanceDefinition)
+                .classDefinition
             : null;
 
-    var extendedClassPath = extendedClass?.baseClassPath;
-    var extendedClassFields = extendedClass?.baseClassFields ?? [];
+    var extendedClassPath = extendedClass;
+    var extendedClassFields = extendedClass?.fields ?? [];
 
     return Library(
       (libraryBuilder) {
@@ -70,7 +71,10 @@ class SerializableModelLibraryGenerator {
         }
 
         if (extendedClassPath != null) {
-          libraryBuilder.directives.add(Directive.import(extendedClassPath));
+          libraryBuilder.directives.add(Directive.import(p.joinAll([
+            ...extendedClass!.subDirParts,
+            '${extendedClass.fileName}.dart',
+          ])));
         }
 
         libraryBuilder.body.addAll([
@@ -80,7 +84,7 @@ class SerializableModelLibraryGenerator {
             tableName,
             fields,
             isBaseClass,
-            extendedClassFields,
+            extendedClass,
           ),
           // We need to generate the implementation class for the copyWith method
           // to support differentiating between null and undefined values.
@@ -157,11 +161,13 @@ class SerializableModelLibraryGenerator {
     String? tableName,
     List<SerializableModelFieldDefinition> fields,
     bool isBaseClass,
-    List<SerializableModelFieldDefinition> baseClassFields,
+    ClassDefinition? extendedClass,
   ) {
     var relationFields = fields.where((field) =>
         field.relation is ObjectRelationDefinition ||
         field.relation is ListRelationDefinition);
+
+    var baseClassFields = extendedClass?.fields ?? [];
 
     return Class((classBuilder) {
       classBuilder
@@ -172,8 +178,8 @@ class SerializableModelLibraryGenerator {
         classBuilder.abstract = true;
       }
 
-      if (classDefinition.extendsClass != null) {
-        classBuilder.extend = refer(classDefinition.extendsClass!.className);
+      if (extendedClass != null) {
+        classBuilder.extend = refer(extendedClass.className);
       }
 
       if (classDefinition.isException) {
@@ -414,11 +420,12 @@ class SerializableModelLibraryGenerator {
     List<SerializableModelFieldDefinition> fields,
   ) {
     var baseClass =
-        classDefinition.extendsClass is ExtendsClassInheritanceDefinition
-            ? classDefinition.extendsClass as ExtendsClassInheritanceDefinition
+        classDefinition.extendsClass is ResolvedInheritanceDefinition
+            ? (classDefinition.extendsClass as ResolvedInheritanceDefinition)
+                .classDefinition
             : null;
 
-    var baseClassFields = baseClass?.baseClassFields ?? [];
+    var baseClassFields = baseClass?.fields ?? [];
 
     return Method((methodBuilder) {
       if (baseClass != null) {

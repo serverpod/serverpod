@@ -25,46 +25,31 @@ void main() {
   group(
       'Given a sub-class named $subClassName with one primitive var extending a base-class named $baseClassName with one primitive var when generating code',
       () {
-    var subClass = ClassDefinitionBuilder()
-        .withClassName(subClassName)
-        .withFileName(subClassFileName)
-        .withSimpleField('age', 'int', nullable: true)
-        .withExtendsClass(
-      baseClassName,
-      baseExpectedFilePath,
-      [
-        {
-          'name': 'name',
-          'type': 'String',
-          'nullable': false,
-        }
-      ],
-    ).build();
-
     var models = [
       ClassDefinitionBuilder()
           .withClassName(baseClassName)
           .withFileName(baseClassFileName)
           .withSimpleField('name', 'String')
           .withSubClasses(
-        baseClassName,
-        [subClass],
-      ).build(),
+            subClassName,
+            subClassFileName,
+            'age',
+            'int',
+            true,
+          )
+          .build(),
       ClassDefinitionBuilder()
           .withClassName(subClassName)
           .withFileName(subClassFileName)
           .withSimpleField('age', 'int', nullable: true)
           .withExtendsClass(
-        baseClassName,
-        baseExpectedFilePath,
-        [
-          {
-            'name': 'name',
-            'type': 'String',
-            'nullable': false,
-          }
-        ],
-      ).build(),
+            baseClassName,
+            baseClassFileName,
+            'name',
+            'String',
+            false,
+          )
+          .build(),
     ];
 
     var codeMap = generator.generateSerializableModelsCode(

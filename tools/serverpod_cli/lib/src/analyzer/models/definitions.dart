@@ -56,10 +56,10 @@ class ClassDefinition extends SerializableModelDefinition {
   /// `true` if this is an exception and not a class.
   final bool isException;
 
-  /// If set to [BaseClassInheritanceDefinition] the class is a base class and stores the sub classes.
-  InheritanceDefinition? subClasses;
+  /// If set to a List of [InheritanceDefinitions] the class is a base class and stores the sub classes.
+  List<InheritanceDefinition> subClasses;
 
-  /// If set to [ExtendsClassInheritanceDefinition] the class extends another class and stores the `name`, `path` and `fields` of the base class.
+  /// If set to [InheritanceDefinitions] the class extends another class and stores the [ClassDefinition] of it's parent.
   InheritanceDefinition? extendsClass;
 
   /// Create a new [ClassDefinition].
@@ -72,13 +72,13 @@ class ClassDefinition extends SerializableModelDefinition {
     required super.serverOnly,
     required this.manageMigration,
     required this.isException,
-    this.subClasses,
+    subClasses,
     this.extendsClass,
     this.tableName,
     this.indexes = const [],
     super.subDirParts,
     this.documentation,
-  });
+  }) : subClasses = subClasses ?? [];
 
   SerializableModelFieldDefinition? findField(String name) {
     return fields
@@ -261,33 +261,18 @@ class ProtocolEnumValueDefinition {
   ProtocolEnumValueDefinition(this.name, [this.documentation]);
 }
 
-abstract class InheritanceDefinition {
-  final String className;
-
-  InheritanceDefinition(this.className);
-}
+abstract class InheritanceDefinition {}
 
 class UnresolvedInheritanceDefinition extends InheritanceDefinition {
-  UnresolvedInheritanceDefinition(super.className);
+  final String className;
+
+  UnresolvedInheritanceDefinition(this.className);
 }
 
-class BaseClassInheritanceDefinition extends InheritanceDefinition {
-  final List<ClassDefinition?> subClasses;
+class ResolvedInheritanceDefinition extends InheritanceDefinition {
+  final ClassDefinition classDefinition;
 
-  BaseClassInheritanceDefinition(
-    super.className,
-    this.subClasses,
-  );
-}
-
-class ExtendsClassInheritanceDefinition extends InheritanceDefinition {
-  final List<SerializableModelFieldDefinition> baseClassFields;
-  final String baseClassPath;
-  ExtendsClassInheritanceDefinition(
-    super.className,
-    this.baseClassFields,
-    this.baseClassPath,
-  );
+  ResolvedInheritanceDefinition(this.classDefinition);
 }
 
 abstract class RelationDefinition {
