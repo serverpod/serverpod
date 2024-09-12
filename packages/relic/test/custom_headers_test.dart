@@ -5,8 +5,7 @@ import 'mocks/http_request_mock.dart';
 
 void main() {
   group('CustomHeaders', () {
-    test(
-        'Given headers with multiple values, it should combine them correctly',
+    test('Given headers with multiple values, it should combine them correctly',
         () {
       var httpRequest = HttpRequestMock()
         ..headers.add('FoO', 'x')
@@ -44,9 +43,11 @@ void main() {
         () {
       var httpRequest = HttpRequestMock()
         ..headers.add('Content-Type', 'application/json') // Managed header
-        ..headers.add('Content-Type', 'text/html') // Managed header, should be combined
+        ..headers.add(
+            'Content-Type', 'text/html') // Managed header, should be combined
         ..headers.add('Custom-Header1', 'value1') // Custom header
-        ..headers.add('Custom-Header1', 'value2') // Custom header, should be combined
+        ..headers.add(
+            'Custom-Header1', 'value2') // Custom header, should be combined
         ..headers.add('bAr', 'z');
 
       var headers = Headers.fromHttpRequest(httpRequest);
@@ -70,7 +71,8 @@ void main() {
       var customHeaders = headers.custom;
 
       // All headers should be treated as custom and combined correctly
-      expect(customHeaders['x-custom-header1'], equals(['customValue1', 'customValue2']));
+      expect(customHeaders['x-custom-header1'],
+          equals(['customValue1', 'customValue2']));
     });
 
     test(
