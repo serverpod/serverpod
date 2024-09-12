@@ -6,7 +6,6 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:hex/hex.dart';
 import 'package:gcloud/storage.dart';
-// import 'package:googleapis/storage/v1.dart' as gcpStorage;
 import 'package:googleapis_auth/auth_io.dart' as auth;
 // ignore: implementation_imports
 import 'package:googleapis_auth/src/crypto/pem.dart';
@@ -15,43 +14,32 @@ import 'package:googleapis_auth/src/crypto/rsa_sign.dart';
 import 'package:intl/intl.dart';
 import 'package:serverpod/serverpod.dart';
 
-/// Concrete implementation of Google Cloud Storage, using gcloud/storage APIs,
+/// Concrete implementation of Google Cloud Storage, using native GCP APIs,
 /// for use with Serverpod.
 class GoogleCloudStorage extends CloudStorage {
-  // This is the path to a service credentials file with storage admin permissions
-  final String serviceAccountPath;
-
   final String bucket;
   final bool public;
 
   late final String publicHost;
   late final Storage storage;
 
+  /// The path to service account credentials with storage admin permissions
+  final String serviceAccountPath;
   late final Map<String, dynamic> _serviceAccount;
 
-  /// Use `init` to create a new instance of [GoogleCloudStorage].
-  /// It authenticates to cloud storage with a service account provided in `serviceAccountPath`.
+  /// Creates a new [GoogleCloudStorage] instance.
+  /// Uses service account credentials to authenticate to Cloud Storage.
   ///
   /// Usage:
   ///   final publicStorage = await GoogleCloudStorage.init(
   ///     serverpod: pod,
   ///     storageId: 'public',
   ///     public: true,
-  ///     bucket: 'my-bucket',
-  ///     serviceAccountPath: '/config/google_service_account.json',
+  ///     bucket: myBucket,
+  ///     serviceAccountPath: '/config/google_account_credentials.json',
   ///   );
   ///
   ///   pod.addCloudStorage(publicStorage);
-  ///
-  ///   final privateStorage = await GoogleCloudStorage.init(
-  ///     serverpod: pod,
-  ///     storageId: 'private',
-  ///     public: false,
-  ///     bucket: 'my-private-bucket',
-  ///     serviceAccountPath: '/config/google_service_account.json',
-  ///   );
-  ///
-  ///   pod.addCloudStorage(privateStorage);
   static Future<GoogleCloudStorage> init({
     required Serverpod serverpod,
     required String storageId,
@@ -60,36 +48,33 @@ class GoogleCloudStorage extends CloudStorage {
     required String serviceAccountPath,
     String? publicHost,
   }) async {
-    final storageInstance = GoogleCloudStorage._(
+    final instance = GoogleCloudStorage._(
       serverpod: serverpod,
       storageId: storageId,
-      serviceAccountPath: serviceAccountPath,
       public: public,
       bucket: bucket,
+      serviceAccountPath: serviceAccountPath,
     );
 
-    await storageInstance._initStorage();
+    await instance._initStorage();
 
-    return storageInstance;
+    return instance;
   }
 
   // Initializes the Google Cloud Storage client.
   Future<void> _initStorage() async {
-    final jsonCredentials = await File(serviceAccountPath).readAsString();
+    final serviceAccount = await File(serviceAccountPath).readAsString();
+    _serviceAccount = jsonDecode(serviceAccount);
 
-    var json = jsonDecode(jsonCredentials);
+    var json = jsonDecode(serviceAccount);
     final project = json['project_id'] as String;
 
-    final credentials =
-        auth.ServiceAccountCredentials.fromJson(jsonCredentials);
+    final credentials = auth.ServiceAccountCredentials.fromJson(serviceAccount);
 
     final client =
         await auth.clientViaServiceAccount(credentials, Storage.SCOPES);
 
     storage = Storage(client, project);
-
-    final serviceAccount = await File(serviceAccountPath).readAsString();
-    _serviceAccount = jsonDecode(serviceAccount);
   }
 
   // Private constructor
@@ -220,7 +205,6 @@ class GoogleCloudStorage extends CloudStorage {
       'X-Goog-Expires': expiration.toString(),
       'X-Goog-SignedHeaders': signedHeaders,
     });
-
     if (subresource != null) {
       queryParameters[subresource] = '';
     }
