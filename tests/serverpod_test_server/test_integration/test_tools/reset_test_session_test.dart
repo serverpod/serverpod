@@ -77,6 +77,21 @@ void main() {
             expect(session.authenticationInfo!.userId, 123);
           });
         });
+
+        group('when copying the session in the first test', () {
+          late TestSession newSession;
+
+          test('then the first test has the modified newSession', () async {
+            newSession = await session.copyWith(
+                getAuthenticationInfo: () => AuthenticationInfo(123, {}));
+
+            expect(newSession.authenticationInfo!.userId, 123);
+          });
+
+          test('then the second test has the reset newSession', () async {
+            expect(newSession.authenticationInfo!.userId, 123);
+          });
+        });
       },
       resetTestSessions: ResetTestSessions.afterAll,
       runMode: ServerpodRunMode.production,

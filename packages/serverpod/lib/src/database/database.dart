@@ -17,8 +17,10 @@ import 'concepts/table.dart';
 /// internally within the Serverpod package.
 extension DatabaseConstructor on Database {
   /// Creates a new [Database] object.
-  static Database create(
-      {required Session session, required DatabasePoolManager poolManager}) {
+  static Database create({
+    required Session session,
+    required DatabasePoolManager poolManager,
+  }) {
     return Database._(session: session, poolManager: poolManager);
   }
 }
@@ -31,9 +33,10 @@ class Database {
 
   /// Creates a new [Database] object. Typically, this is done automatically
   /// when a [Session] is created.
-  Database._(
-      {required Session session, required DatabasePoolManager poolManager})
-      : _session = session,
+  Database._({
+    required Session session,
+    required DatabasePoolManager poolManager,
+  })  : _session = session,
         _databaseConnection = DatabaseConnection(poolManager);
 
   /// Find a list of [TableRow]s from a table, using the provided [where]

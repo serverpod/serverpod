@@ -10,17 +10,28 @@ void main() {
       withServerpod(
         (endpoints, session) {
           setUpAll(() async {
-            await SimpleData.db
-                .insert(session, [SimpleData(num: 111), SimpleData(num: 222)]);
+            await SimpleData.db.insert(
+              session,
+              [
+                SimpleData(num: 111),
+                SimpleData(num: 222),
+              ],
+            );
           });
 
-          test('then creates the objects in the database according to setUpAll',
+          test('then finds the objects in the database according to setUpAll',
               () async {
             final result = await SimpleData.db.find(session);
 
             expect(result.length, 2);
             expect(result[0].num, 111);
             expect(result[1].num, 222);
+          });
+
+          test('then database is rolled back in the second test', () async {
+            final result = await SimpleData.db.find(session);
+
+            expect(result.length, 0);
           });
         },
         rollbackDatabase: RollbackDatabase.afterEach,
@@ -44,11 +55,13 @@ void main() {
       withServerpod(
         (endpoints, session) {
           setUp(() async {
-            await SimpleData.db
-                .insert(session, [SimpleData(num: 111), SimpleData(num: 222)]);
+            await SimpleData.db.insert(session, [
+              SimpleData(num: 111),
+              SimpleData(num: 222),
+            ]);
           });
 
-          test('then creates the objects in the database according to setUp',
+          test('then finds the objects in the database according to setUp',
               () async {
             final result = await SimpleData.db.find(session);
 
@@ -63,9 +76,8 @@ void main() {
             final result = await SimpleData.db.find(session);
 
             expect(result.length, 2);
-
-            var nums = result.map((e) => e.num).toList();
-            expect(nums, containsAll([111, 222]));
+            expect(result[0].num, 111);
+            expect(result[1].num, 222);
           });
         },
         rollbackDatabase: RollbackDatabase.afterEach,
@@ -128,7 +140,7 @@ void main() {
                 newSession, [SimpleData(num: 111), SimpleData(num: 222)]);
           });
 
-          test('then creates the objects in the database according to setUp',
+          test('then finds the objects in the database according to setUp',
               () async {
             final result = await SimpleData.db.find(newSession);
 
@@ -163,11 +175,102 @@ void main() {
   });
 
   group('Given rollbackDatabase set to afterAll', () {
-    withServerpod(
-      (endpoints, session) {
-        group(
-            'when creating SimpleData in in one test and fetching it in the other',
-            () {
+    group('when creating objects in a setUpAll', () {
+      withServerpod(
+        (endpoints, session) {
+          setUpAll(() async {
+            await SimpleData.db.insert(session, [
+              SimpleData(num: 111),
+              SimpleData(num: 222),
+            ]);
+          });
+
+          test('then finds the objects in the database according to setUpAll',
+              () async {
+            final result = await SimpleData.db.find(session);
+
+            expect(result.length, 2);
+            expect(result[0].num, 111);
+            expect(result[1].num, 222);
+          });
+
+          test(
+              'then does not roll back the transaction so that the second test can fetch the same data',
+              () async {
+            final result = await SimpleData.db.find(session);
+
+            expect(result.length, 2);
+            expect(result[0].num, 111);
+            expect(result[1].num, 222);
+          });
+        },
+        rollbackDatabase: RollbackDatabase.afterAll,
+        runMode: ServerpodRunMode.production,
+      );
+
+      withServerpod(
+        (endpoints, session) {
+          test('then the database is rolled back after the first withServerpod',
+              () async {
+            final result = await SimpleData.db.find(session);
+
+            expect(result.length, 0);
+          });
+        },
+        runMode: ServerpodRunMode.production,
+      );
+    });
+
+    group('when creating objects in a setUp', () {
+      withServerpod(
+        (endpoints, session) {
+          setUp(() async {
+            await SimpleData.db.insert(session, [
+              SimpleData(num: 111),
+              SimpleData(num: 222),
+            ]);
+          });
+
+          test('then finds the objects in the database according to setUp',
+              () async {
+            final result = await SimpleData.db.find(session);
+
+            expect(result.length, 2);
+            expect(result[0].num, 111);
+            expect(result[1].num, 222);
+          });
+
+          test(
+              'then does not roll back the transaction so that the second test can fetch all the data',
+              () async {
+            final result = await SimpleData.db.find(session);
+
+            expect(result.length, 4);
+            expect(result[0].num, 111);
+            expect(result[1].num, 222);
+            expect(result[2].num, 111);
+            expect(result[3].num, 222);
+          });
+        },
+        rollbackDatabase: RollbackDatabase.afterAll,
+        runMode: ServerpodRunMode.production,
+      );
+
+      withServerpod((endpoints, session) {
+        test('then the database is rolled back after the first withServerpod',
+            () async {
+          final result = await SimpleData.db.find(session);
+
+          expect(result.length, 0);
+        });
+      }, runMode: ServerpodRunMode.production);
+    });
+
+    group(
+        'when creating SimpleData in in one test and fetching it in the other',
+        () {
+      withServerpod(
+        (endpoints, session) {
           test('then creates SimpleData in the first test', () async {
             await SimpleData.db
                 .insert(session, [SimpleData(num: 111), SimpleData(num: 222)]);
@@ -182,24 +285,24 @@ void main() {
             expect(result[0].num, 111);
             expect(result[1].num, 222);
           });
-        });
-      },
-      rollbackDatabase: RollbackDatabase.afterAll,
-      runMode: ServerpodRunMode.production,
-    );
+        },
+        rollbackDatabase: RollbackDatabase.afterAll,
+        runMode: ServerpodRunMode.production,
+      );
 
-    withServerpod(
-      (endpoints, session) {
-        test(
-            'when fetching SimpleData after the first withServerpod then the database is rolled back',
-            () async {
-          final result = await SimpleData.db.find(session);
+      withServerpod(
+        (endpoints, session) {
+          test(
+              'when fetching SimpleData after the first withServerpod then the database is rolled back',
+              () async {
+            final result = await SimpleData.db.find(session);
 
-          expect(result.length, 0);
-        });
-      },
-      runMode: ServerpodRunMode.production,
-    );
+            expect(result.length, 0);
+          });
+        },
+        runMode: ServerpodRunMode.production,
+      );
+    });
   });
 
   group('Given rollbackDatabase set to never', () {

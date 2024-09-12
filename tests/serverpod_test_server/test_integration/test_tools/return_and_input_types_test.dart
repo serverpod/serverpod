@@ -13,15 +13,14 @@ void main() {
           expect(result, 'Hello');
         });
 
-        test('when calling returnsListOfStream then returns a stream',
-            () async {
+        test('when calling returnsStream then returns a stream', () async {
           final result =
               await endpoints.testTools.returnsStream(session, 3).toList();
           expect(result, [0, 1, 2]);
         });
 
         test(
-            'when calling returnsListOfStream then returns a list of the input stream',
+            'when calling returnsListFromInputStream then returns a list of the input stream',
             () async {
           final stream = Stream<int>.fromIterable([1, 2, 3, 4, 5]);
           final result = await endpoints.testTools
@@ -30,7 +29,7 @@ void main() {
         });
 
         test(
-            'when calling returnsInputStream then echoes the input stream back',
+            'when calling returnsStreamFromInputStream then echoes the input stream back',
             () async {
           final stream = Stream<int>.fromIterable([1, 2, 3, 4, 5]);
           final result =
