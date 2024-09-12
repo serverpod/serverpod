@@ -12,7 +12,7 @@ environment:
 
 dependencies:
   serverpod: SERVERPOD_VERSION
-  crypto: ^3.0.3
+  crypto: ^3.0.2
   gcloud: ^0.8.12
   googleapis_auth: ^1.6.0
   hex: ^0.2.0
