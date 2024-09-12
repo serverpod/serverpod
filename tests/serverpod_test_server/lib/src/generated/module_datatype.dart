@@ -12,6 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
     as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class ModuleDatatype
     implements _i1.SerializableModel, _i1.ProtocolSerialization {

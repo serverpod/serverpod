@@ -12,6 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'dart:typed_data' as _i3;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class ObjectWithMaps
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
