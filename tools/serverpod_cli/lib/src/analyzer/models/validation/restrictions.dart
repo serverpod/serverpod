@@ -3,6 +3,7 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
@@ -219,7 +220,7 @@ class Restrictions {
     if (extendsClass is! String) {
       return [
         SourceSpanSeverityException(
-          'The "extends" key must be a String.',
+          'The "${Keyword.extendsClass}" key must be a String.',
           span,
         )
       ];
@@ -236,7 +237,7 @@ class Restrictions {
     if (baseClassName is! String) {
       return [
         SourceSpanSeverityException(
-          'The "extends" type must be a String.',
+          'The "${Keyword.extendsClass} type must be a String.',
           span,
         )
       ];
