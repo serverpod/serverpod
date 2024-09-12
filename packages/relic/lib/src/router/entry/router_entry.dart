@@ -45,8 +45,14 @@ class RouterEntry {
   /// List of parameter names in the route pattern.
   List<String> get params => _params.toList(); // exposed for using generator.
 
-  RouterEntry._(this.verb, this.route, this._handler, this._middleware,
-      this._routePattern, this._params);
+  RouterEntry._(
+    this.verb,
+    this.route,
+    this._handler,
+    this._middleware,
+    this._routePattern,
+    this._params,
+  );
 
   factory RouterEntry(
     String verb,
@@ -58,7 +64,10 @@ class RouterEntry {
 
     if (!route.startsWith('/')) {
       throw ArgumentError.value(
-          route, 'route', 'expected route to start with a slash');
+        route,
+        'route',
+        'expected route to start with a slash',
+      );
     }
 
     final params = <String>[];
@@ -69,7 +78,10 @@ class RouterEntry {
         params.add(m[2]!);
         if (m[3] != null && !_isNoCapture(m[3]!)) {
           throw ArgumentError.value(
-              route, 'route', 'expression for "${m[2]}" is capturing');
+            route,
+            'route',
+            'expression for "${m[2]}" is capturing',
+          );
         }
         pattern += '(${m[3] ?? r'[^/]+'})';
       }
@@ -77,7 +89,13 @@ class RouterEntry {
     final routePattern = RegExp('^$pattern\$');
 
     return RouterEntry._(
-        verb, route, handler, middleware, routePattern, params);
+      verb,
+      route,
+      handler,
+      middleware,
+      routePattern,
+      params,
+    );
   }
 
   /// Returns a map from parameter name to value, if the path matches the

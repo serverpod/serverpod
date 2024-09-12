@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:collection' show UnmodifiableMapView;
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -20,60 +19,10 @@ import 'package:http_methods/http_methods.dart';
 import 'package:meta/meta.dart' show sealed;
 import 'package:relic/relic.dart';
 
-import 'router_entry.dart' show RouterEntry;
+import 'entry/router_entry.dart' show RouterEntry;
 
-/// Get a URL parameter captured by the [Router].
-@Deprecated('Use Request.params instead')
-String params(Request request, String name) {
-  final value = request.params[name];
-  if (value == null) {
-    throw Exception('no such parameter $name');
-  }
-  return value;
-}
-
-final _emptyParams = UnmodifiableMapView(<String, String>{});
-
-extension RouterParams on Request {
-  /// Get URL parameters captured by the [Router].
-  ///
-  /// **Example**
-  /// ```dart
-  /// final app = Router();
-  ///
-  /// app.get('/hello/<name>', (Request request) {
-  ///   final name = request.params['name'];
-  ///   return Response.ok('Hello $name');
-  /// });
-  /// ```
-  ///
-  /// If no parameters are captured this returns an empty map.
-  ///
-  /// The returned map is unmodifiable.
-  Map<String, String> get params {
-    final p = context['shelf_router/params'];
-    if (p is Map<String, String>) {
-      return UnmodifiableMapView(p);
-    }
-    return _emptyParams;
-  }
-}
-
-/// Middleware to remove body from request.
-final _removeBody = createMiddleware(responseHandler: (r) {
-  if (r.headers.contentLength != null) {
-    r = r.copyWith(
-      headers: r.headers.copyWith(
-        contentLength: '0',
-      ),
-    );
-  }
-  return r.copyWith(
-    body: Body.fromData(
-      Uint8List.fromList(<int>[]),
-    ),
-  );
-});
+part './response/route_not_found_response.dart';
+part './middleware/remove_body.dart';
 
 /// A shelf [Router] routes requests to handlers based on HTTP verb and route
 /// pattern.
@@ -144,7 +93,14 @@ class Router {
     if (verb == 'GET') {
       // Handling in a 'GET' request without handling a 'HEAD' request is always
       // wrong, thus, we add a default implementation that discards the body.
-      _routes.add(RouterEntry('HEAD', route, handler, middleware: _removeBody));
+      _routes.add(
+        RouterEntry(
+          'HEAD',
+          route,
+          handler,
+          middleware: _removeBody,
+        ),
+      );
     }
     _routes.add(RouterEntry(verb, route, handler));
   }
@@ -287,29 +243,4 @@ class Router {
   /// });
   /// ```
   static final Response routeNotFound = _RouteNotFoundResponse();
-}
-
-/// Extends [Response] to allow it to be used multiple times in the
-/// actual content being served.
-class _RouteNotFoundResponse extends Response {
-  static const _message = 'Route not found';
-  static final _messageBytes = utf8.encode(_message);
-
-  _RouteNotFoundResponse() : super.notFound(body: Body.fromData(_messageBytes));
-
-  @override
-  Stream<List<int>> read() => Stream<List<int>>.value(_messageBytes);
-
-  @override
-  Response copyWith({
-    Headers? headers,
-    Map<String, Object?>? context,
-    Body? body,
-  }) {
-    return super.copyWith(
-      headers: headers,
-      context: context,
-      body: body ?? Body.fromData(_messageBytes),
-    );
-  }
 }

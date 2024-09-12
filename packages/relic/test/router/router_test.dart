@@ -19,6 +19,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:relic/src/router/request/request_extension.dart';
 import 'package:relic/src/router/router.dart';
 import 'package:relic/shelf_io.dart' as io;
 import 'package:test/test.dart';
@@ -38,10 +39,9 @@ void main() {
 
   tearDown(() => server.close());
 
-  Future<String> get(String path) =>
-      http.read(Uri.parse(server.url.toString() + path));
+  Future<String> get(String path) => http.read(server.url.resolve(path));
   Future<int> head(String path) async =>
-      (await http.head(Uri.parse(server.url.toString() + path))).statusCode;
+      (await http.head(server.url.resolve(path))).statusCode;
 
   test('get sync/async handler', () async {
     var app = Router();
