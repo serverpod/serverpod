@@ -38,12 +38,14 @@ final _defaultMimeTypeResolver = MimeTypeResolver();
 ///
 /// Specify a custom [contentTypeResolver] to customize automatic content type
 /// detection.
-Handler createStaticHandler(String fileSystemPath,
-    {bool serveFilesOutsidePath = false,
-    String? defaultDocument,
-    bool listDirectories = false,
-    bool useHeaderBytesForContentType = false,
-    MimeTypeResolver? contentTypeResolver}) {
+Handler createStaticHandler(
+  String fileSystemPath, {
+  bool serveFilesOutsidePath = false,
+  String? defaultDocument,
+  bool listDirectories = false,
+  bool useHeaderBytesForContentType = false,
+  MimeTypeResolver? contentTypeResolver,
+}) {
   final rootDir = Directory(fileSystemPath);
   if (!rootDir.existsSync()) {
     throw ArgumentError('A directory corresponding to fileSystemPath '
@@ -211,7 +213,7 @@ Future<Response> _handleFile(
       Response.ok(
         body: request.method == 'HEAD'
             ? null
-            : Body.fromIntStream(file.openRead().cast()),
+            : Body.fromIntStream(file.openRead()),
         headers: headers.copyWith(
           contentLength: '${stat.size}',
         ),

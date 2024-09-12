@@ -35,9 +35,8 @@ void run(List<String> args) async {
   pod.webServer.addRoute(auth.RouteGoogleSignIn(), '/googlesignin');
 
   // Serve all files in the /static directory.
-  pod.webServer.addRoute(
-    RouteStaticDirectory(serverDirectory: 'static', basePath: '/'),
-    '/*',
+  pod.webServer.addStaticDirectory(
+    fileSystemPath: 'web/static',
   );
 
   // Configuration for sign in with email.

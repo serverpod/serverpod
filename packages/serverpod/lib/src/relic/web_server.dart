@@ -4,8 +4,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/relic/templates.dart';
-import 'package:serverpod/src/relic/web_widget.dart';
+import 'package:serverpod/src/relic/static/static_handler.dart';
 
 /// The Serverpod webserver.
 class WebServer {
@@ -67,12 +66,6 @@ class WebServer {
   /// Adds a [Route] to the server, together with a path that defines how
   /// calls are routed.
   void addRoute(Route route, String matchPath) {
-    /// Check if the route is of type RouteStaticDirectory
-    if (route is RouteStaticDirectory) {
-      logDebug(
-        'WARNING: RouteStaticDirectory is deprecated. Use addStaticDirectory instead. This usage will be removed in future versions.',
-      );
-    }
     route._matchPath = matchPath;
     routes.add(route);
   }
@@ -81,9 +74,18 @@ class WebServer {
   /// The static handler is added before other route handlers, allowing static
   /// files to be served first. If no file is found, the request proceeds to
   /// other handlers.
-  void addStaticDirectory(String fileSystemPath) {
-    var staticHandler = createStaticHandler(fileSystemPath);
-    _handler = Cascade().add(staticHandler).add(_handler).handler;
+  void addStaticDirectory({
+    required String fileSystemPath,
+    String mountedPath = '/',
+  }) {
+    // var staticHandler = createStaticHandler(fileSystemPath);
+    _handler = createMountedStaticHandler(
+      fileSystemPath: fileSystemPath,
+      mountedPath: mountedPath,
+      continueHandler: _handler,
+    );
+
+    // _handler = Cascade().add(staticHandler).add(_handler).handler;
   }
 
   /// Starts the webserver.
@@ -143,6 +145,7 @@ class WebServer {
             request.response,
             poweredByHeader: 'serverpod-relic',
           );
+          logDebug('Done!');
         } catch (e, stackTrace) {
           logError(e, stackTrace: stackTrace);
         }

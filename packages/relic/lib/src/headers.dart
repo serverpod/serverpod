@@ -631,9 +631,7 @@ abstract class Headers {
     if (contentLanguage != null) {
       headers.set(_contentLanguageHeader, contentLanguage!);
     }
-    if (contentLength != null) {
-      headers.set(_contentLengthHeader, contentLength!);
-    }
+
     if (contentLocation != null) {
       headers.set(_contentLocationHeader, contentLocation!);
     }
@@ -677,6 +675,12 @@ abstract class Headers {
     /// Set custom headers
     for (var entry in custom.entries) {
       headers.set(entry.key, entry.value);
+    }
+
+    /// Set the content length from Headers or Body
+    var length = contentLength ?? body.contentLength;
+    if (length != null) {
+      headers.set(_contentLengthHeader, length);
     }
 
     /// Set the content type from the Body
@@ -1152,7 +1156,6 @@ class _HeadersImpl extends Headers {
       ifMatch: ifMatch is List<String> ? ifMatch : this.ifMatch,
       ifNoneMatch: ifNoneMatch is List<String> ? ifNoneMatch : this.ifNoneMatch,
       ifRange: ifRange is String ? ifRange : this.ifRange,
-
       lastModified: lastModified is DateTime ? lastModified : this.lastModified,
       maxForwards: maxForwards is String ? maxForwards : this.maxForwards,
       mPragma: mPragma is String ? mPragma : this.mPragma,

@@ -314,7 +314,7 @@ class Response extends Message {
     httpResponse.headers.chunkedTransferEncoding = false;
 
     headers.applyHeaders(httpResponse, body);
-    await httpResponse.addStream(read());
-    await httpResponse.close();
+
+    return httpResponse.addStream(read()).then((_) => httpResponse.close());
   }
 }

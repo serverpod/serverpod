@@ -258,6 +258,7 @@ class Request extends Message {
   @override
   Request copyWith({
     Headers? headers,
+    Uri? requestedUri,
     Map<String, Object?>? context,
     String? path,
     Body? body,
@@ -272,7 +273,7 @@ class Request extends Message {
 
     return Request._(
       method,
-      requestedUri,
+      requestedUri ?? this.requestedUri,
       cookies,
       connectionInfo,
       this.headers.withHeaders(headers),
