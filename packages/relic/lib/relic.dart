@@ -11,7 +11,6 @@ export 'src/headers.dart' show Headers, CustomHeaders;
 export 'src/headers/types/body_type.dart' show BodyType;
 export 'src/hijack_exception.dart' show HijackException;
 export 'src/middleware.dart' show Middleware, createMiddleware;
-// export 'src/middleware/add_chunked_encoding.dart' show addChunkedEncoding;
 export 'src/middleware/logger.dart' show logRequests;
 export 'src/middleware/middleware_extensions.dart' show MiddlewareExtensions;
 export 'src/pipeline.dart' show Pipeline;
