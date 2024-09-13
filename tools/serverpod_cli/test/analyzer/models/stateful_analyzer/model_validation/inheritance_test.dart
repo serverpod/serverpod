@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
@@ -9,7 +10,7 @@ void main() {
 
   group('Extends property tests', () {
     test(
-        'Given a child-class of an existing class, then no errors are collected',
+        'Given a child-class of an existing class, then no errors are collected and childClasses and extendsClass are resolved',
         () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
@@ -30,13 +31,25 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-          .validateAll();
+      var models =
+          StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+              .validateAll();
 
       expect(
         collector.errors,
         isEmpty,
       );
+
+      var parent = models.first as ClassDefinition;
+      var childClasses = parent.childClasses;
+      var isChildResolved = childClasses.first is ResolvedInheritanceDefinition;
+
+      var child = models.last as ClassDefinition;
+      var extendsClass = child.extendsClass;
+      var isExtendsResolved = extendsClass is ResolvedInheritanceDefinition;
+
+      expect(isChildResolved, isTrue);
+      expect(isExtendsResolved, isTrue);
     });
 
     test(

@@ -51,7 +51,7 @@ class ModelDependencyResolver {
       return;
     }
 
-    extendedClass = ResolvedInheritanceDefinition(parentClass);
+    classDefinition.extendsClass = ResolvedInheritanceDefinition(parentClass);
 
     parentClass.childClasses.add(
       ResolvedInheritanceDefinition(classDefinition),
