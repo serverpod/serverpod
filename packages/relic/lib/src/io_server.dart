@@ -5,7 +5,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import '../shelf_io.dart';
+import '../relic_server.dart';
 import 'handler.dart';
 import 'server.dart';
 
