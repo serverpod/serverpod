@@ -57,12 +57,13 @@ void Function(TestClosure<T>)
         testServerpod,
         allTestSessions: allTestSessions,
         enableLogging: maybeEnableSessionLogging ?? false,
+        serverpodSession: testServerpod.createSession(),
       );
 
       setUpAll(() async {
         await testServerpod.start();
-        var serverpodSession = await testServerpod.createSession();
-        transactionManager = TransactionManager(serverpodSession);
+        transactionManager =
+            TransactionManager(mainTestSession.serverpodSession);
 
         if (rollbackDatabase == RollbackDatabase.afterAll ||
             rollbackDatabase == RollbackDatabase.afterEach) {
@@ -70,8 +71,6 @@ void Function(TestClosure<T>)
               await transactionManager.createTransaction();
           await transactionManager.pushSavePoint();
         }
-
-        mainTestSession.setAndConfigureServerpodSession(serverpodSession);
       });
 
       tearDown(() async {

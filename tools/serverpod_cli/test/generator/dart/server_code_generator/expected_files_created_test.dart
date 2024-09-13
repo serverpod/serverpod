@@ -157,7 +157,7 @@ void main() {
   group(
       'Given relativeServerTestToolsPathParts is set when generating protocol code',
       () {
-    final configWithTestToolsPath = GeneratorConfigBuilder()
+    var configWithTestToolsPath = GeneratorConfigBuilder()
         .withName(projectName)
         .withRelativeServerTestToolsPathParts(
       [
@@ -191,7 +191,7 @@ void main() {
   group(
       'Given relativeServerTestToolsPathParts is not set when generating protocol code',
       () {
-    final configWithTestToolsPath = GeneratorConfigBuilder()
+    var configWithTestToolsPath = GeneratorConfigBuilder()
         .withName(projectName)
         .withRelativeServerTestToolsPathParts(null)
         .build();

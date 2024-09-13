@@ -26,7 +26,7 @@ class InternalTestSession extends TestSession {
   final bool _enableLogging;
 
   /// The underlying Serverpod session
-  late Session serverpodSession;
+  InternalServerpodSession serverpodSession;
 
   @override
   Database get db => serverpodSession.db;
@@ -34,41 +34,48 @@ class InternalTestSession extends TestSession {
   @override
   AuthenticationInfo? get authenticationInfo => _authenticationInfo;
 
+  Transaction? _transaction;
   @override
-  Transaction? transaction;
+  Transaction? get transaction => _transaction;
+
+  set transaction(Transaction? transaction) {
+    _transaction = transaction;
+    serverpodSession.transaction = transaction;
+  }
 
   /// Creates a new internal test session.
   InternalTestSession(
     TestServerpod testServerpod, {
     AuthenticationInfo? authenticationInfo,
     InternalTestSession? sessionWithDatabaseConnection,
-    this.transaction,
+    Transaction? transaction,
     required bool enableLogging,
     required List<InternalTestSession> allTestSessions,
+    required this.serverpodSession,
   })  : _allTestSessions = allTestSessions,
         _authenticationInfo = authenticationInfo,
         _testServerpod = testServerpod,
-        _enableLogging = enableLogging {
+        _enableLogging = enableLogging,
+        _transaction = transaction {
     _allTestSessions.add(this);
-  }
-
-  /// Sets the underlying Serverpod session and configures it.
-  /// This is needed to enable the creation of the InternalTestSession before
-  /// the Serverpod session is created.
-  void setAndConfigureServerpodSession(Session session) {
-    serverpodSession = session;
-
-    serverpodSession.transaction = transaction;
-
-    serverpodSession.updateAuthenticated(_authenticationInfo);
+    _configureServerpodSession(serverpodSession);
   }
 
   @override
   Future<TestSession> copyWith({
     AuthenticationInfo? Function()? getAuthenticationInfo,
     bool? enableLogging,
+    String endpoint = '',
+    String method = '',
   }) async {
-    var newSession = InternalTestSession(
+    var newServerpodSession = _testServerpod.createSession(
+      enableLogging: enableLogging ?? _enableLogging,
+      transaction: transaction,
+      endpoint: endpoint,
+      method: method,
+    );
+
+    return InternalTestSession(
       _testServerpod,
       allTestSessions: _allTestSessions,
       authenticationInfo: getAuthenticationInfo != null
@@ -76,14 +83,12 @@ class InternalTestSession extends TestSession {
           : _authenticationInfo,
       enableLogging: enableLogging ?? _enableLogging,
       transaction: transaction,
+      serverpodSession: newServerpodSession,
     );
-    var newServerpodSession = await _testServerpod.createSession(
-      enableLogging: enableLogging ?? _enableLogging,
-    );
+  }
 
-    newSession.setAndConfigureServerpodSession(newServerpodSession);
-
-    return newSession;
+  void _configureServerpodSession(InternalServerpodSession session) {
+    session.updateAuthenticated(_authenticationInfo);
   }
 
   /// Resets the internal state of the test session
@@ -91,8 +96,11 @@ class InternalTestSession extends TestSession {
   Future<void> resetState() async {
     await serverpodSession.close();
     _authenticationInfo = null;
-    var newServerpodSession = await _testServerpod.createSession();
-    setAndConfigureServerpodSession(newServerpodSession);
+    serverpodSession = _testServerpod.createSession(
+      transaction: _transaction,
+      enableLogging: _enableLogging,
+    );
+    _configureServerpodSession(serverpodSession);
   }
 
   /// Destroys the test session and closes the underlying Serverpod session.

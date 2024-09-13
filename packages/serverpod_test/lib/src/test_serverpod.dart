@@ -10,6 +10,23 @@ abstract interface class InternalTestEndpoints {
   );
 }
 
+/// A serverpod session used internally by the test tools.
+/// This is needed to modify the transaction which is not mutable on the [Session] base class.
+class InternalServerpodSession extends Session {
+  /// The transaction that is used by the session.
+  @override
+  Transaction? transaction;
+
+  /// Creates a new internal serverpod session.
+  InternalServerpodSession({
+    required super.endpoint,
+    required super.method,
+    required super.server,
+    required super.enableLogging,
+    this.transaction,
+  });
+}
+
 /// A facade for the real Serverpod instance.
 class TestServerpod<T extends InternalTestEndpoints> {
   /// The test endpoints that are exposed to the user.
@@ -43,7 +60,18 @@ class TestServerpod<T extends InternalTestEndpoints> {
   }
 
   /// Creates a new Serverpod session.
-  Future<Session> createSession({bool enableLogging = false}) async {
-    return _serverpod.createSession(enableLogging: enableLogging);
+  InternalServerpodSession createSession({
+    bool enableLogging = false,
+    Transaction? transaction,
+    String endpoint = '',
+    String method = '',
+  }) {
+    return InternalServerpodSession(
+      server: _serverpod.server,
+      enableLogging: enableLogging,
+      endpoint: endpoint,
+      method: method,
+      transaction: transaction,
+    );
   }
 }

@@ -2,6 +2,24 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 
 class TestToolsEndpoint extends Endpoint {
+  Future<UuidValue> returnsSessionId(Session session) async {
+    return session.sessionId;
+  }
+
+  Future<List<String?>> returnsSessionEndpointAndMethod(Session session) async {
+    return [session.endpoint, session.method];
+  }
+
+  Stream<UuidValue> returnsSessionIdFromStream(Session session) async* {
+    yield session.sessionId;
+  }
+
+  Stream<String?> returnsSessionEndpointAndMethodFromStream(
+      Session session) async* {
+    yield session.endpoint;
+    yield session.method;
+  }
+
   Future<String> returnsString(Session session, String string) async {
     return string;
   }

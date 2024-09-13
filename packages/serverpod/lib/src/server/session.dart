@@ -87,8 +87,10 @@ abstract class Session implements DatabaseAccessor {
   Database? _db;
 
   /// Optional transaction to use for all database queries.
+  /// Only exists to support the serverpod_test package.
   @override
-  Transaction? transaction;
+  @visibleForTesting
+  Transaction? get transaction => null;
 
   /// Access to the database.
   @override

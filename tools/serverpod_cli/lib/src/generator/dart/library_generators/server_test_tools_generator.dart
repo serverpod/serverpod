@@ -132,6 +132,17 @@ class ServerTestToolsGenerator {
       (methodBuilder) => methodBuilder
         ..modifier = MethodModifier.async
         ..body = Block.of([
+          refer('var uniqueSession')
+              .assign(refer('session')
+                  .asA(refer('InternalTestSession', serverpodTestUrl))
+                  .property('copyWith')
+                  .call([], {
+                    'endpoint': literalString(endpoint.name),
+                    'method': literalString(method.name),
+                  })
+                  .awaited
+                  .asA(refer('InternalTestSession', serverpodTestUrl)))
+              .statement,
           refer('var callContext')
               .assign(refer('_endpointDispatch')
                   .awaited
@@ -141,8 +152,7 @@ class ServerTestToolsGenerator {
                   ..requiredParameters.add(
                     Parameter((p) => p..name = '_'),
                   )
-                  ..body = refer('session')
-                      .asA(refer('InternalTestSession', serverpodTestUrl))
+                  ..body = refer('uniqueSession')
                       .property('serverpodSession')
                       .code).closure,
                 'endpointPath': literalString(endpoint.name),
@@ -158,9 +168,7 @@ class ServerTestToolsGenerator {
               .property('method')
               .property('call')
               .call([
-                refer('session')
-                    .asA(refer('InternalTestSession', serverpodTestUrl))
-                    .property('serverpodSession'),
+                refer('uniqueSession').property('serverpodSession'),
                 refer('callContext').property('arguments'),
               ])
               .asA(method.returnType.reference(true, config: config))
@@ -191,6 +199,17 @@ class ServerTestToolsGenerator {
       (methodBuilder) => methodBuilder
         ..modifier = MethodModifier.async
         ..body = Block.of([
+          refer('var uniqueSession')
+              .assign(refer('session')
+                  .asA(refer('InternalTestSession', serverpodTestUrl))
+                  .property('copyWith')
+                  .call([], {
+                    'endpoint': literalString(endpoint.name),
+                    'method': literalString(method.name),
+                  })
+                  .awaited
+                  .asA(refer('InternalTestSession', serverpodTestUrl)))
+              .statement,
           refer('var callContext')
               .assign(refer('_endpointDispatch')
                   .awaited
@@ -200,8 +219,7 @@ class ServerTestToolsGenerator {
                   ..requiredParameters.add(
                     Parameter((p) => p..name = '_'),
                   )
-                  ..body = refer('session')
-                      .asA(refer('InternalTestSession', serverpodTestUrl))
+                  ..body = refer('uniqueSession')
                       .property('serverpodSession')
                       .code).closure,
                 'endpointPath': literalString(endpoint.name),
@@ -219,9 +237,7 @@ class ServerTestToolsGenerator {
               .property('method')
               .property('call')
               .call([
-                refer('session')
-                    .asA(refer('InternalTestSession', serverpodTestUrl))
-                    .property('serverpodSession'),
+                refer('uniqueSession').property('serverpodSession'),
                 refer('callContext').property('arguments'),
                 literalMap({
                   for (var parameter in streamParameters)
@@ -236,13 +252,15 @@ class ServerTestToolsGenerator {
     ).closure;
 
     if (returnsStream) {
-      var streamType = method.returnType.generics.first.className;
+      var streamGeneric = method.returnType.generics.first;
+      var streamControllerType = TypeReference((b) => b
+        ..symbol = 'StreamController'
+        ..url = 'dart:async'
+        ..types.add(streamGeneric.reference(true, config: config)));
+
       return Block.of([
         refer('var streamController')
-            .assign(refer('StreamController<$streamType>', 'dart:async')
-                .newInstance(
-              [],
-            ))
+            .assign(streamControllerType.newInstance([]))
             .statement,
         refer('callStreamFunctionAndHandleExceptions', serverpodTestUrl)
             .call([closure, refer('streamController')]).statement,

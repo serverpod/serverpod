@@ -58,8 +58,10 @@ void main() {
 
         group('when calling getAllSimpleData', () {
           setUp(() async {
-            await SimpleData.db
-                .insert(session, [SimpleData(num: 111), SimpleData(num: 222)]);
+            await SimpleData.db.insert(session, [
+              SimpleData(num: 111),
+              SimpleData(num: 222),
+            ]);
           });
 
           test('then returns all SimpleData in the database', () async {
