@@ -4302,6 +4302,26 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'testTools',
       endpoint: endpoints['testTools']!,
       methodConnectors: {
+        'returnsSessionId': _i1.MethodConnector(
+          name: 'returnsSessionId',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testTools'] as _i34.TestToolsEndpoint)
+                  .returnsSessionId(session),
+        ),
+        'returnsSessionEndpointAndMethod': _i1.MethodConnector(
+          name: 'returnsSessionEndpointAndMethod',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testTools'] as _i34.TestToolsEndpoint)
+                  .returnsSessionEndpointAndMethod(session),
+        ),
         'returnsString': _i1.MethodConnector(
           name: 'returnsString',
           params: {
@@ -4367,6 +4387,32 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['testTools'] as _i34.TestToolsEndpoint)
                   .getAllSimpleData(session),
+        ),
+        'returnsSessionIdFromStream': _i1.MethodStreamConnector(
+          name: 'returnsSessionIdFromStream',
+          params: {},
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['testTools'] as _i34.TestToolsEndpoint)
+                  .returnsSessionIdFromStream(session),
+        ),
+        'returnsSessionEndpointAndMethodFromStream': _i1.MethodStreamConnector(
+          name: 'returnsSessionEndpointAndMethodFromStream',
+          params: {},
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['testTools'] as _i34.TestToolsEndpoint)
+                  .returnsSessionEndpointAndMethodFromStream(session),
         ),
         'returnsStream': _i1.MethodStreamConnector(
           name: 'returnsStream',

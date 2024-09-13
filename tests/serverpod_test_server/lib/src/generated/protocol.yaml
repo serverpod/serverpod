@@ -244,6 +244,10 @@ subSubDirTest:
 subDirTest:
   - testMethod:
 testTools:
+  - returnsSessionId:
+  - returnsSessionEndpointAndMethod:
+  - returnsSessionIdFromStream:
+  - returnsSessionEndpointAndMethodFromStream:
   - returnsString:
   - returnsStream:
   - returnsListFromInputStream:

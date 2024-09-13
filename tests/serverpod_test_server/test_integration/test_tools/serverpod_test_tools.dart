@@ -336,9 +336,12 @@ class _AsyncTasksEndpoint {
     int seconds,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'asyncTasks',
+        method: 'insertRowToSimpleDataAfterDelay',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'asyncTasks',
         methodName: 'insertRowToSimpleDataAfterDelay',
         parameters: {
@@ -348,7 +351,7 @@ class _AsyncTasksEndpoint {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -359,16 +362,19 @@ class _AsyncTasksEndpoint {
     int seconds,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'asyncTasks',
+        method: 'throwExceptionAfterDelay',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'asyncTasks',
         methodName: 'throwExceptionAfterDelay',
         parameters: {'seconds': seconds},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -387,16 +393,19 @@ class _AuthenticationEndpoint {
 
   _i3.Future<void> removeAllUsers(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'authentication',
+        method: 'removeAllUsers',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'authentication',
         methodName: 'removeAllUsers',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -404,16 +413,19 @@ class _AuthenticationEndpoint {
 
   _i3.Future<int> countUsers(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'authentication',
+        method: 'countUsers',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'authentication',
         methodName: 'countUsers',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<int>);
     });
@@ -425,9 +437,12 @@ class _AuthenticationEndpoint {
     String password,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'authentication',
+        method: 'createUser',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'authentication',
         methodName: 'createUser',
         parameters: {
@@ -437,7 +452,7 @@ class _AuthenticationEndpoint {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -449,9 +464,12 @@ class _AuthenticationEndpoint {
     String password,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'authentication',
+        method: 'authenticate',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'authentication',
         methodName: 'authenticate',
         parameters: {
@@ -461,7 +479,7 @@ class _AuthenticationEndpoint {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i4.AuthenticationResponse>);
     });
@@ -469,16 +487,19 @@ class _AuthenticationEndpoint {
 
   _i3.Future<void> signOut(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'authentication',
+        method: 'signOut',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'authentication',
         methodName: 'signOut',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -490,9 +511,12 @@ class _AuthenticationEndpoint {
     List<String> scopes,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'authentication',
+        method: 'updateScopes',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'authentication',
         methodName: 'updateScopes',
         parameters: {
@@ -502,7 +526,7 @@ class _AuthenticationEndpoint {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -524,16 +548,19 @@ class _BasicTypesEndpoint {
     int? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicTypes',
+        method: 'testInt',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicTypes',
         methodName: 'testInt',
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<int?>);
     });
@@ -544,16 +571,19 @@ class _BasicTypesEndpoint {
     double? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicTypes',
+        method: 'testDouble',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicTypes',
         methodName: 'testDouble',
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<double?>);
     });
@@ -564,16 +594,19 @@ class _BasicTypesEndpoint {
     bool? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicTypes',
+        method: 'testBool',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicTypes',
         methodName: 'testBool',
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<bool?>);
     });
@@ -584,16 +617,19 @@ class _BasicTypesEndpoint {
     DateTime? dateTime,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicTypes',
+        method: 'testDateTime',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicTypes',
         methodName: 'testDateTime',
         parameters: {'dateTime': dateTime},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<DateTime?>);
     });
@@ -604,16 +640,19 @@ class _BasicTypesEndpoint {
     String? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicTypes',
+        method: 'testString',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicTypes',
         methodName: 'testString',
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<String?>);
     });
@@ -624,16 +663,19 @@ class _BasicTypesEndpoint {
     _i5.ByteData? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicTypes',
+        method: 'testByteData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicTypes',
         methodName: 'testByteData',
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i5.ByteData?>);
     });
@@ -644,16 +686,19 @@ class _BasicTypesEndpoint {
     Duration? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicTypes',
+        method: 'testDuration',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicTypes',
         methodName: 'testDuration',
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Duration?>);
     });
@@ -664,16 +709,19 @@ class _BasicTypesEndpoint {
     _i6.UuidValue? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicTypes',
+        method: 'testUuid',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicTypes',
         methodName: 'testUuid',
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i6.UuidValue?>);
     });
@@ -692,16 +740,19 @@ class _CloudStorageEndpoint {
 
   _i3.Future<void> reset(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'cloudStorage',
+        method: 'reset',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'cloudStorage',
         methodName: 'reset',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -713,9 +764,12 @@ class _CloudStorageEndpoint {
     _i5.ByteData byteData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'cloudStorage',
+        method: 'storePublicFile',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'cloudStorage',
         methodName: 'storePublicFile',
         parameters: {
@@ -725,7 +779,7 @@ class _CloudStorageEndpoint {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -736,16 +790,19 @@ class _CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'cloudStorage',
+        method: 'retrievePublicFile',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'cloudStorage',
         methodName: 'retrievePublicFile',
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i5.ByteData?>);
     });
@@ -756,16 +813,19 @@ class _CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'cloudStorage',
+        method: 'existsPublicFile',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'cloudStorage',
         methodName: 'existsPublicFile',
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<bool?>);
     });
@@ -776,16 +836,19 @@ class _CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'cloudStorage',
+        method: 'deletePublicFile',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'cloudStorage',
         methodName: 'deletePublicFile',
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -796,16 +859,19 @@ class _CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'cloudStorage',
+        method: 'getPublicUrlForFile',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'cloudStorage',
         methodName: 'getPublicUrlForFile',
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<String?>);
     });
@@ -816,16 +882,19 @@ class _CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'cloudStorage',
+        method: 'getDirectFilePostUrl',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'cloudStorage',
         methodName: 'getDirectFilePostUrl',
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<String?>);
     });
@@ -836,16 +905,19 @@ class _CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'cloudStorage',
+        method: 'verifyDirectFileUpload',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'cloudStorage',
         methodName: 'verifyDirectFileUpload',
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<bool>);
     });
@@ -868,9 +940,12 @@ class _S3CloudStorageEndpoint {
     _i5.ByteData byteData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 's3CloudStorage',
+        method: 'storePublicFile',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 's3CloudStorage',
         methodName: 'storePublicFile',
         parameters: {
@@ -880,7 +955,7 @@ class _S3CloudStorageEndpoint {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -891,16 +966,19 @@ class _S3CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 's3CloudStorage',
+        method: 'retrievePublicFile',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 's3CloudStorage',
         methodName: 'retrievePublicFile',
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i5.ByteData?>);
     });
@@ -911,16 +989,19 @@ class _S3CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 's3CloudStorage',
+        method: 'existsPublicFile',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 's3CloudStorage',
         methodName: 'existsPublicFile',
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<bool?>);
     });
@@ -931,16 +1012,19 @@ class _S3CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 's3CloudStorage',
+        method: 'deletePublicFile',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 's3CloudStorage',
         methodName: 'deletePublicFile',
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -951,16 +1035,19 @@ class _S3CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 's3CloudStorage',
+        method: 'getPublicUrlForFile',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 's3CloudStorage',
         methodName: 'getPublicUrlForFile',
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<String?>);
     });
@@ -971,16 +1058,19 @@ class _S3CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 's3CloudStorage',
+        method: 'getDirectFilePostUrl',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 's3CloudStorage',
         methodName: 'getDirectFilePostUrl',
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<String?>);
     });
@@ -991,16 +1081,19 @@ class _S3CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 's3CloudStorage',
+        method: 'verifyDirectFileUpload',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 's3CloudStorage',
         methodName: 'verifyDirectFileUpload',
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<bool>);
     });
@@ -1020,16 +1113,19 @@ class _CustomClassProtocolEndpoint {
   _i3.Future<_i7.ProtocolCustomClass> getProtocolField(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'customClassProtocol',
+        method: 'getProtocolField',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'customClassProtocol',
         methodName: 'getProtocolField',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i7.ProtocolCustomClass>);
     });
@@ -1051,16 +1147,19 @@ class _CustomTypesEndpoint {
     _i9.CustomClass data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'customTypes',
+        method: 'returnCustomClass',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'customTypes',
         methodName: 'returnCustomClass',
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i8.CustomClass>);
     });
@@ -1071,16 +1170,19 @@ class _CustomTypesEndpoint {
     _i9.CustomClass? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'customTypes',
+        method: 'returnCustomClassNullable',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'customTypes',
         methodName: 'returnCustomClassNullable',
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i8.CustomClass?>);
     });
@@ -1091,16 +1193,19 @@ class _CustomTypesEndpoint {
     _i9.CustomClass2 data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'customTypes',
+        method: 'returnCustomClass2',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'customTypes',
         methodName: 'returnCustomClass2',
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i8.CustomClass2>);
     });
@@ -1111,16 +1216,19 @@ class _CustomTypesEndpoint {
     _i9.CustomClass2? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'customTypes',
+        method: 'returnCustomClass2Nullable',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'customTypes',
         methodName: 'returnCustomClass2Nullable',
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i8.CustomClass2?>);
     });
@@ -1131,16 +1239,19 @@ class _CustomTypesEndpoint {
     _i10.ExternalCustomClass data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'customTypes',
+        method: 'returnExternalCustomClass',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'customTypes',
         methodName: 'returnExternalCustomClass',
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i10.ExternalCustomClass>);
     });
@@ -1151,16 +1262,19 @@ class _CustomTypesEndpoint {
     _i10.ExternalCustomClass? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'customTypes',
+        method: 'returnExternalCustomClassNullable',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'customTypes',
         methodName: 'returnExternalCustomClassNullable',
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i10.ExternalCustomClass?>);
     });
@@ -1171,16 +1285,19 @@ class _CustomTypesEndpoint {
     _i11.FreezedCustomClass data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'customTypes',
+        method: 'returnFreezedCustomClass',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'customTypes',
         methodName: 'returnFreezedCustomClass',
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i11.FreezedCustomClass>);
     });
@@ -1191,16 +1308,19 @@ class _CustomTypesEndpoint {
     _i11.FreezedCustomClass? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'customTypes',
+        method: 'returnFreezedCustomClassNullable',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'customTypes',
         methodName: 'returnFreezedCustomClassNullable',
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i11.FreezedCustomClass?>);
     });
@@ -1219,16 +1339,19 @@ class _BasicDatabase {
 
   _i3.Future<void> deleteAllSimpleTestData(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'deleteAllSimpleTestData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'deleteAllSimpleTestData',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -1239,16 +1362,19 @@ class _BasicDatabase {
     int num,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'deleteSimpleTestDataLessThan',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'deleteSimpleTestDataLessThan',
         parameters: {'num': num},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -1259,16 +1385,19 @@ class _BasicDatabase {
     int num,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'findAndDeleteSimpleTestData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'findAndDeleteSimpleTestData',
         parameters: {'num': num},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -1279,16 +1408,19 @@ class _BasicDatabase {
     int numRows,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'createSimpleTestData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'createSimpleTestData',
         parameters: {'numRows': numRows},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -1297,16 +1429,19 @@ class _BasicDatabase {
   _i3.Future<List<_i12.SimpleData>> findSimpleData(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'findSimpleData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'findSimpleData',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<_i12.SimpleData>>);
     });
@@ -1317,16 +1452,19 @@ class _BasicDatabase {
     int num,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'findFirstRowSimpleData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'findFirstRowSimpleData',
         parameters: {'num': num},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i12.SimpleData?>);
     });
@@ -1337,16 +1475,19 @@ class _BasicDatabase {
     int id,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'findByIdSimpleData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'findByIdSimpleData',
         parameters: {'id': id},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i12.SimpleData?>);
     });
@@ -1360,9 +1501,12 @@ class _BasicDatabase {
     bool descending,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'findSimpleDataRowsLessThan',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'findSimpleDataRowsLessThan',
         parameters: {
@@ -1374,7 +1518,7 @@ class _BasicDatabase {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i13.SimpleDataList?>);
     });
@@ -1385,16 +1529,19 @@ class _BasicDatabase {
     _i14.SimpleData simpleData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'insertRowSimpleData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'insertRowSimpleData',
         parameters: {'simpleData': simpleData},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i12.SimpleData>);
     });
@@ -1405,16 +1552,19 @@ class _BasicDatabase {
     _i14.SimpleData simpleData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'updateRowSimpleData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'updateRowSimpleData',
         parameters: {'simpleData': simpleData},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i12.SimpleData>);
     });
@@ -1425,16 +1575,19 @@ class _BasicDatabase {
     _i14.SimpleData simpleData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'deleteRowSimpleData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'deleteRowSimpleData',
         parameters: {'simpleData': simpleData},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<int>);
     });
@@ -1442,16 +1595,19 @@ class _BasicDatabase {
 
   _i3.Future<List<int>> deleteWhereSimpleData(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'deleteWhereSimpleData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'deleteWhereSimpleData',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<int>>);
     });
@@ -1459,16 +1615,19 @@ class _BasicDatabase {
 
   _i3.Future<int> countSimpleData(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'countSimpleData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'countSimpleData',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<int>);
     });
@@ -1479,16 +1638,19 @@ class _BasicDatabase {
     _i16.Types value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'insertTypes',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'insertTypes',
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i15.Types>);
     });
@@ -1499,16 +1661,19 @@ class _BasicDatabase {
     _i16.Types value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'updateTypes',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'updateTypes',
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i15.Types>);
     });
@@ -1516,16 +1681,19 @@ class _BasicDatabase {
 
   _i3.Future<int?> countTypesRows(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'countTypesRows',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'countTypesRows',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<int?>);
     });
@@ -1533,16 +1701,19 @@ class _BasicDatabase {
 
   _i3.Future<List<int>> deleteAllInTypes(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'deleteAllInTypes',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'deleteAllInTypes',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<int>>);
     });
@@ -1553,16 +1724,19 @@ class _BasicDatabase {
     int id,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'getTypes',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'getTypes',
         parameters: {'id': id},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i15.Types?>);
     });
@@ -1573,16 +1747,19 @@ class _BasicDatabase {
     int id,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'getTypesRawQuery',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'getTypesRawQuery',
         parameters: {'id': id},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<int?>);
     });
@@ -1593,16 +1770,19 @@ class _BasicDatabase {
     _i18.ObjectWithEnum object,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'storeObjectWithEnum',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'storeObjectWithEnum',
         parameters: {'object': object},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i17.ObjectWithEnum>);
     });
@@ -1613,16 +1793,19 @@ class _BasicDatabase {
     int id,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'getObjectWithEnum',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'getObjectWithEnum',
         parameters: {'id': id},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i17.ObjectWithEnum?>);
     });
@@ -1633,16 +1816,19 @@ class _BasicDatabase {
     _i20.ObjectWithObject object,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'storeObjectWithObject',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'storeObjectWithObject',
         parameters: {'object': object},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i19.ObjectWithObject>);
     });
@@ -1653,16 +1839,19 @@ class _BasicDatabase {
     int id,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'getObjectWithObject',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'getObjectWithObject',
         parameters: {'id': id},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i19.ObjectWithObject?>);
     });
@@ -1670,16 +1859,19 @@ class _BasicDatabase {
 
   _i3.Future<int> deleteAll(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'deleteAll',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'deleteAll',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<int>);
     });
@@ -1687,16 +1879,19 @@ class _BasicDatabase {
 
   _i3.Future<bool> testByteDataStore(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'basicDatabase',
+        method: 'testByteDataStore',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'testByteDataStore',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<bool>);
     });
@@ -1718,16 +1913,19 @@ class _TransactionsDatabaseEndpoint {
     int num,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'transactionsDatabase',
+        method: 'removeRow',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'transactionsDatabase',
         methodName: 'removeRow',
         parameters: {'num': num},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -1740,9 +1938,12 @@ class _TransactionsDatabaseEndpoint {
     int numDelete,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'transactionsDatabase',
+        method: 'updateInsertDelete',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'transactionsDatabase',
         methodName: 'updateInsertDelete',
         parameters: {
@@ -1753,7 +1954,7 @@ class _TransactionsDatabaseEndpoint {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<bool>);
     });
@@ -1775,16 +1976,19 @@ class _DeprecationEndpoint {
     double? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'deprecation',
+        method: 'setGlobalDouble',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'deprecation',
         methodName: 'setGlobalDouble',
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -1792,16 +1996,19 @@ class _DeprecationEndpoint {
 
   _i3.Future<double> getGlobalDouble(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'deprecation',
+        method: 'getGlobalDouble',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'deprecation',
         methodName: 'getGlobalDouble',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<double>);
     });
@@ -1820,16 +2027,19 @@ class _EchoRequestEndpoint {
 
   _i3.Future<String?> echoAuthenticationKey(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'echoRequest',
+        method: 'echoAuthenticationKey',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'echoRequest',
         methodName: 'echoAuthenticationKey',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<String?>);
     });
@@ -1840,16 +2050,19 @@ class _EchoRequestEndpoint {
     String headerName,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'echoRequest',
+        method: 'echoHttpHeader',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'echoRequest',
         methodName: 'echoHttpHeader',
         parameters: {'headerName': headerName},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<String>?>);
     });
@@ -1872,9 +2085,12 @@ class _EmailAuthTestMethods {
     String email,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'emailAuthTestMethods',
+        method: 'findVerificationCode',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'emailAuthTestMethods',
         methodName: 'findVerificationCode',
         parameters: {
@@ -1884,7 +2100,7 @@ class _EmailAuthTestMethods {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<String?>);
     });
@@ -1895,16 +2111,19 @@ class _EmailAuthTestMethods {
     String email,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'emailAuthTestMethods',
+        method: 'findResetCode',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'emailAuthTestMethods',
         methodName: 'findResetCode',
         parameters: {'email': email},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<String?>);
     });
@@ -1912,16 +2131,19 @@ class _EmailAuthTestMethods {
 
   _i3.Future<void> tearDown(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'emailAuthTestMethods',
+        method: 'tearDown',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'emailAuthTestMethods',
         methodName: 'tearDown',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -1934,9 +2156,12 @@ class _EmailAuthTestMethods {
     String password,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'emailAuthTestMethods',
+        method: 'createUser',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'emailAuthTestMethods',
         methodName: 'createUser',
         parameters: {
@@ -1947,7 +2172,7 @@ class _EmailAuthTestMethods {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<bool>);
     });
@@ -1966,16 +2191,19 @@ class _ExceptionTestEndpoint {
 
   _i3.Future<String> throwNormalException(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'exceptionTest',
+        method: 'throwNormalException',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'exceptionTest',
         methodName: 'throwNormalException',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<String>);
     });
@@ -1983,16 +2211,19 @@ class _ExceptionTestEndpoint {
 
   _i3.Future<String> throwExceptionWithData(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'exceptionTest',
+        method: 'throwExceptionWithData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'exceptionTest',
         methodName: 'throwExceptionWithData',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<String>);
     });
@@ -2000,16 +2231,19 @@ class _ExceptionTestEndpoint {
 
   _i3.Future<String> workingWithoutException(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'exceptionTest',
+        method: 'workingWithoutException',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'exceptionTest',
         methodName: 'workingWithoutException',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<String>);
     });
@@ -2028,16 +2262,19 @@ class _FailedCallsEndpoint {
 
   _i3.Future<void> failedCall(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'failedCalls',
+        method: 'failedCall',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'failedCalls',
         methodName: 'failedCall',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -2045,16 +2282,19 @@ class _FailedCallsEndpoint {
 
   _i3.Future<void> failedDatabaseQuery(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'failedCalls',
+        method: 'failedDatabaseQuery',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'failedCalls',
         methodName: 'failedDatabaseQuery',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -2063,16 +2303,19 @@ class _FailedCallsEndpoint {
   _i3.Future<bool> failedDatabaseQueryCaughtException(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'failedCalls',
+        method: 'failedDatabaseQueryCaughtException',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'failedCalls',
         methodName: 'failedDatabaseQueryCaughtException',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<bool>);
     });
@@ -2080,16 +2323,19 @@ class _FailedCallsEndpoint {
 
   _i3.Future<void> slowCall(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'failedCalls',
+        method: 'slowCall',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'failedCalls',
         methodName: 'slowCall',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -2097,16 +2343,19 @@ class _FailedCallsEndpoint {
 
   _i3.Future<void> caughtException(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'failedCalls',
+        method: 'caughtException',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'failedCalls',
         methodName: 'caughtException',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -2128,16 +2377,19 @@ class _FieldScopesEndpoint {
     _i21.ObjectFieldScopes object,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'fieldScopes',
+        method: 'storeObject',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'fieldScopes',
         methodName: 'storeObject',
         parameters: {'object': object},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -2146,16 +2398,19 @@ class _FieldScopesEndpoint {
   _i3.Future<_i22.ObjectFieldScopes?> retrieveObject(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'fieldScopes',
+        method: 'retrieveObject',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'fieldScopes',
         methodName: 'retrieveObject',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i22.ObjectFieldScopes?>);
     });
@@ -2177,16 +2432,19 @@ class _FutureCallsEndpoint {
     _i14.SimpleData? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'futureCalls',
+        method: 'makeFutureCall',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'futureCalls',
         methodName: 'makeFutureCall',
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -2208,16 +2466,19 @@ class _ListParametersEndpoint {
     List<int> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnIntList',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnIntList',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<int>>);
     });
@@ -2228,16 +2489,19 @@ class _ListParametersEndpoint {
     List<List<int>> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnIntListList',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnIntListList',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<List<int>>>);
     });
@@ -2248,16 +2512,19 @@ class _ListParametersEndpoint {
     List<int>? list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnIntListNullable',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnIntListNullable',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<int>?>);
     });
@@ -2268,16 +2535,19 @@ class _ListParametersEndpoint {
     List<List<int>?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnIntListNullableList',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnIntListNullableList',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<List<int>?>>);
     });
@@ -2288,16 +2558,19 @@ class _ListParametersEndpoint {
     List<List<int>>? list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnIntListListNullable',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnIntListListNullable',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<List<int>>?>);
     });
@@ -2308,16 +2581,19 @@ class _ListParametersEndpoint {
     List<int?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnIntListNullableInts',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnIntListNullableInts',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<int?>>);
     });
@@ -2328,16 +2604,19 @@ class _ListParametersEndpoint {
     List<int?>? list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnNullableIntListNullableInts',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnNullableIntListNullableInts',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<int?>?>);
     });
@@ -2348,16 +2627,19 @@ class _ListParametersEndpoint {
     List<double> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnDoubleList',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnDoubleList',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<double>>);
     });
@@ -2368,16 +2650,19 @@ class _ListParametersEndpoint {
     List<double?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnDoubleListNullableDoubles',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnDoubleListNullableDoubles',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<double?>>);
     });
@@ -2388,16 +2673,19 @@ class _ListParametersEndpoint {
     List<bool> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnBoolList',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnBoolList',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<bool>>);
     });
@@ -2408,16 +2696,19 @@ class _ListParametersEndpoint {
     List<bool?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnBoolListNullableBools',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnBoolListNullableBools',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<bool?>>);
     });
@@ -2428,16 +2719,19 @@ class _ListParametersEndpoint {
     List<String> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnStringList',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnStringList',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<String>>);
     });
@@ -2448,16 +2742,19 @@ class _ListParametersEndpoint {
     List<String?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnStringListNullableStrings',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnStringListNullableStrings',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<String?>>);
     });
@@ -2468,16 +2765,19 @@ class _ListParametersEndpoint {
     List<DateTime> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnDateTimeList',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnDateTimeList',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<DateTime>>);
     });
@@ -2488,16 +2788,19 @@ class _ListParametersEndpoint {
     List<DateTime?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnDateTimeListNullableDateTimes',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnDateTimeListNullableDateTimes',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<DateTime?>>);
     });
@@ -2508,16 +2811,19 @@ class _ListParametersEndpoint {
     List<_i5.ByteData> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnByteDataList',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnByteDataList',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<_i5.ByteData>>);
     });
@@ -2528,16 +2834,19 @@ class _ListParametersEndpoint {
     List<_i5.ByteData?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnByteDataListNullableByteDatas',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnByteDataListNullableByteDatas',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<_i5.ByteData?>>);
     });
@@ -2548,16 +2857,19 @@ class _ListParametersEndpoint {
     List<_i14.SimpleData> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnSimpleDataList',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnSimpleDataList',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<_i12.SimpleData>>);
     });
@@ -2568,16 +2880,19 @@ class _ListParametersEndpoint {
     List<_i14.SimpleData?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnSimpleDataListNullableSimpleData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnSimpleDataListNullableSimpleData',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<_i12.SimpleData?>>);
     });
@@ -2588,16 +2903,19 @@ class _ListParametersEndpoint {
     List<_i14.SimpleData>? list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnSimpleDataListNullable',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnSimpleDataListNullable',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<_i12.SimpleData>?>);
     });
@@ -2609,16 +2927,19 @@ class _ListParametersEndpoint {
     List<_i14.SimpleData?>? list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnNullableSimpleDataListNullableSimpleData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnNullableSimpleDataListNullableSimpleData',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<_i12.SimpleData?>?>);
     });
@@ -2629,16 +2950,19 @@ class _ListParametersEndpoint {
     List<Duration> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnDurationList',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnDurationList',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<Duration>>);
     });
@@ -2649,16 +2973,19 @@ class _ListParametersEndpoint {
     List<Duration?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'listParameters',
+        method: 'returnDurationListNullableDurations',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'listParameters',
         methodName: 'returnDurationListNullableDurations',
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<Duration?>>);
     });
@@ -2680,16 +3007,19 @@ class _LoggingEndpoint {
     int seconds,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'logging',
+        method: 'slowQueryMethod',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'logging',
         methodName: 'slowQueryMethod',
         parameters: {'seconds': seconds},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -2700,16 +3030,19 @@ class _LoggingEndpoint {
     int queries,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'logging',
+        method: 'queryMethod',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'logging',
         methodName: 'queryMethod',
         parameters: {'queries': queries},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -2717,16 +3050,19 @@ class _LoggingEndpoint {
 
   _i3.Future<void> failedQueryMethod(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'logging',
+        method: 'failedQueryMethod',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'logging',
         methodName: 'failedQueryMethod',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -2737,16 +3073,19 @@ class _LoggingEndpoint {
     int delayMillis,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'logging',
+        method: 'slowMethod',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'logging',
         methodName: 'slowMethod',
         parameters: {'delayMillis': delayMillis},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -2754,16 +3093,19 @@ class _LoggingEndpoint {
 
   _i3.Future<void> failingMethod(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'logging',
+        method: 'failingMethod',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'logging',
         methodName: 'failingMethod',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -2771,16 +3113,19 @@ class _LoggingEndpoint {
 
   _i3.Future<void> emptyMethod(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'logging',
+        method: 'emptyMethod',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'logging',
         methodName: 'emptyMethod',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -2792,9 +3137,12 @@ class _LoggingEndpoint {
     List<int> logLevels,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'logging',
+        method: 'log',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'logging',
         methodName: 'log',
         parameters: {
@@ -2804,7 +3152,7 @@ class _LoggingEndpoint {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -2815,16 +3163,19 @@ class _LoggingEndpoint {
     String message,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'logging',
+        method: 'logInfo',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'logging',
         methodName: 'logInfo',
         parameters: {'message': message},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -2837,9 +3188,12 @@ class _LoggingEndpoint {
     String error,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'logging',
+        method: 'logDebugAndInfoAndError',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'logging',
         methodName: 'logDebugAndInfoAndError',
         parameters: {
@@ -2850,7 +3204,7 @@ class _LoggingEndpoint {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -2858,16 +3212,19 @@ class _LoggingEndpoint {
 
   _i3.Future<void> twoQueries(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'logging',
+        method: 'twoQueries',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'logging',
         methodName: 'twoQueries',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -2880,9 +3237,13 @@ class _LoggingEndpoint {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'logging',
+          method: 'streamEmpty',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'logging',
           methodName: 'streamEmpty',
           arguments: {},
@@ -2890,7 +3251,7 @@ class _LoggingEndpoint {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {'input': input},
         ) as _i3.Stream<int>);
@@ -2907,9 +3268,13 @@ class _LoggingEndpoint {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'logging',
+          method: 'streamLogging',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'logging',
           methodName: 'streamLogging',
           arguments: {},
@@ -2917,7 +3282,7 @@ class _LoggingEndpoint {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {'input': input},
         ) as _i3.Stream<int>);
@@ -2934,9 +3299,13 @@ class _LoggingEndpoint {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'logging',
+          method: 'streamQueryLogging',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'logging',
           methodName: 'streamQueryLogging',
           arguments: {},
@@ -2944,7 +3313,7 @@ class _LoggingEndpoint {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {'input': input},
         ) as _i3.Stream<int>);
@@ -2984,16 +3353,19 @@ class _LoggingDisabledEndpoint {
     String message,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'loggingDisabled',
+        method: 'logInfo',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'loggingDisabled',
         methodName: 'logInfo',
         parameters: {'message': message},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -3015,16 +3387,19 @@ class _MapParametersEndpoint {
     Map<String, int> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnIntMap',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnIntMap',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, int>>);
     });
@@ -3035,16 +3410,19 @@ class _MapParametersEndpoint {
     Map<String, int>? map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnIntMapNullable',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnIntMapNullable',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, int>?>);
     });
@@ -3055,16 +3433,19 @@ class _MapParametersEndpoint {
     Map<String, Map<String, int>> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnNestedIntMap',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnNestedIntMap',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, Map<String, int>>>);
     });
@@ -3075,16 +3456,19 @@ class _MapParametersEndpoint {
     Map<String, int?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnIntMapNullableInts',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnIntMapNullableInts',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, int?>>);
     });
@@ -3095,16 +3479,19 @@ class _MapParametersEndpoint {
     Map<String, int?>? map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnNullableIntMapNullableInts',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnNullableIntMapNullableInts',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, int?>?>);
     });
@@ -3115,16 +3502,19 @@ class _MapParametersEndpoint {
     Map<int, int> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnIntIntMap',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnIntIntMap',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<int, int>>);
     });
@@ -3135,16 +3525,19 @@ class _MapParametersEndpoint {
     Map<_i24.TestEnum, int> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnEnumIntMap',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnEnumIntMap',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<_i23.TestEnum, int>>);
     });
@@ -3155,16 +3548,19 @@ class _MapParametersEndpoint {
     Map<String, _i24.TestEnum> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnEnumMap',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnEnumMap',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, _i23.TestEnum>>);
     });
@@ -3175,16 +3571,19 @@ class _MapParametersEndpoint {
     Map<String, double> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnDoubleMap',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnDoubleMap',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, double>>);
     });
@@ -3195,16 +3594,19 @@ class _MapParametersEndpoint {
     Map<String, double?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnDoubleMapNullableDoubles',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnDoubleMapNullableDoubles',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, double?>>);
     });
@@ -3215,16 +3617,19 @@ class _MapParametersEndpoint {
     Map<String, bool> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnBoolMap',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnBoolMap',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, bool>>);
     });
@@ -3235,16 +3640,19 @@ class _MapParametersEndpoint {
     Map<String, bool?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnBoolMapNullableBools',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnBoolMapNullableBools',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, bool?>>);
     });
@@ -3255,16 +3663,19 @@ class _MapParametersEndpoint {
     Map<String, String> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnStringMap',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnStringMap',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, String>>);
     });
@@ -3275,16 +3686,19 @@ class _MapParametersEndpoint {
     Map<String, String?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnStringMapNullableStrings',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnStringMapNullableStrings',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, String?>>);
     });
@@ -3295,16 +3709,19 @@ class _MapParametersEndpoint {
     Map<String, DateTime> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnDateTimeMap',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnDateTimeMap',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, DateTime>>);
     });
@@ -3315,16 +3732,19 @@ class _MapParametersEndpoint {
     Map<String, DateTime?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnDateTimeMapNullableDateTimes',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnDateTimeMapNullableDateTimes',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, DateTime?>>);
     });
@@ -3335,16 +3755,19 @@ class _MapParametersEndpoint {
     Map<String, _i5.ByteData> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnByteDataMap',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnByteDataMap',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, _i5.ByteData>>);
     });
@@ -3355,16 +3778,19 @@ class _MapParametersEndpoint {
     Map<String, _i5.ByteData?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnByteDataMapNullableByteDatas',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnByteDataMapNullableByteDatas',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, _i5.ByteData?>>);
     });
@@ -3375,16 +3801,19 @@ class _MapParametersEndpoint {
     Map<String, _i14.SimpleData> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnSimpleDataMap',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnSimpleDataMap',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, _i12.SimpleData>>);
     });
@@ -3396,16 +3825,19 @@ class _MapParametersEndpoint {
     Map<String, _i14.SimpleData?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnSimpleDataMapNullableSimpleData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnSimpleDataMapNullableSimpleData',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, _i12.SimpleData?>>);
     });
@@ -3416,16 +3848,19 @@ class _MapParametersEndpoint {
     Map<String, _i14.SimpleData>? map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnSimpleDataMapNullable',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnSimpleDataMapNullable',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, _i12.SimpleData>?>);
     });
@@ -3437,16 +3872,19 @@ class _MapParametersEndpoint {
     Map<String, _i14.SimpleData?>? map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnNullableSimpleDataMapNullableSimpleData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnNullableSimpleDataMapNullableSimpleData',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, _i12.SimpleData?>?>);
     });
@@ -3457,16 +3895,19 @@ class _MapParametersEndpoint {
     Map<String, Duration> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnDurationMap',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnDurationMap',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, Duration>>);
     });
@@ -3477,16 +3918,19 @@ class _MapParametersEndpoint {
     Map<String, Duration?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'mapParameters',
+        method: 'returnDurationMapNullableDurations',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
         methodName: 'returnDurationMapNullableDurations',
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<Map<String, Duration?>>);
     });
@@ -3507,9 +3951,13 @@ class _MethodStreaming {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'methodStreaming',
+          method: 'simpleStream',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'methodStreaming',
           methodName: 'simpleStream',
           arguments: {},
@@ -3517,7 +3965,7 @@ class _MethodStreaming {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {},
         ) as _i3.Stream<int>);
@@ -3534,9 +3982,13 @@ class _MethodStreaming {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'methodStreaming',
+          method: 'neverEndingStreamWithDelay',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'methodStreaming',
           methodName: 'neverEndingStreamWithDelay',
           arguments: {'millisecondsDelay': millisecondsDelay},
@@ -3544,7 +3996,7 @@ class _MethodStreaming {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {},
         ) as _i3.Stream<int>);
@@ -3556,16 +4008,19 @@ class _MethodStreaming {
 
   _i3.Future<void> methodCallEndpoint(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'methodCallEndpoint',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'methodCallEndpoint',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -3576,9 +4031,12 @@ class _MethodStreaming {
     _i3.Stream<int> stream,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'intReturnFromStream',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodStreamCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'intReturnFromStream',
         arguments: {},
@@ -3586,7 +4044,7 @@ class _MethodStreaming {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
         {'stream': stream},
       ) as _i3.Future<int>);
@@ -3598,9 +4056,12 @@ class _MethodStreaming {
     _i3.Stream<int?> stream,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'nullableIntReturnFromStream',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodStreamCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'nullableIntReturnFromStream',
         arguments: {},
@@ -3608,7 +4069,7 @@ class _MethodStreaming {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
         {'stream': stream},
       ) as _i3.Future<int?>);
@@ -3622,9 +4083,13 @@ class _MethodStreaming {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'methodStreaming',
+          method: 'intStreamFromValue',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'methodStreaming',
           methodName: 'intStreamFromValue',
           arguments: {'value': value},
@@ -3632,7 +4097,7 @@ class _MethodStreaming {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {},
         ) as _i3.Stream<int>);
@@ -3649,9 +4114,13 @@ class _MethodStreaming {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'methodStreaming',
+          method: 'intEchoStream',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'methodStreaming',
           methodName: 'intEchoStream',
           arguments: {},
@@ -3659,7 +4128,7 @@ class _MethodStreaming {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {'stream': stream},
         ) as _i3.Stream<int>);
@@ -3676,9 +4145,13 @@ class _MethodStreaming {
     var streamController = _i3.StreamController<dynamic>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'methodStreaming',
+          method: 'dynamicEchoStream',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'methodStreaming',
           methodName: 'dynamicEchoStream',
           arguments: {},
@@ -3686,7 +4159,7 @@ class _MethodStreaming {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {'stream': stream},
         ) as _i3.Stream<dynamic>);
@@ -3700,12 +4173,16 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int?> stream,
   ) {
-    var streamController = _i3.StreamController<int>();
+    var streamController = _i3.StreamController<int?>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'methodStreaming',
+          method: 'nullableIntEchoStream',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'methodStreaming',
           methodName: 'nullableIntEchoStream',
           arguments: {},
@@ -3713,7 +4190,7 @@ class _MethodStreaming {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {'stream': stream},
         ) as _i3.Stream<int?>);
@@ -3728,9 +4205,12 @@ class _MethodStreaming {
     _i3.Stream<int> stream,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'voidReturnAfterStream',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodStreamCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'voidReturnAfterStream',
         arguments: {},
@@ -3738,7 +4218,7 @@ class _MethodStreaming {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
         {'stream': stream},
       ) as _i3.Future<void>);
@@ -3753,9 +4233,13 @@ class _MethodStreaming {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'methodStreaming',
+          method: 'multipleIntEchoStreams',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'methodStreaming',
           methodName: 'multipleIntEchoStreams',
           arguments: {},
@@ -3766,7 +4250,7 @@ class _MethodStreaming {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {
             'stream1': stream1,
@@ -3784,9 +4268,12 @@ class _MethodStreaming {
     _i3.Stream<int> stream,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'directVoidReturnWithStreamInput',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodStreamCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'directVoidReturnWithStreamInput',
         arguments: {},
@@ -3794,7 +4281,7 @@ class _MethodStreaming {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
         {'stream': stream},
       ) as _i3.Future<void>);
@@ -3806,9 +4293,12 @@ class _MethodStreaming {
     _i3.Stream<int> stream,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'directOneIntReturnWithStreamInput',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodStreamCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'directOneIntReturnWithStreamInput',
         arguments: {},
@@ -3816,7 +4306,7 @@ class _MethodStreaming {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
         {'stream': stream},
       ) as _i3.Future<int>);
@@ -3828,9 +4318,12 @@ class _MethodStreaming {
     _i3.Stream<int> stream,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'simpleInputReturnStream',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodStreamCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'simpleInputReturnStream',
         arguments: {},
@@ -3838,7 +4331,7 @@ class _MethodStreaming {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
         {'stream': stream},
       ) as _i3.Future<int>);
@@ -3852,9 +4345,13 @@ class _MethodStreaming {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'methodStreaming',
+          method: 'simpleStreamWithParameter',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'methodStreaming',
           methodName: 'simpleStreamWithParameter',
           arguments: {'value': value},
@@ -3862,7 +4359,7 @@ class _MethodStreaming {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {},
         ) as _i3.Stream<int>);
@@ -3876,12 +4373,16 @@ class _MethodStreaming {
     _i1.TestSession session,
     int value,
   ) {
-    var streamController = _i3.StreamController<SimpleData>();
+    var streamController = _i3.StreamController<_i12.SimpleData>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'methodStreaming',
+          method: 'simpleDataStream',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'methodStreaming',
           methodName: 'simpleDataStream',
           arguments: {'value': value},
@@ -3889,7 +4390,7 @@ class _MethodStreaming {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {},
         ) as _i3.Stream<_i12.SimpleData>);
@@ -3903,12 +4404,16 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<_i14.SimpleData> simpleDataStream,
   ) {
-    var streamController = _i3.StreamController<SimpleData>();
+    var streamController = _i3.StreamController<_i12.SimpleData>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'methodStreaming',
+          method: 'simpleInOutDataStream',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'methodStreaming',
           methodName: 'simpleInOutDataStream',
           arguments: {},
@@ -3916,7 +4421,7 @@ class _MethodStreaming {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {'simpleDataStream': simpleDataStream},
         ) as _i3.Stream<_i12.SimpleData>);
@@ -3928,16 +4433,19 @@ class _MethodStreaming {
 
   _i3.Future<void> simpleEndpoint(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'simpleEndpoint',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'simpleEndpoint',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -3948,16 +4456,19 @@ class _MethodStreaming {
     int value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'intParameter',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'intParameter',
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -3968,16 +4479,19 @@ class _MethodStreaming {
     int value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'doubleInputValue',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'doubleInputValue',
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<int>);
     });
@@ -3988,16 +4502,19 @@ class _MethodStreaming {
     int delay,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'delayedResponse',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'delayedResponse',
         parameters: {'delay': delay},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -4010,9 +4527,13 @@ class _MethodStreaming {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'methodStreaming',
+          method: 'delayedStreamResponse',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'methodStreaming',
           methodName: 'delayedStreamResponse',
           arguments: {'delay': delay},
@@ -4020,7 +4541,7 @@ class _MethodStreaming {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {},
         ) as _i3.Stream<int>);
@@ -4036,9 +4557,12 @@ class _MethodStreaming {
     _i3.Stream<int> stream,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'delayedNeverListenedInputStream',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodStreamCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'delayedNeverListenedInputStream',
         arguments: {'delay': delay},
@@ -4046,7 +4570,7 @@ class _MethodStreaming {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
         {'stream': stream},
       ) as _i3.Future<void>);
@@ -4059,9 +4583,12 @@ class _MethodStreaming {
     _i3.Stream<int> stream,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'delayedPausedInputStream',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodStreamCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'delayedPausedInputStream',
         arguments: {'delay': delay},
@@ -4069,7 +4596,7 @@ class _MethodStreaming {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
         {'stream': stream},
       ) as _i3.Future<void>);
@@ -4078,16 +4605,19 @@ class _MethodStreaming {
 
   _i3.Future<void> completeAllDelayedResponses(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'completeAllDelayedResponses',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'completeAllDelayedResponses',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -4098,9 +4628,12 @@ class _MethodStreaming {
     _i3.Stream<int> stream,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'inStreamThrowsException',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodStreamCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'inStreamThrowsException',
         arguments: {},
@@ -4108,7 +4641,7 @@ class _MethodStreaming {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
         {'stream': stream},
       ) as _i3.Future<void>);
@@ -4120,9 +4653,12 @@ class _MethodStreaming {
     _i3.Stream<int> stream,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'inStreamThrowsSerializableException',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodStreamCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'inStreamThrowsSerializableException',
         arguments: {},
@@ -4130,7 +4666,7 @@ class _MethodStreaming {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
         {'stream': stream},
       ) as _i3.Future<void>);
@@ -4141,9 +4677,13 @@ class _MethodStreaming {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'methodStreaming',
+          method: 'outStreamThrowsException',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'methodStreaming',
           methodName: 'outStreamThrowsException',
           arguments: {},
@@ -4151,7 +4691,7 @@ class _MethodStreaming {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {},
         ) as _i3.Stream<int>);
@@ -4166,9 +4706,13 @@ class _MethodStreaming {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'methodStreaming',
+          method: 'outStreamThrowsSerializableException',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'methodStreaming',
           methodName: 'outStreamThrowsSerializableException',
           arguments: {},
@@ -4176,7 +4720,7 @@ class _MethodStreaming {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {},
         ) as _i3.Stream<int>);
@@ -4191,9 +4735,12 @@ class _MethodStreaming {
     _i3.Stream<int> stream,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'throwsExceptionVoid',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodStreamCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'throwsExceptionVoid',
         arguments: {},
@@ -4201,7 +4748,7 @@ class _MethodStreaming {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
         {'stream': stream},
       ) as _i3.Future<void>);
@@ -4213,9 +4760,12 @@ class _MethodStreaming {
     _i3.Stream<int> stream,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'throwsSerializableExceptionVoid',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodStreamCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'throwsSerializableExceptionVoid',
         arguments: {},
@@ -4223,7 +4773,7 @@ class _MethodStreaming {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
         {'stream': stream},
       ) as _i3.Future<void>);
@@ -4235,9 +4785,12 @@ class _MethodStreaming {
     _i3.Stream<int> stream,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'throwsException',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodStreamCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'throwsException',
         arguments: {},
@@ -4245,7 +4798,7 @@ class _MethodStreaming {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
         {'stream': stream},
       ) as _i3.Future<int>);
@@ -4257,9 +4810,12 @@ class _MethodStreaming {
     _i3.Stream<int> stream,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'throwsSerializableException',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodStreamCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'throwsSerializableException',
         arguments: {},
@@ -4267,7 +4823,7 @@ class _MethodStreaming {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
         {'stream': stream},
       ) as _i3.Future<int>);
@@ -4278,9 +4834,13 @@ class _MethodStreaming {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'methodStreaming',
+          method: 'throwsExceptionStream',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'methodStreaming',
           methodName: 'throwsExceptionStream',
           arguments: {},
@@ -4288,7 +4848,7 @@ class _MethodStreaming {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {},
         ) as _i3.Stream<int>);
@@ -4302,9 +4862,13 @@ class _MethodStreaming {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'methodStreaming',
+          method: 'throwsSerializableExceptionStream',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'methodStreaming',
           methodName: 'throwsSerializableExceptionStream',
           arguments: {},
@@ -4312,7 +4876,7 @@ class _MethodStreaming {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {},
         ) as _i3.Stream<int>);
@@ -4327,9 +4891,12 @@ class _MethodStreaming {
     _i3.Stream<int> stream,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'didInputStreamHaveError',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodStreamCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'didInputStreamHaveError',
         arguments: {},
@@ -4337,7 +4904,7 @@ class _MethodStreaming {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
         {'stream': stream},
       ) as _i3.Future<bool>);
@@ -4349,9 +4916,12 @@ class _MethodStreaming {
     _i3.Stream<int> stream,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'methodStreaming',
+        method: 'didInputStreamHaveSerializableExceptionError',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodStreamCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
         methodName: 'didInputStreamHaveSerializableExceptionError',
         arguments: {},
@@ -4359,7 +4929,7 @@ class _MethodStreaming {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
         {'stream': stream},
       ) as _i3.Future<bool>);
@@ -4381,9 +4951,13 @@ class _AuthenticatedMethodStreaming {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'authenticatedMethodStreaming',
+          method: 'simpleStream',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'authenticatedMethodStreaming',
           methodName: 'simpleStream',
           arguments: {},
@@ -4391,7 +4965,7 @@ class _AuthenticatedMethodStreaming {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {},
         ) as _i3.Stream<int>);
@@ -4408,9 +4982,13 @@ class _AuthenticatedMethodStreaming {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'authenticatedMethodStreaming',
+          method: 'intEchoStream',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'authenticatedMethodStreaming',
           methodName: 'intEchoStream',
           arguments: {},
@@ -4418,7 +4996,7 @@ class _AuthenticatedMethodStreaming {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {'stream': stream},
         ) as _i3.Stream<int>);
@@ -4441,16 +5019,19 @@ class _ModuleSerializationEndpoint {
 
   _i3.Future<bool> serializeModuleObject(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'moduleSerialization',
+        method: 'serializeModuleObject',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'moduleSerialization',
         methodName: 'serializeModuleObject',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<bool>);
     });
@@ -4461,16 +5042,19 @@ class _ModuleSerializationEndpoint {
     _i26.ModuleClass object,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'moduleSerialization',
+        method: 'modifyModuleObject',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'moduleSerialization',
         methodName: 'modifyModuleObject',
         parameters: {'object': object},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i25.ModuleClass>);
     });
@@ -4479,16 +5063,19 @@ class _ModuleSerializationEndpoint {
   _i3.Future<_i27.ModuleDatatype> serializeNestedModuleObject(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'moduleSerialization',
+        method: 'serializeNestedModuleObject',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'moduleSerialization',
         methodName: 'serializeNestedModuleObject',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i27.ModuleDatatype>);
     });
@@ -4507,16 +5094,19 @@ class _NamedParametersEndpoint {
 
   _i3.Future<bool> namedParametersMethod(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'namedParameters',
+        method: 'namedParametersMethod',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'namedParameters',
         methodName: 'namedParametersMethod',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<bool>);
     });
@@ -4525,16 +5115,19 @@ class _NamedParametersEndpoint {
   _i3.Future<bool> namedParametersMethodEqualInts(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'namedParameters',
+        method: 'namedParametersMethodEqualInts',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'namedParameters',
         methodName: 'namedParametersMethodEqualInts',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<bool>);
     });
@@ -4553,16 +5146,19 @@ class _OptionalParametersEndpoint {
 
   _i3.Future<int?> returnOptionalInt(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'optionalParameters',
+        method: 'returnOptionalInt',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'optionalParameters',
         methodName: 'returnOptionalInt',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<int?>);
     });
@@ -4585,9 +5181,12 @@ class _RedisEndpoint {
     _i14.SimpleData data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'redis',
+        method: 'setSimpleData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'redis',
         methodName: 'setSimpleData',
         parameters: {
@@ -4597,7 +5196,7 @@ class _RedisEndpoint {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -4609,9 +5208,12 @@ class _RedisEndpoint {
     _i14.SimpleData data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'redis',
+        method: 'setSimpleDataWithLifetime',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'redis',
         methodName: 'setSimpleDataWithLifetime',
         parameters: {
@@ -4621,7 +5223,7 @@ class _RedisEndpoint {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -4632,16 +5234,19 @@ class _RedisEndpoint {
     String key,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'redis',
+        method: 'getSimpleData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'redis',
         methodName: 'getSimpleData',
         parameters: {'key': key},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i12.SimpleData?>);
     });
@@ -4652,16 +5257,19 @@ class _RedisEndpoint {
     String key,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'redis',
+        method: 'deleteSimpleData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'redis',
         methodName: 'deleteSimpleData',
         parameters: {'key': key},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -4669,16 +5277,19 @@ class _RedisEndpoint {
 
   _i3.Future<void> resetMessageCentralTest(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'redis',
+        method: 'resetMessageCentralTest',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'redis',
         methodName: 'resetMessageCentralTest',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -4689,16 +5300,19 @@ class _RedisEndpoint {
     String channel,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'redis',
+        method: 'listenToChannel',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'redis',
         methodName: 'listenToChannel',
         parameters: {'channel': channel},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i12.SimpleData?>);
     });
@@ -4710,9 +5324,12 @@ class _RedisEndpoint {
     _i14.SimpleData data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'redis',
+        method: 'postToChannel',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'redis',
         methodName: 'postToChannel',
         parameters: {
@@ -4722,7 +5339,7 @@ class _RedisEndpoint {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -4730,16 +5347,19 @@ class _RedisEndpoint {
 
   _i3.Future<int> countSubscribedChannels(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'redis',
+        method: 'countSubscribedChannels',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'redis',
         methodName: 'countSubscribedChannels',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<int>);
     });
@@ -4759,16 +5379,19 @@ class _ServerOnlyScopedFieldModelEndpoint {
   _i3.Future<_i28.ScopeServerOnlyField> getScopeServerOnlyField(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'serverOnlyScopedFieldModel',
+        method: 'getScopeServerOnlyField',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'serverOnlyScopedFieldModel',
         methodName: 'getScopeServerOnlyField',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<_i28.ScopeServerOnlyField>);
     });
@@ -4787,16 +5410,19 @@ class _SignInRequiredEndpoint {
 
   _i3.Future<bool> testMethod(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'signInRequired',
+        method: 'testMethod',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'signInRequired',
         methodName: 'testMethod',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<bool>);
     });
@@ -4815,16 +5441,19 @@ class _AdminScopeRequiredEndpoint {
 
   _i3.Future<bool> testMethod(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'adminScopeRequired',
+        method: 'testMethod',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'adminScopeRequired',
         methodName: 'testMethod',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<bool>);
     });
@@ -4846,16 +5475,19 @@ class _SimpleEndpoint {
     int? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'simple',
+        method: 'setGlobalInt',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'simple',
         methodName: 'setGlobalInt',
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -4863,16 +5495,19 @@ class _SimpleEndpoint {
 
   _i3.Future<void> addToGlobalInt(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'simple',
+        method: 'addToGlobalInt',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'simple',
         methodName: 'addToGlobalInt',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -4880,16 +5515,19 @@ class _SimpleEndpoint {
 
   _i3.Future<int> getGlobalInt(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'simple',
+        method: 'getGlobalInt',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'simple',
         methodName: 'getGlobalInt',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<int>);
     });
@@ -4900,16 +5538,19 @@ class _SimpleEndpoint {
     String name,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'simple',
+        method: 'hello',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'simple',
         methodName: 'hello',
         parameters: {'name': name},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<String>);
     });
@@ -4942,16 +5583,19 @@ class _SubSubDirTestEndpoint {
 
   _i3.Future<String> testMethod(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'subSubDirTest',
+        method: 'testMethod',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'subSubDirTest',
         methodName: 'testMethod',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<String>);
     });
@@ -4970,16 +5614,19 @@ class _SubDirTestEndpoint {
 
   _i3.Future<String> testMethod(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'subDirTest',
+        method: 'testMethod',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'subDirTest',
         methodName: 'testMethod',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<String>);
     });
@@ -4996,21 +5643,123 @@ class _TestToolsEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
+  _i3.Future<_i6.UuidValue> returnsSessionId(_i1.TestSession session) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'testTools',
+        method: 'returnsSessionId',
+      ) as _i1.InternalTestSession);
+      var callContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
+        endpointPath: 'testTools',
+        methodName: 'returnsSessionId',
+        parameters: {},
+        serializationManager: _serializationManager,
+      );
+      return (callContext.method.call(
+        uniqueSession.serverpodSession,
+        callContext.arguments,
+      ) as _i3.Future<_i6.UuidValue>);
+    });
+  }
+
+  _i3.Future<List<String?>> returnsSessionEndpointAndMethod(
+      _i1.TestSession session) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'testTools',
+        method: 'returnsSessionEndpointAndMethod',
+      ) as _i1.InternalTestSession);
+      var callContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
+        endpointPath: 'testTools',
+        methodName: 'returnsSessionEndpointAndMethod',
+        parameters: {},
+        serializationManager: _serializationManager,
+      );
+      return (callContext.method.call(
+        uniqueSession.serverpodSession,
+        callContext.arguments,
+      ) as _i3.Future<List<String?>>);
+    });
+  }
+
+  _i3.Stream<_i6.UuidValue> returnsSessionIdFromStream(
+      _i1.TestSession session) {
+    var streamController = _i3.StreamController<_i6.UuidValue>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'testTools',
+          method: 'returnsSessionIdFromStream',
+        ) as _i1.InternalTestSession);
+        var callContext = await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
+          endpointPath: 'testTools',
+          methodName: 'returnsSessionIdFromStream',
+          arguments: {},
+          requestedInputStreams: [],
+          serializationManager: _serializationManager,
+        );
+        return (callContext.method.call(
+          uniqueSession.serverpodSession,
+          callContext.arguments,
+          {},
+        ) as _i3.Stream<_i6.UuidValue>);
+      },
+      streamController,
+    );
+    return streamController.stream;
+  }
+
+  _i3.Stream<String?> returnsSessionEndpointAndMethodFromStream(
+      _i1.TestSession session) {
+    var streamController = _i3.StreamController<String?>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'testTools',
+          method: 'returnsSessionEndpointAndMethodFromStream',
+        ) as _i1.InternalTestSession);
+        var callContext = await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
+          endpointPath: 'testTools',
+          methodName: 'returnsSessionEndpointAndMethodFromStream',
+          arguments: {},
+          requestedInputStreams: [],
+          serializationManager: _serializationManager,
+        );
+        return (callContext.method.call(
+          uniqueSession.serverpodSession,
+          callContext.arguments,
+          {},
+        ) as _i3.Stream<String?>);
+      },
+      streamController,
+    );
+    return streamController.stream;
+  }
+
   _i3.Future<String> returnsString(
     _i1.TestSession session,
     String string,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'testTools',
+        method: 'returnsString',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'testTools',
         methodName: 'returnsString',
         parameters: {'string': string},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<String>);
     });
@@ -5023,9 +5772,13 @@ class _TestToolsEndpoint {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'testTools',
+          method: 'returnsStream',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'testTools',
           methodName: 'returnsStream',
           arguments: {'n': n},
@@ -5033,7 +5786,7 @@ class _TestToolsEndpoint {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {},
         ) as _i3.Stream<int>);
@@ -5048,9 +5801,12 @@ class _TestToolsEndpoint {
     _i3.Stream<int> numbers,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'testTools',
+        method: 'returnsListFromInputStream',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodStreamCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'testTools',
         methodName: 'returnsListFromInputStream',
         arguments: {},
@@ -5058,7 +5814,7 @@ class _TestToolsEndpoint {
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
         {'numbers': numbers},
       ) as _i3.Future<List<int>>);
@@ -5072,9 +5828,13 @@ class _TestToolsEndpoint {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'testTools',
+          method: 'returnsStreamFromInputStream',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'testTools',
           methodName: 'returnsStreamFromInputStream',
           arguments: {},
@@ -5082,7 +5842,7 @@ class _TestToolsEndpoint {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {'numbers': numbers},
         ) as _i3.Stream<int>);
@@ -5097,16 +5857,19 @@ class _TestToolsEndpoint {
     int number,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'testTools',
+        method: 'postNumberToSharedStream',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'testTools',
         methodName: 'postNumberToSharedStream',
         parameters: {'number': number},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -5119,9 +5882,13 @@ class _TestToolsEndpoint {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'testTools',
+          method: 'postNumberToSharedStreamAndReturnStream',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'testTools',
           methodName: 'postNumberToSharedStreamAndReturnStream',
           arguments: {'number': number},
@@ -5129,7 +5896,7 @@ class _TestToolsEndpoint {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {},
         ) as _i3.Stream<int>);
@@ -5143,9 +5910,13 @@ class _TestToolsEndpoint {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'testTools',
+          method: 'listenForNumbersOnSharedStream',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'testTools',
           methodName: 'listenForNumbersOnSharedStream',
           arguments: {},
@@ -5153,7 +5924,7 @@ class _TestToolsEndpoint {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {},
         ) as _i3.Stream<int>);
@@ -5168,16 +5939,19 @@ class _TestToolsEndpoint {
     int data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'testTools',
+        method: 'createSimpleData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'testTools',
         methodName: 'createSimpleData',
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<void>);
     });
@@ -5186,16 +5960,19 @@ class _TestToolsEndpoint {
   _i3.Future<List<_i12.SimpleData>> getAllSimpleData(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'testTools',
+        method: 'getAllSimpleData',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'testTools',
         methodName: 'getAllSimpleData',
         parameters: {},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<List<_i12.SimpleData>>);
     });
@@ -5217,16 +5994,19 @@ class _AuthenticatedTestToolsEndpoint {
     String string,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'authenticatedTestTools',
+        method: 'returnsString',
+      ) as _i1.InternalTestSession);
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) =>
-            (session as _i1.InternalTestSession).serverpodSession,
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
         endpointPath: 'authenticatedTestTools',
         methodName: 'returnsString',
         parameters: {'string': string},
         serializationManager: _serializationManager,
       );
       return (callContext.method.call(
-        (session as _i1.InternalTestSession).serverpodSession,
+        uniqueSession.serverpodSession,
         callContext.arguments,
       ) as _i3.Future<String>);
     });
@@ -5239,9 +6019,13 @@ class _AuthenticatedTestToolsEndpoint {
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'authenticatedTestTools',
+          method: 'returnsStream',
+        ) as _i1.InternalTestSession);
         var callContext = await _endpointDispatch.getMethodStreamCallContext(
-          createSessionCallback: (_) =>
-              (session as _i1.InternalTestSession).serverpodSession,
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
           endpointPath: 'authenticatedTestTools',
           methodName: 'returnsStream',
           arguments: {'n': n},
@@ -5249,7 +6033,7 @@ class _AuthenticatedTestToolsEndpoint {
           serializationManager: _serializationManager,
         );
         return (callContext.method.call(
-          (session as _i1.InternalTestSession).serverpodSession,
+          uniqueSession.serverpodSession,
           callContext.arguments,
           {},
         ) as _i3.Stream<int>);

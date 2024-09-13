@@ -2001,6 +2001,37 @@ class EndpointTestTools extends _i1.EndpointRef {
   @override
   String get name => 'testTools';
 
+  _i2.Future<_i5.UuidValue> returnsSessionId() =>
+      caller.callServerEndpoint<_i5.UuidValue>(
+        'testTools',
+        'returnsSessionId',
+        {},
+      );
+
+  _i2.Future<List<String?>> returnsSessionEndpointAndMethod() =>
+      caller.callServerEndpoint<List<String?>>(
+        'testTools',
+        'returnsSessionEndpointAndMethod',
+        {},
+      );
+
+  _i2.Stream<_i5.UuidValue> returnsSessionIdFromStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<_i5.UuidValue>,
+          _i5.UuidValue>(
+        'testTools',
+        'returnsSessionIdFromStream',
+        {},
+        {},
+      );
+
+  _i2.Stream<String?> returnsSessionEndpointAndMethodFromStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<String?>, String?>(
+        'testTools',
+        'returnsSessionEndpointAndMethodFromStream',
+        {},
+        {},
+      );
+
   _i2.Future<String> returnsString(String string) =>
       caller.callServerEndpoint<String>(
         'testTools',
