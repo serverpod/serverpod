@@ -367,7 +367,6 @@ void main() {
 
     withServerpod(
       (endpoints, session) {
-        // This does actually clean up but it shouldnt, fix bug
         tearDownAll(() async {
           await SimpleData.db.deleteWhere(
             session,
@@ -385,22 +384,8 @@ void main() {
           expect(result[1].num, 222);
         });
       },
+      rollbackDatabase: RollbackDatabase.never,
       runMode: ServerpodRunMode.production,
     );
   });
-
-  // withServerpod(
-  //   (endpoints, session) {
-  //     test(
-  //         'when fetching SimpleData after the first withServerpod then the database is not rolled back',
-  //         () async {
-  //       final result = await SimpleData.db.find(session);
-
-  //       expect(result.length, 2);
-  //       expect(result[0].num, 111);
-  //       expect(result[1].num, 222);
-  //     });
-  //   },
-  //   runMode: ServerpodRunMode.production,
-  // );
 }
