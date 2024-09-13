@@ -18,11 +18,26 @@ void main() async {
   group('Given a transaction that does not match required database transaction',
       () {
     var invalidTransactionType = MockTransaction();
-    test('when running a transaction then an error is thrown.', () async {
+
+    test('when calling `insert` then an error is thrown.', () async {
       expect(
         session.db.transaction<void>((transaction) async {
-          await UniqueData.db.findFirstRow(
+          await UniqueData.db.insert(
             session,
+            [UniqueData(number: 1, email: 'test@serverpod.dev')],
+            transaction: invalidTransactionType,
+          );
+        }),
+        throwsArgumentError,
+      );
+    });
+
+    test('when calling `insertRow` then an error is thrown.', () async {
+      expect(
+        session.db.transaction<void>((transaction) async {
+          await UniqueData.db.insertRow(
+            session,
+            UniqueData(number: 1, email: 'test@serverpod.dev'),
             transaction: invalidTransactionType,
           );
         }),
