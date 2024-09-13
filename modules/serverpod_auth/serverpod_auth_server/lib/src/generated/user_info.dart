@@ -10,7 +10,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Information about a user. The [UserInfo] should only be shared with the user
 /// itself as it may contain sensitive information, such as the users email.
