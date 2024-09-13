@@ -161,4 +161,45 @@ void main() {
       );
     });
   });
+
+  test(
+      'Given a child class of a external class, then an error is collected that only classes from within the project can be extended',
+      () {
+    var modelSources = [
+      ModelSourceBuilder()
+          .withYaml(
+            '''
+          class: ExampleForeignClass
+          fields:
+            name: String
+          ''',
+          )
+          .withModuleAlias('ModelSourceBuilder')
+          .build(),
+      ModelSourceBuilder().withFileName('example2').withYaml(
+        '''
+          class: ExampleChildClass
+          extends: ExampleForeignClass
+          fields:
+            age: int
+          ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error but none was generated.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'You can only extend classes from your own project.',
+    );
+  });
 }
