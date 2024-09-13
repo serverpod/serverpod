@@ -50,29 +50,19 @@ class SerializableModelLibraryGenerator {
 
     bool isParentClass = classDefinition.childClasses.isNotEmpty;
 
-    var extendedClass =
-        classDefinition.extendsClass is ResolvedInheritanceDefinition
-            ? (classDefinition.extendsClass as ResolvedInheritanceDefinition)
-                .classDefinition
-            : null;
+    var extendsClassDefinition = classDefinition.extendsClass;
 
-    var extendedClassPath = extendedClass;
+    var extendedClass = extendsClassDefinition is ResolvedInheritanceDefinition
+        ? extendsClassDefinition.classDefinition
+        : null;
+
     var extendedClassFields = extendedClass?.fields ?? [];
 
     return Library(
       (libraryBuilder) {
-        var hasFieldSerializedByExtension = classDefinition.fields
-            .where((field) => field.shouldIncludeField(serverCode))
-            .any((field) => field.type.isSerializedByExtension);
-
-        if (hasFieldSerializedByExtension && serverCode) {
-          libraryBuilder.directives.add(Directive.import(
-              'package:serverpod_serialization/serverpod_serialization.dart'));
-        }
-
-        if (extendedClassPath != null) {
+        if (extendedClass != null) {
           libraryBuilder.directives.add(Directive.import(p.joinAll([
-            ...extendedClass!.subDirParts,
+            ...extendedClass.subDirParts,
             '${extendedClass.fileName}.dart',
           ])));
         }
