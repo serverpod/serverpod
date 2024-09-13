@@ -6,52 +6,52 @@ class BodyType {
   // Text
 
   static const plainText = BodyType(
-    mimeType: MimeType('text', 'plain'),
+    mimeType: MimeType.plainText,
     encoding: utf8,
   );
 
   static const html = BodyType(
-    mimeType: MimeType('text', 'html'),
+    mimeType: MimeType.html,
     encoding: utf8,
   );
 
   static const css = BodyType(
-    mimeType: MimeType('text', 'css'),
+    mimeType: MimeType.css,
     encoding: utf8,
   );
 
   static const csv = BodyType(
-    mimeType: MimeType('text', 'csv'),
+    mimeType: MimeType.csv,
     encoding: utf8,
   );
 
   static const javaScript = BodyType(
-    mimeType: MimeType('text', 'javascript'),
+    mimeType: MimeType.javaScript,
     encoding: utf8,
   );
 
   static const json = BodyType(
-    mimeType: MimeType('application', 'json'),
+    mimeType: MimeType.json,
     encoding: utf8,
   );
 
   static const xml = BodyType(
-    mimeType: MimeType('application', 'xml'),
+    mimeType: MimeType.xml,
     encoding: utf8,
   );
 
   // Binary
 
   static const binary = BodyType(
-    mimeType: MimeType('application', 'octet-stream'),
+    mimeType: MimeType.binary,
   );
 
   static const pdf = BodyType(
-    mimeType: MimeType('application', 'pdf'),
+    mimeType: MimeType.pdf,
   );
 
   static const rtf = BodyType(
-    mimeType: MimeType('application', 'rtf'),
+    mimeType: MimeType.rtf,
   );
 
   final MimeType mimeType;
@@ -61,4 +61,13 @@ class BodyType {
     required this.mimeType,
     this.encoding,
   });
+
+  @override
+  String toString() {
+    if (encoding != null) {
+      return '${mimeType.toString()}; charset=${encoding!.name}';
+    } else {
+      return mimeType.toString();
+    }
+  }
 }

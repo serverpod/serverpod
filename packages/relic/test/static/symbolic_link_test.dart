@@ -42,7 +42,7 @@ void main() {
 
       final response = await makeRequest(handler, '/originals/index.html');
       expect(response.statusCode, HttpStatus.ok);
-      expect(response.contentLength, 13);
+      expect(response.body.contentLength, 13);
       expect(response.readAsString(), completion('<html></html>'));
     });
 
@@ -54,7 +54,7 @@ void main() {
 
           final response = await makeRequest(handler, '/link_index.html');
           expect(response.statusCode, HttpStatus.ok);
-          expect(response.contentLength, 13);
+          expect(response.body.contentLength, 13);
           expect(response.readAsString(), completion('<html></html>'));
         },
         onPlatform: _skipSymlinksOnWindows,
@@ -65,7 +65,7 @@ void main() {
 
         final response = await makeRequest(handler, '/link_dir/index.html');
         expect(response.statusCode, HttpStatus.ok);
-        expect(response.contentLength, 13);
+        expect(response.body.contentLength, 13);
         expect(response.readAsString(), completion('<html></html>'));
       });
     });
@@ -94,7 +94,7 @@ void main() {
 
       final response = await makeRequest(handler, '/originals/index.html');
       expect(response.statusCode, HttpStatus.ok);
-      expect(response.contentLength, 13);
+      expect(response.body.contentLength, 13);
       expect(response.readAsString(), completion('<html></html>'));
     });
 
@@ -107,7 +107,7 @@ void main() {
 
           final response = await makeRequest(handler, '/link_index.html');
           expect(response.statusCode, HttpStatus.ok);
-          expect(response.contentLength, 13);
+          expect(response.body.contentLength, 13);
           expect(response.readAsString(), completion('<html></html>'));
         },
         onPlatform: _skipSymlinksOnWindows,
@@ -119,7 +119,7 @@ void main() {
 
         final response = await makeRequest(handler, '/link_dir/index.html');
         expect(response.statusCode, HttpStatus.ok);
-        expect(response.contentLength, 13);
+        expect(response.body.contentLength, 13);
         expect(response.readAsString(), completion('<html></html>'));
       });
     });
@@ -133,7 +133,7 @@ void main() {
 
           final response = await makeRequest(handler, '/link_index.html');
           expect(response.statusCode, HttpStatus.ok);
-          expect(response.contentLength, 13);
+          expect(response.body.contentLength, 13);
           expect(response.readAsString(), completion('<html></html>'));
         },
         onPlatform: _skipSymlinksOnWindows,
@@ -145,7 +145,7 @@ void main() {
 
         final response = await makeRequest(handler, '/link_dir/index.html');
         expect(response.statusCode, HttpStatus.ok);
-        expect(response.contentLength, 13);
+        expect(response.body.contentLength, 13);
         expect(response.readAsString(), completion('<html></html>'));
       });
     });

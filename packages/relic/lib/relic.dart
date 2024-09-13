@@ -9,6 +9,7 @@ export 'src/cascade.dart' show Cascade;
 export 'src/handler.dart' show Handler;
 export 'src/headers.dart' show Headers, CustomHeaders;
 export 'src/headers/types/body_type.dart' show BodyType;
+export 'src/headers/types/mime_type.dart' show MimeType;
 export 'src/hijack_exception.dart' show HijackException;
 export 'src/middleware.dart' show Middleware, createMiddleware;
 export 'src/middleware/logger.dart' show logRequests;

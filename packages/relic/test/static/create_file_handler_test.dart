@@ -21,7 +21,7 @@ void main() {
     final handler = createFileHandler(p.join(d.sandbox, 'file.txt'));
     final response = await makeRequest(handler, '/file.txt');
     expect(response.statusCode, equals(HttpStatus.ok));
-    expect(response.contentLength, equals(8));
+    expect(response.body.contentLength, equals(8));
     expect(response.readAsString(), completion(equals('contents')));
   });
 
@@ -36,7 +36,7 @@ void main() {
         createFileHandler(p.join(d.sandbox, 'file.txt'), url: 'foo/bar');
     final response = await makeRequest(handler, '/foo/bar');
     expect(response.statusCode, equals(HttpStatus.ok));
-    expect(response.contentLength, equals(8));
+    expect(response.body.contentLength, equals(8));
     expect(response.readAsString(), completion(equals('contents')));
   });
 
@@ -147,7 +147,7 @@ void main() {
         ),
       );
       expect(response.statusCode, equals(HttpStatus.ok));
-      expect(response.contentLength, equals(8));
+      expect(response.body.contentLength, equals(8));
       expect(response.readAsString(), completion(equals('contents')));
     });
 
@@ -161,7 +161,7 @@ void main() {
         ),
       );
       expect(response.statusCode, equals(HttpStatus.ok));
-      expect(response.contentLength, equals(8));
+      expect(response.body.contentLength, equals(8));
       expect(response.readAsString(), completion(equals('contents')));
     });
 
@@ -175,7 +175,7 @@ void main() {
         ),
       );
       expect(response.statusCode, equals(HttpStatus.ok));
-      expect(response.contentLength, equals(8));
+      expect(response.body.contentLength, equals(8));
       expect(response.readAsString(), completion(equals('contents')));
     });
 
@@ -189,7 +189,7 @@ void main() {
         ),
       );
       expect(response.statusCode, equals(HttpStatus.ok));
-      expect(response.contentLength, equals(8));
+      expect(response.body.contentLength, equals(8));
       expect(response.readAsString(), completion(equals('contents')));
     });
   });

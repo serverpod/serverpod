@@ -5,6 +5,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:collection/collection.dart';
+import 'package:http_parser/http_parser.dart';
+
 import 'body.dart';
 import 'headers.dart';
 import 'message.dart';
@@ -253,8 +256,8 @@ class Response extends Message {
     Encoding? encoding,
     Map<String, Object>? context,
   }) : super(
-          body ?? Body.empty(),
-          headers ?? Headers.response(),
+          body: body ?? Body.empty(),
+          headers: headers ?? Headers.response(),
           context: context ?? {},
         ) {
     if (statusCode < 100) {
@@ -313,8 +316,46 @@ class Response extends Message {
     // necessary.
     httpResponse.headers.chunkedTransferEncoding = false;
 
-    headers.applyHeaders(httpResponse, body);
+    headers.applyHeaders(httpResponse, body, poweredByHeader: poweredByHeader);
+
+    _handleTransferEncoding(httpResponse, statusCode, body);
 
     return httpResponse.addStream(read()).then((_) => httpResponse.close());
   }
+}
+
+void _handleTransferEncoding(
+  HttpResponse httpResponse,
+  int statusCode,
+  Body body,
+) {
+  var transferEncoding = httpResponse.headers['transfer-encoding'];
+
+  if (_isChunkedEncoding(transferEncoding)) {
+    // If the response is already chunked, decode it to avoid double chunking
+    body = Body.fromIntStream(chunkedCoding.decoder.bind(body.read()));
+    _setChunkedTransferEncodingHeader(httpResponse);
+  } else if (_shouldEnableChunkedEncoding(statusCode, body)) {
+    // If content length is unknown and chunking is needed, set chunked encoding
+    _setChunkedTransferEncodingHeader(httpResponse);
+  }
+}
+
+bool _isChunkedEncoding(List<String>? transferEncoding) {
+  // Check if the 'Transfer-Encoding' header indicates chunked encoding
+  return transferEncoding != null &&
+      !equalsIgnoreAsciiCase(transferEncoding.first, 'identity');
+}
+
+bool _shouldEnableChunkedEncoding(int statusCode, Body body) {
+  // Determine if chunked encoding should be enabled based on status and body
+  return statusCode >= 200 &&
+      statusCode != 204 &&
+      statusCode != 304 &&
+      body.contentLength == null &&
+      body.contentType.mimeType.toString() != 'multipart/byteranges';
+}
+
+void _setChunkedTransferEncodingHeader(HttpResponse httpResponse) {
+  httpResponse.headers.set(HttpHeaders.transferEncodingHeader, 'chunked');
 }

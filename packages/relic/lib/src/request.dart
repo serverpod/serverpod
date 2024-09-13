@@ -183,7 +183,10 @@ class Request extends Message {
         url = _computeUrl(requestedUri, handlerPath, url),
         handlerPath = _computeHandlerPath(requestedUri, handlerPath, url),
         _onHijack = onHijack,
-        super(body ?? Body.empty(), headers, context: context ?? {}) {
+        super(
+            body: body ?? Body.empty(),
+            headers: headers,
+            context: context ?? {}) {
     if (method.isEmpty) {
       throw ArgumentError.value(method, 'method', 'cannot be empty.');
     }

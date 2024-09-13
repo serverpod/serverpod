@@ -1,4 +1,26 @@
 class MimeType {
+  static const plainText = MimeType('text', 'plain');
+
+  static const html = MimeType('text', 'html');
+
+  static const css = MimeType('text', 'css');
+
+  static const csv = MimeType('text', 'csv');
+
+  static const javaScript = MimeType('text', 'javascript');
+
+  static const json = MimeType('application', 'json');
+
+  static const xml = MimeType('application', 'xml');
+
+  // Binary
+
+  static const binary = MimeType('application', 'octet-stream');
+
+  static const pdf = MimeType('application', 'pdf');
+
+  static const rtf = MimeType('application', 'rtf');
+
   final String primaryType;
   final String subType;
 

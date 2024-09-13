@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:relic/src/headers/types/body_type.dart';
+import 'package:relic/src/headers/types/mime_type.dart';
 
 /// The body of a request or response.
 ///
@@ -27,58 +28,74 @@ class Body {
 
   Body._(
     this._stream,
-    this.contentType,
-    this.contentLength,
-  );
+    this.contentLength, {
+    Encoding? encoding,
+    required MimeType mimeType,
+  }) : contentType = BodyType(mimeType: mimeType, encoding: encoding);
 
   factory Body.empty({
     Encoding encoding = utf8,
-    BodyType contentType = BodyType.plainText,
+    MimeType mimeType = MimeType.plainText,
   }) =>
       Body._(
         Stream.empty(),
-        contentType,
         0,
+        encoding: encoding,
+        mimeType: mimeType,
       );
 
   factory Body.fromString(
     String body, {
     Encoding encoding = utf8,
-    BodyType contentType = BodyType.plainText,
+    MimeType mimeType = MimeType.plainText,
   }) {
-    Uint8List encoded;
-    if (encoding == utf8) {
-      encoded = utf8.encode(body);
-    } else {
-      encoded = Uint8List.fromList(encoding.encode(body));
-    }
-
-    return Body._(Stream.value(encoded), contentType, encoded.length);
+    Uint8List encoded = Uint8List.fromList(encoding.encode(body));
+    return Body._(
+      Stream.value(encoded),
+      encoded.length,
+      encoding: encoding,
+      mimeType: mimeType,
+    );
   }
 
   factory Body.fromDataStream(
     Stream<Uint8List> body, {
-    Encoding? encoding,
-    BodyType contentType = BodyType.plainText,
+    Encoding? encoding = utf8,
+    MimeType mimeType = MimeType.plainText,
   }) {
-    return Body._(body, contentType, null);
+    return Body._(
+      body,
+      null,
+      encoding: encoding,
+      mimeType: mimeType,
+    );
   }
 
   factory Body.fromIntStream(
     Stream<List<int>> body, {
-    Encoding? encoding,
-    BodyType contentType = BodyType.plainText,
+    Encoding? encoding = utf8,
+    MimeType mimeType = MimeType.plainText,
   }) {
     Stream<Uint8List> byteStream = body.map((list) => Uint8List.fromList(list));
-    return Body._(byteStream, contentType, null);
+    return Body._(
+      byteStream,
+      null,
+      encoding: encoding,
+      mimeType: mimeType,
+    );
   }
 
   factory Body.fromData(
     Uint8List body, {
     Encoding? encoding,
-    BodyType contentType = BodyType.binary,
+    MimeType mimeType = MimeType.binary,
   }) {
-    return Body._(Stream.value(body), contentType, body.length);
+    return Body._(
+      Stream.value(body),
+      body.length,
+      encoding: encoding,
+      mimeType: mimeType,
+    );
   }
 
   /// Returns a [Stream] representing the body.

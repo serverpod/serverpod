@@ -96,8 +96,5 @@ Response listDirectory(String fileSystemPath, String dirPath) {
       controller.stream,
     ),
     encoding: encoding,
-    headers: Headers.response(
-      contentType: 'text/html',
-    ),
   );
 }

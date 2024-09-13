@@ -43,7 +43,7 @@ void main() {
 
     final response = await makeRequest(handler, '/root.txt');
     expect(response.statusCode, HttpStatus.ok);
-    expect(response.contentLength, 8);
+    expect(response.body.contentLength, 8);
     expect(response.readAsString(), completion('root txt'));
   });
 
@@ -52,7 +52,7 @@ void main() {
 
     final response = await makeRequest(handler, '/root.txt', method: 'HEAD');
     expect(response.statusCode, HttpStatus.ok);
-    expect(response.contentLength, 8);
+    expect(response.body.contentLength, 8);
     expect(await response.readAsString(), isEmpty);
   });
 
@@ -61,7 +61,7 @@ void main() {
 
     final response = await makeRequest(handler, '/files/with%20space.txt');
     expect(response.statusCode, HttpStatus.ok);
-    expect(response.contentLength, 18);
+    expect(response.body.contentLength, 18);
     expect(response.readAsString(), completion('with space content'));
   });
 
@@ -70,7 +70,7 @@ void main() {
 
     final response = await makeRequest(handler, '/files/with%20space.txt');
     expect(response.statusCode, HttpStatus.ok);
-    expect(response.contentLength, 18);
+    expect(response.body.contentLength, 18);
     expect(response.readAsString(), completion('with space content'));
   });
 
@@ -79,7 +79,7 @@ void main() {
 
     final response = await makeRequest(handler, '/files/test.txt');
     expect(response.statusCode, HttpStatus.ok);
-    expect(response.contentLength, 16);
+    expect(response.body.contentLength, 16);
     expect(response.readAsString(), completion('test txt content'));
   });
 
@@ -118,7 +118,7 @@ void main() {
       final response =
           await makeRequest(handler, '/root.txt', headers: headers);
       expect(response.statusCode, HttpStatus.notModified);
-      expect(response.contentLength, 0);
+      expect(response.body.contentLength, 0);
     });
 
     test('before last modified', () async {
@@ -162,7 +162,7 @@ void main() {
       );
 
       expect(response.statusCode, HttpStatus.notModified);
-      expect(response.contentLength, 0);
+      expect(response.body.contentLength, 0);
     });
 
     test('after file modification', () async {

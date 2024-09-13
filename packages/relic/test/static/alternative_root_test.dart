@@ -25,7 +25,7 @@ void main() {
     final response =
         await makeRequest(handler, '/static/root.txt', handlerPath: 'static');
     expect(response.statusCode, HttpStatus.ok);
-    expect(response.contentLength, 8);
+    expect(response.body.contentLength, 8);
     expect(response.readAsString(), completion('root txt'));
   });
 
@@ -36,7 +36,7 @@ void main() {
         handler, '/static/files/with%20space.txt',
         handlerPath: 'static');
     expect(response.statusCode, HttpStatus.ok);
-    expect(response.contentLength, 18);
+    expect(response.body.contentLength, 18);
     expect(response.readAsString(), completion('with space content'));
   });
 
@@ -47,7 +47,7 @@ void main() {
         handler, '/static/files/with%20space.txt',
         handlerPath: 'static');
     expect(response.statusCode, HttpStatus.ok);
-    expect(response.contentLength, 18);
+    expect(response.body.contentLength, 18);
     expect(response.readAsString(), completion('with space content'));
   });
 
@@ -57,7 +57,7 @@ void main() {
     final response = await makeRequest(handler, '/static/files/test.txt',
         handlerPath: 'static');
     expect(response.statusCode, HttpStatus.ok);
-    expect(response.contentLength, 16);
+    expect(response.body.contentLength, 16);
     expect(response.readAsString(), completion('test txt content'));
   });
 

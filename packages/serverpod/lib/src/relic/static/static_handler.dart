@@ -26,10 +26,22 @@ Handler createMountedStaticHandler({
   return (Request request) async {
     var requestedPath = request.requestedUri.path;
 
+    // Ensure the mountedPath has both leading and trailing slashes
+    var normalizedMountedPath = mountedPath;
+    if (!normalizedMountedPath.startsWith('/')) {
+      normalizedMountedPath = '/$normalizedMountedPath';
+    }
+    if (!normalizedMountedPath.endsWith('/')) {
+      normalizedMountedPath = '$normalizedMountedPath/';
+    }
+
     // Check if the request path starts with the mounted path
-    if (request.requestedUri.path.startsWith(mountedPath)) {
-      // Remove the mounted path prefix from the request path
-      var modifiedPath = requestedPath.replaceFirst(mountedPath, '');
+    if (request.requestedUri.path.startsWith(normalizedMountedPath)) {
+      // Safely replace the mounted path prefix
+      var modifiedPath = requestedPath
+          .replaceFirst(normalizedMountedPath, '/')
+          // Prevent double slashes in the resulting path
+          .replaceAll(RegExp(r'//+'), '/');
 
       // Create a new request with the modified path
       var modifiedRequest = request.copyWith(

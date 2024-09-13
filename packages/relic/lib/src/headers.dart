@@ -101,11 +101,9 @@ abstract class Headers {
   final List<String>? connection;
   final List<String>? contentEncoding;
   final List<String>? contentLanguage;
-  final String? contentLength;
   final String? contentLocation;
   final String? contentMD5;
   final String? contentRange;
-  final String? contentType;
   final String? etag;
   final String? expect;
   final List<String>? ifMatch;
@@ -219,11 +217,9 @@ abstract class Headers {
     this.connection,
     this.contentEncoding,
     this.contentLanguage,
-    this.contentLength,
     this.contentLocation,
     this.contentMD5,
     this.contentRange,
-    this.contentType,
     this.etag,
     this.expect,
     this.ifMatch,
@@ -249,8 +245,6 @@ abstract class Headers {
     this.wwwAuthenticate,
     CustomHeaders? custom,
   }) : custom = custom ?? CustomHeaders.empty();
-
-  factory Headers.defaultHeaders() => _HeadersImpl(contentLength: '0');
 
   factory Headers.fromHttpRequest(io.HttpRequest request) {
     var headers = request.headers;
@@ -281,12 +275,10 @@ abstract class Headers {
       age: headers.value(_ageHeader),
       allow: headers[_allowHeader],
       contentDisposition: headers.value(_contentDispositionHeader),
-      contentType: headers.value(_contentTypeHeader),
       cacheControl: headers[_cacheControlHeader],
       connection: headers[_connectionHeader],
       contentEncoding: headers[_contentEncodingHeader],
       contentLanguage: headers[_contentLanguageHeader],
-      contentLength: headers.value(_contentLengthHeader),
       contentLocation: headers.value(_contentLocationHeader),
       contentMD5: headers.value(_contentMD5Header),
       contentRange: headers.value(_contentRangeHeader),
@@ -350,11 +342,9 @@ abstract class Headers {
     List<String>? connection,
     List<String>? contentEncoding,
     List<String>? contentLanguage,
-    String? contentLength,
     String? contentLocation,
     String? contentMD5,
     String? contentRange,
-    String? contentType,
     String? etag,
     String? expect,
     List<String>? ifMatch,
@@ -408,11 +398,9 @@ abstract class Headers {
       connection: connection,
       contentEncoding: contentEncoding,
       contentLanguage: contentLanguage,
-      contentLength: contentLength,
       contentLocation: contentLocation,
       contentMD5: contentMD5,
       contentRange: contentRange,
-      contentType: contentType,
       etag: etag,
       expect: expect,
       ifMatch: ifMatch,
@@ -468,11 +456,9 @@ abstract class Headers {
     List<String>? connection,
     List<String>? contentEncoding,
     List<String>? contentLanguage,
-    String? contentLength,
     String? contentLocation,
     String? contentMD5,
     String? contentRange,
-    String? contentType,
     String? etag,
     String? expect,
     List<String>? ifMatch,
@@ -526,11 +512,9 @@ abstract class Headers {
       connection: connection,
       contentEncoding: contentEncoding,
       contentLanguage: contentLanguage,
-      contentLength: contentLength,
       contentLocation: contentLocation,
       contentMD5: contentMD5,
       contentRange: contentRange,
-      contentType: contentType,
       etag: etag,
       expect: expect,
       ifMatch: ifMatch,
@@ -580,9 +564,9 @@ abstract class Headers {
     if (from != null) headers.set(_fromHeader, from!);
     if (location != null) headers.set(_locationHeader, location!);
 
-    poweredByHeader ??= xPoweredBy;
-    if (poweredByHeader != null) {
-      headers.set(_xPoweredByHeader, poweredByHeader);
+    var poweredBy = xPoweredBy ?? poweredByHeader;
+    if (poweredBy != null) {
+      headers.set(_xPoweredByHeader, poweredBy);
     }
 
     if (accept != null) headers.set(_acceptHeader, accept!);
@@ -677,11 +661,8 @@ abstract class Headers {
       headers.set(entry.key, entry.value);
     }
 
-    /// Set the content length from Headers or Body
-    var length = contentLength ?? body.contentLength;
-    if (length != null) {
-      headers.set(_contentLengthHeader, length);
-    }
+    /// Set the content length from the Body
+    headers.contentLength = body.contentLength ?? 0;
 
     /// Set the content type from the Body
     headers.contentType = io.ContentType(
@@ -719,11 +700,9 @@ abstract class Headers {
     List<String>? connection,
     List<String>? contentEncoding,
     List<String>? contentLanguage,
-    String? contentLength,
     String? contentLocation,
     String? contentMD5,
     String? contentRange,
-    String? contentType,
     String? etag,
     String? expect,
     List<String>? ifMatch,
@@ -793,11 +772,9 @@ abstract class Headers {
         '$_contentEncodingHeader: ${contentEncoding!.join(', ')}',
       if (contentLanguage != null)
         '$_contentLanguageHeader: ${contentLanguage!.join(', ')}',
-      if (contentLength != null) '$_contentLengthHeader: $contentLength',
       if (contentLocation != null) '$_contentLocationHeader: $contentLocation',
       if (contentMD5 != null) '$_contentMD5Header: $contentMD5',
       if (contentRange != null) '$_contentRangeHeader: $contentRange',
-      if (contentType != null) '$_contentTypeHeader: $contentType',
       if (etag != null) '$_etagHeader: $etag',
       if (expect != null) '$_expectHeader: $expect',
       if (ifMatch != null) '$_ifMatchHeader: ${ifMatch!.join(', ')}',
@@ -869,11 +846,9 @@ abstract class Headers {
       if (connection != null) _connectionHeader: connection!,
       if (contentEncoding != null) _contentEncodingHeader: contentEncoding!,
       if (contentLanguage != null) _contentLanguageHeader: contentLanguage!,
-      if (contentLength != null) _contentLengthHeader: contentLength!,
       if (contentLocation != null) _contentLocationHeader: contentLocation!,
       if (contentMD5 != null) _contentMD5Header: contentMD5!,
       if (contentRange != null) _contentRangeHeader: contentRange!,
-      if (contentType != null) _contentTypeHeader: contentType!,
       if (etag != null) _etagHeader: etag!,
       if (expect != null) _expectHeader: expect!,
       if (ifMatch != null) _ifMatchHeader: ifMatch!,
@@ -935,11 +910,9 @@ abstract class Headers {
         (connection == null || connection!.isEmpty) &&
         (contentEncoding == null || contentEncoding!.isEmpty) &&
         (contentLanguage == null || contentLanguage!.isEmpty) &&
-        contentLength == null &&
         contentLocation == null &&
         contentMD5 == null &&
         contentRange == null &&
-        contentType == null &&
         etag == null &&
         expect == null &&
         (ifMatch == null || ifMatch!.isEmpty) &&
@@ -1002,11 +975,9 @@ class _HeadersImpl extends Headers {
     super.connection,
     super.contentEncoding,
     super.contentLanguage,
-    super.contentLength,
     super.contentLocation,
     super.contentMD5,
     super.contentRange,
-    super.contentType,
     super.etag,
     super.expect,
     super.ifMatch,
@@ -1063,11 +1034,9 @@ class _HeadersImpl extends Headers {
     Object? connection = _Undefined,
     Object? contentEncoding = _Undefined,
     Object? contentLanguage = _Undefined,
-    Object? contentLength = _Undefined,
     Object? contentLocation = _Undefined,
     Object? contentMD5 = _Undefined,
     Object? contentRange = _Undefined,
-    Object? contentType = _Undefined,
     Object? etag = _Undefined,
     Object? expect = _Undefined,
     Object? ifMatch = _Undefined,
@@ -1144,13 +1113,10 @@ class _HeadersImpl extends Headers {
       contentLanguage: contentLanguage is List<String>
           ? contentLanguage
           : this.contentLanguage,
-      contentLength:
-          contentLength is String ? contentLength : this.contentLength,
       contentLocation:
           contentLocation is String ? contentLocation : this.contentLocation,
       contentMD5: contentMD5 is String ? contentMD5 : this.contentMD5,
       contentRange: contentRange is String ? contentRange : this.contentRange,
-      contentType: contentType is String ? contentType : this.contentType,
       etag: etag is String ? etag : this.etag,
       expect: expect is String ? expect : this.expect,
       ifMatch: ifMatch is List<String> ? ifMatch : this.ifMatch,
@@ -1219,11 +1185,9 @@ class _HeadersImpl extends Headers {
       connection: other.connection,
       contentEncoding: other.contentEncoding,
       contentLanguage: other.contentLanguage,
-      contentLength: other.contentLength,
       contentLocation: other.contentLocation,
       contentMD5: other.contentMD5,
       contentRange: other.contentRange,
-      contentType: other.contentType,
       etag: other.etag,
       expect: other.expect,
       ifMatch: other.ifMatch,

@@ -2,397 +2,247 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// import 'dart:async';
-// import 'dart:convert';
-// import 'dart:typed_data';
+import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 
-// import 'package:relic/src/body.dart';
-// import 'package:relic/src/message.dart';
-// import 'package:test/test.dart';
+import 'package:relic/relic.dart';
+import 'package:relic/src/message.dart';
+import 'package:test/test.dart';
 
-// import 'test_util.dart';
+import 'test_util.dart';
 
-// class _TestMessage extends Message {
-//   _TestMessage(
-//     Map<String, /* String | List<String> */ Object>? headers,
-//     Map<String, Object>? context,
-//     super.body,
-//   ) : super(headers: headers, context: context);
+class _TestMessage extends Message {
+  _TestMessage(
+    Headers? headers,
+    Map<String, Object>? context, {
+    Body? body,
+  }) : super(
+          headers: headers ?? Headers.request(),
+          body: body ?? Body.empty(),
+          context: context ?? {},
+        );
 
-//   @override
-//   Message change(
-//       {Map<String, String>? headers,
-//       Map<String, Object>? context,
-//       Object? body}) {
-//     throw UnimplementedError();
-//   }
-// }
+  @override
+  Message copyWith({
+    Headers? headers,
+    Map<String, Object>? context,
+    Body? body,
+  }) {
+    throw UnimplementedError();
+  }
+}
 
-// Message _createMessage({
-//   Map<String, /* String | List<String> */ Object>? headers,
-//   Map<String, Object>? context,
-//   Body? body,
-// }) {
-//   return _TestMessage(headers, context, body);
-// }
+Message _createMessage({
+  Headers? headers,
+  Map<String, Object>? context,
+  Body? body,
+}) {
+  return _TestMessage(headers, context, body: body);
+}
 
-// void main() {
-//   group('headers', () {
-//     test('message headers are case insensitive', () {
-//       var message = _createMessage(headers: {'foo': 'bar'});
+void main() {
+  group('headers', () {
+    test('message headers are case insensitive', () {
+      var message = _createMessage(
+        headers: Headers.request(
+          custom: CustomHeaders({
+            'foo': ['bar']
+          }),
+        ),
+      );
 
-//       expect(message.headers, containsPair('foo', 'bar'));
-//       expect(message.headers, containsPair('Foo', 'bar'));
-//       expect(message.headers, containsPair('FOO', 'bar'));
-//       expect(message.headersAll, containsPair('foo', ['bar']));
-//       expect(message.headersAll, containsPair('Foo', ['bar']));
-//       expect(message.headersAll, containsPair('FOO', ['bar']));
-//     });
+      expect(message.headers.custom, containsPair('foo', ['bar']));
+      expect(message.headers.custom, containsPair('Foo', ['bar']));
+      expect(message.headers.custom, containsPair('FOO', ['bar']));
+    });
 
-//     test('null header value becomes default', () {
-//       var message = _createMessage();
-//       expect(message.headers, {
-//         'content-type': 'application/octet-stream; charset=utf-8',
-//         'content-length': '0',
-//       });
-//       expect(message.headers, containsPair('CoNtEnT-lEnGtH', '0'));
-//       expect(() => message.headers['h1'] = 'value1', throwsUnsupportedError);
-//       expect(
-//           () => message.headersAll['h1'] = ['value1'], throwsUnsupportedError);
-//     });
+    test('headers are immutable', () {
+      var message = _createMessage(
+        headers: Headers.request(
+          custom: CustomHeaders({
+            'h1': ['value1']
+          }),
+        ),
+      );
+      expect(
+        () => message.headers.custom['h1'] = ['value1'],
+        throwsUnsupportedError,
+      );
+      expect(
+        () => message.headers.custom['h1'] = ['value2'],
+        throwsUnsupportedError,
+      );
+      expect(
+        () => message.headers.custom['h2'] = ['value2'],
+        throwsUnsupportedError,
+      );
+    });
 
-//     test('headers are immutable', () {
-//       var message = _createMessage(headers: {'h1': 'value1'});
-//       expect(() => message.headers['h1'] = 'value1', throwsUnsupportedError);
-//       expect(() => message.headers['h1'] = 'value2', throwsUnsupportedError);
-//       expect(() => message.headers['h2'] = 'value2', throwsUnsupportedError);
-//       expect(
-//           () => message.headersAll['h1'] = ['value1'], throwsUnsupportedError);
-//       expect(
-//           () => message.headersAll['h1'] = ['value2'], throwsUnsupportedError);
-//       expect(
-//           () => message.headersAll['h2'] = ['value2'], throwsUnsupportedError);
-//     });
+    test('headers with multiple values', () {
+      final message = _createMessage(
+        headers: Headers.request(
+          custom: CustomHeaders({
+            'a': ['A'],
+            'b': ['B1', 'B2'],
+          }),
+        ),
+      );
 
-//     test('headers with multiple values', () {
-//       final message = _createMessage(headers: {
-//         'a': 'A',
-//         'b': ['B1', 'B2'],
-//       });
-//       expect(message.headers, {
-//         'a': 'A',
-//         'b': 'B1,B2',
-//         'content-length': '0',
-//         'content-type': 'application/octet-stream; charset=utf-8',
-//       });
-//       expect(message.headersAll, {
-//         'a': ['A'],
-//         'b': ['B1', 'B2'],
-//         'content-length': ['0'],
-//         'content-type': ['application/octet-stream; charset=utf-8'],
-//       });
-//     });
-//   });
+      expect(message.headers.custom, {
+        'a': ['A'],
+        'b': ['B1', 'B2'],
+      });
+    });
+  });
 
-//   group('context', () {
-//     test('is accessible', () {
-//       var message = _createMessage(context: {'foo': 'bar'});
-//       expect(message.context, containsPair('foo', 'bar'));
-//     });
+  group('readAsString', () {
+    test('supports a null body', () {
+      var request = _createMessage();
+      expect(request.readAsString(), completion(equals('')));
+    });
 
-//     test('null context value becomes empty and immutable', () {
-//       var message = _createMessage();
-//       expect(message.context, isEmpty);
-//       expect(() => message.context['key'] = 'value', throwsUnsupportedError);
-//     });
+    test('supports a Stream<List<int>> body', () {
+      var controller = StreamController<Uint8List>();
+      var request =
+          _createMessage(body: Body.fromDataStream(controller.stream));
+      expect(request.readAsString(), completion(equals('hello, world')));
 
-//     test('is immutable', () {
-//       var message = _createMessage(context: {'key': 'value'});
-//       expect(() => message.context['key'] = 'value', throwsUnsupportedError);
-//       expect(() => message.context['key2'] = 'value', throwsUnsupportedError);
-//     });
-//   });
+      controller.add(helloBytes);
+      return Future(() {
+        controller
+          ..add(worldBytes)
+          ..close();
+      });
+    });
 
-//   group('readAsString', () {
-//     test('supports a null body', () {
-//       var request = _createMessage();
-//       expect(request.readAsString(), completion(equals('')));
-//     });
+    test('defaults to UTF-8', () {
+      var request = _createMessage(
+        body: Body.fromData(Uint8List.fromList([195, 168])),
+      );
+      expect(request.readAsString(), completion(equals('è')));
+    });
+  });
 
-//     test('supports a Stream<List<int>> body', () {
-//       var controller = StreamController<Uint8List>();
-//       var request =
-//           _createMessage(body: Body.fromDataStream(controller.stream));
-//       expect(request.readAsString(), completion(equals('hello, world')));
+  group('read', () {
+    test('supports a null body', () {
+      var request = _createMessage();
+      expect(request.read().toList(), completion(isEmpty));
+    });
 
-//       controller.add(helloBytes);
-//       return Future(() {
-//         controller
-//           ..add(worldBytes)
-//           ..close();
-//       });
-//     });
+    test('supports a Stream<List<int>> body', () {
+      var controller = StreamController<Uint8List>();
+      var request = _createMessage(
+        body: Body.fromDataStream(controller.stream),
+      );
+      expect(request.read().toList(),
+          completion(equals([helloBytes, worldBytes])));
 
-//     test('defaults to UTF-8', () {
-//       var request = _createMessage(
-//         body: Body.fromData(Uint8List.fromList([195, 168])),
-//       );
-//       expect(request.readAsString(), completion(equals('è')));
-//     });
+      controller.add(helloBytes);
+      return Future(() {
+        controller
+          ..add(worldBytes)
+          ..close();
+      });
+    });
 
-//     test('the content-type header overrides the default', () {
-//       var request = _createMessage(
-//         headers: {'content-type': 'text/plain; charset=iso-8859-1'},
-//         body: Body.fromData(Uint8List.fromList([195, 168])),
-//       );
-//       expect(request.readAsString(), completion(equals('Ã¨')));
-//     });
+    test('supports a List<int> body', () {
+      var request = _createMessage(body: Body.fromData(helloBytes));
+      expect(request.read().toList(), completion(equals([helloBytes])));
+    });
 
-//     test('an explicit encoding overrides the content-type header', () {
-//       var request = _createMessage(
-//         headers: {'content-type': 'text/plain; charset=iso-8859-1'},
-//         body: Body.fromData(Uint8List.fromList([195, 168])),
-//       );
-//       expect(request.readAsString(latin1), completion(equals('Ã¨')));
-//     });
-//   });
+    test('throws when calling read()/readAsString() multiple times', () {
+      Message request;
 
-//   group('read', () {
-//     test('supports a null body', () {
-//       var request = _createMessage();
-//       expect(request.read().toList(), completion(isEmpty));
-//     });
+      request = _createMessage();
+      expect(request.read().toList(), completion(isEmpty));
+      expect(() => request.read(), throwsStateError);
 
-//     test('supports a Stream<List<int>> body', () {
-//       var controller = StreamController<Uint8List>();
-//       var request = _createMessage(
-//         body: Body.fromDataStream(controller.stream),
-//       );
-//       expect(request.read().toList(),
-//           completion(equals([helloBytes, worldBytes])));
+      request = _createMessage();
+      expect(request.readAsString(), completion(isEmpty));
+      expect(() => request.readAsString(), throwsStateError);
 
-//       controller.add(helloBytes);
-//       return Future(() {
-//         controller
-//           ..add(worldBytes)
-//           ..close();
-//       });
-//     });
+      request = _createMessage();
+      expect(request.readAsString(), completion(isEmpty));
+      expect(() => request.read(), throwsStateError);
 
-//     test('supports a List<int> body', () {
-//       var request = _createMessage(body: Body.fromData(helloBytes));
-//       expect(request.read().toList(), completion(equals([helloBytes])));
-//     });
+      request = _createMessage();
+      expect(request.read().toList(), completion(isEmpty));
+      expect(() => request.readAsString(), throwsStateError);
+    });
+  });
 
-//     test('throws when calling read()/readAsString() multiple times', () {
-//       Message request;
+  group('content-length', () {
+    test('is 0 with a default body and without a content-length header', () {
+      var request = _createMessage();
+      expect(request.body.contentLength, 0);
+    });
 
-//       request = _createMessage();
-//       expect(request.read().toList(), completion(isEmpty));
-//       expect(() => request.read(), throwsStateError);
+    test('comes from a byte body', () {
+      var request = _createMessage(
+        body: Body.fromData(Uint8List.fromList([1, 2, 3])),
+      );
+      expect(request.body.contentLength, 3);
+    });
 
-//       request = _createMessage();
-//       expect(request.readAsString(), completion(isEmpty));
-//       expect(() => request.readAsString(), throwsStateError);
+    test('comes from a string body', () {
+      var request = _createMessage(body: Body.fromString('foobar'));
+      expect(request.body.contentLength, 6);
+    });
 
-//       request = _createMessage();
-//       expect(request.readAsString(), completion(isEmpty));
-//       expect(() => request.read(), throwsStateError);
+    test('is set based on byte length for a string body', () {
+      var request = _createMessage(body: Body.fromString('fööbär'));
+      expect(request.body.contentLength, 9);
 
-//       request = _createMessage();
-//       expect(request.read().toList(), completion(isEmpty));
-//       expect(() => request.readAsString(), throwsStateError);
-//     });
-//   });
+      request = _createMessage(
+        body: Body.fromString('fööbär', encoding: latin1),
+      );
+      expect(request.body.contentLength, 6);
+    });
 
-//   group('content-length', () {
-//     test('is 0 with a default body and without a content-length header', () {
-//       var request = _createMessage();
-//       expect(request.contentLength, 0);
-//     });
+    test('is null for a stream body', () {
+      var request = _createMessage(
+        body: Body.fromDataStream(Stream.empty()),
+      );
+      expect(request.body.contentLength, isNull);
+    });
 
-//     test('comes from a byte body', () {
-//       var request = _createMessage(
-//         body: Body.fromData(Uint8List.fromList([1, 2, 3])),
-//       );
-//       expect(request.contentLength, 3);
-//     });
+    test('is set for identity transfer encoding', () {
+      var request = _createMessage(
+        body: Body.fromString('1\r\na0\r\n\r\n'),
+        headers: Headers.request(
+          transferEncoding: ['identity'],
+        ),
+      );
+      expect(request.body.contentLength, equals(9));
+    });
+  });
 
-//     test('comes from a string body', () {
-//       var request = _createMessage(body: Body.fromString('foobar'));
-//       expect(request.contentLength, 6);
-//     });
+  group('encoding', () {
+    test('is utf8 without a content-type header', () {
+      expect(_createMessage().encoding, utf8);
+    });
 
-//     test('is set based on byte length for a string body', () {
-//       var request = _createMessage(body: Body.fromString('fööbär'));
-//       expect(request.contentLength, 9);
+    test('defaults to encoding a String as UTF-8', () {
+      expect(
+        _createMessage(
+          body: Body.fromString('è'),
+        ).read().toList(),
+        completion(equals([
+          [195, 168]
+        ])),
+      );
+    });
 
-//       request = _createMessage(
-//         body: Body.fromString('fööbär', encoding: latin1),
-//       );
-//       expect(request.contentLength, 6);
-//     });
-
-//     test('is null for a stream body', () {
-//       var request = _createMessage(
-//         body: Body.fromDataStream(Stream.empty()),
-//       );
-//       expect(request.contentLength, isNull);
-//     });
-
-//     test('uses the content-length header for a stream body', () {
-//       var request = _createMessage(
-//           body: Body.fromDataStream(Stream.empty()),
-//           headers: {'content-length': '42'});
-//       expect(request.contentLength, 42);
-//     });
-
-//     test('real body length takes precedence over content-length header', () {
-//       var request = _createMessage(
-//         body: Body.fromData(Uint8List.fromList([1, 2, 3])),
-//         headers: {'content-length': '42'},
-//       );
-//       expect(request.contentLength, 3);
-//     });
-
-//     test('is null for a chunked transfer encoding', () {
-//       var request = _createMessage(
-//         body: Body.fromString('1\r\na0\r\n\r\n'),
-//         headers: {'transfer-encoding': 'chunked'},
-//       );
-//       expect(request.contentLength, isNull);
-//     });
-
-//     test('is null for a non-identity transfer encoding', () {
-//       var request = _createMessage(
-//         body: Body.fromString('1\r\na0\r\n\r\n'),
-//         headers: {'transfer-encoding': 'custom'},
-//       );
-//       expect(request.contentLength, isNull);
-//     });
-
-//     test('is set for identity transfer encoding', () {
-//       var request = _createMessage(
-//         body: Body.fromString('1\r\na0\r\n\r\n'),
-//         headers: {'transfer-encoding': 'identity'},
-//       );
-//       expect(request.contentLength, equals(9));
-//     });
-//   });
-
-//   group('mimeType', () {
-//     test('is application/octet-stream without a content-type header', () {
-//       expect(_createMessage().mimeType, 'application/octet-stream');
-//     });
-
-//     test('comes from the content-type header', () {
-//       expect(_createMessage(headers: {'content-type': 'text/plain'}).mimeType,
-//           equals('text/plain'));
-//     });
-
-//     test("doesn't include parameters", () {
-//       expect(
-//           _createMessage(
-//                   headers: {'content-type': 'text/plain; foo=bar; bar=baz'})
-//               .mimeType,
-//           equals('text/plain'));
-//     });
-//   });
-
-//   group('encoding', () {
-//     test('is utf8 without a content-type header', () {
-//       expect(_createMessage().encoding, utf8);
-//     });
-
-//     test('is null without a charset parameter', () {
-//       expect(_createMessage(headers: {'content-type': 'text/plain'}).encoding,
-//           utf8);
-//     });
-
-//     test('is null with an unrecognized charset parameter', () {
-//       expect(
-//           _createMessage(
-//               headers: {'content-type': 'text/plain; charset=fblthp'}).encoding,
-//           utf8);
-//     });
-
-//     test('comes from the message body', () {
-//       var message = _createMessage(
-//         headers: {'content-type': 'text/plain; charset=iso-8859-1'},
-//       );
-
-//       expect(message.encoding, equals(utf8));
-//     });
-
-//     test('comes from the message body with a different encoding', () {
-//       expect(
-//           _createMessage(
-//             headers: {'Content-Type': 'text/plain; charset=iso-8859-1'},
-//             body: Body.empty(encoding: latin1),
-//           ).encoding,
-//           equals(latin1));
-//     });
-
-//     test('defaults to encoding a String as UTF-8', () {
-//       expect(
-//         _createMessage(
-//           body: Body.fromString('è'),
-//         ).read().toList(),
-//         completion(equals([
-//           [195, 168]
-//         ])),
-//       );
-//     });
-
-//     test('uses the explicit encoding if available', () {
-//       expect(
-//         _createMessage(
-//           body: Body.fromString('è', encoding: latin1),
-//         ).read().toList(),
-//         completion(equals([
-//           [232]
-//         ])),
-//       );
-//     });
-
-//     test('adds an explicit encoding to the content-type', () {
-//       var request = _createMessage(
-//         body: Body.fromString('è', encoding: latin1),
-//         headers: {'content-type': 'text/plain'},
-//       );
-//       expect(request.headers,
-//           containsPair('content-type', 'text/plain; charset=iso-8859-1'));
-//     });
-
-//     test('adds an explicit encoding to the content-type with a different case',
-//         () {
-//       var request = _createMessage(
-//         body: Body.fromString('è', encoding: latin1),
-//         headers: {'Content-Type': 'text/plain'},
-//       );
-//       expect(request.headers,
-//           containsPair('Content-Type', 'text/plain; charset=iso-8859-1'));
-//     });
-
-//     test(
-//         'sets an absent content-type to application/octet-stream in order to '
-//         'set the charset', () {
-//       var request = _createMessage(
-//         body: Body.fromString('è', encoding: latin1),
-//       );
-//       expect(
-//           request.headers,
-//           containsPair(
-//               'content-type', 'application/octet-stream; charset=iso-8859-1'));
-//     });
-
-//     test('overwrites an existing charset if given an explicit encoding', () {
-//       var request = _createMessage(
-//         body: Body.fromString('è', encoding: latin1),
-//         headers: {'content-type': 'text/plain; charset=whatever'},
-//       );
-//       expect(request.headers,
-//           containsPair('content-type', 'text/plain; charset=iso-8859-1'));
-//     });
-//   });
-// }
+    test('uses the explicit encoding if available', () {
+      expect(
+        _createMessage(
+          body: Body.fromString('è', encoding: latin1),
+        ).read().toList(),
+        completion(equals([
+          [232]
+        ])),
+      );
+    });
+  });
+}

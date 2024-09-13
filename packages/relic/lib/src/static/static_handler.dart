@@ -10,6 +10,7 @@ import 'package:convert/convert.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:relic/relic.dart';
+import 'package:relic/src/headers/types/mime_type.dart';
 
 import 'directory_listing.dart';
 import 'util.dart';
@@ -206,17 +207,16 @@ Future<Response> _handleFile(
   final headers = Headers.response(
     lastModified: stat.modified,
     acceptRanges: ['bytes'],
-    contentType: contentType,
   );
 
   return _fileRangeResponse(request, file, headers) ??
       Response.ok(
         body: request.method == 'HEAD'
             ? null
-            : Body.fromIntStream(file.openRead()),
-        headers: headers.copyWith(
-          contentLength: '${stat.size}',
-        ),
+            : Body.fromIntStream(
+                file.openRead(),
+                mimeType: MimeType.parse(contentType!),
+              ),
       );
 }
 
@@ -275,9 +275,11 @@ Response? _fileRangeResponse(
     HttpStatus.partialContent,
     body: request.method == 'HEAD'
         ? null
-        : Body.fromIntStream(file.openRead(start, end + 1)),
+        : Body.fromIntStream(
+            file.openRead(start, end + 1),
+            mimeType: MimeType.binary,
+          ),
     headers: headers.copyWith(
-      contentLength: (end - start + 1).toString(),
       contentRange: 'bytes $start-$end/$actualLength',
     ),
   );

@@ -43,7 +43,7 @@ void main() {
 
       final response = await makeRequest(handler, '/index.html');
       expect(response.statusCode, HttpStatus.ok);
-      expect(response.contentLength, 13);
+      expect(response.body.contentLength, 13);
       expect(response.readAsString(), completion('<html></html>'));
     });
 
@@ -76,7 +76,7 @@ void main() {
 
       final response = await makeRequest(handler, '/index.html');
       expect(response.statusCode, HttpStatus.ok);
-      expect(response.contentLength, 13);
+      expect(response.body.contentLength, 13);
       expect(response.readAsString(), completion('<html></html>'));
       expect(response.mimeType, 'text/html');
     });
@@ -87,7 +87,7 @@ void main() {
 
       final response = await makeRequest(handler, '/');
       expect(response.statusCode, HttpStatus.ok);
-      expect(response.contentLength, 13);
+      expect(response.body.contentLength, 13);
       expect(response.readAsString(), completion('<html></html>'));
       expect(response.mimeType, 'text/html');
     });
@@ -108,7 +108,7 @@ void main() {
 
       final response = await makeRequest(handler, '/files/');
       expect(response.statusCode, HttpStatus.ok);
-      expect(response.contentLength, 31);
+      expect(response.body.contentLength, 31);
       expect(response.readAsString(),
           completion('<html><body>files</body></html>'));
       expect(response.mimeType, 'text/html');

@@ -58,7 +58,7 @@ Future<void> _testFileContents(String filename) async {
   final fileStat = file.statSync();
 
   final response = await _requestFile(filename);
-  expect(response.contentLength, fileStat.size);
+  expect(response.body.contentLength, fileStat.size);
   expect(
     response.headers.lastModified,
     atSameTimeToSecond(fileStat.modified.toUtc()),

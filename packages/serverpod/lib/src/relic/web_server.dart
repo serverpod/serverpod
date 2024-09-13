@@ -333,7 +333,7 @@ abstract class WidgetRoute extends Route {
       return Response.ok(
         body: Body.fromString(
           widget.toString(),
-          contentType: BodyType.json,
+          mimeType: MimeType.json,
         ),
       );
     } else if (widget is WidgetRedirectPermanently) {
@@ -344,7 +344,7 @@ abstract class WidgetRoute extends Route {
       return Response.ok(
         body: Body.fromString(
           widget.toString(),
-          contentType: BodyType.html,
+          mimeType: MimeType.html,
         ),
       );
     }
