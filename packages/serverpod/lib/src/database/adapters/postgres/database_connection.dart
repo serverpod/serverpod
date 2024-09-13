@@ -284,7 +284,12 @@ class DatabaseConnection {
         .withWhere(where)
         .build();
 
-    return await _deserializedMappedQuery(session, query, table: table);
+    return await _deserializedMappedQuery(
+      session,
+      query,
+      table: table,
+      transaction: transaction,
+    );
   }
 
   /// For most cases use the corresponding method in [Database] instead.
