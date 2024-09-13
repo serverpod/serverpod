@@ -172,4 +172,66 @@ void main() {
       expect(result, equals(true));
     });
   });
+
+  group('Given signed in user that wants to alter its user info', () {
+    setUp(() async {
+      var response = await client.authentication.authenticate(
+        'test@foo.bar',
+        'password',
+      );
+      assert(response.success, 'Failed to authenticate user');
+      await client.authenticationKeyManager
+          ?.put('${response.keyId}:${response.key}');
+      assert(
+          await client.modules.auth.status.isSignedIn(), 'Failed to sign in');
+    });
+
+    tearDown(() async {
+      await client.authenticationKeyManager?.remove();
+      await client.authentication.removeAllUsers();
+      await client.authentication.signOut();
+      assert(
+        await client.modules.auth.status.isSignedIn() == false,
+        'Still signed in after teardown',
+      );
+    });
+
+    test('when changing its user name then user name is updated.', () async {
+      final currentUserInfo = await client.modules.auth.status.getUserInfo();
+      expect(currentUserInfo, isNotNull,
+          reason: 'We expect to get UserInfo back from the auth module');
+      final String updatedUserName = '${currentUserInfo?.userName}updated';
+
+      final result =
+          await client.modules.auth.user.changeUserName(updatedUserName);
+      expect(result, equals(true),
+          reason: 'The call to changeUserName should return true.');
+
+      final updatedUserInfo = await client.modules.auth.status.getUserInfo();
+      expect(updatedUserInfo, isNotNull,
+          reason: 'We expect to get user Info back from the auth module');
+      expect(updatedUserInfo?.userName, equals(updatedUserName),
+          reason: 'We expect that the updated name is returned from '
+              'the auth module');
+    });
+
+    test('when changing its full name  then full name is updated.', () async {
+      final currentUserInfo = await client.modules.auth.status.getUserInfo();
+      expect(currentUserInfo, isNotNull,
+          reason: 'We expect to get user Info back from the auth module');
+      final String updatedFullName = '${currentUserInfo?.fullName}updated';
+
+      final result =
+          await client.modules.auth.user.changeFullName(updatedFullName);
+      expect(result, equals(true),
+          reason: 'The call to changeUserName should return true.');
+
+      final updatedUserInfo = await client.modules.auth.status.getUserInfo();
+      expect(updatedUserInfo, isNotNull,
+          reason: 'We expect to get user Info back from the auth module');
+      expect(updatedUserInfo?.fullName, equals(updatedFullName),
+          reason: 'We expect that the updated name is returned from '
+              'the auth module');
+    });
+  });
 }

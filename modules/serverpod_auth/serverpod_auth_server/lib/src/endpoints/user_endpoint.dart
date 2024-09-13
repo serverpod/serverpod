@@ -38,4 +38,15 @@ class UserEndpoint extends Endpoint {
 
     return (await Users.changeUserName(session, userId, userName)) != null;
   }
+
+  /// Changes the full name of a user.
+  Future<bool> changeFullName(Session session, String fullName) async {
+    fullName = fullName.trim();
+    if (fullName == '') return false;
+
+    var userId = (await session.authenticated)?.userId;
+    if (userId == null) return false;
+
+    return (await Users.changeFullName(session, userId, fullName)) != null;
+  }
 }
