@@ -45,7 +45,7 @@ class GeneratorConfigBuilder {
         ],
         _extraClasses = [],
         _enabledFeatures = [ServerpodFeature.database],
-        _enabledExperimentalFeatures = [ExperimentalFeature.inheritance];
+        _enabledExperimentalFeatures = [];
 
   GeneratorConfigBuilder withName(String name) {
     _name = name;
@@ -103,6 +103,12 @@ class GeneratorConfigBuilder {
 
   GeneratorConfigBuilder withEnabledFeatures(List<ServerpodFeature> features) {
     _enabledFeatures = features;
+    return this;
+  }
+
+  GeneratorConfigBuilder withEnabledExperimentalFeatures(
+      List<ExperimentalFeature> features) {
+    _enabledExperimentalFeatures.addAll(features);
     return this;
   }
 

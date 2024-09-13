@@ -5,6 +5,7 @@ import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -221,6 +222,16 @@ class Restrictions {
       return [
         SourceSpanSeverityException(
           'The "${Keyword.extendsClass}" key must be a String.',
+          span,
+        )
+      ];
+    }
+
+    // TODO: Remove when inheritance is enabled by default.
+    if (!config.isExperimentalFeatureEnabled(ExperimentalFeature.inheritance)) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.extendsClass}" key can only be used when the (experimental) inheritance feature is enabled.',
           span,
         )
       ];

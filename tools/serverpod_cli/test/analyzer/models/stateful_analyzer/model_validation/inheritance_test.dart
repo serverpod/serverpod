@@ -1,12 +1,15 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var config = GeneratorConfigBuilder().build();
+  var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures(
+    [ExperimentalFeature.inheritance],
+  ).build();
 
   group('Extends property tests', () {
     test(
@@ -200,6 +203,47 @@ void main() {
     expect(
       error.message,
       'You can only extend classes from your own project.',
+    );
+  });
+
+  test(
+      'Given a child-class when inheritance is not enabled, then error is collected that experimental-features=inheritance needs to be enabled',
+      () {
+    var modelSources = [
+      ModelSourceBuilder().withYaml(
+        '''
+          class: Example
+          fields:
+            name: String
+          ''',
+      ).build(),
+      ModelSourceBuilder().withFileName('example2').withYaml(
+        '''
+          class: ExampleChildClass
+          extends: Example
+          fields:
+            age: int
+          ''',
+      ).build(),
+    ];
+
+    var generatorConfig = GeneratorConfigBuilder().build();
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(
+            generatorConfig, modelSources, onErrorsCollector(collector))
+        .validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error but none was generated.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'The "extends" key can only be used when the (experimental) inheritance feature is enabled.',
     );
   });
 }
