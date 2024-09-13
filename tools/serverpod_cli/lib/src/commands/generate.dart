@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
+
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
-import 'package:serverpod_cli/src/generator/generator_continuous.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
+import 'package:serverpod_cli/src/generator/generator_continuous.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -25,6 +27,12 @@ class GenerateCommand extends ServerpodCommand {
       negatable: false,
       help: 'Watch for changes and continuously generate code.',
     );
+    argParser.addMultiOption(
+      'experimental-features',
+      help:
+          'Enable experimental features. Experimental features might be removed at any time.',
+      allowed: ExperimentalFeature.values.map((e) => e.name),
+    );
   }
 
   @override
@@ -39,6 +47,15 @@ class GenerateCommand extends ServerpodCommand {
     } catch (e) {
       log.error('An error occurred while parsing the server config file: $e');
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+    }
+
+    var enabledExperimentalFeatures =
+        argResults!.multiOption('experimental-features');
+    for (var feature in enabledExperimentalFeatures) {
+      log.info(
+        'Enabling experimental feature: $feature. This feature might be removed at any time.',
+      );
+      config.experimentalFeatures.add(ExperimentalFeature.fromString(feature));
     }
 
     // Validate cli version is compatible with serverpod packages

@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 
@@ -16,6 +17,7 @@ class GeneratorConfigBuilder {
   List<ModuleConfig> _modules;
   List<TypeDefinition> _extraClasses;
   List<ServerpodFeature> _enabledFeatures;
+  List<ExperimentalFeature> _enabledExperimentalFeatures;
 
   GeneratorConfigBuilder()
       : _name = _defaultName,
@@ -42,7 +44,8 @@ class GeneratorConfigBuilder {
           ),
         ],
         _extraClasses = [],
-        _enabledFeatures = [ServerpodFeature.database];
+        _enabledFeatures = [ServerpodFeature.database],
+        _enabledExperimentalFeatures = [ExperimentalFeature.inheritance];
 
   GeneratorConfigBuilder withName(String name) {
     _name = name;
@@ -115,6 +118,7 @@ class GeneratorConfigBuilder {
       modules: _modules,
       extraClasses: _extraClasses,
       enabledFeatures: _enabledFeatures,
+      experimentalFeatures: _enabledExperimentalFeatures,
     );
   }
 }

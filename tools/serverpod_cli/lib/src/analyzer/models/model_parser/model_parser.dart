@@ -17,8 +17,9 @@ class ModelParser {
     String outFileName,
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
-    List<TypeDefinition> extraClasses,
-  ) {
+    List<TypeDefinition> extraClasses, {
+    bool enableInheritance = false,
+  }) {
     YamlNode? classNode = documentContents.nodes[documentTypeName];
 
     if (classNode == null) {
@@ -35,7 +36,12 @@ class ModelParser {
     var className = classNode.value;
     if (className is! String) return null;
 
-    var extendsClass = _parseExtendsClass(documentContents);
+    // TODO: Remove this check for production mode when we can also implement it for tables
+    // Tracked by issue: https://github.com/serverpod/serverpod/issues/2711
+    // After that, we can remove the check for production mode and always parse the extends class
+    // var extendsClass = _parseExtendsClass(documentContents);
+    var extendsClass =
+        enableInheritance == true ? _parseExtendsClass(documentContents) : null;
 
     var tableName = _parseTableName(documentContents);
     var serverOnly = _parseServerOnly(documentContents);

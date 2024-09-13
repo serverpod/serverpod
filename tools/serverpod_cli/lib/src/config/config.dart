@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:package_config/package_config.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
@@ -58,6 +59,7 @@ class GeneratorConfig {
     required List<ModuleConfig> modules,
     required this.extraClasses,
     required this.enabledFeatures,
+    required this.experimentalFeatures,
   })  : _relativeDartClientPackagePathParts =
             relativeDartClientPackagePathParts,
         _modules = modules;
@@ -139,6 +141,11 @@ class GeneratorConfig {
 
   bool isFeatureEnabled(ServerpodFeature feature) =>
       enabledFeatures.contains(feature);
+
+  final List<ExperimentalFeature> experimentalFeatures;
+
+  bool isExperimentalFeatureEnabled(ExperimentalFeature feature) =>
+      experimentalFeatures.contains(feature);
 
   /// All the modules defined in the config (of type module).
   List<ModuleConfig> get modules => _modules
@@ -275,6 +282,9 @@ class GeneratorConfig {
 
     var enabledFeatures = _enabledFeatures(file, generatorConfig);
 
+    var enabledExperimentalFeatures =
+        _enabledExperimentalFeatures(file, generatorConfig);
+
     return GeneratorConfig(
       name: name,
       type: type,
@@ -286,6 +296,7 @@ class GeneratorConfig {
       modules: modules,
       extraClasses: extraClasses,
       enabledFeatures: enabledFeatures,
+      experimentalFeatures: enabledExperimentalFeatures,
     );
   }
 
@@ -302,6 +313,26 @@ class GeneratorConfig {
     if (features is! Map) return enabledFeatures;
 
     return ServerpodFeature.values
+        .where((feature) => features[feature.name.toString()] == true)
+        .toList();
+  }
+
+  static List<ExperimentalFeature> _enabledExperimentalFeatures(
+    File file,
+    Map config,
+  ) {
+    var enabledFeatures = <ExperimentalFeature>[];
+    if (!file.existsSync()) return enabledFeatures;
+
+    if (!config.containsKey('experimental_features')) {
+      return enabledFeatures;
+    }
+
+    var features = config['experimental_features'];
+
+    if (features is! Map) return enabledFeatures;
+
+    return ExperimentalFeature.values
         .where((feature) => features[feature.name.toString()] == true)
         .toList();
   }
