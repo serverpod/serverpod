@@ -32,6 +32,7 @@ class GenerateCommand extends ServerpodCommand {
       help:
           'Enable experimental features. Experimental features might be removed at any time.',
       allowed: ExperimentalFeature.values.map((e) => e.name),
+      defaultsTo: [],
     );
   }
 
@@ -49,8 +50,7 @@ class GenerateCommand extends ServerpodCommand {
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
 
-    var enabledExperimentalFeatures =
-        argResults!.multiOption('experimental-features');
+    var enabledExperimentalFeatures = argResults!['experimental-features'];
     for (var feature in enabledExperimentalFeatures) {
       log.info(
         'Enabling experimental feature: $feature. This feature might be removed at any time.',
