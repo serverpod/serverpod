@@ -139,7 +139,13 @@ class DatabaseConnection {
     ).build();
 
     var result =
-        await _mappedResultsQuery(session, query, transaction: transaction);
+        (await _mappedResultsQuery(session, query, transaction: transaction))
+            .toList();
+
+    result = _mergeResultsWithNonPersistedFields(
+      rows: rows,
+      dbResults: result,
+    );
 
     return result
         .map((row) => _poolManager.serializationManager.deserialize<T>(row))
@@ -152,7 +158,11 @@ class DatabaseConnection {
     T row, {
     Transaction? transaction,
   }) async {
-    var result = await insert<T>(session, [row], transaction: transaction);
+    var result = await insert<T>(
+      session,
+      [row],
+      transaction: transaction,
+    );
 
     if (result.length != 1) {
       throw DatabaseInsertRowException(
@@ -200,7 +210,13 @@ class DatabaseConnection {
         'UPDATE "${table.tableName}" AS t SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = t.id RETURNING *';
 
     var result =
-        await _mappedResultsQuery(session, query, transaction: transaction);
+        (await _mappedResultsQuery(session, query, transaction: transaction))
+            .toList();
+
+    result = _mergeResultsWithNonPersistedFields(
+      rows: rows,
+      dbResults: result,
+    );
 
     return result
         .map((row) => _poolManager.serializationManager.deserialize<T>(row))
@@ -696,6 +712,23 @@ class DatabaseConnection {
     }
 
     return 'json';
+  }
+
+  /// Merges the database result with the original non-persisted fields.
+  /// Database fields take precedence for common fields, while non-persisted fields are retained.
+  List<Map<String, dynamic>>
+      _mergeResultsWithNonPersistedFields<T extends TableRow>({
+    required List<T> rows,
+    required List<Map<String, dynamic>> dbResults,
+  }) {
+    return List<Map<String, dynamic>>.generate(dbResults.length, (i) {
+      return {
+        // Add non-persisted fields from the original object
+        ...rows[i].toJson(),
+        // Override with database fields (common fields)
+        ...dbResults[i],
+      };
+    });
   }
 }
 
