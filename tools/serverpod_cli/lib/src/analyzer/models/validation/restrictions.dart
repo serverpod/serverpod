@@ -230,7 +230,7 @@ class Restrictions {
     if (!config.isExperimentalFeatureEnabled(ExperimentalFeature.inheritance)) {
       return [
         SourceSpanSeverityException(
-          'The "${Keyword.extendsClass}" key can only be used when the (experimental) inheritance feature is enabled.',
+          'The "${Keyword.extendsClass}" property is not allowed for class type. Valid keys are {class, extends, table, managedMigration, serverOnly, fields, indexes}.',
           span,
         )
       ];

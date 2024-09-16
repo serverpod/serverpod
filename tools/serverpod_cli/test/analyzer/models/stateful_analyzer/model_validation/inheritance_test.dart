@@ -243,7 +243,7 @@ void main() {
     var error = collector.errors.first;
     expect(
       error.message,
-      'The "extends" key can only be used when the (experimental) inheritance feature is enabled.',
+      'The "extends" property is not allowed for class type. Valid keys are {class, extends, table, managedMigration, serverOnly, fields, indexes}.',
     );
   });
 }
