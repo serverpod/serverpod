@@ -128,37 +128,45 @@ void main() {
       }, runMode: ServerpodRunMode.production);
     });
 
-    withServerpod(
-      'when creating a transaction in the test',
-      (endpoints, session) {
-        tearDownAll(() async {
-          await SimpleData.db.deleteWhere(
-            session,
-            where: (t) => Constant.bool(true),
-          );
-        });
+    group('when creating a transaction in the test', () {
+      withServerpod(
+        '',
+        (endpoints, session) {
+          test('then the database is updated according to the change',
+              () async {
+            await session.db.transaction((transaction) async {
+              await SimpleData.db.insert(session, [SimpleData(num: 111)],
+                  transaction: transaction);
+            });
 
-        test('then the database is updated according to the change', () async {
-          await session.db.transaction((transaction) async {
-            await SimpleData.db.insert(session, [SimpleData(num: 111)],
-                transaction: transaction);
+            final result = await SimpleData.db.find(session);
+
+            expect(result.length, 1);
+
+            expect(result.first.num, 111);
           });
 
-          final result = await SimpleData.db.find(session);
+          test('then the change is not rolled back', () async {
+            final result = await SimpleData.db.find(session);
+            expect(result.length, 1);
+          });
+        },
+        rollbackDatabase: RollbackDatabase.afterEach,
+        runMode: ServerpodRunMode.production,
+      );
 
-          expect(result.length, 1);
-
-          expect(result.first.num, 111);
-        });
-
-        test('then the change is not rolled back', () async {
-          final result = await SimpleData.db.find(session);
-          expect(result.length, 1);
-        });
-      },
-      rollbackDatabase: RollbackDatabase.afterEach,
-      runMode: ServerpodRunMode.production,
-    );
+      withServerpod(
+        'then the database has to be cleaned up in the next `withServerpod` by setting rollbackDatabase to never',
+        (endpoints, session) {
+          tearDownAll(() async {
+            await SimpleData.db
+                .deleteWhere(session, where: (_) => Constant.bool(true));
+          });
+        },
+        rollbackDatabase: RollbackDatabase.never,
+        runMode: ServerpodRunMode.production,
+      );
+    });
 
     withServerpod(
       'when creating a copy of the session and creating new objects in the database in setUp',
@@ -340,25 +348,21 @@ void main() {
 
   group('Given rollbackDatabase set to never', () {
     withServerpod(
-      '',
+      'when creating SimpleData in in one test and fetching it in the other',
       (endpoints, session) {
-        group(
-            'when creating SimpleData in in one test and fetching it in the other',
-            () {
-          test('then creates SimpleData in the first test', () async {
-            await SimpleData.db
-                .insert(session, [SimpleData(num: 111), SimpleData(num: 222)]);
-          });
+        test('then creates SimpleData in the first test', () async {
+          await SimpleData.db
+              .insert(session, [SimpleData(num: 111), SimpleData(num: 222)]);
+        });
 
-          test(
-              'then does not roll back the transaction so that the second test can fetch the data',
-              () async {
-            final result = await SimpleData.db.find(session);
+        test(
+            'then does not roll back the transaction so that the second test can fetch the data',
+            () async {
+          final result = await SimpleData.db.find(session);
 
-            expect(result.length, 2);
-            expect(result[0].num, 111);
-            expect(result[1].num, 222);
-          });
+          expect(result.length, 2);
+          expect(result[0].num, 111);
+          expect(result[1].num, 222);
         });
       },
       rollbackDatabase: RollbackDatabase.never,
@@ -366,7 +370,7 @@ void main() {
     );
 
     withServerpod(
-      '',
+      'when fetching SimpleData after the first withServerpod',
       (endpoints, session) {
         tearDownAll(() async {
           await SimpleData.db.deleteWhere(
@@ -375,9 +379,7 @@ void main() {
           );
         });
 
-        test(
-            'when fetching SimpleData after the first withServerpod then the database is not rolled back',
-            () async {
+        test('then the database is not rolled back', () async {
           final result = await SimpleData.db.find(session);
 
           expect(result.length, 2);
