@@ -61,6 +61,7 @@ export 'package:serverpod_test/serverpod_test.dart'
 
 @_i1.isTestGroup
 withServerpod(
+  String testGroupName,
   _i1.TestClosure<TestEndpoints> testClosure, {
   _i1.ResetTestSessions? resetTestSessions,
   _i1.RollbackDatabase? rollbackDatabase,
@@ -68,6 +69,7 @@ withServerpod(
   bool? enableSessionLogging,
 }) {
   _i1.buildWithServerpod<_InternalTestEndpoints>(
+    testGroupName,
     _i1.TestServerpod(
       testEndpoints: _InternalTestEndpoints(),
       endpoints: Endpoints(),

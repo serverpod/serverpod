@@ -346,6 +346,9 @@ class ServerTestToolsGenerator {
         ..annotations.add(refer('isTestGroup', serverpodTestUrl))
         ..requiredParameters.addAll([
           Parameter((p) => p
+            ..name = 'testGroupName'
+            ..type = refer('String')),
+          Parameter((p) => p
             ..name = 'testClosure'
             ..type = refer('TestClosure<TestEndpoints>', serverpodTestUrl)),
         ])
@@ -371,6 +374,7 @@ class ServerTestToolsGenerator {
                 'buildWithServerpod<_InternalTestEndpoints>', serverpodTestUrl)
             .call(
           [
+            refer('testGroupName'),
             refer('TestServerpod', serverpodTestUrl).newInstance(
               [],
               {

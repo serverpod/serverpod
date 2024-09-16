@@ -68,6 +68,7 @@ void main() {
             matches(
               r'@_i\d\.isTestGroup\n'
               r'withServerpod\(\n'
+              r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  _i\d\.ResetTestSessions\? resetTestSessions,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
@@ -132,6 +133,7 @@ void main() {
             matches(
               r'@_i\d\.isTestGroup\n'
               r'withServerpod\(\n'
+              r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  _i\d\.ResetTestSessions\? resetTestSessions,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
@@ -210,6 +212,7 @@ void main() {
             matches(
               r'@_i\d\.isTestGroup\n'
               r'withServerpod\(\n'
+              r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  _i\d\.ResetTestSessions\? resetTestSessions,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'

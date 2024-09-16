@@ -4,95 +4,92 @@ import 'package:test/test.dart';
 import 'serverpod_test_tools.dart';
 
 void main() {
-  group('Given AuthenticatedTestToolsEndpoint', () {
-    withServerpod(
-      (endpoints, session) {
-        test(
-            'when not authenticated and calling returnsString then throws UnauthenticatedEndpointCallTestException',
-            () async {
-          session = await session.copyWith(getAuthenticationInfo: () => null);
+  withServerpod(
+    'Given AuthenticatedTestToolsEndpoint',
+    (endpoints, session) {
+      test(
+          'when not authenticated and calling returnsString then throws UnauthenticatedEndpointCallTestException',
+          () async {
+        session = await session.copyWith(getAuthenticationInfo: () => null);
 
-          final result =
-              endpoints.authenticatedTestTools.returnsString(session, "Hello");
-          await expectLater(
-              result, throwsA(isA<UnauthenticatedEndpointCallTestException>()));
-        });
+        final result =
+            endpoints.authenticatedTestTools.returnsString(session, "Hello");
+        await expectLater(
+            result, throwsA(isA<UnauthenticatedEndpointCallTestException>()));
+      });
 
-        test(
-            'when not having sufficient access scopes and calling returnsString then throws InsufficientEndpointAccessTestException',
-            () async {
-          session = await session.copyWith(
-            getAuthenticationInfo: () => AuthenticationInfo(
-              1234,
-              {},
-            ),
-          );
+      test(
+          'when not having sufficient access scopes and calling returnsString then throws InsufficientEndpointAccessTestException',
+          () async {
+        session = await session.copyWith(
+          getAuthenticationInfo: () => AuthenticationInfo(
+            1234,
+            {},
+          ),
+        );
 
-          final result =
-              endpoints.authenticatedTestTools.returnsString(session, "Hello");
-          await expectLater(
-              result, throwsA(isA<InsufficientEndpointAccessTestException>()));
-        });
+        final result =
+            endpoints.authenticatedTestTools.returnsString(session, "Hello");
+        await expectLater(
+            result, throwsA(isA<InsufficientEndpointAccessTestException>()));
+      });
 
-        test('when authorized and calling returnsString then echoes string',
-            () async {
-          session = await session.copyWith(
-            getAuthenticationInfo: () => AuthenticationInfo(
-              1234,
-              {Scope('user')},
-            ),
-          );
+      test('when authorized and calling returnsString then echoes string',
+          () async {
+        session = await session.copyWith(
+          getAuthenticationInfo: () => AuthenticationInfo(
+            1234,
+            {Scope('user')},
+          ),
+        );
 
-          final result = await endpoints.authenticatedTestTools
-              .returnsString(session, "Hello");
-          expect(result, "Hello");
-        });
+        final result = await endpoints.authenticatedTestTools
+            .returnsString(session, "Hello");
+        expect(result, "Hello");
+      });
 
-        test(
-            'when not authenticated and calling returnsStream then throws UnauthenticatedEndpointCallTestException',
-            () async {
-          session = await session.copyWith(getAuthenticationInfo: () => null);
+      test(
+          'when not authenticated and calling returnsStream then throws UnauthenticatedEndpointCallTestException',
+          () async {
+        session = await session.copyWith(getAuthenticationInfo: () => null);
 
-          final result = endpoints.authenticatedTestTools
-              .returnsStream(session, 3)
-              .toList();
-          await expectLater(
-              result, throwsA(isA<UnauthenticatedEndpointCallTestException>()));
-        });
+        final result =
+            endpoints.authenticatedTestTools.returnsStream(session, 3).toList();
+        await expectLater(
+            result, throwsA(isA<UnauthenticatedEndpointCallTestException>()));
+      });
 
-        test(
-            'when not having sufficient access scopes and calling returnsStream then throws InsufficientEndpointAccessTestException',
-            () async {
-          session = await session.copyWith(
-            getAuthenticationInfo: () => AuthenticationInfo(
-              1234,
-              {},
-            ),
-          );
+      test(
+          'when not having sufficient access scopes and calling returnsStream then throws InsufficientEndpointAccessTestException',
+          () async {
+        session = await session.copyWith(
+          getAuthenticationInfo: () => AuthenticationInfo(
+            1234,
+            {},
+          ),
+        );
 
-          final result = endpoints.authenticatedTestTools
-              .returnsStream(session, 3)
-              .toList();
-          await expectLater(
-              result, throwsA(isA<InsufficientEndpointAccessTestException>()));
-        });
+        final result =
+            endpoints.authenticatedTestTools.returnsStream(session, 3).toList();
+        await expectLater(
+            result, throwsA(isA<InsufficientEndpointAccessTestException>()));
+      });
 
-        test('when authorized and calling returnsStream then returns a stream',
-            () async {
-          session = await session.copyWith(
-            getAuthenticationInfo: () => AuthenticationInfo(
-              1234,
-              {Scope('user')},
-            ),
-          );
+      test('when authorized and calling returnsStream then returns a stream',
+          () async {
+        session = await session.copyWith(
+          getAuthenticationInfo: () => AuthenticationInfo(
+            1234,
+            {Scope('user')},
+          ),
+        );
 
-          final result = await endpoints.authenticatedTestTools
-              .returnsStream(session, 3)
-              .toList();
-          expect(result, [0, 1, 2]);
-        });
-      },
-      runMode: ServerpodRunMode.production,
-    );
-  });
+        final result = await endpoints.authenticatedTestTools
+            .returnsStream(session, 3)
+            .toList();
+        expect(result, [0, 1, 2]);
+      });
+    },
+    runMode: ServerpodRunMode.production,
+  );
 }

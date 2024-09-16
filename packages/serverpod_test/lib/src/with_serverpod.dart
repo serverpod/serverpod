@@ -36,8 +36,10 @@ typedef TestClosure<T> = void Function(
 
 /// Builds the `withServerpod` test helper.
 /// Used by the generated code.
+/// Note: The [testGroupName] parameter is needed to enable IDE support.
 void Function(TestClosure<T>)
     buildWithServerpod<T extends InternalTestEndpoints>(
+  String testGroupName,
   TestServerpod<T> testServerpod, {
   ResetTestSessions? maybeResetTestSessions,
   RollbackDatabase? maybeRollbackDatabase,
@@ -51,8 +53,7 @@ void Function(TestClosure<T>)
   return (
     TestClosure<T> testClosure,
   ) {
-    const groupDescriptionWithSingleSpaceToEnableIDESupport = ' ';
-    group(groupDescriptionWithSingleSpaceToEnableIDESupport, () {
+    group(testGroupName, () {
       InternalTestSession mainTestSession = InternalTestSession(
         testServerpod,
         allTestSessions: allTestSessions,
