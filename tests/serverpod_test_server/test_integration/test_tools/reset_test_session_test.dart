@@ -13,7 +13,7 @@ void main() {
         test(
             'then first test has modified newSession that should be reset due to default resetTestSessions.afterEach configuration',
             () async {
-          newSession = await session.copyWith(
+          newSession = session.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
               123,
               {},
@@ -42,7 +42,7 @@ void main() {
       group('when copying the session in setUpAll', () {
         late TestSession newSession;
         setUpAll(() async {
-          newSession = await session.copyWith(
+          newSession = session.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
               123,
               {},
@@ -65,7 +65,7 @@ void main() {
       group('when copying the session in setUp', () {
         late TestSession newSession;
         setUp(() async {
-          newSession = await session.copyWith(
+          newSession = session.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
               123,
               {},
@@ -92,7 +92,7 @@ void main() {
         late TestSession newSession;
 
         test('then the first test has the modified newSession', () async {
-          newSession = await session.copyWith(
+          newSession = session.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
               123,
               {},
@@ -119,7 +119,7 @@ void main() {
     (endpoints, session) {
       group('when modifying the session in setUpAll', () {
         setUpAll(() async {
-          session = await session.copyWith(
+          session = session.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
               123,
               {Scope('user')},
@@ -146,7 +146,7 @@ void main() {
         late TestSession newSession;
 
         test('then the first test has the modified newSession', () async {
-          newSession = await session.copyWith(
+          newSession = session.copyWith(
               authentication: AuthenticationOverride.authenticationInfo(
             333,
             {},

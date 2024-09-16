@@ -173,7 +173,7 @@ void main() {
       (endpoints, session) {
         late TestSession newSession;
         setUp(() async {
-          newSession = await session.copyWith();
+          newSession = session.copyWith();
           await SimpleData.db
               .insert(newSession, [SimpleData(num: 111), SimpleData(num: 222)]);
         });

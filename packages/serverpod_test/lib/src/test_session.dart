@@ -39,7 +39,7 @@ abstract class TestSession implements DatabaseAccessor {
   /// Creates a new unique session with the provided properties.
   /// This is useful for setting up different session states in the tests
   /// or simulating multiple users.
-  Future<TestSession> copyWith({
+  TestSession copyWith({
     AuthenticationOverride? authentication,
     bool? enableLogging,
   });
@@ -92,12 +92,12 @@ class InternalTestSession extends TestSession {
   }
 
   @override
-  Future<TestSession> copyWith({
+  TestSession copyWith({
     AuthenticationOverride? authentication,
     bool? enableLogging,
     String endpoint = '',
     String method = '',
-  }) async {
+  }) {
     var newServerpodSession = _testServerpod.createSession(
       enableLogging: enableLogging ?? _enableLogging,
       transaction: transaction,

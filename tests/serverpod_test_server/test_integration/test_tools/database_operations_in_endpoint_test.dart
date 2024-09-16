@@ -22,13 +22,13 @@ void main() {
         late TestSession firstSession;
         late TestSession secondSession;
         setUp(() async {
-          firstSession = await session.copyWith(
+          firstSession = session.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
               111,
               {},
             ),
           );
-          secondSession = await session.copyWith(
+          secondSession = session.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
               222,
               {},

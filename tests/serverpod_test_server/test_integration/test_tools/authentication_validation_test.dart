@@ -10,7 +10,7 @@ void main() {
       test(
           'when not authenticated and calling returnsString then throws UnauthenticatedEndpointCallTestException',
           () async {
-        session = await session.copyWith(
+        session = session.copyWith(
             authentication: AuthenticationOverride.unauthenticated());
 
         final result =
@@ -22,7 +22,7 @@ void main() {
       test(
           'when not having sufficient access scopes and calling returnsString then throws InsufficientEndpointAccessTestException',
           () async {
-        session = await session.copyWith(
+        session = session.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(1234, {}),
         );
 
@@ -34,7 +34,7 @@ void main() {
 
       test('when authorized and calling returnsString then echoes string',
           () async {
-        session = await session.copyWith(
+        session = session.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
             1234,
             {Scope('user')},
@@ -49,7 +49,7 @@ void main() {
       test(
           'when not authenticated and calling returnsStream then throws UnauthenticatedEndpointCallTestException',
           () async {
-        session = await session.copyWith(
+        session = session.copyWith(
             authentication: AuthenticationOverride.unauthenticated());
 
         final result =
@@ -61,7 +61,7 @@ void main() {
       test(
           'when not having sufficient access scopes and calling returnsStream then throws InsufficientEndpointAccessTestException',
           () async {
-        session = await session.copyWith(
+        session = session.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
           1234,
           {},
@@ -75,7 +75,7 @@ void main() {
 
       test('when authorized and calling returnsStream then returns a stream',
           () async {
-        session = await session.copyWith(
+        session = session.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
             1234,
             {Scope('user')},
