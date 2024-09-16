@@ -2,17 +2,45 @@ import 'package:serverpod/serverpod.dart';
 
 import 'test_serverpod.dart';
 
+/// An override for the authentication state in a test session.
+abstract class AuthenticationOverride {
+  /// Sets the session to be unauthenticated. This is the default.
+  static AuthenticationOverride unauthenticated() => _Unauthenticated();
+
+  /// Sets the session to be authenticated with the provided userId and scope.
+  static AuthenticationOverride authenticationInfo(
+          int userId, Set<Scope> scopes,
+          {String? authId}) =>
+      _AuthenticationInfoOverride(userId, scopes, authId: authId);
+}
+
+/// Overrides the authenticationInfo on the session. This will bypass any auth handlers.
+class _AuthenticationInfoOverride extends AuthenticationOverride {
+  final AuthenticationInfo _authenticationInfo;
+
+  /// The authentication info to use for the session.
+  AuthenticationInfo get authenticationInfo => _authenticationInfo;
+
+  /// Creates a new AuthenticationInfoOverride with the provided authentication info.
+  _AuthenticationInfoOverride(int userId, Set<Scope> scopes, {String? authId})
+      : _authenticationInfo =
+            AuthenticationInfo(userId, scopes, authId: authId);
+}
+
+/// Does not override the authentication state in the session.
+class _Unauthenticated extends AuthenticationOverride {}
+
 /// A test specific session that is used to call database methods or pass to endpoints.
 /// This is the public interface exposed to developers.
 abstract class TestSession implements DatabaseAccessor {
   /// AuthenticationInfo for the session.
-  AuthenticationInfo? get authenticationInfo;
+  Future<AuthenticationInfo?> get authenticationInfo;
 
   /// Creates a new unique session with the provided properties.
   /// This is useful for setting up different session states in the tests
   /// or simulating multiple users.
   Future<TestSession> copyWith({
-    AuthenticationInfo? Function()? getAuthenticationInfo,
+    AuthenticationOverride? authentication,
     bool? enableLogging,
   });
 }
@@ -22,7 +50,7 @@ abstract class TestSession implements DatabaseAccessor {
 class InternalTestSession extends TestSession {
   final List<InternalTestSession> _allTestSessions;
   final TestServerpod _testServerpod;
-  AuthenticationInfo? _authenticationInfo;
+  AuthenticationOverride? _authenticationOverride;
   final bool _enableLogging;
 
   /// The underlying Serverpod session
@@ -32,7 +60,9 @@ class InternalTestSession extends TestSession {
   Database get db => serverpodSession.db;
 
   @override
-  AuthenticationInfo? get authenticationInfo => _authenticationInfo;
+  Future<AuthenticationInfo?> get authenticationInfo async {
+    return serverpodSession.authenticated;
+  }
 
   Transaction? _transaction;
   @override
@@ -46,14 +76,14 @@ class InternalTestSession extends TestSession {
   /// Creates a new internal test session.
   InternalTestSession(
     TestServerpod testServerpod, {
-    AuthenticationInfo? authenticationInfo,
+    AuthenticationOverride? authenticationOverride,
     InternalTestSession? sessionWithDatabaseConnection,
     Transaction? transaction,
     required bool enableLogging,
     required List<InternalTestSession> allTestSessions,
     required this.serverpodSession,
   })  : _allTestSessions = allTestSessions,
-        _authenticationInfo = authenticationInfo,
+        _authenticationOverride = authenticationOverride,
         _testServerpod = testServerpod,
         _enableLogging = enableLogging,
         _transaction = transaction {
@@ -63,7 +93,7 @@ class InternalTestSession extends TestSession {
 
   @override
   Future<TestSession> copyWith({
-    AuthenticationInfo? Function()? getAuthenticationInfo,
+    AuthenticationOverride? authentication,
     bool? enableLogging,
     String endpoint = '',
     String method = '',
@@ -78,9 +108,7 @@ class InternalTestSession extends TestSession {
     return InternalTestSession(
       _testServerpod,
       allTestSessions: _allTestSessions,
-      authenticationInfo: getAuthenticationInfo != null
-          ? getAuthenticationInfo()
-          : _authenticationInfo,
+      authenticationOverride: authentication ?? _authenticationOverride,
       enableLogging: enableLogging ?? _enableLogging,
       transaction: transaction,
       serverpodSession: newServerpodSession,
@@ -88,14 +116,17 @@ class InternalTestSession extends TestSession {
   }
 
   void _configureServerpodSession(InternalServerpodSession session) {
-    session.updateAuthenticated(_authenticationInfo);
+    var authenticationOverride = _authenticationOverride;
+    if (authenticationOverride is _AuthenticationInfoOverride) {
+      session.updateAuthenticated(authenticationOverride.authenticationInfo);
+    }
   }
 
   /// Resets the internal state of the test session
   /// and recreates the underlying Serverpod session.
   Future<void> resetState() async {
     await serverpodSession.close();
-    _authenticationInfo = null;
+    _authenticationOverride = null;
     serverpodSession = _testServerpod.createSession(
       transaction: _transaction,
       enableLogging: _enableLogging,
@@ -106,6 +137,6 @@ class InternalTestSession extends TestSession {
   /// Destroys the test session and closes the underlying Serverpod session.
   Future<void> destroy() async {
     await serverpodSession.close();
-    _authenticationInfo = null;
+    _authenticationOverride = null;
   }
 }

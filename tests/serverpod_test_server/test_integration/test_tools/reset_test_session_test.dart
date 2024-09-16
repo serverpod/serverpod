@@ -14,15 +14,22 @@ void main() {
             'then first test has modified newSession that should be reset due to default resetTestSessions.afterEach configuration',
             () async {
           newSession = await session.copyWith(
-              getAuthenticationInfo: () => AuthenticationInfo(123, {}));
+            authentication: AuthenticationOverride.authenticationInfo(
+              123,
+              {},
+            ),
+          );
 
-          expect(newSession.authenticationInfo!.userId, 123);
+          await expectLater(
+            newSession.authenticationInfo,
+            completion((a) => a.userId == 123),
+          );
         });
 
         test(
             'then the second test has the reset newSession due to default resetTestSessions.afterEach configuration',
             () async {
-          expect(newSession.authenticationInfo, isNull);
+          await expectLater(newSession.authenticationInfo, completion(isNull));
         });
       });
     },
@@ -36,15 +43,22 @@ void main() {
         late TestSession newSession;
         setUpAll(() async {
           newSession = await session.copyWith(
-              getAuthenticationInfo: () => AuthenticationInfo(123, {}));
+            authentication: AuthenticationOverride.authenticationInfo(
+              123,
+              {},
+            ),
+          );
         });
 
         test('then the first test has the modified newSession', () async {
-          expect(newSession.authenticationInfo!.userId, 123);
+          await expectLater(
+            newSession.authenticationInfo,
+            completion((a) => a.userId == 123),
+          );
         });
 
         test('then the second test has the reset newSession', () async {
-          expect(newSession.authenticationInfo, isNull);
+          await expectLater(newSession.authenticationInfo, completion(isNull));
         });
       });
 
@@ -52,15 +66,25 @@ void main() {
         late TestSession newSession;
         setUp(() async {
           newSession = await session.copyWith(
-              getAuthenticationInfo: () => AuthenticationInfo(123, {}));
+            authentication: AuthenticationOverride.authenticationInfo(
+              123,
+              {},
+            ),
+          );
         });
 
         test('then the first test has the modified newSession', () async {
-          expect(newSession.authenticationInfo!.userId, 123);
+          await expectLater(
+            newSession.authenticationInfo,
+            completion((a) => a.userId == 123),
+          );
         });
 
         test('then the second test has the modified newSession', () async {
-          expect(newSession.authenticationInfo!.userId, 123);
+          await expectLater(
+            newSession.authenticationInfo,
+            completion((a) => a.userId == 123),
+          );
         });
       });
 
@@ -69,13 +93,20 @@ void main() {
 
         test('then the first test has the modified newSession', () async {
           newSession = await session.copyWith(
-              getAuthenticationInfo: () => AuthenticationInfo(123, {}));
+            authentication: AuthenticationOverride.authenticationInfo(
+              123,
+              {},
+            ),
+          );
 
-          expect(newSession.authenticationInfo!.userId, 123);
+          await expectLater(
+            newSession.authenticationInfo,
+            completion((a) => a.userId == 123),
+          );
         });
 
         test('then the second test has the reset newSession', () async {
-          expect(newSession.authenticationInfo, isNull);
+          await expectLater(newSession.authenticationInfo, completion(isNull));
         });
       });
     },
@@ -89,16 +120,25 @@ void main() {
       group('when modifying the session in setUpAll', () {
         setUpAll(() async {
           session = await session.copyWith(
-              getAuthenticationInfo: () =>
-                  AuthenticationInfo(123, {Scope('user')}));
+            authentication: AuthenticationOverride.authenticationInfo(
+              123,
+              {Scope('user')},
+            ),
+          );
         });
 
         test('then the first test has the modified session', () async {
-          expect(session.authenticationInfo!.userId, 123);
+          await expectLater(
+            session.authenticationInfo,
+            completion((a) => a.userId == 123),
+          );
         });
 
         test('then the second test also has the modified session', () async {
-          expect(session.authenticationInfo!.userId, 123);
+          await expectLater(
+            session.authenticationInfo,
+            completion((a) => a.userId == 123),
+          );
         });
       });
 
@@ -107,13 +147,22 @@ void main() {
 
         test('then the first test has the modified newSession', () async {
           newSession = await session.copyWith(
-              getAuthenticationInfo: () => AuthenticationInfo(123, {}));
+              authentication: AuthenticationOverride.authenticationInfo(
+            333,
+            {},
+          ));
 
-          expect(newSession.authenticationInfo!.userId, 123);
+          await expectLater(
+            newSession.authenticationInfo,
+            completion((a) => a.userId == 333),
+          );
         });
 
         test('then the second test has the reset newSession', () async {
-          expect(newSession.authenticationInfo!.userId, 123);
+          await expectLater(
+            newSession.authenticationInfo,
+            completion((a) => a.userId == 333),
+          );
         });
       });
     },

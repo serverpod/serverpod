@@ -10,7 +10,8 @@ void main() {
       test(
           'when not authenticated and calling returnsString then throws UnauthenticatedEndpointCallTestException',
           () async {
-        session = await session.copyWith(getAuthenticationInfo: () => null);
+        session = await session.copyWith(
+            authentication: AuthenticationOverride.unauthenticated());
 
         final result =
             endpoints.authenticatedTestTools.returnsString(session, "Hello");
@@ -22,10 +23,7 @@ void main() {
           'when not having sufficient access scopes and calling returnsString then throws InsufficientEndpointAccessTestException',
           () async {
         session = await session.copyWith(
-          getAuthenticationInfo: () => AuthenticationInfo(
-            1234,
-            {},
-          ),
+          authentication: AuthenticationOverride.authenticationInfo(1234, {}),
         );
 
         final result =
@@ -37,7 +35,7 @@ void main() {
       test('when authorized and calling returnsString then echoes string',
           () async {
         session = await session.copyWith(
-          getAuthenticationInfo: () => AuthenticationInfo(
+          authentication: AuthenticationOverride.authenticationInfo(
             1234,
             {Scope('user')},
           ),
@@ -51,7 +49,8 @@ void main() {
       test(
           'when not authenticated and calling returnsStream then throws UnauthenticatedEndpointCallTestException',
           () async {
-        session = await session.copyWith(getAuthenticationInfo: () => null);
+        session = await session.copyWith(
+            authentication: AuthenticationOverride.unauthenticated());
 
         final result =
             endpoints.authenticatedTestTools.returnsStream(session, 3).toList();
@@ -63,11 +62,10 @@ void main() {
           'when not having sufficient access scopes and calling returnsStream then throws InsufficientEndpointAccessTestException',
           () async {
         session = await session.copyWith(
-          getAuthenticationInfo: () => AuthenticationInfo(
-            1234,
-            {},
-          ),
-        );
+            authentication: AuthenticationOverride.authenticationInfo(
+          1234,
+          {},
+        ));
 
         final result =
             endpoints.authenticatedTestTools.returnsStream(session, 3).toList();
@@ -78,7 +76,7 @@ void main() {
       test('when authorized and calling returnsStream then returns a stream',
           () async {
         session = await session.copyWith(
-          getAuthenticationInfo: () => AuthenticationInfo(
+          authentication: AuthenticationOverride.authenticationInfo(
             1234,
             {Scope('user')},
           ),

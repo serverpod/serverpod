@@ -23,10 +23,16 @@ void main() {
         late TestSession secondSession;
         setUp(() async {
           firstSession = await session.copyWith(
-            getAuthenticationInfo: () => AuthenticationInfo(111, {}),
+            authentication: AuthenticationOverride.authenticationInfo(
+              111,
+              {},
+            ),
           );
           secondSession = await session.copyWith(
-            getAuthenticationInfo: () => AuthenticationInfo(222, {}),
+            authentication: AuthenticationOverride.authenticationInfo(
+              222,
+              {},
+            ),
           );
 
           await endpoints.testTools.createSimpleData(firstSession, 111);

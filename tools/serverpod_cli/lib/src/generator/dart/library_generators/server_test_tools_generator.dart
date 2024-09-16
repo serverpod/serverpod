@@ -417,6 +417,7 @@ class ServerTestToolsGenerator {
         'RollbackDatabase',
         'ResetTestSessions',
         'flushEventQueue',
+        'AuthenticationOverride',
       ]),
     ]);
   }

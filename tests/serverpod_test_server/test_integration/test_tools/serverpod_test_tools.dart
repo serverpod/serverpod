@@ -57,7 +57,8 @@ export 'package:serverpod_test/serverpod_test.dart'
         InsufficientEndpointAccessTestException,
         RollbackDatabase,
         ResetTestSessions,
-        flushEventQueue;
+        flushEventQueue,
+        AuthenticationOverride;
 
 @_i1.isTestGroup
 withServerpod(

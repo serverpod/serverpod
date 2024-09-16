@@ -41,10 +41,16 @@ void main() {
           'when calling postNumberToSharedStream and listenForNumbersOnSharedStream with different sessions then number should be echoed',
           () async {
         var userSession1 = await session.copyWith(
-          getAuthenticationInfo: () => AuthenticationInfo(1, {}),
+          authentication: AuthenticationOverride.authenticationInfo(
+            1,
+            {},
+          ),
         );
         var userSession2 = await session.copyWith(
-          getAuthenticationInfo: () => AuthenticationInfo(2, {}),
+          authentication: AuthenticationOverride.authenticationInfo(
+            2,
+            {},
+          ),
         );
 
         var stream =
