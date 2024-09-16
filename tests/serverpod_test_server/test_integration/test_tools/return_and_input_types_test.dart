@@ -55,7 +55,7 @@ void main() {
 
         var stream =
             endpoints.testTools.listenForNumbersOnSharedStream(userSession1);
-        await flushEventQueue();
+        await flushMicrotasks();
 
         await endpoints.testTools.postNumberToSharedStream(userSession2, 111);
         await endpoints.testTools.postNumberToSharedStream(userSession2, 222);

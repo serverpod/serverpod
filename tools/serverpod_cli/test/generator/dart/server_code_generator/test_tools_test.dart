@@ -56,7 +56,7 @@ void main() {
             r'InsufficientEndpointAccessTestException,\s+'
             r'RollbackDatabase,\s+'
             r'ResetTestSessions,\s+'
-            r'flushEventQueue,\s+'
+            r'flushMicrotasks,\s+'
             r'AuthenticationOverride;'),
       );
     }, skip: testToolsFile == null);

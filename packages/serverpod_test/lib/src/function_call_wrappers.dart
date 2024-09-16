@@ -10,7 +10,13 @@ Future<T> callAwaitableFunctionAndHandleExceptions<T>(
   try {
     return await call();
   } catch (e) {
-    throw _getException(e);
+    var handledException = _getException(e);
+    if (handledException != null) {
+      throw handledException;
+    }
+
+    // Rethrow user exceptions to preserve stack trace
+    rethrow;
   }
 }
 
@@ -73,6 +79,6 @@ dynamic _getException(dynamic e) {
         'Make sure you have run the `serverpod generate` command.\n ${StackTrace.current}',
       );
     default:
-      return e;
+      return null;
   }
 }

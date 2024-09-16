@@ -414,7 +414,7 @@ class ServerTestToolsGenerator {
         'InsufficientEndpointAccessTestException',
         'RollbackDatabase',
         'ResetTestSessions',
-        'flushEventQueue',
+        'flushMicrotasks',
         'AuthenticationOverride',
       ]),
     ]);
