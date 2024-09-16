@@ -71,8 +71,7 @@ class SerializableModelLibraryGenerator {
               tableName,
               fields,
             ),
-          if (buildRepository.hasImplicitClassOperations(fields) &&
-              !isParentClass)
+          if (buildRepository.hasImplicitClassOperations(fields))
             _buildModelImplicitClass(className, classDefinition),
         ]);
 
