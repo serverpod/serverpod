@@ -50,23 +50,8 @@ class SerializableModelLibraryGenerator {
 
     bool isParentClass = classDefinition.childClasses.isNotEmpty;
 
-    var extendsClassDefinition = classDefinition.extendsClass;
-
-    var extendedClass = extendsClassDefinition is ResolvedInheritanceDefinition
-        ? extendsClassDefinition.classDefinition
-        : null;
-
-    var extendedClassFields = extendedClass?.fields ?? [];
-
     return Library(
       (libraryBuilder) {
-        if (extendedClass != null) {
-          libraryBuilder.directives.add(Directive.import(p.joinAll([
-            ...extendedClass.subDirParts,
-            '${extendedClass.fileName}.dart',
-          ])));
-        }
-
         libraryBuilder.body.addAll([
           _buildModelClass(
             className,
@@ -74,7 +59,6 @@ class SerializableModelLibraryGenerator {
             tableName,
             fields,
             isParentClass,
-            extendedClass,
           ),
           // We need to generate the implementation class for the copyWith method
           // to support differentiating between null and undefined values.
@@ -85,7 +69,7 @@ class SerializableModelLibraryGenerator {
               className,
               classDefinition,
               tableName,
-              [...extendedClassFields, ...fields],
+              fields,
             ),
           if (buildRepository.hasImplicitClassOperations(fields) &&
               !isParentClass)
@@ -151,13 +135,13 @@ class SerializableModelLibraryGenerator {
     String? tableName,
     List<SerializableModelFieldDefinition> fields,
     bool isParentClass,
-    ClassDefinition? extendedClass,
   ) {
     var relationFields = fields.where((field) =>
         field.relation is ObjectRelationDefinition ||
         field.relation is ListRelationDefinition);
 
-    var parentClassFields = extendedClass?.fields ?? [];
+    var parentClass = classDefinition.parentClass;
+    var parentClassFields = classDefinition.parentFields;
 
     return Class((classBuilder) {
       classBuilder
@@ -168,8 +152,14 @@ class SerializableModelLibraryGenerator {
         classBuilder.abstract = true;
       }
 
-      if (extendedClass != null) {
-        classBuilder.extend = refer(extendedClass.className);
+      if (parentClass != null) {
+        classBuilder.extend = refer(
+          parentClass.className,
+          p.joinAll([
+            ...parentClass.subDirParts,
+            '${parentClass.fileName}.dart',
+          ]),
+        );
       }
 
       if (classDefinition.isException) {
@@ -210,17 +200,19 @@ class SerializableModelLibraryGenerator {
           fields,
           tableName,
           isParentClass,
-          parentClassFields,
         ),
         if (!isParentClass)
           _buildModelClassFactoryConstructor(
             className,
             classDefinition,
-            [...parentClassFields, ...fields],
+            fields,
             tableName,
           ),
         _buildModelClassFromJsonConstructor(
-            className, [...parentClassFields, ...fields], classDefinition)
+          className,
+          [...parentClassFields, ...fields],
+          classDefinition,
+        )
       ]);
 
       if (!isParentClass) {
@@ -239,8 +231,10 @@ class SerializableModelLibraryGenerator {
 
       // Serialization for database and everything
       if (serverCode) {
-        classBuilder.methods.add(_buildModelClassToJsonForProtocolMethod(
-            [...parentClassFields, ...fields]));
+        classBuilder.methods.add(
+          _buildModelClassToJsonForProtocolMethod(
+              [...parentClassFields, ...fields]),
+        );
 
         if (tableName != null) {
           classBuilder.methods.addAll([
@@ -409,16 +403,8 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
-    var parentClass =
-        classDefinition.extendsClass is ResolvedInheritanceDefinition
-            ? (classDefinition.extendsClass as ResolvedInheritanceDefinition)
-                .classDefinition
-            : null;
-
-    var parentClassFields = parentClass?.fields ?? [];
-
     return Method((methodBuilder) {
-      if (parentClass != null) {
+      if (classDefinition.parentClass != null) {
         methodBuilder.annotations.add(refer('override'));
       }
 
@@ -426,7 +412,9 @@ class SerializableModelLibraryGenerator {
         ..name = 'copyWith'
         ..optionalParameters.addAll(
           _buildAbstractCopyWithParameters(
-              classDefinition, [...parentClassFields, ...fields]),
+            classDefinition,
+            [...classDefinition.parentFields, ...fields],
+          ),
         )
         ..returns = refer(className);
     });
@@ -444,7 +432,9 @@ class SerializableModelLibraryGenerator {
           m.annotations.add(refer('override'));
         }
         m.optionalParameters.addAll(
-          fields.where((field) => field.shouldIncludeField(serverCode)).map(
+          [...classDefinition.parentFields, ...fields]
+              .where((field) => field.shouldIncludeField(serverCode))
+              .map(
             (field) {
               var fieldType = field.type.reference(
                 serverCode,
@@ -483,7 +473,7 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
-    return fields
+    return [...classDefinition.parentFields, ...fields]
         .where((field) => field.shouldIncludeField(serverCode))
         .fold({}, (map, field) {
       Expression assignment = _buildDeepCloneTree(
@@ -971,7 +961,6 @@ class SerializableModelLibraryGenerator {
     List<SerializableModelFieldDefinition> fields,
     String? tableName,
     bool isParentClass,
-    List<SerializableModelFieldDefinition> parentClassFields,
   ) {
     return Constructor((c) {
       if (!isParentClass) {
@@ -982,7 +971,6 @@ class SerializableModelLibraryGenerator {
         fields,
         tableName,
         setAsToThis: true,
-        parentClassFields: parentClassFields,
       ));
 
       for (SerializableModelFieldDefinition field in fields) {
@@ -1039,9 +1027,11 @@ class SerializableModelLibraryGenerator {
         setAsToThis: false,
       ));
 
-      Map<String, Expression> namedParams = fields
-          .where((field) => field.shouldIncludeField(serverCode))
-          .fold({}, (map, field) {
+      Map<String, Expression> namedParams = [
+        ...classDefinition.parentFields,
+        ...fields
+      ].where((field) => field.shouldIncludeField(serverCode)).fold({},
+          (map, field) {
         return {
           ...map,
           field.name: refer(field.name),
@@ -1057,11 +1047,10 @@ class SerializableModelLibraryGenerator {
     List<SerializableModelFieldDefinition> fields,
     String? tableName, {
     required bool setAsToThis,
-    List<SerializableModelFieldDefinition>? parentClassFields,
   }) {
-    var inheritedFields = parentClassFields ?? [];
+    var inheritedFields = classDefinition.parentFields;
 
-    return [...inheritedFields, ...fields]
+    return [...classDefinition.parentFields, ...fields]
         .where((field) => field.shouldIncludeField(serverCode))
         .map((field) {
       bool hasPrimaryKey =

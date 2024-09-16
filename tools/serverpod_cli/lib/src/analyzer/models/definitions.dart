@@ -85,6 +85,14 @@ class ClassDefinition extends SerializableModelDefinition {
         .cast()
         .firstWhere((element) => element.name == name, orElse: () => null);
   }
+
+  ClassDefinition? get parentClass =>
+      extendsClass is ResolvedInheritanceDefinition
+          ? (extendsClass as ResolvedInheritanceDefinition).classDefinition
+          : null;
+
+  List<SerializableModelFieldDefinition> get parentFields =>
+      parentClass?.fields ?? [];
 }
 
 /// Describes a single field of a [ClassDefinition].
