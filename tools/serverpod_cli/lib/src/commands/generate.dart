@@ -53,7 +53,7 @@ class GenerateCommand extends ServerpodCommand {
     var enabledExperimentalFeatures = argResults!['experimental-features'];
     for (var feature in enabledExperimentalFeatures) {
       log.info(
-        'Enabling experimental feature: $feature. This feature might be removed at any time.',
+        'Enabling experimental feature: $feature.',
       );
       config.experimentalFeatures.add(ExperimentalFeature.fromString(feature));
     }
