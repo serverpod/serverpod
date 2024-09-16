@@ -1,3 +1,5 @@
+// TODO: Remove when inheritance is enabled by default.
+// Tracked by issue: https://github.com/serverpod/serverpod/issues/2711
 enum ExperimentalFeature {
   inheritance;
 

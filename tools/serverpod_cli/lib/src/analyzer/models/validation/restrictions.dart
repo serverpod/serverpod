@@ -227,7 +227,6 @@ class Restrictions {
       ];
     }
 
-    // TODO: Remove when inheritance is enabled by default.
     if (!config.isExperimentalFeatureEnabled(ExperimentalFeature.inheritance)) {
       return [
         SourceSpanSeverityException(
