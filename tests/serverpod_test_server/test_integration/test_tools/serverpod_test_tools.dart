@@ -339,7 +339,7 @@ class _AsyncTasksEndpoint {
     int seconds,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'asyncTasks',
         method: 'insertRowToSimpleDataAfterDelay',
       ) as _i1.InternalTestSession);
@@ -365,7 +365,7 @@ class _AsyncTasksEndpoint {
     int seconds,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'asyncTasks',
         method: 'throwExceptionAfterDelay',
       ) as _i1.InternalTestSession);
@@ -396,7 +396,7 @@ class _AuthenticationEndpoint {
 
   _i3.Future<void> removeAllUsers(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'authentication',
         method: 'removeAllUsers',
       ) as _i1.InternalTestSession);
@@ -416,7 +416,7 @@ class _AuthenticationEndpoint {
 
   _i3.Future<int> countUsers(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'authentication',
         method: 'countUsers',
       ) as _i1.InternalTestSession);
@@ -440,7 +440,7 @@ class _AuthenticationEndpoint {
     String password,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'authentication',
         method: 'createUser',
       ) as _i1.InternalTestSession);
@@ -467,7 +467,7 @@ class _AuthenticationEndpoint {
     String password,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'authentication',
         method: 'authenticate',
       ) as _i1.InternalTestSession);
@@ -490,7 +490,7 @@ class _AuthenticationEndpoint {
 
   _i3.Future<void> signOut(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'authentication',
         method: 'signOut',
       ) as _i1.InternalTestSession);
@@ -514,7 +514,7 @@ class _AuthenticationEndpoint {
     List<String> scopes,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'authentication',
         method: 'updateScopes',
       ) as _i1.InternalTestSession);
@@ -551,7 +551,7 @@ class _BasicTypesEndpoint {
     int? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicTypes',
         method: 'testInt',
       ) as _i1.InternalTestSession);
@@ -574,7 +574,7 @@ class _BasicTypesEndpoint {
     double? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicTypes',
         method: 'testDouble',
       ) as _i1.InternalTestSession);
@@ -597,7 +597,7 @@ class _BasicTypesEndpoint {
     bool? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicTypes',
         method: 'testBool',
       ) as _i1.InternalTestSession);
@@ -620,7 +620,7 @@ class _BasicTypesEndpoint {
     DateTime? dateTime,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicTypes',
         method: 'testDateTime',
       ) as _i1.InternalTestSession);
@@ -643,7 +643,7 @@ class _BasicTypesEndpoint {
     String? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicTypes',
         method: 'testString',
       ) as _i1.InternalTestSession);
@@ -666,7 +666,7 @@ class _BasicTypesEndpoint {
     _i5.ByteData? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicTypes',
         method: 'testByteData',
       ) as _i1.InternalTestSession);
@@ -689,7 +689,7 @@ class _BasicTypesEndpoint {
     Duration? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicTypes',
         method: 'testDuration',
       ) as _i1.InternalTestSession);
@@ -712,7 +712,7 @@ class _BasicTypesEndpoint {
     _i6.UuidValue? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicTypes',
         method: 'testUuid',
       ) as _i1.InternalTestSession);
@@ -743,7 +743,7 @@ class _CloudStorageEndpoint {
 
   _i3.Future<void> reset(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'cloudStorage',
         method: 'reset',
       ) as _i1.InternalTestSession);
@@ -767,7 +767,7 @@ class _CloudStorageEndpoint {
     _i5.ByteData byteData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'cloudStorage',
         method: 'storePublicFile',
       ) as _i1.InternalTestSession);
@@ -793,7 +793,7 @@ class _CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'cloudStorage',
         method: 'retrievePublicFile',
       ) as _i1.InternalTestSession);
@@ -816,7 +816,7 @@ class _CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'cloudStorage',
         method: 'existsPublicFile',
       ) as _i1.InternalTestSession);
@@ -839,7 +839,7 @@ class _CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'cloudStorage',
         method: 'deletePublicFile',
       ) as _i1.InternalTestSession);
@@ -862,7 +862,7 @@ class _CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'cloudStorage',
         method: 'getPublicUrlForFile',
       ) as _i1.InternalTestSession);
@@ -885,7 +885,7 @@ class _CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'cloudStorage',
         method: 'getDirectFilePostUrl',
       ) as _i1.InternalTestSession);
@@ -908,7 +908,7 @@ class _CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'cloudStorage',
         method: 'verifyDirectFileUpload',
       ) as _i1.InternalTestSession);
@@ -943,7 +943,7 @@ class _S3CloudStorageEndpoint {
     _i5.ByteData byteData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 's3CloudStorage',
         method: 'storePublicFile',
       ) as _i1.InternalTestSession);
@@ -969,7 +969,7 @@ class _S3CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 's3CloudStorage',
         method: 'retrievePublicFile',
       ) as _i1.InternalTestSession);
@@ -992,7 +992,7 @@ class _S3CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 's3CloudStorage',
         method: 'existsPublicFile',
       ) as _i1.InternalTestSession);
@@ -1015,7 +1015,7 @@ class _S3CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 's3CloudStorage',
         method: 'deletePublicFile',
       ) as _i1.InternalTestSession);
@@ -1038,7 +1038,7 @@ class _S3CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 's3CloudStorage',
         method: 'getPublicUrlForFile',
       ) as _i1.InternalTestSession);
@@ -1061,7 +1061,7 @@ class _S3CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 's3CloudStorage',
         method: 'getDirectFilePostUrl',
       ) as _i1.InternalTestSession);
@@ -1084,7 +1084,7 @@ class _S3CloudStorageEndpoint {
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 's3CloudStorage',
         method: 'verifyDirectFileUpload',
       ) as _i1.InternalTestSession);
@@ -1116,7 +1116,7 @@ class _CustomClassProtocolEndpoint {
   _i3.Future<_i7.ProtocolCustomClass> getProtocolField(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'customClassProtocol',
         method: 'getProtocolField',
       ) as _i1.InternalTestSession);
@@ -1150,7 +1150,7 @@ class _CustomTypesEndpoint {
     _i9.CustomClass data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'customTypes',
         method: 'returnCustomClass',
       ) as _i1.InternalTestSession);
@@ -1173,7 +1173,7 @@ class _CustomTypesEndpoint {
     _i9.CustomClass? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'customTypes',
         method: 'returnCustomClassNullable',
       ) as _i1.InternalTestSession);
@@ -1196,7 +1196,7 @@ class _CustomTypesEndpoint {
     _i9.CustomClass2 data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'customTypes',
         method: 'returnCustomClass2',
       ) as _i1.InternalTestSession);
@@ -1219,7 +1219,7 @@ class _CustomTypesEndpoint {
     _i9.CustomClass2? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'customTypes',
         method: 'returnCustomClass2Nullable',
       ) as _i1.InternalTestSession);
@@ -1242,7 +1242,7 @@ class _CustomTypesEndpoint {
     _i10.ExternalCustomClass data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'customTypes',
         method: 'returnExternalCustomClass',
       ) as _i1.InternalTestSession);
@@ -1265,7 +1265,7 @@ class _CustomTypesEndpoint {
     _i10.ExternalCustomClass? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'customTypes',
         method: 'returnExternalCustomClassNullable',
       ) as _i1.InternalTestSession);
@@ -1288,7 +1288,7 @@ class _CustomTypesEndpoint {
     _i11.FreezedCustomClass data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'customTypes',
         method: 'returnFreezedCustomClass',
       ) as _i1.InternalTestSession);
@@ -1311,7 +1311,7 @@ class _CustomTypesEndpoint {
     _i11.FreezedCustomClass? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'customTypes',
         method: 'returnFreezedCustomClassNullable',
       ) as _i1.InternalTestSession);
@@ -1342,7 +1342,7 @@ class _BasicDatabase {
 
   _i3.Future<void> deleteAllSimpleTestData(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'deleteAllSimpleTestData',
       ) as _i1.InternalTestSession);
@@ -1365,7 +1365,7 @@ class _BasicDatabase {
     int num,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'deleteSimpleTestDataLessThan',
       ) as _i1.InternalTestSession);
@@ -1388,7 +1388,7 @@ class _BasicDatabase {
     int num,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'findAndDeleteSimpleTestData',
       ) as _i1.InternalTestSession);
@@ -1411,7 +1411,7 @@ class _BasicDatabase {
     int numRows,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'createSimpleTestData',
       ) as _i1.InternalTestSession);
@@ -1432,7 +1432,7 @@ class _BasicDatabase {
   _i3.Future<List<_i12.SimpleData>> findSimpleData(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'findSimpleData',
       ) as _i1.InternalTestSession);
@@ -1455,7 +1455,7 @@ class _BasicDatabase {
     int num,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'findFirstRowSimpleData',
       ) as _i1.InternalTestSession);
@@ -1478,7 +1478,7 @@ class _BasicDatabase {
     int id,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'findByIdSimpleData',
       ) as _i1.InternalTestSession);
@@ -1504,7 +1504,7 @@ class _BasicDatabase {
     bool descending,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'findSimpleDataRowsLessThan',
       ) as _i1.InternalTestSession);
@@ -1532,7 +1532,7 @@ class _BasicDatabase {
     _i14.SimpleData simpleData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'insertRowSimpleData',
       ) as _i1.InternalTestSession);
@@ -1555,7 +1555,7 @@ class _BasicDatabase {
     _i14.SimpleData simpleData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'updateRowSimpleData',
       ) as _i1.InternalTestSession);
@@ -1578,7 +1578,7 @@ class _BasicDatabase {
     _i14.SimpleData simpleData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'deleteRowSimpleData',
       ) as _i1.InternalTestSession);
@@ -1598,7 +1598,7 @@ class _BasicDatabase {
 
   _i3.Future<List<int>> deleteWhereSimpleData(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'deleteWhereSimpleData',
       ) as _i1.InternalTestSession);
@@ -1618,7 +1618,7 @@ class _BasicDatabase {
 
   _i3.Future<int> countSimpleData(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'countSimpleData',
       ) as _i1.InternalTestSession);
@@ -1641,7 +1641,7 @@ class _BasicDatabase {
     _i16.Types value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'insertTypes',
       ) as _i1.InternalTestSession);
@@ -1664,7 +1664,7 @@ class _BasicDatabase {
     _i16.Types value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'updateTypes',
       ) as _i1.InternalTestSession);
@@ -1684,7 +1684,7 @@ class _BasicDatabase {
 
   _i3.Future<int?> countTypesRows(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'countTypesRows',
       ) as _i1.InternalTestSession);
@@ -1704,7 +1704,7 @@ class _BasicDatabase {
 
   _i3.Future<List<int>> deleteAllInTypes(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'deleteAllInTypes',
       ) as _i1.InternalTestSession);
@@ -1727,7 +1727,7 @@ class _BasicDatabase {
     int id,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'getTypes',
       ) as _i1.InternalTestSession);
@@ -1750,7 +1750,7 @@ class _BasicDatabase {
     int id,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'getTypesRawQuery',
       ) as _i1.InternalTestSession);
@@ -1773,7 +1773,7 @@ class _BasicDatabase {
     _i18.ObjectWithEnum object,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'storeObjectWithEnum',
       ) as _i1.InternalTestSession);
@@ -1796,7 +1796,7 @@ class _BasicDatabase {
     int id,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'getObjectWithEnum',
       ) as _i1.InternalTestSession);
@@ -1819,7 +1819,7 @@ class _BasicDatabase {
     _i20.ObjectWithObject object,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'storeObjectWithObject',
       ) as _i1.InternalTestSession);
@@ -1842,7 +1842,7 @@ class _BasicDatabase {
     int id,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'getObjectWithObject',
       ) as _i1.InternalTestSession);
@@ -1862,7 +1862,7 @@ class _BasicDatabase {
 
   _i3.Future<int> deleteAll(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'deleteAll',
       ) as _i1.InternalTestSession);
@@ -1882,7 +1882,7 @@ class _BasicDatabase {
 
   _i3.Future<bool> testByteDataStore(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
         method: 'testByteDataStore',
       ) as _i1.InternalTestSession);
@@ -1916,7 +1916,7 @@ class _TransactionsDatabaseEndpoint {
     int num,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'transactionsDatabase',
         method: 'removeRow',
       ) as _i1.InternalTestSession);
@@ -1941,7 +1941,7 @@ class _TransactionsDatabaseEndpoint {
     int numDelete,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'transactionsDatabase',
         method: 'updateInsertDelete',
       ) as _i1.InternalTestSession);
@@ -1979,7 +1979,7 @@ class _DeprecationEndpoint {
     double? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'deprecation',
         method: 'setGlobalDouble',
       ) as _i1.InternalTestSession);
@@ -1999,7 +1999,7 @@ class _DeprecationEndpoint {
 
   _i3.Future<double> getGlobalDouble(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'deprecation',
         method: 'getGlobalDouble',
       ) as _i1.InternalTestSession);
@@ -2030,7 +2030,7 @@ class _EchoRequestEndpoint {
 
   _i3.Future<String?> echoAuthenticationKey(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'echoRequest',
         method: 'echoAuthenticationKey',
       ) as _i1.InternalTestSession);
@@ -2053,7 +2053,7 @@ class _EchoRequestEndpoint {
     String headerName,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'echoRequest',
         method: 'echoHttpHeader',
       ) as _i1.InternalTestSession);
@@ -2088,7 +2088,7 @@ class _EmailAuthTestMethods {
     String email,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'emailAuthTestMethods',
         method: 'findVerificationCode',
       ) as _i1.InternalTestSession);
@@ -2114,7 +2114,7 @@ class _EmailAuthTestMethods {
     String email,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'emailAuthTestMethods',
         method: 'findResetCode',
       ) as _i1.InternalTestSession);
@@ -2134,7 +2134,7 @@ class _EmailAuthTestMethods {
 
   _i3.Future<void> tearDown(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'emailAuthTestMethods',
         method: 'tearDown',
       ) as _i1.InternalTestSession);
@@ -2159,7 +2159,7 @@ class _EmailAuthTestMethods {
     String password,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'emailAuthTestMethods',
         method: 'createUser',
       ) as _i1.InternalTestSession);
@@ -2194,7 +2194,7 @@ class _ExceptionTestEndpoint {
 
   _i3.Future<String> throwNormalException(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'exceptionTest',
         method: 'throwNormalException',
       ) as _i1.InternalTestSession);
@@ -2214,7 +2214,7 @@ class _ExceptionTestEndpoint {
 
   _i3.Future<String> throwExceptionWithData(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'exceptionTest',
         method: 'throwExceptionWithData',
       ) as _i1.InternalTestSession);
@@ -2234,7 +2234,7 @@ class _ExceptionTestEndpoint {
 
   _i3.Future<String> workingWithoutException(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'exceptionTest',
         method: 'workingWithoutException',
       ) as _i1.InternalTestSession);
@@ -2265,7 +2265,7 @@ class _FailedCallsEndpoint {
 
   _i3.Future<void> failedCall(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'failedCalls',
         method: 'failedCall',
       ) as _i1.InternalTestSession);
@@ -2285,7 +2285,7 @@ class _FailedCallsEndpoint {
 
   _i3.Future<void> failedDatabaseQuery(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'failedCalls',
         method: 'failedDatabaseQuery',
       ) as _i1.InternalTestSession);
@@ -2306,7 +2306,7 @@ class _FailedCallsEndpoint {
   _i3.Future<bool> failedDatabaseQueryCaughtException(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'failedCalls',
         method: 'failedDatabaseQueryCaughtException',
       ) as _i1.InternalTestSession);
@@ -2326,7 +2326,7 @@ class _FailedCallsEndpoint {
 
   _i3.Future<void> slowCall(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'failedCalls',
         method: 'slowCall',
       ) as _i1.InternalTestSession);
@@ -2346,7 +2346,7 @@ class _FailedCallsEndpoint {
 
   _i3.Future<void> caughtException(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'failedCalls',
         method: 'caughtException',
       ) as _i1.InternalTestSession);
@@ -2380,7 +2380,7 @@ class _FieldScopesEndpoint {
     _i21.ObjectFieldScopes object,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'fieldScopes',
         method: 'storeObject',
       ) as _i1.InternalTestSession);
@@ -2401,7 +2401,7 @@ class _FieldScopesEndpoint {
   _i3.Future<_i22.ObjectFieldScopes?> retrieveObject(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'fieldScopes',
         method: 'retrieveObject',
       ) as _i1.InternalTestSession);
@@ -2435,7 +2435,7 @@ class _FutureCallsEndpoint {
     _i14.SimpleData? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'futureCalls',
         method: 'makeFutureCall',
       ) as _i1.InternalTestSession);
@@ -2469,7 +2469,7 @@ class _ListParametersEndpoint {
     List<int> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnIntList',
       ) as _i1.InternalTestSession);
@@ -2492,7 +2492,7 @@ class _ListParametersEndpoint {
     List<List<int>> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnIntListList',
       ) as _i1.InternalTestSession);
@@ -2515,7 +2515,7 @@ class _ListParametersEndpoint {
     List<int>? list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnIntListNullable',
       ) as _i1.InternalTestSession);
@@ -2538,7 +2538,7 @@ class _ListParametersEndpoint {
     List<List<int>?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnIntListNullableList',
       ) as _i1.InternalTestSession);
@@ -2561,7 +2561,7 @@ class _ListParametersEndpoint {
     List<List<int>>? list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnIntListListNullable',
       ) as _i1.InternalTestSession);
@@ -2584,7 +2584,7 @@ class _ListParametersEndpoint {
     List<int?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnIntListNullableInts',
       ) as _i1.InternalTestSession);
@@ -2607,7 +2607,7 @@ class _ListParametersEndpoint {
     List<int?>? list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnNullableIntListNullableInts',
       ) as _i1.InternalTestSession);
@@ -2630,7 +2630,7 @@ class _ListParametersEndpoint {
     List<double> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnDoubleList',
       ) as _i1.InternalTestSession);
@@ -2653,7 +2653,7 @@ class _ListParametersEndpoint {
     List<double?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnDoubleListNullableDoubles',
       ) as _i1.InternalTestSession);
@@ -2676,7 +2676,7 @@ class _ListParametersEndpoint {
     List<bool> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnBoolList',
       ) as _i1.InternalTestSession);
@@ -2699,7 +2699,7 @@ class _ListParametersEndpoint {
     List<bool?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnBoolListNullableBools',
       ) as _i1.InternalTestSession);
@@ -2722,7 +2722,7 @@ class _ListParametersEndpoint {
     List<String> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnStringList',
       ) as _i1.InternalTestSession);
@@ -2745,7 +2745,7 @@ class _ListParametersEndpoint {
     List<String?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnStringListNullableStrings',
       ) as _i1.InternalTestSession);
@@ -2768,7 +2768,7 @@ class _ListParametersEndpoint {
     List<DateTime> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnDateTimeList',
       ) as _i1.InternalTestSession);
@@ -2791,7 +2791,7 @@ class _ListParametersEndpoint {
     List<DateTime?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnDateTimeListNullableDateTimes',
       ) as _i1.InternalTestSession);
@@ -2814,7 +2814,7 @@ class _ListParametersEndpoint {
     List<_i5.ByteData> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnByteDataList',
       ) as _i1.InternalTestSession);
@@ -2837,7 +2837,7 @@ class _ListParametersEndpoint {
     List<_i5.ByteData?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnByteDataListNullableByteDatas',
       ) as _i1.InternalTestSession);
@@ -2860,7 +2860,7 @@ class _ListParametersEndpoint {
     List<_i14.SimpleData> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnSimpleDataList',
       ) as _i1.InternalTestSession);
@@ -2883,7 +2883,7 @@ class _ListParametersEndpoint {
     List<_i14.SimpleData?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnSimpleDataListNullableSimpleData',
       ) as _i1.InternalTestSession);
@@ -2906,7 +2906,7 @@ class _ListParametersEndpoint {
     List<_i14.SimpleData>? list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnSimpleDataListNullable',
       ) as _i1.InternalTestSession);
@@ -2930,7 +2930,7 @@ class _ListParametersEndpoint {
     List<_i14.SimpleData?>? list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnNullableSimpleDataListNullableSimpleData',
       ) as _i1.InternalTestSession);
@@ -2953,7 +2953,7 @@ class _ListParametersEndpoint {
     List<Duration> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnDurationList',
       ) as _i1.InternalTestSession);
@@ -2976,7 +2976,7 @@ class _ListParametersEndpoint {
     List<Duration?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'listParameters',
         method: 'returnDurationListNullableDurations',
       ) as _i1.InternalTestSession);
@@ -3010,7 +3010,7 @@ class _LoggingEndpoint {
     int seconds,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'logging',
         method: 'slowQueryMethod',
       ) as _i1.InternalTestSession);
@@ -3033,7 +3033,7 @@ class _LoggingEndpoint {
     int queries,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'logging',
         method: 'queryMethod',
       ) as _i1.InternalTestSession);
@@ -3053,7 +3053,7 @@ class _LoggingEndpoint {
 
   _i3.Future<void> failedQueryMethod(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'logging',
         method: 'failedQueryMethod',
       ) as _i1.InternalTestSession);
@@ -3076,7 +3076,7 @@ class _LoggingEndpoint {
     int delayMillis,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'logging',
         method: 'slowMethod',
       ) as _i1.InternalTestSession);
@@ -3096,7 +3096,7 @@ class _LoggingEndpoint {
 
   _i3.Future<void> failingMethod(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'logging',
         method: 'failingMethod',
       ) as _i1.InternalTestSession);
@@ -3116,7 +3116,7 @@ class _LoggingEndpoint {
 
   _i3.Future<void> emptyMethod(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'logging',
         method: 'emptyMethod',
       ) as _i1.InternalTestSession);
@@ -3140,7 +3140,7 @@ class _LoggingEndpoint {
     List<int> logLevels,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'logging',
         method: 'log',
       ) as _i1.InternalTestSession);
@@ -3166,7 +3166,7 @@ class _LoggingEndpoint {
     String message,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'logging',
         method: 'logInfo',
       ) as _i1.InternalTestSession);
@@ -3191,7 +3191,7 @@ class _LoggingEndpoint {
     String error,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'logging',
         method: 'logDebugAndInfoAndError',
       ) as _i1.InternalTestSession);
@@ -3215,7 +3215,7 @@ class _LoggingEndpoint {
 
   _i3.Future<void> twoQueries(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'logging',
         method: 'twoQueries',
       ) as _i1.InternalTestSession);
@@ -3356,7 +3356,7 @@ class _LoggingDisabledEndpoint {
     String message,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'loggingDisabled',
         method: 'logInfo',
       ) as _i1.InternalTestSession);
@@ -3390,7 +3390,7 @@ class _MapParametersEndpoint {
     Map<String, int> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnIntMap',
       ) as _i1.InternalTestSession);
@@ -3413,7 +3413,7 @@ class _MapParametersEndpoint {
     Map<String, int>? map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnIntMapNullable',
       ) as _i1.InternalTestSession);
@@ -3436,7 +3436,7 @@ class _MapParametersEndpoint {
     Map<String, Map<String, int>> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnNestedIntMap',
       ) as _i1.InternalTestSession);
@@ -3459,7 +3459,7 @@ class _MapParametersEndpoint {
     Map<String, int?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnIntMapNullableInts',
       ) as _i1.InternalTestSession);
@@ -3482,7 +3482,7 @@ class _MapParametersEndpoint {
     Map<String, int?>? map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnNullableIntMapNullableInts',
       ) as _i1.InternalTestSession);
@@ -3505,7 +3505,7 @@ class _MapParametersEndpoint {
     Map<int, int> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnIntIntMap',
       ) as _i1.InternalTestSession);
@@ -3528,7 +3528,7 @@ class _MapParametersEndpoint {
     Map<_i24.TestEnum, int> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnEnumIntMap',
       ) as _i1.InternalTestSession);
@@ -3551,7 +3551,7 @@ class _MapParametersEndpoint {
     Map<String, _i24.TestEnum> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnEnumMap',
       ) as _i1.InternalTestSession);
@@ -3574,7 +3574,7 @@ class _MapParametersEndpoint {
     Map<String, double> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnDoubleMap',
       ) as _i1.InternalTestSession);
@@ -3597,7 +3597,7 @@ class _MapParametersEndpoint {
     Map<String, double?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnDoubleMapNullableDoubles',
       ) as _i1.InternalTestSession);
@@ -3620,7 +3620,7 @@ class _MapParametersEndpoint {
     Map<String, bool> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnBoolMap',
       ) as _i1.InternalTestSession);
@@ -3643,7 +3643,7 @@ class _MapParametersEndpoint {
     Map<String, bool?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnBoolMapNullableBools',
       ) as _i1.InternalTestSession);
@@ -3666,7 +3666,7 @@ class _MapParametersEndpoint {
     Map<String, String> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnStringMap',
       ) as _i1.InternalTestSession);
@@ -3689,7 +3689,7 @@ class _MapParametersEndpoint {
     Map<String, String?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnStringMapNullableStrings',
       ) as _i1.InternalTestSession);
@@ -3712,7 +3712,7 @@ class _MapParametersEndpoint {
     Map<String, DateTime> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnDateTimeMap',
       ) as _i1.InternalTestSession);
@@ -3735,7 +3735,7 @@ class _MapParametersEndpoint {
     Map<String, DateTime?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnDateTimeMapNullableDateTimes',
       ) as _i1.InternalTestSession);
@@ -3758,7 +3758,7 @@ class _MapParametersEndpoint {
     Map<String, _i5.ByteData> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnByteDataMap',
       ) as _i1.InternalTestSession);
@@ -3781,7 +3781,7 @@ class _MapParametersEndpoint {
     Map<String, _i5.ByteData?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnByteDataMapNullableByteDatas',
       ) as _i1.InternalTestSession);
@@ -3804,7 +3804,7 @@ class _MapParametersEndpoint {
     Map<String, _i14.SimpleData> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnSimpleDataMap',
       ) as _i1.InternalTestSession);
@@ -3828,7 +3828,7 @@ class _MapParametersEndpoint {
     Map<String, _i14.SimpleData?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnSimpleDataMapNullableSimpleData',
       ) as _i1.InternalTestSession);
@@ -3851,7 +3851,7 @@ class _MapParametersEndpoint {
     Map<String, _i14.SimpleData>? map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnSimpleDataMapNullable',
       ) as _i1.InternalTestSession);
@@ -3875,7 +3875,7 @@ class _MapParametersEndpoint {
     Map<String, _i14.SimpleData?>? map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnNullableSimpleDataMapNullableSimpleData',
       ) as _i1.InternalTestSession);
@@ -3898,7 +3898,7 @@ class _MapParametersEndpoint {
     Map<String, Duration> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnDurationMap',
       ) as _i1.InternalTestSession);
@@ -3921,7 +3921,7 @@ class _MapParametersEndpoint {
     Map<String, Duration?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'mapParameters',
         method: 'returnDurationMapNullableDurations',
       ) as _i1.InternalTestSession);
@@ -4011,7 +4011,7 @@ class _MethodStreaming {
 
   _i3.Future<void> methodCallEndpoint(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'methodCallEndpoint',
       ) as _i1.InternalTestSession);
@@ -4436,7 +4436,7 @@ class _MethodStreaming {
 
   _i3.Future<void> simpleEndpoint(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'simpleEndpoint',
       ) as _i1.InternalTestSession);
@@ -4459,7 +4459,7 @@ class _MethodStreaming {
     int value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'intParameter',
       ) as _i1.InternalTestSession);
@@ -4482,7 +4482,7 @@ class _MethodStreaming {
     int value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'doubleInputValue',
       ) as _i1.InternalTestSession);
@@ -4505,7 +4505,7 @@ class _MethodStreaming {
     int delay,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'delayedResponse',
       ) as _i1.InternalTestSession);
@@ -4608,7 +4608,7 @@ class _MethodStreaming {
 
   _i3.Future<void> completeAllDelayedResponses(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'completeAllDelayedResponses',
       ) as _i1.InternalTestSession);
@@ -5022,7 +5022,7 @@ class _ModuleSerializationEndpoint {
 
   _i3.Future<bool> serializeModuleObject(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'moduleSerialization',
         method: 'serializeModuleObject',
       ) as _i1.InternalTestSession);
@@ -5045,7 +5045,7 @@ class _ModuleSerializationEndpoint {
     _i26.ModuleClass object,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'moduleSerialization',
         method: 'modifyModuleObject',
       ) as _i1.InternalTestSession);
@@ -5066,7 +5066,7 @@ class _ModuleSerializationEndpoint {
   _i3.Future<_i27.ModuleDatatype> serializeNestedModuleObject(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'moduleSerialization',
         method: 'serializeNestedModuleObject',
       ) as _i1.InternalTestSession);
@@ -5097,7 +5097,7 @@ class _NamedParametersEndpoint {
 
   _i3.Future<bool> namedParametersMethod(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'namedParameters',
         method: 'namedParametersMethod',
       ) as _i1.InternalTestSession);
@@ -5118,7 +5118,7 @@ class _NamedParametersEndpoint {
   _i3.Future<bool> namedParametersMethodEqualInts(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'namedParameters',
         method: 'namedParametersMethodEqualInts',
       ) as _i1.InternalTestSession);
@@ -5149,7 +5149,7 @@ class _OptionalParametersEndpoint {
 
   _i3.Future<int?> returnOptionalInt(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'optionalParameters',
         method: 'returnOptionalInt',
       ) as _i1.InternalTestSession);
@@ -5184,7 +5184,7 @@ class _RedisEndpoint {
     _i14.SimpleData data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'redis',
         method: 'setSimpleData',
       ) as _i1.InternalTestSession);
@@ -5211,7 +5211,7 @@ class _RedisEndpoint {
     _i14.SimpleData data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'redis',
         method: 'setSimpleDataWithLifetime',
       ) as _i1.InternalTestSession);
@@ -5237,7 +5237,7 @@ class _RedisEndpoint {
     String key,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'redis',
         method: 'getSimpleData',
       ) as _i1.InternalTestSession);
@@ -5260,7 +5260,7 @@ class _RedisEndpoint {
     String key,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'redis',
         method: 'deleteSimpleData',
       ) as _i1.InternalTestSession);
@@ -5280,7 +5280,7 @@ class _RedisEndpoint {
 
   _i3.Future<void> resetMessageCentralTest(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'redis',
         method: 'resetMessageCentralTest',
       ) as _i1.InternalTestSession);
@@ -5303,7 +5303,7 @@ class _RedisEndpoint {
     String channel,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'redis',
         method: 'listenToChannel',
       ) as _i1.InternalTestSession);
@@ -5327,7 +5327,7 @@ class _RedisEndpoint {
     _i14.SimpleData data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'redis',
         method: 'postToChannel',
       ) as _i1.InternalTestSession);
@@ -5350,7 +5350,7 @@ class _RedisEndpoint {
 
   _i3.Future<int> countSubscribedChannels(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'redis',
         method: 'countSubscribedChannels',
       ) as _i1.InternalTestSession);
@@ -5382,7 +5382,7 @@ class _ServerOnlyScopedFieldModelEndpoint {
   _i3.Future<_i28.ScopeServerOnlyField> getScopeServerOnlyField(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'serverOnlyScopedFieldModel',
         method: 'getScopeServerOnlyField',
       ) as _i1.InternalTestSession);
@@ -5413,7 +5413,7 @@ class _SignInRequiredEndpoint {
 
   _i3.Future<bool> testMethod(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'signInRequired',
         method: 'testMethod',
       ) as _i1.InternalTestSession);
@@ -5444,7 +5444,7 @@ class _AdminScopeRequiredEndpoint {
 
   _i3.Future<bool> testMethod(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'adminScopeRequired',
         method: 'testMethod',
       ) as _i1.InternalTestSession);
@@ -5478,7 +5478,7 @@ class _SimpleEndpoint {
     int? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'simple',
         method: 'setGlobalInt',
       ) as _i1.InternalTestSession);
@@ -5498,7 +5498,7 @@ class _SimpleEndpoint {
 
   _i3.Future<void> addToGlobalInt(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'simple',
         method: 'addToGlobalInt',
       ) as _i1.InternalTestSession);
@@ -5518,7 +5518,7 @@ class _SimpleEndpoint {
 
   _i3.Future<int> getGlobalInt(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'simple',
         method: 'getGlobalInt',
       ) as _i1.InternalTestSession);
@@ -5541,7 +5541,7 @@ class _SimpleEndpoint {
     String name,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'simple',
         method: 'hello',
       ) as _i1.InternalTestSession);
@@ -5586,7 +5586,7 @@ class _SubSubDirTestEndpoint {
 
   _i3.Future<String> testMethod(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'subSubDirTest',
         method: 'testMethod',
       ) as _i1.InternalTestSession);
@@ -5617,7 +5617,7 @@ class _SubDirTestEndpoint {
 
   _i3.Future<String> testMethod(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'subDirTest',
         method: 'testMethod',
       ) as _i1.InternalTestSession);
@@ -5648,7 +5648,7 @@ class _TestToolsEndpoint {
 
   _i3.Future<_i6.UuidValue> returnsSessionId(_i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'testTools',
         method: 'returnsSessionId',
       ) as _i1.InternalTestSession);
@@ -5669,7 +5669,7 @@ class _TestToolsEndpoint {
   _i3.Future<List<String?>> returnsSessionEndpointAndMethod(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'testTools',
         method: 'returnsSessionEndpointAndMethod',
       ) as _i1.InternalTestSession);
@@ -5750,7 +5750,7 @@ class _TestToolsEndpoint {
     String string,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'testTools',
         method: 'returnsString',
       ) as _i1.InternalTestSession);
@@ -5860,7 +5860,7 @@ class _TestToolsEndpoint {
     int number,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'testTools',
         method: 'postNumberToSharedStream',
       ) as _i1.InternalTestSession);
@@ -5942,7 +5942,7 @@ class _TestToolsEndpoint {
     int data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'testTools',
         method: 'createSimpleData',
       ) as _i1.InternalTestSession);
@@ -5963,7 +5963,7 @@ class _TestToolsEndpoint {
   _i3.Future<List<_i12.SimpleData>> getAllSimpleData(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'testTools',
         method: 'getAllSimpleData',
       ) as _i1.InternalTestSession);
@@ -5997,7 +5997,7 @@ class _AuthenticatedTestToolsEndpoint {
     String string,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+      var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'authenticatedTestTools',
         method: 'returnsString',
       ) as _i1.InternalTestSession);
