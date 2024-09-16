@@ -326,47 +326,15 @@ class ClassDefinitionBuilder {
     return this;
   }
 
-  ClassDefinitionBuilder withChildClasses(
-    String className,
-    String fileName,
-    String fieldName,
-    String fieldType,
-    bool fieldNullable,
-  ) {
+  ClassDefinitionBuilder withChildClasses(List<ClassDefinition> childClasses) {
     _childClasses = [
-      ResolvedInheritanceDefinition(
-        ClassDefinitionBuilder()
-            .withClassName(className)
-            .withFileName(fileName)
-            .withSimpleField(
-              fieldName,
-              fieldType,
-              nullable: fieldNullable,
-            )
-            .build(),
-      )
+      for (var child in childClasses) ResolvedInheritanceDefinition(child),
     ];
     return this;
   }
 
-  ClassDefinitionBuilder withExtendsClass(
-    String className,
-    String fileName,
-    String fieldName,
-    String fieldType,
-    bool fieldNullable,
-  ) {
-    _extendsClass = ResolvedInheritanceDefinition(
-      ClassDefinitionBuilder()
-          .withClassName(className)
-          .withFileName(fileName)
-          .withSimpleField(
-            fieldName,
-            fieldType,
-            nullable: fieldNullable,
-          )
-          .build(),
-    );
+  ClassDefinitionBuilder withExtendsClass(ClassDefinition parentClass) {
+    _extendsClass = ResolvedInheritanceDefinition(parentClass);
     return this;
   }
 }

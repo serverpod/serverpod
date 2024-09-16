@@ -31,23 +31,24 @@ void main() {
           .withFileName(parentClassFileName)
           .withSimpleField('name', 'String')
           .withChildClasses(
-            childClassName,
-            childClassFileName,
-            'age',
-            'int',
-            true,
-          )
-          .build(),
+        [
+          ClassDefinitionBuilder()
+              .withClassName(childClassName)
+              .withFileName(childClassFileName)
+              .withSimpleField('age', 'int')
+              .build(),
+        ],
+      ).build(),
       ClassDefinitionBuilder()
           .withClassName(childClassName)
           .withFileName(childClassFileName)
           .withSimpleField('age', 'int', nullable: true)
           .withExtendsClass(
-            parentClassName,
-            parentClassFileName,
-            'name',
-            'String',
-            false,
+            ClassDefinitionBuilder()
+                .withClassName(parentClassName)
+                .withFileName(parentClassFileName)
+                .withSimpleField('name', 'String')
+                .build(),
           )
           .build(),
     ];
