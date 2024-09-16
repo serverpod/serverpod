@@ -490,7 +490,7 @@ class DatabaseConnection {
     String query, {
     required Table table,
     int? timeoutInSeconds,
-    Transaction? transaction,
+    required Transaction? transaction,
     Include? include,
   }) async {
     var result = await _mappedResultsQuery(
