@@ -243,3 +243,20 @@ subSubDirTest:
   - testMethod:
 subDirTest:
   - testMethod:
+testTools:
+  - returnsSessionId:
+  - returnsSessionEndpointAndMethod:
+  - returnsSessionIdFromStream:
+  - returnsSessionEndpointAndMethodFromStream:
+  - returnsString:
+  - returnsStream:
+  - returnsListFromInputStream:
+  - returnsStreamFromInputStream:
+  - postNumberToSharedStream:
+  - postNumberToSharedStreamAndReturnStream:
+  - listenForNumbersOnSharedStream:
+  - createSimpleData:
+  - getAllSimpleData:
+authenticatedTestTools:
+  - returnsString:
+  - returnsStream:

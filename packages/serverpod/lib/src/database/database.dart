@@ -13,6 +13,18 @@ import 'adapters/postgres/database_connection.dart';
 import 'concepts/expressions.dart';
 import 'concepts/table.dart';
 
+/// Extension to only expose the [Database] constructor
+/// internally within the Serverpod package.
+extension DatabaseConstructor on Database {
+  /// Creates a new [Database] object.
+  static Database create({
+    required Session session,
+    required DatabasePoolManager poolManager,
+  }) {
+    return Database._(session: session, poolManager: poolManager);
+  }
+}
+
 /// Provides easy access to the database in relation to the current [Session].
 class Database {
   final Session _session;
@@ -21,8 +33,10 @@ class Database {
 
   /// Creates a new [Database] object. Typically, this is done automatically
   /// when a [Session] is created.
-  Database({required Session session, required DatabasePoolManager poolManager})
-      : _session = session,
+  Database._({
+    required Session session,
+    required DatabasePoolManager poolManager,
+  })  : _session = session,
         _databaseConnection = DatabaseConnection(poolManager);
 
   /// Find a list of [TableRow]s from a table, using the provided [where]

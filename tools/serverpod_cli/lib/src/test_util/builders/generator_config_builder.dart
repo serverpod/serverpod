@@ -18,6 +18,7 @@ class GeneratorConfigBuilder {
   List<TypeDefinition> _extraClasses;
   List<ServerpodFeature> _enabledFeatures;
   List<ExperimentalFeature> _enabledExperimentalFeatures;
+  List<String>? _relativeServerTestToolsPathParts;
 
   GeneratorConfigBuilder()
       : _name = _defaultName,
@@ -113,6 +114,13 @@ class GeneratorConfigBuilder {
     return this;
   }
 
+  GeneratorConfigBuilder withRelativeServerTestToolsPathParts(
+    List<String>? relativeServerTestToolsPathParts,
+  ) {
+    _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts;
+    return this;
+  }
+
   GeneratorConfig build() {
     return GeneratorConfig(
       name: _name,
@@ -126,6 +134,7 @@ class GeneratorConfigBuilder {
       extraClasses: _extraClasses,
       enabledFeatures: _enabledFeatures,
       experimentalFeatures: _enabledExperimentalFeatures,
+      relativeServerTestToolsPathParts: _relativeServerTestToolsPathParts,
     );
   }
 }

@@ -163,7 +163,7 @@ class ScopeNoneFieldsRepository {
   const ScopeNoneFieldsRepository._();
 
   Future<List<ScopeNoneFields>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     int? limit,
     int? offset,
@@ -172,19 +172,19 @@ class ScopeNoneFieldsRepository {
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<ScopeNoneFields>(
+    return databaseAccessor.db.find<ScopeNoneFields>(
       where: where?.call(ScopeNoneFields.t),
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ScopeNoneFields?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     int? offset,
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
@@ -192,118 +192,118 @@ class ScopeNoneFieldsRepository {
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<ScopeNoneFields>(
+    return databaseAccessor.db.findFirstRow<ScopeNoneFields>(
       where: where?.call(ScopeNoneFields.t),
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ScopeNoneFields?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ScopeNoneFields>(
+    return databaseAccessor.db.findById<ScopeNoneFields>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ScopeNoneFields>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ScopeNoneFields> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ScopeNoneFields>(
+    return databaseAccessor.db.insert<ScopeNoneFields>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ScopeNoneFields> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ScopeNoneFields row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ScopeNoneFields>(
+    return databaseAccessor.db.insertRow<ScopeNoneFields>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ScopeNoneFields>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ScopeNoneFields> rows, {
     _i1.ColumnSelections<ScopeNoneFieldsTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<ScopeNoneFields>(
+    return databaseAccessor.db.update<ScopeNoneFields>(
       rows,
       columns: columns?.call(ScopeNoneFields.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ScopeNoneFields> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ScopeNoneFields row, {
     _i1.ColumnSelections<ScopeNoneFieldsTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<ScopeNoneFields>(
+    return databaseAccessor.db.updateRow<ScopeNoneFields>(
       row,
       columns: columns?.call(ScopeNoneFields.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ScopeNoneFields>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ScopeNoneFields> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ScopeNoneFields>(
+    return databaseAccessor.db.delete<ScopeNoneFields>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ScopeNoneFields> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ScopeNoneFields row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ScopeNoneFields>(
+    return databaseAccessor.db.deleteRow<ScopeNoneFields>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ScopeNoneFields>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<ScopeNoneFields>(
+    return databaseAccessor.db.deleteWhere<ScopeNoneFields>(
       where: where(ScopeNoneFields.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<ScopeNoneFields>(
+    return databaseAccessor.db.count<ScopeNoneFields>(
       where: where?.call(ScopeNoneFields.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

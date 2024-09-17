@@ -1,6 +1,7 @@
 type: server
 
 client_package_path: ../serverpod_test_client
+server_test_tools_path: test_integration/test_tools
 
 modules:
   serverpod_test_module:

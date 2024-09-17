@@ -5,6 +5,7 @@ packages/serverpod_service_client
 packages/serverpod_shared
 packages/serverpod
 packages/serverpod_flutter
+packages/serverpod_test
 templates/serverpod_templates
 tools/serverpod_cli
 modules/serverpod_auth/serverpod_auth_server

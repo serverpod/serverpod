@@ -165,7 +165,7 @@ class ObjectWithDurationRepository {
   const ObjectWithDurationRepository._();
 
   Future<List<ObjectWithDuration>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
     int? limit,
     int? offset,
@@ -174,19 +174,19 @@ class ObjectWithDurationRepository {
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<ObjectWithDuration>(
+    return databaseAccessor.db.find<ObjectWithDuration>(
       where: where?.call(ObjectWithDuration.t),
       orderBy: orderBy?.call(ObjectWithDuration.t),
       orderByList: orderByList?.call(ObjectWithDuration.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ObjectWithDuration?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
@@ -194,118 +194,118 @@ class ObjectWithDurationRepository {
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<ObjectWithDuration>(
+    return databaseAccessor.db.findFirstRow<ObjectWithDuration>(
       where: where?.call(ObjectWithDuration.t),
       orderBy: orderBy?.call(ObjectWithDuration.t),
       orderByList: orderByList?.call(ObjectWithDuration.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ObjectWithDuration?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ObjectWithDuration>(
+    return databaseAccessor.db.findById<ObjectWithDuration>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ObjectWithDuration>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ObjectWithDuration> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ObjectWithDuration>(
+    return databaseAccessor.db.insert<ObjectWithDuration>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ObjectWithDuration> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ObjectWithDuration row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ObjectWithDuration>(
+    return databaseAccessor.db.insertRow<ObjectWithDuration>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ObjectWithDuration>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ObjectWithDuration> rows, {
     _i1.ColumnSelections<ObjectWithDurationTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<ObjectWithDuration>(
+    return databaseAccessor.db.update<ObjectWithDuration>(
       rows,
       columns: columns?.call(ObjectWithDuration.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ObjectWithDuration> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ObjectWithDuration row, {
     _i1.ColumnSelections<ObjectWithDurationTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<ObjectWithDuration>(
+    return databaseAccessor.db.updateRow<ObjectWithDuration>(
       row,
       columns: columns?.call(ObjectWithDuration.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ObjectWithDuration>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ObjectWithDuration> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ObjectWithDuration>(
+    return databaseAccessor.db.delete<ObjectWithDuration>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ObjectWithDuration> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ObjectWithDuration row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ObjectWithDuration>(
+    return databaseAccessor.db.deleteRow<ObjectWithDuration>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ObjectWithDuration>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<ObjectWithDurationTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<ObjectWithDuration>(
+    return databaseAccessor.db.deleteWhere<ObjectWithDuration>(
       where: where(ObjectWithDuration.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<ObjectWithDuration>(
+    return databaseAccessor.db.count<ObjectWithDuration>(
       where: where?.call(ObjectWithDuration.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

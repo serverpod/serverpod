@@ -251,7 +251,7 @@ class RelationToMultipleMaxFieldNameRepository {
   final detachRow = const RelationToMultipleMaxFieldNameDetachRowRepository._();
 
   Future<List<RelationToMultipleMaxFieldName>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
     int? limit,
     int? offset,
@@ -261,20 +261,20 @@ class RelationToMultipleMaxFieldNameRepository {
     _i1.Transaction? transaction,
     RelationToMultipleMaxFieldNameInclude? include,
   }) async {
-    return session.db.find<RelationToMultipleMaxFieldName>(
+    return databaseAccessor.db.find<RelationToMultipleMaxFieldName>(
       where: where?.call(RelationToMultipleMaxFieldName.t),
       orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
       orderByList: orderByList?.call(RelationToMultipleMaxFieldName.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<RelationToMultipleMaxFieldName?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<RelationToMultipleMaxFieldNameTable>? orderBy,
@@ -283,122 +283,122 @@ class RelationToMultipleMaxFieldNameRepository {
     _i1.Transaction? transaction,
     RelationToMultipleMaxFieldNameInclude? include,
   }) async {
-    return session.db.findFirstRow<RelationToMultipleMaxFieldName>(
+    return databaseAccessor.db.findFirstRow<RelationToMultipleMaxFieldName>(
       where: where?.call(RelationToMultipleMaxFieldName.t),
       orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
       orderByList: orderByList?.call(RelationToMultipleMaxFieldName.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<RelationToMultipleMaxFieldName?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
     RelationToMultipleMaxFieldNameInclude? include,
   }) async {
-    return session.db.findById<RelationToMultipleMaxFieldName>(
+    return databaseAccessor.db.findById<RelationToMultipleMaxFieldName>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<List<RelationToMultipleMaxFieldName>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<RelationToMultipleMaxFieldName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<RelationToMultipleMaxFieldName>(
+    return databaseAccessor.db.insert<RelationToMultipleMaxFieldName>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<RelationToMultipleMaxFieldName> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     RelationToMultipleMaxFieldName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<RelationToMultipleMaxFieldName>(
+    return databaseAccessor.db.insertRow<RelationToMultipleMaxFieldName>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<RelationToMultipleMaxFieldName>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<RelationToMultipleMaxFieldName> rows, {
     _i1.ColumnSelections<RelationToMultipleMaxFieldNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<RelationToMultipleMaxFieldName>(
+    return databaseAccessor.db.update<RelationToMultipleMaxFieldName>(
       rows,
       columns: columns?.call(RelationToMultipleMaxFieldName.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<RelationToMultipleMaxFieldName> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     RelationToMultipleMaxFieldName row, {
     _i1.ColumnSelections<RelationToMultipleMaxFieldNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<RelationToMultipleMaxFieldName>(
+    return databaseAccessor.db.updateRow<RelationToMultipleMaxFieldName>(
       row,
       columns: columns?.call(RelationToMultipleMaxFieldName.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<RelationToMultipleMaxFieldName>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<RelationToMultipleMaxFieldName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<RelationToMultipleMaxFieldName>(
+    return databaseAccessor.db.delete<RelationToMultipleMaxFieldName>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<RelationToMultipleMaxFieldName> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     RelationToMultipleMaxFieldName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<RelationToMultipleMaxFieldName>(
+    return databaseAccessor.db.deleteRow<RelationToMultipleMaxFieldName>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<RelationToMultipleMaxFieldName>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>
         where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<RelationToMultipleMaxFieldName>(
+    return databaseAccessor.db.deleteWhere<RelationToMultipleMaxFieldName>(
       where: where(RelationToMultipleMaxFieldName.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<RelationToMultipleMaxFieldName>(
+    return databaseAccessor.db.count<RelationToMultipleMaxFieldName>(
       where: where?.call(RelationToMultipleMaxFieldName.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -407,7 +407,7 @@ class RelationToMultipleMaxFieldNameAttachRepository {
   const RelationToMultipleMaxFieldNameAttachRepository._();
 
   Future<void> multipleMaxFieldNames(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     RelationToMultipleMaxFieldName relationToMultipleMaxFieldName,
     List<_i2.MultipleMaxFieldName> multipleMaxFieldName, {
     _i1.Transaction? transaction,
@@ -426,13 +426,13 @@ class RelationToMultipleMaxFieldNameAttachRepository {
                   relationToMultipleMaxFieldName.id,
             ))
         .toList();
-    await session.db.update<_i2.MultipleMaxFieldName>(
+    await databaseAccessor.db.update<_i2.MultipleMaxFieldName>(
       $multipleMaxFieldName,
       columns: [
         _i2.MultipleMaxFieldName.t
             .$_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId
       ],
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -441,7 +441,7 @@ class RelationToMultipleMaxFieldNameAttachRowRepository {
   const RelationToMultipleMaxFieldNameAttachRowRepository._();
 
   Future<void> multipleMaxFieldNames(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     RelationToMultipleMaxFieldName relationToMultipleMaxFieldName,
     _i2.MultipleMaxFieldName multipleMaxFieldName, {
     _i1.Transaction? transaction,
@@ -458,13 +458,13 @@ class RelationToMultipleMaxFieldNameAttachRowRepository {
       $_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId:
           relationToMultipleMaxFieldName.id,
     );
-    await session.db.updateRow<_i2.MultipleMaxFieldName>(
+    await databaseAccessor.db.updateRow<_i2.MultipleMaxFieldName>(
       $multipleMaxFieldName,
       columns: [
         _i2.MultipleMaxFieldName.t
             .$_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId
       ],
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -473,7 +473,7 @@ class RelationToMultipleMaxFieldNameDetachRepository {
   const RelationToMultipleMaxFieldNameDetachRepository._();
 
   Future<void> multipleMaxFieldNames(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<_i2.MultipleMaxFieldName> multipleMaxFieldName, {
     _i1.Transaction? transaction,
   }) async {
@@ -488,13 +488,13 @@ class RelationToMultipleMaxFieldNameDetachRepository {
                   null,
             ))
         .toList();
-    await session.db.update<_i2.MultipleMaxFieldName>(
+    await databaseAccessor.db.update<_i2.MultipleMaxFieldName>(
       $multipleMaxFieldName,
       columns: [
         _i2.MultipleMaxFieldName.t
             .$_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId
       ],
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -503,7 +503,7 @@ class RelationToMultipleMaxFieldNameDetachRowRepository {
   const RelationToMultipleMaxFieldNameDetachRowRepository._();
 
   Future<void> multipleMaxFieldNames(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     _i2.MultipleMaxFieldName multipleMaxFieldName, {
     _i1.Transaction? transaction,
   }) async {
@@ -515,13 +515,13 @@ class RelationToMultipleMaxFieldNameDetachRowRepository {
       multipleMaxFieldName,
       $_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId: null,
     );
-    await session.db.updateRow<_i2.MultipleMaxFieldName>(
+    await databaseAccessor.db.updateRow<_i2.MultipleMaxFieldName>(
       $multipleMaxFieldName,
       columns: [
         _i2.MultipleMaxFieldName.t
             .$_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId
       ],
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

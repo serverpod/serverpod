@@ -255,7 +255,7 @@ class EnumDefaultModelRepository {
   const EnumDefaultModelRepository._();
 
   Future<List<EnumDefaultModel>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EnumDefaultModelTable>? where,
     int? limit,
     int? offset,
@@ -264,19 +264,19 @@ class EnumDefaultModelRepository {
     _i1.OrderByListBuilder<EnumDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<EnumDefaultModel>(
+    return databaseAccessor.db.find<EnumDefaultModel>(
       where: where?.call(EnumDefaultModel.t),
       orderBy: orderBy?.call(EnumDefaultModel.t),
       orderByList: orderByList?.call(EnumDefaultModel.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EnumDefaultModel?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EnumDefaultModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<EnumDefaultModelTable>? orderBy,
@@ -284,118 +284,118 @@ class EnumDefaultModelRepository {
     _i1.OrderByListBuilder<EnumDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<EnumDefaultModel>(
+    return databaseAccessor.db.findFirstRow<EnumDefaultModel>(
       where: where?.call(EnumDefaultModel.t),
       orderBy: orderBy?.call(EnumDefaultModel.t),
       orderByList: orderByList?.call(EnumDefaultModel.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EnumDefaultModel?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<EnumDefaultModel>(
+    return databaseAccessor.db.findById<EnumDefaultModel>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EnumDefaultModel>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EnumDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<EnumDefaultModel>(
+    return databaseAccessor.db.insert<EnumDefaultModel>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EnumDefaultModel> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EnumDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<EnumDefaultModel>(
+    return databaseAccessor.db.insertRow<EnumDefaultModel>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EnumDefaultModel>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EnumDefaultModel> rows, {
     _i1.ColumnSelections<EnumDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<EnumDefaultModel>(
+    return databaseAccessor.db.update<EnumDefaultModel>(
       rows,
       columns: columns?.call(EnumDefaultModel.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EnumDefaultModel> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EnumDefaultModel row, {
     _i1.ColumnSelections<EnumDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<EnumDefaultModel>(
+    return databaseAccessor.db.updateRow<EnumDefaultModel>(
       row,
       columns: columns?.call(EnumDefaultModel.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EnumDefaultModel>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EnumDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<EnumDefaultModel>(
+    return databaseAccessor.db.delete<EnumDefaultModel>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EnumDefaultModel> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EnumDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<EnumDefaultModel>(
+    return databaseAccessor.db.deleteRow<EnumDefaultModel>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EnumDefaultModel>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<EnumDefaultModelTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<EnumDefaultModel>(
+    return databaseAccessor.db.deleteWhere<EnumDefaultModel>(
       where: where(EnumDefaultModel.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EnumDefaultModelTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<EnumDefaultModel>(
+    return databaseAccessor.db.count<EnumDefaultModel>(
       where: where?.call(EnumDefaultModel.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

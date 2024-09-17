@@ -282,6 +282,14 @@ class EndpointUser extends _i1.EndpointRef {
         'changeUserName',
         {'userName': userName},
       );
+
+  /// Changes the full name of a user.
+  _i2.Future<bool> changeFullName(String fullName) =>
+      caller.callServerEndpoint<bool>(
+        'serverpod_auth.user',
+        'changeFullName',
+        {'fullName': fullName},
+      );
 }
 
 class Caller extends _i1.ModuleEndpointCaller {
