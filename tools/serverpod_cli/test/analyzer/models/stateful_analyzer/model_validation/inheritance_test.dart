@@ -243,7 +243,7 @@ void main() {
     var error = collector.errors.first;
     expect(
       error.message,
-      'The "extends" property is not allowed for class type. Valid keys are {class, extends, table, managedMigration, serverOnly, fields, indexes}.',
+      'The "extends" property is not allowed for class type. Valid keys are {class, table, managedMigration, serverOnly, fields, indexes}.',
     );
   });
 }
