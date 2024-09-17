@@ -10,7 +10,7 @@ import 'handler.dart';
 import 'server.dart';
 
 /// A [Server] backed by a `dart:io` [HttpServer].
-class IOServer implements Server {
+class RelicServer implements Server {
   /// The underlying [HttpServer].
   final HttpServer server;
 
@@ -35,14 +35,15 @@ class IOServer implements Server {
     return Uri(scheme: 'http', host: server.address.address, port: server.port);
   }
 
-  /// Calls [HttpServer.bind] and wraps the result in an [IOServer].
-  static Future<IOServer> bind(Object address, int port, {int? backlog}) async {
+  /// Calls [HttpServer.bind] and wraps the result in an [RelicServer].
+  static Future<RelicServer> bind(Object address, int port,
+      {int? backlog}) async {
     backlog ??= 0;
     var server = await HttpServer.bind(address, port, backlog: backlog);
-    return IOServer(server);
+    return RelicServer(server);
   }
 
-  IOServer(this.server);
+  RelicServer(this.server);
 
   @override
   void mount(Handler handler) {

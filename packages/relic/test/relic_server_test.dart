@@ -14,7 +14,7 @@ import 'package:async/async.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' as parser;
 import 'package:relic/relic.dart';
-import 'package:relic/relic_server.dart' as shelf_io;
+import 'package:relic/relic_server.dart' as relic_server;
 import 'package:relic/src/util/util.dart';
 import 'package:test/test.dart';
 
@@ -272,7 +272,7 @@ void main() {
 
   test('passes asynchronous exceptions to the parent error zone', () async {
     await runZonedGuarded(() async {
-      var server = await shelf_io.serve((request) {
+      var server = await relic_server.serve((request) {
         Future(() => throw StateError('oh no'));
         return syncHandler(request);
       }, 'localhost', 0);
@@ -288,7 +288,7 @@ void main() {
 
   test("doesn't pass asynchronous exceptions to the root error zone", () async {
     var response = await Zone.root.run(() async {
-      var server = await shelf_io.serve((request) {
+      var server = await relic_server.serve((request) {
         Future(() => throw StateError('oh no'));
         return syncHandler(request);
       }, 'localhost', 0);
@@ -398,7 +398,7 @@ void main() {
     });
 
     test('can be set at the server level', () async {
-      _server = await shelf_io.serve(
+      _server = await relic_server.serve(
         syncHandler,
         'localhost',
         0,
@@ -412,7 +412,7 @@ void main() {
     });
 
     test('defers to header in response when set at the server level', () async {
-      _server = await shelf_io.serve(
+      _server = await relic_server.serve(
         (request) {
           return Response.ok(
             body: Body.fromString('test'),
@@ -431,7 +431,7 @@ void main() {
     });
 
     test('is omitted when set to null', () async {
-      _server = await shelf_io.serve(
+      _server = await relic_server.serve(
         syncHandler,
         'localhost',
         0,
@@ -481,7 +481,6 @@ void main() {
       });
     });
 
-    // TODO: Fix this
     test('is preserved when the transfer-encoding header is "chunked"',
         () async {
       await _scheduleServer((request) {
@@ -556,7 +555,7 @@ void main() {
     });
   });
 
-  test('respects the "shelf.io.buffer_output" context parameter', () async {
+  test('respects the "relic_server.buffer_output" context parameter', () async {
     var controller = StreamController<String>();
     await _scheduleServer((request) {
       controller.add('Hello, ');
@@ -567,7 +566,7 @@ void main() {
               .bind(controller.stream)
               .map((list) => Uint8List.fromList(list)),
         ),
-        context: {'shelf.io.buffer_output': false},
+        context: {'relic_server.buffer_output': false},
       );
     });
 
@@ -644,7 +643,7 @@ Future<void> _scheduleServer(
   SecurityContext? securityContext,
 }) async {
   assert(_server == null);
-  _server = await shelf_io.serve(
+  _server = await relic_server.serve(
     handler,
     'localhost',
     0,
@@ -657,18 +656,11 @@ Future<http.Response> _get(
         String path = ''}) =>
     _request((client, url) => client.getUrl(url), headers: headers, path: path);
 
-Future<http.Response> _head(
-        {Map<String, /* String | List<String> */ Object>? headers,
-        String path = ''}) =>
-    _request((client, url) => client.headUrl(url),
-        headers: headers, path: path);
-
 Future<http.Response> _request(
   Future<HttpClientRequest> Function(HttpClient, Uri) request, {
   Map<String, /* String | List<String> */ Object>? headers,
   String path = '',
 }) async {
-  // TODO: use http.Client once it supports sending/receiving multiple headers.
   final client = HttpClient();
   try {
     final rq = await request(client, Uri.http('localhost:$_serverPort', path));

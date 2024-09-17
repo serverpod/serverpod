@@ -656,15 +656,15 @@ abstract class Headers {
       headers.set(_contentDispositionHeader, contentDisposition!);
     }
 
-    /// Set custom headers
+    // Set custom headers
     for (var entry in custom.entries) {
       headers.set(entry.key, entry.value);
     }
 
-    /// Set the content length from the Body
+    // Set the content length from the Body
     headers.contentLength = body.contentLength ?? 0;
 
-    /// Set the content type from the Body
+    // Set the content type from the Body
     headers.contentType = io.ContentType(
       body.contentType.mimeType.primaryType,
       body.contentType.mimeType.subType,
@@ -1152,7 +1152,13 @@ class _HeadersImpl extends Headers {
     );
   }
 
-  @override
+  /// Merges the current `Headers` instance with another `Headers`.
+  ///
+  /// If `other` is `null`, this instance is returned unchanged. Otherwise, fields
+  /// from `other` will overwrite the corresponding fields in this instance.
+  /// Custom headers are merged as well.
+  ///
+  /// Returns a new `Headers` instance with the merged values.
   @override
   Headers withHeaders(Headers? other) {
     if (other == null) return this;

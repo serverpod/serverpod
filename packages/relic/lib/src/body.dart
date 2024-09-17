@@ -12,7 +12,7 @@ import 'package:relic/src/headers/types/mime_type.dart';
 /// The body of a request or response.
 ///
 /// This tracks whether the body has been read. It's separate from [Message]
-/// because the message may be changed with [Message.change], but each instance
+/// because the message may be changed with [Message.copyWith], but each instance
 /// should share a notion of whether the body was read.
 class Body {
   /// The contents of the message body.

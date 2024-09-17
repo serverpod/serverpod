@@ -78,14 +78,11 @@ class WebServer {
     required String fileSystemPath,
     String mountedPath = '/',
   }) {
-    // var staticHandler = createStaticHandler(fileSystemPath);
     _handler = createMountedStaticHandler(
       fileSystemPath: fileSystemPath,
       mountedPath: mountedPath,
       continueHandler: _handler,
     );
-
-    // _handler = Cascade().add(staticHandler).add(_handler).handler;
   }
 
   /// Starts the webserver.

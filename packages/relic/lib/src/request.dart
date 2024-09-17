@@ -12,7 +12,7 @@ import 'message.dart';
 import 'headers.dart';
 import 'util/util.dart';
 
-/// An HTTP request to be processed by a Shelf application.
+/// An HTTP request to be processed by a Relic Server application.
 class Request extends Message {
   /// The URL path from the current handler to the requested resource, relative
   /// to [handlerPath], plus any query parameters.
@@ -114,7 +114,6 @@ class Request extends Message {
   /// no [HijackException] is received for a hijacked request.
   ///
   /// See also [hijack].
-  // TODO(kevmoo) finish documenting the rest of the arguments.
   Request(
     String method,
     Uri requestedUri, {
@@ -295,7 +294,7 @@ class Request extends Message {
   /// [callback] is called with a [StreamChannel<List<int>>] that provides
   /// access to the underlying request socket.
   ///
-  /// This may only be called when using a Shelf adapter that supports
+  /// This may only be called when using a Relic Server adapter that supports
   /// hijacking, such as the `dart:io` adapter. In addition, a given request may
   /// only be hijacked once. [canHijack] can be used to detect whether this
   /// request can be hijacked.

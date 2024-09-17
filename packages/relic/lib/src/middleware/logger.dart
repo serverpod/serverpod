@@ -65,7 +65,7 @@ String _errorMessage(DateTime requestTime, Uri requestedUri, String method,
   var chain = Chain.current();
   if (stack != null) {
     chain = Chain.forTrace(stack)
-        .foldFrames((frame) => frame.isCore || frame.package == 'shelf')
+        .foldFrames((frame) => frame.isCore || frame.package == 'relic')
         .terse;
   }
 

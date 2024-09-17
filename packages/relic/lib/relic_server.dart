@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-/// A Shelf adapter for handling [HttpRequest] objects from `dart:io`'s
+/// A Relic Server adapter for handling [HttpRequest] objects from `dart:io`'s
 /// [HttpServer].
 ///
 /// One can provide an instance of [HttpServer] as the `requests` parameter in
@@ -11,11 +11,11 @@
 /// This adapter supports request hijacking; see [Request.hijack].
 ///
 /// [Request]s passed to a [Handler] will contain the [Request.context] key
-/// `"shelf.io.connection_info"` containing the [HttpConnectionInfo] object from
+/// `"relic.server.connection_info"` containing the [HttpConnectionInfo] object from
 /// the underlying [HttpRequest].
 ///
 /// When creating [Response] instances for this adapter, you can set the
-/// `"shelf.io.buffer_output"` key in [Response.context]. If `true`,
+/// `"relic.server.buffer_output"` key in [Response.context]. If `true`,
 /// (the default), streamed responses will be buffered to improve performance.
 /// If `false`, all chunks will be pushed over the wire as they're received.
 /// See [HttpResponse.bufferOutput] for more information.
@@ -29,7 +29,7 @@ import 'package:stack_trace/stack_trace.dart';
 import 'relic.dart';
 import 'src/util/util.dart';
 
-export 'src/io_server.dart' show IOServer;
+export 'src/io_server.dart' show RelicServer;
 
 /// Starts an [HttpServer] that listens on the specified [address] and
 /// [port] and sends requests to [handler].
@@ -39,7 +39,7 @@ export 'src/io_server.dart' show IOServer;
 /// See the documentation for [HttpServer.bind] and [HttpServer.bindSecure]
 /// for more details on [address], [port], [backlog], and [shared].
 ///
-/// {@template shelf_io_header_defaults}
+/// {@template relic_server_header_defaults}
 /// Every response will get a "date" header and an "X-Powered-By" header.
 /// If the either header is present in the `Response`, it will not be
 /// overwritten.
@@ -53,7 +53,7 @@ Future<io.HttpServer> serve(
   io.SecurityContext? securityContext,
   int? backlog,
   bool shared = false,
-  String? poweredByHeader = 'Dart with package:shelf',
+  String? poweredByHeader = 'Dart with package:relic_server',
 }) async {
   backlog ??= 0;
   var server = await (securityContext == null
@@ -79,11 +79,11 @@ Future<io.HttpServer> serve(
 /// by [handler] will be printed to the console or, if there's an active error
 /// zone, passed to that zone.
 ///
-/// {@macro shelf_io_header_defaults}
+/// {@macro relic_server_header_defaults}
 void serveRequests(
   Stream<io.HttpRequest> requests,
   Handler handler, {
-  String? poweredByHeader = 'Dart with package:shelf',
+  String? poweredByHeader = 'Dart with package:relic_server',
 }) {
   catchTopLevelErrors(() {
     requests.listen((request) =>
@@ -97,19 +97,18 @@ void serveRequests(
 ///
 /// Returns a [Future] which completes when the request has been handled.
 ///
-/// {@macro shelf_io_header_defaults}
+/// {@macro relic_server_header_defaults}
 Future<void> handleRequest(
   io.HttpRequest request,
   Handler handler, {
-  String? poweredByHeader = 'Dart with package:shelf',
+  String? poweredByHeader = 'Dart with package:relic_server',
 }) async {
-  Request shelfRequest;
+  Request relicRequest;
   try {
-    shelfRequest = Request.fromHttpRequest(request);
+    relicRequest = Request.fromHttpRequest(request);
     // ignore: avoid_catching_errors
   } on ArgumentError catch (error, stackTrace) {
     if (error.name == 'method' || error.name == 'requestedUri') {
-      // TODO: use a reduced log level when using package:logging
       _logTopLevelError('Error parsing request.\n$error', stackTrace);
       final response = Response.badRequest();
       await response.writeHttpResponse(
@@ -135,24 +134,22 @@ Future<void> handleRequest(
     return;
   }
 
-  // TODO(nweiz): abstract out hijack handling to make it easier to implement an
-  // adapter.
   Response? response;
   try {
-    response = await handler(shelfRequest);
+    response = await handler(relicRequest);
   } on HijackException catch (error, stackTrace) {
     // A HijackException should bypass the response-writing logic entirely.
-    if (!shelfRequest.canHijack) return;
+    if (!relicRequest.canHijack) return;
 
     // If the request wasn't hijacked, we shouldn't be seeing this exception.
     response = _logError(
-      shelfRequest,
+      relicRequest,
       "Caught HijackException, but the request wasn't hijacked.",
       stackTrace,
     );
   } catch (error, stackTrace) {
     response = _logError(
-      shelfRequest,
+      relicRequest,
       'Error thrown by handler.\n$error',
       stackTrace,
     );
@@ -160,7 +157,7 @@ Future<void> handleRequest(
 
   if ((response as dynamic) == null) {
     _logError(
-      shelfRequest,
+      relicRequest,
       'null response from handler.',
       StackTrace.current,
     ).writeHttpResponse(
@@ -169,7 +166,7 @@ Future<void> handleRequest(
     );
     return;
   }
-  if (shelfRequest.canHijack) {
+  if (relicRequest.canHijack) {
     await response.writeHttpResponse(
       request.response,
       poweredByHeader: poweredByHeader,
@@ -179,14 +176,12 @@ Future<void> handleRequest(
 
   var message = StringBuffer()
     ..writeln('Got a response for hijacked request '
-        '${shelfRequest.method} ${shelfRequest.requestedUri}:')
+        '${relicRequest.method} ${relicRequest.requestedUri}:')
     ..writeln(response.statusCode)
     ..writeln(response.headers);
   throw Exception(message.toString().trim());
 }
 
-// TODO(kevmoo) A developer mode is needed to include error info in response
-// TODO(kevmoo) Make error output plugable. stderr, logging, etc
 Response _logError(Request request, String message, StackTrace stackTrace) {
   // Add information about the request itself.
   var buffer = StringBuffer();
@@ -203,7 +198,7 @@ Response _logError(Request request, String message, StackTrace stackTrace) {
 
 void _logTopLevelError(String message, StackTrace stackTrace) {
   final chain = Chain.forTrace(stackTrace)
-      .foldFrames((frame) => frame.isCore || frame.package == 'shelf')
+      .foldFrames((frame) => frame.isCore || frame.package == 'relic_server')
       .terse;
 
   io.stderr.writeln('ERROR - ${DateTime.now()}');

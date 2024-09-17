@@ -22,7 +22,7 @@ class Response extends Message {
   ///
   /// This indicates that the request has succeeded.
   ///
-  /// {@template shelf_response_body_and_encoding_param}
+  /// {@template relic_response_body_and_encoding_param}
   /// [body] is the response body. It may be either a [String], a [List<int>], a
   /// [Stream<List<int>>], or `null` to indicate no body.
   ///
@@ -59,7 +59,7 @@ class Response extends Message {
   /// URI. [location] is that URI; it can be either a [String] or a [Uri]. It's
   /// automatically set as the Location header in [headers].
   ///
-  /// {@macro shelf_response_body_and_encoding_param}
+  /// {@macro relic_response_body_and_encoding_param}
   Response.movedPermanently(
     Uri location, {
     Body? body,
@@ -81,7 +81,7 @@ class Response extends Message {
   /// URI. [location] is that URI; it can be either a [String] or a [Uri]. It's
   /// automatically set as the Location header in [headers].
   ///
-  /// {@macro shelf_response_body_and_encoding_param}
+  /// {@macro relic_response_body_and_encoding_param}
   Response.found(
     Uri location, {
     Body? body,
@@ -104,7 +104,7 @@ class Response extends Message {
   /// [String] or a [Uri]. It's automatically set as the Location header in
   /// [headers].
   ///
-  /// {@macro shelf_response_body_and_encoding_param}
+  /// {@macro relic_response_body_and_encoding_param}
   Response.seeOther(
     Uri location, {
     Body? body,
@@ -155,7 +155,7 @@ class Response extends Message {
   ///
   /// This indicates that the server has received a malformed request.
   ///
-  /// {@macro shelf_response_body_and_encoding_param}
+  /// {@macro relic_response_body_and_encoding_param}
   Response.badRequest({
     Body? body,
     Headers? headers,
@@ -174,7 +174,7 @@ class Response extends Message {
   /// This indicates indicates that the client request has not been completed
   /// because it lacks valid authentication credentials.
   ///
-  /// {@macro shelf_response_body_and_encoding_param}
+  /// {@macro relic_response_body_and_encoding_param}
   Response.unauthorized({
     Body? body,
     Headers? headers,
@@ -192,7 +192,7 @@ class Response extends Message {
   ///
   /// This indicates that the server is refusing to fulfill the request.
   ///
-  /// {@macro shelf_response_body_and_encoding_param}
+  /// {@macro relic_response_body_and_encoding_param}
   Response.forbidden({
     Body? body,
     Headers? headers,
@@ -211,7 +211,7 @@ class Response extends Message {
   /// This indicates that the server didn't find any resource matching the
   /// requested URI.
   ///
-  /// {@macro shelf_response_body_and_encoding_param}
+  /// {@macro relic_response_body_and_encoding_param}
   Response.notFound({
     Body? body,
     Headers? headers,
@@ -230,7 +230,7 @@ class Response extends Message {
   /// This indicates that the server had an internal error that prevented it
   /// from fulfilling the request.
   ///
-  /// {@macro shelf_response_body_and_encoding_param}
+  /// {@macro relic_response_body_and_encoding_param}
   Response.internalServerError({
     Body? body,
     Headers? headers,
@@ -248,7 +248,7 @@ class Response extends Message {
   ///
   /// [statusCode] must be greater than or equal to 100.
   ///
-  /// {@macro shelf_response_body_and_encoding_param}
+  /// {@macro relic_response_body_and_encoding_param}
   Response(
     this.statusCode, {
     Body? body,
@@ -304,15 +304,15 @@ class Response extends Message {
     HttpResponse httpResponse, {
     String? poweredByHeader,
   }) async {
-    if (context.containsKey('shelf.io.buffer_output')) {
-      httpResponse.bufferOutput = context['shelf.io.buffer_output'] as bool;
+    if (context.containsKey('relic_server.buffer_output')) {
+      httpResponse.bufferOutput = context['relic_server.buffer_output'] as bool;
     }
 
     httpResponse.statusCode = statusCode;
 
     // An adapter must not add or modify the `Transfer-Encoding` parameter, but
     // the Dart SDK sets it by default. Set this before we fill in
-    // [response.headers] so that the user or Shelf can explicitly override it if
+    // [response.headers] so that the user or relic server can explicitly override it if
     // necessary.
     httpResponse.headers.chunkedTransferEncoding = false;
 

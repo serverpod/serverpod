@@ -10,7 +10,6 @@ import 'package:convert/convert.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:relic/relic.dart';
-import 'package:relic/src/headers/types/mime_type.dart';
 
 import 'directory_listing.dart';
 import 'util.dart';
@@ -18,9 +17,7 @@ import 'util.dart';
 /// The default resolver for MIME types based on file extensions.
 final _defaultMimeTypeResolver = MimeTypeResolver();
 
-// TODO option to exclude hidden files?
-
-/// Creates a Shelf [Handler] that serves files from the provided
+/// Creates a Relic [Handler] that serves files from the provided
 /// [fileSystemPath].
 ///
 /// Accessing a path containing symbolic links will succeed only if the resolved
@@ -152,7 +149,7 @@ File? _tryDefaultFile(String dirPath, String? defaultFile) {
   return null;
 }
 
-/// Creates a shelf [Handler] that serves the file at [path].
+/// Creates a Relic [Handler] that serves the file at [path].
 ///
 /// This returns a 404 response for any requests whose [Request.url] doesn't
 /// match [url]. The [url] defaults to the basename of [path].
