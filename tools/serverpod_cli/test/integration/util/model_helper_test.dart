@@ -19,7 +19,6 @@ GeneratorConfig createGeneratorConfig([
     modules: [],
     extraClasses: [],
     enabledFeatures: [],
-    experimentalFeatures: [],
   );
 }
 

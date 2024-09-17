@@ -59,7 +59,7 @@ class GeneratorConfig {
     required List<ModuleConfig> modules,
     required this.extraClasses,
     required this.enabledFeatures,
-    required this.experimentalFeatures,
+    this.experimentalFeatures = const [],
   })  : _relativeDartClientPackagePathParts =
             relativeDartClientPackagePathParts,
         _modules = modules;

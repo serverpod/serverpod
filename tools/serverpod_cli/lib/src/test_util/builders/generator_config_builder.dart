@@ -17,7 +17,7 @@ class GeneratorConfigBuilder {
   List<ModuleConfig> _modules;
   List<TypeDefinition> _extraClasses;
   List<ServerpodFeature> _enabledFeatures;
-  final List<ExperimentalFeature> _enabledExperimentalFeatures;
+  List<ExperimentalFeature> _enabledExperimentalFeatures;
 
   GeneratorConfigBuilder()
       : _name = _defaultName,
@@ -107,8 +107,9 @@ class GeneratorConfigBuilder {
   }
 
   GeneratorConfigBuilder withEnabledExperimentalFeatures(
-      List<ExperimentalFeature> features) {
-    _enabledExperimentalFeatures.addAll(features);
+    List<ExperimentalFeature> features,
+  ) {
+    _enabledExperimentalFeatures = features;
     return this;
   }
 
