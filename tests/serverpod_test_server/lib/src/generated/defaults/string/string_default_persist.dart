@@ -423,7 +423,7 @@ class StringDefaultPersistRepository {
   const StringDefaultPersistRepository._();
 
   Future<List<StringDefaultPersist>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<StringDefaultPersistTable>? where,
     int? limit,
     int? offset,
@@ -432,19 +432,19 @@ class StringDefaultPersistRepository {
     _i1.OrderByListBuilder<StringDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<StringDefaultPersist>(
+    return databaseAccessor.db.find<StringDefaultPersist>(
       where: where?.call(StringDefaultPersist.t),
       orderBy: orderBy?.call(StringDefaultPersist.t),
       orderByList: orderByList?.call(StringDefaultPersist.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<StringDefaultPersist?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<StringDefaultPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<StringDefaultPersistTable>? orderBy,
@@ -452,118 +452,118 @@ class StringDefaultPersistRepository {
     _i1.OrderByListBuilder<StringDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<StringDefaultPersist>(
+    return databaseAccessor.db.findFirstRow<StringDefaultPersist>(
       where: where?.call(StringDefaultPersist.t),
       orderBy: orderBy?.call(StringDefaultPersist.t),
       orderByList: orderByList?.call(StringDefaultPersist.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<StringDefaultPersist?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<StringDefaultPersist>(
+    return databaseAccessor.db.findById<StringDefaultPersist>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<StringDefaultPersist>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<StringDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<StringDefaultPersist>(
+    return databaseAccessor.db.insert<StringDefaultPersist>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<StringDefaultPersist> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     StringDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<StringDefaultPersist>(
+    return databaseAccessor.db.insertRow<StringDefaultPersist>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<StringDefaultPersist>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<StringDefaultPersist> rows, {
     _i1.ColumnSelections<StringDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<StringDefaultPersist>(
+    return databaseAccessor.db.update<StringDefaultPersist>(
       rows,
       columns: columns?.call(StringDefaultPersist.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<StringDefaultPersist> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     StringDefaultPersist row, {
     _i1.ColumnSelections<StringDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<StringDefaultPersist>(
+    return databaseAccessor.db.updateRow<StringDefaultPersist>(
       row,
       columns: columns?.call(StringDefaultPersist.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<StringDefaultPersist>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<StringDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<StringDefaultPersist>(
+    return databaseAccessor.db.delete<StringDefaultPersist>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<StringDefaultPersist> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     StringDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<StringDefaultPersist>(
+    return databaseAccessor.db.deleteRow<StringDefaultPersist>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<StringDefaultPersist>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<StringDefaultPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<StringDefaultPersist>(
+    return databaseAccessor.db.deleteWhere<StringDefaultPersist>(
       where: where(StringDefaultPersist.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<StringDefaultPersistTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<StringDefaultPersist>(
+    return databaseAccessor.db.count<StringDefaultPersist>(
       where: where?.call(StringDefaultPersist.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

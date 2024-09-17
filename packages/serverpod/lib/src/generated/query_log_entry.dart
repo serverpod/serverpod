@@ -360,7 +360,7 @@ class QueryLogEntryRepository {
   const QueryLogEntryRepository._();
 
   Future<List<QueryLogEntry>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
     int? limit,
     int? offset,
@@ -369,19 +369,19 @@ class QueryLogEntryRepository {
     _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<QueryLogEntry>(
+    return databaseAccessor.db.find<QueryLogEntry>(
       where: where?.call(QueryLogEntry.t),
       orderBy: orderBy?.call(QueryLogEntry.t),
       orderByList: orderByList?.call(QueryLogEntry.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<QueryLogEntry?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<QueryLogEntryTable>? orderBy,
@@ -389,118 +389,118 @@ class QueryLogEntryRepository {
     _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<QueryLogEntry>(
+    return databaseAccessor.db.findFirstRow<QueryLogEntry>(
       where: where?.call(QueryLogEntry.t),
       orderBy: orderBy?.call(QueryLogEntry.t),
       orderByList: orderByList?.call(QueryLogEntry.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<QueryLogEntry?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<QueryLogEntry>(
+    return databaseAccessor.db.findById<QueryLogEntry>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<QueryLogEntry>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<QueryLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<QueryLogEntry>(
+    return databaseAccessor.db.insert<QueryLogEntry>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<QueryLogEntry> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     QueryLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<QueryLogEntry>(
+    return databaseAccessor.db.insertRow<QueryLogEntry>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<QueryLogEntry>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<QueryLogEntry> rows, {
     _i1.ColumnSelections<QueryLogEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<QueryLogEntry>(
+    return databaseAccessor.db.update<QueryLogEntry>(
       rows,
       columns: columns?.call(QueryLogEntry.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<QueryLogEntry> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     QueryLogEntry row, {
     _i1.ColumnSelections<QueryLogEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<QueryLogEntry>(
+    return databaseAccessor.db.updateRow<QueryLogEntry>(
       row,
       columns: columns?.call(QueryLogEntry.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<QueryLogEntry>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<QueryLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<QueryLogEntry>(
+    return databaseAccessor.db.delete<QueryLogEntry>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<QueryLogEntry> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     QueryLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<QueryLogEntry>(
+    return databaseAccessor.db.deleteRow<QueryLogEntry>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<QueryLogEntry>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<QueryLogEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<QueryLogEntry>(
+    return databaseAccessor.db.deleteWhere<QueryLogEntry>(
       where: where(QueryLogEntry.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<QueryLogEntry>(
+    return databaseAccessor.db.count<QueryLogEntry>(
       where: where?.call(QueryLogEntry.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

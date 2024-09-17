@@ -209,7 +209,7 @@ class UserImageRepository {
   const UserImageRepository._();
 
   Future<List<UserImage>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<UserImageTable>? where,
     int? limit,
     int? offset,
@@ -218,19 +218,19 @@ class UserImageRepository {
     _i1.OrderByListBuilder<UserImageTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<UserImage>(
+    return databaseAccessor.db.find<UserImage>(
       where: where?.call(UserImage.t),
       orderBy: orderBy?.call(UserImage.t),
       orderByList: orderByList?.call(UserImage.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<UserImage?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<UserImageTable>? where,
     int? offset,
     _i1.OrderByBuilder<UserImageTable>? orderBy,
@@ -238,118 +238,118 @@ class UserImageRepository {
     _i1.OrderByListBuilder<UserImageTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<UserImage>(
+    return databaseAccessor.db.findFirstRow<UserImage>(
       where: where?.call(UserImage.t),
       orderBy: orderBy?.call(UserImage.t),
       orderByList: orderByList?.call(UserImage.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<UserImage?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<UserImage>(
+    return databaseAccessor.db.findById<UserImage>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<UserImage>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<UserImage> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UserImage>(
+    return databaseAccessor.db.insert<UserImage>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<UserImage> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     UserImage row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UserImage>(
+    return databaseAccessor.db.insertRow<UserImage>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<UserImage>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<UserImage> rows, {
     _i1.ColumnSelections<UserImageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<UserImage>(
+    return databaseAccessor.db.update<UserImage>(
       rows,
       columns: columns?.call(UserImage.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<UserImage> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     UserImage row, {
     _i1.ColumnSelections<UserImageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<UserImage>(
+    return databaseAccessor.db.updateRow<UserImage>(
       row,
       columns: columns?.call(UserImage.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<UserImage>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<UserImage> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UserImage>(
+    return databaseAccessor.db.delete<UserImage>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<UserImage> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     UserImage row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UserImage>(
+    return databaseAccessor.db.deleteRow<UserImage>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<UserImage>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<UserImageTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<UserImage>(
+    return databaseAccessor.db.deleteWhere<UserImage>(
       where: where(UserImage.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<UserImageTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<UserImage>(
+    return databaseAccessor.db.count<UserImage>(
       where: where?.call(UserImage.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

@@ -122,7 +122,7 @@ class EmptyModelWithTableRepository {
   const EmptyModelWithTableRepository._();
 
   Future<List<EmptyModelWithTable>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
     int? limit,
     int? offset,
@@ -131,19 +131,19 @@ class EmptyModelWithTableRepository {
     _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<EmptyModelWithTable>(
+    return databaseAccessor.db.find<EmptyModelWithTable>(
       where: where?.call(EmptyModelWithTable.t),
       orderBy: orderBy?.call(EmptyModelWithTable.t),
       orderByList: orderByList?.call(EmptyModelWithTable.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmptyModelWithTable?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
@@ -151,118 +151,118 @@ class EmptyModelWithTableRepository {
     _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<EmptyModelWithTable>(
+    return databaseAccessor.db.findFirstRow<EmptyModelWithTable>(
       where: where?.call(EmptyModelWithTable.t),
       orderBy: orderBy?.call(EmptyModelWithTable.t),
       orderByList: orderByList?.call(EmptyModelWithTable.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmptyModelWithTable?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<EmptyModelWithTable>(
+    return databaseAccessor.db.findById<EmptyModelWithTable>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EmptyModelWithTable>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EmptyModelWithTable> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<EmptyModelWithTable>(
+    return databaseAccessor.db.insert<EmptyModelWithTable>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmptyModelWithTable> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EmptyModelWithTable row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<EmptyModelWithTable>(
+    return databaseAccessor.db.insertRow<EmptyModelWithTable>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EmptyModelWithTable>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EmptyModelWithTable> rows, {
     _i1.ColumnSelections<EmptyModelWithTableTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<EmptyModelWithTable>(
+    return databaseAccessor.db.update<EmptyModelWithTable>(
       rows,
       columns: columns?.call(EmptyModelWithTable.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmptyModelWithTable> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EmptyModelWithTable row, {
     _i1.ColumnSelections<EmptyModelWithTableTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<EmptyModelWithTable>(
+    return databaseAccessor.db.updateRow<EmptyModelWithTable>(
       row,
       columns: columns?.call(EmptyModelWithTable.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EmptyModelWithTable>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EmptyModelWithTable> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<EmptyModelWithTable>(
+    return databaseAccessor.db.delete<EmptyModelWithTable>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmptyModelWithTable> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EmptyModelWithTable row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<EmptyModelWithTable>(
+    return databaseAccessor.db.deleteRow<EmptyModelWithTable>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EmptyModelWithTable>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<EmptyModelWithTableTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<EmptyModelWithTable>(
+    return databaseAccessor.db.deleteWhere<EmptyModelWithTable>(
       where: where(EmptyModelWithTable.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<EmptyModelWithTable>(
+    return databaseAccessor.db.count<EmptyModelWithTable>(
       where: where?.call(EmptyModelWithTable.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

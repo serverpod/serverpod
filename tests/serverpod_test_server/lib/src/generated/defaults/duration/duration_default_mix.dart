@@ -242,7 +242,7 @@ class DurationDefaultMixRepository {
   const DurationDefaultMixRepository._();
 
   Future<List<DurationDefaultMix>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<DurationDefaultMixTable>? where,
     int? limit,
     int? offset,
@@ -251,19 +251,19 @@ class DurationDefaultMixRepository {
     _i1.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<DurationDefaultMix>(
+    return databaseAccessor.db.find<DurationDefaultMix>(
       where: where?.call(DurationDefaultMix.t),
       orderBy: orderBy?.call(DurationDefaultMix.t),
       orderByList: orderByList?.call(DurationDefaultMix.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<DurationDefaultMix?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<DurationDefaultMixTable>? where,
     int? offset,
     _i1.OrderByBuilder<DurationDefaultMixTable>? orderBy,
@@ -271,118 +271,118 @@ class DurationDefaultMixRepository {
     _i1.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<DurationDefaultMix>(
+    return databaseAccessor.db.findFirstRow<DurationDefaultMix>(
       where: where?.call(DurationDefaultMix.t),
       orderBy: orderBy?.call(DurationDefaultMix.t),
       orderByList: orderByList?.call(DurationDefaultMix.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<DurationDefaultMix?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<DurationDefaultMix>(
+    return databaseAccessor.db.findById<DurationDefaultMix>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<DurationDefaultMix>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<DurationDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<DurationDefaultMix>(
+    return databaseAccessor.db.insert<DurationDefaultMix>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<DurationDefaultMix> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     DurationDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<DurationDefaultMix>(
+    return databaseAccessor.db.insertRow<DurationDefaultMix>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<DurationDefaultMix>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<DurationDefaultMix> rows, {
     _i1.ColumnSelections<DurationDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<DurationDefaultMix>(
+    return databaseAccessor.db.update<DurationDefaultMix>(
       rows,
       columns: columns?.call(DurationDefaultMix.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<DurationDefaultMix> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     DurationDefaultMix row, {
     _i1.ColumnSelections<DurationDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<DurationDefaultMix>(
+    return databaseAccessor.db.updateRow<DurationDefaultMix>(
       row,
       columns: columns?.call(DurationDefaultMix.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<DurationDefaultMix>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<DurationDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<DurationDefaultMix>(
+    return databaseAccessor.db.delete<DurationDefaultMix>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<DurationDefaultMix> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     DurationDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<DurationDefaultMix>(
+    return databaseAccessor.db.deleteRow<DurationDefaultMix>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<DurationDefaultMix>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<DurationDefaultMixTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<DurationDefaultMix>(
+    return databaseAccessor.db.deleteWhere<DurationDefaultMix>(
       where: where(DurationDefaultMix.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<DurationDefaultMixTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<DurationDefaultMix>(
+    return databaseAccessor.db.count<DurationDefaultMix>(
       where: where?.call(DurationDefaultMix.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

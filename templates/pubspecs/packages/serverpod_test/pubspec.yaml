@@ -1,0 +1,27 @@
+# TEMPLATE
+
+name: serverpod_test
+version: SERVERPOD_VERSION
+description: Severpod test tools to simplify testing of endpoints.
+repository: https://github.com/serverpod/serverpod
+homepage: https://serverpod.dev
+issue_tracker: https://github.com/serverpod/serverpod/issues
+
+environment:
+  sdk: DART_VERSION
+
+dependencies:
+  serverpod_lints: SERVERPOD_VERSION
+  test: ^1.24.2
+  serverpod: SERVERPOD_VERSION
+  meta: ^1.8.0
+
+dependency_overrides:
+  serverpod:
+    path: ../serverpod
+  serverpod_shared:
+    path: ../serverpod_shared
+  serverpod_serialization:
+    path: ../serverpod_serialization
+  serverpod_lints:
+    path: ../serverpod_lints

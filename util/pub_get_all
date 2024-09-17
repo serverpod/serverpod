@@ -35,6 +35,7 @@ declare -a dart_paths=(
   "packages/serverpod_serialization"
   "packages/serverpod_service_client"
   "packages/serverpod_shared"
+  "packages/serverpod_test"
   "tests/serverpod_test_client"
   "tests/serverpod_test_server"
   "tests/serverpod_test_shared"

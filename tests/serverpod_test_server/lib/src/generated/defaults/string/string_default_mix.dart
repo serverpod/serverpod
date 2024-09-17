@@ -221,7 +221,7 @@ class StringDefaultMixRepository {
   const StringDefaultMixRepository._();
 
   Future<List<StringDefaultMix>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<StringDefaultMixTable>? where,
     int? limit,
     int? offset,
@@ -230,19 +230,19 @@ class StringDefaultMixRepository {
     _i1.OrderByListBuilder<StringDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<StringDefaultMix>(
+    return databaseAccessor.db.find<StringDefaultMix>(
       where: where?.call(StringDefaultMix.t),
       orderBy: orderBy?.call(StringDefaultMix.t),
       orderByList: orderByList?.call(StringDefaultMix.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<StringDefaultMix?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<StringDefaultMixTable>? where,
     int? offset,
     _i1.OrderByBuilder<StringDefaultMixTable>? orderBy,
@@ -250,118 +250,118 @@ class StringDefaultMixRepository {
     _i1.OrderByListBuilder<StringDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<StringDefaultMix>(
+    return databaseAccessor.db.findFirstRow<StringDefaultMix>(
       where: where?.call(StringDefaultMix.t),
       orderBy: orderBy?.call(StringDefaultMix.t),
       orderByList: orderByList?.call(StringDefaultMix.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<StringDefaultMix?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<StringDefaultMix>(
+    return databaseAccessor.db.findById<StringDefaultMix>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<StringDefaultMix>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<StringDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<StringDefaultMix>(
+    return databaseAccessor.db.insert<StringDefaultMix>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<StringDefaultMix> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     StringDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<StringDefaultMix>(
+    return databaseAccessor.db.insertRow<StringDefaultMix>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<StringDefaultMix>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<StringDefaultMix> rows, {
     _i1.ColumnSelections<StringDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<StringDefaultMix>(
+    return databaseAccessor.db.update<StringDefaultMix>(
       rows,
       columns: columns?.call(StringDefaultMix.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<StringDefaultMix> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     StringDefaultMix row, {
     _i1.ColumnSelections<StringDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<StringDefaultMix>(
+    return databaseAccessor.db.updateRow<StringDefaultMix>(
       row,
       columns: columns?.call(StringDefaultMix.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<StringDefaultMix>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<StringDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<StringDefaultMix>(
+    return databaseAccessor.db.delete<StringDefaultMix>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<StringDefaultMix> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     StringDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<StringDefaultMix>(
+    return databaseAccessor.db.deleteRow<StringDefaultMix>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<StringDefaultMix>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<StringDefaultMixTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<StringDefaultMix>(
+    return databaseAccessor.db.deleteWhere<StringDefaultMix>(
       where: where(StringDefaultMix.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<StringDefaultMixTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<StringDefaultMix>(
+    return databaseAccessor.db.count<StringDefaultMix>(
       where: where?.call(StringDefaultMix.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

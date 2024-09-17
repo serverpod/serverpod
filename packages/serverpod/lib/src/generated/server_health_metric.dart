@@ -277,7 +277,7 @@ class ServerHealthMetricRepository {
   const ServerHealthMetricRepository._();
 
   Future<List<ServerHealthMetric>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? limit,
     int? offset,
@@ -286,19 +286,19 @@ class ServerHealthMetricRepository {
     _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<ServerHealthMetric>(
+    return databaseAccessor.db.find<ServerHealthMetric>(
       where: where?.call(ServerHealthMetric.t),
       orderBy: orderBy?.call(ServerHealthMetric.t),
       orderByList: orderByList?.call(ServerHealthMetric.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ServerHealthMetric?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? offset,
     _i1.OrderByBuilder<ServerHealthMetricTable>? orderBy,
@@ -306,118 +306,118 @@ class ServerHealthMetricRepository {
     _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<ServerHealthMetric>(
+    return databaseAccessor.db.findFirstRow<ServerHealthMetric>(
       where: where?.call(ServerHealthMetric.t),
       orderBy: orderBy?.call(ServerHealthMetric.t),
       orderByList: orderByList?.call(ServerHealthMetric.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ServerHealthMetric?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ServerHealthMetric>(
+    return databaseAccessor.db.findById<ServerHealthMetric>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ServerHealthMetric>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ServerHealthMetric> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ServerHealthMetric>(
+    return databaseAccessor.db.insert<ServerHealthMetric>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ServerHealthMetric> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ServerHealthMetric row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ServerHealthMetric>(
+    return databaseAccessor.db.insertRow<ServerHealthMetric>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ServerHealthMetric>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ServerHealthMetric> rows, {
     _i1.ColumnSelections<ServerHealthMetricTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<ServerHealthMetric>(
+    return databaseAccessor.db.update<ServerHealthMetric>(
       rows,
       columns: columns?.call(ServerHealthMetric.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ServerHealthMetric> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ServerHealthMetric row, {
     _i1.ColumnSelections<ServerHealthMetricTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<ServerHealthMetric>(
+    return databaseAccessor.db.updateRow<ServerHealthMetric>(
       row,
       columns: columns?.call(ServerHealthMetric.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ServerHealthMetric>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ServerHealthMetric> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ServerHealthMetric>(
+    return databaseAccessor.db.delete<ServerHealthMetric>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ServerHealthMetric> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ServerHealthMetric row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ServerHealthMetric>(
+    return databaseAccessor.db.deleteRow<ServerHealthMetric>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ServerHealthMetric>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<ServerHealthMetricTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<ServerHealthMetric>(
+    return databaseAccessor.db.deleteWhere<ServerHealthMetric>(
       where: where(ServerHealthMetric.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<ServerHealthMetric>(
+    return databaseAccessor.db.count<ServerHealthMetric>(
       where: where?.call(ServerHealthMetric.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

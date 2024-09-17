@@ -3,18 +3,17 @@ import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
-Future<void> deleteAll(Session session) async {
-  await RelatedUniqueData.db
-      .deleteWhere(session, where: (t) => Constant.bool(true));
-  await Types.db.deleteWhere(session, where: (t) => Constant.bool(true));
-  await UniqueData.db.deleteWhere(session, where: (t) => Constant.bool(true));
-}
-
 void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given an empty database', () {
-    tearDown(() async => await deleteAll(session));
+    tearDown(() async {
+      await RelatedUniqueData.db
+          .deleteWhere(session, where: (t) => Constant.bool(true));
+      await Types.db.deleteWhere(session, where: (t) => Constant.bool(true));
+      await UniqueData.db
+          .deleteWhere(session, where: (t) => Constant.bool(true));
+    });
     test(
         'when batch inserting then all the entries are created in the database.',
         () async {
@@ -70,28 +69,47 @@ void main() async {
     });
   });
 
-  test(
-      'Given an object data without an id when calling insertRow then the created object is returned.',
-      () async {
-    var simpleData = SimpleData(num: 1);
-    var inserted = await SimpleData.db.insertRow(
-      session,
-      simpleData,
-    );
+  group('Given an object data without an id when calling insertRow', () {
+    late SimpleData inserted;
+    setUp(() async {
+      var simpleData = SimpleData(num: 1);
+      inserted = await SimpleData.db.insertRow(
+        session,
+        simpleData,
+      );
+    });
+    tearDown(() async {
+      await SimpleData.db.deleteWhere(
+        session,
+        where: (t) => Constant.bool(true),
+      );
+    });
 
-    expect(inserted.id, isNotNull);
-    expect(inserted.num, 1);
+    test(' then the created object is returned.', () async {
+      expect(inserted.id, isNotNull);
+      expect(inserted.num, 1);
+    });
   });
 
-  test(
-      'Given a model without fields when inserting it, then the model is created.',
-      () async {
-    var emptyModel = EmptyModelWithTable();
-    var inserted = await EmptyModelWithTable.db.insertRow(
-      session,
-      emptyModel,
-    );
+  group('Given a model without fields when inserting it', () {
+    late EmptyModelWithTable inserted;
+    setUp(() async {
+      var emptyModel = EmptyModelWithTable();
+      inserted = await EmptyModelWithTable.db.insertRow(
+        session,
+        emptyModel,
+      );
+    });
 
-    expect(inserted.id, isNotNull);
+    tearDown(() async {
+      await EmptyModelWithTable.db.deleteWhere(
+        session,
+        where: (t) => Constant.bool(true),
+      );
+    });
+
+    test('then the model is created.', () async {
+      expect(inserted.id, isNotNull);
+    });
   });
 }

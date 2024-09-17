@@ -204,7 +204,7 @@ class EnumDefaultPersistRepository {
   const EnumDefaultPersistRepository._();
 
   Future<List<EnumDefaultPersist>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
     int? limit,
     int? offset,
@@ -213,19 +213,19 @@ class EnumDefaultPersistRepository {
     _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<EnumDefaultPersist>(
+    return databaseAccessor.db.find<EnumDefaultPersist>(
       where: where?.call(EnumDefaultPersist.t),
       orderBy: orderBy?.call(EnumDefaultPersist.t),
       orderByList: orderByList?.call(EnumDefaultPersist.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EnumDefaultPersist?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
@@ -233,118 +233,118 @@ class EnumDefaultPersistRepository {
     _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<EnumDefaultPersist>(
+    return databaseAccessor.db.findFirstRow<EnumDefaultPersist>(
       where: where?.call(EnumDefaultPersist.t),
       orderBy: orderBy?.call(EnumDefaultPersist.t),
       orderByList: orderByList?.call(EnumDefaultPersist.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EnumDefaultPersist?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<EnumDefaultPersist>(
+    return databaseAccessor.db.findById<EnumDefaultPersist>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EnumDefaultPersist>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EnumDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<EnumDefaultPersist>(
+    return databaseAccessor.db.insert<EnumDefaultPersist>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EnumDefaultPersist> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EnumDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<EnumDefaultPersist>(
+    return databaseAccessor.db.insertRow<EnumDefaultPersist>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EnumDefaultPersist>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EnumDefaultPersist> rows, {
     _i1.ColumnSelections<EnumDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<EnumDefaultPersist>(
+    return databaseAccessor.db.update<EnumDefaultPersist>(
       rows,
       columns: columns?.call(EnumDefaultPersist.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EnumDefaultPersist> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EnumDefaultPersist row, {
     _i1.ColumnSelections<EnumDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<EnumDefaultPersist>(
+    return databaseAccessor.db.updateRow<EnumDefaultPersist>(
       row,
       columns: columns?.call(EnumDefaultPersist.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EnumDefaultPersist>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EnumDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<EnumDefaultPersist>(
+    return databaseAccessor.db.delete<EnumDefaultPersist>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EnumDefaultPersist> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EnumDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<EnumDefaultPersist>(
+    return databaseAccessor.db.deleteRow<EnumDefaultPersist>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EnumDefaultPersist>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<EnumDefaultPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<EnumDefaultPersist>(
+    return databaseAccessor.db.deleteWhere<EnumDefaultPersist>(
       where: where(EnumDefaultPersist.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<EnumDefaultPersist>(
+    return databaseAccessor.db.count<EnumDefaultPersist>(
       where: where?.call(EnumDefaultPersist.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
