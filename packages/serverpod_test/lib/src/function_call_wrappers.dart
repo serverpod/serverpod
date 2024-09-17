@@ -50,15 +50,15 @@ Future<void> callStreamFunctionAndHandleExceptions<T>(
 }
 
 /// The user was not authenticated.
-class UnauthenticatedEndpointCallTestException implements Exception {
-  /// Creates a new UnauthenticatedEndpointCallTestException.
-  UnauthenticatedEndpointCallTestException();
+class ServerpodUnauthenticatedException implements Exception {
+  /// Creates a new [ServerpodUnauthenticatedException].
+  ServerpodUnauthenticatedException();
 }
 
 /// The authentication key provided did not have sufficient access.
-class InsufficientEndpointAccessTestException implements Exception {
-  /// Creates a new InsufficientEndpointAccessTestException.
-  InsufficientEndpointAccessTestException();
+class ServerpodInsufficientAccessException implements Exception {
+  /// Creates a new [ServerpodInsufficientAccessException].
+  ServerpodInsufficientAccessException();
 }
 
 dynamic _getException(dynamic e) {
@@ -66,9 +66,9 @@ dynamic _getException(dynamic e) {
     case NotAuthorizedException():
       return switch (e.authenticationFailedResult.reason) {
         AuthenticationFailureReason.unauthenticated =>
-          UnauthenticatedEndpointCallTestException(),
+          ServerpodUnauthenticatedException(),
         AuthenticationFailureReason.insufficientAccess =>
-          InsufficientEndpointAccessTestException(),
+          ServerpodInsufficientAccessException(),
       };
     case MethodNotFoundException():
     case EndpointNotFoundException():

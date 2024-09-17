@@ -8,7 +8,7 @@ void main() {
     'Given AuthenticatedTestToolsEndpoint',
     (endpoints, session) {
       test(
-          'when not authenticated and calling returnsString then throws UnauthenticatedEndpointCallTestException',
+          'when not authenticated and calling returnsString then throws ServerpodUnauthenticatedException',
           () async {
         session = session.copyWith(
             authentication: AuthenticationOverride.unauthenticated());
@@ -16,11 +16,11 @@ void main() {
         final result =
             endpoints.authenticatedTestTools.returnsString(session, "Hello");
         await expectLater(
-            result, throwsA(isA<UnauthenticatedEndpointCallTestException>()));
+            result, throwsA(isA<ServerpodUnauthenticatedException>()));
       });
 
       test(
-          'when not having sufficient access scopes and calling returnsString then throws InsufficientEndpointAccessTestException',
+          'when not having sufficient access scopes and calling returnsString then throws ServerpodInsufficientAccessException',
           () async {
         session = session.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(1234, {}),
@@ -29,7 +29,7 @@ void main() {
         final result =
             endpoints.authenticatedTestTools.returnsString(session, "Hello");
         await expectLater(
-            result, throwsA(isA<InsufficientEndpointAccessTestException>()));
+            result, throwsA(isA<ServerpodInsufficientAccessException>()));
       });
 
       test('when authorized and calling returnsString then echoes string',
@@ -47,7 +47,7 @@ void main() {
       });
 
       test(
-          'when not authenticated and calling returnsStream then throws UnauthenticatedEndpointCallTestException',
+          'when not authenticated and calling returnsStream then throws ServerpodUnauthenticatedException',
           () async {
         session = session.copyWith(
             authentication: AuthenticationOverride.unauthenticated());
@@ -55,11 +55,11 @@ void main() {
         final result =
             endpoints.authenticatedTestTools.returnsStream(session, 3).toList();
         await expectLater(
-            result, throwsA(isA<UnauthenticatedEndpointCallTestException>()));
+            result, throwsA(isA<ServerpodUnauthenticatedException>()));
       });
 
       test(
-          'when not having sufficient access scopes and calling returnsStream then throws InsufficientEndpointAccessTestException',
+          'when not having sufficient access scopes and calling returnsStream then throws ServerpodInsufficientAccessException',
           () async {
         session = session.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
@@ -70,7 +70,7 @@ void main() {
         final result =
             endpoints.authenticatedTestTools.returnsStream(session, 3).toList();
         await expectLater(
-            result, throwsA(isA<InsufficientEndpointAccessTestException>()));
+            result, throwsA(isA<ServerpodInsufficientAccessException>()));
       });
 
       test('when authorized and calling returnsStream then returns a stream',

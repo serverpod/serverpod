@@ -52,8 +52,8 @@ void main() {
         matches(
             r"export\s+'package:serverpod_test/serverpod_test\.dart'\s+show\s+"
             r'TestSession,\s+'
-            r'UnauthenticatedEndpointCallTestException,\s+'
-            r'InsufficientEndpointAccessTestException,\s+'
+            r'ServerpodUnauthenticatedException,\s+'
+            r'ServerpodInsufficientAccessException,\s+'
             r'RollbackDatabase,\s+'
             r'ResetTestSessions,\s+'
             r'flushMicrotasks,\s+'

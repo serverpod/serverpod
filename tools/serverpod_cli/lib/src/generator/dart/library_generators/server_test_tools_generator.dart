@@ -410,8 +410,8 @@ class ServerTestToolsGenerator {
       Directive.import(endpointsPath),
       Directive.export(serverpodTestUrl, show: const [
         'TestSession',
-        'UnauthenticatedEndpointCallTestException',
-        'InsufficientEndpointAccessTestException',
+        'ServerpodUnauthenticatedException',
+        'ServerpodInsufficientAccessException',
         'RollbackDatabase',
         'ResetTestSessions',
         'flushMicrotasks',

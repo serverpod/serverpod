@@ -53,8 +53,8 @@ import 'package:serverpod_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test.dart'
     show
         TestSession,
-        UnauthenticatedEndpointCallTestException,
-        InsufficientEndpointAccessTestException,
+        ServerpodUnauthenticatedException,
+        ServerpodInsufficientAccessException,
         RollbackDatabase,
         ResetTestSessions,
         flushMicrotasks,
