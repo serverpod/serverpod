@@ -8,13 +8,10 @@ import 'package:test/test.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures(
-    [ExperimentalFeature.inheritance],
-  ).build();
+      [ExperimentalFeature.inheritance]).build();
 
   group('Extends property tests', () {
-    test(
-        'Given a child-class of an existing class, then no errors are collected and childClasses and extendsClass are resolved',
-        () {
+    group('Given a child-class of an existing class', () {
       var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
@@ -38,21 +35,29 @@ void main() {
           StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
               .validateAll();
 
-      expect(
-        collector.errors,
-        isEmpty,
-      );
+      test('Then no errors are collected', () {
+        expect(
+          collector.errors,
+          isEmpty,
+        );
+      });
 
-      var parent = models.first as ClassDefinition;
-      var childClasses = parent.childClasses;
-      var isChildResolved = childClasses.first is ResolvedInheritanceDefinition;
+      test('Then the child-class is resolved', () {
+        var parent = models.first as ClassDefinition;
+        var childClasses = parent.childClasses;
+        var isChildResolved =
+            childClasses.first is ResolvedInheritanceDefinition;
 
-      var child = models.last as ClassDefinition;
-      var extendsClass = child.extendsClass;
-      var isExtendsResolved = extendsClass is ResolvedInheritanceDefinition;
+        expect(isChildResolved, isTrue);
+      });
 
-      expect(isChildResolved, isTrue);
-      expect(isExtendsResolved, isTrue);
+      test('Then extendsClass is resolved', () {
+        var child = models.last as ClassDefinition;
+        var extendsClass = child.extendsClass;
+        var isExtendsResolved = extendsClass is ResolvedInheritanceDefinition;
+
+        expect(isExtendsResolved, isTrue);
+      });
     });
 
     test(
