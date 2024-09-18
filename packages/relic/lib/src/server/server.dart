@@ -4,7 +4,7 @@
 
 import 'dart:async';
 
-import 'handler.dart';
+import '../handler/handler.dart';
 
 /// An [adapter][] with a concrete URL.
 ///
@@ -20,7 +20,7 @@ import 'handler.dart';
 /// code to a single server implementation.
 ///
 /// There are two built-in implementations of this interface. You can create a
-/// server backed by `dart:io` using [IOServer], or you can create a server
+/// server backed by `dart:io` using [RelicServer], or you can create a server
 /// that's backed by a normal [Handler] using [ServerHandler].
 ///
 /// Implementations of this interface are responsible for ensuring that the
