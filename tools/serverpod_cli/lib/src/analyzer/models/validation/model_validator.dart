@@ -120,7 +120,8 @@ void _collectInvalidKeyErrors(
   YamlMap documentContents,
   CodeAnalysisCollector collector,
 ) {
-  var validKeys = documentStructure.map((e) => e.key).toSet();
+  var validKeys =
+      documentStructure.where((e) => !e.isHidden).map((e) => e.key).toSet();
   for (var keyNode in documentContents.nodes.keys) {
     if (keyNode is! YamlScalar) {
       collector.addError(SourceSpanSeverityException(

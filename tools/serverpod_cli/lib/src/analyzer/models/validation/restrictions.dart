@@ -1,3 +1,6 @@
+import 'package:source_span/source_span.dart';
+import 'package:yaml/yaml.dart';
+
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
@@ -5,12 +8,9 @@ import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
-import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
-import 'package:source_span/source_span.dart';
-import 'package:yaml/yaml.dart';
 
 import 'model_relations.dart';
 
@@ -207,32 +207,6 @@ class Restrictions {
             'The "table" property cannot be used when the database feature is disabled.',
             span,
             severity: SourceSpanSeverity.warning)
-      ];
-    }
-
-    return [];
-  }
-
-  List<SourceSpanSeverityException> validateExtendsClassKey(
-    String parentNodeName,
-    dynamic extendsClass,
-    SourceSpan? span,
-  ) {
-    if (extendsClass is! String) {
-      return [
-        SourceSpanSeverityException(
-          'The "${Keyword.extendsClass}" key must be a String.',
-          span,
-        )
-      ];
-    }
-
-    if (!config.isExperimentalFeatureEnabled(ExperimentalFeature.inheritance)) {
-      return [
-        SourceSpanSeverityException(
-          'The "${Keyword.extendsClass}" property is not allowed for class type. Valid keys are {class, table, managedMigration, serverOnly, fields, indexes}.',
-          span,
-        )
       ];
     }
 

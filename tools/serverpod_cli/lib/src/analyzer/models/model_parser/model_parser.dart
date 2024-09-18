@@ -36,12 +36,7 @@ class ModelParser {
     var className = classNode.value;
     if (className is! String) return null;
 
-    // TODO: Remove this check for `enabledInheritance == true` when we can also implement it for tables
-    // Tracked by issue: https://github.com/serverpod/serverpod/issues/2711
-    // After that, we can remove the check if `enableInheritance == true` and always parse the extends class
-    // var extendsClass = _parseExtendsClass(documentContents);
-    var extendsClass =
-        enableInheritance == true ? _parseExtendsClass(documentContents) : null;
+    var extendsClass = _parseExtendsClass(documentContents);
 
     var tableName = _parseTableName(documentContents);
     var serverOnly = _parseServerOnly(documentContents);

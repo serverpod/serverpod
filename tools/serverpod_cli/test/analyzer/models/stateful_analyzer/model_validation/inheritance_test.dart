@@ -207,7 +207,7 @@ void main() {
   });
 
   test(
-      'Given a child-class when inheritance is not enabled, then error is collected that experimental-features=inheritance needs to be enabled',
+      'Given a child-class when inheritance is not enabled, then error is collected that the "extends" property is not allowed',
       () {
     var modelSources = [
       ModelSourceBuilder().withYaml(
