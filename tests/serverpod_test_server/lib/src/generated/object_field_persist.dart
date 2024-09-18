@@ -192,7 +192,7 @@ class ObjectFieldPersistRepository {
   const ObjectFieldPersistRepository._();
 
   Future<List<ObjectFieldPersist>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     int? limit,
     int? offset,
@@ -201,19 +201,19 @@ class ObjectFieldPersistRepository {
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<ObjectFieldPersist>(
+    return databaseAccessor.db.find<ObjectFieldPersist>(
       where: where?.call(ObjectFieldPersist.t),
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ObjectFieldPersist?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
@@ -221,118 +221,118 @@ class ObjectFieldPersistRepository {
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<ObjectFieldPersist>(
+    return databaseAccessor.db.findFirstRow<ObjectFieldPersist>(
       where: where?.call(ObjectFieldPersist.t),
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ObjectFieldPersist?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ObjectFieldPersist>(
+    return databaseAccessor.db.findById<ObjectFieldPersist>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ObjectFieldPersist>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ObjectFieldPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ObjectFieldPersist>(
+    return databaseAccessor.db.insert<ObjectFieldPersist>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ObjectFieldPersist> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ObjectFieldPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ObjectFieldPersist>(
+    return databaseAccessor.db.insertRow<ObjectFieldPersist>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ObjectFieldPersist>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ObjectFieldPersist> rows, {
     _i1.ColumnSelections<ObjectFieldPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<ObjectFieldPersist>(
+    return databaseAccessor.db.update<ObjectFieldPersist>(
       rows,
       columns: columns?.call(ObjectFieldPersist.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ObjectFieldPersist> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ObjectFieldPersist row, {
     _i1.ColumnSelections<ObjectFieldPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<ObjectFieldPersist>(
+    return databaseAccessor.db.updateRow<ObjectFieldPersist>(
       row,
       columns: columns?.call(ObjectFieldPersist.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ObjectFieldPersist>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ObjectFieldPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ObjectFieldPersist>(
+    return databaseAccessor.db.delete<ObjectFieldPersist>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ObjectFieldPersist> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ObjectFieldPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ObjectFieldPersist>(
+    return databaseAccessor.db.deleteRow<ObjectFieldPersist>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ObjectFieldPersist>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<ObjectFieldPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<ObjectFieldPersist>(
+    return databaseAccessor.db.deleteWhere<ObjectFieldPersist>(
       where: where(ObjectFieldPersist.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<ObjectFieldPersist>(
+    return databaseAccessor.db.count<ObjectFieldPersist>(
       where: where?.call(ObjectFieldPersist.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
