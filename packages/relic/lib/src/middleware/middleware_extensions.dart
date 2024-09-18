@@ -1,5 +1,5 @@
-import '../handler.dart';
-import '../middleware.dart';
+import '../handler/handler.dart';
+import 'middleware.dart';
 
 /// Extensions on [Middleware] to aid in composing [Middleware] and [Handler]s.
 ///

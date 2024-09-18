@@ -7,7 +7,7 @@ import 'dart:io' as io;
 import 'body.dart';
 import 'package:stream_channel/stream_channel.dart';
 
-import 'hijack_exception.dart';
+import './exception/hijack_exception.dart';
 import 'message.dart';
 import 'headers.dart';
 import 'util/util.dart';

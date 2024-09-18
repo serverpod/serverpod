@@ -2,8 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'handler.dart';
-import 'middleware.dart';
+import 'handler/handler.dart';
+import 'middleware/middleware.dart';
 
 /// A helper that makes it easy to compose a set of [Middleware] and a
 /// [Handler].

@@ -7,7 +7,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
-import 'package:relic/relic.dart';
+
+import '../body.dart';
+import '../response.dart';
 
 String _getHeader(String sanitizedHeading) => '''<!DOCTYPE html>
 <html>

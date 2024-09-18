@@ -3,8 +3,8 @@
 // BSD-style license that can be found in the LICENSE file.
 import 'dart:async';
 
-import 'request.dart';
-import 'response.dart';
+import '../request.dart';
+import '../response.dart';
 
 /// A function which handles a [Request].
 ///

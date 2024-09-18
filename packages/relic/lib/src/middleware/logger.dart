@@ -6,8 +6,8 @@ import 'dart:async';
 
 import 'package:stack_trace/stack_trace.dart';
 
-import '../hijack_exception.dart';
-import '../middleware.dart';
+import '../exception/hijack_exception.dart';
+import 'middleware.dart';
 
 /// Middleware which prints the time of the request, the elapsed time for the
 /// inner handlers, the response's status code and the request URI.

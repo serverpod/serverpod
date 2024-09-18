@@ -9,7 +9,13 @@ import 'dart:math' as math;
 import 'package:convert/convert.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
-import 'package:relic/relic.dart';
+
+import '../body.dart';
+import '../handler/handler.dart';
+import '../headers.dart';
+import '../headers/types/mime_type.dart';
+import '../request.dart';
+import '../response.dart';
 
 import 'directory_listing.dart';
 import 'util.dart';
