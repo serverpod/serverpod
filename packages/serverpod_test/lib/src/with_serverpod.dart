@@ -6,6 +6,20 @@ import 'transaction_manager.dart';
 
 export 'package:meta/meta.dart' show isTestGroup;
 
+/// Thrown when the [withServerpod] helper could not be initialized.
+class InitializationException implements Exception {
+  /// The error message.
+  final String message;
+
+  /// Creates a new initialization exception.
+  InitializationException(this.message);
+
+  @override
+  String toString() {
+    return message;
+  }
+}
+
 /// Options for when to reset the test session and recreate
 /// the underlying Serverpod session during the test lifecycle.
 enum ResetTestSessions {
@@ -61,16 +75,23 @@ void Function(TestClosure<T>)
         serverpodSession: testServerpod.createSession(),
       );
 
-      setUpAll(() async {
-        await testServerpod.start();
-        transactionManager =
-            TransactionManager(mainTestSession.serverpodSession);
+      var setUpAllFailed = false;
 
-        if (rollbackDatabase == RollbackDatabase.afterAll ||
-            rollbackDatabase == RollbackDatabase.afterEach) {
-          mainTestSession.transaction =
-              await transactionManager.createTransaction();
-          await transactionManager.pushSavePoint();
+      setUpAll(() async {
+        try {
+          await testServerpod.start();
+          transactionManager =
+              TransactionManager(mainTestSession.serverpodSession);
+
+          if (rollbackDatabase == RollbackDatabase.afterAll ||
+              rollbackDatabase == RollbackDatabase.afterEach) {
+            mainTestSession.transaction =
+                await transactionManager.createTransaction();
+            await transactionManager.pushSavePoint();
+          }
+        } catch (e) {
+          setUpAllFailed = true;
+          rethrow;
         }
       });
 
@@ -88,6 +109,12 @@ void Function(TestClosure<T>)
       });
 
       tearDownAll(() async {
+        if (setUpAllFailed) {
+          // If setUpAll failed, there is nothing to tear down.
+          // `transactionManager` might not be initialized so this callback is not safe to execute.
+          return;
+        }
+
         if (rollbackDatabase == RollbackDatabase.afterAll ||
             rollbackDatabase == RollbackDatabase.afterEach) {
           await transactionManager.cancelTransaction();

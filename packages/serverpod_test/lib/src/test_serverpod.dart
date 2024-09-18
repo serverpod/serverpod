@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_test/src/with_serverpod.dart';
 
 /// Internal test endpoints interface that contains implementation details
 /// that should only be used internally by the test tools.
@@ -27,6 +28,20 @@ class InternalServerpodSession extends Session {
   });
 }
 
+List<String> _getServerpodStartUpArgs(String? runMode) {
+  List<String> runModeFlag = ['-m', runMode ?? ServerpodRunMode.test];
+
+  // Apply migrations only in test mode.
+  // For other environments it might be unexpected that the tests are applying migrations.
+  List<String> applyMigrationsFlag =
+      runMode == ServerpodRunMode.test ? ['--apply-migrations'] : [];
+
+  return [
+    ...runModeFlag,
+    ...applyMigrationsFlag,
+  ];
+}
+
 /// A facade for the real Serverpod instance.
 class TestServerpod<T extends InternalTestEndpoints> {
   /// The test endpoints that are exposed to the user.
@@ -41,7 +56,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
     required EndpointDispatch endpoints,
     String? runMode,
   }) : _serverpod = Serverpod(
-          ['-m', runMode ?? ServerpodRunMode.test],
+          _getServerpodStartUpArgs(runMode),
           serializationManager,
           endpoints,
         ) {
@@ -51,7 +66,17 @@ class TestServerpod<T extends InternalTestEndpoints> {
 
   /// Starts the underlying serverpod instance.
   Future<void> start() async {
-    await _serverpod.start();
+    try {
+      await _serverpod.start(runInGuardedZone: false);
+    } on ExitException catch (e, stackTrace) {
+      throw InitializationException(
+        'Failed to start the serverpod instance: ${e.message} \n\n $stackTrace',
+      );
+    } catch (e) {
+      throw InitializationException(
+        'Failed to start the serverpod instance ($e)',
+      );
+    }
   }
 
   /// Shuts down the underlying serverpod instance.
