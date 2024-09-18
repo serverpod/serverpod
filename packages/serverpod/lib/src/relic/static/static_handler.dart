@@ -1,4 +1,4 @@
-import 'package:serverpod/serverpod.dart';
+import 'package:relic/relic.dart';
 
 /// Creates a handler that serves static files mounted at a specific [moutedPath].
 ///
