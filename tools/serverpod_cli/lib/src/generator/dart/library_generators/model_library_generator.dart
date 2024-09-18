@@ -48,8 +48,6 @@ class SerializableModelLibraryGenerator {
       config: config,
     );
 
-    bool isParentClass = classDefinition.childClasses.isNotEmpty;
-
     return Library(
       (libraryBuilder) {
         libraryBuilder.body.addAll([
@@ -58,13 +56,12 @@ class SerializableModelLibraryGenerator {
             classDefinition,
             tableName,
             fields,
-            isParentClass,
           ),
           // We need to generate the implementation class for the copyWith method
           // to support differentiating between null and undefined values.
           // https://stackoverflow.com/questions/68009392/dart-custom-copywith-method-with-nullable-properties
           if (_shouldCreateUndefinedClass(fields)) _buildUndefinedClass(),
-          if (!isParentClass)
+          if (!classDefinition.isParentClass)
             _buildModelImplClass(
               className,
               classDefinition,
@@ -133,7 +130,6 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
     String? tableName,
     List<SerializableModelFieldDefinition> fields,
-    bool isParentClass,
   ) {
     var relationFields = fields.where((field) =>
         field.relation is ObjectRelationDefinition ||
@@ -147,7 +143,7 @@ class SerializableModelLibraryGenerator {
         ..name = className
         ..docs.addAll(classDefinition.documentation ?? []);
 
-      if (!isParentClass) {
+      if (!classDefinition.isParentClass) {
         classBuilder.abstract = true;
       }
 
@@ -198,9 +194,8 @@ class SerializableModelLibraryGenerator {
           classDefinition,
           fields,
           tableName,
-          isParentClass,
         ),
-        if (!isParentClass)
+        if (!classDefinition.isParentClass)
           _buildModelClassFactoryConstructor(
             className,
             classDefinition,
@@ -214,15 +209,14 @@ class SerializableModelLibraryGenerator {
         )
       ]);
 
-      if (!isParentClass) {
+      if (!classDefinition.isParentClass) {
         classBuilder.methods.add(_buildAbstractCopyWithMethod(
           className,
           classDefinition,
           fields,
         ));
       } else {
-        classBuilder.methods
-            .add(_buildCopyWithMethod(classDefinition, fields, true));
+        classBuilder.methods.add(_buildCopyWithMethod(classDefinition, fields));
       }
       // Serialization
       classBuilder.methods
@@ -277,7 +271,7 @@ class SerializableModelLibraryGenerator {
         ..constructors.add(
           _buildModelImplClassConstructor(classDefinition, fields, tableName),
         )
-        ..methods.add(_buildCopyWithMethod(classDefinition, fields, false));
+        ..methods.add(_buildCopyWithMethod(classDefinition, fields));
     });
   }
 
@@ -422,12 +416,11 @@ class SerializableModelLibraryGenerator {
   Method _buildCopyWithMethod(
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
-    bool isParentClass,
   ) {
     return Method(
       (m) {
         m.name = 'copyWith';
-        if (!isParentClass) {
+        if (!classDefinition.isParentClass) {
           m.annotations.add(refer('override'));
         }
         m.optionalParameters.addAll(
@@ -959,10 +952,9 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
     String? tableName,
-    bool isParentClass,
   ) {
     return Constructor((c) {
-      if (!isParentClass) {
+      if (!classDefinition.isParentClass) {
         c.name = '_';
       }
       c.optionalParameters.addAll(_buildModelClassConstructorParameters(
