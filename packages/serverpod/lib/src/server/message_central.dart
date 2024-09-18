@@ -58,7 +58,7 @@ class MessageCentral {
       var channel = _channels[channelName];
       if (channel == null) return true;
 
-      for (var callback in channel) {
+      for (var callback in channel.toList()) {
         callback(message);
       }
       return true;

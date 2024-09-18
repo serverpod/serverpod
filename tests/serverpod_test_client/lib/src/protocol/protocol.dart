@@ -51,52 +51,52 @@ import 'empty_model/empty_model_relation_item.dart' as _i38;
 import 'empty_model/empty_model_with_table.dart' as _i39;
 import 'empty_model/relation_empy_model.dart' as _i40;
 import 'exception_with_data.dart' as _i41;
-import 'inheritance/child_class.dart' as _i42;
-import 'inheritance/parent_class.dart' as _i43;
-import 'long_identifiers/deep_includes/city_with_long_table_name.dart' as _i44;
+import 'inheritance/parent_class.dart' as _i42;
+import 'long_identifiers/deep_includes/city_with_long_table_name.dart' as _i43;
 import 'long_identifiers/deep_includes/organization_with_long_table_name.dart'
-    as _i45;
+    as _i44;
 import 'long_identifiers/deep_includes/person_with_long_table_name.dart'
-    as _i46;
-import 'long_identifiers/max_field_name.dart' as _i47;
+    as _i45;
+import 'long_identifiers/max_field_name.dart' as _i46;
 import 'long_identifiers/models_with_relations/long_implicit_id_field.dart'
-    as _i48;
+    as _i47;
 import 'long_identifiers/models_with_relations/long_implicit_id_field_collection.dart'
-    as _i49;
+    as _i48;
 import 'long_identifiers/models_with_relations/relation_to_mutiple_max_field_name.dart'
-    as _i50;
-import 'long_identifiers/models_with_relations/user_note.dart' as _i51;
+    as _i49;
+import 'long_identifiers/models_with_relations/user_note.dart' as _i50;
 import 'long_identifiers/models_with_relations/user_note_collection.dart'
-    as _i52;
+    as _i51;
 import 'long_identifiers/models_with_relations/user_note_collection_with_a_long_name.dart'
-    as _i53;
+    as _i52;
 import 'long_identifiers/models_with_relations/user_note_with_a_long_name.dart'
-    as _i54;
-import 'long_identifiers/multiple_max_field_name.dart' as _i55;
-import 'models_with_list_relations/city.dart' as _i56;
-import 'models_with_list_relations/organization.dart' as _i57;
-import 'models_with_list_relations/person.dart' as _i58;
-import 'models_with_relations/many_to_many/course.dart' as _i59;
-import 'models_with_relations/many_to_many/enrollment.dart' as _i60;
-import 'models_with_relations/many_to_many/student.dart' as _i61;
-import 'models_with_relations/module/object_user.dart' as _i62;
-import 'models_with_relations/module/parent_user.dart' as _i63;
-import 'models_with_relations/nested_one_to_many/arena.dart' as _i64;
-import 'models_with_relations/nested_one_to_many/player.dart' as _i65;
-import 'models_with_relations/nested_one_to_many/team.dart' as _i66;
-import 'models_with_relations/one_to_many/comment.dart' as _i67;
-import 'models_with_relations/one_to_many/customer.dart' as _i68;
-import 'models_with_relations/one_to_many/order.dart' as _i69;
-import 'models_with_relations/one_to_one/address.dart' as _i70;
-import 'models_with_relations/one_to_one/citizen.dart' as _i71;
-import 'models_with_relations/one_to_one/company.dart' as _i72;
-import 'models_with_relations/one_to_one/town.dart' as _i73;
-import 'models_with_relations/self_relation/many_to_many/blocking.dart' as _i74;
-import 'models_with_relations/self_relation/many_to_many/member.dart' as _i75;
-import 'models_with_relations/self_relation/one_to_many/cat.dart' as _i76;
-import 'models_with_relations/self_relation/one_to_one/post.dart' as _i77;
-import 'module_datatype.dart' as _i78;
-import 'nullability.dart' as _i79;
+    as _i53;
+import 'long_identifiers/multiple_max_field_name.dart' as _i54;
+import 'models_with_list_relations/city.dart' as _i55;
+import 'models_with_list_relations/organization.dart' as _i56;
+import 'models_with_list_relations/person.dart' as _i57;
+import 'models_with_relations/many_to_many/course.dart' as _i58;
+import 'models_with_relations/many_to_many/enrollment.dart' as _i59;
+import 'models_with_relations/many_to_many/student.dart' as _i60;
+import 'models_with_relations/module/object_user.dart' as _i61;
+import 'models_with_relations/module/parent_user.dart' as _i62;
+import 'models_with_relations/nested_one_to_many/arena.dart' as _i63;
+import 'models_with_relations/nested_one_to_many/player.dart' as _i64;
+import 'models_with_relations/nested_one_to_many/team.dart' as _i65;
+import 'models_with_relations/one_to_many/comment.dart' as _i66;
+import 'models_with_relations/one_to_many/customer.dart' as _i67;
+import 'models_with_relations/one_to_many/order.dart' as _i68;
+import 'models_with_relations/one_to_one/address.dart' as _i69;
+import 'models_with_relations/one_to_one/citizen.dart' as _i70;
+import 'models_with_relations/one_to_one/company.dart' as _i71;
+import 'models_with_relations/one_to_one/town.dart' as _i72;
+import 'models_with_relations/self_relation/many_to_many/blocking.dart' as _i73;
+import 'models_with_relations/self_relation/many_to_many/member.dart' as _i74;
+import 'models_with_relations/self_relation/one_to_many/cat.dart' as _i75;
+import 'models_with_relations/self_relation/one_to_one/post.dart' as _i76;
+import 'module_datatype.dart' as _i77;
+import 'nullability.dart' as _i78;
+import 'object_field_persist.dart' as _i79;
 import 'object_field_scopes.dart' as _i80;
 import 'object_with_bytedata.dart' as _i81;
 import 'object_with_custom_class.dart' as _i82;
@@ -178,7 +178,6 @@ export 'empty_model/empty_model_relation_item.dart';
 export 'empty_model/empty_model_with_table.dart';
 export 'empty_model/relation_empy_model.dart';
 export 'exception_with_data.dart';
-export 'inheritance/child_class.dart';
 export 'inheritance/parent_class.dart';
 export 'long_identifiers/deep_includes/city_with_long_table_name.dart';
 export 'long_identifiers/deep_includes/organization_with_long_table_name.dart';
@@ -216,6 +215,7 @@ export 'models_with_relations/self_relation/one_to_many/cat.dart';
 export 'models_with_relations/self_relation/one_to_one/post.dart';
 export 'module_datatype.dart';
 export 'nullability.dart';
+export 'object_field_persist.dart';
 export 'object_field_scopes.dart';
 export 'object_with_bytedata.dart';
 export 'object_with_custom_class.dart';
@@ -381,119 +381,119 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i41.ExceptionWithData) {
       return _i41.ExceptionWithData.fromJson(data) as T;
     }
-    if (t == _i42.ChildClass) {
-      return _i42.ChildClass.fromJson(data) as T;
+    if (t == _i42.ParentClass) {
+      return _i42.ParentClass.fromJson(data) as T;
     }
-    if (t == _i43.ParentClass) {
-      return _i43.ParentClass.fromJson(data) as T;
+    if (t == _i43.CityWithLongTableName) {
+      return _i43.CityWithLongTableName.fromJson(data) as T;
     }
-    if (t == _i44.CityWithLongTableName) {
-      return _i44.CityWithLongTableName.fromJson(data) as T;
+    if (t == _i44.OrganizationWithLongTableName) {
+      return _i44.OrganizationWithLongTableName.fromJson(data) as T;
     }
-    if (t == _i45.OrganizationWithLongTableName) {
-      return _i45.OrganizationWithLongTableName.fromJson(data) as T;
+    if (t == _i45.PersonWithLongTableName) {
+      return _i45.PersonWithLongTableName.fromJson(data) as T;
     }
-    if (t == _i46.PersonWithLongTableName) {
-      return _i46.PersonWithLongTableName.fromJson(data) as T;
+    if (t == _i46.MaxFieldName) {
+      return _i46.MaxFieldName.fromJson(data) as T;
     }
-    if (t == _i47.MaxFieldName) {
-      return _i47.MaxFieldName.fromJson(data) as T;
+    if (t == _i47.LongImplicitIdField) {
+      return _i47.LongImplicitIdField.fromJson(data) as T;
     }
-    if (t == _i48.LongImplicitIdField) {
-      return _i48.LongImplicitIdField.fromJson(data) as T;
+    if (t == _i48.LongImplicitIdFieldCollection) {
+      return _i48.LongImplicitIdFieldCollection.fromJson(data) as T;
     }
-    if (t == _i49.LongImplicitIdFieldCollection) {
-      return _i49.LongImplicitIdFieldCollection.fromJson(data) as T;
+    if (t == _i49.RelationToMultipleMaxFieldName) {
+      return _i49.RelationToMultipleMaxFieldName.fromJson(data) as T;
     }
-    if (t == _i50.RelationToMultipleMaxFieldName) {
-      return _i50.RelationToMultipleMaxFieldName.fromJson(data) as T;
+    if (t == _i50.UserNote) {
+      return _i50.UserNote.fromJson(data) as T;
     }
-    if (t == _i51.UserNote) {
-      return _i51.UserNote.fromJson(data) as T;
+    if (t == _i51.UserNoteCollection) {
+      return _i51.UserNoteCollection.fromJson(data) as T;
     }
-    if (t == _i52.UserNoteCollection) {
-      return _i52.UserNoteCollection.fromJson(data) as T;
+    if (t == _i52.UserNoteCollectionWithALongName) {
+      return _i52.UserNoteCollectionWithALongName.fromJson(data) as T;
     }
-    if (t == _i53.UserNoteCollectionWithALongName) {
-      return _i53.UserNoteCollectionWithALongName.fromJson(data) as T;
+    if (t == _i53.UserNoteWithALongName) {
+      return _i53.UserNoteWithALongName.fromJson(data) as T;
     }
-    if (t == _i54.UserNoteWithALongName) {
-      return _i54.UserNoteWithALongName.fromJson(data) as T;
+    if (t == _i54.MultipleMaxFieldName) {
+      return _i54.MultipleMaxFieldName.fromJson(data) as T;
     }
-    if (t == _i55.MultipleMaxFieldName) {
-      return _i55.MultipleMaxFieldName.fromJson(data) as T;
+    if (t == _i55.City) {
+      return _i55.City.fromJson(data) as T;
     }
-    if (t == _i56.City) {
-      return _i56.City.fromJson(data) as T;
+    if (t == _i56.Organization) {
+      return _i56.Organization.fromJson(data) as T;
     }
-    if (t == _i57.Organization) {
-      return _i57.Organization.fromJson(data) as T;
+    if (t == _i57.Person) {
+      return _i57.Person.fromJson(data) as T;
     }
-    if (t == _i58.Person) {
-      return _i58.Person.fromJson(data) as T;
+    if (t == _i58.Course) {
+      return _i58.Course.fromJson(data) as T;
     }
-    if (t == _i59.Course) {
-      return _i59.Course.fromJson(data) as T;
+    if (t == _i59.Enrollment) {
+      return _i59.Enrollment.fromJson(data) as T;
     }
-    if (t == _i60.Enrollment) {
-      return _i60.Enrollment.fromJson(data) as T;
+    if (t == _i60.Student) {
+      return _i60.Student.fromJson(data) as T;
     }
-    if (t == _i61.Student) {
-      return _i61.Student.fromJson(data) as T;
+    if (t == _i61.ObjectUser) {
+      return _i61.ObjectUser.fromJson(data) as T;
     }
-    if (t == _i62.ObjectUser) {
-      return _i62.ObjectUser.fromJson(data) as T;
+    if (t == _i62.ParentUser) {
+      return _i62.ParentUser.fromJson(data) as T;
     }
-    if (t == _i63.ParentUser) {
-      return _i63.ParentUser.fromJson(data) as T;
+    if (t == _i63.Arena) {
+      return _i63.Arena.fromJson(data) as T;
     }
-    if (t == _i64.Arena) {
-      return _i64.Arena.fromJson(data) as T;
+    if (t == _i64.Player) {
+      return _i64.Player.fromJson(data) as T;
     }
-    if (t == _i65.Player) {
-      return _i65.Player.fromJson(data) as T;
+    if (t == _i65.Team) {
+      return _i65.Team.fromJson(data) as T;
     }
-    if (t == _i66.Team) {
-      return _i66.Team.fromJson(data) as T;
+    if (t == _i66.Comment) {
+      return _i66.Comment.fromJson(data) as T;
     }
-    if (t == _i67.Comment) {
-      return _i67.Comment.fromJson(data) as T;
+    if (t == _i67.Customer) {
+      return _i67.Customer.fromJson(data) as T;
     }
-    if (t == _i68.Customer) {
-      return _i68.Customer.fromJson(data) as T;
+    if (t == _i68.Order) {
+      return _i68.Order.fromJson(data) as T;
     }
-    if (t == _i69.Order) {
-      return _i69.Order.fromJson(data) as T;
+    if (t == _i69.Address) {
+      return _i69.Address.fromJson(data) as T;
     }
-    if (t == _i70.Address) {
-      return _i70.Address.fromJson(data) as T;
+    if (t == _i70.Citizen) {
+      return _i70.Citizen.fromJson(data) as T;
     }
-    if (t == _i71.Citizen) {
-      return _i71.Citizen.fromJson(data) as T;
+    if (t == _i71.Company) {
+      return _i71.Company.fromJson(data) as T;
     }
-    if (t == _i72.Company) {
-      return _i72.Company.fromJson(data) as T;
+    if (t == _i72.Town) {
+      return _i72.Town.fromJson(data) as T;
     }
-    if (t == _i73.Town) {
-      return _i73.Town.fromJson(data) as T;
+    if (t == _i73.Blocking) {
+      return _i73.Blocking.fromJson(data) as T;
     }
-    if (t == _i74.Blocking) {
-      return _i74.Blocking.fromJson(data) as T;
+    if (t == _i74.Member) {
+      return _i74.Member.fromJson(data) as T;
     }
-    if (t == _i75.Member) {
-      return _i75.Member.fromJson(data) as T;
+    if (t == _i75.Cat) {
+      return _i75.Cat.fromJson(data) as T;
     }
-    if (t == _i76.Cat) {
-      return _i76.Cat.fromJson(data) as T;
+    if (t == _i76.Post) {
+      return _i76.Post.fromJson(data) as T;
     }
-    if (t == _i77.Post) {
-      return _i77.Post.fromJson(data) as T;
+    if (t == _i77.ModuleDatatype) {
+      return _i77.ModuleDatatype.fromJson(data) as T;
     }
-    if (t == _i78.ModuleDatatype) {
-      return _i78.ModuleDatatype.fromJson(data) as T;
+    if (t == _i78.Nullability) {
+      return _i78.Nullability.fromJson(data) as T;
     }
-    if (t == _i79.Nullability) {
-      return _i79.Nullability.fromJson(data) as T;
+    if (t == _i79.ObjectFieldPersist) {
+      return _i79.ObjectFieldPersist.fromJson(data) as T;
     }
     if (t == _i80.ObjectFieldScopes) {
       return _i80.ObjectFieldScopes.fromJson(data) as T;
@@ -719,133 +719,134 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i41.ExceptionWithData?>()) {
       return (data != null ? _i41.ExceptionWithData.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i42.ChildClass?>()) {
-      return (data != null ? _i42.ChildClass.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i42.ParentClass?>()) {
+      return (data != null ? _i42.ParentClass.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i43.ParentClass?>()) {
-      return (data != null ? _i43.ParentClass.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i44.CityWithLongTableName?>()) {
-      return (data != null ? _i44.CityWithLongTableName.fromJson(data) : null)
+    if (t == _i1.getType<_i43.CityWithLongTableName?>()) {
+      return (data != null ? _i43.CityWithLongTableName.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i45.OrganizationWithLongTableName?>()) {
+    if (t == _i1.getType<_i44.OrganizationWithLongTableName?>()) {
       return (data != null
-          ? _i45.OrganizationWithLongTableName.fromJson(data)
+          ? _i44.OrganizationWithLongTableName.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i46.PersonWithLongTableName?>()) {
-      return (data != null ? _i46.PersonWithLongTableName.fromJson(data) : null)
+    if (t == _i1.getType<_i45.PersonWithLongTableName?>()) {
+      return (data != null ? _i45.PersonWithLongTableName.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i47.MaxFieldName?>()) {
-      return (data != null ? _i47.MaxFieldName.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i46.MaxFieldName?>()) {
+      return (data != null ? _i46.MaxFieldName.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i48.LongImplicitIdField?>()) {
-      return (data != null ? _i48.LongImplicitIdField.fromJson(data) : null)
+    if (t == _i1.getType<_i47.LongImplicitIdField?>()) {
+      return (data != null ? _i47.LongImplicitIdField.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i49.LongImplicitIdFieldCollection?>()) {
+    if (t == _i1.getType<_i48.LongImplicitIdFieldCollection?>()) {
       return (data != null
-          ? _i49.LongImplicitIdFieldCollection.fromJson(data)
+          ? _i48.LongImplicitIdFieldCollection.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i50.RelationToMultipleMaxFieldName?>()) {
+    if (t == _i1.getType<_i49.RelationToMultipleMaxFieldName?>()) {
       return (data != null
-          ? _i50.RelationToMultipleMaxFieldName.fromJson(data)
+          ? _i49.RelationToMultipleMaxFieldName.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i51.UserNote?>()) {
-      return (data != null ? _i51.UserNote.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i50.UserNote?>()) {
+      return (data != null ? _i50.UserNote.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i52.UserNoteCollection?>()) {
-      return (data != null ? _i52.UserNoteCollection.fromJson(data) : null)
+    if (t == _i1.getType<_i51.UserNoteCollection?>()) {
+      return (data != null ? _i51.UserNoteCollection.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i53.UserNoteCollectionWithALongName?>()) {
+    if (t == _i1.getType<_i52.UserNoteCollectionWithALongName?>()) {
       return (data != null
-          ? _i53.UserNoteCollectionWithALongName.fromJson(data)
+          ? _i52.UserNoteCollectionWithALongName.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i54.UserNoteWithALongName?>()) {
-      return (data != null ? _i54.UserNoteWithALongName.fromJson(data) : null)
+    if (t == _i1.getType<_i53.UserNoteWithALongName?>()) {
+      return (data != null ? _i53.UserNoteWithALongName.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i55.MultipleMaxFieldName?>()) {
-      return (data != null ? _i55.MultipleMaxFieldName.fromJson(data) : null)
+    if (t == _i1.getType<_i54.MultipleMaxFieldName?>()) {
+      return (data != null ? _i54.MultipleMaxFieldName.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i56.City?>()) {
-      return (data != null ? _i56.City.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i55.City?>()) {
+      return (data != null ? _i55.City.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i57.Organization?>()) {
-      return (data != null ? _i57.Organization.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i56.Organization?>()) {
+      return (data != null ? _i56.Organization.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i58.Person?>()) {
-      return (data != null ? _i58.Person.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i57.Person?>()) {
+      return (data != null ? _i57.Person.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i59.Course?>()) {
-      return (data != null ? _i59.Course.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i58.Course?>()) {
+      return (data != null ? _i58.Course.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i60.Enrollment?>()) {
-      return (data != null ? _i60.Enrollment.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i59.Enrollment?>()) {
+      return (data != null ? _i59.Enrollment.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i61.Student?>()) {
-      return (data != null ? _i61.Student.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i60.Student?>()) {
+      return (data != null ? _i60.Student.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i62.ObjectUser?>()) {
-      return (data != null ? _i62.ObjectUser.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i61.ObjectUser?>()) {
+      return (data != null ? _i61.ObjectUser.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i63.ParentUser?>()) {
-      return (data != null ? _i63.ParentUser.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i62.ParentUser?>()) {
+      return (data != null ? _i62.ParentUser.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i64.Arena?>()) {
-      return (data != null ? _i64.Arena.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i63.Arena?>()) {
+      return (data != null ? _i63.Arena.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i65.Player?>()) {
-      return (data != null ? _i65.Player.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i64.Player?>()) {
+      return (data != null ? _i64.Player.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i66.Team?>()) {
-      return (data != null ? _i66.Team.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i65.Team?>()) {
+      return (data != null ? _i65.Team.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i67.Comment?>()) {
-      return (data != null ? _i67.Comment.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i66.Comment?>()) {
+      return (data != null ? _i66.Comment.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i68.Customer?>()) {
-      return (data != null ? _i68.Customer.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i67.Customer?>()) {
+      return (data != null ? _i67.Customer.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i69.Order?>()) {
-      return (data != null ? _i69.Order.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i68.Order?>()) {
+      return (data != null ? _i68.Order.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i70.Address?>()) {
-      return (data != null ? _i70.Address.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i69.Address?>()) {
+      return (data != null ? _i69.Address.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i71.Citizen?>()) {
-      return (data != null ? _i71.Citizen.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i70.Citizen?>()) {
+      return (data != null ? _i70.Citizen.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i72.Company?>()) {
-      return (data != null ? _i72.Company.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i71.Company?>()) {
+      return (data != null ? _i71.Company.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i73.Town?>()) {
-      return (data != null ? _i73.Town.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i72.Town?>()) {
+      return (data != null ? _i72.Town.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i74.Blocking?>()) {
-      return (data != null ? _i74.Blocking.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i73.Blocking?>()) {
+      return (data != null ? _i73.Blocking.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i75.Member?>()) {
-      return (data != null ? _i75.Member.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i74.Member?>()) {
+      return (data != null ? _i74.Member.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i76.Cat?>()) {
-      return (data != null ? _i76.Cat.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i75.Cat?>()) {
+      return (data != null ? _i75.Cat.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i77.Post?>()) {
-      return (data != null ? _i77.Post.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i76.Post?>()) {
+      return (data != null ? _i76.Post.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i78.ModuleDatatype?>()) {
-      return (data != null ? _i78.ModuleDatatype.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i77.ModuleDatatype?>()) {
+      return (data != null ? _i77.ModuleDatatype.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i79.Nullability?>()) {
-      return (data != null ? _i79.Nullability.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i78.Nullability?>()) {
+      return (data != null ? _i78.Nullability.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i79.ObjectFieldPersist?>()) {
+      return (data != null ? _i79.ObjectFieldPersist.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i80.ObjectFieldScopes?>()) {
       return (data != null ? _i80.ObjectFieldScopes.fromJson(data) : null) as T;
@@ -2054,119 +2055,119 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i41.ExceptionWithData) {
       return 'ExceptionWithData';
     }
-    if (data is _i42.ChildClass) {
-      return 'ChildClass';
-    }
-    if (data is _i43.ParentClass) {
+    if (data is _i42.ParentClass) {
       return 'ParentClass';
     }
-    if (data is _i44.CityWithLongTableName) {
+    if (data is _i43.CityWithLongTableName) {
       return 'CityWithLongTableName';
     }
-    if (data is _i45.OrganizationWithLongTableName) {
+    if (data is _i44.OrganizationWithLongTableName) {
       return 'OrganizationWithLongTableName';
     }
-    if (data is _i46.PersonWithLongTableName) {
+    if (data is _i45.PersonWithLongTableName) {
       return 'PersonWithLongTableName';
     }
-    if (data is _i47.MaxFieldName) {
+    if (data is _i46.MaxFieldName) {
       return 'MaxFieldName';
     }
-    if (data is _i48.LongImplicitIdField) {
+    if (data is _i47.LongImplicitIdField) {
       return 'LongImplicitIdField';
     }
-    if (data is _i49.LongImplicitIdFieldCollection) {
+    if (data is _i48.LongImplicitIdFieldCollection) {
       return 'LongImplicitIdFieldCollection';
     }
-    if (data is _i50.RelationToMultipleMaxFieldName) {
+    if (data is _i49.RelationToMultipleMaxFieldName) {
       return 'RelationToMultipleMaxFieldName';
     }
-    if (data is _i51.UserNote) {
+    if (data is _i50.UserNote) {
       return 'UserNote';
     }
-    if (data is _i52.UserNoteCollection) {
+    if (data is _i51.UserNoteCollection) {
       return 'UserNoteCollection';
     }
-    if (data is _i53.UserNoteCollectionWithALongName) {
+    if (data is _i52.UserNoteCollectionWithALongName) {
       return 'UserNoteCollectionWithALongName';
     }
-    if (data is _i54.UserNoteWithALongName) {
+    if (data is _i53.UserNoteWithALongName) {
       return 'UserNoteWithALongName';
     }
-    if (data is _i55.MultipleMaxFieldName) {
+    if (data is _i54.MultipleMaxFieldName) {
       return 'MultipleMaxFieldName';
     }
-    if (data is _i56.City) {
+    if (data is _i55.City) {
       return 'City';
     }
-    if (data is _i57.Organization) {
+    if (data is _i56.Organization) {
       return 'Organization';
     }
-    if (data is _i58.Person) {
+    if (data is _i57.Person) {
       return 'Person';
     }
-    if (data is _i59.Course) {
+    if (data is _i58.Course) {
       return 'Course';
     }
-    if (data is _i60.Enrollment) {
+    if (data is _i59.Enrollment) {
       return 'Enrollment';
     }
-    if (data is _i61.Student) {
+    if (data is _i60.Student) {
       return 'Student';
     }
-    if (data is _i62.ObjectUser) {
+    if (data is _i61.ObjectUser) {
       return 'ObjectUser';
     }
-    if (data is _i63.ParentUser) {
+    if (data is _i62.ParentUser) {
       return 'ParentUser';
     }
-    if (data is _i64.Arena) {
+    if (data is _i63.Arena) {
       return 'Arena';
     }
-    if (data is _i65.Player) {
+    if (data is _i64.Player) {
       return 'Player';
     }
-    if (data is _i66.Team) {
+    if (data is _i65.Team) {
       return 'Team';
     }
-    if (data is _i67.Comment) {
+    if (data is _i66.Comment) {
       return 'Comment';
     }
-    if (data is _i68.Customer) {
+    if (data is _i67.Customer) {
       return 'Customer';
     }
-    if (data is _i69.Order) {
+    if (data is _i68.Order) {
       return 'Order';
     }
-    if (data is _i70.Address) {
+    if (data is _i69.Address) {
       return 'Address';
     }
-    if (data is _i71.Citizen) {
+    if (data is _i70.Citizen) {
       return 'Citizen';
     }
-    if (data is _i72.Company) {
+    if (data is _i71.Company) {
       return 'Company';
     }
-    if (data is _i73.Town) {
+    if (data is _i72.Town) {
       return 'Town';
     }
-    if (data is _i74.Blocking) {
+    if (data is _i73.Blocking) {
       return 'Blocking';
     }
-    if (data is _i75.Member) {
+    if (data is _i74.Member) {
       return 'Member';
     }
-    if (data is _i76.Cat) {
+    if (data is _i75.Cat) {
       return 'Cat';
     }
-    if (data is _i77.Post) {
+    if (data is _i76.Post) {
       return 'Post';
     }
-    if (data is _i78.ModuleDatatype) {
+    if (data is _i77.ModuleDatatype) {
       return 'ModuleDatatype';
     }
-    if (data is _i79.Nullability) {
+    if (data is _i78.Nullability) {
       return 'Nullability';
+    }
+    if (data is _i79.ObjectFieldPersist) {
+      return 'ObjectFieldPersist';
     }
     if (data is _i80.ObjectFieldScopes) {
       return 'ObjectFieldScopes';
@@ -2409,119 +2410,119 @@ class Protocol extends _i1.SerializationManager {
     if (data['className'] == 'ExceptionWithData') {
       return deserialize<_i41.ExceptionWithData>(data['data']);
     }
-    if (data['className'] == 'ChildClass') {
-      return deserialize<_i42.ChildClass>(data['data']);
-    }
     if (data['className'] == 'ParentClass') {
-      return deserialize<_i43.ParentClass>(data['data']);
+      return deserialize<_i42.ParentClass>(data['data']);
     }
     if (data['className'] == 'CityWithLongTableName') {
-      return deserialize<_i44.CityWithLongTableName>(data['data']);
+      return deserialize<_i43.CityWithLongTableName>(data['data']);
     }
     if (data['className'] == 'OrganizationWithLongTableName') {
-      return deserialize<_i45.OrganizationWithLongTableName>(data['data']);
+      return deserialize<_i44.OrganizationWithLongTableName>(data['data']);
     }
     if (data['className'] == 'PersonWithLongTableName') {
-      return deserialize<_i46.PersonWithLongTableName>(data['data']);
+      return deserialize<_i45.PersonWithLongTableName>(data['data']);
     }
     if (data['className'] == 'MaxFieldName') {
-      return deserialize<_i47.MaxFieldName>(data['data']);
+      return deserialize<_i46.MaxFieldName>(data['data']);
     }
     if (data['className'] == 'LongImplicitIdField') {
-      return deserialize<_i48.LongImplicitIdField>(data['data']);
+      return deserialize<_i47.LongImplicitIdField>(data['data']);
     }
     if (data['className'] == 'LongImplicitIdFieldCollection') {
-      return deserialize<_i49.LongImplicitIdFieldCollection>(data['data']);
+      return deserialize<_i48.LongImplicitIdFieldCollection>(data['data']);
     }
     if (data['className'] == 'RelationToMultipleMaxFieldName') {
-      return deserialize<_i50.RelationToMultipleMaxFieldName>(data['data']);
+      return deserialize<_i49.RelationToMultipleMaxFieldName>(data['data']);
     }
     if (data['className'] == 'UserNote') {
-      return deserialize<_i51.UserNote>(data['data']);
+      return deserialize<_i50.UserNote>(data['data']);
     }
     if (data['className'] == 'UserNoteCollection') {
-      return deserialize<_i52.UserNoteCollection>(data['data']);
+      return deserialize<_i51.UserNoteCollection>(data['data']);
     }
     if (data['className'] == 'UserNoteCollectionWithALongName') {
-      return deserialize<_i53.UserNoteCollectionWithALongName>(data['data']);
+      return deserialize<_i52.UserNoteCollectionWithALongName>(data['data']);
     }
     if (data['className'] == 'UserNoteWithALongName') {
-      return deserialize<_i54.UserNoteWithALongName>(data['data']);
+      return deserialize<_i53.UserNoteWithALongName>(data['data']);
     }
     if (data['className'] == 'MultipleMaxFieldName') {
-      return deserialize<_i55.MultipleMaxFieldName>(data['data']);
+      return deserialize<_i54.MultipleMaxFieldName>(data['data']);
     }
     if (data['className'] == 'City') {
-      return deserialize<_i56.City>(data['data']);
+      return deserialize<_i55.City>(data['data']);
     }
     if (data['className'] == 'Organization') {
-      return deserialize<_i57.Organization>(data['data']);
+      return deserialize<_i56.Organization>(data['data']);
     }
     if (data['className'] == 'Person') {
-      return deserialize<_i58.Person>(data['data']);
+      return deserialize<_i57.Person>(data['data']);
     }
     if (data['className'] == 'Course') {
-      return deserialize<_i59.Course>(data['data']);
+      return deserialize<_i58.Course>(data['data']);
     }
     if (data['className'] == 'Enrollment') {
-      return deserialize<_i60.Enrollment>(data['data']);
+      return deserialize<_i59.Enrollment>(data['data']);
     }
     if (data['className'] == 'Student') {
-      return deserialize<_i61.Student>(data['data']);
+      return deserialize<_i60.Student>(data['data']);
     }
     if (data['className'] == 'ObjectUser') {
-      return deserialize<_i62.ObjectUser>(data['data']);
+      return deserialize<_i61.ObjectUser>(data['data']);
     }
     if (data['className'] == 'ParentUser') {
-      return deserialize<_i63.ParentUser>(data['data']);
+      return deserialize<_i62.ParentUser>(data['data']);
     }
     if (data['className'] == 'Arena') {
-      return deserialize<_i64.Arena>(data['data']);
+      return deserialize<_i63.Arena>(data['data']);
     }
     if (data['className'] == 'Player') {
-      return deserialize<_i65.Player>(data['data']);
+      return deserialize<_i64.Player>(data['data']);
     }
     if (data['className'] == 'Team') {
-      return deserialize<_i66.Team>(data['data']);
+      return deserialize<_i65.Team>(data['data']);
     }
     if (data['className'] == 'Comment') {
-      return deserialize<_i67.Comment>(data['data']);
+      return deserialize<_i66.Comment>(data['data']);
     }
     if (data['className'] == 'Customer') {
-      return deserialize<_i68.Customer>(data['data']);
+      return deserialize<_i67.Customer>(data['data']);
     }
     if (data['className'] == 'Order') {
-      return deserialize<_i69.Order>(data['data']);
+      return deserialize<_i68.Order>(data['data']);
     }
     if (data['className'] == 'Address') {
-      return deserialize<_i70.Address>(data['data']);
+      return deserialize<_i69.Address>(data['data']);
     }
     if (data['className'] == 'Citizen') {
-      return deserialize<_i71.Citizen>(data['data']);
+      return deserialize<_i70.Citizen>(data['data']);
     }
     if (data['className'] == 'Company') {
-      return deserialize<_i72.Company>(data['data']);
+      return deserialize<_i71.Company>(data['data']);
     }
     if (data['className'] == 'Town') {
-      return deserialize<_i73.Town>(data['data']);
+      return deserialize<_i72.Town>(data['data']);
     }
     if (data['className'] == 'Blocking') {
-      return deserialize<_i74.Blocking>(data['data']);
+      return deserialize<_i73.Blocking>(data['data']);
     }
     if (data['className'] == 'Member') {
-      return deserialize<_i75.Member>(data['data']);
+      return deserialize<_i74.Member>(data['data']);
     }
     if (data['className'] == 'Cat') {
-      return deserialize<_i76.Cat>(data['data']);
+      return deserialize<_i75.Cat>(data['data']);
     }
     if (data['className'] == 'Post') {
-      return deserialize<_i77.Post>(data['data']);
+      return deserialize<_i76.Post>(data['data']);
     }
     if (data['className'] == 'ModuleDatatype') {
-      return deserialize<_i78.ModuleDatatype>(data['data']);
+      return deserialize<_i77.ModuleDatatype>(data['data']);
     }
     if (data['className'] == 'Nullability') {
-      return deserialize<_i79.Nullability>(data['data']);
+      return deserialize<_i78.Nullability>(data['data']);
+    }
+    if (data['className'] == 'ObjectFieldPersist') {
+      return deserialize<_i79.ObjectFieldPersist>(data['data']);
     }
     if (data['className'] == 'ObjectFieldScopes') {
       return deserialize<_i80.ObjectFieldScopes>(data['data']);
