@@ -12,19 +12,15 @@ import 'package:relic/src/util/util.dart';
 import 'package:stack_trace/stack_trace.dart';
 
 import 'handler/handler.dart';
-import 'server/server.dart';
-
-part './server/logger.dart';
 
 /// A [Server] backed by a `dart:io` [HttpServer].
-class RelicServer implements Server {
+class RelicServer {
   /// The underlying [HttpServer].
   final HttpServer server;
 
   /// Whether [mount] has been called.
   Handler? _handler;
 
-  @override
   Uri get url {
     if (server.address.isLoopback) {
       return Uri(scheme: 'http', host: 'localhost', port: server.port);
@@ -64,7 +60,7 @@ class RelicServer implements Server {
     return RelicServer._(server);
   }
 
-  /// Calls [HttpServer.bind] and wraps the result in an [RelicServer].
+  /// Calls [HttpServer.bindSecure] and wraps the result in an [RelicServer].
   static Future<RelicServer> bindSecure(
     Object address,
     int port,
@@ -82,10 +78,11 @@ class RelicServer implements Server {
     );
     return RelicServer._(server);
   }
+  
 
   RelicServer._(this.server);
 
-  @override
+  /// Mounts a handler to the server. Only one handler can be mounted at a time.
   void mount(
     Handler handler, {
     String? poweredByHeader = 'Dart with package:relic_server',
@@ -94,71 +91,52 @@ class RelicServer implements Server {
       throw StateError("Can't mount two handlers for the same server.");
     }
     _handler = handler;
-
     _serveRequests(poweredByHeader: poweredByHeader);
   }
 
-  @override
   Future<void> close() => server.close();
 
-  /// Serve a [Stream] of [HttpRequest]s.
-  ///
-  /// [HttpServer] implements [Stream<HttpRequest>] so it can be passed directly
-  /// to [_serveRequests].
-  ///
-  /// Errors thrown by [handler] while serving a request will be printed to the
-  /// console and cause a 500 response with no body. Errors thrown asynchronously
-  /// by [handler] will be printed to the console or, if there's an active error
-  /// zone, passed to that zone.
-  ///
-  /// {@macro relic_server_header_defaults}
   void _serveRequests({
     required String? poweredByHeader,
   }) {
     catchTopLevelErrors(() {
-      server.listen((request) =>
-          _handleRequest(request, poweredByHeader: poweredByHeader));
+      server.listen(
+        (request) => _handleRequest(
+          request,
+          poweredByHeader: poweredByHeader,
+        ),
+      );
     }, (error, stackTrace) {
-      _logTopLevelError('Asynchronous error\n$error', stackTrace);
+      _logTopLevelError(
+        'Asynchronous error\n$error',
+        stackTrace,
+      );
     });
   }
 
-  /// Uses [handler] to handle [request].
-  ///
-  /// Returns a [Future] which completes when the request has been handled.
-  ///
-  /// {@macro relic_server_header_defaults}
+  /// Handles incoming HTTP requests, passing them to the handler.
   Future<void> _handleRequest(
     HttpRequest request, {
     required String? poweredByHeader,
   }) async {
     var handler = _handler;
-    if (handler == null) return;
+    if (handler == null) {
+      throw StateError(
+        "No handler mounted. Ensure the server has a handler before handling requests.",
+      );
+    }
 
     Request relicRequest;
     try {
       relicRequest = Request.fromHttpRequest(request);
-      // ignore: avoid_catching_errors
-    } on ArgumentError catch (error, stackTrace) {
-      if (error.name == 'method' || error.name == 'requestedUri') {
-        _logTopLevelError('Error parsing request.\n$error', stackTrace);
-        final response = Response.badRequest();
-        await response.writeHttpResponse(
-          request.response,
-          poweredByHeader: poweredByHeader,
-        );
-      } else {
-        _logTopLevelError('Error parsing request.\n$error', stackTrace);
-        final response = Response.internalServerError();
-        await response.writeHttpResponse(
-          request.response,
-          poweredByHeader: poweredByHeader,
-        );
-      }
-      return;
     } catch (error, stackTrace) {
       _logTopLevelError('Error parsing request.\n$error', stackTrace);
-      final response = Response.internalServerError();
+
+      var response = (error is ArgumentError &&
+              (error.name == 'method' || error.name == 'requestedUri'))
+          ? Response.badRequest()
+          : Response.internalServerError();
+
       await response.writeHttpResponse(
         request.response,
         poweredByHeader: poweredByHeader,
@@ -186,10 +164,6 @@ class RelicServer implements Server {
         stackTrace,
       );
       response = Response.internalServerError();
-      await response.writeHttpResponse(
-        request.response,
-        poweredByHeader: poweredByHeader,
-      );
       return;
     }
 
@@ -208,4 +182,31 @@ class RelicServer implements Server {
       ..writeln(response.headers);
     throw Exception(message.toString().trim());
   }
+}
+
+void _logError(
+  Request request,
+  String message,
+  StackTrace stackTrace,
+) {
+  // Add information about the request itself.
+  var buffer = StringBuffer();
+  buffer.write('${request.method} ${request.requestedUri.path}');
+  if (request.requestedUri.query.isNotEmpty) {
+    buffer.write('?${request.requestedUri.query}');
+  }
+  buffer.writeln();
+  buffer.write(message);
+
+  _logTopLevelError(buffer.toString(), stackTrace);
+}
+
+void _logTopLevelError(String message, StackTrace stackTrace) {
+  final chain = Chain.forTrace(stackTrace)
+      .foldFrames((frame) => frame.isCore || frame.package == 'relic_server')
+      .terse;
+
+  stderr.writeln('ERROR - ${DateTime.now()}');
+  stderr.writeln(message);
+  stderr.writeln(chain);
 }

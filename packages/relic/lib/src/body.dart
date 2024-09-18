@@ -102,11 +102,13 @@ class Body {
   ///
   /// Can only be called once.
   Stream<Uint8List> read() {
-    if (_stream == null) {
-      throw StateError("The 'read' method can only be called once on a "
-          'Request/Response object.');
+    var stream = _stream;
+    if (stream == null) {
+      throw StateError(
+        "The 'read' method can only be called once on a "
+        'Request/Response object.',
+      );
     }
-    var stream = _stream!;
     _stream = null;
     return stream;
   }

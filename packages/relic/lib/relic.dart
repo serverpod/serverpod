@@ -17,6 +17,5 @@ export 'src/middleware/middleware_extensions.dart' show MiddlewareExtensions;
 export 'src/pipeline.dart' show Pipeline;
 export 'src/request.dart' show Request;
 export 'src/response.dart' show Response;
-export 'src/server/server.dart' show Server;
 
 export 'src/static/static_handler.dart';
