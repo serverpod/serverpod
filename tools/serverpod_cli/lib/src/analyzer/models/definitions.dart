@@ -72,13 +72,13 @@ class ClassDefinition extends SerializableModelDefinition {
     required super.serverOnly,
     required this.manageMigration,
     required this.isException,
-    childClasses,
+    List<InheritanceDefinition>? childClasses,
     this.extendsClass,
     this.tableName,
     this.indexes = const [],
     super.subDirParts,
     this.documentation,
-  }) : childClasses = childClasses ?? [];
+  }) : childClasses = childClasses ?? <InheritanceDefinition>[];
 
   SerializableModelFieldDefinition? findField(String name) {
     return fields
