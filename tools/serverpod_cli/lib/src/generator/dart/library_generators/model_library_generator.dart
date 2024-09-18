@@ -1,4 +1,5 @@
 import 'package:code_builder/code_builder.dart';
+import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 
 import 'package:serverpod_cli/analyzer.dart';
@@ -10,7 +11,6 @@ import 'package:serverpod_cli/src/generator/keywords.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'package:path/path.dart' as p;
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 /// Generates the dart libraries for [SerializableModelDefinition]s.
@@ -151,6 +151,7 @@ class SerializableModelLibraryGenerator {
         classBuilder.extend = refer(
           parentClass.className,
           p.joinAll([
+            'package:${serverCode ? '${config.serverPackage}/src/generated' : '${config.dartClientPackage}/src/protocol'}',
             ...parentClass.subDirParts,
             '${parentClass.fileName}.dart',
           ]),

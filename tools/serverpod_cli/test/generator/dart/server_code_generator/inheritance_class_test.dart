@@ -220,4 +220,223 @@ void main() {
       });
     });
   });
+
+  test(
+      'Given a class named $childClassName extending an existing class named $parentClassName, Then $childClassName should have a valid (absolute) import path to $parentClassName',
+      () {
+    var models = [
+      ClassDefinitionBuilder()
+          .withClassName(parentClassName)
+          .withFileName(parentClassFileName)
+          .withSimpleField('name', 'String')
+          .withChildClasses(
+        [
+          ClassDefinitionBuilder()
+              .withClassName(childClassName)
+              .withFileName(childClassFileName)
+              .withSimpleField('age', 'int')
+              .build(),
+        ],
+      ).build(),
+      ClassDefinitionBuilder()
+          .withClassName(childClassName)
+          .withFileName(childClassFileName)
+          .withSimpleField('age', 'int', nullable: true)
+          .withExtendsClass(
+            ClassDefinitionBuilder()
+                .withClassName(parentClassName)
+                .withFileName(parentClassFileName)
+                .withSimpleField('name', 'String')
+                .build(),
+          )
+          .build(),
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var childCompilationUnit =
+        parseString(content: codeMap[childExpectedFilePath]!).unit;
+
+    var expectedParentLink =
+        'package:${projectName}_server/src/generated/$parentClassFileName.dart';
+
+    var hasValidImportPath = CompilationUnitHelpers.hasImportDirective(
+      childCompilationUnit,
+      uri: expectedParentLink,
+    );
+
+    expect(hasValidImportPath, isTrue);
+  });
+
+  test(
+      'Given a class named $childClassName extending an existing class named $parentClassName, When $childClassName is located in a sub directory, Then $childClassName should have a valid (absolute) import path to $parentClassName',
+      () {
+    var childExpectedFilePathWithSubDir = path.join(
+        'lib', 'src', 'generated', 'inheritance', '$childClassFileName.dart');
+
+    var models = [
+      ClassDefinitionBuilder()
+          .withClassName(parentClassName)
+          .withFileName(parentClassFileName)
+          .withSimpleField('name', 'String')
+          .withChildClasses(
+        [
+          ClassDefinitionBuilder()
+              .withClassName(childClassName)
+              .withFileName(childClassFileName)
+              .withSubDirParts(['inheritance'])
+              .withSimpleField('age', 'int')
+              .build(),
+        ],
+      ).build(),
+      ClassDefinitionBuilder()
+          .withClassName(childClassName)
+          .withFileName(childClassFileName)
+          .withSubDirParts(['inheritance'])
+          .withSimpleField('age', 'int', nullable: true)
+          .withExtendsClass(
+            ClassDefinitionBuilder()
+                .withClassName(parentClassName)
+                .withFileName(parentClassFileName)
+                .withSimpleField('name', 'String')
+                .build(),
+          )
+          .build(),
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var childCompilationUnit =
+        parseString(content: codeMap[childExpectedFilePathWithSubDir]!).unit;
+
+    var expectedParentLink =
+        'package:${projectName}_server/src/generated/$parentClassFileName.dart';
+
+    var hasValidImportPath = CompilationUnitHelpers.hasImportDirective(
+      childCompilationUnit,
+      uri: expectedParentLink,
+    );
+
+    expect(hasValidImportPath, isTrue);
+  });
+
+  test(
+      'Given a class named $childClassName extending an existing class named $parentClassName, When $parentClassName is located in a sub directory, Then $childClassName should have a valid (absolute) import path to $parentClassName',
+      () {
+    var childExpectedFilePath =
+        path.join('lib', 'src', 'generated', '$childClassFileName.dart');
+
+    var models = [
+      ClassDefinitionBuilder()
+          .withClassName(parentClassName)
+          .withFileName(parentClassFileName)
+          .withSubDirParts(['inheritance'])
+          .withSimpleField('name', 'String')
+          .withChildClasses(
+            [
+              ClassDefinitionBuilder()
+                  .withClassName(childClassName)
+                  .withFileName(childClassFileName)
+                  .withSimpleField('age', 'int')
+                  .build(),
+            ],
+          )
+          .build(),
+      ClassDefinitionBuilder()
+          .withClassName(childClassName)
+          .withFileName(childClassFileName)
+          .withSimpleField('age', 'int', nullable: true)
+          .withExtendsClass(
+            ClassDefinitionBuilder()
+                .withClassName(parentClassName)
+                .withFileName(parentClassFileName)
+                .withSubDirParts(['inheritance'])
+                .withSimpleField('name', 'String')
+                .build(),
+          )
+          .build(),
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var childCompilationUnit =
+        parseString(content: codeMap[childExpectedFilePath]!).unit;
+
+    var expectedParentLinkWithSubDir =
+        'package:${projectName}_server/src/generated/inheritance/$parentClassFileName.dart';
+
+    var hasValidImportPath = CompilationUnitHelpers.hasImportDirective(
+      childCompilationUnit,
+      uri: expectedParentLinkWithSubDir,
+    );
+
+    expect(hasValidImportPath, isTrue);
+  });
+
+  test(
+      'Given a class named $childClassName extending an existing class named $parentClassName, When both are located in a sub directory, Then $childClassName should have a valid (absolute) import path to $parentClassName',
+      () {
+    var childExpectedFilePathWithSubDir = path.join(
+        'lib', 'src', 'generated', 'inheritance', '$childClassFileName.dart');
+
+    var models = [
+      ClassDefinitionBuilder()
+          .withClassName(parentClassName)
+          .withFileName(parentClassFileName)
+          .withSubDirParts(['inheritance'])
+          .withSimpleField('name', 'String')
+          .withChildClasses(
+            [
+              ClassDefinitionBuilder()
+                  .withClassName(childClassName)
+                  .withFileName(childClassFileName)
+                  .withSubDirParts(['inheritance'])
+                  .withSimpleField('age', 'int')
+                  .build(),
+            ],
+          )
+          .build(),
+      ClassDefinitionBuilder()
+          .withClassName(childClassName)
+          .withFileName(childClassFileName)
+          .withSubDirParts(['inheritance'])
+          .withSimpleField('age', 'int', nullable: true)
+          .withExtendsClass(
+            ClassDefinitionBuilder()
+                .withClassName(parentClassName)
+                .withFileName(parentClassFileName)
+                .withSubDirParts(['inheritance'])
+                .withSimpleField('name', 'String')
+                .build(),
+          )
+          .build(),
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var childCompilationUnit =
+        parseString(content: codeMap[childExpectedFilePathWithSubDir]!).unit;
+
+    var expectedParentLinkWithSubDir =
+        'package:${projectName}_server/src/generated/inheritance/$parentClassFileName.dart';
+
+    var hasValidImportPath = CompilationUnitHelpers.hasImportDirective(
+      childCompilationUnit,
+      uri: expectedParentLinkWithSubDir,
+    );
+
+    expect(hasValidImportPath, isTrue);
+  });
 }
