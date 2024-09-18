@@ -14,11 +14,15 @@ class WebServer {
   /// If a security context is provided an HTTPS server will be started.
   final SecurityContext? securityContext;
 
-  /// The [address] can either be a [String] or an [InternetAddress]. If
-  /// [address] is a [String], the server will perform a
-  /// [InternetAddress.lookup] and use the first value in the list. Defaults to
-  /// [InternetAddress.anyIPv6].
-  final Object? address;
+  /// The [address] specifies the IP address on which the server listens.
+  ///
+  /// If [address] is `null`, it defaults to [InternetAddress.anyIPv6], allowing
+  /// the server to listen on all available network interfaces.
+  ///
+  /// Example usage:
+  /// - Unsecured: `HttpServer.bind(address ?? InternetAddress.anyIPv6, _port)`
+  /// - Secured: `HttpServer.bindSecure(address ?? InternetAddress.anyIPv6, _port, securityContext!)`
+  final InternetAddress? address;
 
   /// The server id of this server.
   final String serverId;
