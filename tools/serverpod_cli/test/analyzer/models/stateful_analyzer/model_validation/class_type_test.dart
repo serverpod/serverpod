@@ -27,7 +27,7 @@ void main() {
             .validateAll();
 
     var model = models.first as ClassDefinition;
-    expect(model.type?.className, model.className);
+    expect(model.type.className, model.className);
   });
 
   test(
@@ -51,8 +51,8 @@ void main() {
 
     var model = models.first as EnumDefinition;
 
-    expect(model.type?.className, model.className);
-    expect(model.type?.enumDefinition, model);
+    expect(model.type.className, model.className);
+    expect(model.type.enumDefinition, model);
   });
 
   test(
@@ -74,6 +74,6 @@ void main() {
             .validateAll();
 
     var model = models.first as ClassDefinition;
-    expect(model.type?.className, model.className);
+    expect(model.type.className, model.className);
   });
 }

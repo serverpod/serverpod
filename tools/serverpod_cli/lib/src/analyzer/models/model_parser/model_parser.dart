@@ -108,7 +108,7 @@ class ModelParser {
       serverOnly: serverOnly,
       type: enumType,
     );
-    enumDef.type?.enumDefinition = enumDef;
+    enumDef.type.enumDefinition = enumDef;
     return enumDef;
   }
 

@@ -11,7 +11,7 @@ sealed class SerializableModelDefinition {
   final String className;
   final List<String> subDirParts;
   final bool serverOnly;
-  TypeDefinition? type;
+  final TypeDefinition type;
 
   SerializableModelDefinition({
     required this.moduleAlias,
@@ -19,8 +19,8 @@ sealed class SerializableModelDefinition {
     required this.sourceFileName,
     required this.className,
     required this.serverOnly,
+    required this.type,
     this.subDirParts = const [],
-    this.type,
   });
 
   /// Generate the file reference [String] to this file.
