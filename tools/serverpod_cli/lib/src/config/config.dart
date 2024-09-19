@@ -166,7 +166,8 @@ class GeneratorConfig {
   final List<ExperimentalFeature> experimentalFeatures;
 
   bool isExperimentalFeatureEnabled(ExperimentalFeature feature) =>
-      experimentalFeatures.contains(feature);
+      experimentalFeatures.contains(feature) ||
+      experimentalFeatures.contains(ExperimentalFeature.all);
 
   /// All the modules defined in the config (of type module).
   List<ModuleConfig> get modules => _modules
@@ -319,8 +320,10 @@ class GeneratorConfig {
 
     var enabledFeatures = _enabledFeatures(file, generatorConfig);
 
-    var enabledExperimentalFeatures =
-        _enabledExperimentalFeatures(file, generatorConfig);
+    var enabledExperimentalFeatures = [
+      ..._enabledExperimentalFeatures(file, generatorConfig),
+      ...CommandLineExperimentalFeatures.instance.features,
+    ];
 
     return GeneratorConfig(
       name: name,

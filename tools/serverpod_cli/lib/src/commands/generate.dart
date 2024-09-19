@@ -5,7 +5,6 @@ import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/generator/generator_continuous.dart';
@@ -27,13 +26,6 @@ class GenerateCommand extends ServerpodCommand {
       negatable: false,
       help: 'Watch for changes and continuously generate code.',
     );
-    argParser.addMultiOption(
-      'experimental-features',
-      help:
-          'Enable experimental features. Experimental features might be removed at any time.',
-      allowed: ExperimentalFeature.values.map((e) => e.name),
-      defaultsTo: [],
-    );
   }
 
   @override
@@ -48,14 +40,6 @@ class GenerateCommand extends ServerpodCommand {
     } catch (e) {
       log.error('An error occurred while parsing the server config file: $e');
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
-    }
-
-    var enabledExperimentalFeatures = argResults!['experimental-features'];
-    for (var feature in enabledExperimentalFeatures) {
-      log.info(
-        'Enabling experimental feature: $feature.',
-      );
-      config.experimentalFeatures.add(ExperimentalFeature.fromString(feature));
     }
 
     // Validate cli version is compatible with serverpod packages
