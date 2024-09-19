@@ -17,9 +17,8 @@ class ModelParser {
     String outFileName,
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
-    List<TypeDefinition> extraClasses, {
-    bool enableInheritance = false,
-  }) {
+    List<TypeDefinition> extraClasses,
+  ) {
     YamlNode? classNode = documentContents.nodes[documentTypeName];
 
     if (classNode == null) {

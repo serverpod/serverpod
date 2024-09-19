@@ -69,7 +69,6 @@ class SerializableModelAnalyzer {
           documentContents,
           docsExtractor,
           extraClasses,
-          enableInheritance: enableInheritance,
         );
       case Keyword.exceptionType:
         return ModelParser.serializeClassFile(
