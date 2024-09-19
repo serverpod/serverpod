@@ -1,5 +1,4 @@
 import 'package:code_builder/code_builder.dart';
-import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 
 import 'package:serverpod_cli/analyzer.dart';
@@ -150,10 +149,7 @@ class SerializableModelLibraryGenerator {
       if (parentClass != null) {
         classBuilder.extend = refer(
           parentClass.className,
-          p.joinAll([
-            'package:${serverCode ? '${config.serverPackage}/src/generated' : '${config.dartClientPackage}/src/protocol'}',
-            'protocol.dart',
-          ]),
+          parentClass.type?.reference(serverCode, config: config).url,
         );
       }
 

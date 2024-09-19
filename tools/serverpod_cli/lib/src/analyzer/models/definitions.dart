@@ -11,6 +11,7 @@ sealed class SerializableModelDefinition {
   final String className;
   final List<String> subDirParts;
   final bool serverOnly;
+  TypeDefinition? type;
 
   SerializableModelDefinition({
     required this.moduleAlias,
@@ -19,6 +20,7 @@ sealed class SerializableModelDefinition {
     required this.className,
     required this.serverOnly,
     this.subDirParts = const [],
+    this.type,
   });
 
   /// Generate the file reference [String] to this file.
@@ -72,6 +74,7 @@ class ClassDefinition extends SerializableModelDefinition {
     required super.serverOnly,
     required this.manageMigration,
     required this.isException,
+    required super.type,
     List<InheritanceDefinition>? childClasses,
     this.extendsClass,
     this.tableName,
@@ -256,6 +259,7 @@ class EnumDefinition extends SerializableModelDefinition {
     required this.serialized,
     required this.values,
     required super.serverOnly,
+    required super.type,
     super.subDirParts,
     this.documentation,
   });

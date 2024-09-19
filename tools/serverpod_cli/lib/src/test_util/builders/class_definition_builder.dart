@@ -24,6 +24,7 @@ class ClassDefinitionBuilder {
   List<String>? _documentation;
   List<InheritanceDefinition> _childClasses;
   InheritanceDefinition? _extendsClass;
+  TypeDefinition? _classType;
 
   ClassDefinitionBuilder()
       : _moduleAlias = defaultModuleAlias,
@@ -66,6 +67,7 @@ class ClassDefinitionBuilder {
       documentation: _documentation,
       childClasses: _childClasses,
       extendsClass: _extendsClass,
+      type: _classType,
     );
   }
 

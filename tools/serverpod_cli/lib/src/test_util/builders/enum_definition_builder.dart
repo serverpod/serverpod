@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
@@ -13,6 +14,8 @@ class EnumDefinitionBuilder {
 
   List<ProtocolEnumValueDefinition> _values;
   List<String>? _documentation;
+
+  TypeDefinition? _type;
 
   EnumDefinitionBuilder()
       : _moduleAlias = defaultModuleAlias,
@@ -40,6 +43,7 @@ class EnumDefinitionBuilder {
       subDirParts: _subDirParts,
       serverOnly: _serverOnly,
       documentation: _documentation,
+      type: _type,
     );
   }
 
