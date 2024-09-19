@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:relic/relic.dart';
+import 'package:relic/src/headers.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
@@ -74,7 +75,7 @@ void main() {
         handler,
         '/file.txt',
         headers: Headers.request(
-          range: 'bytes=0-4',
+          range: RangeHeader.fromHeaderValue('bytes=0-4'),
         ),
       );
       expect(response.statusCode, equals(HttpStatus.partialContent));
@@ -95,7 +96,7 @@ void main() {
         handler,
         '/file.txt',
         headers: Headers.request(
-          range: 'bytes=0-9',
+          range: RangeHeader.fromHeaderValue('bytes=0-9'),
         ),
       );
       expect(
@@ -119,7 +120,7 @@ void main() {
         handler,
         '/file.txt',
         headers: Headers.request(
-          range: 'bytes=0-9',
+          range: RangeHeader.fromHeaderValue('bytes=0-9'),
         ),
       );
       expect(response.headers, containsPair('content-length', '0'));
@@ -139,7 +140,7 @@ void main() {
         handler,
         '/file.txt',
         headers: Headers.request(
-          range: 'bytes=2-1',
+          range: RangeHeader.fromHeaderValue('bytes=2-1'),
         ),
       );
       expect(response.statusCode, equals(HttpStatus.ok));
@@ -153,7 +154,7 @@ void main() {
         handler,
         '/file.txt',
         headers: Headers.request(
-          range: 'bytes=2-1',
+          range: RangeHeader.fromHeaderValue('bytes=2-1'),
         ),
       );
       expect(response.statusCode, equals(HttpStatus.ok));
@@ -167,7 +168,7 @@ void main() {
         handler,
         '/file.txt',
         headers: Headers.request(
-          range: 'not-bytes=0-1',
+          range: RangeHeader.fromHeaderValue('not-bytes=0-1'),
         ),
       );
       expect(response.statusCode, equals(HttpStatus.ok));
@@ -181,7 +182,7 @@ void main() {
         handler,
         '/file.txt',
         headers: Headers.request(
-          range: 'bytes=-',
+          range: RangeHeader.fromHeaderValue('bytes=-'),
         ),
       );
       expect(response.statusCode, equals(HttpStatus.ok));

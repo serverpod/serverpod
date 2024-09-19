@@ -33,7 +33,7 @@ abstract class AuthorizationHeader {
       return BasicAuthorizationHeader._fromHeaderValue(value);
     }
 
-    throw ArgumentError('Invalid Authorization header');
+    throw FormatException('Invalid Authorization header format');
   }
 }
 
@@ -63,17 +63,17 @@ class BearerAuthorizationHeader extends AuthorizationHeader {
   /// Factory constructor to create a [BearerAuthorizationHeader] from a token string.
   ///
   /// If the token starts with the "Bearer " prefix, the prefix is stripped
-  /// from the token value. Otherwise, it throws an [ArgumentError].
+  /// from the token value. Otherwise, it throws an [FormatException].
   factory BearerAuthorizationHeader._fromHeaderValue(String value) {
     if (value.isEmpty) {
-      throw ArgumentError('Bearer token cannot be empty.');
+      throw FormatException('Bearer token cannot be empty.');
     }
     if (value.startsWith(prefix)) {
       return BearerAuthorizationHeader._(
         token: value.substring(prefix.length).trim(),
       );
     }
-    throw ArgumentError('Invalid Bearer token format.');
+    throw FormatException('Invalid Bearer token format.');
   }
 
   /// Returns the full authorization string, including the "Bearer " prefix.
@@ -118,7 +118,7 @@ class BasicAuthorizationHeader extends AuthorizationHeader {
   /// string into username and password. If the token is invalid, it throws an error.
   factory BasicAuthorizationHeader._fromHeaderValue(String value) {
     if (!value.startsWith(prefix)) {
-      throw ArgumentError('Token does not start with the Basic prefix');
+      throw FormatException('Token does not start with the Basic prefix');
     }
 
     final base64Part = value.substring(prefix.length).trim();
@@ -131,7 +131,7 @@ class BasicAuthorizationHeader extends AuthorizationHeader {
     final parts = decoded.split(':');
 
     if (parts.length != 2) {
-      throw ArgumentError('Invalid Basic token format');
+      throw FormatException('Invalid Basic token format');
     }
 
     return BasicAuthorizationHeader._(

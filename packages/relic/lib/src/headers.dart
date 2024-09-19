@@ -8,6 +8,10 @@ import 'body.dart';
 
 part 'headers/custom_headers.dart';
 part 'headers/authorization_header.dart';
+part 'headers/content_range_header.dart';
+part 'headers/cache_control_header.dart';
+part 'headers/content_disposition_header.dart';
+part 'headers/range_header.dart';
 
 abstract class Headers {
   static const _acceptHeader = "accept";
@@ -97,13 +101,13 @@ abstract class Headers {
   final String? age;
   final List<String>? allow;
   final AuthorizationHeader? authorization;
-  final List<String>? cacheControl;
+  final CacheControlHeader? cacheControl;
   final List<String>? connection;
   final List<String>? contentEncoding;
   final List<String>? contentLanguage;
   final String? contentLocation;
   final String? contentMD5;
-  final String? contentRange;
+  final ContentRangeHeader? contentRange;
   final String? etag;
   final String? expect;
   final List<String>? ifMatch;
@@ -115,7 +119,7 @@ abstract class Headers {
   final String? mPragma;
   final List<String>? proxyAuthenticate;
   final String? proxyAuthorization;
-  final String? range;
+  final RangeHeader? range;
   final String? referer;
   final String? retryAfter;
   final String? server;
@@ -128,7 +132,7 @@ abstract class Headers {
   final List<String>? via;
   final List<String>? warning;
   final List<String>? wwwAuthenticate;
-  final String? contentDisposition;
+  final ContentDispositionHeader? contentDisposition;
 
   final CustomHeaders custom;
 
@@ -274,14 +278,20 @@ abstract class Headers {
           headers.value(_accessControlRequestMethodHeader),
       age: headers.value(_ageHeader),
       allow: headers[_allowHeader],
-      contentDisposition: headers.value(_contentDispositionHeader),
-      cacheControl: headers[_cacheControlHeader],
+      contentDisposition: ContentDispositionHeader.tryParse(
+        headers.value(_contentDispositionHeader),
+      ),
+      cacheControl: CacheControlHeader.tryParse(
+        headers.value(_cacheControlHeader),
+      ),
       connection: headers[_connectionHeader],
       contentEncoding: headers[_contentEncodingHeader],
       contentLanguage: headers[_contentLanguageHeader],
       contentLocation: headers.value(_contentLocationHeader),
       contentMD5: headers.value(_contentMD5Header),
-      contentRange: headers.value(_contentRangeHeader),
+      contentRange: ContentRangeHeader.tryParse(
+        headers.value(_contentRangeHeader),
+      ),
       etag: headers.value(_etagHeader),
       expect: headers.value(_expectHeader),
       ifMatch: headers[_ifMatchHeader],
@@ -291,7 +301,7 @@ abstract class Headers {
       mPragma: headers.value(_pragmaHeader),
       proxyAuthenticate: headers[_proxyAuthenticateHeader],
       proxyAuthorization: headers.value(_proxyAuthorizationHeader),
-      range: headers.value(_rangeHeader),
+      range: RangeHeader.tryParse(headers.value(_rangeHeader)),
       referer: headers.value(_refererHeader),
       retryAfter: headers.value(_retryAfterHeader),
       server: headers.value(_serverHeader),
@@ -336,15 +346,15 @@ abstract class Headers {
     String? accessControlRequestMethod,
     String? age,
     List<String>? allow,
-    String? contentDisposition,
+    ContentDispositionHeader? contentDisposition,
     AuthorizationHeader? authorization,
-    List<String>? cacheControl,
+    CacheControlHeader? cacheControl,
     List<String>? connection,
     List<String>? contentEncoding,
     List<String>? contentLanguage,
     String? contentLocation,
     String? contentMD5,
-    String? contentRange,
+    ContentRangeHeader? contentRange,
     String? etag,
     String? expect,
     List<String>? ifMatch,
@@ -355,7 +365,7 @@ abstract class Headers {
     String? mPragma,
     List<String>? proxyAuthenticate,
     String? proxyAuthorization,
-    String? range,
+    RangeHeader? range,
     String? referer,
     String? retryAfter,
     String? server,
@@ -450,15 +460,15 @@ abstract class Headers {
     String? accessControlRequestMethod,
     String? age,
     List<String>? allow,
-    String? contentDisposition,
+    ContentDispositionHeader? contentDisposition,
     AuthorizationHeader? authorization,
-    List<String>? cacheControl,
+    CacheControlHeader? cacheControl,
     List<String>? connection,
     List<String>? contentEncoding,
     List<String>? contentLanguage,
     String? contentLocation,
     String? contentMD5,
-    String? contentRange,
+    ContentRangeHeader? contentRange,
     String? etag,
     String? expect,
     List<String>? ifMatch,
@@ -469,7 +479,7 @@ abstract class Headers {
     String? mPragma,
     List<String>? proxyAuthenticate,
     String? proxyAuthorization,
-    String? range,
+    RangeHeader? range,
     String? referer,
     String? retryAfter,
     String? server,
@@ -694,15 +704,15 @@ abstract class Headers {
     String? accessControlRequestMethod,
     String? age,
     List<String>? allow,
-    String? contentDisposition,
+    ContentDispositionHeader? contentDisposition,
     AuthorizationHeader? authorization,
-    List<String>? cacheControl,
+    CacheControlHeader? cacheControl,
     List<String>? connection,
     List<String>? contentEncoding,
     List<String>? contentLanguage,
     String? contentLocation,
     String? contentMD5,
-    String? contentRange,
+    ContentRangeHeader? contentRange,
     String? etag,
     String? expect,
     List<String>? ifMatch,
@@ -713,7 +723,7 @@ abstract class Headers {
     String? mPragma,
     List<String>? proxyAuthenticate,
     String? proxyAuthorization,
-    String? range,
+    RangeHeader? range,
     String? referer,
     String? retryAfter,
     String? server,
@@ -765,8 +775,7 @@ abstract class Headers {
       if (age != null) '$_ageHeader: $age',
       if (allow != null) '$_allowHeader: ${allow!.join(', ')}',
       if (authorization != null) '$authorization',
-      if (cacheControl != null)
-        '$_cacheControlHeader: ${cacheControl!.join(', ')}',
+      if (cacheControl != null) '$_cacheControlHeader: $cacheControl',
       if (connection != null) '$_connectionHeader: ${connection!.join(', ')}',
       if (contentEncoding != null)
         '$_contentEncodingHeader: ${contentEncoding!.join(', ')}',
@@ -906,7 +915,7 @@ abstract class Headers {
         age == null &&
         (allow == null || allow!.isEmpty) &&
         authorization == null &&
-        (cacheControl == null || cacheControl!.isEmpty) &&
+        cacheControl == null &&
         (connection == null || connection!.isEmpty) &&
         (contentEncoding == null || contentEncoding!.isEmpty) &&
         (contentLanguage == null || contentLanguage!.isEmpty) &&
@@ -1100,12 +1109,12 @@ class _HeadersImpl extends Headers {
           : this.accessControlRequestMethod,
       age: age is String ? age : this.age,
       allow: allow is List<String> ? allow : this.allow,
-      contentDisposition: contentDisposition is String
+      contentDisposition: contentDisposition is ContentDispositionHeader
           ? contentDisposition
           : this.contentDisposition,
       authorization: authorization ?? this.authorization,
       cacheControl:
-          cacheControl is List<String> ? cacheControl : this.cacheControl,
+          cacheControl is CacheControlHeader ? cacheControl : this.cacheControl,
       connection: connection is List<String> ? connection : this.connection,
       contentEncoding: contentEncoding is List<String>
           ? contentEncoding
@@ -1116,7 +1125,8 @@ class _HeadersImpl extends Headers {
       contentLocation:
           contentLocation is String ? contentLocation : this.contentLocation,
       contentMD5: contentMD5 is String ? contentMD5 : this.contentMD5,
-      contentRange: contentRange is String ? contentRange : this.contentRange,
+      contentRange:
+          contentRange is ContentRangeHeader ? contentRange : this.contentRange,
       etag: etag is String ? etag : this.etag,
       expect: expect is String ? expect : this.expect,
       ifMatch: ifMatch is List<String> ? ifMatch : this.ifMatch,
@@ -1131,7 +1141,7 @@ class _HeadersImpl extends Headers {
       proxyAuthorization: proxyAuthorization is String
           ? proxyAuthorization
           : this.proxyAuthorization,
-      range: range is String ? range : this.range,
+      range: range is RangeHeader ? range : this.range,
       referer: referer is String ? referer : this.referer,
       retryAfter: retryAfter is String ? retryAfter : this.retryAfter,
       server: server is String ? server : this.server,

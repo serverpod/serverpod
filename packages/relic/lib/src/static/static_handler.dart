@@ -219,8 +219,6 @@ Future<Response> _handleFile(
       );
 }
 
-final _bytesMatcher = RegExp(r'^bytes=(\d*)-(\d*)$');
-
 /// Serves a range of [file], if [request] is valid 'bytes' range request.
 ///
 /// If the request does not specify a range, specifies a range of the wrong
@@ -237,39 +235,41 @@ Response? _fileRangeResponse(
 ) {
   final range = request.headers.range;
   if (range == null) return null;
-  final matches = _bytesMatcher.firstMatch(range);
-  // Ignore ranges other than bytes
-  if (matches == null) return null;
 
   final actualLength = file.lengthSync();
-  final startMatch = matches[1]!;
-  final endMatch = matches[2]!;
-  if (startMatch.isEmpty && endMatch.isEmpty) return null;
+  final startMatch = range.start;
+  final endMatch = range.end;
+
+  if (startMatch == null && endMatch == null) return null;
 
   int start; // First byte position - inclusive.
   int end; // Last byte position - inclusive.
-  if (startMatch.isEmpty) {
-    start = actualLength - int.parse(endMatch);
+
+  if (startMatch == null) {
+    // If start is missing, calculate based on the end range (suffix byte range).
+    start = actualLength - (endMatch ?? 0);
     if (start < 0) start = 0;
     end = actualLength - 1;
   } else {
-    start = int.parse(startMatch);
-    end = endMatch.isEmpty ? actualLength - 1 : int.parse(endMatch);
+    // Use the provided start, and if end is missing, default to the file length.
+    start = startMatch;
+    end = endMatch ?? actualLength - 1;
   }
 
   // If the range is syntactically invalid the Range header
   // MUST be ignored (RFC 2616 section 14.35.1).
-  if (start > end) return null;
-
-  if (end >= actualLength) {
-    end = actualLength - 1;
-  }
-  if (start >= actualLength) {
+  if (start > end || start >= actualLength) {
     return Response(
       HttpStatus.requestedRangeNotSatisfiable,
       headers: headers,
     );
   }
+
+  // Adjust end if it's beyond the actual file length.
+  if (end >= actualLength) {
+    end = actualLength - 1;
+  }
+
   return Response(
     HttpStatus.partialContent,
     body: request.method == 'HEAD'
@@ -279,7 +279,11 @@ Response? _fileRangeResponse(
             mimeType: MimeType.binary,
           ),
     headers: headers.copyWith(
-      contentRange: 'bytes $start-$end/$actualLength',
+      contentRange: ContentRangeHeader(
+        start: start,
+        end: end,
+        totalSize: actualLength,
+      ),
     ),
   );
 }
