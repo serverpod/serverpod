@@ -28,19 +28,10 @@ class InternalServerpodSession extends Session {
   });
 }
 
-List<String> _getServerpodStartUpArgs(String? runMode) {
-  List<String> runModeFlag = ['-m', runMode ?? ServerpodRunMode.test];
-
-  // Apply migrations only in test mode.
-  // For other environments it might be unexpected that the tests are applying migrations.
-  List<String> applyMigrationsFlag =
-      runMode == ServerpodRunMode.test ? ['--apply-migrations'] : [];
-
-  return [
-    ...runModeFlag,
-    ...applyMigrationsFlag,
-  ];
-}
+List<String> _getServerpodStartUpArgs(String? runMode) => [
+      '-m',
+      runMode ?? ServerpodRunMode.test,
+    ];
 
 /// A facade for the real Serverpod instance.
 class TestServerpod<T extends InternalTestEndpoints> {
@@ -68,13 +59,13 @@ class TestServerpod<T extends InternalTestEndpoints> {
   Future<void> start() async {
     try {
       await _serverpod.start(runInGuardedZone: false);
-    } on ExitException catch (e, stackTrace) {
+    } on ExitException catch (e) {
       throw InitializationException(
-        'Failed to start the serverpod instance: ${e.message} \n\n $stackTrace',
+        'Failed to start the serverpod instance${e.message.isEmpty ? ', check the log for more info.' : ': ${e.message}'}',
       );
-    } catch (e) {
+    } catch (_) {
       throw InitializationException(
-        'Failed to start the serverpod instance ($e)',
+        'Failed to start the serverpod instance, check the log for more info.',
       );
     }
   }

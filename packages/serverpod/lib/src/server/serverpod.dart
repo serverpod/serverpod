@@ -436,6 +436,9 @@ class Serverpod {
       }, onZoneError);
     } else {
       await _unguardedStart();
+      if (_exitCode != 0) {
+        throw ExitException(_exitCode);
+      }
     }
   }
 
