@@ -149,7 +149,7 @@ class SerializableModelLibraryGenerator {
       if (parentClass != null) {
         classBuilder.extend = parentClass.type?.reference(
           serverCode,
-          subDirParts: parentClass.subDirParts,
+          subDirParts: classDefinition.subDirParts,
           config: config,
         );
       }
