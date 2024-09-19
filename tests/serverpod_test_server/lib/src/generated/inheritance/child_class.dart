@@ -9,7 +9,7 @@
 // ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i1;
+import 'protocol.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 
 abstract class ChildClass extends _i1.ParentClass
