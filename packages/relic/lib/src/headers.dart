@@ -12,6 +12,7 @@ part 'headers/content_range_header.dart';
 part 'headers/cache_control_header.dart';
 part 'headers/content_disposition_header.dart';
 part 'headers/range_header.dart';
+part 'headers/retry_after_header.dart';
 
 abstract class Headers {
   static const _acceptHeader = "accept";
@@ -121,7 +122,7 @@ abstract class Headers {
   final String? proxyAuthorization;
   final RangeHeader? range;
   final String? referer;
-  final String? retryAfter;
+  final RetryAfterHeader? retryAfter;
   final String? server;
   final List<String>? te;
   final List<String>? trailer;
@@ -303,7 +304,9 @@ abstract class Headers {
       proxyAuthorization: headers.value(_proxyAuthorizationHeader),
       range: RangeHeader.tryParse(headers.value(_rangeHeader)),
       referer: headers.value(_refererHeader),
-      retryAfter: headers.value(_retryAfterHeader),
+      retryAfter: RetryAfterHeader.tryParse(
+        headers.value(_retryAfterHeader),
+      ),
       server: headers.value(_serverHeader),
       te: headers[_teHeader],
       trailer: headers[_trailerHeader],
@@ -367,7 +370,7 @@ abstract class Headers {
     String? proxyAuthorization,
     RangeHeader? range,
     String? referer,
-    String? retryAfter,
+    RetryAfterHeader? retryAfter,
     String? server,
     List<String>? te,
     List<String>? trailer,
@@ -481,7 +484,7 @@ abstract class Headers {
     String? proxyAuthorization,
     RangeHeader? range,
     String? referer,
-    String? retryAfter,
+    RetryAfterHeader? retryAfter,
     String? server,
     List<String>? te,
     List<String>? trailer,
@@ -725,7 +728,7 @@ abstract class Headers {
     String? proxyAuthorization,
     RangeHeader? range,
     String? referer,
-    String? retryAfter,
+    RetryAfterHeader? retryAfter,
     String? server,
     List<String>? te,
     List<String>? trailer,
@@ -1143,7 +1146,7 @@ class _HeadersImpl extends Headers {
           : this.proxyAuthorization,
       range: range is RangeHeader ? range : this.range,
       referer: referer is String ? referer : this.referer,
-      retryAfter: retryAfter is String ? retryAfter : this.retryAfter,
+      retryAfter: retryAfter is RetryAfterHeader ? retryAfter : this.retryAfter,
       server: server is String ? server : this.server,
       te: te is List<String> ? te : this.te,
       trailer: trailer is List<String> ? trailer : this.trailer,
