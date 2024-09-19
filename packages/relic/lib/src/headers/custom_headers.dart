@@ -23,7 +23,7 @@ class CustomHeaders extends UnmodifiableMapView<String, List<String>> {
     var custom = <MapEntry<String, List<String>>>[];
 
     headers.forEach((name, values) {
-      /// Skip headers that we support natively.
+      // Skip headers that we support natively.
       if (excludedHeaders.contains(name.toLowerCase())) {
         return;
       }
@@ -44,7 +44,7 @@ class CustomHeaders extends UnmodifiableMapView<String, List<String>> {
 
     final mergedEntries = <MapEntry<String, List<String>>>[];
 
-    /// Add all entries from the current instance
+    // Add all entries from the current instance
     for (var entry in entries) {
       mergedEntries.add(
         MapEntry(
@@ -54,20 +54,20 @@ class CustomHeaders extends UnmodifiableMapView<String, List<String>> {
       );
     }
 
-    /// Override entries from the other instance
+    // Override entries from the other instance
     for (var entry in other.entries) {
       var index = mergedEntries.indexWhere(
         (e) => e.key.toLowerCase() == entry.key.toLowerCase(),
       );
 
       if (index != -1) {
-        /// If the key exists, override the value
+        // If the key exists, override the value
         mergedEntries[index] = MapEntry(
           entry.key,
           List<String>.from(entry.value),
         );
       } else {
-        /// If the key doesn't exist, add the new entry
+        // If the key doesn't exist, add the new entry
         mergedEntries.add(
           MapEntry(
             entry.key,
