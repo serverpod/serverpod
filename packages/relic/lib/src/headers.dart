@@ -13,6 +13,7 @@ part 'headers/cache_control_header.dart';
 part 'headers/content_disposition_header.dart';
 part 'headers/range_header.dart';
 part 'headers/retry_after_header.dart';
+part 'headers/accept_header.dart';
 
 abstract class Headers {
   static const _acceptHeader = "accept";
@@ -88,7 +89,7 @@ abstract class Headers {
   final int? port;
   final Uri? location;
   final String? xPoweredBy;
-  final List<String>? accept;
+  final AcceptHeader? accept;
   final List<String>? acceptCharset;
   final List<String>? acceptEncoding;
   final List<String>? acceptLanguage;
@@ -264,7 +265,9 @@ abstract class Headers {
       from: headers.value(_fromHeader),
       host: headers.host,
       port: headers.port,
-      accept: headers[_acceptHeader],
+      accept: AcceptHeader.tryParse(
+        headers.value(_acceptHeader),
+      ),
       acceptCharset: headers[_acceptCharsetHeader],
       acceptEncoding: headers[_acceptEncodingHeader],
       acceptLanguage: headers[_acceptLanguageHeader],
@@ -336,7 +339,7 @@ abstract class Headers {
     int? port,
     Uri? location,
     String? xPoweredBy,
-    List<String>? accept,
+    AcceptHeader? accept,
     List<String>? acceptCharset,
     List<String>? acceptEncoding,
     List<String>? acceptLanguage,
@@ -450,7 +453,7 @@ abstract class Headers {
     int? port,
     Uri? location,
     String? xPoweredBy,
-    List<String>? accept,
+    AcceptHeader? accept,
     List<String>? acceptCharset,
     List<String>? acceptEncoding,
     List<String>? acceptLanguage,
@@ -694,7 +697,7 @@ abstract class Headers {
     int? port,
     Uri? location,
     String? xPoweredBy,
-    List<String>? accept,
+    AcceptHeader? accept,
     List<String>? acceptCharset,
     List<String>? acceptEncoding,
     List<String>? acceptLanguage,
@@ -754,7 +757,7 @@ abstract class Headers {
       if (host != null) '$_hostHeader: $host${port != null ? ':$port' : ''}',
       if (location != null) '$_locationHeader: $location',
       if (xPoweredBy != null) '$_xPoweredByHeader: $xPoweredBy',
-      if (accept != null) '$_acceptHeader: ${accept!.join(', ')}',
+      if (accept != null) '$_acceptHeader: $accept!',
       if (acceptCharset != null)
         '$_acceptCharsetHeader: ${acceptCharset!.join(', ')}',
       if (acceptEncoding != null)
@@ -902,7 +905,7 @@ abstract class Headers {
         port == null &&
         location == null &&
         xPoweredBy == null &&
-        (accept == null || accept!.isEmpty) &&
+        (accept == null || accept!.mediaTypes.isEmpty) &&
         (acceptCharset == null || acceptCharset!.isEmpty) &&
         (acceptEncoding == null || acceptEncoding!.isEmpty) &&
         (acceptLanguage == null || acceptLanguage!.isEmpty) &&
@@ -1083,7 +1086,7 @@ class _HeadersImpl extends Headers {
       port: port is int? ? port : this.port,
       location: location is Uri? ? location : this.location,
       xPoweredBy: xPoweredBy is String? ? xPoweredBy : this.xPoweredBy,
-      accept: accept is List<String> ? accept : this.accept,
+      accept: accept is AcceptHeader ? accept : this.accept,
       acceptCharset:
           acceptCharset is List<String> ? acceptCharset : this.acceptCharset,
       acceptEncoding:
