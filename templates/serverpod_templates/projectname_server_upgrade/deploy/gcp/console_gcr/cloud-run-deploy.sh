@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # These are the variables that need to be set to be able to deploy to cloud run.
 # You can find the values in the Google Cloud Console.
