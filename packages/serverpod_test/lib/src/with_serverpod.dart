@@ -62,7 +62,7 @@ void Function(TestClosure<T>)
   var resetTestSessions = maybeResetTestSessions ?? ResetTestSessions.afterEach;
   var rollbackDatabase = maybeRollbackDatabase ?? RollbackDatabase.afterEach;
   List<InternalTestSession> allTestSessions = [];
-  late TransactionManager transactionManager;
+  TransactionManager? transactionManager;
 
   return (
     TestClosure<T> testClosure,
@@ -75,30 +75,29 @@ void Function(TestClosure<T>)
         serverpodSession: testServerpod.createSession(),
       );
 
-      var setUpAllFailed = false;
-
       setUpAll(() async {
-        try {
-          await testServerpod.start();
-          transactionManager =
-              TransactionManager(mainTestSession.serverpodSession);
+        await testServerpod.start();
+        var localTransactionManager =
+            TransactionManager(mainTestSession.serverpodSession);
+        transactionManager = localTransactionManager;
 
-          if (rollbackDatabase == RollbackDatabase.afterAll ||
-              rollbackDatabase == RollbackDatabase.afterEach) {
-            mainTestSession.transaction =
-                await transactionManager.createTransaction();
-            await transactionManager.pushSavePoint();
-          }
-        } catch (e) {
-          setUpAllFailed = true;
-          rethrow;
+        if (rollbackDatabase == RollbackDatabase.afterAll ||
+            rollbackDatabase == RollbackDatabase.afterEach) {
+          mainTestSession.transaction =
+              await localTransactionManager.createTransaction();
+          await localTransactionManager.pushSavePoint();
         }
       });
 
       tearDown(() async {
+        var localTransactionManager = transactionManager;
+        if (localTransactionManager == null) {
+          throw StateError('Transaction manager is null.');
+        }
+
         if (rollbackDatabase == RollbackDatabase.afterEach) {
-          await transactionManager.popSavePoint();
-          await transactionManager.pushSavePoint();
+          await localTransactionManager.popSavePoint();
+          await localTransactionManager.pushSavePoint();
         }
 
         if (resetTestSessions == ResetTestSessions.afterEach) {
@@ -109,15 +108,9 @@ void Function(TestClosure<T>)
       });
 
       tearDownAll(() async {
-        if (setUpAllFailed) {
-          // If setUpAll failed, there is nothing to tear down.
-          // `transactionManager` might not be initialized so this callback is not safe to execute.
-          return;
-        }
-
         if (rollbackDatabase == RollbackDatabase.afterAll ||
             rollbackDatabase == RollbackDatabase.afterEach) {
-          await transactionManager.cancelTransaction();
+          await transactionManager?.cancelTransaction();
         }
 
         for (var testSession in allTestSessions) {

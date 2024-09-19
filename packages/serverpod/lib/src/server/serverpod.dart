@@ -423,7 +423,6 @@ class Serverpod {
       }
 
       _exitCode = 1;
-      // TODO: Log to database?
       stderr.writeln(
         '${DateTime.now().toUtc()} Internal server error. Zoned exception.',
       );
