@@ -5,6 +5,7 @@ import 'dart:math' as math;
 import 'package:convert/convert.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
+import 'package:relic/src/static/extension/datetime_extension.dart';
 
 import '../body.dart';
 import '../handler/handler.dart';
@@ -14,7 +15,6 @@ import '../request.dart';
 import '../response.dart';
 
 import 'directory_listing.dart';
-import 'util.dart';
 
 /// The default resolver for MIME types based on file extensions.
 final _defaultMimeTypeResolver = MimeTypeResolver();
@@ -196,7 +196,7 @@ Future<Response> _handleFile(
   final ifModifiedSince = request.headers.ifModifiedSince;
 
   if (ifModifiedSince != null) {
-    final fileChangeAtSecResolution = toSecondResolution(stat.modified);
+    final fileChangeAtSecResolution = stat.modified.toSecondResolution;
     if (!fileChangeAtSecResolution.isAfter(ifModifiedSince)) {
       return Response.notModified();
     }

@@ -1,6 +1,6 @@
 import 'package:path/path.dart' as p;
 import 'package:relic/relic.dart';
-import 'package:relic/src/static/util.dart';
+import 'package:relic/src/static/extension/datetime_extension.dart';
 import 'package:test/test.dart';
 
 final p.Context _ctx = p.url;
@@ -56,7 +56,7 @@ class _SecondResolutionDateTimeMatcher extends Matcher {
   final DateTime _target;
 
   _SecondResolutionDateTimeMatcher(DateTime target)
-      : _target = toSecondResolution(target);
+      : _target = target.toSecondResolution;
 
   @override
   bool matches(dynamic item, Map<dynamic, dynamic> matchState) {
@@ -72,4 +72,4 @@ class _SecondResolutionDateTimeMatcher extends Matcher {
 }
 
 bool _datesEqualToSecond(DateTime d1, DateTime d2) =>
-    toSecondResolution(d1).isAtSameMomentAs(toSecondResolution(d2));
+    d1.toSecondResolution.isAtSameMomentAs(d2.toSecondResolution);
