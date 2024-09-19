@@ -152,8 +152,7 @@ class SerializableModelLibraryGenerator {
           parentClass.className,
           p.joinAll([
             'package:${serverCode ? '${config.serverPackage}/src/generated' : '${config.dartClientPackage}/src/protocol'}',
-            ...parentClass.subDirParts,
-            '${parentClass.fileName}.dart',
+            'protocol.dart',
           ]),
         );
       }
