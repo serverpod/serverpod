@@ -16,39 +16,13 @@ part 'headers/retry_after_header.dart';
 part 'headers/accept_header.dart';
 
 abstract class Headers {
+  // Request Headers
   static const _acceptHeader = "accept";
   static const _acceptCharsetHeader = "accept-charset";
   static const _acceptEncodingHeader = "accept-encoding";
   static const _acceptLanguageHeader = "accept-language";
-  static const _acceptRangesHeader = "accept-ranges";
-  static const _accessControlAllowCredentialsHeader =
-      'access-control-allow-credentials';
-  static const _accessControlAllowOriginHeader = 'access-control-allow-origin';
-  static const _accessControlExposeHeadersHeader =
-      'access-control-expose-headers';
-  static const _accessControlMaxAgeHeader = 'access-control-max-age';
-  static const _accessControlRequestHeadersHeader =
-      'access-control-request-headers';
-  static const _accessControlRequestMethodHeader =
-      'access-control-request-method';
-  static const _ageHeader = "age";
-  static const _allowHeader = "allow";
-
   static const _authorizationHeader = "authorization";
-
-  static const _cacheControlHeader = "cache-control";
-  static const _connectionHeader = "connection";
-  static const _contentEncodingHeader = "content-encoding";
-  static const _contentLanguageHeader = "content-language";
-  static const _contentLengthHeader = "content-length";
-  static const _contentLocationHeader = "content-location";
-  static const _contentMD5Header = "content-md5";
-  static const _contentRangeHeader = "content-range";
-  static const _contentTypeHeader = "content-type";
-  static const _dateHeader = "date";
-  static const _etagHeader = "etag";
   static const _expectHeader = "expect";
-  static const _expiresHeader = "expires";
   static const _fromHeader = "from";
   static const _hostHeader = "host";
   static const _ifMatchHeader = "if-match";
@@ -56,86 +30,121 @@ abstract class Headers {
   static const _ifNoneMatchHeader = "if-none-match";
   static const _ifRangeHeader = "if-range";
   static const _ifUnmodifiedSinceHeader = "if-unmodified-since";
-  static const _lastModifiedHeader = "last-modified";
-  static const _locationHeader = "location";
   static const _maxForwardsHeader = "max-forwards";
   static const _pragmaHeader = "pragma";
-  static const _proxyAuthenticateHeader = "proxy-authenticate";
   static const _proxyAuthorizationHeader = "proxy-authorization";
   static const _rangeHeader = "range";
   static const _refererHeader = "referer";
-  static const _retryAfterHeader = "retry-after";
-  static const _serverHeader = "server";
   static const _teHeader = "te";
-  static const _trailerHeader = "trailer";
-  static const _transferEncodingHeader = "transfer-encoding";
   static const _upgradeHeader = "upgrade";
   static const _userAgentHeader = "user-agent";
+  static const _accessControlRequestHeadersHeader =
+      'access-control-request-headers';
+  static const _accessControlRequestMethodHeader =
+      'access-control-request-method';
+
+// Response Headers
+  static const _accessControlAllowCredentialsHeader =
+      'access-control-allow-credentials';
+  static const _accessControlAllowOriginHeader = 'access-control-allow-origin';
+  static const _accessControlExposeHeadersHeader =
+      'access-control-expose-headers';
+  static const _accessControlMaxAgeHeader = 'access-control-max-age';
+  static const _ageHeader = "age";
+  static const _allowHeader = "allow";
+  static const _cacheControlHeader = "cache-control";
+  static const _connectionHeader = "connection";
+  static const _contentDispositionHeader = "content-disposition";
+  static const _contentEncodingHeader = "content-encoding";
+  static const _contentLanguageHeader = "content-language";
+  static const _contentLocationHeader = "content-location";
+  static const _contentMD5Header = "content-md5";
+  static const _contentRangeHeader = "content-range";
+  static const _dateHeader = "date";
+  static const _etagHeader = "etag";
+  static const _expiresHeader = "expires";
+  static const _lastModifiedHeader = "last-modified";
+  static const _locationHeader = "location";
+  static const _proxyAuthenticateHeader = "proxy-authenticate";
+  static const _retryAfterHeader = "retry-after";
+  static const _serverHeader = "server";
+  static const _trailerHeader = "trailer";
+  static const _transferEncodingHeader = "transfer-encoding";
   static const _varyHeader = "vary";
   static const _viaHeader = "via";
   static const _warningHeader = "warning";
   static const _wwwAuthenticateHeader = "www-authenticate";
-  static const _contentDispositionHeader = "content-disposition";
   static const _xPoweredByHeader = 'X-Powered-By';
 
-  // Define header properties
+  /// Common Headers (Used in Both Requests and Responses)
+  static const _acceptRangesHeader = "accept-ranges";
+  static const _contentLengthHeader = "content-length";
+  static const _contentTypeHeader = "content-type";
+
+  /// Define header properties
+
+  /// Date-related headers
   final DateTime? date;
   final DateTime? expires;
   final DateTime? ifModifiedSince;
   final DateTime? lastModified;
 
+  /// Request Headers
   final String? from;
   final String? host;
   final int? port;
-  final Uri? location;
-  final String? xPoweredBy;
-  final AcceptHeader? accept;
   final List<String>? acceptCharset;
   final List<String>? acceptEncoding;
   final List<String>? acceptLanguage;
-  final List<String>? acceptRanges;
-  final String? accessControlAllowCredentials;
-  final String? accessControlAllowOrigin;
-  final List<String>? accessControlExposeHeaders;
-  final String? accessControlMaxAge;
   final List<String>? accessControlRequestHeaders;
   final String? accessControlRequestMethod;
   final String? age;
   final List<String>? allow;
   final AuthorizationHeader? authorization;
-  final CacheControlHeader? cacheControl;
   final List<String>? connection;
+  final String? expect;
+  final List<String>? ifMatch;
+  final List<String>? ifNoneMatch;
+  final String? ifRange;
+  final String? maxForwards;
+  final String? proxyAuthorization;
+  final RangeHeader? range;
+  final String? referer;
+  final String? userAgent;
+  final List<String>? te;
+  final List<String>? upgrade;
+
+  /// Renamed from `pragma` to avoid conflict with Dart's built-in `pragma`
+  final String? mPragma;
+
+  /// Response Headers
+  final Uri? location;
+  final String? xPoweredBy;
+  final String? accessControlAllowCredentials;
+  final String? accessControlAllowOrigin;
+  final List<String>? accessControlExposeHeaders;
+  final String? accessControlMaxAge;
+  final CacheControlHeader? cacheControl;
   final List<String>? contentEncoding;
   final List<String>? contentLanguage;
   final String? contentLocation;
   final String? contentMD5;
   final ContentRangeHeader? contentRange;
   final String? etag;
-  final String? expect;
-  final List<String>? ifMatch;
-  final List<String>? ifNoneMatch;
-  final String? ifRange;
-  final String? maxForwards;
-
-  /// Renamed from `[pragma]` to `mPragma` to avoid conflict with Dart's `[pragma]` type.
-  final String? mPragma;
   final List<String>? proxyAuthenticate;
-  final String? proxyAuthorization;
-  final RangeHeader? range;
-  final String? referer;
   final RetryAfterHeader? retryAfter;
   final String? server;
-  final List<String>? te;
   final List<String>? trailer;
-  final List<String>? transferEncoding;
-  final List<String>? upgrade;
-  final String? userAgent;
   final List<String>? vary;
   final List<String>? via;
   final List<String>? warning;
   final List<String>? wwwAuthenticate;
   final ContentDispositionHeader? contentDisposition;
 
+  /// Common Headers (Used in Both Requests and Responses)
+  final AcceptHeader? accept;
+  final List<String>? acceptRanges;
+  final List<String>? transferEncoding;
   final CustomHeaders custom;
 
   static const _managedHeaders = <String>{
@@ -332,114 +341,64 @@ abstract class Headers {
 
   factory Headers.request({
     DateTime? date,
-    DateTime? expires,
     DateTime? ifModifiedSince,
     String? from,
     String? host,
     int? port,
-    Uri? location,
-    String? xPoweredBy,
     AcceptHeader? accept,
     List<String>? acceptCharset,
     List<String>? acceptEncoding,
     List<String>? acceptLanguage,
     List<String>? acceptRanges,
-    String? accessControlAllowCredentials,
-    String? accessControlAllowOrigin,
-    List<String>? accessControlExposeHeaders,
-    String? accessControlMaxAge,
     List<String>? accessControlRequestHeaders,
     String? accessControlRequestMethod,
     String? age,
-    List<String>? allow,
-    ContentDispositionHeader? contentDisposition,
     AuthorizationHeader? authorization,
-    CacheControlHeader? cacheControl,
     List<String>? connection,
-    List<String>? contentEncoding,
-    List<String>? contentLanguage,
-    String? contentLocation,
-    String? contentMD5,
-    ContentRangeHeader? contentRange,
-    String? etag,
     String? expect,
     List<String>? ifMatch,
     List<String>? ifNoneMatch,
     String? ifRange,
-    DateTime? lastModified,
     String? maxForwards,
     String? mPragma,
-    List<String>? proxyAuthenticate,
     String? proxyAuthorization,
+    List<String>? transferEncoding,
     RangeHeader? range,
     String? referer,
-    RetryAfterHeader? retryAfter,
-    String? server,
     List<String>? te,
-    List<String>? trailer,
-    List<String>? transferEncoding,
     List<String>? upgrade,
     String? userAgent,
-    List<String>? vary,
-    List<String>? via,
-    List<String>? warning,
-    List<String>? wwwAuthenticate,
     CustomHeaders? custom,
   }) {
     return _HeadersImpl(
       date: date,
-      expires: expires,
       ifModifiedSince: ifModifiedSince,
       from: from,
       host: host,
       port: port,
-      location: location,
-      xPoweredBy: xPoweredBy,
       accept: accept,
       acceptCharset: acceptCharset,
       acceptEncoding: acceptEncoding,
       acceptLanguage: acceptLanguage,
       acceptRanges: acceptRanges,
-      accessControlAllowCredentials: accessControlAllowCredentials,
-      accessControlAllowOrigin: accessControlAllowOrigin,
-      accessControlExposeHeaders: accessControlExposeHeaders,
-      accessControlMaxAge: accessControlMaxAge,
       accessControlRequestHeaders: accessControlRequestHeaders,
       accessControlRequestMethod: accessControlRequestMethod,
       age: age,
-      allow: allow,
-      contentDisposition: contentDisposition,
       authorization: authorization,
-      cacheControl: cacheControl,
       connection: connection,
-      contentEncoding: contentEncoding,
-      contentLanguage: contentLanguage,
-      contentLocation: contentLocation,
-      contentMD5: contentMD5,
-      contentRange: contentRange,
-      etag: etag,
       expect: expect,
       ifMatch: ifMatch,
       ifNoneMatch: ifNoneMatch,
       ifRange: ifRange,
-      lastModified: lastModified,
       maxForwards: maxForwards,
       mPragma: mPragma,
-      proxyAuthenticate: proxyAuthenticate,
       proxyAuthorization: proxyAuthorization,
+      transferEncoding: transferEncoding,
       range: range,
       referer: referer,
-      retryAfter: retryAfter,
-      server: server,
       te: te,
-      trailer: trailer,
-      transferEncoding: transferEncoding,
       upgrade: upgrade,
       userAgent: userAgent,
-      vary: vary,
-      via: via,
-      warning: warning,
-      wwwAuthenticate: wwwAuthenticate,
       custom: custom ?? CustomHeaders.empty(),
     );
   }
@@ -447,53 +406,30 @@ abstract class Headers {
   factory Headers.response({
     DateTime? date,
     DateTime? expires,
-    DateTime? ifModifiedSince,
-    String? from,
-    String? host,
-    int? port,
     Uri? location,
     String? xPoweredBy,
-    AcceptHeader? accept,
-    List<String>? acceptCharset,
-    List<String>? acceptEncoding,
-    List<String>? acceptLanguage,
-    List<String>? acceptRanges,
     String? accessControlAllowCredentials,
     String? accessControlAllowOrigin,
     List<String>? accessControlExposeHeaders,
     String? accessControlMaxAge,
-    List<String>? accessControlRequestHeaders,
-    String? accessControlRequestMethod,
     String? age,
     List<String>? allow,
     ContentDispositionHeader? contentDisposition,
-    AuthorizationHeader? authorization,
     CacheControlHeader? cacheControl,
     List<String>? connection,
     List<String>? contentEncoding,
     List<String>? contentLanguage,
+    List<String>? acceptRanges,
     String? contentLocation,
     String? contentMD5,
     ContentRangeHeader? contentRange,
     String? etag,
-    String? expect,
-    List<String>? ifMatch,
-    List<String>? ifNoneMatch,
-    String? ifRange,
     DateTime? lastModified,
-    String? maxForwards,
-    String? mPragma,
     List<String>? proxyAuthenticate,
-    String? proxyAuthorization,
-    RangeHeader? range,
-    String? referer,
     RetryAfterHeader? retryAfter,
     String? server,
-    List<String>? te,
     List<String>? trailer,
     List<String>? transferEncoding,
-    List<String>? upgrade,
-    String? userAgent,
     List<String>? vary,
     List<String>? via,
     List<String>? warning,
@@ -503,53 +439,30 @@ abstract class Headers {
     return _HeadersImpl(
       date: date ?? DateTime.now(),
       expires: expires,
-      ifModifiedSince: ifModifiedSince,
-      from: from,
-      host: host,
-      port: port,
       location: location,
       xPoweredBy: xPoweredBy,
-      accept: accept,
-      acceptCharset: acceptCharset,
-      acceptEncoding: acceptEncoding,
-      acceptLanguage: acceptLanguage,
-      acceptRanges: acceptRanges,
       accessControlAllowCredentials: accessControlAllowCredentials,
       accessControlAllowOrigin: accessControlAllowOrigin,
       accessControlExposeHeaders: accessControlExposeHeaders,
       accessControlMaxAge: accessControlMaxAge,
-      accessControlRequestHeaders: accessControlRequestHeaders,
-      accessControlRequestMethod: accessControlRequestMethod,
       age: age,
       allow: allow,
       contentDisposition: contentDisposition,
-      authorization: authorization,
       cacheControl: cacheControl,
       connection: connection,
       contentEncoding: contentEncoding,
       contentLanguage: contentLanguage,
+      acceptRanges: acceptRanges,
       contentLocation: contentLocation,
       contentMD5: contentMD5,
       contentRange: contentRange,
       etag: etag,
-      expect: expect,
-      ifMatch: ifMatch,
-      ifNoneMatch: ifNoneMatch,
-      ifRange: ifRange,
       lastModified: lastModified,
-      maxForwards: maxForwards,
-      mPragma: mPragma,
       proxyAuthenticate: proxyAuthenticate,
-      proxyAuthorization: proxyAuthorization,
-      range: range,
-      referer: referer,
       retryAfter: retryAfter,
       server: server,
-      te: te,
       trailer: trailer,
       transferEncoding: transferEncoding,
-      upgrade: upgrade,
-      userAgent: userAgent,
       vary: vary,
       via: via,
       warning: warning,
