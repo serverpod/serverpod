@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:relic/relic.dart';
+import 'package:relic/src/headers.dart';
 import 'package:relic/src/message.dart';
 import 'package:test/test.dart';
 
@@ -207,7 +208,9 @@ void main() {
       var request = _createMessage(
         body: Body.fromString('1\r\na0\r\n\r\n'),
         headers: Headers.request(
-          transferEncoding: ['identity'],
+          transferEncoding: TransferEncodingHeader(
+            encodings: ['identity'],
+          ),
         ),
       );
       expect(request.body.contentLength, equals(9));

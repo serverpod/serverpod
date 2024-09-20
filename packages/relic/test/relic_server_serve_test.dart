@@ -10,6 +10,7 @@ import 'package:async/async.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' as parser;
 import 'package:relic/relic.dart';
+import 'package:relic/src/headers.dart';
 import 'package:relic/src/method/method.dart';
 import 'package:relic/src/relic_server_serve.dart' as relic_server;
 import 'package:relic/src/util/util.dart';
@@ -468,7 +469,9 @@ void main() {
               Stream.value(Uint8List.fromList([1, 2, 3, 4])),
             ),
             headers: Headers.response(
-              transferEncoding: ['identity'],
+              transferEncoding: TransferEncodingHeader(
+                encodings: ['identity'],
+              ),
             ),
           );
         });
@@ -492,7 +495,9 @@ void main() {
             ),
           ),
           headers: Headers.response(
-            transferEncoding: ['chunked'],
+            transferEncoding: TransferEncodingHeader(
+              encodings: ['chunked'],
+            ),
           ),
         );
       });

@@ -19,6 +19,7 @@ part 'headers/etag_header.dart';
 part 'headers/vary_header.dart';
 part 'headers/server_header.dart';
 part 'headers/proxy_authenticate_header.dart';
+part 'headers/transfer_encoding_header.dart';
 
 abstract class Headers {
   // Request Headers
@@ -149,7 +150,7 @@ abstract class Headers {
   /// Common Headers (Used in Both Requests and Responses)
   final AcceptHeader? accept;
   final List<String>? acceptRanges;
-  final List<String>? transferEncoding;
+  final TransferEncodingHeader? transferEncoding;
   final CustomHeaders custom;
 
   static const _managedHeaders = <String>{
@@ -329,7 +330,9 @@ abstract class Headers {
       server: ServerHeader.tryParse(headers.value(_serverHeader)),
       te: headers[_teHeader],
       trailer: headers[_trailerHeader],
-      transferEncoding: headers[_transferEncodingHeader],
+      transferEncoding: TransferEncodingHeader.tryParse(
+        headers.value(_transferEncodingHeader),
+      ),
       upgrade: headers[_upgradeHeader],
       userAgent: headers.value(_userAgentHeader),
       vary: VaryHeader.tryParse(headers.value(_varyHeader)),
@@ -369,7 +372,7 @@ abstract class Headers {
     String? maxForwards,
     String? mPragma,
     String? proxyAuthorization,
-    List<String>? transferEncoding,
+    TransferEncodingHeader? transferEncoding,
     RangeHeader? range,
     String? referer,
     List<String>? te,
@@ -436,7 +439,7 @@ abstract class Headers {
     RetryAfterHeader? retryAfter,
     ServerHeader? server,
     List<String>? trailer,
-    List<String>? transferEncoding,
+    TransferEncodingHeader? transferEncoding,
     VaryHeader? vary,
     List<String>? via,
     List<String>? warning,
@@ -655,7 +658,7 @@ abstract class Headers {
     ServerHeader? server,
     List<String>? te,
     List<String>? trailer,
-    List<String>? transferEncoding,
+    TransferEncodingHeader? transferEncoding,
     List<String>? upgrade,
     String? userAgent,
     VaryHeader? vary,
@@ -730,7 +733,7 @@ abstract class Headers {
       if (te != null) '$_teHeader: ${te!.join(', ')}',
       if (trailer != null) '$_trailerHeader: ${trailer!.join(', ')}',
       if (transferEncoding != null)
-        '$_transferEncodingHeader: ${transferEncoding!.join(', ')}',
+        '$_transferEncodingHeader: $transferEncoding',
       if (upgrade != null) '$_upgradeHeader: ${upgrade!.join(', ')}',
       if (userAgent != null) '$_userAgentHeader: $userAgent',
       if (vary != null) '$_varyHeader: $vary',
@@ -863,7 +866,7 @@ abstract class Headers {
         server == null &&
         (te == null || te!.isEmpty) &&
         (trailer == null || trailer!.isEmpty) &&
-        (transferEncoding == null || transferEncoding!.isEmpty) &&
+        (transferEncoding == null || transferEncoding!.encodings.isEmpty) &&
         (upgrade == null || upgrade!.isEmpty) &&
         userAgent == null &&
         (vary == null || vary!.fields.isEmpty) &&
@@ -1072,7 +1075,7 @@ class _HeadersImpl extends Headers {
       server: server is ServerHeader ? server : this.server,
       te: te is List<String> ? te : this.te,
       trailer: trailer is List<String> ? trailer : this.trailer,
-      transferEncoding: transferEncoding is List<String>
+      transferEncoding: transferEncoding is TransferEncodingHeader
           ? transferEncoding
           : this.transferEncoding,
       upgrade: upgrade is List<String> ? upgrade : this.upgrade,
