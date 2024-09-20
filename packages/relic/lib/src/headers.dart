@@ -17,6 +17,7 @@ part 'headers/accept_header.dart';
 part 'headers/connection_header.dart';
 part 'headers/etag_header.dart';
 part 'headers/vary_header.dart';
+part 'headers/server_header.dart';
 
 abstract class Headers {
   // Request Headers
@@ -136,7 +137,7 @@ abstract class Headers {
   final ETagHeader? etag;
   final List<String>? proxyAuthenticate;
   final RetryAfterHeader? retryAfter;
-  final String? server;
+  final ServerHeader? server;
   final List<String>? trailer;
   final VaryHeader? vary;
   final List<String>? via;
@@ -321,10 +322,8 @@ abstract class Headers {
       proxyAuthorization: headers.value(_proxyAuthorizationHeader),
       range: RangeHeader.tryParse(headers.value(_rangeHeader)),
       referer: headers.value(_refererHeader),
-      retryAfter: RetryAfterHeader.tryParse(
-        headers.value(_retryAfterHeader),
-      ),
-      server: headers.value(_serverHeader),
+      retryAfter: RetryAfterHeader.tryParse(headers.value(_retryAfterHeader)),
+      server: ServerHeader.tryParse(headers.value(_serverHeader)),
       te: headers[_teHeader],
       trailer: headers[_trailerHeader],
       transferEncoding: headers[_transferEncodingHeader],
@@ -432,7 +431,7 @@ abstract class Headers {
     DateTime? lastModified,
     List<String>? proxyAuthenticate,
     RetryAfterHeader? retryAfter,
-    String? server,
+    ServerHeader? server,
     List<String>? trailer,
     List<String>? transferEncoding,
     VaryHeader? vary,
@@ -650,7 +649,7 @@ abstract class Headers {
     RangeHeader? range,
     String? referer,
     RetryAfterHeader? retryAfter,
-    String? server,
+    ServerHeader? server,
     List<String>? te,
     List<String>? trailer,
     List<String>? transferEncoding,
@@ -1068,7 +1067,7 @@ class _HeadersImpl extends Headers {
       range: range is RangeHeader ? range : this.range,
       referer: referer is String ? referer : this.referer,
       retryAfter: retryAfter is RetryAfterHeader ? retryAfter : this.retryAfter,
-      server: server is String ? server : this.server,
+      server: server is ServerHeader ? server : this.server,
       te: te is List<String> ? te : this.te,
       trailer: trailer is List<String> ? trailer : this.trailer,
       transferEncoding: transferEncoding is List<String>
