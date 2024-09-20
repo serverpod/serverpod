@@ -1,16 +1,16 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class UserNoteCollection extends _i1.TableRow
     implements _i1.ProtocolSerialization {
@@ -131,7 +131,7 @@ class _UserNoteCollectionImpl extends UserNoteCollection {
       name: name ?? this.name,
       userNotesPropertyName: userNotesPropertyName is List<_i2.UserNote>?
           ? userNotesPropertyName
-          : this.userNotesPropertyName?.clone(),
+          : this.userNotesPropertyName?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -247,7 +247,7 @@ class UserNoteCollectionRepository {
   final detachRow = const UserNoteCollectionDetachRowRepository._();
 
   Future<List<UserNoteCollection>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<UserNoteCollectionTable>? where,
     int? limit,
     int? offset,
@@ -257,20 +257,20 @@ class UserNoteCollectionRepository {
     _i1.Transaction? transaction,
     UserNoteCollectionInclude? include,
   }) async {
-    return session.db.find<UserNoteCollection>(
+    return databaseAccessor.db.find<UserNoteCollection>(
       where: where?.call(UserNoteCollection.t),
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<UserNoteCollection?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<UserNoteCollectionTable>? where,
     int? offset,
     _i1.OrderByBuilder<UserNoteCollectionTable>? orderBy,
@@ -279,121 +279,121 @@ class UserNoteCollectionRepository {
     _i1.Transaction? transaction,
     UserNoteCollectionInclude? include,
   }) async {
-    return session.db.findFirstRow<UserNoteCollection>(
+    return databaseAccessor.db.findFirstRow<UserNoteCollection>(
       where: where?.call(UserNoteCollection.t),
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<UserNoteCollection?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
     UserNoteCollectionInclude? include,
   }) async {
-    return session.db.findById<UserNoteCollection>(
+    return databaseAccessor.db.findById<UserNoteCollection>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<List<UserNoteCollection>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<UserNoteCollection> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UserNoteCollection>(
+    return databaseAccessor.db.insert<UserNoteCollection>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<UserNoteCollection> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     UserNoteCollection row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UserNoteCollection>(
+    return databaseAccessor.db.insertRow<UserNoteCollection>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<UserNoteCollection>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<UserNoteCollection> rows, {
     _i1.ColumnSelections<UserNoteCollectionTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<UserNoteCollection>(
+    return databaseAccessor.db.update<UserNoteCollection>(
       rows,
       columns: columns?.call(UserNoteCollection.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<UserNoteCollection> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     UserNoteCollection row, {
     _i1.ColumnSelections<UserNoteCollectionTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<UserNoteCollection>(
+    return databaseAccessor.db.updateRow<UserNoteCollection>(
       row,
       columns: columns?.call(UserNoteCollection.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<UserNoteCollection>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<UserNoteCollection> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UserNoteCollection>(
+    return databaseAccessor.db.delete<UserNoteCollection>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<UserNoteCollection> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     UserNoteCollection row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UserNoteCollection>(
+    return databaseAccessor.db.deleteRow<UserNoteCollection>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<UserNoteCollection>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<UserNoteCollectionTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<UserNoteCollection>(
+    return databaseAccessor.db.deleteWhere<UserNoteCollection>(
       where: where(UserNoteCollection.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<UserNoteCollectionTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<UserNoteCollection>(
+    return databaseAccessor.db.count<UserNoteCollection>(
       where: where?.call(UserNoteCollection.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -402,10 +402,11 @@ class UserNoteCollectionAttachRepository {
   const UserNoteCollectionAttachRepository._();
 
   Future<void> userNotesPropertyName(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     UserNoteCollection userNoteCollection,
-    List<_i2.UserNote> userNote,
-  ) async {
+    List<_i2.UserNote> userNote, {
+    _i1.Transaction? transaction,
+  }) async {
     if (userNote.any((e) => e.id == null)) {
       throw ArgumentError.notNull('userNote.id');
     }
@@ -420,12 +421,13 @@ class UserNoteCollectionAttachRepository {
                   userNoteCollection.id,
             ))
         .toList();
-    await session.db.update<_i2.UserNote>(
+    await databaseAccessor.db.update<_i2.UserNote>(
       $userNote,
       columns: [
         _i2.UserNote.t
             .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
       ],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -434,10 +436,11 @@ class UserNoteCollectionAttachRowRepository {
   const UserNoteCollectionAttachRowRepository._();
 
   Future<void> userNotesPropertyName(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     UserNoteCollection userNoteCollection,
-    _i2.UserNote userNote,
-  ) async {
+    _i2.UserNote userNote, {
+    _i1.Transaction? transaction,
+  }) async {
     if (userNote.id == null) {
       throw ArgumentError.notNull('userNote.id');
     }
@@ -450,12 +453,13 @@ class UserNoteCollectionAttachRowRepository {
       $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId:
           userNoteCollection.id,
     );
-    await session.db.updateRow<_i2.UserNote>(
+    await databaseAccessor.db.updateRow<_i2.UserNote>(
       $userNote,
       columns: [
         _i2.UserNote.t
             .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
       ],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -464,9 +468,10 @@ class UserNoteCollectionDetachRepository {
   const UserNoteCollectionDetachRepository._();
 
   Future<void> userNotesPropertyName(
-    _i1.Session session,
-    List<_i2.UserNote> userNote,
-  ) async {
+    _i1.DatabaseAccessor databaseAccessor,
+    List<_i2.UserNote> userNote, {
+    _i1.Transaction? transaction,
+  }) async {
     if (userNote.any((e) => e.id == null)) {
       throw ArgumentError.notNull('userNote.id');
     }
@@ -478,12 +483,13 @@ class UserNoteCollectionDetachRepository {
                   null,
             ))
         .toList();
-    await session.db.update<_i2.UserNote>(
+    await databaseAccessor.db.update<_i2.UserNote>(
       $userNote,
       columns: [
         _i2.UserNote.t
             .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
       ],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -492,9 +498,10 @@ class UserNoteCollectionDetachRowRepository {
   const UserNoteCollectionDetachRowRepository._();
 
   Future<void> userNotesPropertyName(
-    _i1.Session session,
-    _i2.UserNote userNote,
-  ) async {
+    _i1.DatabaseAccessor databaseAccessor,
+    _i2.UserNote userNote, {
+    _i1.Transaction? transaction,
+  }) async {
     if (userNote.id == null) {
       throw ArgumentError.notNull('userNote.id');
     }
@@ -503,12 +510,13 @@ class UserNoteCollectionDetachRowRepository {
       userNote,
       $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId: null,
     );
-    await session.db.updateRow<_i2.UserNote>(
+    await databaseAccessor.db.updateRow<_i2.UserNote>(
       $userNote,
       columns: [
         _i2.UserNote.t
             .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
       ],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

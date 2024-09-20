@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:package_config/package_config.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
@@ -53,12 +55,15 @@ class GeneratorConfig {
     required this.dartClientPackage,
     required this.dartClientDependsOnServiceClient,
     required this.serverPackageDirectoryPathParts,
+    List<String>? relativeServerTestToolsPathParts,
     required List<String> relativeDartClientPackagePathParts,
     required List<ModuleConfig> modules,
     required this.extraClasses,
     required this.enabledFeatures,
+    this.experimentalFeatures = const [],
   })  : _relativeDartClientPackagePathParts =
             relativeDartClientPackagePathParts,
+        _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
         _modules = modules;
 
   /// The name of the serverpod project.
@@ -108,10 +113,17 @@ class GeneratorConfig {
   List<String> get endpointsSourcePathParts =>
       [...serverPackageDirectoryPathParts, 'lib', 'src', 'endpoints'];
 
+  /// The internal package path parts of the directory, where the generated code is stored in the
+  /// server package.
+  List<String> get generatedServeModelPackagePathParts => ['src', 'generated'];
+
   /// The path parts of the directory, where the generated code is stored in the
   /// server package.
-  List<String> get generatedServeModelPathParts =>
-      [...serverPackageDirectoryPathParts, 'lib', 'src', 'generated'];
+  List<String> get generatedServeModelPathParts => [
+        ...serverPackageDirectoryPathParts,
+        'lib',
+        ...generatedServeModelPackagePathParts
+      ];
 
   /// Path parts from the server package to the dart client package.
   final List<String> _relativeDartClientPackagePathParts;
@@ -121,6 +133,18 @@ class GeneratorConfig {
         ...serverPackageDirectoryPathParts,
         ..._relativeDartClientPackagePathParts
       ];
+
+  final List<String>? _relativeServerTestToolsPathParts;
+  List<String>? get generatedServerTestToolsPathParts {
+    var localRelativeServerTestToolsPathParts =
+        _relativeServerTestToolsPathParts;
+    if (localRelativeServerTestToolsPathParts == null) return null;
+
+    return [
+      ...serverPackageDirectoryPathParts,
+      ...localRelativeServerTestToolsPathParts
+    ];
+  }
 
   /// The path parts to the protocol directory in the dart client package.
   List<String> get generatedDartClientModelPathParts =>
@@ -139,6 +163,12 @@ class GeneratorConfig {
   bool isFeatureEnabled(ServerpodFeature feature) =>
       enabledFeatures.contains(feature);
 
+  final List<ExperimentalFeature> experimentalFeatures;
+
+  bool isExperimentalFeatureEnabled(ExperimentalFeature feature) =>
+      experimentalFeatures.contains(feature) ||
+      experimentalFeatures.contains(ExperimentalFeature.all);
+
   /// All the modules defined in the config (of type module).
   List<ModuleConfig> get modules => _modules
       .where((module) => module.type == PackageType.module)
@@ -152,41 +182,33 @@ class GeneratorConfig {
   /// All the modules including my self and internal modules.
   List<ModuleConfig> get modulesAll => _modules;
 
-  /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
-  static Future<GeneratorConfig> load([String dir = '']) async {
-    var serverPackageDirectoryPathParts = p.split(dir);
+  /// Create a new [GeneratorConfig] by loading the configuration in the [serverRootDir].
+  static Future<GeneratorConfig> load([String serverRootDir = '']) async {
+    var serverPackageDirectoryPathParts = p.split(serverRootDir);
 
     Pubspec? pubspec;
     try {
-      pubspec = parsePubspec(File(p.join(dir, 'pubspec.yaml')));
+      pubspec = parsePubspec(File(p.join(serverRootDir, 'pubspec.yaml')));
     } catch (_) {}
 
     if (pubspec == null) {
-      log.error(
-        'Failed to load pubspec.yaml. Are you running serverpod from your '
-        'projects root directory?',
-      );
-
       throw const ServerpodProjectNotFoundException(
-        'Failed to load valid pubspec.yaml',
+        'Failed to load pubspec.yaml. Are you running serverpod from your '
+        'projects server root directory?',
       );
     }
 
-    if (!isServerDirectory(Directory(dir))) {
-      log.error(
+    if (!isServerDirectory(Directory(serverRootDir))) {
+      throw const ServerpodProjectNotFoundException(
         'Could not find the Serverpod dependency. Are you running serverpod from your '
         'projects root directory?',
-      );
-
-      throw const ServerpodProjectNotFoundException(
-        'Serverpod dependency not found.',
       );
     }
 
     var serverPackage = pubspec.name;
     var name = _stripPackage(serverPackage);
 
-    var file = File(p.join(dir, 'config', 'generator.yaml'));
+    var file = File(p.join(serverRootDir, 'config', 'generator.yaml'));
     Map generatorConfig = {};
     try {
       var yamlStr = file.readAsStringSync();
@@ -200,6 +222,12 @@ class GeneratorConfig {
     if (generatorConfig['client_package_path'] != null) {
       relativeDartClientPackagePathParts =
           p.split(generatorConfig['client_package_path']);
+    }
+
+    List<String>? relativeServerTestToolsPathParts;
+    if (generatorConfig['server_test_tools_path'] != null) {
+      relativeServerTestToolsPathParts =
+          p.split(generatorConfig['server_test_tools_path']);
     }
 
     late String dartClientPackage;
@@ -217,13 +245,36 @@ class GeneratorConfig {
       dartClientDependsOnServiceClient =
           yaml['dependencies'].containsKey('serverpod_service_client');
     } catch (_) {
-      log.error(
+      throw const ServerpodProjectNotFoundException(
         'Failed to load client pubspec.yaml. If you are using a none default '
         'path it has to be specified in the config/generator.yaml file!',
       );
+    }
+
+    var packageConfig = await findPackageConfig(Directory(serverRootDir));
+
+    if (packageConfig == null) {
       throw const ServerpodProjectNotFoundException(
-        'Failed to load client pubspec.yaml',
+        'Failed to read your server\'s package configuration. Have you run '
+        '`dart pub get` in your server directory?',
       );
+    }
+
+    if (relativeServerTestToolsPathParts != null &&
+        packageConfig['serverpod_test'] == null) {
+      log.warning(
+        'A `server_test_tools_path` was set in the generator config, '
+        'but the `serverpod_test` package is not installed. '
+        "Make sure it's part of your pubspec.yaml file and run `dart pub get`. "
+        "If you don't want to use `serverpod_test`, then remove `server_test_tools_path`.",
+      );
+    }
+
+    var allPackagesAreInstalled = pubspec.dependencies.keys
+        .every((dependencyName) => packageConfig[dependencyName] != null);
+    if (!allPackagesAreInstalled) {
+      log.warning(
+          'Not all dependencies are installed, which might cause errors in your Serverpod code. Run `dart pub get`.');
     }
 
     var manualModules = <String, String?>{};
@@ -236,7 +287,7 @@ class GeneratorConfig {
     }
 
     var modules = await locateModules(
-      directory: Directory(dir),
+      directory: Directory(serverRootDir),
       manualModules: manualModules,
     );
 
@@ -269,6 +320,11 @@ class GeneratorConfig {
 
     var enabledFeatures = _enabledFeatures(file, generatorConfig);
 
+    var enabledExperimentalFeatures = [
+      ..._enabledExperimentalFeatures(file, generatorConfig),
+      ...CommandLineExperimentalFeatures.instance.features,
+    ];
+
     return GeneratorConfig(
       name: name,
       type: type,
@@ -276,10 +332,12 @@ class GeneratorConfig {
       dartClientPackage: dartClientPackage,
       dartClientDependsOnServiceClient: dartClientDependsOnServiceClient,
       serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
+      relativeServerTestToolsPathParts: relativeServerTestToolsPathParts,
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
       modules: modules,
       extraClasses: extraClasses,
       enabledFeatures: enabledFeatures,
+      experimentalFeatures: enabledExperimentalFeatures,
     );
   }
 
@@ -296,6 +354,26 @@ class GeneratorConfig {
     if (features is! Map) return enabledFeatures;
 
     return ServerpodFeature.values
+        .where((feature) => features[feature.name.toString()] == true)
+        .toList();
+  }
+
+  static List<ExperimentalFeature> _enabledExperimentalFeatures(
+    File file,
+    Map config,
+  ) {
+    var enabledFeatures = <ExperimentalFeature>[];
+    if (!file.existsSync()) return enabledFeatures;
+
+    if (!config.containsKey('experimental_features')) {
+      return enabledFeatures;
+    }
+
+    var features = config['experimental_features'];
+
+    if (features is! Map) return enabledFeatures;
+
+    return ExperimentalFeature.values
         .where((feature) => features[feature.name.toString()] == true)
         .toList();
   }

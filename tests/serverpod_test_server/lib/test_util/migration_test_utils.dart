@@ -53,6 +53,7 @@ abstract class MigrationTestUtils {
         if (force) '--force',
         '--verbose',
         '--no-analytics',
+        '--experimental-features=all',
       ],
     );
 

@@ -1,4 +1,5 @@
 import 'package:serverpod_test_server/src/generated/protocol.dart';
+import 'package:serverpod/protocol.dart' as serverpod;
 import 'package:test/test.dart';
 
 void main() {
@@ -66,6 +67,19 @@ void main() {
       expect(decoded is SimpleData?, true);
     },
   );
+
+  test(
+      'Given a Serverpod defined model when encoding and decoding with type then output matches input',
+      () {
+    var serverpodDefinedModel =
+        serverpod.ClusterServerInfo(serverId: 'Hello World');
+    var encoded = protocol.encodeWithType(serverpodDefinedModel);
+    var decoded = protocol.decodeWithType(encoded);
+
+    expect(decoded, isA<serverpod.ClusterServerInfo>());
+    expect((decoded as serverpod.ClusterServerInfo).serverId,
+        serverpodDefinedModel.serverId);
+  });
 }
 
 extension _SimpleDataExtension on SimpleData {

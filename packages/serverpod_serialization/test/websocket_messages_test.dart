@@ -1,4 +1,5 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:serverpod_serialization/src/websocket_message_keys.dart';
 import 'package:test/test.dart';
 
 class _TestSerializationManager extends SerializationManager {
@@ -89,6 +90,13 @@ class _TestSerializableException
 
 void main() {
   test(
+      'Given message that has no data when building websocket message then data keyword is not included',
+      () {
+    var message = PingCommand.buildMessage();
+    expect(message, isNot(contains(WebSocketMessageKey.data)));
+  });
+
+  test(
       'Given a Ping command message when building websocket message from string then PingCommand is returned.',
       () {
     var message = PingCommand.buildMessage();
@@ -127,7 +135,8 @@ void main() {
     var message = BadRequestMessage.buildMessage('testRequest');
 
     /// Missing mandatory field 'request'
-    message = message.replaceAll('"request":"testRequest"', '');
+    message = message.replaceAll(
+        '"${WebSocketMessageDataKey.request}":"testRequest"', '');
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
@@ -157,7 +166,7 @@ void main() {
       'Given an unknown command json String when building websocket message from string then UnknownMessageException is thrown.',
       () {
     var message =
-        '{"${WebSocketMessage.messageTypeKeyword}": "this is not a known message type"}';
+        '{"${WebSocketMessageKey.type}": "this is not a known message type"}';
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
@@ -187,7 +196,7 @@ void main() {
   test(
       'Given a null messageType when building websocket message from string then UnknownMessageException is thrown.',
       () {
-    var message = '{"${WebSocketMessage.messageTypeKeyword}": null}';
+    var message = '{"${WebSocketMessageKey.type}": null}';
     expect(
       () => WebSocketMessage.fromJsonString(
         message,
@@ -227,7 +236,7 @@ void main() {
       inputStreams: ['input1'],
     );
 
-    // This message is missing the mandatory endpoint field.
+    // This message uses an unsupported type for input stream.
     message = message.replaceAll('"input1"', '1');
 
     expect(
@@ -255,7 +264,8 @@ void main() {
     );
 
     // This message is missing the mandatory endpoint field.
-    message = message.replaceAll('"endpoint":"endpoint",', '');
+    message = message.replaceAll(
+        '"${WebSocketMessageDataKey.endpoint}":"endpoint",', '');
 
     expect(
       () => WebSocketMessage.fromJsonString(
@@ -340,7 +350,7 @@ void main() {
 
     // This message is missing the mandatory connectionId field.
     message = message.replaceAll(
-      '"connectionId":${SerializationManager.encodeForProtocol(connectionId)},',
+      '"${WebSocketMessageDataKey.connectionId}":${SerializationManager.encodeForProtocol(connectionId)},',
       '',
     );
 
@@ -427,7 +437,8 @@ void main() {
     );
 
     // This message is missing the mandatory endpoint field.
-    message = message.replaceAll('"endpoint":"endpoint",', '');
+    message = message.replaceAll(
+        '"${WebSocketMessageDataKey.endpoint}":"endpoint",', '');
 
     expect(
       () => WebSocketMessage.fromJsonString(
@@ -487,7 +498,8 @@ void main() {
     );
 
     // This message is missing the mandatory endpoint field.
-    message = message.replaceAll('"endpoint":"endpoint",', '');
+    message = message.replaceAll(
+        '"${WebSocketMessageDataKey.endpoint}":"endpoint",', '');
 
     expect(
       () => WebSocketMessage.fromJsonString(

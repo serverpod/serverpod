@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -30,7 +31,7 @@ class EnumDefinitionBuilder {
         _documentation = [];
 
   EnumDefinition build() {
-    return EnumDefinition(
+    var enumDefinition = EnumDefinition(
       moduleAlias: _moduleAlias,
       fileName: _fileName,
       sourceFileName: _sourceFileName,
@@ -40,7 +41,10 @@ class EnumDefinitionBuilder {
       subDirParts: _subDirParts,
       serverOnly: _serverOnly,
       documentation: _documentation,
+      type: TypeDefinitionBuilder().withClassName(_className).build(),
     );
+    enumDefinition.type.enumDefinition = enumDefinition;
+    return enumDefinition;
   }
 
   EnumDefinitionBuilder withModuleAlias(String moduleAlias) {

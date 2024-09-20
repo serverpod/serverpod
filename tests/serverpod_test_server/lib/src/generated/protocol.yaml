@@ -7,6 +7,7 @@ authentication:
   - createUser:
   - authenticate:
   - signOut:
+  - updateScopes:
 basicTypes:
   - testInt:
   - testDouble:
@@ -73,6 +74,12 @@ basicDatabase:
 transactionsDatabase:
   - removeRow:
   - updateInsertDelete:
+deprecation:
+  - setGlobalDouble:
+  - getGlobalDouble:
+echoRequest:
+  - echoAuthenticationKey:
+  - echoHttpHeader:
 emailAuthTestMethods:
   - findVerificationCode:
   - findResetCode:
@@ -200,6 +207,7 @@ methodStreaming:
   - didInputStreamHaveSerializableExceptionError:
 authenticatedMethodStreaming:
   - simpleStream:
+  - intEchoStream:
 moduleSerialization:
   - serializeModuleObject:
   - modifyModuleObject:
@@ -235,3 +243,20 @@ subSubDirTest:
   - testMethod:
 subDirTest:
   - testMethod:
+testTools:
+  - returnsSessionId:
+  - returnsSessionEndpointAndMethod:
+  - returnsSessionIdFromStream:
+  - returnsSessionEndpointAndMethodFromStream:
+  - returnsString:
+  - returnsStream:
+  - returnsListFromInputStream:
+  - returnsStreamFromInputStream:
+  - postNumberToSharedStream:
+  - postNumberToSharedStreamAndReturnStream:
+  - listenForNumbersOnSharedStream:
+  - createSimpleData:
+  - getAllSimpleData:
+authenticatedTestTools:
+  - returnsString:
+  - returnsStream:

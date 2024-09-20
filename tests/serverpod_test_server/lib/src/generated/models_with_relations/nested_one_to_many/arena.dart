@@ -1,11 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -208,7 +209,7 @@ class ArenaRepository {
   final detachRow = const ArenaDetachRowRepository._();
 
   Future<List<Arena>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ArenaTable>? where,
     int? limit,
     int? offset,
@@ -218,20 +219,20 @@ class ArenaRepository {
     _i1.Transaction? transaction,
     ArenaInclude? include,
   }) async {
-    return session.db.find<Arena>(
+    return databaseAccessor.db.find<Arena>(
       where: where?.call(Arena.t),
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<Arena?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ArenaTable>? where,
     int? offset,
     _i1.OrderByBuilder<ArenaTable>? orderBy,
@@ -240,121 +241,121 @@ class ArenaRepository {
     _i1.Transaction? transaction,
     ArenaInclude? include,
   }) async {
-    return session.db.findFirstRow<Arena>(
+    return databaseAccessor.db.findFirstRow<Arena>(
       where: where?.call(Arena.t),
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<Arena?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
     ArenaInclude? include,
   }) async {
-    return session.db.findById<Arena>(
+    return databaseAccessor.db.findById<Arena>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<List<Arena>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Arena> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Arena>(
+    return databaseAccessor.db.insert<Arena>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Arena> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Arena row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Arena>(
+    return databaseAccessor.db.insertRow<Arena>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Arena>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Arena> rows, {
     _i1.ColumnSelections<ArenaTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Arena>(
+    return databaseAccessor.db.update<Arena>(
       rows,
       columns: columns?.call(Arena.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Arena> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Arena row, {
     _i1.ColumnSelections<ArenaTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Arena>(
+    return databaseAccessor.db.updateRow<Arena>(
       row,
       columns: columns?.call(Arena.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Arena>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Arena> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Arena>(
+    return databaseAccessor.db.delete<Arena>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Arena> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Arena row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Arena>(
+    return databaseAccessor.db.deleteRow<Arena>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Arena>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<ArenaTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Arena>(
+    return databaseAccessor.db.deleteWhere<Arena>(
       where: where(Arena.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ArenaTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Arena>(
+    return databaseAccessor.db.count<Arena>(
       where: where?.call(Arena.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -363,10 +364,11 @@ class ArenaAttachRowRepository {
   const ArenaAttachRowRepository._();
 
   Future<void> team(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Arena arena,
-    _i2.Team team,
-  ) async {
+    _i2.Team team, {
+    _i1.Transaction? transaction,
+  }) async {
     if (team.id == null) {
       throw ArgumentError.notNull('team.id');
     }
@@ -375,9 +377,10 @@ class ArenaAttachRowRepository {
     }
 
     var $team = team.copyWith(arenaId: arena.id);
-    await session.db.updateRow<_i2.Team>(
+    await databaseAccessor.db.updateRow<_i2.Team>(
       $team,
       columns: [_i2.Team.t.arenaId],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -386,9 +389,10 @@ class ArenaDetachRowRepository {
   const ArenaDetachRowRepository._();
 
   Future<void> team(
-    _i1.Session session,
-    Arena arena,
-  ) async {
+    _i1.DatabaseAccessor databaseAccessor,
+    Arena arena, {
+    _i1.Transaction? transaction,
+  }) async {
     var $team = arena.team;
 
     if ($team == null) {
@@ -402,9 +406,10 @@ class ArenaDetachRowRepository {
     }
 
     var $$team = $team.copyWith(arenaId: null);
-    await session.db.updateRow<_i2.Team>(
+    await databaseAccessor.db.updateRow<_i2.Team>(
       $$team,
       columns: [_i2.Team.t.arenaId],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

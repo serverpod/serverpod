@@ -1,15 +1,15 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Represents a version of a database migration.
 abstract class DatabaseMigrationVersion extends _i1.TableRow
@@ -212,7 +212,7 @@ class DatabaseMigrationVersionRepository {
   const DatabaseMigrationVersionRepository._();
 
   Future<List<DatabaseMigrationVersion>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
     int? limit,
     int? offset,
@@ -221,19 +221,19 @@ class DatabaseMigrationVersionRepository {
     _i1.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<DatabaseMigrationVersion>(
+    return databaseAccessor.db.find<DatabaseMigrationVersion>(
       where: where?.call(DatabaseMigrationVersion.t),
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<DatabaseMigrationVersion?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
     int? offset,
     _i1.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
@@ -241,118 +241,118 @@ class DatabaseMigrationVersionRepository {
     _i1.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<DatabaseMigrationVersion>(
+    return databaseAccessor.db.findFirstRow<DatabaseMigrationVersion>(
       where: where?.call(DatabaseMigrationVersion.t),
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<DatabaseMigrationVersion?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<DatabaseMigrationVersion>(
+    return databaseAccessor.db.findById<DatabaseMigrationVersion>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<DatabaseMigrationVersion>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<DatabaseMigrationVersion> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<DatabaseMigrationVersion>(
+    return databaseAccessor.db.insert<DatabaseMigrationVersion>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<DatabaseMigrationVersion> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     DatabaseMigrationVersion row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<DatabaseMigrationVersion>(
+    return databaseAccessor.db.insertRow<DatabaseMigrationVersion>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<DatabaseMigrationVersion>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<DatabaseMigrationVersion> rows, {
     _i1.ColumnSelections<DatabaseMigrationVersionTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<DatabaseMigrationVersion>(
+    return databaseAccessor.db.update<DatabaseMigrationVersion>(
       rows,
       columns: columns?.call(DatabaseMigrationVersion.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<DatabaseMigrationVersion> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     DatabaseMigrationVersion row, {
     _i1.ColumnSelections<DatabaseMigrationVersionTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<DatabaseMigrationVersion>(
+    return databaseAccessor.db.updateRow<DatabaseMigrationVersion>(
       row,
       columns: columns?.call(DatabaseMigrationVersion.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<DatabaseMigrationVersion>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<DatabaseMigrationVersion> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<DatabaseMigrationVersion>(
+    return databaseAccessor.db.delete<DatabaseMigrationVersion>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<DatabaseMigrationVersion> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     DatabaseMigrationVersion row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<DatabaseMigrationVersion>(
+    return databaseAccessor.db.deleteRow<DatabaseMigrationVersion>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<DatabaseMigrationVersion>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<DatabaseMigrationVersion>(
+    return databaseAccessor.db.deleteWhere<DatabaseMigrationVersion>(
       where: where(DatabaseMigrationVersion.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<DatabaseMigrationVersion>(
+    return databaseAccessor.db.count<DatabaseMigrationVersion>(
       where: where?.call(DatabaseMigrationVersion.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

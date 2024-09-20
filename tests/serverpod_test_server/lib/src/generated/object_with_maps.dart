@@ -1,17 +1,17 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'dart:typed_data' as _i3;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class ObjectWithMaps
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -285,24 +285,141 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
     Map<int, int>? intIntMap,
   }) {
     return ObjectWithMaps(
-      dataMap: dataMap ?? this.dataMap.clone(),
-      intMap: intMap ?? this.intMap.clone(),
-      stringMap: stringMap ?? this.stringMap.clone(),
-      dateTimeMap: dateTimeMap ?? this.dateTimeMap.clone(),
-      byteDataMap: byteDataMap ?? this.byteDataMap.clone(),
-      durationMap: durationMap ?? this.durationMap.clone(),
-      uuidMap: uuidMap ?? this.uuidMap.clone(),
-      nullableDataMap: nullableDataMap ?? this.nullableDataMap.clone(),
-      nullableIntMap: nullableIntMap ?? this.nullableIntMap.clone(),
-      nullableStringMap: nullableStringMap ?? this.nullableStringMap.clone(),
-      nullableDateTimeMap:
-          nullableDateTimeMap ?? this.nullableDateTimeMap.clone(),
-      nullableByteDataMap:
-          nullableByteDataMap ?? this.nullableByteDataMap.clone(),
-      nullableDurationMap:
-          nullableDurationMap ?? this.nullableDurationMap.clone(),
-      nullableUuidMap: nullableUuidMap ?? this.nullableUuidMap.clone(),
-      intIntMap: intIntMap ?? this.intIntMap.clone(),
+      dataMap: dataMap ??
+          this.dataMap.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0.copyWith(),
+                  )),
+      intMap: intMap ??
+          this.intMap.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0,
+                  )),
+      stringMap: stringMap ??
+          this.stringMap.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0,
+                  )),
+      dateTimeMap: dateTimeMap ??
+          this.dateTimeMap.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0,
+                  )),
+      byteDataMap: byteDataMap ??
+          this.byteDataMap.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0.clone(),
+                  )),
+      durationMap: durationMap ??
+          this.durationMap.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0,
+                  )),
+      uuidMap: uuidMap ??
+          this.uuidMap.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0,
+                  )),
+      nullableDataMap: nullableDataMap ??
+          this.nullableDataMap.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0?.copyWith(),
+                  )),
+      nullableIntMap: nullableIntMap ??
+          this.nullableIntMap.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0,
+                  )),
+      nullableStringMap: nullableStringMap ??
+          this.nullableStringMap.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0,
+                  )),
+      nullableDateTimeMap: nullableDateTimeMap ??
+          this.nullableDateTimeMap.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0,
+                  )),
+      nullableByteDataMap: nullableByteDataMap ??
+          this.nullableByteDataMap.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0?.clone(),
+                  )),
+      nullableDurationMap: nullableDurationMap ??
+          this.nullableDurationMap.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0,
+                  )),
+      nullableUuidMap: nullableUuidMap ??
+          this.nullableUuidMap.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0,
+                  )),
+      intIntMap: intIntMap ??
+          this.intIntMap.map((
+                key0,
+                value0,
+              ) =>
+                  MapEntry(
+                    key0,
+                    value0,
+                  )),
     );
   }
 }

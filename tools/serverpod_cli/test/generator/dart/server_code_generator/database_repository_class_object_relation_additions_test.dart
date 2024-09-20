@@ -164,13 +164,12 @@ void main() {
       });
 
       test(
-          'company method has the input params of session, example and company',
+          'company method has the input params of databaseAccessor, example, company and named param transaction',
           () {
         expect(
           companyMethod?.parameters?.toSource(),
           matches(
-            r'(_i\d.Session session, Example example, Company company)',
-          ),
+              r'\(_i\d\.DatabaseAccessor databaseAccessor, Example example, Company company, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: companyMethod == null);
 
@@ -184,13 +183,12 @@ void main() {
       });
 
       test(
-          'the address method has the input params of session, example and address',
+          'the address method has the input params of databaseAccessor, example, address and named param transaction',
           () {
         expect(
           addressMethod?.parameters?.toSource(),
           matches(
-            r'(_i\d.Session session, Example example, Address address)',
-          ),
+              r'\(_i\d\.DatabaseAccessor databaseAccessor, Example example, Address address, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: addressMethod == null);
 
@@ -264,10 +262,13 @@ void main() {
         expect(companyMethod, isNotNull, reason: 'Missing company method.');
       });
 
-      test('company method has the input params of session, example', () {
+      test(
+          'company method has the input params of databaseAccessor, example and named param transaction',
+          () {
         expect(
           companyMethod?.parameters?.toSource(),
-          '(_i1.Session session, Example example)',
+          matches(
+              r'\(_i\d\.DatabaseAccessor databaseAccessor, Example example, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: companyMethod == null);
 
@@ -438,7 +439,7 @@ void main() {
         expect(
           method?.parameters?.toSource(),
           matches(
-            r'(_i\d.Session session, Example example, Example nestedExample)',
+            r'(_i\d.DatabaseAccessor databaseAccessor, Example example, Example nestedExample)',
           ),
         );
       });

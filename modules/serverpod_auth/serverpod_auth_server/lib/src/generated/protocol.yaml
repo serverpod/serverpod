@@ -25,3 +25,4 @@ user:
   - removeUserImage:
   - setUserImage:
   - changeUserName:
+  - changeFullName:

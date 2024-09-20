@@ -1,11 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
@@ -105,12 +106,12 @@ class _DatabaseDefinitionsImpl extends DatabaseDefinitions {
     List<_i2.DatabaseMigrationVersion>? latestAvailableMigrations,
   }) {
     return DatabaseDefinitions(
-      target: target ?? this.target.clone(),
-      live: live ?? this.live.clone(),
-      installedMigrations:
-          installedMigrations ?? this.installedMigrations.clone(),
-      latestAvailableMigrations:
-          latestAvailableMigrations ?? this.latestAvailableMigrations.clone(),
+      target: target ?? this.target.map((e0) => e0.copyWith()).toList(),
+      live: live ?? this.live.map((e0) => e0.copyWith()).toList(),
+      installedMigrations: installedMigrations ??
+          this.installedMigrations.map((e0) => e0.copyWith()).toList(),
+      latestAvailableMigrations: latestAvailableMigrations ??
+          this.latestAvailableMigrations.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

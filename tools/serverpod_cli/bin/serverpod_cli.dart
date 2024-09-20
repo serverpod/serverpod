@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/analyze_pubspecs.dart';
-import 'package:serverpod_cli/src/commands/cloud.dart';
 import 'package:serverpod_cli/src/commands/create.dart';
 import 'package:serverpod_cli/src/commands/create_repair_migration.dart';
 import 'package:serverpod_cli/src/commands/generate_pubspecs.dart';
@@ -74,7 +73,6 @@ ServerpodCommandRunner buildCommandRunner() {
       CreateRepairMigrationCommand(),
       UpgradeCommand(),
       VersionCommand(),
-      if (productionMode == false) CloudCommand(),
     ]);
 }
 

@@ -33,6 +33,7 @@ void main() {
           'when equals compared to uuid value then output is equals expression.',
           () {
         var comparisonExpression = column.equals(
+          // ignore: deprecated_member_use
           UuidValue.fromString(Uuid.NAMESPACE_NIL),
         );
 
@@ -53,8 +54,10 @@ void main() {
       test(
           'when NOT equals compared to uuid value then output is NOT equals expression.',
           () {
-        var comparisonExpression =
-            column.notEquals(UuidValue.fromString(Uuid.NAMESPACE_NIL));
+        var comparisonExpression = column.notEquals(
+          // ignore: deprecated_member_use
+          UuidValue.fromString(Uuid.NAMESPACE_NIL),
+        );
 
         expect(comparisonExpression.toString(),
             '$column IS DISTINCT FROM \'00000000-0000-0000-0000-000000000000\'');

@@ -1,15 +1,15 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Database table for tracking failed email sign-ins. Saves IP-address, time,
 /// and email to be prevent brute force attacks.
@@ -210,7 +210,7 @@ class EmailFailedSignInRepository {
   const EmailFailedSignInRepository._();
 
   Future<List<EmailFailedSignIn>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? limit,
     int? offset,
@@ -219,19 +219,19 @@ class EmailFailedSignInRepository {
     _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<EmailFailedSignIn>(
+    return databaseAccessor.db.find<EmailFailedSignIn>(
       where: where?.call(EmailFailedSignIn.t),
       orderBy: orderBy?.call(EmailFailedSignIn.t),
       orderByList: orderByList?.call(EmailFailedSignIn.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmailFailedSignIn?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
@@ -239,118 +239,118 @@ class EmailFailedSignInRepository {
     _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<EmailFailedSignIn>(
+    return databaseAccessor.db.findFirstRow<EmailFailedSignIn>(
       where: where?.call(EmailFailedSignIn.t),
       orderBy: orderBy?.call(EmailFailedSignIn.t),
       orderByList: orderByList?.call(EmailFailedSignIn.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmailFailedSignIn?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<EmailFailedSignIn>(
+    return databaseAccessor.db.findById<EmailFailedSignIn>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EmailFailedSignIn>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EmailFailedSignIn> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<EmailFailedSignIn>(
+    return databaseAccessor.db.insert<EmailFailedSignIn>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmailFailedSignIn> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EmailFailedSignIn row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<EmailFailedSignIn>(
+    return databaseAccessor.db.insertRow<EmailFailedSignIn>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EmailFailedSignIn>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EmailFailedSignIn> rows, {
     _i1.ColumnSelections<EmailFailedSignInTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<EmailFailedSignIn>(
+    return databaseAccessor.db.update<EmailFailedSignIn>(
       rows,
       columns: columns?.call(EmailFailedSignIn.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmailFailedSignIn> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EmailFailedSignIn row, {
     _i1.ColumnSelections<EmailFailedSignInTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<EmailFailedSignIn>(
+    return databaseAccessor.db.updateRow<EmailFailedSignIn>(
       row,
       columns: columns?.call(EmailFailedSignIn.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EmailFailedSignIn>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EmailFailedSignIn> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<EmailFailedSignIn>(
+    return databaseAccessor.db.delete<EmailFailedSignIn>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmailFailedSignIn> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EmailFailedSignIn row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<EmailFailedSignIn>(
+    return databaseAccessor.db.deleteRow<EmailFailedSignIn>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EmailFailedSignIn>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<EmailFailedSignInTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<EmailFailedSignIn>(
+    return databaseAccessor.db.deleteWhere<EmailFailedSignIn>(
       where: where(EmailFailedSignIn.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<EmailFailedSignIn>(
+    return databaseAccessor.db.count<EmailFailedSignIn>(
       where: where?.call(EmailFailedSignIn.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

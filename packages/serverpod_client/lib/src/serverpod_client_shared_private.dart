@@ -2,14 +2,13 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'serverpod_client_exception.dart';
 
-import 'http/http_status_html.dart'
-    if (dart.library.io) 'http/http_status_io.dart';
+import 'http/http_status.dart';
 
 /// Encodes arguments for serialization.
 String formatArgs(
-    Map<String, dynamic> args, String? authorizationKey, String method) {
-  if (authorizationKey != null) args['auth'] = authorizationKey;
-
+  Map<String, dynamic> args,
+  String method,
+) {
   args['method'] = method;
 
   return SerializationManager.encode(args);
@@ -45,7 +44,7 @@ dynamic getExceptionFrom({
   }
 
   return switch (statusCode) {
-    HttpStatus.badRequest => ServerpodClientBadRequest(),
+    HttpStatus.badRequest => ServerpodClientBadRequest(data),
     HttpStatus.unauthorized => ServerpodClientUnauthorized(),
     HttpStatus.forbidden => ServerpodClientForbidden(),
     HttpStatus.notFound => ServerpodClientNotFound(),

@@ -2,6 +2,17 @@ import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
 
+/// Channels that are listened to by the Serverpod Framework.
+abstract class MessageCentralServerpodChannels {
+  /// Used to revoke authentication tokens.
+  /// The message should be of type [RevokedAuthenticationUser],
+  /// [RevokedAuthenticationAuthId] or [RevokedAuthenticationScope].
+  /// The [userId] should be the [AuthenticationInfo.userId] for the concerned
+  /// user.
+  static String revokedAuthentication(int userId) =>
+      '_serverpod_revoked_authentication_$userId';
+}
+
 // TODO: Support for server clusters.
 
 /// The callback used by listeners of the [MessageCentral].
@@ -47,7 +58,7 @@ class MessageCentral {
       var channel = _channels[channelName];
       if (channel == null) return true;
 
-      for (var callback in channel) {
+      for (var callback in channel.toList()) {
         callback(message);
       }
       return true;

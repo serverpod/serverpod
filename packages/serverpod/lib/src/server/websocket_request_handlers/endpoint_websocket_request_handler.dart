@@ -27,12 +27,15 @@ abstract class EndpointWebsocketRequestHandler {
         webSocket: webSocket,
       );
 
-      for (var endpointConnector in server.endpoints.connectors.values) {
-        await _callStreamOpened(session, endpointConnector.endpoint);
+      var endpointDispatch = server.endpoints;
+      for (var endpointConnector in endpointDispatch.connectors.values) {
+        await _callStreamOpened(
+            session, endpointConnector.endpoint.name, endpointDispatch);
       }
-      for (var module in server.endpoints.modules.values) {
+      for (var module in endpointDispatch.modules.values) {
         for (var endpointConnector in module.connectors.values) {
-          await _callStreamOpened(session, endpointConnector.endpoint);
+          await _callStreamOpened(
+              session, endpointConnector.endpoint.name, endpointDispatch);
         }
       }
 
@@ -56,7 +59,7 @@ abstract class EndpointWebsocketRequestHandler {
               );
             } else if (command == 'auth') {
               var authKey = args['key'] as String?;
-              session.updateAuthenticationKey(authKey);
+              session.updateAuthenticationKey(unwrapAuthHeaderValue(authKey));
             }
             continue;
           }
@@ -65,55 +68,50 @@ abstract class EndpointWebsocketRequestHandler {
           var endpointName = data['endpoint'] as String;
           var serialization = data['object'] as Map<String, dynamic>;
 
-          var endpointConnector =
-              server.endpoints.getConnectorByName(endpointName);
-          if (endpointConnector == null) {
+          EndpointConnector endpointConnector;
+          try {
+            endpointConnector = await server.endpoints.getEndpointConnector(
+                session: session, endpointPath: endpointName);
+          } on NotAuthorizedException {
+            continue;
+          } on EndpointNotFoundException {
             throw Exception('Endpoint not found: $endpointName');
           }
 
-          var endpoint = endpointConnector.endpoint;
-          var authFailed = await EndpointDispatch.canUserAccessEndpoint(
-            () => session.authenticated,
-            endpoint.requireLogin,
-            endpoint.requiredScopes,
-          );
+          // Process the message.
+          var startTime = DateTime.now();
+          dynamic messageError;
+          StackTrace? messageStackTrace;
 
-          if (authFailed == null) {
-            // Process the message.
-            var startTime = DateTime.now();
-            dynamic messageError;
-            StackTrace? messageStackTrace;
+          SerializableModel? message;
+          try {
+            session.endpoint = endpointName;
 
-            SerializableModel? message;
-            try {
-              session.endpoint = endpointName;
+            message = server.serializationManager
+                .deserializeByClassName(serialization);
 
-              message = server.serializationManager
-                  .deserializeByClassName(serialization);
+            if (message == null) throw Exception('Streamed message was null');
 
-              if (message == null) throw Exception('Streamed message was null');
-
-              await endpointConnector.endpoint
-                  .handleStreamMessage(session, message);
-            } catch (e, s) {
-              messageError = e;
-              messageStackTrace = s;
-              stderr.writeln('${DateTime.now().toUtc()} Internal server error. '
-                  'Uncaught exception in handleStreamMessage.');
-              stderr.writeln('$e');
-              stderr.writeln('$s');
-            }
-
-            var duration = DateTime.now().difference(startTime);
-            unawaited(session.logManager?.logMessage(
-              messageId: session.nextMessageId(),
-              endpointName: endpointName,
-              messageName: serialization['className'],
-              duration: duration,
-              error: messageError?.toString(),
-              stackTrace: messageStackTrace,
-            ));
+            await endpointConnector.endpoint
+                .handleStreamMessage(session, message);
+          } catch (e, s) {
+            messageError = e;
+            messageStackTrace = s;
+            stderr.writeln('${DateTime.now().toUtc()} Internal server error. '
+                'Uncaught exception in handleStreamMessage.');
+            stderr.writeln('$e');
+            stderr.writeln('$s');
           }
+
+          var duration = DateTime.now().difference(startTime);
+          unawaited(session.logManager?.logMessage(
+            messageId: session.nextMessageId(),
+            endpointName: endpointName,
+            messageName: serialization['className'],
+            duration: duration,
+            error: messageError?.toString(),
+            stackTrace: messageStackTrace,
+          ));
         }
       } catch (e, s) {
         error = e;
@@ -122,11 +120,13 @@ abstract class EndpointWebsocketRequestHandler {
 
       // TODO: Possibly keep a list of open streams instead
       for (var endpointConnector in server.endpoints.connectors.values) {
-        await _callStreamClosed(session, endpointConnector.endpoint);
+        await _callStreamClosed(
+            session, endpointConnector.endpoint.name, endpointDispatch);
       }
       for (var module in server.endpoints.modules.values) {
         for (var endpointConnector in module.connectors.values) {
-          await _callStreamClosed(session, endpointConnector.endpoint);
+          await _callStreamClosed(
+              session, endpointConnector.endpoint.name, endpointDispatch);
         }
       }
       await session.close(error: error, stackTrace: stackTrace);
@@ -141,34 +141,38 @@ abstract class EndpointWebsocketRequestHandler {
 
   static Future<void> _callStreamOpened(
     StreamingSession session,
-    Endpoint endpoint,
+    String endpointName,
+    EndpointDispatch endpointDispatch,
   ) async {
     try {
-      session.endpoint = endpoint.name;
-      var authFailed = await EndpointDispatch.canUserAccessEndpoint(
-        () => session.authenticated,
-        endpoint.requireLogin,
-        endpoint.requiredScopes,
+      session.endpoint = endpointName;
+      var connector = await endpointDispatch.getEndpointConnector(
+        session: session,
+        endpointPath: endpointName,
       );
-      if (authFailed == null) await endpoint.streamOpened(session);
-    } catch (e) {
+      await connector.endpoint.streamOpened(session);
+    } on NotAuthorizedException {
+      return;
+    } catch (_) {
       return;
     }
   }
 
   static Future<void> _callStreamClosed(
     StreamingSession session,
-    Endpoint endpoint,
+    String endpointName,
+    EndpointDispatch endpointDispatch,
   ) async {
     try {
-      session.endpoint = endpoint.name;
-      var authFailed = await EndpointDispatch.canUserAccessEndpoint(
-        () => session.authenticated,
-        endpoint.requireLogin,
-        endpoint.requiredScopes,
+      session.endpoint = endpointName;
+      var connector = await endpointDispatch.getEndpointConnector(
+        session: session,
+        endpointPath: endpointName,
       );
-      if (authFailed == null) await endpoint.streamClosed(session);
-    } catch (e) {
+      await connector.endpoint.streamClosed(session);
+    } on NotAuthorizedException {
+      return;
+    } catch (_) {
       return;
     }
   }

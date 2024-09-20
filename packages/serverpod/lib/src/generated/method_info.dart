@@ -1,11 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -187,7 +188,7 @@ class MethodInfoRepository {
   const MethodInfoRepository._();
 
   Future<List<MethodInfo>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<MethodInfoTable>? where,
     int? limit,
     int? offset,
@@ -196,19 +197,19 @@ class MethodInfoRepository {
     _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<MethodInfo>(
+    return databaseAccessor.db.find<MethodInfo>(
       where: where?.call(MethodInfo.t),
       orderBy: orderBy?.call(MethodInfo.t),
       orderByList: orderByList?.call(MethodInfo.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<MethodInfo?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<MethodInfoTable>? where,
     int? offset,
     _i1.OrderByBuilder<MethodInfoTable>? orderBy,
@@ -216,118 +217,118 @@ class MethodInfoRepository {
     _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<MethodInfo>(
+    return databaseAccessor.db.findFirstRow<MethodInfo>(
       where: where?.call(MethodInfo.t),
       orderBy: orderBy?.call(MethodInfo.t),
       orderByList: orderByList?.call(MethodInfo.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<MethodInfo?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<MethodInfo>(
+    return databaseAccessor.db.findById<MethodInfo>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<MethodInfo>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<MethodInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<MethodInfo>(
+    return databaseAccessor.db.insert<MethodInfo>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<MethodInfo> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     MethodInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<MethodInfo>(
+    return databaseAccessor.db.insertRow<MethodInfo>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<MethodInfo>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<MethodInfo> rows, {
     _i1.ColumnSelections<MethodInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<MethodInfo>(
+    return databaseAccessor.db.update<MethodInfo>(
       rows,
       columns: columns?.call(MethodInfo.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<MethodInfo> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     MethodInfo row, {
     _i1.ColumnSelections<MethodInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<MethodInfo>(
+    return databaseAccessor.db.updateRow<MethodInfo>(
       row,
       columns: columns?.call(MethodInfo.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<MethodInfo>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<MethodInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<MethodInfo>(
+    return databaseAccessor.db.delete<MethodInfo>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<MethodInfo> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     MethodInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<MethodInfo>(
+    return databaseAccessor.db.deleteRow<MethodInfo>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<MethodInfo>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<MethodInfoTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<MethodInfo>(
+    return databaseAccessor.db.deleteWhere<MethodInfo>(
       where: where(MethodInfo.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<MethodInfoTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<MethodInfo>(
+    return databaseAccessor.db.count<MethodInfo>(
       where: where?.call(MethodInfo.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

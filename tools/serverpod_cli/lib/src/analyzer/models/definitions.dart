@@ -11,6 +11,7 @@ sealed class SerializableModelDefinition {
   final String className;
   final List<String> subDirParts;
   final bool serverOnly;
+  final TypeDefinition type;
 
   SerializableModelDefinition({
     required this.moduleAlias,
@@ -18,6 +19,7 @@ sealed class SerializableModelDefinition {
     required this.sourceFileName,
     required this.className,
     required this.serverOnly,
+    required this.type,
     this.subDirParts = const [],
   });
 
@@ -56,6 +58,12 @@ class ClassDefinition extends SerializableModelDefinition {
   /// `true` if this is an exception and not a class.
   final bool isException;
 
+  /// If set to a List of [InheritanceDefinitions] the class is a parent class and stores the child classes.
+  List<InheritanceDefinition> childClasses;
+
+  /// If set to [InheritanceDefinitions] the class extends another class and stores the [ClassDefinition] of it's parent.
+  InheritanceDefinition? extendsClass;
+
   /// Create a new [ClassDefinition].
   ClassDefinition({
     required super.moduleAlias,
@@ -66,17 +74,32 @@ class ClassDefinition extends SerializableModelDefinition {
     required super.serverOnly,
     required this.manageMigration,
     required this.isException,
+    required super.type,
+    List<InheritanceDefinition>? childClasses,
+    this.extendsClass,
     this.tableName,
     this.indexes = const [],
     super.subDirParts,
     this.documentation,
-  });
+  }) : childClasses = childClasses ?? <InheritanceDefinition>[];
 
   SerializableModelFieldDefinition? findField(String name) {
     return fields
         .cast()
         .firstWhere((element) => element.name == name, orElse: () => null);
   }
+
+  ClassDefinition? get parentClass {
+    var extendsClass = this.extendsClass;
+    if (extendsClass is! ResolvedInheritanceDefinition) return null;
+
+    return extendsClass.classDefinition;
+  }
+
+  List<SerializableModelFieldDefinition> get parentFields =>
+      parentClass?.fields ?? [];
+
+  bool get isParentClass => childClasses.isNotEmpty;
 }
 
 /// Describes a single field of a [ClassDefinition].
@@ -236,6 +259,7 @@ class EnumDefinition extends SerializableModelDefinition {
     required this.serialized,
     required this.values,
     required super.serverOnly,
+    required super.type,
     super.subDirParts,
     this.documentation,
   });
@@ -251,6 +275,20 @@ class ProtocolEnumValueDefinition {
 
   /// Create a new [ProtocolEnumValueDefinition].
   ProtocolEnumValueDefinition(this.name, [this.documentation]);
+}
+
+abstract class InheritanceDefinition {}
+
+class UnresolvedInheritanceDefinition extends InheritanceDefinition {
+  final String className;
+
+  UnresolvedInheritanceDefinition(this.className);
+}
+
+class ResolvedInheritanceDefinition extends InheritanceDefinition {
+  final ClassDefinition classDefinition;
+
+  ResolvedInheritanceDefinition(this.classDefinition);
 }
 
 abstract class RelationDefinition {
@@ -441,7 +479,12 @@ const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;
 
 const String defaultPrimaryKeyName = 'id';
 
+/// DateTime
 const String defaultDateTimeValueNow = 'now';
 
+/// bool
 const String defaultBooleanTrue = 'true';
 const String defaultBooleanFalse = 'false';
+
+/// UuidValue
+const String defaultUuidValueRandom = 'random';

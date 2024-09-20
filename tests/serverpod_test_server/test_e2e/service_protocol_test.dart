@@ -430,7 +430,7 @@ void main() {
             .map((c) => c.dartType)
             .toList();
 
-        expect(columns, hasLength(7));
+        expect(columns, hasLength(10));
         expect(
             columns,
             containsAll([
@@ -441,6 +441,9 @@ void main() {
               'List<protocol:SimpleData>?',
               'List<protocol:SimpleData?>',
               'List<protocol:SimpleData?>?',
+              'List<List<protocol:SimpleData>>?',
+              'Map<String,List<List<Map<int,protocol:SimpleData>>?>>?',
+              'Map<String,Map<int,protocol:SimpleData>>?',
             ]));
 
         var columnsWithScopes = tableDefinitions

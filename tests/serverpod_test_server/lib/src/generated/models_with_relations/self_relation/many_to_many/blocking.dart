@@ -1,11 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -275,7 +276,7 @@ class BlockingRepository {
   final attachRow = const BlockingAttachRowRepository._();
 
   Future<List<Blocking>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<BlockingTable>? where,
     int? limit,
     int? offset,
@@ -285,20 +286,20 @@ class BlockingRepository {
     _i1.Transaction? transaction,
     BlockingInclude? include,
   }) async {
-    return session.db.find<Blocking>(
+    return databaseAccessor.db.find<Blocking>(
       where: where?.call(Blocking.t),
       orderBy: orderBy?.call(Blocking.t),
       orderByList: orderByList?.call(Blocking.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<Blocking?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<BlockingTable>? where,
     int? offset,
     _i1.OrderByBuilder<BlockingTable>? orderBy,
@@ -307,121 +308,121 @@ class BlockingRepository {
     _i1.Transaction? transaction,
     BlockingInclude? include,
   }) async {
-    return session.db.findFirstRow<Blocking>(
+    return databaseAccessor.db.findFirstRow<Blocking>(
       where: where?.call(Blocking.t),
       orderBy: orderBy?.call(Blocking.t),
       orderByList: orderByList?.call(Blocking.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<Blocking?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
     BlockingInclude? include,
   }) async {
-    return session.db.findById<Blocking>(
+    return databaseAccessor.db.findById<Blocking>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<List<Blocking>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Blocking> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Blocking>(
+    return databaseAccessor.db.insert<Blocking>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Blocking> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Blocking row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Blocking>(
+    return databaseAccessor.db.insertRow<Blocking>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Blocking>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Blocking> rows, {
     _i1.ColumnSelections<BlockingTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Blocking>(
+    return databaseAccessor.db.update<Blocking>(
       rows,
       columns: columns?.call(Blocking.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Blocking> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Blocking row, {
     _i1.ColumnSelections<BlockingTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Blocking>(
+    return databaseAccessor.db.updateRow<Blocking>(
       row,
       columns: columns?.call(Blocking.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Blocking>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Blocking> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Blocking>(
+    return databaseAccessor.db.delete<Blocking>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Blocking> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Blocking row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Blocking>(
+    return databaseAccessor.db.deleteRow<Blocking>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Blocking>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<BlockingTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Blocking>(
+    return databaseAccessor.db.deleteWhere<Blocking>(
       where: where(Blocking.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<BlockingTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Blocking>(
+    return databaseAccessor.db.count<Blocking>(
       where: where?.call(Blocking.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -430,10 +431,11 @@ class BlockingAttachRowRepository {
   const BlockingAttachRowRepository._();
 
   Future<void> blocked(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Blocking blocking,
-    _i2.Member blocked,
-  ) async {
+    _i2.Member blocked, {
+    _i1.Transaction? transaction,
+  }) async {
     if (blocking.id == null) {
       throw ArgumentError.notNull('blocking.id');
     }
@@ -442,17 +444,19 @@ class BlockingAttachRowRepository {
     }
 
     var $blocking = blocking.copyWith(blockedId: blocked.id);
-    await session.db.updateRow<Blocking>(
+    await databaseAccessor.db.updateRow<Blocking>(
       $blocking,
       columns: [Blocking.t.blockedId],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<void> blockedBy(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Blocking blocking,
-    _i2.Member blockedBy,
-  ) async {
+    _i2.Member blockedBy, {
+    _i1.Transaction? transaction,
+  }) async {
     if (blocking.id == null) {
       throw ArgumentError.notNull('blocking.id');
     }
@@ -461,9 +465,10 @@ class BlockingAttachRowRepository {
     }
 
     var $blocking = blocking.copyWith(blockedById: blockedBy.id);
-    await session.db.updateRow<Blocking>(
+    await databaseAccessor.db.updateRow<Blocking>(
       $blocking,
       columns: [Blocking.t.blockedById],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

@@ -1,17 +1,17 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i2;
 import 'protocol.dart' as _i3;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A chat message.
 abstract class ChatMessage extends _i1.TableRow
@@ -229,7 +229,7 @@ class _ChatMessageImpl extends ChatMessage {
       sent: sent is bool? ? sent : this.sent,
       attachments: attachments is List<_i3.ChatMessageAttachment>?
           ? attachments
-          : this.attachments?.clone(),
+          : this.attachments?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -327,7 +327,7 @@ class ChatMessageRepository {
   const ChatMessageRepository._();
 
   Future<List<ChatMessage>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ChatMessageTable>? where,
     int? limit,
     int? offset,
@@ -336,19 +336,19 @@ class ChatMessageRepository {
     _i1.OrderByListBuilder<ChatMessageTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<ChatMessage>(
+    return databaseAccessor.db.find<ChatMessage>(
       where: where?.call(ChatMessage.t),
       orderBy: orderBy?.call(ChatMessage.t),
       orderByList: orderByList?.call(ChatMessage.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ChatMessage?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ChatMessageTable>? where,
     int? offset,
     _i1.OrderByBuilder<ChatMessageTable>? orderBy,
@@ -356,118 +356,118 @@ class ChatMessageRepository {
     _i1.OrderByListBuilder<ChatMessageTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<ChatMessage>(
+    return databaseAccessor.db.findFirstRow<ChatMessage>(
       where: where?.call(ChatMessage.t),
       orderBy: orderBy?.call(ChatMessage.t),
       orderByList: orderByList?.call(ChatMessage.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ChatMessage?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ChatMessage>(
+    return databaseAccessor.db.findById<ChatMessage>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ChatMessage>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ChatMessage> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ChatMessage>(
+    return databaseAccessor.db.insert<ChatMessage>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ChatMessage> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ChatMessage row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ChatMessage>(
+    return databaseAccessor.db.insertRow<ChatMessage>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ChatMessage>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ChatMessage> rows, {
     _i1.ColumnSelections<ChatMessageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<ChatMessage>(
+    return databaseAccessor.db.update<ChatMessage>(
       rows,
       columns: columns?.call(ChatMessage.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ChatMessage> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ChatMessage row, {
     _i1.ColumnSelections<ChatMessageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<ChatMessage>(
+    return databaseAccessor.db.updateRow<ChatMessage>(
       row,
       columns: columns?.call(ChatMessage.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ChatMessage>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ChatMessage> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ChatMessage>(
+    return databaseAccessor.db.delete<ChatMessage>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ChatMessage> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ChatMessage row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ChatMessage>(
+    return databaseAccessor.db.deleteRow<ChatMessage>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ChatMessage>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<ChatMessageTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<ChatMessage>(
+    return databaseAccessor.db.deleteWhere<ChatMessage>(
       where: where(ChatMessage.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ChatMessageTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<ChatMessage>(
+    return databaseAccessor.db.count<ChatMessage>(
       where: where?.call(ChatMessage.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

@@ -342,11 +342,10 @@ void main() {
       name: 'copyWith',
     );
 
-    test('then the clone method is called on field when copying the object.',
-        () {
+    test('then the list is iterated and the strings are copied.', () {
       var sourceCode = copyWithMethod?.body.toSource();
-      expect(
-          sourceCode, '{return Example(names: names ?? this.names.clone());}');
+      expect(sourceCode,
+          '{return Example(names: names ?? this.names.map((e0) => e0).toList());}');
     }, skip: copyWithMethod == null);
   });
 
@@ -380,10 +379,10 @@ void main() {
       name: 'copyWith',
     );
 
-    test('then the clone method is called on field when copying the object.',
-        () {
+    test('then the map is iterated and the strings are copied .', () {
       var sourceCode = copyWithMethod?.body.toSource();
-      expect(sourceCode, '{return Example(map: map ?? this.map.clone());}');
+      expect(sourceCode,
+          '{return Example(map: map ?? this.map.map((key0, value0) => MapEntry(key0, value0)));}');
     }, skip: copyWithMethod == null);
   });
 
@@ -416,8 +415,7 @@ void main() {
       name: 'copyWith',
     );
 
-    test('then the clone method is called on field when copying the object.',
-        () {
+    test('then the clone method is called when copying the object.', () {
       var sourceCode = copyWithMethod?.body.toSource();
       expect(sourceCode, '{return Example(data: data ?? this.data.clone());}');
     }, skip: copyWithMethod == null);
@@ -452,8 +450,7 @@ void main() {
       name: 'copyWith',
     );
 
-    test('then the clone method is called on field when copying the object.',
-        () {
+    test('then the copyWith method is called when copying the object.', () {
       var sourceCode = copyWithMethod?.body.toSource();
       expect(sourceCode,
           '{return Example(nested: nested ?? this.nested.copyWith());}');

@@ -1,16 +1,16 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../protocol.dart' as _i2;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class Member extends _i1.TableRow
     implements _i1.ProtocolSerialization {
@@ -146,11 +146,12 @@ class _MemberImpl extends Member {
     return Member(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      blocking:
-          blocking is List<_i2.Blocking>? ? blocking : this.blocking?.clone(),
+      blocking: blocking is List<_i2.Blocking>?
+          ? blocking
+          : this.blocking?.map((e0) => e0.copyWith()).toList(),
       blockedBy: blockedBy is List<_i2.Blocking>?
           ? blockedBy
-          : this.blockedBy?.clone(),
+          : this.blockedBy?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -304,7 +305,7 @@ class MemberRepository {
   final attachRow = const MemberAttachRowRepository._();
 
   Future<List<Member>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<MemberTable>? where,
     int? limit,
     int? offset,
@@ -314,20 +315,20 @@ class MemberRepository {
     _i1.Transaction? transaction,
     MemberInclude? include,
   }) async {
-    return session.db.find<Member>(
+    return databaseAccessor.db.find<Member>(
       where: where?.call(Member.t),
       orderBy: orderBy?.call(Member.t),
       orderByList: orderByList?.call(Member.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<Member?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<MemberTable>? where,
     int? offset,
     _i1.OrderByBuilder<MemberTable>? orderBy,
@@ -336,121 +337,121 @@ class MemberRepository {
     _i1.Transaction? transaction,
     MemberInclude? include,
   }) async {
-    return session.db.findFirstRow<Member>(
+    return databaseAccessor.db.findFirstRow<Member>(
       where: where?.call(Member.t),
       orderBy: orderBy?.call(Member.t),
       orderByList: orderByList?.call(Member.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<Member?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
     MemberInclude? include,
   }) async {
-    return session.db.findById<Member>(
+    return databaseAccessor.db.findById<Member>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<List<Member>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Member> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Member>(
+    return databaseAccessor.db.insert<Member>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Member> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Member row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Member>(
+    return databaseAccessor.db.insertRow<Member>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Member>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Member> rows, {
     _i1.ColumnSelections<MemberTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Member>(
+    return databaseAccessor.db.update<Member>(
       rows,
       columns: columns?.call(Member.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Member> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Member row, {
     _i1.ColumnSelections<MemberTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Member>(
+    return databaseAccessor.db.updateRow<Member>(
       row,
       columns: columns?.call(Member.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Member>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Member> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Member>(
+    return databaseAccessor.db.delete<Member>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Member> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Member row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Member>(
+    return databaseAccessor.db.deleteRow<Member>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Member>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<MemberTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Member>(
+    return databaseAccessor.db.deleteWhere<Member>(
       where: where(Member.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<MemberTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Member>(
+    return databaseAccessor.db.count<Member>(
       where: where?.call(Member.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -459,10 +460,11 @@ class MemberAttachRepository {
   const MemberAttachRepository._();
 
   Future<void> blocking(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Member member,
-    List<_i2.Blocking> blocking,
-  ) async {
+    List<_i2.Blocking> blocking, {
+    _i1.Transaction? transaction,
+  }) async {
     if (blocking.any((e) => e.id == null)) {
       throw ArgumentError.notNull('blocking.id');
     }
@@ -472,17 +474,19 @@ class MemberAttachRepository {
 
     var $blocking =
         blocking.map((e) => e.copyWith(blockedById: member.id)).toList();
-    await session.db.update<_i2.Blocking>(
+    await databaseAccessor.db.update<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedById],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<void> blockedBy(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Member member,
-    List<_i2.Blocking> blocking,
-  ) async {
+    List<_i2.Blocking> blocking, {
+    _i1.Transaction? transaction,
+  }) async {
     if (blocking.any((e) => e.id == null)) {
       throw ArgumentError.notNull('blocking.id');
     }
@@ -492,9 +496,10 @@ class MemberAttachRepository {
 
     var $blocking =
         blocking.map((e) => e.copyWith(blockedId: member.id)).toList();
-    await session.db.update<_i2.Blocking>(
+    await databaseAccessor.db.update<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedId],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -503,10 +508,11 @@ class MemberAttachRowRepository {
   const MemberAttachRowRepository._();
 
   Future<void> blocking(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Member member,
-    _i2.Blocking blocking,
-  ) async {
+    _i2.Blocking blocking, {
+    _i1.Transaction? transaction,
+  }) async {
     if (blocking.id == null) {
       throw ArgumentError.notNull('blocking.id');
     }
@@ -515,17 +521,19 @@ class MemberAttachRowRepository {
     }
 
     var $blocking = blocking.copyWith(blockedById: member.id);
-    await session.db.updateRow<_i2.Blocking>(
+    await databaseAccessor.db.updateRow<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedById],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<void> blockedBy(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Member member,
-    _i2.Blocking blocking,
-  ) async {
+    _i2.Blocking blocking, {
+    _i1.Transaction? transaction,
+  }) async {
     if (blocking.id == null) {
       throw ArgumentError.notNull('blocking.id');
     }
@@ -534,9 +542,10 @@ class MemberAttachRowRepository {
     }
 
     var $blocking = blocking.copyWith(blockedId: member.id);
-    await session.db.updateRow<_i2.Blocking>(
+    await databaseAccessor.db.updateRow<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedId],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

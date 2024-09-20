@@ -1,10 +1,11 @@
 import 'dart:math';
 
+import 'package:super_string/super_string.dart';
+
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
-import 'package:super_string/super_string.dart';
 
 class ModelDependencyResolver {
   /// Resolves dependencies between models, this method mutates the input.
@@ -12,6 +13,7 @@ class ModelDependencyResolver {
     List<SerializableModelDefinition> modelDefinitions,
   ) {
     modelDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
+      _resolveInheritance(classDefinition, modelDefinitions);
       for (var fieldDefinition in classDefinition.fields) {
         _resolveFieldIndexes(fieldDefinition, classDefinition);
         _resolveProtocolReference(fieldDefinition, modelDefinitions);
@@ -28,6 +30,32 @@ class ModelDependencyResolver {
         );
       }
     });
+  }
+
+  static void _resolveInheritance(
+    ClassDefinition classDefinition,
+    List<SerializableModelDefinition> modelDefinitions,
+  ) {
+    var extendedClass = classDefinition.extendsClass;
+    if (extendedClass is! UnresolvedInheritanceDefinition) {
+      return;
+    }
+    var parentClassName = extendedClass.className;
+
+    var parentClass = modelDefinitions
+        .whereType<ClassDefinition>()
+        .where((element) => element.className == parentClassName)
+        .firstOrNull;
+
+    if (parentClass == null) {
+      return;
+    }
+
+    classDefinition.extendsClass = ResolvedInheritanceDefinition(parentClass);
+
+    parentClass.childClasses.add(
+      ResolvedInheritanceDefinition(classDefinition),
+    );
   }
 
   static void _resolveFieldIndexes(
@@ -69,7 +97,7 @@ class ModelDependencyResolver {
 
     if (enumDefinitionList.isEmpty) return;
 
-    typeDefinition.serializeEnum = enumDefinitionList.first.serialized;
+    typeDefinition.enumDefinition = enumDefinitionList.first;
   }
 
   static void _resolveObjectRelationReference(

@@ -1,15 +1,15 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Database bindings for an email reset.
 abstract class EmailReset extends _i1.TableRow
@@ -210,7 +210,7 @@ class EmailResetRepository {
   const EmailResetRepository._();
 
   Future<List<EmailReset>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EmailResetTable>? where,
     int? limit,
     int? offset,
@@ -219,19 +219,19 @@ class EmailResetRepository {
     _i1.OrderByListBuilder<EmailResetTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<EmailReset>(
+    return databaseAccessor.db.find<EmailReset>(
       where: where?.call(EmailReset.t),
       orderBy: orderBy?.call(EmailReset.t),
       orderByList: orderByList?.call(EmailReset.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmailReset?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EmailResetTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmailResetTable>? orderBy,
@@ -239,118 +239,118 @@ class EmailResetRepository {
     _i1.OrderByListBuilder<EmailResetTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<EmailReset>(
+    return databaseAccessor.db.findFirstRow<EmailReset>(
       where: where?.call(EmailReset.t),
       orderBy: orderBy?.call(EmailReset.t),
       orderByList: orderByList?.call(EmailReset.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmailReset?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<EmailReset>(
+    return databaseAccessor.db.findById<EmailReset>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EmailReset>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EmailReset> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<EmailReset>(
+    return databaseAccessor.db.insert<EmailReset>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmailReset> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EmailReset row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<EmailReset>(
+    return databaseAccessor.db.insertRow<EmailReset>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EmailReset>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EmailReset> rows, {
     _i1.ColumnSelections<EmailResetTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<EmailReset>(
+    return databaseAccessor.db.update<EmailReset>(
       rows,
       columns: columns?.call(EmailReset.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmailReset> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EmailReset row, {
     _i1.ColumnSelections<EmailResetTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<EmailReset>(
+    return databaseAccessor.db.updateRow<EmailReset>(
       row,
       columns: columns?.call(EmailReset.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EmailReset>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EmailReset> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<EmailReset>(
+    return databaseAccessor.db.delete<EmailReset>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmailReset> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EmailReset row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<EmailReset>(
+    return databaseAccessor.db.deleteRow<EmailReset>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EmailReset>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<EmailResetTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<EmailReset>(
+    return databaseAccessor.db.deleteWhere<EmailReset>(
       where: where(EmailReset.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EmailResetTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<EmailReset>(
+    return databaseAccessor.db.count<EmailReset>(
       where: where?.call(EmailReset.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

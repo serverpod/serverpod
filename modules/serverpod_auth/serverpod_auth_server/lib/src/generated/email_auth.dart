@@ -1,11 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -208,7 +209,7 @@ class EmailAuthRepository {
   const EmailAuthRepository._();
 
   Future<List<EmailAuth>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     int? limit,
     int? offset,
@@ -217,19 +218,19 @@ class EmailAuthRepository {
     _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<EmailAuth>(
+    return databaseAccessor.db.find<EmailAuth>(
       where: where?.call(EmailAuth.t),
       orderBy: orderBy?.call(EmailAuth.t),
       orderByList: orderByList?.call(EmailAuth.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmailAuth?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmailAuthTable>? orderBy,
@@ -237,118 +238,118 @@ class EmailAuthRepository {
     _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<EmailAuth>(
+    return databaseAccessor.db.findFirstRow<EmailAuth>(
       where: where?.call(EmailAuth.t),
       orderBy: orderBy?.call(EmailAuth.t),
       orderByList: orderByList?.call(EmailAuth.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmailAuth?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<EmailAuth>(
+    return databaseAccessor.db.findById<EmailAuth>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EmailAuth>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EmailAuth> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<EmailAuth>(
+    return databaseAccessor.db.insert<EmailAuth>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmailAuth> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EmailAuth row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<EmailAuth>(
+    return databaseAccessor.db.insertRow<EmailAuth>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EmailAuth>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EmailAuth> rows, {
     _i1.ColumnSelections<EmailAuthTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<EmailAuth>(
+    return databaseAccessor.db.update<EmailAuth>(
       rows,
       columns: columns?.call(EmailAuth.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmailAuth> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EmailAuth row, {
     _i1.ColumnSelections<EmailAuthTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<EmailAuth>(
+    return databaseAccessor.db.updateRow<EmailAuth>(
       row,
       columns: columns?.call(EmailAuth.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EmailAuth>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EmailAuth> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<EmailAuth>(
+    return databaseAccessor.db.delete<EmailAuth>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmailAuth> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EmailAuth row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<EmailAuth>(
+    return databaseAccessor.db.deleteRow<EmailAuth>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EmailAuth>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<EmailAuthTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<EmailAuth>(
+    return databaseAccessor.db.deleteWhere<EmailAuth>(
       where: where(EmailAuth.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<EmailAuth>(
+    return databaseAccessor.db.count<EmailAuth>(
       where: where?.call(EmailAuth.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

@@ -1,11 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -228,7 +229,7 @@ class PlayerRepository {
   final detachRow = const PlayerDetachRowRepository._();
 
   Future<List<Player>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<PlayerTable>? where,
     int? limit,
     int? offset,
@@ -238,20 +239,20 @@ class PlayerRepository {
     _i1.Transaction? transaction,
     PlayerInclude? include,
   }) async {
-    return session.db.find<Player>(
+    return databaseAccessor.db.find<Player>(
       where: where?.call(Player.t),
       orderBy: orderBy?.call(Player.t),
       orderByList: orderByList?.call(Player.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<Player?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<PlayerTable>? where,
     int? offset,
     _i1.OrderByBuilder<PlayerTable>? orderBy,
@@ -260,121 +261,121 @@ class PlayerRepository {
     _i1.Transaction? transaction,
     PlayerInclude? include,
   }) async {
-    return session.db.findFirstRow<Player>(
+    return databaseAccessor.db.findFirstRow<Player>(
       where: where?.call(Player.t),
       orderBy: orderBy?.call(Player.t),
       orderByList: orderByList?.call(Player.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<Player?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
     PlayerInclude? include,
   }) async {
-    return session.db.findById<Player>(
+    return databaseAccessor.db.findById<Player>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<List<Player>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Player> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Player>(
+    return databaseAccessor.db.insert<Player>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Player> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Player row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Player>(
+    return databaseAccessor.db.insertRow<Player>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Player>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Player> rows, {
     _i1.ColumnSelections<PlayerTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Player>(
+    return databaseAccessor.db.update<Player>(
       rows,
       columns: columns?.call(Player.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Player> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Player row, {
     _i1.ColumnSelections<PlayerTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Player>(
+    return databaseAccessor.db.updateRow<Player>(
       row,
       columns: columns?.call(Player.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Player>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Player> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Player>(
+    return databaseAccessor.db.delete<Player>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Player> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Player row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Player>(
+    return databaseAccessor.db.deleteRow<Player>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Player>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<PlayerTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Player>(
+    return databaseAccessor.db.deleteWhere<Player>(
       where: where(Player.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<PlayerTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Player>(
+    return databaseAccessor.db.count<Player>(
       where: where?.call(Player.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -383,10 +384,11 @@ class PlayerAttachRowRepository {
   const PlayerAttachRowRepository._();
 
   Future<void> team(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Player player,
-    _i2.Team team,
-  ) async {
+    _i2.Team team, {
+    _i1.Transaction? transaction,
+  }) async {
     if (player.id == null) {
       throw ArgumentError.notNull('player.id');
     }
@@ -395,9 +397,10 @@ class PlayerAttachRowRepository {
     }
 
     var $player = player.copyWith(teamId: team.id);
-    await session.db.updateRow<Player>(
+    await databaseAccessor.db.updateRow<Player>(
       $player,
       columns: [Player.t.teamId],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -406,17 +409,19 @@ class PlayerDetachRowRepository {
   const PlayerDetachRowRepository._();
 
   Future<void> team(
-    _i1.Session session,
-    Player player,
-  ) async {
+    _i1.DatabaseAccessor databaseAccessor,
+    Player player, {
+    _i1.Transaction? transaction,
+  }) async {
     if (player.id == null) {
       throw ArgumentError.notNull('player.id');
     }
 
     var $player = player.copyWith(teamId: null);
-    await session.db.updateRow<Player>(
+    await databaseAccessor.db.updateRow<Player>(
       $player,
       columns: [Player.t.teamId],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

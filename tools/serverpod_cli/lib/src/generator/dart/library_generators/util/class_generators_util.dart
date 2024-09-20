@@ -137,7 +137,7 @@ Expression _buildFromJson(
         serverCode,
       );
     case ValueType.isEnum:
-      EnumSerialization? enumSerialization = type.serializeEnum;
+      EnumSerialization? enumSerialization = type.enumDefinition?.serialized;
       if (enumSerialization == null) {
         throw StateError("Expected 'enumSerialization' not to be null!");
       }
@@ -380,7 +380,12 @@ Expression _buildClassTypeFromJson(
           config: config,
         )
         .property('fromJson')
-        .call([valueExpression.asA(refer('Map<String, dynamic>'))])
+        .call([
+          if (type.customClass)
+            valueExpression
+          else
+            valueExpression.asA(refer('Map<String, dynamic>')),
+        ])
         .checkIfNull(type, valueExpression: valueExpression)
         .code,
   );

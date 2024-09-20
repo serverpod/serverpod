@@ -4,8 +4,13 @@ import 'dart:convert';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_client/src/client_method_stream_manager.dart';
 import 'package:serverpod_client/src/method_stream/method_stream_connection_details.dart';
-import 'package:serverpod_client/src/method_stream/method_stream_manager_exceptions.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+
+import 'serverpod_client_shared_private.dart';
+
+import 'serverpod_client_io.dart'
+    if (dart.library.js) 'serverpod_client_browser.dart'
+    if (dart.library.io) 'serverpod_client_io.dart';
 
 /// A callback with no parameters or return value.
 typedef VoidCallback = void Function();
@@ -44,12 +49,31 @@ class MethodCallContext {
   });
 }
 
-/// Superclass with shared methods for handling communication with the server.
-/// It's overridden i two different versions depending on if the dart:io library
+/// Defines the interface of the delegate that performs the actual request to the server
+/// and returns the response data.
+/// The delegate is used by [ServerpodClientShared] to perform the actual request.
+/// It's overridden in different versions depending on if the dart:io library
 /// is available.
+abstract class ServerpodClientRequestDelegate {
+  /// Performs the actual request to the server and returns the response data.
+  Future<String> serverRequest<T>(
+    Uri url, {
+    required String body,
+    String? authenticationValue,
+  });
+
+  /// Closes the connection to the server.
+  /// This delegate should not be used after calling this.
+  void close();
+}
+
+/// Superclass with shared methods for handling communication with the server.
+/// Is typically overridden by generated code to provide implementations of methods for calling the server.
 abstract class ServerpodClientShared extends EndpointCaller {
   /// Full url to the Serverpod server. E.g. "https://example.com/"
   final String host;
+
+  late final ServerpodClientRequestDelegate _requestDelegate;
 
   WebSocketChannel? _webSocket;
 
@@ -91,9 +115,12 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   /// Full host name of the web socket endpoint.
   /// E.g. "wss://example.com/websocket"
-  ///
-  /// This string also includes the authentication key if one is available.
+  @Deprecated('This is only for internal use and may be removed in the future.')
   Future<String> get websocketHost async {
+    return _webSocketHostWithAuth;
+  }
+
+  Future<String> get _webSocketHostWithAuth async {
     var uri = _webSocketHost;
 
     var auth = await authenticationKeyManager?.get();
@@ -104,7 +131,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
         },
       );
     }
-
     return uri.toString();
   }
 
@@ -182,7 +208,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     }
   }
 
-  /// Creates a new ServerpodClient.
+  /// Creates a new ServerpodClientShared.
   ServerpodClientShared(
     this.host,
     this.serializationManager, {
@@ -201,6 +227,11 @@ abstract class ServerpodClientShared extends EndpointCaller {
         'host must end with a slash, eg: https://example.com/');
     assert(host.startsWith('http://') || host.startsWith('https://'),
         'host must include protocol, eg: https://example.com/');
+    _requestDelegate = ServerpodClientRequestDelegateImpl(
+      connectionTimeout: this.connectionTimeout,
+      serializationManager: serializationManager,
+      securityContext: securityContext,
+    );
     disconnectStreamsOnLostInternetConnection ??= false;
     _disconnectMethodStreamsOnLostInternetConnection =
         disconnectStreamsOnLostInternetConnection;
@@ -269,6 +300,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   /// Closes all open connections to the server.
   void close() {
+    _requestDelegate.close();
     closeStreamingConnection();
     closeStreamingMethodConnections();
   }
@@ -295,7 +327,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     try {
       // Connect to the server.
       _firstMessageReceived = false;
-      var host = await websocketHost;
+      var host = await _webSocketHostWithAuth;
       _webSocket = WebSocketChannel.connect(Uri.parse(host));
       await _webSocket?.ready;
 
@@ -419,13 +451,62 @@ abstract class ServerpodClientShared extends EndpointCaller {
   }
 
   /// Updates the authentication key if the streaming connection is open.
+  /// Note, the provided key will be converted/wrapped as a proper authentication header value
+  /// when sent to the server.
   Future<void> updateStreamingConnectionAuthenticationKey(
     String? authKey,
   ) async {
     if (streamingConnectionStatus == StreamingConnectionStatus.disconnected) {
       return;
     }
-    await _sendControlCommandToStream('auth', {'key': authKey});
+    var authValue = await authenticationKeyManager?.toHeaderValue(authKey);
+    await _sendControlCommandToStream('auth', {'key': authValue});
+  }
+
+  @override
+  Future<T> callServerEndpoint<T>(
+    String endpoint,
+    String method,
+    Map<String, dynamic> args,
+  ) async {
+    var callContext = MethodCallContext(
+      endpointName: endpoint,
+      methodName: method,
+      arguments: args,
+    );
+
+    try {
+      var authenticationValue =
+          await authenticationKeyManager?.getHeaderValue();
+      var body = formatArgs(args, method);
+      var url = Uri.parse('$host$endpoint');
+
+      var data = await _requestDelegate.serverRequest(
+        url,
+        body: body,
+        authenticationValue: authenticationValue,
+      );
+
+      T result;
+      if (T == getType<void>()) {
+        result = returnVoid() as T;
+      } else {
+        result = parseData<T>(data, T, serializationManager);
+      }
+
+      onSucceededCall?.call(callContext);
+      return result;
+    } catch (e, s) {
+      onFailedCall?.call(callContext, e, s);
+
+      if (logFailedCalls) {
+        // ignore: avoid_print
+        print('Failed call: $endpoint.$method');
+        // ignore: avoid_print
+        print('$e');
+      }
+      rethrow;
+    }
   }
 
   @override
@@ -441,24 +522,29 @@ abstract class ServerpodClientShared extends EndpointCaller {
       args: args,
       parameterStreams: streams,
       outputController: StreamController<G>(),
-      authenticationProvider: () async => authenticationKeyManager?.get(),
+      authenticationProvider: () async =>
+          authenticationKeyManager?.getHeaderValue(),
     );
 
-    _methodStreamManager
-        .openMethodStream(connectionDetails)
-        .onError<OpenMethodStreamException>((e, _) {
-      var error = switch (e.responseType) {
-        OpenMethodStreamResponseType.endpointNotFound =>
-          ServerpodClientNotFound(),
-        OpenMethodStreamResponseType.authenticationFailed =>
-          ServerpodClientUnauthorized(),
-        OpenMethodStreamResponseType.authorizationDeclined =>
-          ServerpodClientForbidden(),
-        OpenMethodStreamResponseType.invalidArguments =>
-          ServerpodClientBadRequest(),
-        OpenMethodStreamResponseType.success =>
-          ServerpodClientException('Unknown error, data: $e', -1),
-      };
+    _methodStreamManager.openMethodStream(connectionDetails).catchError((e, _) {
+      Object error;
+      if (e is OpenMethodStreamException) {
+        error = switch (e.responseType) {
+          OpenMethodStreamResponseType.endpointNotFound =>
+            ServerpodClientNotFound(),
+          OpenMethodStreamResponseType.authenticationFailed =>
+            ServerpodClientUnauthorized(),
+          OpenMethodStreamResponseType.authorizationDeclined =>
+            ServerpodClientForbidden(),
+          OpenMethodStreamResponseType.invalidArguments =>
+            ServerpodClientBadRequest(),
+          OpenMethodStreamResponseType.success =>
+            ServerpodClientException('Unknown error, data: $e', -1),
+        };
+      } else {
+        error = e;
+      }
+
       connectionDetails.outputController.addError(error);
       connectionDetails.outputController.close();
     });

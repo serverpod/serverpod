@@ -4,10 +4,10 @@ description: Starting point for a Serverpod server.
 # homepage: https://www.example.com
 
 environment:
-  sdk: '>=3.2.0 <4.0.0'
+  sdk: '>=3.3.0 <4.0.0'
 
 dependencies:
-  serverpod: 2.0.2
+  serverpod: 2.1.1
 
 dev_dependencies:
   lints: '>=3.0.0 <5.0.0'

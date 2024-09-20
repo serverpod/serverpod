@@ -5,13 +5,13 @@ import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/generated/protocol.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod/src/server/log_manager/log_writers.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import '../cache/caches.dart';
-import '../database/database.dart';
 
 /// A listener that will be called when the session is about to close.
 typedef WillCloseListener = FutureOr<void> Function(Session session);
@@ -19,7 +19,7 @@ typedef WillCloseListener = FutureOr<void> Function(Session session);
 /// When a call is made to the [Server] a [Session] object is created. It
 /// contains all data associated with the current connection and provides
 /// easy access to the database.
-abstract class Session {
+abstract class Session implements DatabaseAccessor {
   final LinkedHashSet<WillCloseListener> _willCloseListeners = LinkedHashSet();
 
   /// Adds a listener that will be called when the session is about to close.
@@ -86,7 +86,14 @@ abstract class Session {
   /// Access to the database.
   Database? _db;
 
+  /// Optional transaction to use for all database queries.
+  /// Only exists to support the serverpod_test package.
+  @override
+  @visibleForTesting
+  Transaction? get transaction => null;
+
   /// Access to the database.
+  @override
   Database get db {
     var database = _db;
     if (database == null) {
@@ -185,16 +192,9 @@ abstract class Session {
   bool _initialized = false;
 
   Future<void> _initialize() async {
-    if (server.authenticationHandler == null) {
-      stderr.write(
-        'No authentication handler is set, authentication is disabled, '
-        'all requests to protected endpoints will be rejected.',
-      );
-    }
-
-    if (server.authenticationHandler != null && _authenticationKey != null) {
-      _authenticated =
-          await server.authenticationHandler!(this, _authenticationKey!);
+    var authKey = _authenticationKey;
+    if (authKey != null) {
+      _authenticated = await server.authenticationHandler(this, authKey);
     }
 
     _initialized = true;
@@ -413,7 +413,7 @@ class StreamingSession extends Session {
     this.queryParameters = queryParameters;
 
     // Get the the authentication key, if any
-    _authenticationKey = queryParameters['auth'];
+    _authenticationKey = unwrapAuthHeaderValue(queryParameters['auth']);
   }
 
   /// Updates the authentication key for the streaming session.
@@ -612,6 +612,54 @@ class MessageCentralAccess {
   /// emit an error.
   Stream<T> createStream<T>(String channelName) =>
       _session.server.messageCentral.createStream<T>(_session, channelName);
+
+  /// Broadcasts revoked authentication events to the Serverpod framework.
+  /// This message ensures authenticated connections to the user are closed.
+  ///
+  /// The [userId] should be the [AuthenticationInfo.userId] for the concerned
+  /// user.
+  ///
+  /// The [message] must be of type [RevokedAuthenticationUser],
+  /// [RevokedAuthenticationAuthId], or [RevokedAuthenticationScope].
+  ///
+  /// [RevokedAuthenticationUser] is used to communicate that all the user's
+  /// authentication is revoked.
+  ///
+  /// [RevokedAuthenticationAuthId] is used to communicate that a specific
+  /// authentication id has been revoked for a user.
+  ///
+  /// [RevokedAuthenticationScope] is used to communicate that a specific
+  /// scope or scopes have been revoked for the user.
+  Future<bool> authenticationRevoked(
+    int userId,
+    SerializableModel message,
+  ) async {
+    if (message is! RevokedAuthenticationUser &&
+        message is! RevokedAuthenticationAuthId &&
+        message is! RevokedAuthenticationScope) {
+      throw ArgumentError(
+        'Message must be of type RevokedAuthenticationUser, '
+        'RevokedAuthenticationAuthId, or RevokedAuthenticationScope',
+      );
+    }
+
+    try {
+      return await _session.server.messageCentral.postMessage(
+        MessageCentralServerpodChannels.revokedAuthentication(userId),
+        message,
+        global: true,
+      );
+    } on StateError catch (_) {
+      // Throws StateError if Redis is not enabled that is ignored.
+    }
+
+    // If Redis is not enabled, send the message locally.
+    return _session.server.messageCentral.postMessage(
+      MessageCentralServerpodChannels.revokedAuthentication(userId),
+      message,
+      global: false,
+    );
+  }
 }
 
 /// Internal methods for [Session].

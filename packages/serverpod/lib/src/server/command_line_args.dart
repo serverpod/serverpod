@@ -69,6 +69,7 @@ class CommandLineArgs {
           abbr: 'm',
           allowed: [
             ServerpodRunMode.development,
+            ServerpodRunMode.test,
             ServerpodRunMode.staging,
             ServerpodRunMode.production,
           ],

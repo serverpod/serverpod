@@ -1,16 +1,16 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class UserNoteCollectionWithALongName extends _i1.TableRow
     implements _i1.ProtocolSerialization {
@@ -129,7 +129,7 @@ class _UserNoteCollectionWithALongNameImpl
       name: name ?? this.name,
       notes: notes is List<_i2.UserNoteWithALongName>?
           ? notes
-          : this.notes?.clone(),
+          : this.notes?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -246,7 +246,7 @@ class UserNoteCollectionWithALongNameRepository {
       const UserNoteCollectionWithALongNameDetachRowRepository._();
 
   Future<List<UserNoteCollectionWithALongName>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>? where,
     int? limit,
     int? offset,
@@ -256,20 +256,20 @@ class UserNoteCollectionWithALongNameRepository {
     _i1.Transaction? transaction,
     UserNoteCollectionWithALongNameInclude? include,
   }) async {
-    return session.db.find<UserNoteCollectionWithALongName>(
+    return databaseAccessor.db.find<UserNoteCollectionWithALongName>(
       where: where?.call(UserNoteCollectionWithALongName.t),
       orderBy: orderBy?.call(UserNoteCollectionWithALongName.t),
       orderByList: orderByList?.call(UserNoteCollectionWithALongName.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<UserNoteCollectionWithALongName?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<UserNoteCollectionWithALongNameTable>? orderBy,
@@ -278,122 +278,122 @@ class UserNoteCollectionWithALongNameRepository {
     _i1.Transaction? transaction,
     UserNoteCollectionWithALongNameInclude? include,
   }) async {
-    return session.db.findFirstRow<UserNoteCollectionWithALongName>(
+    return databaseAccessor.db.findFirstRow<UserNoteCollectionWithALongName>(
       where: where?.call(UserNoteCollectionWithALongName.t),
       orderBy: orderBy?.call(UserNoteCollectionWithALongName.t),
       orderByList: orderByList?.call(UserNoteCollectionWithALongName.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<UserNoteCollectionWithALongName?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
     UserNoteCollectionWithALongNameInclude? include,
   }) async {
-    return session.db.findById<UserNoteCollectionWithALongName>(
+    return databaseAccessor.db.findById<UserNoteCollectionWithALongName>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<List<UserNoteCollectionWithALongName>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<UserNoteCollectionWithALongName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UserNoteCollectionWithALongName>(
+    return databaseAccessor.db.insert<UserNoteCollectionWithALongName>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<UserNoteCollectionWithALongName> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     UserNoteCollectionWithALongName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UserNoteCollectionWithALongName>(
+    return databaseAccessor.db.insertRow<UserNoteCollectionWithALongName>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<UserNoteCollectionWithALongName>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<UserNoteCollectionWithALongName> rows, {
     _i1.ColumnSelections<UserNoteCollectionWithALongNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<UserNoteCollectionWithALongName>(
+    return databaseAccessor.db.update<UserNoteCollectionWithALongName>(
       rows,
       columns: columns?.call(UserNoteCollectionWithALongName.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<UserNoteCollectionWithALongName> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     UserNoteCollectionWithALongName row, {
     _i1.ColumnSelections<UserNoteCollectionWithALongNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<UserNoteCollectionWithALongName>(
+    return databaseAccessor.db.updateRow<UserNoteCollectionWithALongName>(
       row,
       columns: columns?.call(UserNoteCollectionWithALongName.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<UserNoteCollectionWithALongName>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<UserNoteCollectionWithALongName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UserNoteCollectionWithALongName>(
+    return databaseAccessor.db.delete<UserNoteCollectionWithALongName>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<UserNoteCollectionWithALongName> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     UserNoteCollectionWithALongName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UserNoteCollectionWithALongName>(
+    return databaseAccessor.db.deleteRow<UserNoteCollectionWithALongName>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<UserNoteCollectionWithALongName>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>
         where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<UserNoteCollectionWithALongName>(
+    return databaseAccessor.db.deleteWhere<UserNoteCollectionWithALongName>(
       where: where(UserNoteCollectionWithALongName.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<UserNoteCollectionWithALongName>(
+    return databaseAccessor.db.count<UserNoteCollectionWithALongName>(
       where: where?.call(UserNoteCollectionWithALongName.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -402,10 +402,11 @@ class UserNoteCollectionWithALongNameAttachRepository {
   const UserNoteCollectionWithALongNameAttachRepository._();
 
   Future<void> notes(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     UserNoteCollectionWithALongName userNoteCollectionWithALongName,
-    List<_i2.UserNoteWithALongName> userNoteWithALongName,
-  ) async {
+    List<_i2.UserNoteWithALongName> userNoteWithALongName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (userNoteWithALongName.any((e) => e.id == null)) {
       throw ArgumentError.notNull('userNoteWithALongName.id');
     }
@@ -420,12 +421,13 @@ class UserNoteCollectionWithALongNameAttachRepository {
                   userNoteCollectionWithALongName.id,
             ))
         .toList();
-    await session.db.update<_i2.UserNoteWithALongName>(
+    await databaseAccessor.db.update<_i2.UserNoteWithALongName>(
       $userNoteWithALongName,
       columns: [
         _i2.UserNoteWithALongName.t
             .$_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId
       ],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -434,10 +436,11 @@ class UserNoteCollectionWithALongNameAttachRowRepository {
   const UserNoteCollectionWithALongNameAttachRowRepository._();
 
   Future<void> notes(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     UserNoteCollectionWithALongName userNoteCollectionWithALongName,
-    _i2.UserNoteWithALongName userNoteWithALongName,
-  ) async {
+    _i2.UserNoteWithALongName userNoteWithALongName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (userNoteWithALongName.id == null) {
       throw ArgumentError.notNull('userNoteWithALongName.id');
     }
@@ -450,12 +453,13 @@ class UserNoteCollectionWithALongNameAttachRowRepository {
       $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId:
           userNoteCollectionWithALongName.id,
     );
-    await session.db.updateRow<_i2.UserNoteWithALongName>(
+    await databaseAccessor.db.updateRow<_i2.UserNoteWithALongName>(
       $userNoteWithALongName,
       columns: [
         _i2.UserNoteWithALongName.t
             .$_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId
       ],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -464,9 +468,10 @@ class UserNoteCollectionWithALongNameDetachRepository {
   const UserNoteCollectionWithALongNameDetachRepository._();
 
   Future<void> notes(
-    _i1.Session session,
-    List<_i2.UserNoteWithALongName> userNoteWithALongName,
-  ) async {
+    _i1.DatabaseAccessor databaseAccessor,
+    List<_i2.UserNoteWithALongName> userNoteWithALongName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (userNoteWithALongName.any((e) => e.id == null)) {
       throw ArgumentError.notNull('userNoteWithALongName.id');
     }
@@ -478,12 +483,13 @@ class UserNoteCollectionWithALongNameDetachRepository {
                   null,
             ))
         .toList();
-    await session.db.update<_i2.UserNoteWithALongName>(
+    await databaseAccessor.db.update<_i2.UserNoteWithALongName>(
       $userNoteWithALongName,
       columns: [
         _i2.UserNoteWithALongName.t
             .$_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId
       ],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -492,9 +498,10 @@ class UserNoteCollectionWithALongNameDetachRowRepository {
   const UserNoteCollectionWithALongNameDetachRowRepository._();
 
   Future<void> notes(
-    _i1.Session session,
-    _i2.UserNoteWithALongName userNoteWithALongName,
-  ) async {
+    _i1.DatabaseAccessor databaseAccessor,
+    _i2.UserNoteWithALongName userNoteWithALongName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (userNoteWithALongName.id == null) {
       throw ArgumentError.notNull('userNoteWithALongName.id');
     }
@@ -503,12 +510,13 @@ class UserNoteCollectionWithALongNameDetachRowRepository {
       userNoteWithALongName,
       $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId: null,
     );
-    await session.db.updateRow<_i2.UserNoteWithALongName>(
+    await databaseAccessor.db.updateRow<_i2.UserNoteWithALongName>(
       $userNoteWithALongName,
       columns: [
         _i2.UserNoteWithALongName.t
             .$_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId
       ],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

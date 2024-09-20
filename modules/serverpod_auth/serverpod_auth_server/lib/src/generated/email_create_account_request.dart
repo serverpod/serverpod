@@ -1,11 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -231,7 +232,7 @@ class EmailCreateAccountRequestRepository {
   const EmailCreateAccountRequestRepository._();
 
   Future<List<EmailCreateAccountRequest>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? limit,
     int? offset,
@@ -240,19 +241,19 @@ class EmailCreateAccountRequestRepository {
     _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<EmailCreateAccountRequest>(
+    return databaseAccessor.db.find<EmailCreateAccountRequest>(
       where: where?.call(EmailCreateAccountRequest.t),
       orderBy: orderBy?.call(EmailCreateAccountRequest.t),
       orderByList: orderByList?.call(EmailCreateAccountRequest.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmailCreateAccountRequest?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
@@ -260,118 +261,118 @@ class EmailCreateAccountRequestRepository {
     _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<EmailCreateAccountRequest>(
+    return databaseAccessor.db.findFirstRow<EmailCreateAccountRequest>(
       where: where?.call(EmailCreateAccountRequest.t),
       orderBy: orderBy?.call(EmailCreateAccountRequest.t),
       orderByList: orderByList?.call(EmailCreateAccountRequest.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmailCreateAccountRequest?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<EmailCreateAccountRequest>(
+    return databaseAccessor.db.findById<EmailCreateAccountRequest>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EmailCreateAccountRequest>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EmailCreateAccountRequest> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<EmailCreateAccountRequest>(
+    return databaseAccessor.db.insert<EmailCreateAccountRequest>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmailCreateAccountRequest> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EmailCreateAccountRequest row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<EmailCreateAccountRequest>(
+    return databaseAccessor.db.insertRow<EmailCreateAccountRequest>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EmailCreateAccountRequest>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EmailCreateAccountRequest> rows, {
     _i1.ColumnSelections<EmailCreateAccountRequestTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<EmailCreateAccountRequest>(
+    return databaseAccessor.db.update<EmailCreateAccountRequest>(
       rows,
       columns: columns?.call(EmailCreateAccountRequest.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmailCreateAccountRequest> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EmailCreateAccountRequest row, {
     _i1.ColumnSelections<EmailCreateAccountRequestTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<EmailCreateAccountRequest>(
+    return databaseAccessor.db.updateRow<EmailCreateAccountRequest>(
       row,
       columns: columns?.call(EmailCreateAccountRequest.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EmailCreateAccountRequest>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<EmailCreateAccountRequest> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<EmailCreateAccountRequest>(
+    return databaseAccessor.db.delete<EmailCreateAccountRequest>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<EmailCreateAccountRequest> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     EmailCreateAccountRequest row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<EmailCreateAccountRequest>(
+    return databaseAccessor.db.deleteRow<EmailCreateAccountRequest>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<EmailCreateAccountRequest>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<EmailCreateAccountRequest>(
+    return databaseAccessor.db.deleteWhere<EmailCreateAccountRequest>(
       where: where(EmailCreateAccountRequest.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<EmailCreateAccountRequest>(
+    return databaseAccessor.db.count<EmailCreateAccountRequest>(
       where: where?.call(EmailCreateAccountRequest.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

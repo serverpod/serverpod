@@ -3,10 +3,11 @@ import 'dart:io';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
+
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
-import 'package:serverpod_cli/src/generator/generator_continuous.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
+import 'package:serverpod_cli/src/generator/generator_continuous.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -36,7 +37,8 @@ class GenerateCommand extends ServerpodCommand {
     GeneratorConfig config;
     try {
       config = await GeneratorConfig.load();
-    } catch (_) {
+    } catch (e) {
+      log.error('An error occurred while parsing the server config file: $e');
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
 

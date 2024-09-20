@@ -27,13 +27,12 @@ class DatabaseConnection {
   final DatabasePoolManager _poolManager;
 
   /// Access to the raw Postgresql connection pool.
-  final pg.Pool _postgresConnection;
+  pg.Pool get _postgresConnection => _poolManager.pool;
 
   /// Creates a new database connection from the configuration. For most cases
   /// this shouldn't be called directly, use the db object in the [Session] to
   /// access the database.
-  DatabaseConnection(this._poolManager)
-      : _postgresConnection = _poolManager.pool;
+  DatabaseConnection(this._poolManager);
 
   /// Tests the database connection.
   /// Throws an exception if the connection is not working.
@@ -139,11 +138,9 @@ class DatabaseConnection {
       rows: rows,
     ).build();
 
-    var result =
-        await _mappedResultsQuery(session, query, transaction: transaction);
-
-    return result
-        .map((row) => _poolManager.serializationManager.deserialize<T>(row))
+    return (await _mappedResultsQuery(session, query, transaction: transaction)
+            .then((_mergeResultsWithNonPersistedFields(rows))))
+        .map(_poolManager.serializationManager.deserialize<T>)
         .toList();
   }
 
@@ -153,7 +150,11 @@ class DatabaseConnection {
     T row, {
     Transaction? transaction,
   }) async {
-    var result = await insert<T>(session, [row], transaction: transaction);
+    var result = await insert<T>(
+      session,
+      [row],
+      transaction: transaction,
+    );
 
     if (result.length != 1) {
       throw DatabaseInsertRowException(
@@ -200,11 +201,9 @@ class DatabaseConnection {
     var query =
         'UPDATE "${table.tableName}" AS t SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = t.id RETURNING *';
 
-    var result =
-        await _mappedResultsQuery(session, query, transaction: transaction);
-
-    return result
-        .map((row) => _poolManager.serializationManager.deserialize<T>(row))
+    return (await _mappedResultsQuery(session, query, transaction: transaction)
+            .then((_mergeResultsWithNonPersistedFields(rows))))
+        .map(_poolManager.serializationManager.deserialize<T>)
         .toList();
   }
 
@@ -285,7 +284,12 @@ class DatabaseConnection {
         .withWhere(where)
         .build();
 
-    return await _deserializedMappedQuery(session, query, table: table);
+    return await _deserializedMappedQuery(
+      session,
+      query,
+      table: table,
+      transaction: transaction,
+    );
   }
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -390,10 +394,26 @@ class DatabaseConnection {
       );
       return result;
     } catch (exception, trace) {
-      if (exception is pg.PgException) {
-        var serverpodException = DatabaseException(
-          exception.message,
+      if (exception is pg.ServerException) {
+        var message = switch (exception.code) {
+          ('42P01') =>
+            'Table not found, have you applied the database migration? (${exception.message})',
+          (_) => exception.message,
+        };
+
+        var serverpodException = DatabaseException(message);
+        _logQuery(
+          session,
+          query,
+          startTime,
+          exception: serverpodException,
+          trace: trace,
         );
+        throw serverpodException;
+      }
+
+      if (exception is pg.PgException) {
+        var serverpodException = DatabaseException(exception.message);
         _logQuery(
           session,
           query,
@@ -470,7 +490,7 @@ class DatabaseConnection {
     String query, {
     required Table table,
     int? timeoutInSeconds,
-    Transaction? transaction,
+    required Transaction? transaction,
     Include? include,
   }) async {
     var result = await _mappedResultsQuery(
@@ -676,6 +696,23 @@ class DatabaseConnection {
     }
 
     return 'json';
+  }
+
+  /// Merges the database result with the original non-persisted fields.
+  /// Database fields take precedence for common fields, while non-persisted fields are retained.
+  List<Map<String, dynamic>> Function(Iterable<Map<String, dynamic>>)
+      _mergeResultsWithNonPersistedFields<T extends TableRow>(
+    List<T> rows,
+  ) {
+    return (Iterable<Map<String, dynamic>> dbResults) =>
+        List<Map<String, dynamic>>.generate(dbResults.length, (i) {
+          return {
+            // Add non-persisted fields from the original object
+            ...rows[i].toJson(),
+            // Override with database fields (common fields)
+            ...dbResults.elementAt(i),
+          };
+        });
   }
 }
 

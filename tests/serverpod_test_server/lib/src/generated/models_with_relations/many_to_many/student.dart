@@ -1,16 +1,16 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class Student extends _i1.TableRow
     implements _i1.ProtocolSerialization {
@@ -127,7 +127,7 @@ class _StudentImpl extends Student {
       name: name ?? this.name,
       enrollments: enrollments is List<_i2.Enrollment>?
           ? enrollments
-          : this.enrollments?.clone(),
+          : this.enrollments?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -234,7 +234,7 @@ class StudentRepository {
   final attachRow = const StudentAttachRowRepository._();
 
   Future<List<Student>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<StudentTable>? where,
     int? limit,
     int? offset,
@@ -244,20 +244,20 @@ class StudentRepository {
     _i1.Transaction? transaction,
     StudentInclude? include,
   }) async {
-    return session.db.find<Student>(
+    return databaseAccessor.db.find<Student>(
       where: where?.call(Student.t),
       orderBy: orderBy?.call(Student.t),
       orderByList: orderByList?.call(Student.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<Student?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<StudentTable>? where,
     int? offset,
     _i1.OrderByBuilder<StudentTable>? orderBy,
@@ -266,121 +266,121 @@ class StudentRepository {
     _i1.Transaction? transaction,
     StudentInclude? include,
   }) async {
-    return session.db.findFirstRow<Student>(
+    return databaseAccessor.db.findFirstRow<Student>(
       where: where?.call(Student.t),
       orderBy: orderBy?.call(Student.t),
       orderByList: orderByList?.call(Student.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<Student?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
     StudentInclude? include,
   }) async {
-    return session.db.findById<Student>(
+    return databaseAccessor.db.findById<Student>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<List<Student>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Student> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Student>(
+    return databaseAccessor.db.insert<Student>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Student> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Student row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Student>(
+    return databaseAccessor.db.insertRow<Student>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Student>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Student> rows, {
     _i1.ColumnSelections<StudentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Student>(
+    return databaseAccessor.db.update<Student>(
       rows,
       columns: columns?.call(Student.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Student> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Student row, {
     _i1.ColumnSelections<StudentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Student>(
+    return databaseAccessor.db.updateRow<Student>(
       row,
       columns: columns?.call(Student.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Student>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Student> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Student>(
+    return databaseAccessor.db.delete<Student>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Student> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Student row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Student>(
+    return databaseAccessor.db.deleteRow<Student>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Student>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<StudentTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Student>(
+    return databaseAccessor.db.deleteWhere<Student>(
       where: where(Student.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<StudentTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Student>(
+    return databaseAccessor.db.count<Student>(
       where: where?.call(Student.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -389,10 +389,11 @@ class StudentAttachRepository {
   const StudentAttachRepository._();
 
   Future<void> enrollments(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Student student,
-    List<_i2.Enrollment> enrollment,
-  ) async {
+    List<_i2.Enrollment> enrollment, {
+    _i1.Transaction? transaction,
+  }) async {
     if (enrollment.any((e) => e.id == null)) {
       throw ArgumentError.notNull('enrollment.id');
     }
@@ -402,9 +403,10 @@ class StudentAttachRepository {
 
     var $enrollment =
         enrollment.map((e) => e.copyWith(studentId: student.id)).toList();
-    await session.db.update<_i2.Enrollment>(
+    await databaseAccessor.db.update<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.studentId],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -413,10 +415,11 @@ class StudentAttachRowRepository {
   const StudentAttachRowRepository._();
 
   Future<void> enrollments(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Student student,
-    _i2.Enrollment enrollment,
-  ) async {
+    _i2.Enrollment enrollment, {
+    _i1.Transaction? transaction,
+  }) async {
     if (enrollment.id == null) {
       throw ArgumentError.notNull('enrollment.id');
     }
@@ -425,9 +428,10 @@ class StudentAttachRowRepository {
     }
 
     var $enrollment = enrollment.copyWith(studentId: student.id);
-    await session.db.updateRow<_i2.Enrollment>(
+    await databaseAccessor.db.updateRow<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.studentId],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

@@ -1,11 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -169,7 +170,7 @@ class SimpleDataRepository {
   const SimpleDataRepository._();
 
   Future<List<SimpleData>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<SimpleDataTable>? where,
     int? limit,
     int? offset,
@@ -178,19 +179,19 @@ class SimpleDataRepository {
     _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<SimpleData>(
+    return databaseAccessor.db.find<SimpleData>(
       where: where?.call(SimpleData.t),
       orderBy: orderBy?.call(SimpleData.t),
       orderByList: orderByList?.call(SimpleData.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<SimpleData?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<SimpleDataTable>? where,
     int? offset,
     _i1.OrderByBuilder<SimpleDataTable>? orderBy,
@@ -198,118 +199,118 @@ class SimpleDataRepository {
     _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<SimpleData>(
+    return databaseAccessor.db.findFirstRow<SimpleData>(
       where: where?.call(SimpleData.t),
       orderBy: orderBy?.call(SimpleData.t),
       orderByList: orderByList?.call(SimpleData.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<SimpleData?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<SimpleData>(
+    return databaseAccessor.db.findById<SimpleData>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<SimpleData>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<SimpleData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<SimpleData>(
+    return databaseAccessor.db.insert<SimpleData>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<SimpleData> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     SimpleData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<SimpleData>(
+    return databaseAccessor.db.insertRow<SimpleData>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<SimpleData>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<SimpleData> rows, {
     _i1.ColumnSelections<SimpleDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<SimpleData>(
+    return databaseAccessor.db.update<SimpleData>(
       rows,
       columns: columns?.call(SimpleData.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<SimpleData> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     SimpleData row, {
     _i1.ColumnSelections<SimpleDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<SimpleData>(
+    return databaseAccessor.db.updateRow<SimpleData>(
       row,
       columns: columns?.call(SimpleData.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<SimpleData>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<SimpleData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<SimpleData>(
+    return databaseAccessor.db.delete<SimpleData>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<SimpleData> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     SimpleData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<SimpleData>(
+    return databaseAccessor.db.deleteRow<SimpleData>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<SimpleData>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<SimpleDataTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<SimpleData>(
+    return databaseAccessor.db.deleteWhere<SimpleData>(
       where: where(SimpleData.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<SimpleDataTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<SimpleData>(
+    return databaseAccessor.db.count<SimpleData>(
       where: where?.call(SimpleData.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

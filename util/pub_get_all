@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
@@ -10,12 +10,18 @@ set -e
 
 BASE=$(pwd)
 OFFLINE_MODE=""
-
-# Check for --offline parameter
-if [ "$1" == "--offline" ]; then
-    OFFLINE_MODE="--offline"
-    echo "Running in offline mode"
-fi
+PUB_MODE="upgrade"
+for arg in "$@"
+do
+  # Check for --offline parameter
+  if [ "$arg" == "--offline" ]; then
+      OFFLINE_MODE="--offline"
+      echo "Running in offline mode"
+  elif [ "$arg" == "--downgrade" ]; then
+      PUB_MODE="downgrade"
+      echo "Running in downgrade mode"
+  fi
+done
 
 echo "PUB UPGRADE ALL"
 
@@ -29,6 +35,7 @@ declare -a dart_paths=(
   "packages/serverpod_serialization"
   "packages/serverpod_service_client"
   "packages/serverpod_shared"
+  "packages/serverpod_test"
   "tests/serverpod_test_client"
   "tests/serverpod_test_server"
   "tests/serverpod_test_shared"
@@ -66,12 +73,12 @@ declare -a flutter_paths=(
 for path in "${dart_paths[@]}"; do
   echo "\n### $path"
   cd "$BASE/$path"
-  dart pub upgrade $OFFLINE_MODE
+  dart pub $PUB_MODE $OFFLINE_MODE
 done
 
 # Upgrade Flutter packages
 for path in "${flutter_paths[@]}"; do
   echo "\n### $path"
   cd "$BASE/$path"
-  flutter pub upgrade $OFFLINE_MODE
+  flutter pub $PUB_MODE $OFFLINE_MODE
 done

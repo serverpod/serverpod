@@ -1,15 +1,15 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Represents a snapshot of the number of open connections the server currently
 /// is handling. An entry is written every minute for each server. All health
@@ -278,7 +278,7 @@ class ServerHealthConnectionInfoRepository {
   const ServerHealthConnectionInfoRepository._();
 
   Future<List<ServerHealthConnectionInfo>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? limit,
     int? offset,
@@ -287,19 +287,19 @@ class ServerHealthConnectionInfoRepository {
     _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<ServerHealthConnectionInfo>(
+    return databaseAccessor.db.find<ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ServerHealthConnectionInfo?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? offset,
     _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
@@ -307,118 +307,118 @@ class ServerHealthConnectionInfoRepository {
     _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<ServerHealthConnectionInfo>(
+    return databaseAccessor.db.findFirstRow<ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ServerHealthConnectionInfo?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ServerHealthConnectionInfo>(
+    return databaseAccessor.db.findById<ServerHealthConnectionInfo>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ServerHealthConnectionInfo>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ServerHealthConnectionInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ServerHealthConnectionInfo>(
+    return databaseAccessor.db.insert<ServerHealthConnectionInfo>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ServerHealthConnectionInfo> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ServerHealthConnectionInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ServerHealthConnectionInfo>(
+    return databaseAccessor.db.insertRow<ServerHealthConnectionInfo>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ServerHealthConnectionInfo>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ServerHealthConnectionInfo> rows, {
     _i1.ColumnSelections<ServerHealthConnectionInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<ServerHealthConnectionInfo>(
+    return databaseAccessor.db.update<ServerHealthConnectionInfo>(
       rows,
       columns: columns?.call(ServerHealthConnectionInfo.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ServerHealthConnectionInfo> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ServerHealthConnectionInfo row, {
     _i1.ColumnSelections<ServerHealthConnectionInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<ServerHealthConnectionInfo>(
+    return databaseAccessor.db.updateRow<ServerHealthConnectionInfo>(
       row,
       columns: columns?.call(ServerHealthConnectionInfo.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ServerHealthConnectionInfo>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ServerHealthConnectionInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ServerHealthConnectionInfo>(
+    return databaseAccessor.db.delete<ServerHealthConnectionInfo>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ServerHealthConnectionInfo> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ServerHealthConnectionInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ServerHealthConnectionInfo>(
+    return databaseAccessor.db.deleteRow<ServerHealthConnectionInfo>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ServerHealthConnectionInfo>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<ServerHealthConnectionInfo>(
+    return databaseAccessor.db.deleteWhere<ServerHealthConnectionInfo>(
       where: where(ServerHealthConnectionInfo.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<ServerHealthConnectionInfo>(
+    return databaseAccessor.db.count<ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

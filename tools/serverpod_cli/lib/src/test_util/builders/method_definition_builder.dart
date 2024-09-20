@@ -5,6 +5,7 @@ import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dar
 class MethodDefinitionBuilder {
   String _name = 'example';
   String? _documentationComment;
+  List<AnnotationDefinition> _annotations = [];
   TypeDefinition _returnType =
       TypeDefinitionBuilder().withFutureOf('String').build();
   List<ParameterDefinition> _parameters = [];
@@ -17,8 +18,16 @@ class MethodDefinitionBuilder {
   }
 
   MethodDefinitionBuilder withDocumentationComment(
-      String? documentationComment) {
+    String? documentationComment,
+  ) {
     _documentationComment = documentationComment;
+    return this;
+  }
+
+  MethodDefinitionBuilder withAnnotations(
+    List<AnnotationDefinition> annotations,
+  ) {
+    _annotations = annotations;
     return this;
   }
 
@@ -33,13 +42,15 @@ class MethodDefinitionBuilder {
   }
 
   MethodDefinitionBuilder withParametersPositional(
-      List<ParameterDefinition> parametersPositional) {
+    List<ParameterDefinition> parametersPositional,
+  ) {
     _parametersPositional = parametersPositional;
     return this;
   }
 
   MethodDefinitionBuilder withParametersNamed(
-      List<ParameterDefinition> parametersNamed) {
+    List<ParameterDefinition> parametersNamed,
+  ) {
     _parametersNamed = parametersNamed;
     return this;
   }
@@ -48,6 +59,7 @@ class MethodDefinitionBuilder {
     return MethodCallDefinition(
       name: _name,
       documentationComment: _documentationComment,
+      annotations: _annotations,
       returnType: _returnType,
       parameters: _parameters,
       parametersPositional: _parametersPositional,
@@ -59,6 +71,7 @@ class MethodDefinitionBuilder {
     return MethodStreamDefinition(
       name: _name,
       documentationComment: _documentationComment,
+      annotations: _annotations,
       returnType: _returnType,
       parameters: _parameters,
       parametersPositional: _parametersPositional,

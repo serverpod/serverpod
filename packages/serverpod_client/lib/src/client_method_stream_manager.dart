@@ -5,7 +5,6 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_client/src/method_stream/method_stream_connection_details.dart';
-import 'package:serverpod_client/src/method_stream/method_stream_manager_exceptions.dart';
 import 'package:serverpod_client/src/util/lock.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -333,10 +332,7 @@ final class ClientMethodStreamManager {
 
     if (reason == CloseReason.error) {
       inboundStreamContext.controller.addError(
-        const ServerpodClientException(
-          'Stream closed with error reason',
-          -1,
-        ),
+        const ConnectionClosedException(),
       );
     }
 
@@ -435,7 +431,7 @@ final class ClientMethodStreamManager {
 
   Future<void> _listenToWebSocketStream(WebSocketChannel webSocket) async {
     _webSocketListenerCompleter = Completer();
-    MethodStreamExceptions closeException = const WebSocketClosedException();
+    MethodStreamException closeException = const WebSocketClosedException();
     try {
       await for (String jsonData in webSocket.stream) {
         if (!_handshakeComplete.isCompleted) {
@@ -495,10 +491,11 @@ final class ClientMethodStreamManager {
       /// Attempt to send close message to server if connection is still open.
       await webSocket.sink.close();
     } finally {
-      /// Close any still open streams with an exception.
-      await _closeAllStreams(closeException);
       _cancelConnectionTimer();
       _webSocketListenerCompleter.complete();
+
+      /// Close any still open streams with an exception.
+      await closeAllConnections(closeException);
     }
   }
 

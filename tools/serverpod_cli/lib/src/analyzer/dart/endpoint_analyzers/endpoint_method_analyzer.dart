@@ -6,6 +6,7 @@ import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_para
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/keywords.dart';
 
 const _excludedMethodNameSet = {
   'streamOpened',
@@ -30,6 +31,7 @@ abstract class EndpointMethodAnalyzer {
       return MethodStreamDefinition(
         name: method.name,
         documentationComment: method.documentationComment,
+        annotations: _parseAnnotations(dartElement: method),
         // TODO: Move removal of session parameter to Parameter analyzer
         parameters: parameters.required.sublist(1), // Skip session parameter,
         parametersNamed: parameters.named,
@@ -41,6 +43,7 @@ abstract class EndpointMethodAnalyzer {
     return MethodCallDefinition(
       name: method.name,
       documentationComment: method.documentationComment,
+      annotations: _parseAnnotations(dartElement: method),
       // TODO: Move removal of session parameter to Parameter analyzer
       parameters: parameters.required.sublist(1), // Skip session parameter,
       parametersNamed: parameters.named,
@@ -90,7 +93,13 @@ abstract class EndpointMethodAnalyzer {
 
   static bool _missingSessionParameter(List<ParameterElement> parameters) {
     if (parameters.isEmpty) return true;
-    return parameters.first.type.element?.displayName != 'Session';
+
+    bool firstParameterIsNotSession =
+        parameters.first.type.element?.displayName != Keyword.sessionClassName;
+
+    return firstParameterIsNotSession ||
+        parameters.first.isNamed ||
+        parameters.first.isOptional;
   }
 
   static SourceSpanSeverityException? _validateReturnType({
@@ -152,6 +161,48 @@ abstract class EndpointMethodAnalyzer {
     }
 
     return null;
+  }
+
+  static List<String>? _parseAnnotationStringArgument(
+    ElementAnnotation annotation,
+    String fieldName,
+  ) {
+    var argument =
+        annotation.computeConstantValue()?.getField(fieldName)?.toStringValue();
+    return argument != null ? ["'$argument'"] : null;
+  }
+
+  static List<AnnotationDefinition> _parseAnnotations({
+    required Element dartElement,
+  }) {
+    return dartElement.metadata.expand<AnnotationDefinition>((annotation) {
+      var annotationElement = annotation.element;
+      var annotationName = annotationElement is ConstructorElement
+          ? annotationElement.enclosingElement.name
+          : annotationElement?.name;
+      if (annotationName == null) return [];
+      return switch (annotationName) {
+        'Deprecated' => [
+            AnnotationDefinition(
+              name: annotationName,
+              arguments: _parseAnnotationStringArgument(annotation, 'message'),
+              methodCallAnalyzerIgnoreRule:
+                  'deprecated_member_use_from_same_package',
+            ),
+          ],
+        'deprecated' =>
+          // @deprecated is a shorthand for @Deprecated(..)
+          // see https://api.flutter.dev/flutter/dart-core/deprecated-constant.html
+          [
+            AnnotationDefinition(
+              name: annotationName,
+              methodCallAnalyzerIgnoreRule:
+                  'deprecated_member_use_from_same_package',
+            ),
+          ],
+        _ => [],
+      };
+    }).toList();
   }
 }
 

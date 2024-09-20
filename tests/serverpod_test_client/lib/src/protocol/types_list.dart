@@ -1,11 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
@@ -219,26 +220,55 @@ class _TypesListImpl extends TypesList {
     Object? aList = _Undefined,
   }) {
     return TypesList(
-      anInt: anInt is List<int>? ? anInt : this.anInt?.clone(),
-      aBool: aBool is List<bool>? ? aBool : this.aBool?.clone(),
-      aDouble: aDouble is List<double>? ? aDouble : this.aDouble?.clone(),
-      aDateTime:
-          aDateTime is List<DateTime>? ? aDateTime : this.aDateTime?.clone(),
-      aString: aString is List<String>? ? aString : this.aString?.clone(),
+      anInt: anInt is List<int>? ? anInt : this.anInt?.map((e0) => e0).toList(),
+      aBool:
+          aBool is List<bool>? ? aBool : this.aBool?.map((e0) => e0).toList(),
+      aDouble: aDouble is List<double>?
+          ? aDouble
+          : this.aDouble?.map((e0) => e0).toList(),
+      aDateTime: aDateTime is List<DateTime>?
+          ? aDateTime
+          : this.aDateTime?.map((e0) => e0).toList(),
+      aString: aString is List<String>?
+          ? aString
+          : this.aString?.map((e0) => e0).toList(),
       aByteData: aByteData is List<_i2.ByteData>?
           ? aByteData
-          : this.aByteData?.clone(),
-      aDuration:
-          aDuration is List<Duration>? ? aDuration : this.aDuration?.clone(),
-      aUuid: aUuid is List<_i1.UuidValue>? ? aUuid : this.aUuid?.clone(),
-      anEnum: anEnum is List<_i3.TestEnum>? ? anEnum : this.anEnum?.clone(),
+          : this.aByteData?.map((e0) => e0.clone()).toList(),
+      aDuration: aDuration is List<Duration>?
+          ? aDuration
+          : this.aDuration?.map((e0) => e0).toList(),
+      aUuid: aUuid is List<_i1.UuidValue>?
+          ? aUuid
+          : this.aUuid?.map((e0) => e0).toList(),
+      anEnum: anEnum is List<_i3.TestEnum>?
+          ? anEnum
+          : this.anEnum?.map((e0) => e0).toList(),
       aStringifiedEnum: aStringifiedEnum is List<_i3.TestEnumStringified>?
           ? aStringifiedEnum
-          : this.aStringifiedEnum?.clone(),
-      anObject:
-          anObject is List<_i3.Types>? ? anObject : this.anObject?.clone(),
-      aMap: aMap is List<Map<String, _i3.Types>>? ? aMap : this.aMap?.clone(),
-      aList: aList is List<List<_i3.Types>>? ? aList : this.aList?.clone(),
+          : this.aStringifiedEnum?.map((e0) => e0).toList(),
+      anObject: anObject is List<_i3.Types>?
+          ? anObject
+          : this.anObject?.map((e0) => e0.copyWith()).toList(),
+      aMap: aMap is List<Map<String, _i3.Types>>?
+          ? aMap
+          : this
+              .aMap
+              ?.map((e0) => e0.map((
+                    key1,
+                    value1,
+                  ) =>
+                      MapEntry(
+                        key1,
+                        value1.copyWith(),
+                      )))
+              .toList(),
+      aList: aList is List<List<_i3.Types>>?
+          ? aList
+          : this
+              .aList
+              ?.map((e0) => e0.map((e1) => e1.copyWith()).toList())
+              .toList(),
     );
   }
 }

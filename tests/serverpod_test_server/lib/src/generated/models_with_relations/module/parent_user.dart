@@ -1,11 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -181,7 +182,7 @@ class ParentUserRepository {
   const ParentUserRepository._();
 
   Future<List<ParentUser>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ParentUserTable>? where,
     int? limit,
     int? offset,
@@ -190,19 +191,19 @@ class ParentUserRepository {
     _i1.OrderByListBuilder<ParentUserTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<ParentUser>(
+    return databaseAccessor.db.find<ParentUser>(
       where: where?.call(ParentUser.t),
       orderBy: orderBy?.call(ParentUser.t),
       orderByList: orderByList?.call(ParentUser.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ParentUser?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ParentUserTable>? where,
     int? offset,
     _i1.OrderByBuilder<ParentUserTable>? orderBy,
@@ -210,118 +211,118 @@ class ParentUserRepository {
     _i1.OrderByListBuilder<ParentUserTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<ParentUser>(
+    return databaseAccessor.db.findFirstRow<ParentUser>(
       where: where?.call(ParentUser.t),
       orderBy: orderBy?.call(ParentUser.t),
       orderByList: orderByList?.call(ParentUser.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ParentUser?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ParentUser>(
+    return databaseAccessor.db.findById<ParentUser>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ParentUser>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ParentUser> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ParentUser>(
+    return databaseAccessor.db.insert<ParentUser>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ParentUser> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ParentUser row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ParentUser>(
+    return databaseAccessor.db.insertRow<ParentUser>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ParentUser>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ParentUser> rows, {
     _i1.ColumnSelections<ParentUserTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<ParentUser>(
+    return databaseAccessor.db.update<ParentUser>(
       rows,
       columns: columns?.call(ParentUser.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ParentUser> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ParentUser row, {
     _i1.ColumnSelections<ParentUserTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<ParentUser>(
+    return databaseAccessor.db.updateRow<ParentUser>(
       row,
       columns: columns?.call(ParentUser.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ParentUser>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ParentUser> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ParentUser>(
+    return databaseAccessor.db.delete<ParentUser>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<ParentUser> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ParentUser row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ParentUser>(
+    return databaseAccessor.db.deleteRow<ParentUser>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<ParentUser>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<ParentUserTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<ParentUser>(
+    return databaseAccessor.db.deleteWhere<ParentUser>(
       where: where(ParentUser.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ParentUserTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<ParentUser>(
+    return databaseAccessor.db.count<ParentUser>(
       where: where?.call(ParentUser.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

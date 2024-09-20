@@ -1,11 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -186,7 +187,7 @@ class ChannelRepository {
   const ChannelRepository._();
 
   Future<List<Channel>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ChannelTable>? where,
     int? limit,
     int? offset,
@@ -195,19 +196,19 @@ class ChannelRepository {
     _i1.OrderByListBuilder<ChannelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<Channel>(
+    return databaseAccessor.db.find<Channel>(
       where: where?.call(Channel.t),
       orderBy: orderBy?.call(Channel.t),
       orderByList: orderByList?.call(Channel.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Channel?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ChannelTable>? where,
     int? offset,
     _i1.OrderByBuilder<ChannelTable>? orderBy,
@@ -215,118 +216,118 @@ class ChannelRepository {
     _i1.OrderByListBuilder<ChannelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<Channel>(
+    return databaseAccessor.db.findFirstRow<Channel>(
       where: where?.call(Channel.t),
       orderBy: orderBy?.call(Channel.t),
       orderByList: orderByList?.call(Channel.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Channel?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<Channel>(
+    return databaseAccessor.db.findById<Channel>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Channel>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Channel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Channel>(
+    return databaseAccessor.db.insert<Channel>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Channel> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Channel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Channel>(
+    return databaseAccessor.db.insertRow<Channel>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Channel>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Channel> rows, {
     _i1.ColumnSelections<ChannelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Channel>(
+    return databaseAccessor.db.update<Channel>(
       rows,
       columns: columns?.call(Channel.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Channel> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Channel row, {
     _i1.ColumnSelections<ChannelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Channel>(
+    return databaseAccessor.db.updateRow<Channel>(
       row,
       columns: columns?.call(Channel.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Channel>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Channel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Channel>(
+    return databaseAccessor.db.delete<Channel>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Channel> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Channel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Channel>(
+    return databaseAccessor.db.deleteRow<Channel>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Channel>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<ChannelTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Channel>(
+    return databaseAccessor.db.deleteWhere<Channel>(
       where: where(Channel.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ChannelTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Channel>(
+    return databaseAccessor.db.count<Channel>(
       where: where?.call(Channel.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

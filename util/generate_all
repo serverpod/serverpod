@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
@@ -56,7 +56,7 @@ dart $CLI generate --no-analytics
 
 echo "\ntests/serverpod_test_server"
 cd $BASE/tests/serverpod_test_server
-dart $CLI generate --no-analytics
+dart $CLI generate --no-analytics --experimental-features=all
 
 echo "\ntests/serverpod_test_module/serverpod_test_module_server"
 cd $BASE/tests/serverpod_test_module/serverpod_test_module_server

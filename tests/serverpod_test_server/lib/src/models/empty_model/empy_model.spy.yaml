@@ -1,4 +1,0 @@
-class: EmptyModel
-table: empty_model
-fields:
-  items: List<EmptyModelRelationItem>?, relation

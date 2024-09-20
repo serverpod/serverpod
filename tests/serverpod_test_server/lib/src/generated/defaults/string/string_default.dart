@@ -1,11 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -188,7 +189,7 @@ class StringDefaultRepository {
   const StringDefaultRepository._();
 
   Future<List<StringDefault>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<StringDefaultTable>? where,
     int? limit,
     int? offset,
@@ -197,19 +198,19 @@ class StringDefaultRepository {
     _i1.OrderByListBuilder<StringDefaultTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<StringDefault>(
+    return databaseAccessor.db.find<StringDefault>(
       where: where?.call(StringDefault.t),
       orderBy: orderBy?.call(StringDefault.t),
       orderByList: orderByList?.call(StringDefault.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<StringDefault?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<StringDefaultTable>? where,
     int? offset,
     _i1.OrderByBuilder<StringDefaultTable>? orderBy,
@@ -217,118 +218,118 @@ class StringDefaultRepository {
     _i1.OrderByListBuilder<StringDefaultTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<StringDefault>(
+    return databaseAccessor.db.findFirstRow<StringDefault>(
       where: where?.call(StringDefault.t),
       orderBy: orderBy?.call(StringDefault.t),
       orderByList: orderByList?.call(StringDefault.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<StringDefault?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<StringDefault>(
+    return databaseAccessor.db.findById<StringDefault>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<StringDefault>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<StringDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<StringDefault>(
+    return databaseAccessor.db.insert<StringDefault>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<StringDefault> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     StringDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<StringDefault>(
+    return databaseAccessor.db.insertRow<StringDefault>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<StringDefault>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<StringDefault> rows, {
     _i1.ColumnSelections<StringDefaultTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<StringDefault>(
+    return databaseAccessor.db.update<StringDefault>(
       rows,
       columns: columns?.call(StringDefault.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<StringDefault> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     StringDefault row, {
     _i1.ColumnSelections<StringDefaultTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<StringDefault>(
+    return databaseAccessor.db.updateRow<StringDefault>(
       row,
       columns: columns?.call(StringDefault.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<StringDefault>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<StringDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<StringDefault>(
+    return databaseAccessor.db.delete<StringDefault>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<StringDefault> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     StringDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<StringDefault>(
+    return databaseAccessor.db.deleteRow<StringDefault>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<StringDefault>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<StringDefaultTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<StringDefault>(
+    return databaseAccessor.db.deleteWhere<StringDefault>(
       where: where(StringDefault.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<StringDefaultTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<StringDefault>(
+    return databaseAccessor.db.count<StringDefault>(
       where: where?.call(StringDefault.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

@@ -1,16 +1,16 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class CityWithLongTableName extends _i1.TableRow
     implements _i1.ProtocolSerialization {
@@ -151,10 +151,10 @@ class _CityWithLongTableNameImpl extends CityWithLongTableName {
       name: name ?? this.name,
       citizens: citizens is List<_i2.PersonWithLongTableName>?
           ? citizens
-          : this.citizens?.clone(),
+          : this.citizens?.map((e0) => e0.copyWith()).toList(),
       organizations: organizations is List<_i2.OrganizationWithLongTableName>?
           ? organizations
-          : this.organizations?.clone(),
+          : this.organizations?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -317,7 +317,7 @@ class CityWithLongTableNameRepository {
   final detachRow = const CityWithLongTableNameDetachRowRepository._();
 
   Future<List<CityWithLongTableName>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<CityWithLongTableNameTable>? where,
     int? limit,
     int? offset,
@@ -327,20 +327,20 @@ class CityWithLongTableNameRepository {
     _i1.Transaction? transaction,
     CityWithLongTableNameInclude? include,
   }) async {
-    return session.db.find<CityWithLongTableName>(
+    return databaseAccessor.db.find<CityWithLongTableName>(
       where: where?.call(CityWithLongTableName.t),
       orderBy: orderBy?.call(CityWithLongTableName.t),
       orderByList: orderByList?.call(CityWithLongTableName.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<CityWithLongTableName?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<CityWithLongTableNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<CityWithLongTableNameTable>? orderBy,
@@ -349,121 +349,121 @@ class CityWithLongTableNameRepository {
     _i1.Transaction? transaction,
     CityWithLongTableNameInclude? include,
   }) async {
-    return session.db.findFirstRow<CityWithLongTableName>(
+    return databaseAccessor.db.findFirstRow<CityWithLongTableName>(
       where: where?.call(CityWithLongTableName.t),
       orderBy: orderBy?.call(CityWithLongTableName.t),
       orderByList: orderByList?.call(CityWithLongTableName.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<CityWithLongTableName?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
     CityWithLongTableNameInclude? include,
   }) async {
-    return session.db.findById<CityWithLongTableName>(
+    return databaseAccessor.db.findById<CityWithLongTableName>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<List<CityWithLongTableName>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<CityWithLongTableName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<CityWithLongTableName>(
+    return databaseAccessor.db.insert<CityWithLongTableName>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<CityWithLongTableName> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     CityWithLongTableName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<CityWithLongTableName>(
+    return databaseAccessor.db.insertRow<CityWithLongTableName>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<CityWithLongTableName>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<CityWithLongTableName> rows, {
     _i1.ColumnSelections<CityWithLongTableNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<CityWithLongTableName>(
+    return databaseAccessor.db.update<CityWithLongTableName>(
       rows,
       columns: columns?.call(CityWithLongTableName.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<CityWithLongTableName> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     CityWithLongTableName row, {
     _i1.ColumnSelections<CityWithLongTableNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<CityWithLongTableName>(
+    return databaseAccessor.db.updateRow<CityWithLongTableName>(
       row,
       columns: columns?.call(CityWithLongTableName.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<CityWithLongTableName>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<CityWithLongTableName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<CityWithLongTableName>(
+    return databaseAccessor.db.delete<CityWithLongTableName>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<CityWithLongTableName> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     CityWithLongTableName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<CityWithLongTableName>(
+    return databaseAccessor.db.deleteRow<CityWithLongTableName>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<CityWithLongTableName>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<CityWithLongTableNameTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<CityWithLongTableName>(
+    return databaseAccessor.db.deleteWhere<CityWithLongTableName>(
       where: where(CityWithLongTableName.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<CityWithLongTableNameTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<CityWithLongTableName>(
+    return databaseAccessor.db.count<CityWithLongTableName>(
       where: where?.call(CityWithLongTableName.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -472,10 +472,11 @@ class CityWithLongTableNameAttachRepository {
   const CityWithLongTableNameAttachRepository._();
 
   Future<void> citizens(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     CityWithLongTableName cityWithLongTableName,
-    List<_i2.PersonWithLongTableName> personWithLongTableName,
-  ) async {
+    List<_i2.PersonWithLongTableName> personWithLongTableName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (personWithLongTableName.any((e) => e.id == null)) {
       throw ArgumentError.notNull('personWithLongTableName.id');
     }
@@ -490,20 +491,22 @@ class CityWithLongTableNameAttachRepository {
                   cityWithLongTableName.id,
             ))
         .toList();
-    await session.db.update<_i2.PersonWithLongTableName>(
+    await databaseAccessor.db.update<_i2.PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [
         _i2.PersonWithLongTableName.t
             .$_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id
       ],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<void> organizations(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     CityWithLongTableName cityWithLongTableName,
-    List<_i2.OrganizationWithLongTableName> organizationWithLongTableName,
-  ) async {
+    List<_i2.OrganizationWithLongTableName> organizationWithLongTableName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (organizationWithLongTableName.any((e) => e.id == null)) {
       throw ArgumentError.notNull('organizationWithLongTableName.id');
     }
@@ -514,9 +517,10 @@ class CityWithLongTableNameAttachRepository {
     var $organizationWithLongTableName = organizationWithLongTableName
         .map((e) => e.copyWith(cityId: cityWithLongTableName.id))
         .toList();
-    await session.db.update<_i2.OrganizationWithLongTableName>(
+    await databaseAccessor.db.update<_i2.OrganizationWithLongTableName>(
       $organizationWithLongTableName,
       columns: [_i2.OrganizationWithLongTableName.t.cityId],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -525,10 +529,11 @@ class CityWithLongTableNameAttachRowRepository {
   const CityWithLongTableNameAttachRowRepository._();
 
   Future<void> citizens(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     CityWithLongTableName cityWithLongTableName,
-    _i2.PersonWithLongTableName personWithLongTableName,
-  ) async {
+    _i2.PersonWithLongTableName personWithLongTableName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (personWithLongTableName.id == null) {
       throw ArgumentError.notNull('personWithLongTableName.id');
     }
@@ -541,20 +546,22 @@ class CityWithLongTableNameAttachRowRepository {
       $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id:
           cityWithLongTableName.id,
     );
-    await session.db.updateRow<_i2.PersonWithLongTableName>(
+    await databaseAccessor.db.updateRow<_i2.PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [
         _i2.PersonWithLongTableName.t
             .$_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id
       ],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<void> organizations(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     CityWithLongTableName cityWithLongTableName,
-    _i2.OrganizationWithLongTableName organizationWithLongTableName,
-  ) async {
+    _i2.OrganizationWithLongTableName organizationWithLongTableName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (organizationWithLongTableName.id == null) {
       throw ArgumentError.notNull('organizationWithLongTableName.id');
     }
@@ -564,9 +571,10 @@ class CityWithLongTableNameAttachRowRepository {
 
     var $organizationWithLongTableName = organizationWithLongTableName.copyWith(
         cityId: cityWithLongTableName.id);
-    await session.db.updateRow<_i2.OrganizationWithLongTableName>(
+    await databaseAccessor.db.updateRow<_i2.OrganizationWithLongTableName>(
       $organizationWithLongTableName,
       columns: [_i2.OrganizationWithLongTableName.t.cityId],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -575,9 +583,10 @@ class CityWithLongTableNameDetachRepository {
   const CityWithLongTableNameDetachRepository._();
 
   Future<void> citizens(
-    _i1.Session session,
-    List<_i2.PersonWithLongTableName> personWithLongTableName,
-  ) async {
+    _i1.DatabaseAccessor databaseAccessor,
+    List<_i2.PersonWithLongTableName> personWithLongTableName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (personWithLongTableName.any((e) => e.id == null)) {
       throw ArgumentError.notNull('personWithLongTableName.id');
     }
@@ -589,19 +598,21 @@ class CityWithLongTableNameDetachRepository {
                   null,
             ))
         .toList();
-    await session.db.update<_i2.PersonWithLongTableName>(
+    await databaseAccessor.db.update<_i2.PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [
         _i2.PersonWithLongTableName.t
             .$_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id
       ],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<void> organizations(
-    _i1.Session session,
-    List<_i2.OrganizationWithLongTableName> organizationWithLongTableName,
-  ) async {
+    _i1.DatabaseAccessor databaseAccessor,
+    List<_i2.OrganizationWithLongTableName> organizationWithLongTableName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (organizationWithLongTableName.any((e) => e.id == null)) {
       throw ArgumentError.notNull('organizationWithLongTableName.id');
     }
@@ -609,9 +620,10 @@ class CityWithLongTableNameDetachRepository {
     var $organizationWithLongTableName = organizationWithLongTableName
         .map((e) => e.copyWith(cityId: null))
         .toList();
-    await session.db.update<_i2.OrganizationWithLongTableName>(
+    await databaseAccessor.db.update<_i2.OrganizationWithLongTableName>(
       $organizationWithLongTableName,
       columns: [_i2.OrganizationWithLongTableName.t.cityId],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -620,9 +632,10 @@ class CityWithLongTableNameDetachRowRepository {
   const CityWithLongTableNameDetachRowRepository._();
 
   Future<void> citizens(
-    _i1.Session session,
-    _i2.PersonWithLongTableName personWithLongTableName,
-  ) async {
+    _i1.DatabaseAccessor databaseAccessor,
+    _i2.PersonWithLongTableName personWithLongTableName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (personWithLongTableName.id == null) {
       throw ArgumentError.notNull('personWithLongTableName.id');
     }
@@ -631,28 +644,31 @@ class CityWithLongTableNameDetachRowRepository {
       personWithLongTableName,
       $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id: null,
     );
-    await session.db.updateRow<_i2.PersonWithLongTableName>(
+    await databaseAccessor.db.updateRow<_i2.PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [
         _i2.PersonWithLongTableName.t
             .$_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id
       ],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<void> organizations(
-    _i1.Session session,
-    _i2.OrganizationWithLongTableName organizationWithLongTableName,
-  ) async {
+    _i1.DatabaseAccessor databaseAccessor,
+    _i2.OrganizationWithLongTableName organizationWithLongTableName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (organizationWithLongTableName.id == null) {
       throw ArgumentError.notNull('organizationWithLongTableName.id');
     }
 
     var $organizationWithLongTableName =
         organizationWithLongTableName.copyWith(cityId: null);
-    await session.db.updateRow<_i2.OrganizationWithLongTableName>(
+    await databaseAccessor.db.updateRow<_i2.OrganizationWithLongTableName>(
       $organizationWithLongTableName,
       columns: [_i2.OrganizationWithLongTableName.t.cityId],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

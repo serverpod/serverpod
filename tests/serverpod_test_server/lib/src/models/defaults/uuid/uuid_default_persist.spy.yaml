@@ -1,0 +1,5 @@
+class: UuidDefaultPersist
+table: uuid_default_persist
+fields:
+  uuidDefaultPersistRandom: UuidValue?, defaultPersist=random
+  uuidDefaultPersistStr: UuidValue?, defaultPersist='550e8400-e29b-41d4-a716-446655440000'

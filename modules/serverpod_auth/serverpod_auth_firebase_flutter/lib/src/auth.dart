@@ -33,8 +33,19 @@ Future<UserInfo?> signInWithFirebase({
 
                 try {
                   var idToken = await user.getIdToken();
+                  if (idToken == null) {
+                    if (kDebugMode) {
+                      print(
+                        'serverpod_auth_firebase: Failed to get ID token. '
+                        'Aborting.',
+                      );
+                    }
+                    navigator.maybePop();
+                    return;
+                  }
+
                   var serverResponse =
-                      await caller.firebase.authenticate(idToken!);
+                      await caller.firebase.authenticate(idToken);
 
                   if (!serverResponse.success) {
                     // Failed to sign in.

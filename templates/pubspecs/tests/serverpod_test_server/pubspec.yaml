@@ -18,8 +18,8 @@ dependencies:
     path: ../serverpod_test_shared
   serverpod_test_module_server:
     path: ../serverpod_test_module/serverpod_test_module_server
-  uuid: ^4.0.0
-
+  uuid: ^4.1.0
+  web: '>=0.3.0 <2.0.0'
 
 dev_dependencies:
   lints: '>=3.0.0 <5.0.0'
@@ -31,6 +31,7 @@ dev_dependencies:
     path: ../serverpod_test_client
   serverpod_test_module_client:
     path: ../serverpod_test_module/serverpod_test_module_client
+  serverpod_test: SERVERPOD_VERSION
 
 dependency_overrides:
   serverpod:
@@ -51,3 +52,5 @@ dependency_overrides:
     path: ../../packages/serverpod_serialization
   serverpod_shared:
     path: ../../packages/serverpod_shared
+  serverpod_test:
+    path: ../../packages/serverpod_test

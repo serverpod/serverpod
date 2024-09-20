@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Wait for database to be up (timeout after 60 seconds)
 echo "### Wait for Postgres"

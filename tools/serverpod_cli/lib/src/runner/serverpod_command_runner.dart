@@ -1,6 +1,8 @@
+import 'package:args/args.dart';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
@@ -76,7 +78,30 @@ class ServerpodCommandRunner extends BetterCommandRunner {
     super.setLogLevel,
     super.onAnalyticsEvent,
   })  : _productionMode = productionMode,
-        _cliVersion = cliVersion;
+        _cliVersion = cliVersion {
+    argParser.addMultiOption(
+      'experimental-features',
+      help:
+          'Enable experimental features. Experimental features might be removed at any time.',
+      allowed: ExperimentalFeature.values.map((e) => e.name),
+      defaultsTo: [],
+    );
+  }
+
+  @override
+  Future<void> runCommand(ArgResults topLevelResults) async {
+    var enabledExperimentalFeatures = topLevelResults['experimental-features'];
+
+    var experimentalFeatures = <ExperimentalFeature>[];
+    for (var feature in enabledExperimentalFeatures) {
+      log.info(
+        'Enabling experimental feature: $feature.',
+      );
+      experimentalFeatures.add(ExperimentalFeature.fromString(feature));
+    }
+    CommandLineExperimentalFeatures.initialize(experimentalFeatures);
+    await super.runCommand(topLevelResults);
+  }
 
   static ServerpodCommandRunner createCommandRunner(
     Analytics analytics,

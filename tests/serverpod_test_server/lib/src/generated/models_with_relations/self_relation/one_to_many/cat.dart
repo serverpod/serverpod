@@ -1,16 +1,16 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../protocol.dart' as _i2;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class Cat extends _i1.TableRow implements _i1.ProtocolSerialization {
   Cat._({
@@ -156,7 +156,9 @@ class _CatImpl extends Cat {
       name: name ?? this.name,
       motherId: motherId is int? ? motherId : this.motherId,
       mother: mother is _i2.Cat? ? mother : this.mother?.copyWith(),
-      kittens: kittens is List<_i2.Cat>? ? kittens : this.kittens?.clone(),
+      kittens: kittens is List<_i2.Cat>?
+          ? kittens
+          : this.kittens?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -301,7 +303,7 @@ class CatRepository {
   final detachRow = const CatDetachRowRepository._();
 
   Future<List<Cat>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<CatTable>? where,
     int? limit,
     int? offset,
@@ -311,20 +313,20 @@ class CatRepository {
     _i1.Transaction? transaction,
     CatInclude? include,
   }) async {
-    return session.db.find<Cat>(
+    return databaseAccessor.db.find<Cat>(
       where: where?.call(Cat.t),
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<Cat?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<CatTable>? where,
     int? offset,
     _i1.OrderByBuilder<CatTable>? orderBy,
@@ -333,121 +335,121 @@ class CatRepository {
     _i1.Transaction? transaction,
     CatInclude? include,
   }) async {
-    return session.db.findFirstRow<Cat>(
+    return databaseAccessor.db.findFirstRow<Cat>(
       where: where?.call(Cat.t),
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<Cat?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
     CatInclude? include,
   }) async {
-    return session.db.findById<Cat>(
+    return databaseAccessor.db.findById<Cat>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
       include: include,
     );
   }
 
   Future<List<Cat>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Cat> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Cat>(
+    return databaseAccessor.db.insert<Cat>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Cat> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Cat row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Cat>(
+    return databaseAccessor.db.insertRow<Cat>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Cat>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Cat> rows, {
     _i1.ColumnSelections<CatTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Cat>(
+    return databaseAccessor.db.update<Cat>(
       rows,
       columns: columns?.call(Cat.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Cat> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Cat row, {
     _i1.ColumnSelections<CatTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Cat>(
+    return databaseAccessor.db.updateRow<Cat>(
       row,
       columns: columns?.call(Cat.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Cat>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Cat> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Cat>(
+    return databaseAccessor.db.delete<Cat>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<Cat> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Cat row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Cat>(
+    return databaseAccessor.db.deleteRow<Cat>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<Cat>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<CatTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Cat>(
+    return databaseAccessor.db.deleteWhere<Cat>(
       where: where(Cat.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<CatTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Cat>(
+    return databaseAccessor.db.count<Cat>(
       where: where?.call(Cat.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -456,10 +458,11 @@ class CatAttachRepository {
   const CatAttachRepository._();
 
   Future<void> kittens(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Cat cat,
-    List<_i2.Cat> nestedCat,
-  ) async {
+    List<_i2.Cat> nestedCat, {
+    _i1.Transaction? transaction,
+  }) async {
     if (nestedCat.any((e) => e.id == null)) {
       throw ArgumentError.notNull('nestedCat.id');
     }
@@ -469,9 +472,10 @@ class CatAttachRepository {
 
     var $nestedCat =
         nestedCat.map((e) => e.copyWith(motherId: cat.id)).toList();
-    await session.db.update<_i2.Cat>(
+    await databaseAccessor.db.update<_i2.Cat>(
       $nestedCat,
       columns: [_i2.Cat.t.motherId],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -480,10 +484,11 @@ class CatAttachRowRepository {
   const CatAttachRowRepository._();
 
   Future<void> mother(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Cat cat,
-    _i2.Cat mother,
-  ) async {
+    _i2.Cat mother, {
+    _i1.Transaction? transaction,
+  }) async {
     if (cat.id == null) {
       throw ArgumentError.notNull('cat.id');
     }
@@ -492,17 +497,19 @@ class CatAttachRowRepository {
     }
 
     var $cat = cat.copyWith(motherId: mother.id);
-    await session.db.updateRow<Cat>(
+    await databaseAccessor.db.updateRow<Cat>(
       $cat,
       columns: [Cat.t.motherId],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<void> kittens(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Cat cat,
-    _i2.Cat nestedCat,
-  ) async {
+    _i2.Cat nestedCat, {
+    _i1.Transaction? transaction,
+  }) async {
     if (nestedCat.id == null) {
       throw ArgumentError.notNull('nestedCat.id');
     }
@@ -511,9 +518,10 @@ class CatAttachRowRepository {
     }
 
     var $nestedCat = nestedCat.copyWith(motherId: cat.id);
-    await session.db.updateRow<_i2.Cat>(
+    await databaseAccessor.db.updateRow<_i2.Cat>(
       $nestedCat,
       columns: [_i2.Cat.t.motherId],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -522,17 +530,19 @@ class CatDetachRepository {
   const CatDetachRepository._();
 
   Future<void> kittens(
-    _i1.Session session,
-    List<_i2.Cat> cat,
-  ) async {
+    _i1.DatabaseAccessor databaseAccessor,
+    List<_i2.Cat> cat, {
+    _i1.Transaction? transaction,
+  }) async {
     if (cat.any((e) => e.id == null)) {
       throw ArgumentError.notNull('cat.id');
     }
 
     var $cat = cat.map((e) => e.copyWith(motherId: null)).toList();
-    await session.db.update<_i2.Cat>(
+    await databaseAccessor.db.update<_i2.Cat>(
       $cat,
       columns: [_i2.Cat.t.motherId],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }
@@ -541,32 +551,36 @@ class CatDetachRowRepository {
   const CatDetachRowRepository._();
 
   Future<void> mother(
-    _i1.Session session,
-    Cat cat,
-  ) async {
+    _i1.DatabaseAccessor databaseAccessor,
+    Cat cat, {
+    _i1.Transaction? transaction,
+  }) async {
     if (cat.id == null) {
       throw ArgumentError.notNull('cat.id');
     }
 
     var $cat = cat.copyWith(motherId: null);
-    await session.db.updateRow<Cat>(
+    await databaseAccessor.db.updateRow<Cat>(
       $cat,
       columns: [Cat.t.motherId],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<void> kittens(
-    _i1.Session session,
-    _i2.Cat cat,
-  ) async {
+    _i1.DatabaseAccessor databaseAccessor,
+    _i2.Cat cat, {
+    _i1.Transaction? transaction,
+  }) async {
     if (cat.id == null) {
       throw ArgumentError.notNull('cat.id');
     }
 
     var $cat = cat.copyWith(motherId: null);
-    await session.db.updateRow<_i2.Cat>(
+    await databaseAccessor.db.updateRow<_i2.Cat>(
       $cat,
       columns: [_i2.Cat.t.motherId],
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

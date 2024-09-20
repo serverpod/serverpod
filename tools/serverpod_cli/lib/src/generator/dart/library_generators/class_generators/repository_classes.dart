@@ -225,8 +225,8 @@ class BuildRepositoryClass {
       )
       ..requiredParameters.addAll([
         Parameter((p) => p
-          ..type = refer('Session', 'package:serverpod/serverpod.dart')
-          ..name = 'session'),
+          ..type = refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+          ..name = 'databaseAccessor'),
       ])
       ..optionalParameters.addAll([
         Parameter((p) => p
@@ -277,7 +277,7 @@ class BuildRepositoryClass {
             ..named = true),
       ])
       ..modifier = MethodModifier.async
-      ..body = refer('session')
+      ..body = refer('databaseAccessor')
           .property('db')
           .property('find')
           .call([], {
@@ -293,7 +293,8 @@ class BuildRepositoryClass {
             'orderDescending': refer('orderDescending'),
             'limit': refer('limit'),
             'offset': refer('offset'),
-            'transaction': refer('transaction'),
+            'transaction': refer('transaction')
+                .ifNullThen(refer('databaseAccessor').property('transaction')),
             if (objectRelationFields.isNotEmpty) 'include': refer('include'),
           }, [
             refer(className)
@@ -319,8 +320,8 @@ class BuildRepositoryClass {
       )
       ..requiredParameters.addAll([
         Parameter((p) => p
-          ..type = refer('Session', 'package:serverpod/serverpod.dart')
-          ..name = 'session'),
+          ..type = refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+          ..name = 'databaseAccessor'),
       ])
       ..optionalParameters.addAll([
         Parameter((p) => p
@@ -365,7 +366,7 @@ class BuildRepositoryClass {
             ..named = true),
       ])
       ..modifier = MethodModifier.async
-      ..body = refer('session')
+      ..body = refer('databaseAccessor')
           .property('db')
           .property('findFirstRow')
           .call(
@@ -382,7 +383,8 @@ class BuildRepositoryClass {
               ),
               'orderDescending': refer('orderDescending'),
               'offset': refer('offset'),
-              'transaction': refer('transaction'),
+              'transaction': refer('transaction').ifNullThen(
+                  refer('databaseAccessor').property('transaction')),
               if (objectRelationFields.isNotEmpty) 'include': refer('include'),
             },
             [refer(className)],
@@ -406,8 +408,8 @@ class BuildRepositoryClass {
       )
       ..requiredParameters.addAll([
         Parameter((p) => p
-          ..type = refer('Session', 'package:serverpod/serverpod.dart')
-          ..name = 'session'),
+          ..type = refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+          ..name = 'databaseAccessor'),
         Parameter((p) => p
           ..type = refer('int')
           ..name = 'id'),
@@ -429,13 +431,14 @@ class BuildRepositoryClass {
             ..named = true),
       ])
       ..modifier = MethodModifier.async
-      ..body = refer('session')
+      ..body = refer('databaseAccessor')
           .property('db')
           .property('findById')
           .call(
             [refer('id')],
             {
-              'transaction': refer('transaction'),
+              'transaction': refer('transaction').ifNullThen(
+                  refer('databaseAccessor').property('transaction')),
               if (objectRelationFields.isNotEmpty) 'include': refer('include'),
             },
             [refer(className)],
@@ -455,8 +458,9 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
+            ..type =
+                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..name = 'databaseAccessor'),
           Parameter((p) => p
             ..type = refer('List<$className>')
             ..name = 'rows'),
@@ -471,13 +475,14 @@ class BuildRepositoryClass {
             ..named = true),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
+        ..body = refer('databaseAccessor')
             .property('db')
             .property('insert')
             .call([
               refer('rows')
             ], {
-              'transaction': refer('transaction'),
+              'transaction': refer('transaction').ifNullThen(
+                  refer('databaseAccessor').property('transaction')),
             }, [
               refer(className)
             ])
@@ -497,8 +502,9 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
+            ..type =
+                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..name = 'databaseAccessor'),
           Parameter((p) => p
             ..type = refer(className)
             ..name = 'row'),
@@ -513,13 +519,14 @@ class BuildRepositoryClass {
             ..named = true),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
+        ..body = refer('databaseAccessor')
             .property('db')
             .property('insertRow')
             .call([
               refer('row')
             ], {
-              'transaction': refer('transaction'),
+              'transaction': refer('transaction').ifNullThen(
+                  refer('databaseAccessor').property('transaction')),
             }, [
               refer(className)
             ])
@@ -539,8 +546,9 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
+            ..type =
+                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..name = 'databaseAccessor'),
           Parameter((p) => p
             ..type = refer('List<$className>')
             ..name = 'rows'),
@@ -562,7 +570,7 @@ class BuildRepositoryClass {
             ..named = true),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
+        ..body = refer('databaseAccessor')
             .property('db')
             .property('update')
             .call([
@@ -571,7 +579,8 @@ class BuildRepositoryClass {
               'columns': refer('columns').nullSafeProperty('call').call([
                 refer(className).property('t'),
               ]),
-              'transaction': refer('transaction'),
+              'transaction': refer('transaction').ifNullThen(
+                  refer('databaseAccessor').property('transaction')),
             }, [
               refer(className)
             ])
@@ -591,8 +600,9 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
+            ..type =
+                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..name = 'databaseAccessor'),
           Parameter((p) => p
             ..type = refer(className)
             ..name = 'row'),
@@ -614,7 +624,7 @@ class BuildRepositoryClass {
             ..named = true),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
+        ..body = refer('databaseAccessor')
             .property('db')
             .property('updateRow')
             .call([
@@ -623,7 +633,8 @@ class BuildRepositoryClass {
               'columns': refer('columns').nullSafeProperty('call').call([
                 refer(className).property('t'),
               ]),
-              'transaction': refer('transaction'),
+              'transaction': refer('transaction').ifNullThen(
+                  refer('databaseAccessor').property('transaction')),
             }, [
               refer(className)
             ])
@@ -651,8 +662,9 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
+            ..type =
+                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..name = 'databaseAccessor'),
           Parameter((p) => p
             ..type = refer('List<$className>')
             ..name = 'rows'),
@@ -667,13 +679,14 @@ class BuildRepositoryClass {
             ..named = true),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
+        ..body = refer('databaseAccessor')
             .property('db')
             .property('delete')
             .call([
               refer('rows')
             ], {
-              'transaction': refer('transaction'),
+              'transaction': refer('transaction').ifNullThen(
+                  refer('databaseAccessor').property('transaction')),
             }, [
               refer(className)
             ])
@@ -695,8 +708,9 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
+            ..type =
+                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..name = 'databaseAccessor'),
           Parameter((p) => p
             ..type = refer(className)
             ..name = 'row'),
@@ -711,13 +725,14 @@ class BuildRepositoryClass {
             ..named = true),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
+        ..body = refer('databaseAccessor')
             .property('db')
             .property('deleteRow')
             .call([
               refer('row')
             ], {
-              'transaction': refer('transaction'),
+              'transaction': refer('transaction').ifNullThen(
+                  refer('databaseAccessor').property('transaction')),
             }, [
               refer(className)
             ])
@@ -745,8 +760,9 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
+            ..type =
+                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..name = 'databaseAccessor'),
         ])
         ..optionalParameters.addAll([
           Parameter((p) => p
@@ -767,12 +783,13 @@ class BuildRepositoryClass {
             ..named = true),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
+        ..body = refer('databaseAccessor')
             .property('db')
             .property('deleteWhere')
             .call([], {
               'where': refer('where').call([refer(className).property('t')]),
-              'transaction': refer('transaction'),
+              'transaction': refer('transaction').ifNullThen(
+                  refer('databaseAccessor').property('transaction')),
             }, [
               refer(className)
             ])
@@ -792,8 +809,9 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
+            ..type =
+                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..name = 'databaseAccessor'),
         ])
         ..optionalParameters.addAll([
           Parameter((p) => p
@@ -818,7 +836,7 @@ class BuildRepositoryClass {
             ..named = true),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
+        ..body = refer('databaseAccessor')
             .property('db')
             .property('count')
             .call([], {
@@ -826,7 +844,8 @@ class BuildRepositoryClass {
                 [refer(className).property('t')],
               ),
               'limit': refer('limit'),
-              'transaction': refer('transaction'),
+              'transaction': refer('transaction').ifNullThen(
+                  refer('databaseAccessor').property('transaction')),
             }, [
               refer(className)
             ])
@@ -898,8 +917,9 @@ class BuildRepositoryClass {
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
             parameterBuilder
-              ..name = 'session'
-              ..type = refer('Session', 'package:serverpod/serverpod.dart');
+              ..name = 'databaseAccessor'
+              ..type =
+                  refer('DatabaseAccessor', 'package:serverpod/serverpod.dart');
           }),
           Parameter((parameterBuilder) {
             parameterBuilder
@@ -915,8 +935,17 @@ class BuildRepositoryClass {
                 subDirParts: classDefinition.subDirParts,
                 config: config,
               );
-          })
+          }),
         ])
+        ..optionalParameters.add(
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        )
         ..modifier = MethodModifier.async
         ..body = relation.implicitForeignField
             ? _buildAttachImplementationBlockImplicitListRelation(
@@ -962,8 +991,9 @@ class BuildRepositoryClass {
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
             parameterBuilder
-              ..name = 'session'
-              ..type = refer('Session', 'package:serverpod/serverpod.dart');
+              ..name = 'databaseAccessor'
+              ..type =
+                  refer('DatabaseAccessor', 'package:serverpod/serverpod.dart');
           }),
           Parameter((parameterBuilder) {
             parameterBuilder
@@ -974,8 +1004,17 @@ class BuildRepositoryClass {
             parameterBuilder
               ..name = otherClassFieldName
               ..type = foreignType;
-          })
+          }),
         ])
+        ..optionalParameters.add(
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        )
         ..modifier = MethodModifier.async
         ..body = relation.implicitForeignField
             ? _buildAttachRowImplementationBlockImplicit(
@@ -1020,8 +1059,9 @@ class BuildRepositoryClass {
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
             parameterBuilder
-              ..name = 'session'
-              ..type = refer('Session', 'package:serverpod/serverpod.dart');
+              ..name = 'databaseAccessor'
+              ..type =
+                  refer('DatabaseAccessor', 'package:serverpod/serverpod.dart');
           }),
           Parameter((parameterBuilder) {
             parameterBuilder
@@ -1032,8 +1072,17 @@ class BuildRepositoryClass {
             parameterBuilder
               ..name = otherClassFieldName
               ..type = foreignType;
-          })
+          }),
         ])
+        ..optionalParameters.add(
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        )
         ..modifier = MethodModifier.async
         ..body = relation.isForeignKeyOrigin
             ? _buildAttachRowImplementationBlockExplicit(
@@ -1222,8 +1271,9 @@ class BuildRepositoryClass {
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
             parameterBuilder
-              ..name = 'session'
-              ..type = refer('Session', 'package:serverpod/serverpod.dart');
+              ..name = 'databaseAccessor'
+              ..type =
+                  refer('DatabaseAccessor', 'package:serverpod/serverpod.dart');
           }),
           Parameter((parameterBuilder) {
             parameterBuilder
@@ -1235,8 +1285,17 @@ class BuildRepositoryClass {
                 config: config,
               );
             refer(classFieldName, 'package:serverpod/serverpod.dart');
-          })
+          }),
         ])
+        ..optionalParameters.add(
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        )
         ..returns = refer('Future<void>')
         ..modifier = MethodModifier.async
         ..body = relation.implicitForeignField
@@ -1280,8 +1339,9 @@ class BuildRepositoryClass {
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
             parameterBuilder
-              ..name = 'session'
-              ..type = refer('Session', 'package:serverpod/serverpod.dart');
+              ..name = 'databaseAccessor'
+              ..type =
+                  refer('DatabaseAccessor', 'package:serverpod/serverpod.dart');
           }),
           Parameter((parameterBuilder) {
             parameterBuilder
@@ -1292,8 +1352,17 @@ class BuildRepositoryClass {
                 subDirParts: classDefinition.subDirParts,
                 config: config,
               );
-          })
+          }),
         ])
+        ..optionalParameters.add(
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        )
         ..returns = refer('Future<void>')
         ..modifier = MethodModifier.async
         ..body = relation.implicitForeignField
@@ -1329,15 +1398,25 @@ class BuildRepositoryClass {
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
             parameterBuilder
-              ..name = 'session'
-              ..type = refer('Session', 'package:serverpod/serverpod.dart');
+              ..name = 'databaseAccessor'
+              ..type =
+                  refer('DatabaseAccessor', 'package:serverpod/serverpod.dart');
           }),
           Parameter((parameterBuilder) {
             parameterBuilder
               ..name = classFieldName
               ..type = refer(className);
-          })
+          }),
         ])
+        ..optionalParameters.add(
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        )
         ..returns = refer('Future<void>')
         ..modifier = MethodModifier.async
         ..body = relation.isForeignKeyOrigin
@@ -1722,7 +1801,7 @@ class BuildRepositoryClass {
     String localCopyVariable = _createEscapedLocalVar(rowName);
     return (BlockBuilder()
           ..statements.addAll([
-            refer('session')
+            refer('databaseAccessor')
                 .property('db')
                 .property(property)
                 .call([
@@ -1730,7 +1809,9 @@ class BuildRepositoryClass {
                 ], {
                   'columns': literalList(
                     [classReference.property('t').property(fieldName)],
-                  )
+                  ),
+                  'transaction': refer('transaction').ifNullThen(
+                      refer('databaseAccessor').property('transaction')),
                 }, [
                   classReference,
                 ])

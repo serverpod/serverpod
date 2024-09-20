@@ -1,5 +1,4 @@
-import 'http/http_status_html.dart'
-    if (dart.library.io) 'http/http_status_io.dart';
+import 'http/http_status.dart';
 
 /// [Exception] thrown when errors in communication with the server occurs.
 class ServerpodClientException implements Exception {
@@ -22,7 +21,11 @@ class ServerpodClientException implements Exception {
 /// to the server.
 class ServerpodClientBadRequest extends ServerpodClientException {
   /// Creates a Bad Request Exception
-  ServerpodClientBadRequest() : super('Bad request', HttpStatus.badRequest);
+  ServerpodClientBadRequest([String? message])
+      : super(
+          'Bad request${message != null && message != '' ? ': $message' : ''}',
+          HttpStatus.badRequest,
+        );
 }
 
 /// Thrown if the client fails to authenticate and is therefore

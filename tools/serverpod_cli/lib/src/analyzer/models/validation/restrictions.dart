@@ -1,14 +1,17 @@
+import 'package:serverpod_cli/src/util/model_helper.dart';
+import 'package:source_span/source_span.dart';
+import 'package:yaml/yaml.dart';
+
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
-import 'package:source_span/source_span.dart';
-import 'package:yaml/yaml.dart';
 
 import 'model_relations.dart';
 
@@ -164,6 +167,21 @@ class Restrictions {
       ];
     }
 
+    var duplicateExtraClass =
+        config.extraClasses.cast<TypeDefinition?>().firstWhere(
+              (extraClass) => extraClass?.className == className,
+              orElse: () => null,
+            );
+
+    if (duplicateExtraClass != null) {
+      return [
+        SourceSpanSeverityException(
+          'The $documentType name "$className" is already used by a custom class (${duplicateExtraClass.url}).',
+          span,
+        )
+      ];
+    }
+
     var classesByName = parsedModels.classNames[className]?.where(
         (model) => model.moduleAlias == documentDefinition?.moduleAlias);
 
@@ -190,6 +208,52 @@ class Restrictions {
             'The "table" property cannot be used when the database feature is disabled.',
             span,
             severity: SourceSpanSeverity.warning)
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateExtendingClassName(
+    String parentNodeName,
+    dynamic parentClassName,
+    SourceSpan? span,
+  ) {
+    if (parentClassName is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.extendsClass} type must be a String.',
+          span,
+        )
+      ];
+    }
+
+    var parentClass = parsedModels.findByClassName(parentClassName);
+
+    if (parentClass == null) {
+      return [
+        SourceSpanSeverityException(
+          'The class "$parentClassName" was not found in any model.',
+          span,
+        )
+      ];
+    }
+
+    if (parentClass.moduleAlias != defaultModuleAlias) {
+      return [
+        SourceSpanSeverityException(
+          'You can only extend classes from your own project.',
+          span,
+        )
+      ];
+    }
+
+    if (parentClass is ClassDefinition && parentClass.tableName != null) {
+      return [
+        SourceSpanSeverityException(
+          'A parent class cannot have a table definition. Please remove the "table" property from the class "$parentClassName".',
+          span,
+        )
       ];
     }
 

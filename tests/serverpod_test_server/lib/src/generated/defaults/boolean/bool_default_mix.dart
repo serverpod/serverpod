@@ -1,11 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -214,7 +215,7 @@ class BoolDefaultMixRepository {
   const BoolDefaultMixRepository._();
 
   Future<List<BoolDefaultMix>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<BoolDefaultMixTable>? where,
     int? limit,
     int? offset,
@@ -223,19 +224,19 @@ class BoolDefaultMixRepository {
     _i1.OrderByListBuilder<BoolDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<BoolDefaultMix>(
+    return databaseAccessor.db.find<BoolDefaultMix>(
       where: where?.call(BoolDefaultMix.t),
       orderBy: orderBy?.call(BoolDefaultMix.t),
       orderByList: orderByList?.call(BoolDefaultMix.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<BoolDefaultMix?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<BoolDefaultMixTable>? where,
     int? offset,
     _i1.OrderByBuilder<BoolDefaultMixTable>? orderBy,
@@ -243,118 +244,118 @@ class BoolDefaultMixRepository {
     _i1.OrderByListBuilder<BoolDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<BoolDefaultMix>(
+    return databaseAccessor.db.findFirstRow<BoolDefaultMix>(
       where: where?.call(BoolDefaultMix.t),
       orderBy: orderBy?.call(BoolDefaultMix.t),
       orderByList: orderByList?.call(BoolDefaultMix.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<BoolDefaultMix?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<BoolDefaultMix>(
+    return databaseAccessor.db.findById<BoolDefaultMix>(
       id,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<BoolDefaultMix>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<BoolDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<BoolDefaultMix>(
+    return databaseAccessor.db.insert<BoolDefaultMix>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<BoolDefaultMix> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     BoolDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<BoolDefaultMix>(
+    return databaseAccessor.db.insertRow<BoolDefaultMix>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<BoolDefaultMix>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<BoolDefaultMix> rows, {
     _i1.ColumnSelections<BoolDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<BoolDefaultMix>(
+    return databaseAccessor.db.update<BoolDefaultMix>(
       rows,
       columns: columns?.call(BoolDefaultMix.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<BoolDefaultMix> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     BoolDefaultMix row, {
     _i1.ColumnSelections<BoolDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<BoolDefaultMix>(
+    return databaseAccessor.db.updateRow<BoolDefaultMix>(
       row,
       columns: columns?.call(BoolDefaultMix.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<BoolDefaultMix>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<BoolDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<BoolDefaultMix>(
+    return databaseAccessor.db.delete<BoolDefaultMix>(
       rows,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<BoolDefaultMix> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     BoolDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<BoolDefaultMix>(
+    return databaseAccessor.db.deleteRow<BoolDefaultMix>(
       row,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<List<BoolDefaultMix>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<BoolDefaultMixTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<BoolDefaultMix>(
+    return databaseAccessor.db.deleteWhere<BoolDefaultMix>(
       where: where(BoolDefaultMix.t),
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<BoolDefaultMixTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<BoolDefaultMix>(
+    return databaseAccessor.db.count<BoolDefaultMix>(
       where: where?.call(BoolDefaultMix.t),
       limit: limit,
-      transaction: transaction,
+      transaction: transaction ?? databaseAccessor.transaction,
     );
   }
 }

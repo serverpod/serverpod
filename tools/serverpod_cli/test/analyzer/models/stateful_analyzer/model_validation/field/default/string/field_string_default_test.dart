@@ -33,9 +33,9 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultModelValue,
-            '\'This is a default value\'');
+            "'This is a default value'");
         expect(definition.fields.last.defaultPersistValue,
-            '\'This is a default value\'');
+            "'This is a default value'");
       },
     );
 
@@ -63,9 +63,9 @@ void main() {
         var definition = definitions.first as ClassDefinition;
 
         expect(definition.fields.last.defaultModelValue,
-            '\'This is a default null value\'');
+            "'This is a default null value'");
         expect(definition.fields.last.defaultPersistValue,
-            '\'This is a default null value\'');
+            "'This is a default null value'");
       },
     );
 
@@ -92,9 +92,9 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultModelValue,
-            '\'This \\\'is\\\' a default value\'');
+            "'This \\'is\\' a default value'");
         expect(definition.fields.last.defaultPersistValue,
-            '\'This \\\'is\\\' a default value\'');
+            "'This \\'is\\' a default value'");
       },
     );
 
@@ -107,7 +107,7 @@ void main() {
           class: Example
           table: example
           fields:
-            stringType: String, default="This \\"is\\" a default value"
+            stringType: String, default='This \\"is\\" a default value'
           ''',
           ).build()
         ];
@@ -122,11 +122,11 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          '"This \\"is\\" a default value"',
+          "'This \\\"is\\\" a default value'",
         );
         expect(
           definition.fields.last.defaultPersistValue,
-          '"This \\"is\\" a default value"',
+          "'This \\\"is\\\" a default value'",
         );
       },
     );
@@ -155,11 +155,11 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          '\'This, is a default value\'',
+          "'This, is a default value'",
         );
         expect(
           definition.fields.last.defaultPersistValue,
-          '\'This, is a default value\'',
+          "'This, is a default value'",
         );
       },
     );
@@ -173,7 +173,7 @@ void main() {
           class: Example
           table: example
           fields:
-            stringType: String, default="This \\"is\\", a default value"
+            stringType: String, default='This \\"is\\", a default value'
           ''',
           ).build()
         ];
@@ -188,11 +188,11 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          '"This \\"is\\", a default value"',
+          "'This \\\"is\\\", a default value'",
         );
         expect(
           definition.fields.last.defaultPersistValue,
-          '"This \\"is\\", a default value"',
+          "'This \\\"is\\\", a default value'",
         );
       },
     );
@@ -206,7 +206,7 @@ void main() {
           class: Example
           table: example
           fields:
-            stringType: String, default="This 'is' a default value"
+            stringType: String, default='This \\'is\\' a default value'
           ''',
           ).build()
         ];
@@ -221,11 +221,11 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          '"This \'is\' a default value"',
+          "'This \\'is\\' a default value'",
         );
         expect(
           definition.fields.last.defaultPersistValue,
-          '"This \'is\' a default value"',
+          "'This \\'is\\' a default value'",
         );
       },
     );
@@ -254,11 +254,11 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          '\'This "is" a default value\'',
+          "'This \"is\" a default value'",
         );
         expect(
           definition.fields.last.defaultPersistValue,
-          '\'This "is" a default value\'',
+          "'This \"is\" a default value'",
         );
       },
     );
