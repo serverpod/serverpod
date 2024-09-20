@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
@@ -238,7 +239,7 @@ class Restrictions {
       ];
     }
 
-    if (parentClass.moduleAlias != 'protocol') {
+    if (parentClass.moduleAlias != defaultModuleAlias) {
       return [
         SourceSpanSeverityException(
           'You can only extend classes from your own project.',
