@@ -14,6 +14,7 @@ part 'headers/content_disposition_header.dart';
 part 'headers/range_header.dart';
 part 'headers/retry_after_header.dart';
 part 'headers/accept_header.dart';
+part 'headers/connection_header.dart';
 
 abstract class Headers {
   // Request Headers
@@ -101,7 +102,7 @@ abstract class Headers {
   final String? age;
   final List<String>? allow;
   final AuthorizationHeader? authorization;
-  final List<String>? connection;
+  final ConnectionHeader? connection;
   final String? expect;
   final List<String>? ifMatch;
   final List<String>? ifNoneMatch;
@@ -297,7 +298,9 @@ abstract class Headers {
       cacheControl: CacheControlHeader.tryParse(
         headers.value(_cacheControlHeader),
       ),
-      connection: headers[_connectionHeader],
+      connection: ConnectionHeader.tryParse(
+        headers.value(_connectionHeader),
+      ),
       contentEncoding: headers[_contentEncodingHeader],
       contentLanguage: headers[_contentLanguageHeader],
       contentLocation: headers.value(_contentLocationHeader),
@@ -354,7 +357,7 @@ abstract class Headers {
     String? accessControlRequestMethod,
     String? age,
     AuthorizationHeader? authorization,
-    List<String>? connection,
+    ConnectionHeader? connection,
     String? expect,
     List<String>? ifMatch,
     List<String>? ifNoneMatch,
@@ -416,7 +419,7 @@ abstract class Headers {
     List<String>? allow,
     ContentDispositionHeader? contentDisposition,
     CacheControlHeader? cacheControl,
-    List<String>? connection,
+    ConnectionHeader? connection,
     List<String>? contentEncoding,
     List<String>? contentLanguage,
     List<String>? acceptRanges,
@@ -626,7 +629,7 @@ abstract class Headers {
     ContentDispositionHeader? contentDisposition,
     AuthorizationHeader? authorization,
     CacheControlHeader? cacheControl,
-    List<String>? connection,
+    ConnectionHeader? connection,
     List<String>? contentEncoding,
     List<String>? contentLanguage,
     String? contentLocation,
@@ -695,7 +698,7 @@ abstract class Headers {
       if (allow != null) '$_allowHeader: ${allow!.join(', ')}',
       if (authorization != null) '$authorization',
       if (cacheControl != null) '$_cacheControlHeader: $cacheControl',
-      if (connection != null) '$_connectionHeader: ${connection!.join(', ')}',
+      if (connection != null) '$_connectionHeader: $connection',
       if (contentEncoding != null)
         '$_contentEncodingHeader: ${contentEncoding!.join(', ')}',
       if (contentLanguage != null)
@@ -835,7 +838,7 @@ abstract class Headers {
         (allow == null || allow!.isEmpty) &&
         authorization == null &&
         cacheControl == null &&
-        (connection == null || connection!.isEmpty) &&
+        (connection == null || connection!.directives.isEmpty) &&
         (contentEncoding == null || contentEncoding!.isEmpty) &&
         (contentLanguage == null || contentLanguage!.isEmpty) &&
         contentLocation == null &&
@@ -1034,7 +1037,7 @@ class _HeadersImpl extends Headers {
       authorization: authorization ?? this.authorization,
       cacheControl:
           cacheControl is CacheControlHeader ? cacheControl : this.cacheControl,
-      connection: connection is List<String> ? connection : this.connection,
+      connection: connection is ConnectionHeader ? connection : this.connection,
       contentEncoding: contentEncoding is List<String>
           ? contentEncoding
           : this.contentEncoding,
