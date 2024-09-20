@@ -15,6 +15,7 @@ part 'headers/range_header.dart';
 part 'headers/retry_after_header.dart';
 part 'headers/accept_header.dart';
 part 'headers/connection_header.dart';
+part 'headers/etag_header.dart';
 
 abstract class Headers {
   // Request Headers
@@ -131,7 +132,7 @@ abstract class Headers {
   final String? contentLocation;
   final String? contentMD5;
   final ContentRangeHeader? contentRange;
-  final String? etag;
+  final ETagHeader? etag;
   final List<String>? proxyAuthenticate;
   final RetryAfterHeader? retryAfter;
   final String? server;
@@ -308,7 +309,7 @@ abstract class Headers {
       contentRange: ContentRangeHeader.tryParse(
         headers.value(_contentRangeHeader),
       ),
-      etag: headers.value(_etagHeader),
+      etag: ETagHeader.tryParse(headers.value(_etagHeader)),
       expect: headers.value(_expectHeader),
       ifMatch: headers[_ifMatchHeader],
       ifNoneMatch: headers[_ifNoneMatchHeader],
@@ -426,7 +427,7 @@ abstract class Headers {
     String? contentLocation,
     String? contentMD5,
     ContentRangeHeader? contentRange,
-    String? etag,
+    ETagHeader? etag,
     DateTime? lastModified,
     List<String>? proxyAuthenticate,
     RetryAfterHeader? retryAfter,
@@ -635,7 +636,7 @@ abstract class Headers {
     String? contentLocation,
     String? contentMD5,
     ContentRangeHeader? contentRange,
-    String? etag,
+    ETagHeader? etag,
     String? expect,
     List<String>? ifMatch,
     List<String>? ifNoneMatch,
@@ -1049,7 +1050,7 @@ class _HeadersImpl extends Headers {
       contentMD5: contentMD5 is String ? contentMD5 : this.contentMD5,
       contentRange:
           contentRange is ContentRangeHeader ? contentRange : this.contentRange,
-      etag: etag is String ? etag : this.etag,
+      etag: etag is ETagHeader ? etag : this.etag,
       expect: expect is String ? expect : this.expect,
       ifMatch: ifMatch is List<String> ? ifMatch : this.ifMatch,
       ifNoneMatch: ifNoneMatch is List<String> ? ifNoneMatch : this.ifNoneMatch,
