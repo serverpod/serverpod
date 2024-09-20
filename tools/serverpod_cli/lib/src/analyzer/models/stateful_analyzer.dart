@@ -1,5 +1,4 @@
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 
@@ -86,8 +85,6 @@ class StatefulAnalyzer {
     var doc = SerializableModelAnalyzer.extractModelDefinition(
       state.source,
       config.extraClasses,
-      enableInheritance:
-          config.isExperimentalFeatureEnabled(ExperimentalFeature.inheritance),
     );
     state.model = doc;
     if (doc != null) {
@@ -104,9 +101,6 @@ class StatefulAnalyzer {
       var model = SerializableModelAnalyzer.extractModelDefinition(
         state.source,
         config.extraClasses,
-        enableInheritance: config.isExperimentalFeatureEnabled(
-          ExperimentalFeature.inheritance,
-        ),
       );
       state.model = model;
     }
