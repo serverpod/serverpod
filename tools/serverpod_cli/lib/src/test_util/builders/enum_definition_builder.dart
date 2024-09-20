@@ -1,4 +1,3 @@
-import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
@@ -16,8 +15,6 @@ class EnumDefinitionBuilder {
   List<ProtocolEnumValueDefinition> _values;
   List<String>? _documentation;
 
-  TypeDefinition _type;
-
   EnumDefinitionBuilder()
       : _moduleAlias = defaultModuleAlias,
         _fileName = 'example',
@@ -31,11 +28,10 @@ class EnumDefinitionBuilder {
           ProtocolEnumValueDefinition('B'),
           ProtocolEnumValueDefinition('C'),
         ],
-        _documentation = [],
-        _type = TypeDefinitionBuilder().withClassName('Example').build();
+        _documentation = [];
 
   EnumDefinition build() {
-    return EnumDefinition(
+    var enumDefinition = EnumDefinition(
       moduleAlias: _moduleAlias,
       fileName: _fileName,
       sourceFileName: _sourceFileName,
@@ -45,8 +41,10 @@ class EnumDefinitionBuilder {
       subDirParts: _subDirParts,
       serverOnly: _serverOnly,
       documentation: _documentation,
-      type: _type,
+      type: TypeDefinitionBuilder().withClassName(_className).build(),
     );
+    enumDefinition.type.enumDefinition = enumDefinition;
+    return enumDefinition;
   }
 
   EnumDefinitionBuilder withModuleAlias(String moduleAlias) {
@@ -96,11 +94,6 @@ class EnumDefinitionBuilder {
 
   EnumDefinitionBuilder withDocumentation(List<String>? documentation) {
     _documentation = documentation;
-    return this;
-  }
-
-  EnumDefinitionBuilder withType(TypeDefinition type) {
-    _type = type;
     return this;
   }
 }

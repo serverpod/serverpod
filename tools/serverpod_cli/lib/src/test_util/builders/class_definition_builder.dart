@@ -24,7 +24,6 @@ class ClassDefinitionBuilder {
   List<String>? _documentation;
   List<InheritanceDefinition> _childClasses;
   InheritanceDefinition? _extendsClass;
-  TypeDefinition _classType;
 
   ClassDefinitionBuilder()
       : _moduleAlias = defaultModuleAlias,
@@ -37,8 +36,7 @@ class ClassDefinitionBuilder {
         _serverOnly = false,
         _isException = false,
         _indexes = [],
-        _childClasses = [],
-        _classType = TypeDefinitionBuilder().withClassName('Example').build();
+        _childClasses = [];
 
   ClassDefinition build() {
     if (_tableName != null) {
@@ -68,7 +66,7 @@ class ClassDefinitionBuilder {
       documentation: _documentation,
       childClasses: _childClasses,
       extendsClass: _extendsClass,
-      type: _classType,
+      type: TypeDefinitionBuilder().withClassName(_className).build(),
     );
   }
 
@@ -338,11 +336,6 @@ class ClassDefinitionBuilder {
 
   ClassDefinitionBuilder withExtendsClass(ClassDefinition parentClass) {
     _extendsClass = ResolvedInheritanceDefinition(parentClass);
-    return this;
-  }
-
-  ClassDefinitionBuilder withClassType(TypeDefinition classType) {
-    _classType = classType;
     return this;
   }
 }
