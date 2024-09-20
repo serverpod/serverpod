@@ -18,6 +18,7 @@ part 'headers/connection_header.dart';
 part 'headers/etag_header.dart';
 part 'headers/vary_header.dart';
 part 'headers/server_header.dart';
+part 'headers/proxy_authenticate_header.dart';
 
 abstract class Headers {
   // Request Headers
@@ -135,7 +136,7 @@ abstract class Headers {
   final String? contentMD5;
   final ContentRangeHeader? contentRange;
   final ETagHeader? etag;
-  final List<String>? proxyAuthenticate;
+  final ProxyAuthenticateHeader? proxyAuthenticate;
   final RetryAfterHeader? retryAfter;
   final ServerHeader? server;
   final List<String>? trailer;
@@ -318,7 +319,9 @@ abstract class Headers {
       ifRange: headers.value(_ifRangeHeader),
       maxForwards: headers.value(_maxForwardsHeader),
       mPragma: headers.value(_pragmaHeader),
-      proxyAuthenticate: headers[_proxyAuthenticateHeader],
+      proxyAuthenticate: ProxyAuthenticateHeader.tryParse(
+        headers.value(_proxyAuthenticateHeader),
+      ),
       proxyAuthorization: headers.value(_proxyAuthorizationHeader),
       range: RangeHeader.tryParse(headers.value(_rangeHeader)),
       referer: headers.value(_refererHeader),
@@ -429,7 +432,7 @@ abstract class Headers {
     ContentRangeHeader? contentRange,
     ETagHeader? etag,
     DateTime? lastModified,
-    List<String>? proxyAuthenticate,
+    ProxyAuthenticateHeader? proxyAuthenticate,
     RetryAfterHeader? retryAfter,
     ServerHeader? server,
     List<String>? trailer,
@@ -644,7 +647,7 @@ abstract class Headers {
     String? lastModified,
     String? maxForwards,
     String? mPragma,
-    List<String>? proxyAuthenticate,
+    ProxyAuthenticateHeader? proxyAuthenticate,
     String? proxyAuthorization,
     RangeHeader? range,
     String? referer,
@@ -717,8 +720,7 @@ abstract class Headers {
       if (maxForwards != null) '$_maxForwardsHeader: $maxForwards',
       if (mPragma != null) '$_pragmaHeader: $mPragma',
       if (proxyAuthenticate != null)
-        ...proxyAuthenticate!
-            .map((value) => '$_proxyAuthenticateHeader: $value'),
+        '$_proxyAuthenticateHeader: $proxyAuthenticate',
       if (proxyAuthorization != null)
         '$_proxyAuthorizationHeader: $proxyAuthorization',
       if (range != null) '$_rangeHeader: $range',
@@ -853,7 +855,7 @@ abstract class Headers {
         lastModified == null &&
         maxForwards == null &&
         mPragma == null &&
-        (proxyAuthenticate == null || proxyAuthenticate!.isEmpty) &&
+        (proxyAuthenticate == null || proxyAuthenticate!.schemes.isEmpty) &&
         proxyAuthorization == null &&
         range == null &&
         referer == null &&
@@ -1058,7 +1060,7 @@ class _HeadersImpl extends Headers {
       lastModified: lastModified is DateTime ? lastModified : this.lastModified,
       maxForwards: maxForwards is String ? maxForwards : this.maxForwards,
       mPragma: mPragma is String ? mPragma : this.mPragma,
-      proxyAuthenticate: proxyAuthenticate is List<String>
+      proxyAuthenticate: proxyAuthenticate is ProxyAuthenticateHeader
           ? proxyAuthenticate
           : this.proxyAuthenticate,
       proxyAuthorization: proxyAuthorization is String
