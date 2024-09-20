@@ -16,6 +16,7 @@ part 'headers/retry_after_header.dart';
 part 'headers/accept_header.dart';
 part 'headers/connection_header.dart';
 part 'headers/etag_header.dart';
+part 'headers/vary_header.dart';
 
 abstract class Headers {
   // Request Headers
@@ -137,7 +138,7 @@ abstract class Headers {
   final RetryAfterHeader? retryAfter;
   final String? server;
   final List<String>? trailer;
-  final List<String>? vary;
+  final VaryHeader? vary;
   final List<String>? via;
   final List<String>? warning;
   final List<String>? wwwAuthenticate;
@@ -329,7 +330,7 @@ abstract class Headers {
       transferEncoding: headers[_transferEncodingHeader],
       upgrade: headers[_upgradeHeader],
       userAgent: headers.value(_userAgentHeader),
-      vary: headers[_varyHeader],
+      vary: VaryHeader.tryParse(headers.value(_varyHeader)),
       via: headers[_viaHeader],
       warning: headers[_warningHeader],
       wwwAuthenticate: headers[_wwwAuthenticateHeader],
@@ -434,7 +435,7 @@ abstract class Headers {
     String? server,
     List<String>? trailer,
     List<String>? transferEncoding,
-    List<String>? vary,
+    VaryHeader? vary,
     List<String>? via,
     List<String>? warning,
     List<String>? wwwAuthenticate,
@@ -655,7 +656,7 @@ abstract class Headers {
     List<String>? transferEncoding,
     List<String>? upgrade,
     String? userAgent,
-    List<String>? vary,
+    VaryHeader? vary,
     List<String>? via,
     List<String>? warning,
     List<String>? wwwAuthenticate,
@@ -731,7 +732,7 @@ abstract class Headers {
         '$_transferEncodingHeader: ${transferEncoding!.join(', ')}',
       if (upgrade != null) '$_upgradeHeader: ${upgrade!.join(', ')}',
       if (userAgent != null) '$_userAgentHeader: $userAgent',
-      if (vary != null) '$_varyHeader: ${vary!.join(', ')}',
+      if (vary != null) '$_varyHeader: $vary',
       if (via != null) '$_viaHeader: ${via!.join(', ')}',
       if (warning != null)
         ...warning!.map((value) => '$_warningHeader: $value'),
@@ -864,7 +865,7 @@ abstract class Headers {
         (transferEncoding == null || transferEncoding!.isEmpty) &&
         (upgrade == null || upgrade!.isEmpty) &&
         userAgent == null &&
-        (vary == null || vary!.isEmpty) &&
+        (vary == null || vary!.fields.isEmpty) &&
         (via == null || via!.isEmpty) &&
         (warning == null || warning!.isEmpty) &&
         (wwwAuthenticate == null || wwwAuthenticate!.isEmpty) &&
@@ -1075,7 +1076,7 @@ class _HeadersImpl extends Headers {
           : this.transferEncoding,
       upgrade: upgrade is List<String> ? upgrade : this.upgrade,
       userAgent: userAgent is String ? userAgent : this.userAgent,
-      vary: vary is List<String> ? vary : this.vary,
+      vary: vary is VaryHeader ? vary : this.vary,
       via: via is List<String> ? via : this.via,
       warning: warning is List<String> ? warning : this.warning,
       wwwAuthenticate: wwwAuthenticate is List<String>
