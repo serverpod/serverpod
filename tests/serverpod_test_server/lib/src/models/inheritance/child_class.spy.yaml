@@ -1,0 +1,4 @@
+class: ChildClass
+extends: ParentClass
+fields:
+    age: int

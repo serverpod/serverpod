@@ -35,6 +35,13 @@ class ModelParser {
     var className = classNode.value;
     if (className is! String) return null;
 
+    var extendsClass = _parseExtendsClass(documentContents);
+
+    var classType = parseType(
+      '$defaultModuleAlias:$className',
+      extraClasses: extraClasses,
+    );
+
     var tableName = _parseTableName(documentContents);
     var serverOnly = _parseServerOnly(documentContents);
     var fields = _parseClassFields(
@@ -53,6 +60,7 @@ class ModelParser {
     return ClassDefinition(
       moduleAlias: protocolSource.moduleAlias,
       className: className,
+      extendsClass: extendsClass,
       sourceFileName: protocolSource.yamlSourceUri.path,
       tableName: tableName,
       manageMigration: manageMigration,
@@ -63,6 +71,7 @@ class ModelParser {
       documentation: classDocumentation,
       isException: documentTypeName == Keyword.exceptionType,
       serverOnly: serverOnly,
+      type: classType,
     );
   }
 
@@ -82,8 +91,12 @@ class ModelParser {
     var serverOnly = _parseServerOnly(documentContents);
     var serializeAs = _parseSerializedAs(documentContents);
     var values = _parseEnumValues(documentContents, docsExtractor);
+    var enumType = parseType(
+      '$defaultModuleAlias:$className',
+      extraClasses: [],
+    );
 
-    return EnumDefinition(
+    var enumDef = EnumDefinition(
       moduleAlias: protocolSource.moduleAlias,
       fileName: outFileName,
       sourceFileName: protocolSource.yamlSourceUri.path,
@@ -93,7 +106,19 @@ class ModelParser {
       documentation: enumDocumentation,
       subDirParts: protocolSource.protocolRootPathParts,
       serverOnly: serverOnly,
+      type: enumType,
     );
+    enumDef.type.enumDefinition = enumDef;
+    return enumDef;
+  }
+
+  static UnresolvedInheritanceDefinition? _parseExtendsClass(
+    YamlMap documentContents,
+  ) {
+    var extendsClass = documentContents.nodes[Keyword.extendsClass]?.value;
+    if (extendsClass is! String) return null;
+
+    return UnresolvedInheritanceDefinition(extendsClass);
   }
 
   static bool _parseServerOnly(YamlMap documentContents) {
@@ -188,6 +213,7 @@ class ModelParser {
     if (typeValue is! String) return [];
 
     var fieldDocumentation = docsExtractor.getDocumentation(key.span.start);
+
     var typeResult = parseType(
       typeValue,
       extraClasses: extraClasses,

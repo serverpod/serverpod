@@ -22,6 +22,8 @@ class ClassDefinitionBuilder {
   List<_FieldBuilder> _fields;
   List<SerializableModelIndexDefinition> _indexes;
   List<String>? _documentation;
+  List<InheritanceDefinition> _childClasses;
+  InheritanceDefinition? _extendsClass;
 
   ClassDefinitionBuilder()
       : _moduleAlias = defaultModuleAlias,
@@ -33,7 +35,8 @@ class ClassDefinitionBuilder {
         _managedMigration = true,
         _serverOnly = false,
         _isException = false,
-        _indexes = [];
+        _indexes = [],
+        _childClasses = [];
 
   ClassDefinition build() {
     if (_tableName != null) {
@@ -61,6 +64,9 @@ class ClassDefinitionBuilder {
       manageMigration: _managedMigration,
       indexes: _indexes,
       documentation: _documentation,
+      childClasses: _childClasses,
+      extendsClass: _extendsClass,
+      type: TypeDefinitionBuilder().withClassName(_className).build(),
     );
   }
 
@@ -318,6 +324,18 @@ class ClassDefinitionBuilder {
 
   ClassDefinitionBuilder withIsException(bool isException) {
     _isException = isException;
+    return this;
+  }
+
+  ClassDefinitionBuilder withChildClasses(List<ClassDefinition> childClasses) {
+    _childClasses = [
+      for (var child in childClasses) ResolvedInheritanceDefinition(child),
+    ];
+    return this;
+  }
+
+  ClassDefinitionBuilder withExtendsClass(ClassDefinition parentClass) {
+    _extendsClass = ResolvedInheritanceDefinition(parentClass);
     return this;
   }
 }
