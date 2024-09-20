@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:relic/relic.dart';
+import 'package:relic/src/method/method.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:test/test.dart';
 
@@ -8,14 +9,15 @@ import 'test_util.dart';
 
 void main() {
   test('hijacking a non-hijackable request throws a StateError', () {
-    expect(() => Request('GET', localhostUri).hijack((_) {}), throwsStateError);
+    expect(() => Request(Method.get, localhostUri).hijack((_) {}),
+        throwsStateError);
   });
 
   test(
       'hijacking a hijackable request throws a HijackException and calls '
       'onHijack', () {
     var request =
-        Request('GET', localhostUri, onHijack: expectAsync1((callback) {
+        Request(Method.get, localhostUri, onHijack: expectAsync1((callback) {
       var streamController = StreamController<List<int>>();
       streamController.add([1, 2, 3]);
       streamController.close();
@@ -37,8 +39,8 @@ void main() {
 
   test('hijacking a hijackable request twice throws a StateError', () {
     // Assert that the [onHijack] callback is only called once.
-    var request =
-        Request('GET', localhostUri, onHijack: expectAsync1((_) {}, count: 1));
+    var request = Request(Method.get, localhostUri,
+        onHijack: expectAsync1((_) {}, count: 1));
 
     expect(() => request.hijack((_) {}), throwsHijackException);
 

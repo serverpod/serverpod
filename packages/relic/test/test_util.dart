@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:relic/relic.dart';
+import 'package:relic/src/method/method.dart';
 import 'package:test/test.dart';
 
 // "hello,"
@@ -32,7 +33,7 @@ Future<Response> asyncHandler(Request request) =>
 Future<Response> makeSimpleRequest(Handler handler) =>
     Future.sync(() => handler(_request));
 
-final _request = Request('GET', localhostUri);
+final _request = Request(Method.get, localhostUri);
 
 final localhostUri = Uri.parse('http://localhost/');
 

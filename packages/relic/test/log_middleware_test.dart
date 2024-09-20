@@ -1,4 +1,5 @@
 import 'package:relic/relic.dart';
+import 'package:relic/src/method/method.dart';
 import 'package:test/test.dart';
 
 import 'test_util.dart';
@@ -14,7 +15,7 @@ void main() {
     expect(gotLog, isFalse);
     gotLog = true;
     expect(isError, isFalse);
-    expect(msg, contains('GET'));
+    expect(msg, contains(Method.get.value));
     expect(msg, contains('[200]'));
   }
 

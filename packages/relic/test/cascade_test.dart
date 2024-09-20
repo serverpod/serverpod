@@ -1,4 +1,5 @@
 import 'package:relic/relic.dart';
+import 'package:relic/src/method/method.dart';
 import 'package:test/test.dart';
 
 import 'test_util.dart';
@@ -39,7 +40,7 @@ void main() {
         "doesn't", () async {
       final response = await handler(
         Request(
-          'GET',
+          Method.get,
           localhostUri,
           headers: Headers.response(
             custom: CustomHeaders({
@@ -57,7 +58,7 @@ void main() {
         "two don't", () async {
       final response = await handler(
         Request(
-          'GET',
+          Method.get,
           localhostUri,
           headers: Headers.response(
             custom: CustomHeaders({
@@ -76,7 +77,7 @@ void main() {
         () async {
       final response = await handler(
         Request(
-          'GET',
+          Method.get,
           localhostUri,
           headers: Headers.response(
             custom: CustomHeaders(

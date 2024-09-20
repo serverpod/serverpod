@@ -5,6 +5,7 @@ import 'dart:math' as math;
 import 'package:convert/convert.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
+import 'package:relic/src/method/method.dart';
 import 'package:relic/src/static/extension/datetime_extension.dart';
 
 import '../body.dart';
@@ -208,15 +209,17 @@ Future<Response> _handleFile(
     acceptRanges: ['bytes'],
   );
 
-  return _fileRangeResponse(request, file, headers) ??
-      Response.ok(
-        body: request.method == 'HEAD'
-            ? null
-            : Body.fromIntStream(
-                file.openRead(),
-                mimeType: MimeType.parse(contentType!),
-              ),
-      );
+  var response = _fileRangeResponse(request, file, headers);
+  if (response != null) return response;
+
+  return Response.ok(
+    body: request.method == Method.head
+        ? null
+        : Body.fromIntStream(
+            file.openRead(),
+            mimeType: MimeType.parse(contentType!),
+          ),
+  );
 }
 
 /// Serves a range of [file], if [request] is valid 'bytes' range request.
@@ -272,7 +275,7 @@ Response? _fileRangeResponse(
 
   return Response(
     HttpStatus.partialContent,
-    body: request.method == 'HEAD'
+    body: request.method == Method.head
         ? null
         : Body.fromIntStream(
             file.openRead(start, end + 1),

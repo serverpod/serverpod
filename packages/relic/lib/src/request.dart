@@ -1,5 +1,7 @@
 import 'dart:io' as io;
 
+import 'package:relic/src/method/method.dart';
+
 import 'body.dart';
 import 'package:stream_channel/stream_channel.dart';
 
@@ -27,7 +29,7 @@ class Request extends Message {
   final Uri url;
 
   /// The HTTP request method, such as "GET" or "POST".
-  final String method;
+  final Method method;
 
   /// The URL path to the current handler.
   ///
@@ -111,7 +113,7 @@ class Request extends Message {
   ///
   /// See also [hijack].
   Request(
-    String method,
+    Method method,
     Uri requestedUri, {
     List<io.Cookie> cookies = const [],
     io.HttpConnectionInfo? connectionInfo,
@@ -144,7 +146,7 @@ class Request extends Message {
     }
 
     return Request(
-      request.method,
+      Method.parse(request.method),
       request.requestedUri,
       cookies: request.cookies,
       connectionInfo: request.connectionInfo,
@@ -182,10 +184,6 @@ class Request extends Message {
             body: body ?? Body.empty(),
             headers: headers,
             context: context ?? {}) {
-    if (method.isEmpty) {
-      throw ArgumentError.value(method, 'method', 'cannot be empty.');
-    }
-
     try {
       // Trigger URI parsing methods that may throw format exception (in Request
       // constructor or in handlers / routing).

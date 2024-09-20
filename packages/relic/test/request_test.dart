@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart';
 import 'package:relic/relic.dart';
+import 'package:relic/src/method/method.dart';
 import 'package:test/test.dart';
 
 import 'test_util.dart';
@@ -12,7 +13,7 @@ Request _request({
   Body? body,
 }) {
   return Request(
-    'GET',
+    Method.get,
     localhostUri,
     headers: headers,
     body: body,
@@ -22,51 +23,51 @@ Request _request({
 void main() {
   group('constructor', () {
     test('protocolVersion defaults to "1.1"', () {
-      var request = Request('GET', localhostUri);
+      var request = Request(Method.get, localhostUri);
       expect(request.protocolVersion, '1.1');
     });
 
     test('provide non-default protocolVersion', () {
-      var request = Request('GET', localhostUri, protocolVersion: '1.0');
+      var request = Request(Method.get, localhostUri, protocolVersion: '1.0');
       expect(request.protocolVersion, '1.0');
     });
 
     group('url', () {
       test("defaults to the requestedUri's relativized path and query", () {
-        var request = Request('GET', Uri.parse('http://localhost/foo/bar?q=1'));
+        var request = Request(Method.get, Uri.parse('http://localhost/foo/bar?q=1'));
         expect(request.url, equals(Uri.parse('foo/bar?q=1')));
       });
 
       test('may contain colon', () {
-        var request = Request('GET', Uri.parse('http://localhost/foo/bar:42'));
+        var request = Request(Method.get, Uri.parse('http://localhost/foo/bar:42'));
         expect(request.url, equals(Uri.parse('foo/bar:42')));
       });
 
       test('may contain colon in first segment', () {
-        var request = Request('GET', Uri.parse('http://localhost/foo:bar/42'));
+        var request = Request(Method.get, Uri.parse('http://localhost/foo:bar/42'));
         expect(request.url, equals(Uri.parse('foo%3Abar/42')));
       });
 
       test('may contain slash', () {
         var request =
-            Request('GET', Uri.parse('http://localhost/foo/bar%2f42'));
+            Request(Method.get, Uri.parse('http://localhost/foo/bar%2f42'));
         expect(request.url, equals(Uri.parse('foo/bar%2f42')));
       });
 
       test('is inferred from handlerPath if possible', () {
-        var request = Request('GET', Uri.parse('http://localhost/foo/bar?q=1'),
+        var request = Request(Method.get, Uri.parse('http://localhost/foo/bar?q=1'),
             handlerPath: '/foo/');
         expect(request.url, equals(Uri.parse('bar?q=1')));
       });
 
       test('uses the given value if passed', () {
-        var request = Request('GET', Uri.parse('http://localhost/foo/bar?q=1'),
+        var request = Request(Method.get, Uri.parse('http://localhost/foo/bar?q=1'),
             url: Uri.parse('bar?q=1'));
         expect(request.url, equals(Uri.parse('bar?q=1')));
       });
 
       test('may be empty', () {
-        var request = Request('GET', Uri.parse('http://localhost/foo/bar'),
+        var request = Request(Method.get, Uri.parse('http://localhost/foo/bar'),
             url: Uri.parse(''));
         expect(request.url, equals(Uri.parse('')));
       });
@@ -74,31 +75,31 @@ void main() {
 
     group('handlerPath', () {
       test("defaults to '/'", () {
-        var request = Request('GET', Uri.parse('http://localhost/foo/bar'));
+        var request = Request(Method.get, Uri.parse('http://localhost/foo/bar'));
         expect(request.handlerPath, equals('/'));
       });
 
       test('is inferred from url if possible', () {
-        var request = Request('GET', Uri.parse('http://localhost/foo/bar?q=1'),
+        var request = Request(Method.get, Uri.parse('http://localhost/foo/bar?q=1'),
             url: Uri.parse('bar?q=1'));
         expect(request.handlerPath, equals('/foo/'));
       });
 
       test('uses the given value if passed', () {
-        var request = Request('GET', Uri.parse('http://localhost/foo/bar?q=1'),
+        var request = Request(Method.get, Uri.parse('http://localhost/foo/bar?q=1'),
             handlerPath: '/foo/');
         expect(request.handlerPath, equals('/foo/'));
       });
 
       test('adds a trailing slash to the given value if necessary', () {
-        var request = Request('GET', Uri.parse('http://localhost/foo/bar?q=1'),
+        var request = Request(Method.get, Uri.parse('http://localhost/foo/bar?q=1'),
             handlerPath: '/foo');
         expect(request.handlerPath, equals('/foo/'));
         expect(request.url, equals(Uri.parse('bar?q=1')));
       });
 
       test('may be a single slash', () {
-        var request = Request('GET', Uri.parse('http://localhost/foo/bar?q=1'),
+        var request = Request(Method.get, Uri.parse('http://localhost/foo/bar?q=1'),
             handlerPath: '/');
         expect(request.handlerPath, equals('/'));
         expect(request.url, equals(Uri.parse('foo/bar?q=1')));
@@ -108,12 +109,12 @@ void main() {
     group('errors', () {
       group('requestedUri', () {
         test('must be absolute', () {
-          expect(() => Request('GET', Uri.parse('/path')), throwsArgumentError);
+          expect(() => Request(Method.get, Uri.parse('/path')), throwsArgumentError);
         });
 
         test('may not have a fragment', () {
           expect(() {
-            Request('GET', Uri.parse('http://localhost/#fragment'));
+            Request(Method.get, Uri.parse('http://localhost/#fragment'));
           }, throwsArgumentError);
         });
       });
@@ -121,41 +122,41 @@ void main() {
       group('url', () {
         test('must be relative', () {
           expect(() {
-            Request('GET', Uri.parse('http://localhost/test'),
+            Request(Method.get, Uri.parse('http://localhost/test'),
                 url: Uri.parse('http://localhost/test'));
           }, throwsArgumentError);
         });
 
         test('may not be root-relative', () {
           expect(() {
-            Request('GET', Uri.parse('http://localhost/test'),
+            Request(Method.get, Uri.parse('http://localhost/test'),
                 url: Uri.parse('/test'));
           }, throwsArgumentError);
         });
 
         test('may not have a fragment', () {
           expect(() {
-            Request('GET', Uri.parse('http://localhost/test'),
+            Request(Method.get, Uri.parse('http://localhost/test'),
                 url: Uri.parse('test#fragment'));
           }, throwsArgumentError);
         });
 
         test('must be a suffix of requestedUri', () {
           expect(() {
-            Request('GET', Uri.parse('http://localhost/dir/test'),
+            Request(Method.get, Uri.parse('http://localhost/dir/test'),
                 url: Uri.parse('dir'));
           }, throwsArgumentError);
         });
 
         test('must have the same query parameters as requestedUri', () {
           expect(() {
-            Request('GET', Uri.parse('http://localhost/test?q=1&r=2'),
+            Request(Method.get, Uri.parse('http://localhost/test?q=1&r=2'),
                 url: Uri.parse('test?q=2&r=1'));
           }, throwsArgumentError);
 
           // Order matters for query parameters.
           expect(() {
-            Request('GET', Uri.parse('http://localhost/test?q=1&r=2'),
+            Request(Method.get, Uri.parse('http://localhost/test?q=1&r=2'),
                 url: Uri.parse('test?r=2&q=1'));
           }, throwsArgumentError);
         });
@@ -164,21 +165,21 @@ void main() {
       group('handlerPath', () {
         test('must be a prefix of requestedUri', () {
           expect(() {
-            Request('GET', Uri.parse('http://localhost/dir/test'),
+            Request(Method.get, Uri.parse('http://localhost/dir/test'),
                 handlerPath: '/test');
           }, throwsArgumentError);
         });
 
         test('must start with "/"', () {
           expect(() {
-            Request('GET', Uri.parse('http://localhost/test'),
+            Request(Method.get, Uri.parse('http://localhost/test'),
                 handlerPath: 'test');
           }, throwsArgumentError);
         });
 
         test('must be the requestedUri path if url is empty', () {
           expect(() {
-            Request('GET', Uri.parse('http://localhost/test'),
+            Request(Method.get, Uri.parse('http://localhost/test'),
                 handlerPath: '/', url: Uri.parse(''));
           }, throwsArgumentError);
         });
@@ -187,14 +188,14 @@ void main() {
       group('handlerPath + url must', () {
         test('be requestedUrl path', () {
           expect(() {
-            Request('GET', Uri.parse('http://localhost/foo/bar/baz'),
+            Request(Method.get, Uri.parse('http://localhost/foo/bar/baz'),
                 handlerPath: '/foo/', url: Uri.parse('baz'));
           }, throwsArgumentError);
         });
 
         test('be on a path boundary', () {
           expect(() {
-            Request('GET', Uri.parse('http://localhost/foo/bar/baz'),
+            Request(Method.get, Uri.parse('http://localhost/foo/bar/baz'),
                 handlerPath: '/foo/ba', url: Uri.parse('r/baz'));
           }, throwsArgumentError);
         });
@@ -223,7 +224,7 @@ void main() {
 
       var uri = Uri.parse('https://test.example.com/static/file.html');
 
-      var request = Request('GET', uri,
+      var request = Request(Method.get, uri,
           protocolVersion: '2.0',
           headers: Headers.request(
               custom: CustomHeaders({
@@ -257,7 +258,7 @@ void main() {
     group('with path', () {
       test('updates handlerPath and url', () {
         var uri = Uri.parse('https://test.example.com/static/dir/file.html');
-        var request = Request('GET', uri,
+        var request = Request(Method.get, uri,
             handlerPath: '/static/', url: Uri.parse('dir/file.html'));
         var copy = request.copyWith(path: 'dir');
 
@@ -267,7 +268,7 @@ void main() {
 
       test('allows a trailing slash', () {
         var uri = Uri.parse('https://test.example.com/static/dir/file.html');
-        var request = Request('GET', uri,
+        var request = Request(Method.get, uri,
             handlerPath: '/static/', url: Uri.parse('dir/file.html'));
         var copy = request.copyWith(path: 'dir/');
 
@@ -277,7 +278,7 @@ void main() {
 
       test('regression test for Issue #142', () {
         var uri = Uri.parse('https://test.example.com/static/dir/');
-        var request = Request('GET', uri,
+        var request = Request(Method.get, uri,
             handlerPath: '/static/', url: Uri.parse('dir/'));
 
         var copy = request.copyWith(path: 'dir');
@@ -287,7 +288,7 @@ void main() {
 
       test('allows changing path leading to double //', () {
         var uri = Uri.parse('https://test.example.com/some_base//more');
-        var request = Request('GET', uri,
+        var request = Request(Method.get, uri,
             handlerPath: '', url: Uri.parse('some_base//more'));
 
         var copy = request.copyWith(path: 'some_base');
@@ -297,7 +298,7 @@ void main() {
 
       test('throws if path does not match existing uri', () {
         var uri = Uri.parse('https://test.example.com/static/dir/file.html');
-        var request = Request('GET', uri,
+        var request = Request(Method.get, uri,
             handlerPath: '/static/', url: Uri.parse('dir/file.html'));
 
         expect(() => request.copyWith(path: 'wrong'), throwsArgumentError);
@@ -305,7 +306,7 @@ void main() {
 
       test("throws if path isn't a path boundary", () {
         var uri = Uri.parse('https://test.example.com/static/dir/file.html');
-        var request = Request('GET', uri,
+        var request = Request(Method.get, uri,
             handlerPath: '/static/', url: Uri.parse('dir/file.html'));
 
         expect(() => request.copyWith(path: 'di'), throwsArgumentError);

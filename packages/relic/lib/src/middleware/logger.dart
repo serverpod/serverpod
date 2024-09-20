@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:relic/src/method/method.dart';
 import 'package:stack_trace/stack_trace.dart';
 
 import '../exception/hijack_exception.dart';
@@ -15,7 +16,9 @@ import 'middleware.dart';
 /// The `isError` parameter indicates whether the message is caused by an error.
 ///
 /// If [logger] is not passed, the message is just passed to [print].
-Middleware logRequests({void Function(String message, bool isError)? logger}) =>
+Middleware logRequests({
+  void Function(String message, bool isError)? logger,
+}) =>
     (innerHandler) {
       final theLogger = logger ?? _defaultLogger;
 
@@ -24,8 +27,13 @@ Middleware logRequests({void Function(String message, bool isError)? logger}) =>
         var watch = Stopwatch()..start();
 
         return Future.sync(() => innerHandler(request)).then((response) {
-          var msg = _message(startTime, response.statusCode,
-              request.requestedUri, request.method, watch.elapsed);
+          var msg = _message(
+            startTime,
+            response.statusCode,
+            request.requestedUri,
+            request.method.value,
+            watch.elapsed,
+          );
 
           theLogger(msg, false);
 
@@ -33,8 +41,14 @@ Middleware logRequests({void Function(String message, bool isError)? logger}) =>
         }, onError: (Object error, StackTrace stackTrace) {
           if (error is HijackException) throw error;
 
-          var msg = _errorMessage(startTime, request.requestedUri,
-              request.method, watch.elapsed, error, stackTrace);
+          var msg = _errorMessage(
+            startTime,
+            request.requestedUri,
+            request.method,
+            watch.elapsed,
+            error,
+            stackTrace,
+          );
 
           theLogger(msg, true);
 
@@ -56,7 +70,7 @@ String _message(DateTime requestTime, int statusCode, Uri requestedUri,
       '${requestedUri.path}${_formatQuery(requestedUri.query)}';
 }
 
-String _errorMessage(DateTime requestTime, Uri requestedUri, String method,
+String _errorMessage(DateTime requestTime, Uri requestedUri, Method method,
     Duration elapsedTime, Object error, StackTrace? stack) {
   var chain = Chain.current();
   if (stack != null) {
@@ -65,7 +79,7 @@ String _errorMessage(DateTime requestTime, Uri requestedUri, String method,
         .terse;
   }
 
-  var msg = '$requestTime\t$elapsedTime\t$method\t${requestedUri.path}'
+  var msg = '$requestTime\t$elapsedTime\t${method.value}\t${requestedUri.path}'
       '${_formatQuery(requestedUri.query)}\n$error';
 
   return '$msg\n$chain';
@@ -77,4 +91,8 @@ void _defaultLogger(String msg, bool isError) {
   } else {
     print(msg);
   }
+}
+
+void main() {
+  print("POST".padRight(7));
 }

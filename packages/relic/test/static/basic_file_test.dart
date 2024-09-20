@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:mime/mime.dart' as mime;
 import 'package:path/path.dart' as p;
 import 'package:relic/relic.dart';
+import 'package:relic/src/method/method.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
@@ -46,7 +47,8 @@ void main() {
   test('HEAD', () async {
     final handler = createStaticHandler(d.sandbox);
 
-    final response = await makeRequest(handler, '/root.txt', method: 'HEAD');
+    final response =
+        await makeRequest(handler, '/root.txt', method: Method.head);
     expect(response.statusCode, HttpStatus.ok);
     expect(response.body.contentLength, 8);
     expect(await response.readAsString(), isEmpty);

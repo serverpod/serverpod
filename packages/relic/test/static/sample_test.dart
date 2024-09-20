@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:relic/relic.dart';
+import 'package:relic/src/method/method.dart';
 import 'package:test/test.dart';
 
 import 'test_util.dart';
@@ -44,7 +45,7 @@ void main() {
 Future<Response> _requestFile(String filename) {
   final uri = Uri.parse('http://localhost/$filename');
 
-  return _request(Request('GET', uri));
+  return _request(Request(Method.get, uri));
 }
 
 Future<void> _testFileContents(String filename) async {

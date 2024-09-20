@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:relic/relic.dart';
 import 'package:relic/src/message.dart';
+import 'package:relic/src/method/method.dart';
 import 'package:test/test.dart';
 
 import 'test_util.dart';
@@ -16,7 +17,7 @@ void main() {
       Map<String, Object>? context,
     }) {
       return Request(
-        'GET',
+        Method.get,
         localhostUri,
         body: body,
         headers: headers,

@@ -10,6 +10,7 @@ import 'package:async/async.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' as parser;
 import 'package:relic/relic.dart';
+import 'package:relic/src/method/method.dart';
 import 'package:relic/src/relic_server_serve.dart' as relic_server;
 import 'package:relic/src/util/util.dart';
 import 'package:test/test.dart';
@@ -65,7 +66,7 @@ void main() {
     late Uri uri;
 
     await _scheduleServer((request) {
-      expect(request.method, 'GET');
+      expect(request.method, Method.get);
 
       expect(request.requestedUri, uri);
 
@@ -96,7 +97,7 @@ void main() {
   test('chunked requests are un-chunked', () async {
     await _scheduleServer(expectAsync1((request) {
       expect(request.body.contentLength, isNull);
-      expect(request.method, 'POST');
+      expect(request.method, Method.post);
       expect(
           request.headers, isNot(contains(HttpHeaders.transferEncodingHeader)));
       expect(
@@ -107,8 +108,10 @@ void main() {
       return Response.ok();
     }));
 
-    var request =
-        http.StreamedRequest('POST', Uri.http('localhost:$_serverPort', ''));
+    var request = http.StreamedRequest(
+      Method.post.value,
+      Uri.http('localhost:$_serverPort', ''),
+    );
     request.sink.add([1, 2, 3, 4]);
     // ignore: unawaited_futures
     request.sink.close();
@@ -204,7 +207,7 @@ void main() {
     await _scheduleServer((request) async {
       expect(request.mimeType, isNull);
       expect(request.encoding, isNull);
-      expect(request.method, 'POST');
+      expect(request.method, Method.post);
       expect(request.body.contentLength, 0);
 
       var body = await request.readAsString();
@@ -221,7 +224,7 @@ void main() {
     await _scheduleServer((request) async {
       expect(request.mimeType, 'text/plain');
       expect(request.encoding, utf8);
-      expect(request.method, 'POST');
+      expect(request.method, Method.post);
       expect(request.body.contentLength, 9);
 
       var body = await request.readAsString();
@@ -236,7 +239,7 @@ void main() {
 
   test('supports request hijacking', () async {
     await _scheduleServer((request) {
-      expect(request.method, 'POST');
+      expect(request.method, Method.post);
 
       request.hijack(expectAsync1((channel) {
         expect(channel.stream.first, completion(equals('Hello'.codeUnits)));
@@ -566,7 +569,8 @@ void main() {
       );
     });
 
-    var request = http.Request('GET', Uri.http('localhost:$_serverPort', ''));
+    var request =
+        http.Request(Method.get.value, Uri.http('localhost:$_serverPort', ''));
 
     var response = await request.send();
     var stream = StreamQueue(utf8.decoder.bind(response.stream));
@@ -680,7 +684,8 @@ Future<http.Response> _request(
 
 Future<http.StreamedResponse> _post(
     {Map<String, String>? headers, String? body}) {
-  var request = http.Request('POST', Uri.http('localhost:$_serverPort', ''));
+  var request =
+      http.Request(Method.post.value, Uri.http('localhost:$_serverPort', ''));
 
   if (headers != null) request.headers.addAll(headers);
   if (body != null) request.body = body;
