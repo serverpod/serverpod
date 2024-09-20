@@ -68,6 +68,7 @@ withServerpod(
   _i1.RollbackDatabase? rollbackDatabase,
   String? runMode,
   bool? enableSessionLogging,
+  bool? applyMigrations,
 }) {
   _i1.buildWithServerpod<_InternalTestEndpoints>(
     testGroupName,
@@ -76,6 +77,7 @@ withServerpod(
       endpoints: Endpoints(),
       serializationManager: Protocol(),
       runMode: runMode,
+      applyMigrations: applyMigrations,
     ),
     maybeResetTestSessions: resetTestSessions,
     maybeRollbackDatabase: rollbackDatabase,

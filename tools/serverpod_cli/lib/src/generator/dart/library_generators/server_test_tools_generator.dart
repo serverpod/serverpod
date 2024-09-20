@@ -2,6 +2,7 @@ import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 
 class ServerTestToolsGenerator {
@@ -367,6 +368,11 @@ class ServerTestToolsGenerator {
             ..name = 'enableSessionLogging'
             ..named = true
             ..type = refer('bool?')),
+          if (config.isFeatureEnabled(ServerpodFeature.database))
+            Parameter((p) => p
+              ..name = 'applyMigrations'
+              ..named = true
+              ..type = refer('bool?')),
         ])
         ..body = refer(
                 'buildWithServerpod<_InternalTestEndpoints>', serverpodTestUrl)
@@ -381,6 +387,10 @@ class ServerTestToolsGenerator {
                 'endpoints': refer('Endpoints').newInstance([]),
                 'serializationManager': refer('Protocol').newInstance([]),
                 'runMode': refer('runMode'),
+                'applyMigrations':
+                    config.isFeatureEnabled(ServerpodFeature.database)
+                        ? refer('applyMigrations')
+                        : literalBool(false),
               },
             ),
           ],

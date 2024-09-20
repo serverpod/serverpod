@@ -28,9 +28,11 @@ class InternalServerpodSession extends Session {
   });
 }
 
-List<String> _getServerpodStartUpArgs(String? runMode) => [
+List<String> _getServerpodStartUpArgs(String? runMode, bool? applyMigrations) =>
+    [
       '-m',
       runMode ?? ServerpodRunMode.test,
+      if (applyMigrations ?? true) '--apply-migrations',
     ];
 
 /// A facade for the real Serverpod instance.
@@ -46,8 +48,12 @@ class TestServerpod<T extends InternalTestEndpoints> {
     required SerializationManagerServer serializationManager,
     required EndpointDispatch endpoints,
     String? runMode,
+    bool? applyMigrations,
   }) : _serverpod = Serverpod(
-          _getServerpodStartUpArgs(runMode),
+          _getServerpodStartUpArgs(
+            runMode,
+            applyMigrations,
+          ),
           serializationManager,
           endpoints,
         ) {
