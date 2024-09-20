@@ -75,6 +75,7 @@ void main() {
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  bool\? applyMigrations,\n'
               r'\}\)',
             ));
       },
@@ -96,6 +97,54 @@ void main() {
             testToolsFile,
             matches(
                 r'class _InternalTestEndpoints extends TestEndpoints\n\s*implements _i\d\.InternalTestEndpoints \{\n'));
+      },
+      skip: testToolsFile == null,
+    );
+  });
+
+  group(
+      'Given protocol definition without endpoints when generating test tools file for Serverpod mini',
+      () {
+    var serverpodMiniConfig = GeneratorConfigBuilder()
+        .withName(projectName)
+        .withRelativeServerTestToolsPathParts(
+      [
+        'integration_test',
+        'test_tools',
+      ],
+    ).withEnabledFeatures([]).build();
+    var protocolDefinition = const ProtocolDefinition(
+      endpoints: [],
+      models: [],
+    );
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: serverpodMiniConfig,
+    );
+
+    test('then test tools file is created.', () {
+      expect(codeMap, contains(expectedFileName));
+    });
+
+    var testToolsFile = codeMap[expectedFileName];
+
+    test(
+      'then test tools file has `withServerpod` function without `applyMigrations` parameter',
+      () {
+        expect(
+            testToolsFile,
+            matches(
+              r'@_i\d\.isTestGroup\n'
+              r'withServerpod\(\n'
+              r'  String testGroupName,\n'
+              r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
+              r'  _i\d\.ResetTestSessions\? resetTestSessions,\n'
+              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
+              r'  String\? runMode,\n'
+              r'  bool\? enableSessionLogging,\n'
+              r'\}\)',
+            ));
       },
       skip: testToolsFile == null,
     );
@@ -140,6 +189,7 @@ void main() {
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  bool\? applyMigrations,\n'
               r'\}\)',
             ));
       },
@@ -219,6 +269,7 @@ void main() {
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  bool\? applyMigrations,\n'
               r'\}\)',
             ));
       },
