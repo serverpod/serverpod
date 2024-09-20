@@ -272,7 +272,7 @@ class Request extends Message {
       requestedUri ?? this.requestedUri,
       cookies,
       connectionInfo,
-      this.headers.withHeaders(headers),
+      this.headers.withOther(headers),
       protocolVersion: protocolVersion,
       handlerPath: handlerPath,
       body: body,

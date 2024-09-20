@@ -658,7 +658,7 @@ abstract class Headers {
     CustomHeaders? custom,
   });
 
-  Headers withHeaders(Headers? other);
+  Headers withOther(Headers? other);
 
   @override
   String toString() {
@@ -1089,7 +1089,7 @@ class _HeadersImpl extends Headers {
   ///
   /// Returns a new `Headers` instance with the merged values.
   @override
-  Headers withHeaders(Headers? other) {
+  Headers withOther(Headers? other) {
     if (other == null) return this;
 
     return copyWith(
@@ -1146,7 +1146,7 @@ class _HeadersImpl extends Headers {
       via: other.via,
       warning: other.warning,
       wwwAuthenticate: other.wwwAuthenticate,
-      custom: custom._set(other.custom),
+      custom: custom._withOther(other.custom),
     );
   }
 }

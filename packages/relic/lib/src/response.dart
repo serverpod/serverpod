@@ -291,7 +291,7 @@ class Response extends Message {
     return Response(
       statusCode,
       body: body ?? this.body,
-      headers: this.headers.withHeaders(headers),
+      headers: this.headers.withOther(headers),
       context: newContext,
     );
   }

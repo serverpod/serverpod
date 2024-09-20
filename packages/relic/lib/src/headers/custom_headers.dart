@@ -39,45 +39,51 @@ class CustomHeaders extends UnmodifiableMapView<String, List<String>> {
     Iterable<MapEntry<String, List<String>>> entries,
   ) : super(_toCaseInsensitiveMap(entries));
 
-  CustomHeaders _set(CustomHeaders other) {
-    if (other.isEmpty) return this;
+  /// Adds a new header or updates an existing one.
+  CustomHeaders add(String key, List<String> values) {
+    var updatedHeaders = Map<String, List<String>>.from(this);
+    updatedHeaders[key] = values;
+    return CustomHeaders(updatedHeaders);
+  }
 
-    final mergedEntries = <MapEntry<String, List<String>>>[];
+  /// Removes a header by its key.
+  CustomHeaders removeKey(String key) {
+    var updatedHeaders = Map<String, List<String>>.from(this);
+    updatedHeaders.remove(key);
+    return CustomHeaders(updatedHeaders);
+  }
 
-    // Add all entries from the current instance
-    for (var entry in entries) {
-      mergedEntries.add(
-        MapEntry(
-          entry.key,
-          List<String>.from(entry.value),
-        ),
-      );
-    }
+  /// Creates a copy of this instance with optional modifications.
+  ///
+  /// You can pass in a map of updated or new headers that will
+  /// be added to the new instance.
+  CustomHeaders copyWith({
+    Map<String, List<String>>? newHeaders,
+  }) {
+    var updatedHeaders = Map<String, List<String>>.from(this);
 
-    // Override entries from the other instance
-    for (var entry in other.entries) {
-      var index = mergedEntries.indexWhere(
-        (e) => e.key.toLowerCase() == entry.key.toLowerCase(),
-      );
-
-      if (index != -1) {
-        // If the key exists, override the value
-        mergedEntries[index] = MapEntry(
-          entry.key,
-          List<String>.from(entry.value),
-        );
-      } else {
-        // If the key doesn't exist, add the new entry
-        mergedEntries.add(
-          MapEntry(
-            entry.key,
-            List<String>.from(entry.value),
-          ),
-        );
+    if (newHeaders != null) {
+      for (var entry in newHeaders.entries) {
+        updatedHeaders[entry.key] = entry.value;
       }
     }
 
-    return CustomHeaders._(mergedEntries);
+    return CustomHeaders(updatedHeaders);
+  }
+
+  /// Sets headers from another `CustomHeaders` instance.
+  CustomHeaders _withOther(CustomHeaders other) {
+    if (other.isEmpty) return this;
+
+    // Create a new map with all entries from the current instance.
+    var mergedEntries = Map<String, List<String>>.from(this);
+
+    // Add/override entries from the other instance.
+    other.forEach((key, value) {
+      mergedEntries[key] = List<String>.from(value);
+    });
+
+    return CustomHeaders(mergedEntries);
   }
 }
 
