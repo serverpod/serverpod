@@ -113,7 +113,7 @@ class ServerTestToolsGenerator {
                 Parameter(
                   (p) => p
                     ..name = parameter.name
-                    ..type = parameter.type.reference(false, config: config),
+                    ..type = parameter.type.reference(true, config: config),
                 ),
             ],
           );
@@ -233,6 +233,32 @@ class ServerTestToolsGenerator {
               }))
               .statement,
           refer('callContext')
+              .property('setOnRevokedAuthenticationCallback')
+              .call([
+            Method((methodBuilder) => methodBuilder
+              ..requiredParameters.add(
+                Parameter((p) => p..name = 'reason'),
+              )
+              ..body = Block.of([
+                for (var parameter in streamParameters)
+                  refer('${parameter.name}StreamController')
+                      .property('close')
+                      .call([]).statement,
+                if (returnsStream)
+                  Block.of([
+                    refer('streamController').property('addError').call([
+                      refer('getTestAuthorizationException', serverpodTestUrl)
+                          .call([
+                        refer('reason'),
+                      ]),
+                    ]).statement,
+                    refer('streamController')
+                        .property('close')
+                        .call([]).statement,
+                  ])
+              ])).closure,
+          ]).statement,
+          refer('callContext')
               .property('method')
               .property('call')
               .call([
@@ -240,7 +266,9 @@ class ServerTestToolsGenerator {
                 refer('callContext').property('arguments'),
                 literalMap({
                   for (var parameter in streamParameters)
-                    literalString(parameter.name): refer(parameter.name),
+                    literalString(parameter.name):
+                        refer('${parameter.name}StreamController')
+                            .property('stream'),
                 }),
               ])
               .asA(method.returnType.reference(true, config: config))
@@ -250,26 +278,55 @@ class ServerTestToolsGenerator {
         ..returns,
     ).closure;
 
+    var inputStreamControllersDeclarations = Block.of([
+      for (var streamParameter in streamParameters)
+        Block.of([
+          _buildStreamControllerDeclaration(streamParameter.type.generics.first,
+              '${streamParameter.name}StreamController'),
+          refer(streamParameter.name).property('listen').call(
+            [
+              refer('${streamParameter.name}StreamController').property('add'),
+            ],
+            {
+              'onDone': refer('${streamParameter.name}StreamController')
+                  .property('close'),
+            },
+          ).statement,
+        ]),
+    ]);
+
     if (returnsStream) {
       var streamGeneric = method.returnType.generics.first;
-      var streamControllerType = TypeReference((b) => b
-        ..symbol = 'StreamController'
-        ..url = 'dart:async'
-        ..types.add(streamGeneric.reference(true, config: config)));
 
       return Block.of([
-        refer('var streamController')
-            .assign(streamControllerType.newInstance([]))
-            .statement,
+        inputStreamControllersDeclarations,
+        _buildStreamControllerDeclaration(streamGeneric, 'streamController'),
         refer('callStreamFunctionAndHandleExceptions', serverpodTestUrl)
             .call([closure, refer('streamController')]).statement,
         refer('streamController').property('stream').returned.statement,
       ]);
     }
 
-    return refer('callAwaitableFunctionAndHandleExceptions', serverpodTestUrl)
-        .call([closure])
-        .returned
+    return Block.of([
+      inputStreamControllersDeclarations,
+      refer('callAwaitableFunctionAndHandleExceptions', serverpodTestUrl)
+          .call([closure])
+          .returned
+          .statement
+    ]);
+  }
+
+  Code _buildStreamControllerDeclaration(
+    TypeDefinition type,
+    String variableName,
+  ) {
+    var streamControllerType = TypeReference((b) => b
+      ..symbol = 'StreamController'
+      ..url = 'dart:async'
+      ..types.add(type.reference(true, config: config)));
+
+    return refer('var $variableName')
+        .assign(streamControllerType.newInstance([]))
         .statement;
   }
 

@@ -36,6 +36,9 @@ abstract class TestSession implements DatabaseAccessor {
   /// AuthenticationInfo for the session.
   Future<AuthenticationInfo?> get authenticationInfo;
 
+  /// Access to the message central
+  MessageCentralAccess get messages;
+
   /// Creates a new unique session with the provided properties.
   /// This is useful for setting up different session states in the tests
   /// or simulating multiple users.
@@ -63,6 +66,9 @@ class InternalTestSession extends TestSession {
   Future<AuthenticationInfo?> get authenticationInfo async {
     return serverpodSession.authenticated;
   }
+
+  @override
+  MessageCentralAccess get messages => serverpodSession.messages;
 
   Transaction? _transaction;
   @override

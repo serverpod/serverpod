@@ -96,4 +96,15 @@ class AuthenticatedTestToolsEndpoint extends Endpoint {
       List<int>.generate(n, (index) => index),
     );
   }
+
+  Future<List<int>> returnsListFromInputStream(
+      Session session, Stream<int> numbers) async {
+    return numbers.toList();
+  }
+
+  Stream<int> intEchoStream(Session session, Stream<int> stream) async* {
+    await for (var value in stream) {
+      yield value;
+    }
+  }
 }

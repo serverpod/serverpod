@@ -61,15 +61,22 @@ class ServerpodInsufficientAccessException implements Exception {
   ServerpodInsufficientAccessException();
 }
 
+/// Returns a test exception based on the [authenticationFailureReason].
+Exception getTestAuthorizationException(
+  AuthenticationFailureReason authenticationFailureReason,
+) {
+  return switch (authenticationFailureReason) {
+    AuthenticationFailureReason.unauthenticated =>
+      ServerpodUnauthenticatedException(),
+    AuthenticationFailureReason.insufficientAccess =>
+      ServerpodInsufficientAccessException(),
+  };
+}
+
 dynamic _getException(dynamic e) {
   switch (e) {
     case NotAuthorizedException():
-      return switch (e.authenticationFailedResult.reason) {
-        AuthenticationFailureReason.unauthenticated =>
-          ServerpodUnauthenticatedException(),
-        AuthenticationFailureReason.insufficientAccess =>
-          ServerpodInsufficientAccessException(),
-      };
+      return getTestAuthorizationException(e.authenticationFailedResult.reason);
     case MethodNotFoundException():
     case EndpointNotFoundException():
     case InvalidParametersException():
