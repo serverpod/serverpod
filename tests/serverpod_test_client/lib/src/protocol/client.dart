@@ -2122,6 +2122,22 @@ class EndpointAuthenticatedTestTools extends _i1.EndpointRef {
         {'n': n},
         {},
       );
+
+  _i2.Future<List<int>> returnsListFromInputStream(_i2.Stream<int> numbers) =>
+      caller.callStreamingServerEndpoint<_i2.Future<List<int>>, List<int>>(
+        'authenticatedTestTools',
+        'returnsListFromInputStream',
+        {},
+        {'numbers': numbers},
+      );
+
+  _i2.Stream<int> intEchoStream(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'authenticatedTestTools',
+        'intEchoStream',
+        {},
+        {'stream': stream},
+      );
 }
 
 class _Modules {

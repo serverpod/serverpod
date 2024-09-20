@@ -17,37 +17,25 @@ import 'dart:typed_data' as _i5;
 import 'package:uuid/uuid_value.dart' as _i6;
 import 'package:serverpod_test_server/src/protocol_custom_classes.dart' as _i7;
 import 'package:serverpod_test_server/src/custom_classes.dart' as _i8;
-import 'package:serverpod_test_client/src/custom_classes.dart' as _i9;
-import 'package:serverpod_test_shared/src/external_custom_class.dart' as _i10;
-import 'package:serverpod_test_shared/src/freezed_custom_class.dart' as _i11;
-import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i12;
+import 'package:serverpod_test_shared/src/external_custom_class.dart' as _i9;
+import 'package:serverpod_test_shared/src/freezed_custom_class.dart' as _i10;
+import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i11;
 import 'package:serverpod_test_server/src/generated/simple_data_list.dart'
-    as _i13;
-import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i14;
-import 'package:serverpod_test_server/src/generated/types.dart' as _i15;
-import 'package:serverpod_test_client/src/protocol/types.dart' as _i16;
+    as _i12;
+import 'package:serverpod_test_server/src/generated/types.dart' as _i13;
 import 'package:serverpod_test_server/src/generated/object_with_enum.dart'
-    as _i17;
-import 'package:serverpod_test_client/src/protocol/object_with_enum.dart'
-    as _i18;
+    as _i14;
 import 'package:serverpod_test_server/src/generated/object_with_object.dart'
-    as _i19;
-import 'package:serverpod_test_client/src/protocol/object_with_object.dart'
-    as _i20;
-import 'package:serverpod_test_client/src/protocol/object_field_scopes.dart'
-    as _i21;
+    as _i15;
 import 'package:serverpod_test_server/src/generated/object_field_scopes.dart'
-    as _i22;
-import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i23;
-import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i24;
+    as _i16;
+import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i17;
 import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
-    as _i25;
-import 'package:serverpod_test_module_client/serverpod_test_module_client.dart'
-    as _i26;
+    as _i18;
 import 'package:serverpod_test_server/src/generated/module_datatype.dart'
-    as _i27;
+    as _i19;
 import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_field.dart'
-    as _i28;
+    as _i20;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test.dart'
@@ -1149,7 +1137,7 @@ class _CustomTypesEndpoint {
 
   _i3.Future<_i8.CustomClass> returnCustomClass(
     _i1.TestSession session,
-    _i9.CustomClass data,
+    _i8.CustomClass data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -1172,7 +1160,7 @@ class _CustomTypesEndpoint {
 
   _i3.Future<_i8.CustomClass?> returnCustomClassNullable(
     _i1.TestSession session,
-    _i9.CustomClass? data,
+    _i8.CustomClass? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -1195,7 +1183,7 @@ class _CustomTypesEndpoint {
 
   _i3.Future<_i8.CustomClass2> returnCustomClass2(
     _i1.TestSession session,
-    _i9.CustomClass2 data,
+    _i8.CustomClass2 data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -1218,7 +1206,7 @@ class _CustomTypesEndpoint {
 
   _i3.Future<_i8.CustomClass2?> returnCustomClass2Nullable(
     _i1.TestSession session,
-    _i9.CustomClass2? data,
+    _i8.CustomClass2? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -1239,9 +1227,9 @@ class _CustomTypesEndpoint {
     });
   }
 
-  _i3.Future<_i10.ExternalCustomClass> returnExternalCustomClass(
+  _i3.Future<_i9.ExternalCustomClass> returnExternalCustomClass(
     _i1.TestSession session,
-    _i10.ExternalCustomClass data,
+    _i9.ExternalCustomClass data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -1258,13 +1246,13 @@ class _CustomTypesEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i10.ExternalCustomClass>);
+      ) as _i3.Future<_i9.ExternalCustomClass>);
     });
   }
 
-  _i3.Future<_i10.ExternalCustomClass?> returnExternalCustomClassNullable(
+  _i3.Future<_i9.ExternalCustomClass?> returnExternalCustomClassNullable(
     _i1.TestSession session,
-    _i10.ExternalCustomClass? data,
+    _i9.ExternalCustomClass? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -1281,13 +1269,13 @@ class _CustomTypesEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i10.ExternalCustomClass?>);
+      ) as _i3.Future<_i9.ExternalCustomClass?>);
     });
   }
 
-  _i3.Future<_i11.FreezedCustomClass> returnFreezedCustomClass(
+  _i3.Future<_i10.FreezedCustomClass> returnFreezedCustomClass(
     _i1.TestSession session,
-    _i11.FreezedCustomClass data,
+    _i10.FreezedCustomClass data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -1304,13 +1292,13 @@ class _CustomTypesEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i11.FreezedCustomClass>);
+      ) as _i3.Future<_i10.FreezedCustomClass>);
     });
   }
 
-  _i3.Future<_i11.FreezedCustomClass?> returnFreezedCustomClassNullable(
+  _i3.Future<_i10.FreezedCustomClass?> returnFreezedCustomClassNullable(
     _i1.TestSession session,
-    _i11.FreezedCustomClass? data,
+    _i10.FreezedCustomClass? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -1327,7 +1315,7 @@ class _CustomTypesEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i11.FreezedCustomClass?>);
+      ) as _i3.Future<_i10.FreezedCustomClass?>);
     });
   }
 }
@@ -1431,7 +1419,7 @@ class _BasicDatabase {
     });
   }
 
-  _i3.Future<List<_i12.SimpleData>> findSimpleData(
+  _i3.Future<List<_i11.SimpleData>> findSimpleData(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -1448,11 +1436,11 @@ class _BasicDatabase {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<List<_i12.SimpleData>>);
+      ) as _i3.Future<List<_i11.SimpleData>>);
     });
   }
 
-  _i3.Future<_i12.SimpleData?> findFirstRowSimpleData(
+  _i3.Future<_i11.SimpleData?> findFirstRowSimpleData(
     _i1.TestSession session,
     int num,
   ) async {
@@ -1471,11 +1459,11 @@ class _BasicDatabase {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i12.SimpleData?>);
+      ) as _i3.Future<_i11.SimpleData?>);
     });
   }
 
-  _i3.Future<_i12.SimpleData?> findByIdSimpleData(
+  _i3.Future<_i11.SimpleData?> findByIdSimpleData(
     _i1.TestSession session,
     int id,
   ) async {
@@ -1494,11 +1482,11 @@ class _BasicDatabase {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i12.SimpleData?>);
+      ) as _i3.Future<_i11.SimpleData?>);
     });
   }
 
-  _i3.Future<_i13.SimpleDataList?> findSimpleDataRowsLessThan(
+  _i3.Future<_i12.SimpleDataList?> findSimpleDataRowsLessThan(
     _i1.TestSession session,
     int num,
     int offset,
@@ -1525,13 +1513,13 @@ class _BasicDatabase {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i13.SimpleDataList?>);
+      ) as _i3.Future<_i12.SimpleDataList?>);
     });
   }
 
-  _i3.Future<_i12.SimpleData> insertRowSimpleData(
+  _i3.Future<_i11.SimpleData> insertRowSimpleData(
     _i1.TestSession session,
-    _i14.SimpleData simpleData,
+    _i11.SimpleData simpleData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -1548,13 +1536,13 @@ class _BasicDatabase {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i12.SimpleData>);
+      ) as _i3.Future<_i11.SimpleData>);
     });
   }
 
-  _i3.Future<_i12.SimpleData> updateRowSimpleData(
+  _i3.Future<_i11.SimpleData> updateRowSimpleData(
     _i1.TestSession session,
-    _i14.SimpleData simpleData,
+    _i11.SimpleData simpleData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -1571,13 +1559,13 @@ class _BasicDatabase {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i12.SimpleData>);
+      ) as _i3.Future<_i11.SimpleData>);
     });
   }
 
   _i3.Future<int> deleteRowSimpleData(
     _i1.TestSession session,
-    _i14.SimpleData simpleData,
+    _i11.SimpleData simpleData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -1638,9 +1626,9 @@ class _BasicDatabase {
     });
   }
 
-  _i3.Future<_i15.Types> insertTypes(
+  _i3.Future<_i13.Types> insertTypes(
     _i1.TestSession session,
-    _i16.Types value,
+    _i13.Types value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -1657,13 +1645,13 @@ class _BasicDatabase {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i15.Types>);
+      ) as _i3.Future<_i13.Types>);
     });
   }
 
-  _i3.Future<_i15.Types> updateTypes(
+  _i3.Future<_i13.Types> updateTypes(
     _i1.TestSession session,
-    _i16.Types value,
+    _i13.Types value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -1680,7 +1668,7 @@ class _BasicDatabase {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i15.Types>);
+      ) as _i3.Future<_i13.Types>);
     });
   }
 
@@ -1724,7 +1712,7 @@ class _BasicDatabase {
     });
   }
 
-  _i3.Future<_i15.Types?> getTypes(
+  _i3.Future<_i13.Types?> getTypes(
     _i1.TestSession session,
     int id,
   ) async {
@@ -1743,7 +1731,7 @@ class _BasicDatabase {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i15.Types?>);
+      ) as _i3.Future<_i13.Types?>);
     });
   }
 
@@ -1770,9 +1758,9 @@ class _BasicDatabase {
     });
   }
 
-  _i3.Future<_i17.ObjectWithEnum> storeObjectWithEnum(
+  _i3.Future<_i14.ObjectWithEnum> storeObjectWithEnum(
     _i1.TestSession session,
-    _i18.ObjectWithEnum object,
+    _i14.ObjectWithEnum object,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -1789,11 +1777,11 @@ class _BasicDatabase {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i17.ObjectWithEnum>);
+      ) as _i3.Future<_i14.ObjectWithEnum>);
     });
   }
 
-  _i3.Future<_i17.ObjectWithEnum?> getObjectWithEnum(
+  _i3.Future<_i14.ObjectWithEnum?> getObjectWithEnum(
     _i1.TestSession session,
     int id,
   ) async {
@@ -1812,13 +1800,13 @@ class _BasicDatabase {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i17.ObjectWithEnum?>);
+      ) as _i3.Future<_i14.ObjectWithEnum?>);
     });
   }
 
-  _i3.Future<_i19.ObjectWithObject> storeObjectWithObject(
+  _i3.Future<_i15.ObjectWithObject> storeObjectWithObject(
     _i1.TestSession session,
-    _i20.ObjectWithObject object,
+    _i15.ObjectWithObject object,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -1835,11 +1823,11 @@ class _BasicDatabase {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i19.ObjectWithObject>);
+      ) as _i3.Future<_i15.ObjectWithObject>);
     });
   }
 
-  _i3.Future<_i19.ObjectWithObject?> getObjectWithObject(
+  _i3.Future<_i15.ObjectWithObject?> getObjectWithObject(
     _i1.TestSession session,
     int id,
   ) async {
@@ -1858,7 +1846,7 @@ class _BasicDatabase {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i19.ObjectWithObject?>);
+      ) as _i3.Future<_i15.ObjectWithObject?>);
     });
   }
 
@@ -2379,7 +2367,7 @@ class _FieldScopesEndpoint {
 
   _i3.Future<void> storeObject(
     _i1.TestSession session,
-    _i21.ObjectFieldScopes object,
+    _i16.ObjectFieldScopes object,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -2400,7 +2388,7 @@ class _FieldScopesEndpoint {
     });
   }
 
-  _i3.Future<_i22.ObjectFieldScopes?> retrieveObject(
+  _i3.Future<_i16.ObjectFieldScopes?> retrieveObject(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -2417,7 +2405,7 @@ class _FieldScopesEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i22.ObjectFieldScopes?>);
+      ) as _i3.Future<_i16.ObjectFieldScopes?>);
     });
   }
 }
@@ -2434,7 +2422,7 @@ class _FutureCallsEndpoint {
 
   _i3.Future<void> makeFutureCall(
     _i1.TestSession session,
-    _i14.SimpleData? data,
+    _i11.SimpleData? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -2857,9 +2845,9 @@ class _ListParametersEndpoint {
     });
   }
 
-  _i3.Future<List<_i12.SimpleData>> returnSimpleDataList(
+  _i3.Future<List<_i11.SimpleData>> returnSimpleDataList(
     _i1.TestSession session,
-    List<_i14.SimpleData> list,
+    List<_i11.SimpleData> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -2876,13 +2864,13 @@ class _ListParametersEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<List<_i12.SimpleData>>);
+      ) as _i3.Future<List<_i11.SimpleData>>);
     });
   }
 
-  _i3.Future<List<_i12.SimpleData?>> returnSimpleDataListNullableSimpleData(
+  _i3.Future<List<_i11.SimpleData?>> returnSimpleDataListNullableSimpleData(
     _i1.TestSession session,
-    List<_i14.SimpleData?> list,
+    List<_i11.SimpleData?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -2899,13 +2887,13 @@ class _ListParametersEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<List<_i12.SimpleData?>>);
+      ) as _i3.Future<List<_i11.SimpleData?>>);
     });
   }
 
-  _i3.Future<List<_i12.SimpleData>?> returnSimpleDataListNullable(
+  _i3.Future<List<_i11.SimpleData>?> returnSimpleDataListNullable(
     _i1.TestSession session,
-    List<_i14.SimpleData>? list,
+    List<_i11.SimpleData>? list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -2922,14 +2910,14 @@ class _ListParametersEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<List<_i12.SimpleData>?>);
+      ) as _i3.Future<List<_i11.SimpleData>?>);
     });
   }
 
-  _i3.Future<List<_i12.SimpleData?>?>
+  _i3.Future<List<_i11.SimpleData?>?>
       returnNullableSimpleDataListNullableSimpleData(
     _i1.TestSession session,
-    List<_i14.SimpleData?>? list,
+    List<_i11.SimpleData?>? list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -2946,7 +2934,7 @@ class _ListParametersEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<List<_i12.SimpleData?>?>);
+      ) as _i3.Future<List<_i11.SimpleData?>?>);
     });
   }
 
@@ -3239,6 +3227,11 @@ class _LoggingEndpoint {
     _i1.TestSession session,
     _i3.Stream<int> input,
   ) {
+    var inputStreamController = _i3.StreamController<int>();
+    input.listen(
+      inputStreamController.add,
+      onDone: inputStreamController.close,
+    );
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
@@ -3255,10 +3248,15 @@ class _LoggingEndpoint {
           requestedInputStreams: ['input'],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          inputStreamController.close();
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
-          {'input': input},
+          {'input': inputStreamController.stream},
         ) as _i3.Stream<int>);
       },
       streamController,
@@ -3270,6 +3268,11 @@ class _LoggingEndpoint {
     _i1.TestSession session,
     _i3.Stream<int> input,
   ) {
+    var inputStreamController = _i3.StreamController<int>();
+    input.listen(
+      inputStreamController.add,
+      onDone: inputStreamController.close,
+    );
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
@@ -3286,10 +3289,15 @@ class _LoggingEndpoint {
           requestedInputStreams: ['input'],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          inputStreamController.close();
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
-          {'input': input},
+          {'input': inputStreamController.stream},
         ) as _i3.Stream<int>);
       },
       streamController,
@@ -3301,6 +3309,11 @@ class _LoggingEndpoint {
     _i1.TestSession session,
     _i3.Stream<int> input,
   ) {
+    var inputStreamController = _i3.StreamController<int>();
+    input.listen(
+      inputStreamController.add,
+      onDone: inputStreamController.close,
+    );
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
@@ -3317,10 +3330,15 @@ class _LoggingEndpoint {
           requestedInputStreams: ['input'],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          inputStreamController.close();
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
-          {'input': input},
+          {'input': inputStreamController.stream},
         ) as _i3.Stream<int>);
       },
       streamController,
@@ -3525,9 +3543,9 @@ class _MapParametersEndpoint {
     });
   }
 
-  _i3.Future<Map<_i23.TestEnum, int>> returnEnumIntMap(
+  _i3.Future<Map<_i17.TestEnum, int>> returnEnumIntMap(
     _i1.TestSession session,
-    Map<_i24.TestEnum, int> map,
+    Map<_i17.TestEnum, int> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -3544,13 +3562,13 @@ class _MapParametersEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<Map<_i23.TestEnum, int>>);
+      ) as _i3.Future<Map<_i17.TestEnum, int>>);
     });
   }
 
-  _i3.Future<Map<String, _i23.TestEnum>> returnEnumMap(
+  _i3.Future<Map<String, _i17.TestEnum>> returnEnumMap(
     _i1.TestSession session,
-    Map<String, _i24.TestEnum> map,
+    Map<String, _i17.TestEnum> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -3567,7 +3585,7 @@ class _MapParametersEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<Map<String, _i23.TestEnum>>);
+      ) as _i3.Future<Map<String, _i17.TestEnum>>);
     });
   }
 
@@ -3801,9 +3819,9 @@ class _MapParametersEndpoint {
     });
   }
 
-  _i3.Future<Map<String, _i12.SimpleData>> returnSimpleDataMap(
+  _i3.Future<Map<String, _i11.SimpleData>> returnSimpleDataMap(
     _i1.TestSession session,
-    Map<String, _i14.SimpleData> map,
+    Map<String, _i11.SimpleData> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -3820,14 +3838,14 @@ class _MapParametersEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<Map<String, _i12.SimpleData>>);
+      ) as _i3.Future<Map<String, _i11.SimpleData>>);
     });
   }
 
-  _i3.Future<Map<String, _i12.SimpleData?>>
+  _i3.Future<Map<String, _i11.SimpleData?>>
       returnSimpleDataMapNullableSimpleData(
     _i1.TestSession session,
-    Map<String, _i14.SimpleData?> map,
+    Map<String, _i11.SimpleData?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -3844,13 +3862,13 @@ class _MapParametersEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<Map<String, _i12.SimpleData?>>);
+      ) as _i3.Future<Map<String, _i11.SimpleData?>>);
     });
   }
 
-  _i3.Future<Map<String, _i12.SimpleData>?> returnSimpleDataMapNullable(
+  _i3.Future<Map<String, _i11.SimpleData>?> returnSimpleDataMapNullable(
     _i1.TestSession session,
-    Map<String, _i14.SimpleData>? map,
+    Map<String, _i11.SimpleData>? map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -3867,14 +3885,14 @@ class _MapParametersEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<Map<String, _i12.SimpleData>?>);
+      ) as _i3.Future<Map<String, _i11.SimpleData>?>);
     });
   }
 
-  _i3.Future<Map<String, _i12.SimpleData?>?>
+  _i3.Future<Map<String, _i11.SimpleData?>?>
       returnNullableSimpleDataMapNullableSimpleData(
     _i1.TestSession session,
-    Map<String, _i14.SimpleData?>? map,
+    Map<String, _i11.SimpleData?>? map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -3891,7 +3909,7 @@ class _MapParametersEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<Map<String, _i12.SimpleData?>?>);
+      ) as _i3.Future<Map<String, _i11.SimpleData?>?>);
     });
   }
 
@@ -3969,6 +3987,10 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
@@ -4000,6 +4022,10 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
@@ -4035,6 +4061,11 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
+    var streamStreamController = _i3.StreamController<int>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4048,10 +4079,13 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
+      callContext.setOnRevokedAuthenticationCallback((reason) {
+        streamStreamController.close();
+      });
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-        {'stream': stream},
+        {'stream': streamStreamController.stream},
       ) as _i3.Future<int>);
     });
   }
@@ -4060,6 +4094,11 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int?> stream,
   ) async {
+    var streamStreamController = _i3.StreamController<int?>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4073,10 +4112,13 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
+      callContext.setOnRevokedAuthenticationCallback((reason) {
+        streamStreamController.close();
+      });
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-        {'stream': stream},
+        {'stream': streamStreamController.stream},
       ) as _i3.Future<int?>);
     });
   }
@@ -4101,6 +4143,10 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
@@ -4116,6 +4162,11 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) {
+    var streamStreamController = _i3.StreamController<int>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
@@ -4132,10 +4183,15 @@ class _MethodStreaming {
           requestedInputStreams: ['stream'],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamStreamController.close();
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
-          {'stream': stream},
+          {'stream': streamStreamController.stream},
         ) as _i3.Stream<int>);
       },
       streamController,
@@ -4147,6 +4203,11 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<dynamic> stream,
   ) {
+    var streamStreamController = _i3.StreamController<dynamic>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
     var streamController = _i3.StreamController<dynamic>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
@@ -4163,10 +4224,15 @@ class _MethodStreaming {
           requestedInputStreams: ['stream'],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamStreamController.close();
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
-          {'stream': stream},
+          {'stream': streamStreamController.stream},
         ) as _i3.Stream<dynamic>);
       },
       streamController,
@@ -4178,6 +4244,11 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int?> stream,
   ) {
+    var streamStreamController = _i3.StreamController<int?>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
     var streamController = _i3.StreamController<int?>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
@@ -4194,10 +4265,15 @@ class _MethodStreaming {
           requestedInputStreams: ['stream'],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamStreamController.close();
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
-          {'stream': stream},
+          {'stream': streamStreamController.stream},
         ) as _i3.Stream<int?>);
       },
       streamController,
@@ -4209,6 +4285,11 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
+    var streamStreamController = _i3.StreamController<int>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4222,10 +4303,13 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
+      callContext.setOnRevokedAuthenticationCallback((reason) {
+        streamStreamController.close();
+      });
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-        {'stream': stream},
+        {'stream': streamStreamController.stream},
       ) as _i3.Future<void>);
     });
   }
@@ -4235,6 +4319,16 @@ class _MethodStreaming {
     _i3.Stream<int> stream1,
     _i3.Stream<int> stream2,
   ) {
+    var stream1StreamController = _i3.StreamController<int>();
+    stream1.listen(
+      stream1StreamController.add,
+      onDone: stream1StreamController.close,
+    );
+    var stream2StreamController = _i3.StreamController<int>();
+    stream2.listen(
+      stream2StreamController.add,
+      onDone: stream2StreamController.close,
+    );
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
@@ -4254,12 +4348,18 @@ class _MethodStreaming {
           ],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          stream1StreamController.close();
+          stream2StreamController.close();
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
           {
-            'stream1': stream1,
-            'stream2': stream2,
+            'stream1': stream1StreamController.stream,
+            'stream2': stream2StreamController.stream,
           },
         ) as _i3.Stream<int>);
       },
@@ -4272,6 +4372,11 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
+    var streamStreamController = _i3.StreamController<int>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4285,10 +4390,13 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
+      callContext.setOnRevokedAuthenticationCallback((reason) {
+        streamStreamController.close();
+      });
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-        {'stream': stream},
+        {'stream': streamStreamController.stream},
       ) as _i3.Future<void>);
     });
   }
@@ -4297,6 +4405,11 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
+    var streamStreamController = _i3.StreamController<int>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4310,10 +4423,13 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
+      callContext.setOnRevokedAuthenticationCallback((reason) {
+        streamStreamController.close();
+      });
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-        {'stream': stream},
+        {'stream': streamStreamController.stream},
       ) as _i3.Future<int>);
     });
   }
@@ -4322,6 +4438,11 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
+    var streamStreamController = _i3.StreamController<int>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4335,10 +4456,13 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
+      callContext.setOnRevokedAuthenticationCallback((reason) {
+        streamStreamController.close();
+      });
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-        {'stream': stream},
+        {'stream': streamStreamController.stream},
       ) as _i3.Future<int>);
     });
   }
@@ -4363,6 +4487,10 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
@@ -4374,11 +4502,11 @@ class _MethodStreaming {
     return streamController.stream;
   }
 
-  _i3.Stream<_i12.SimpleData> simpleDataStream(
+  _i3.Stream<_i11.SimpleData> simpleDataStream(
     _i1.TestSession session,
     int value,
   ) {
-    var streamController = _i3.StreamController<_i12.SimpleData>();
+    var streamController = _i3.StreamController<_i11.SimpleData>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var uniqueSession =
@@ -4394,22 +4522,32 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
           {},
-        ) as _i3.Stream<_i12.SimpleData>);
+        ) as _i3.Stream<_i11.SimpleData>);
       },
       streamController,
     );
     return streamController.stream;
   }
 
-  _i3.Stream<_i12.SimpleData> simpleInOutDataStream(
+  _i3.Stream<_i11.SimpleData> simpleInOutDataStream(
     _i1.TestSession session,
-    _i3.Stream<_i14.SimpleData> simpleDataStream,
+    _i3.Stream<_i11.SimpleData> simpleDataStream,
   ) {
-    var streamController = _i3.StreamController<_i12.SimpleData>();
+    var simpleDataStreamStreamController =
+        _i3.StreamController<_i11.SimpleData>();
+    simpleDataStream.listen(
+      simpleDataStreamStreamController.add,
+      onDone: simpleDataStreamStreamController.close,
+    );
+    var streamController = _i3.StreamController<_i11.SimpleData>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var uniqueSession =
@@ -4425,11 +4563,16 @@ class _MethodStreaming {
           requestedInputStreams: ['simpleDataStream'],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          simpleDataStreamStreamController.close();
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
-          {'simpleDataStream': simpleDataStream},
-        ) as _i3.Stream<_i12.SimpleData>);
+          {'simpleDataStream': simpleDataStreamStreamController.stream},
+        ) as _i3.Stream<_i11.SimpleData>);
       },
       streamController,
     );
@@ -4545,6 +4688,10 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
@@ -4561,6 +4708,11 @@ class _MethodStreaming {
     int delay,
     _i3.Stream<int> stream,
   ) async {
+    var streamStreamController = _i3.StreamController<int>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4574,10 +4726,13 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
+      callContext.setOnRevokedAuthenticationCallback((reason) {
+        streamStreamController.close();
+      });
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-        {'stream': stream},
+        {'stream': streamStreamController.stream},
       ) as _i3.Future<void>);
     });
   }
@@ -4587,6 +4742,11 @@ class _MethodStreaming {
     int delay,
     _i3.Stream<int> stream,
   ) async {
+    var streamStreamController = _i3.StreamController<int>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4600,10 +4760,13 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
+      callContext.setOnRevokedAuthenticationCallback((reason) {
+        streamStreamController.close();
+      });
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-        {'stream': stream},
+        {'stream': streamStreamController.stream},
       ) as _i3.Future<void>);
     });
   }
@@ -4632,6 +4795,11 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
+    var streamStreamController = _i3.StreamController<int>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4645,10 +4813,13 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
+      callContext.setOnRevokedAuthenticationCallback((reason) {
+        streamStreamController.close();
+      });
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-        {'stream': stream},
+        {'stream': streamStreamController.stream},
       ) as _i3.Future<void>);
     });
   }
@@ -4657,6 +4828,11 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
+    var streamStreamController = _i3.StreamController<int>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4670,10 +4846,13 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
+      callContext.setOnRevokedAuthenticationCallback((reason) {
+        streamStreamController.close();
+      });
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-        {'stream': stream},
+        {'stream': streamStreamController.stream},
       ) as _i3.Future<void>);
     });
   }
@@ -4695,6 +4874,10 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
@@ -4724,6 +4907,10 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
@@ -4739,6 +4926,11 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
+    var streamStreamController = _i3.StreamController<int>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4752,10 +4944,13 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
+      callContext.setOnRevokedAuthenticationCallback((reason) {
+        streamStreamController.close();
+      });
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-        {'stream': stream},
+        {'stream': streamStreamController.stream},
       ) as _i3.Future<void>);
     });
   }
@@ -4764,6 +4959,11 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
+    var streamStreamController = _i3.StreamController<int>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4777,10 +4977,13 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
+      callContext.setOnRevokedAuthenticationCallback((reason) {
+        streamStreamController.close();
+      });
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-        {'stream': stream},
+        {'stream': streamStreamController.stream},
       ) as _i3.Future<void>);
     });
   }
@@ -4789,6 +4992,11 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
+    var streamStreamController = _i3.StreamController<int>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4802,10 +5010,13 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
+      callContext.setOnRevokedAuthenticationCallback((reason) {
+        streamStreamController.close();
+      });
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-        {'stream': stream},
+        {'stream': streamStreamController.stream},
       ) as _i3.Future<int>);
     });
   }
@@ -4814,6 +5025,11 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
+    var streamStreamController = _i3.StreamController<int>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4827,10 +5043,13 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
+      callContext.setOnRevokedAuthenticationCallback((reason) {
+        streamStreamController.close();
+      });
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-        {'stream': stream},
+        {'stream': streamStreamController.stream},
       ) as _i3.Future<int>);
     });
   }
@@ -4852,6 +5071,10 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
@@ -4880,6 +5103,10 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
@@ -4895,6 +5122,11 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
+    var streamStreamController = _i3.StreamController<int>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4908,10 +5140,13 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
+      callContext.setOnRevokedAuthenticationCallback((reason) {
+        streamStreamController.close();
+      });
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-        {'stream': stream},
+        {'stream': streamStreamController.stream},
       ) as _i3.Future<bool>);
     });
   }
@@ -4920,6 +5155,11 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
+    var streamStreamController = _i3.StreamController<int>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4933,10 +5173,13 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
+      callContext.setOnRevokedAuthenticationCallback((reason) {
+        streamStreamController.close();
+      });
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-        {'stream': stream},
+        {'stream': streamStreamController.stream},
       ) as _i3.Future<bool>);
     });
   }
@@ -4969,6 +5212,10 @@ class _AuthenticatedMethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
@@ -4984,6 +5231,11 @@ class _AuthenticatedMethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) {
+    var streamStreamController = _i3.StreamController<int>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
@@ -5000,10 +5252,15 @@ class _AuthenticatedMethodStreaming {
           requestedInputStreams: ['stream'],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamStreamController.close();
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
-          {'stream': stream},
+          {'stream': streamStreamController.stream},
         ) as _i3.Stream<int>);
       },
       streamController,
@@ -5042,9 +5299,9 @@ class _ModuleSerializationEndpoint {
     });
   }
 
-  _i3.Future<_i25.ModuleClass> modifyModuleObject(
+  _i3.Future<_i18.ModuleClass> modifyModuleObject(
     _i1.TestSession session,
-    _i26.ModuleClass object,
+    _i18.ModuleClass object,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -5061,11 +5318,11 @@ class _ModuleSerializationEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i25.ModuleClass>);
+      ) as _i3.Future<_i18.ModuleClass>);
     });
   }
 
-  _i3.Future<_i27.ModuleDatatype> serializeNestedModuleObject(
+  _i3.Future<_i19.ModuleDatatype> serializeNestedModuleObject(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -5082,7 +5339,7 @@ class _ModuleSerializationEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i27.ModuleDatatype>);
+      ) as _i3.Future<_i19.ModuleDatatype>);
     });
   }
 }
@@ -5183,7 +5440,7 @@ class _RedisEndpoint {
   _i3.Future<void> setSimpleData(
     _i1.TestSession session,
     String key,
-    _i14.SimpleData data,
+    _i11.SimpleData data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -5210,7 +5467,7 @@ class _RedisEndpoint {
   _i3.Future<void> setSimpleDataWithLifetime(
     _i1.TestSession session,
     String key,
-    _i14.SimpleData data,
+    _i11.SimpleData data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -5234,7 +5491,7 @@ class _RedisEndpoint {
     });
   }
 
-  _i3.Future<_i12.SimpleData?> getSimpleData(
+  _i3.Future<_i11.SimpleData?> getSimpleData(
     _i1.TestSession session,
     String key,
   ) async {
@@ -5253,7 +5510,7 @@ class _RedisEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i12.SimpleData?>);
+      ) as _i3.Future<_i11.SimpleData?>);
     });
   }
 
@@ -5300,7 +5557,7 @@ class _RedisEndpoint {
     });
   }
 
-  _i3.Future<_i12.SimpleData?> listenToChannel(
+  _i3.Future<_i11.SimpleData?> listenToChannel(
     _i1.TestSession session,
     String channel,
   ) async {
@@ -5319,14 +5576,14 @@ class _RedisEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i12.SimpleData?>);
+      ) as _i3.Future<_i11.SimpleData?>);
     });
   }
 
   _i3.Future<void> postToChannel(
     _i1.TestSession session,
     String channel,
-    _i14.SimpleData data,
+    _i11.SimpleData data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -5381,7 +5638,7 @@ class _ServerOnlyScopedFieldModelEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i28.ScopeServerOnlyField> getScopeServerOnlyField(
+  _i3.Future<_i20.ScopeServerOnlyField> getScopeServerOnlyField(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -5398,7 +5655,7 @@ class _ServerOnlyScopedFieldModelEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<_i28.ScopeServerOnlyField>);
+      ) as _i3.Future<_i20.ScopeServerOnlyField>);
     });
   }
 }
@@ -5707,6 +5964,10 @@ class _TestToolsEndpoint {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
@@ -5736,6 +5997,10 @@ class _TestToolsEndpoint {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
@@ -5790,6 +6055,10 @@ class _TestToolsEndpoint {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
@@ -5805,6 +6074,11 @@ class _TestToolsEndpoint {
     _i1.TestSession session,
     _i3.Stream<int> numbers,
   ) async {
+    var numbersStreamController = _i3.StreamController<int>();
+    numbers.listen(
+      numbersStreamController.add,
+      onDone: numbersStreamController.close,
+    );
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'testTools',
@@ -5818,10 +6092,13 @@ class _TestToolsEndpoint {
         requestedInputStreams: ['numbers'],
         serializationManager: _serializationManager,
       );
+      callContext.setOnRevokedAuthenticationCallback((reason) {
+        numbersStreamController.close();
+      });
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-        {'numbers': numbers},
+        {'numbers': numbersStreamController.stream},
       ) as _i3.Future<List<int>>);
     });
   }
@@ -5830,6 +6107,11 @@ class _TestToolsEndpoint {
     _i1.TestSession session,
     _i3.Stream<int> numbers,
   ) {
+    var numbersStreamController = _i3.StreamController<int>();
+    numbers.listen(
+      numbersStreamController.add,
+      onDone: numbersStreamController.close,
+    );
     var streamController = _i3.StreamController<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
@@ -5846,10 +6128,15 @@ class _TestToolsEndpoint {
           requestedInputStreams: ['numbers'],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          numbersStreamController.close();
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
-          {'numbers': numbers},
+          {'numbers': numbersStreamController.stream},
         ) as _i3.Stream<int>);
       },
       streamController,
@@ -5900,6 +6187,10 @@ class _TestToolsEndpoint {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
@@ -5928,6 +6219,10 @@ class _TestToolsEndpoint {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
@@ -5962,7 +6257,7 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i3.Future<List<_i12.SimpleData>> getAllSimpleData(
+  _i3.Future<List<_i11.SimpleData>> getAllSimpleData(
       _i1.TestSession session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var uniqueSession = ((session as _i1.InternalTestSession).copyWith(
@@ -5979,7 +6274,7 @@ class _TestToolsEndpoint {
       return (callContext.method.call(
         uniqueSession.serverpodSession,
         callContext.arguments,
-      ) as _i3.Future<List<_i12.SimpleData>>);
+      ) as _i3.Future<List<_i11.SimpleData>>);
     });
   }
 }
@@ -6037,10 +6332,88 @@ class _AuthenticatedTestToolsEndpoint {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
         return (callContext.method.call(
           uniqueSession.serverpodSession,
           callContext.arguments,
           {},
+        ) as _i3.Stream<int>);
+      },
+      streamController,
+    );
+    return streamController.stream;
+  }
+
+  _i3.Future<List<int>> returnsListFromInputStream(
+    _i1.TestSession session,
+    _i3.Stream<int> numbers,
+  ) async {
+    var numbersStreamController = _i3.StreamController<int>();
+    numbers.listen(
+      numbersStreamController.add,
+      onDone: numbersStreamController.close,
+    );
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var uniqueSession = (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'authenticatedTestTools',
+        method: 'returnsListFromInputStream',
+      ) as _i1.InternalTestSession);
+      var callContext = await _endpointDispatch.getMethodStreamCallContext(
+        createSessionCallback: (_) => uniqueSession.serverpodSession,
+        endpointPath: 'authenticatedTestTools',
+        methodName: 'returnsListFromInputStream',
+        arguments: {},
+        requestedInputStreams: ['numbers'],
+        serializationManager: _serializationManager,
+      );
+      callContext.setOnRevokedAuthenticationCallback((reason) {
+        numbersStreamController.close();
+      });
+      return (callContext.method.call(
+        uniqueSession.serverpodSession,
+        callContext.arguments,
+        {'numbers': numbersStreamController.stream},
+      ) as _i3.Future<List<int>>);
+    });
+  }
+
+  _i3.Stream<int> intEchoStream(
+    _i1.TestSession session,
+    _i3.Stream<int> stream,
+  ) {
+    var streamStreamController = _i3.StreamController<int>();
+    stream.listen(
+      streamStreamController.add,
+      onDone: streamStreamController.close,
+    );
+    var streamController = _i3.StreamController<int>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var uniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'authenticatedTestTools',
+          method: 'intEchoStream',
+        ) as _i1.InternalTestSession);
+        var callContext = await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => uniqueSession.serverpodSession,
+          endpointPath: 'authenticatedTestTools',
+          methodName: 'intEchoStream',
+          arguments: {},
+          requestedInputStreams: ['stream'],
+          serializationManager: _serializationManager,
+        );
+        callContext.setOnRevokedAuthenticationCallback((reason) {
+          streamStreamController.close();
+          streamController.addError(_i1.getTestAuthorizationException(reason));
+          streamController.close();
+        });
+        return (callContext.method.call(
+          uniqueSession.serverpodSession,
+          callContext.arguments,
+          {'stream': streamStreamController.stream},
         ) as _i3.Stream<int>);
       },
       streamController,
