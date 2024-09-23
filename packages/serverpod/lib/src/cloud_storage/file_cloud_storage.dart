@@ -106,6 +106,7 @@ class FileCloudStorage extends CloudStorage {
     required Session session,
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
+    int maxFileSize = 10 * 1024 * 1024,
 
   }) async {
     var config = session.server.serverpod.config;
