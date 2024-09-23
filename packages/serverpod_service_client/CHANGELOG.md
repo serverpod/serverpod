@@ -1,3 +1,10 @@
+## 2.1.2
+ - fix: Supports updating full user name in auth module.
+ - fix: Adds missing transaction parameter in `deleteWhere` query.
+ - fix: Correctly preserves non-persisted fields during database insert and update operations.
+ - fix: Allows event listeners to remove themselves inside their handler.
+ - fix: Correctly checks settings before letting a user change name or image in auth module.
+
 ## 2.1.1
  - fix: Posts revoked authentication events locally if Redis is disabled.
  - fix: Uses `dynamic` type for `fromJson` parameter in custom class serialization.
