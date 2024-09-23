@@ -34,17 +34,20 @@ void main() {
 
     group('url', () {
       test("defaults to the requestedUri's relativized path and query", () {
-        var request = Request(Method.get, Uri.parse('http://localhost/foo/bar?q=1'));
+        var request =
+            Request(Method.get, Uri.parse('http://localhost/foo/bar?q=1'));
         expect(request.url, equals(Uri.parse('foo/bar?q=1')));
       });
 
       test('may contain colon', () {
-        var request = Request(Method.get, Uri.parse('http://localhost/foo/bar:42'));
+        var request =
+            Request(Method.get, Uri.parse('http://localhost/foo/bar:42'));
         expect(request.url, equals(Uri.parse('foo/bar:42')));
       });
 
       test('may contain colon in first segment', () {
-        var request = Request(Method.get, Uri.parse('http://localhost/foo:bar/42'));
+        var request =
+            Request(Method.get, Uri.parse('http://localhost/foo:bar/42'));
         expect(request.url, equals(Uri.parse('foo%3Abar/42')));
       });
 
@@ -55,13 +58,15 @@ void main() {
       });
 
       test('is inferred from handlerPath if possible', () {
-        var request = Request(Method.get, Uri.parse('http://localhost/foo/bar?q=1'),
+        var request = Request(
+            Method.get, Uri.parse('http://localhost/foo/bar?q=1'),
             handlerPath: '/foo/');
         expect(request.url, equals(Uri.parse('bar?q=1')));
       });
 
       test('uses the given value if passed', () {
-        var request = Request(Method.get, Uri.parse('http://localhost/foo/bar?q=1'),
+        var request = Request(
+            Method.get, Uri.parse('http://localhost/foo/bar?q=1'),
             url: Uri.parse('bar?q=1'));
         expect(request.url, equals(Uri.parse('bar?q=1')));
       });
@@ -75,31 +80,36 @@ void main() {
 
     group('handlerPath', () {
       test("defaults to '/'", () {
-        var request = Request(Method.get, Uri.parse('http://localhost/foo/bar'));
+        var request =
+            Request(Method.get, Uri.parse('http://localhost/foo/bar'));
         expect(request.handlerPath, equals('/'));
       });
 
       test('is inferred from url if possible', () {
-        var request = Request(Method.get, Uri.parse('http://localhost/foo/bar?q=1'),
+        var request = Request(
+            Method.get, Uri.parse('http://localhost/foo/bar?q=1'),
             url: Uri.parse('bar?q=1'));
         expect(request.handlerPath, equals('/foo/'));
       });
 
       test('uses the given value if passed', () {
-        var request = Request(Method.get, Uri.parse('http://localhost/foo/bar?q=1'),
+        var request = Request(
+            Method.get, Uri.parse('http://localhost/foo/bar?q=1'),
             handlerPath: '/foo/');
         expect(request.handlerPath, equals('/foo/'));
       });
 
       test('adds a trailing slash to the given value if necessary', () {
-        var request = Request(Method.get, Uri.parse('http://localhost/foo/bar?q=1'),
+        var request = Request(
+            Method.get, Uri.parse('http://localhost/foo/bar?q=1'),
             handlerPath: '/foo');
         expect(request.handlerPath, equals('/foo/'));
         expect(request.url, equals(Uri.parse('bar?q=1')));
       });
 
       test('may be a single slash', () {
-        var request = Request(Method.get, Uri.parse('http://localhost/foo/bar?q=1'),
+        var request = Request(
+            Method.get, Uri.parse('http://localhost/foo/bar?q=1'),
             handlerPath: '/');
         expect(request.handlerPath, equals('/'));
         expect(request.url, equals(Uri.parse('foo/bar?q=1')));
@@ -109,7 +119,8 @@ void main() {
     group('errors', () {
       group('requestedUri', () {
         test('must be absolute', () {
-          expect(() => Request(Method.get, Uri.parse('/path')), throwsArgumentError);
+          expect(() => Request(Method.get, Uri.parse('/path')),
+              throwsArgumentError);
         });
 
         test('may not have a fragment', () {

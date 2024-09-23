@@ -25,8 +25,12 @@ class RangeHeader {
     final match = regex.firstMatch(value);
 
     if (match != null) {
-      final start = match.group(1)?.isNotEmpty == true ? int.parse(match.group(1)!) : null;
-      final end = match.group(2)?.isNotEmpty == true ? int.parse(match.group(2)!) : null;
+      final start = match.group(1)?.isNotEmpty == true
+          ? int.parse(match.group(1)!)
+          : null;
+      final end = match.group(2)?.isNotEmpty == true
+          ? int.parse(match.group(2)!)
+          : null;
 
       return RangeHeader(start: start, end: end);
     } else {
