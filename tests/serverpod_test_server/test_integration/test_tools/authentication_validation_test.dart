@@ -128,7 +128,7 @@ void main() {
         });
 
         test(
-            'and the authenticated user is revoked then stream is closed with ServerpodUnauthenticatedException.',
+            'and the authenticated user is revoked then stream is closed with ConnectionClosedException.',
             () async {
           await expectLater(
             session.messages.authenticationRevoked(
@@ -145,12 +145,12 @@ void main() {
             completes,
           );
           var exception = await streamClosedCompleter.future;
-          expect(exception, isA<ServerpodUnauthenticatedException>());
+          expect(exception, isA<ConnectionClosedException>());
           expect(() => inStream.stream.first, throwsA(isA<StateError>()));
         });
 
         test(
-            'and the required scope for an endpoint is revoked then stream is closed with ServerpodInsufficientAccessException.',
+            'and the required scope for an endpoint is revoked then stream is closed with ConnectionClosedException.',
             () async {
           await expectLater(
             session.messages.authenticationRevoked(
@@ -167,7 +167,7 @@ void main() {
             completes,
           );
           var exception = await streamClosedCompleter.future;
-          expect(exception, isA<ServerpodInsufficientAccessException>());
+          expect(exception, isA<ConnectionClosedException>());
         });
       });
 
@@ -232,7 +232,7 @@ void main() {
         });
 
         test(
-            'and the authenticated user is revoked then streams are closed with ServerpodUnauthenticatedException.',
+            'and the authenticated user is revoked then streams are closed with ConnectionClosedException.',
             () async {
           await expectLater(
             session.messages.authenticationRevoked(
@@ -247,18 +247,18 @@ void main() {
             completes,
           );
           var exception = await streamClosedCompleter1.future;
-          expect(exception, isA<ServerpodUnauthenticatedException>());
+          expect(exception, isA<ConnectionClosedException>());
 
           await expectLater(
             streamClosedCompleter2.future.timeout(Duration(seconds: 5)),
             completes,
           );
           exception = await streamClosedCompleter2.future;
-          expect(exception, isA<ServerpodUnauthenticatedException>());
+          expect(exception, isA<ConnectionClosedException>());
         });
 
         test(
-            'and the required scope for an endpoint is revoked then streams are closed with ServerpodInsufficientAccessException.',
+            'and the required scope for an endpoint is revoked then streams are closed with ConnectionClosedException.',
             () async {
           await expectLater(
             session.messages.authenticationRevoked(
@@ -273,14 +273,14 @@ void main() {
             completes,
           );
           var exception = await streamClosedCompleter1.future;
-          expect(exception, isA<ServerpodInsufficientAccessException>());
+          expect(exception, isA<ConnectionClosedException>());
 
           await expectLater(
             streamClosedCompleter2.future,
             completes,
           );
           exception = await streamClosedCompleter2.future;
-          expect(exception, isA<ServerpodInsufficientAccessException>());
+          expect(exception, isA<ConnectionClosedException>());
         });
       });
     },

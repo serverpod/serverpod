@@ -12,3 +12,6 @@ export 'src/server/run_mode.dart';
 export 'src/server/server.dart';
 export 'src/server/serverpod.dart' hide ServerpodInternalMethods;
 export 'src/server/session.dart' hide SessionInternalMethods;
+
+// ignore: invalid_export_of_internal_element
+export 'src/server/websocket_request_handlers/helpers/method_stream_manager.dart';

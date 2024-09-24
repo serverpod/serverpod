@@ -32,7 +32,8 @@ class TestToolsEndpoint extends Endpoint {
 
   Future<List<int>> returnsListFromInputStream(
       Session session, Stream<int> numbers) async {
-    return numbers.toList();
+    var result = await numbers.toList();
+    return result;
   }
 
   Stream<int> returnsStreamFromInputStream(

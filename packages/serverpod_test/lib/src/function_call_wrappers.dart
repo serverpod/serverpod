@@ -2,9 +2,8 @@ import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
 
-import 'test_stream_manager.dart';
-
-/// Test tools helper to not leak exceptions from awaitable functions.
+/// Test tools helper to not leak exceptions.
+/// Used for calls to awaitable functions with non-stream input parameters.
 /// Used by the generated code.
 Future<T> callAwaitableFunctionAndHandleExceptions<T>(
   Future<T> Function() call,
@@ -12,7 +11,7 @@ Future<T> callAwaitableFunctionAndHandleExceptions<T>(
   try {
     return await call();
   } catch (e) {
-    var handledException = getException(e);
+    var handledException = _getException(e);
     if (handledException != null) {
       throw handledException;
     }
@@ -22,23 +21,42 @@ Future<T> callAwaitableFunctionAndHandleExceptions<T>(
   }
 }
 
-/// Test tools helper to not leak exceptions from functions that return streams.
-/// The [streamController] is used to start executing the endpoint method immediately up to the first `yield`.
-/// This removes the need for the caller to start listening to the stream to start the execution.
+/// Test tools helper to not leak exceptions.
+/// Used for calls to awaitable functions with streams as input parameters.
 /// Used by the generated code.
-Future<void> callStreamFunctionAndHandleExceptions<T>(
+Future<T> callAwaitableFunctionWithStreamInputAndHandleExceptions<T>(
   Future<Stream<T>> Function() call,
-  TestStreamManager streamManager,
 ) async {
   late Stream<T> stream;
   try {
     stream = await call();
   } catch (e) {
-    streamManager.outputStreamController.addError(getException(e));
-    return;
+    var handledException = _getException(e);
+    if (handledException != null) {
+      throw handledException;
+    }
+
+    // Rethrow user exceptions to preserve stack trace
+    rethrow;
   }
 
-  streamManager.setOutputStream(stream);
+  return stream.first;
+}
+
+/// Test tools helper to not leak exceptions.
+/// Used for calls to functions that return a stream, regardless of input parameters.
+/// Used by the generated code.
+Future<void> callStreamFunctionAndHandleExceptions<T>(
+  Future<void> Function() call,
+  StreamController controllerToCloseUponFailure,
+) async {
+  try {
+    await call();
+  } catch (e) {
+    controllerToCloseUponFailure.addError(_getException(e));
+    await controllerToCloseUponFailure.close();
+    return;
+  }
 }
 
 /// The user was not authenticated.
@@ -53,23 +71,22 @@ class ServerpodInsufficientAccessException implements Exception {
   ServerpodInsufficientAccessException();
 }
 
-/// Returns a test exception based on the [authenticationFailureReason].
-Exception getTestAuthorizationException(
-  AuthenticationFailureReason authenticationFailureReason,
-) {
-  return switch (authenticationFailureReason) {
-    AuthenticationFailureReason.unauthenticated =>
-      ServerpodUnauthenticatedException(),
-    AuthenticationFailureReason.insufficientAccess =>
-      ServerpodInsufficientAccessException(),
-  };
+/// Thrown if a stream connection is closed with an error.
+/// For example, if the user authentication was revoked.
+class ConnectionClosedException {
+  /// Creates a new [ConnectionClosedException].
+  const ConnectionClosedException();
 }
 
-/// Returns the exception that should be exposed to the test.
-dynamic getException(dynamic e) {
+dynamic _getException(dynamic e) {
   switch (e) {
     case NotAuthorizedException():
-      return getTestAuthorizationException(e.authenticationFailedResult.reason);
+      return switch (e.authenticationFailedResult.reason) {
+        AuthenticationFailureReason.unauthenticated =>
+          ServerpodUnauthenticatedException(),
+        AuthenticationFailureReason.insufficientAccess =>
+          ServerpodInsufficientAccessException(),
+      };
     case MethodNotFoundException():
     case EndpointNotFoundException():
     case InvalidParametersException():

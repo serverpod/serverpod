@@ -2,6 +2,7 @@ import 'package:test/test.dart';
 
 import 'test_serverpod.dart';
 import 'test_session.dart';
+import 'test_stream_manager.dart';
 import 'transaction_manager.dart';
 
 export 'package:meta/meta.dart' show isTestGroup;
@@ -105,6 +106,8 @@ void Function(TestClosure<T>)
             await testSession.resetState();
           }
         }
+
+        await GlobalStreamManager.closeAllStreams();
       });
 
       tearDownAll(() async {

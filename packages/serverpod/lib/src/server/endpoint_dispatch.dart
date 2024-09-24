@@ -79,15 +79,13 @@ abstract class EndpointDispatch {
       requestedInputStreams: requestedInputStreams,
     );
 
-    var methodStreamCallContext = MethodStreamCallContext(
+    return MethodStreamCallContext(
       method: methodConnector,
       arguments: callContext.arguments,
       inputStreams: inputStreams,
       endpoint: callContext.endpoint,
       session: callContext.session,
     );
-
-    return methodStreamCallContext;
   }
 
   /// Tries to get an [EndpointConnector] for a given endpoint and method name.
@@ -97,8 +95,10 @@ abstract class EndpointDispatch {
     required Session session,
     required String endpointPath,
   }) async {
-    return _getEndpointConnector(endpointPath, (_) => session)
-        .then((value) => value.$1);
+    var (endpointConnector, _session) =
+        await _getEndpointConnector(endpointPath, (_) => session);
+
+    return endpointConnector;
   }
 
   /// Tries to get a [MethodCallContext] for a given endpoint and method name.
@@ -386,6 +386,9 @@ class MethodStreamCallContext {
         localRevokedAuthenticationCallback,
       );
     }
+
+    _authenticationInfo = null;
+    _revokedAuthenticationCallback = null;
   }
 
   /// Sets a callback that is called when the authentication is revoked.

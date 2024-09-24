@@ -1,76 +1,117 @@
 import 'dart:async';
 
-import 'package:serverpod/server.dart';
+import 'package:serverpod/serverpod.dart';
 
-import 'function_call_wrappers.dart';
+import '../serverpod_test.dart';
 
-/// Package private extension to set the output stream.
-extension SetOutputStreamExtension on TestStreamManager {
-  /// Sets the output stream and starts listening to it.
-  void setOutputStream(Stream stream) {
-    var subscription = stream.listen((data) {
-      outputStreamController.add(data);
-    }, onError: (e) {
-      outputStreamController.addError(getException(e));
-    }, onDone: () {
-      outputStreamController.close();
-    });
+/// Helper singleton to close all open streams
+/// Only used internally.
+class GlobalStreamManager {
+  // ignore: invalid_use_of_internal_member
+  static List<MethodStreamManager> _streamManagers = [];
 
-    outputStreamController.onCancel = () {
-      subscription.cancel();
-    };
+  /// Closes all open streams
+  static Future<void> closeAllStreams() async {
+    for (var streamManager in _streamManagers) {
+      await streamManager.closeAllStreams();
+    }
+    _streamManagers = [];
+  }
+
+  /// Adds a stream manager to the list of tracked stream managers.
+  // ignore: invalid_use_of_internal_member
+  static void add(MethodStreamManager streamManager) {
+    _streamManagers.add(streamManager);
   }
 }
 
 /// Manages streams in the generated endpoints.
-/// Should only be used in generated code.
+/// Used by the generated code.
 class TestStreamManager<OutputStreamType> {
-  final Map<String, StreamController> _inputStreamControllers = {};
-  StreamController<OutputStreamType>? _outputStreamController;
+  /// The stream controller for the output stream.
+  StreamController<OutputStreamType> outputStreamController;
 
-  /// Gets the output stream controller and creates it lazily.
-  StreamController<OutputStreamType> get outputStreamController {
-    _outputStreamController ??= StreamController<OutputStreamType>();
-
-    return _outputStreamController!;
-  }
+  // ignore: invalid_use_of_internal_member
+  late final MethodStreamManager _streamManager;
+  final UuidValue _namespace = const Uuid().v4obj();
 
   /// Creates a new [TestStreamManager].
-  TestStreamManager();
+  TestStreamManager()
+      : outputStreamController = StreamController<OutputStreamType>() {
+    _streamManager = MethodStreamManager(
+      onOutputStreamClosed: (
+        UuidValue namespace,
+        CloseReason? closeReason,
+        MethodStreamCallContext context,
+      ) {
+        if (closeReason == CloseReason.error) {
+          outputStreamController.addError(const ConnectionClosedException());
+        }
 
-  /// Wraps all input streams in a [StreamController] to allow the test tools to close them when needed.
-  Map<String, Stream> createManagedInputStreams(
-    Map<String, Stream> inputStreams,
+        outputStreamController.close();
+      },
+      onOutputStreamError: (
+        UuidValue namespace,
+        Object error,
+        StackTrace stackTrace,
+        MethodStreamCallContext context,
+      ) {
+        outputStreamController.addError(error, stackTrace);
+      },
+      onOutputStreamValue: (
+        UuidValue namespace,
+        Object? value,
+        MethodStreamCallContext context,
+      ) {
+        outputStreamController.add(value as OutputStreamType);
+      },
+    );
+
+    GlobalStreamManager.add(_streamManager);
+  }
+
+  /// Inititates a stream method call which opens all needed streams.
+  void callStreamMethod(
+    MethodStreamCallContext callContext,
+    Session session,
+    Map<String, Stream<dynamic>> inputStreams,
   ) {
-    return inputStreams.map((key, stream) {
-      var streamController = StreamController();
+    _streamManager.createStream(
+      methodStreamCallContext: callContext,
+      namespace: _namespace,
+      session: session,
+    );
+
+    inputStreams.forEach((name, stream) {
       stream.listen(
-        streamController.add,
-        onDone: streamController.close,
+        (value) {
+          _streamManager.dispatchData(
+            endpoint: callContext.endpoint.name,
+            method: callContext.method.name,
+            namespace: _namespace,
+            parameter: name,
+            value: value,
+          );
+        },
+        onDone: () {
+          _streamManager.closeStream(
+            endpoint: callContext.endpoint.name,
+            method: callContext.method.name,
+            namespace: _namespace,
+            parameter: name,
+            reason: CloseReason.done,
+          );
+        },
+        onError: (error) {
+          _streamManager.dispatchError(
+            endpoint: callContext.endpoint.name,
+            method: callContext.method.name,
+            namespace: _namespace,
+            parameter: name,
+            error: error,
+          );
+        },
       );
-      _inputStreamControllers[key] = streamController;
-
-      return MapEntry(key, streamController.stream);
     });
-  }
-
-  /// Gets the input stream with the given [name].
-  Stream getInputStream(String name) {
-    var maybeStream = _inputStreamControllers[name]?.stream;
-    if (maybeStream == null) {
-      throw StateError('Stream $name not found');
-    }
-
-    return maybeStream;
-  }
-
-  /// Closes all input streams and the output stream with the appropriate error.
-  void onRevokedAuthentication(AuthenticationFailureReason reason) {
-    _inputStreamControllers.forEach((key, controller) {
-      controller.close();
-    });
-
-    _outputStreamController?.addError(getTestAuthorizationException(reason));
-    _outputStreamController?.close();
   }
 }

@@ -232,63 +232,45 @@ class ServerTestToolsGenerator {
                 'serializationManager': refer('_serializationManager'),
               }))
               .statement,
-          refer('_localCallContext')
-              .property('setOnRevokedAuthenticationCallback')
-              .call([
-            refer('_localTestStreamManager')
-                .property('onRevokedAuthentication'),
+          refer('_localTestStreamManager').property('callStreamMethod').call([
+            refer('_localCallContext'),
+            refer('_localUniqueSession').property('serverpodSession'),
+            literalMap({
+              for (var parameter in streamParameters)
+                literalString(parameter.name): refer(parameter.name).code,
+            }),
           ]).statement,
-          refer('_localCallContext')
-              .property('method')
-              .property('call')
-              .call([
-                refer('_localUniqueSession').property('serverpodSession'),
-                refer('_localCallContext').property('arguments'),
-                literalMap({
-                  for (var parameter in streamParameters)
-                    literalString(parameter.name):
-                        refer('_localTestStreamManager')
-                            .property('getInputStream')
-                            .call([literalString(parameter.name)]),
-                }),
-              ])
-              .asA(method.returnType.reference(true, config: config))
-              .returned
-              .statement,
+          if (hasStreamParameter && !returnsStream)
+            refer('_localTestStreamManager')
+                .property('outputStreamController')
+                .property('stream')
+                .returned
+                .statement,
         ])
         ..returns,
     ).closure;
 
-    var testStreamManager = TypeReference((b) {
+    var testStreamManagerType = TypeReference((b) {
       var typeRef = b
         ..symbol = 'TestStreamManager'
         ..url = serverpodTestUrl;
-      if (returnsStream) {
-        typeRef.types.add(
-          method.returnType.generics.first.reference(true, config: config),
-        );
-      }
+      typeRef.types.add(
+        method.returnType.generics.first.reference(true, config: config),
+      );
     });
 
-    var streamManager = testStreamManager.newInstance([]);
-    if (hasStreamParameter) {
-      streamManager = streamManager.cascade('createManagedInputStreams').call([
-        literalMap({
-          for (var parameter in streamParameters)
-            literalString(parameter.name): refer(parameter.name).code,
-        })
-      ]);
-    }
+    var streamManagerInstance = testStreamManagerType.newInstance([]);
 
-    var streamManagerDeclaration =
-        refer('var _localTestStreamManager').assign(streamManager).statement;
+    var streamManagerDeclaration = refer('var _localTestStreamManager')
+        .assign(streamManagerInstance)
+        .statement;
 
     if (returnsStream) {
       return Block.of([
         streamManagerDeclaration,
         refer('callStreamFunctionAndHandleExceptions', serverpodTestUrl).call([
           closure,
-          refer('_localTestStreamManager'),
+          refer('_localTestStreamManager').property('outputStreamController'),
         ]).statement,
         refer('_localTestStreamManager')
             .property('outputStreamController')
@@ -300,10 +282,10 @@ class ServerTestToolsGenerator {
 
     return Block.of([
       streamManagerDeclaration,
-      refer('callAwaitableFunctionAndHandleExceptions', serverpodTestUrl)
-          .call([closure])
-          .returned
-          .statement
+      refer(
+        'callAwaitableFunctionWithStreamInputAndHandleExceptions',
+        serverpodTestUrl,
+      ).call([closure]).returned.statement,
     ]);
   }
 
@@ -454,6 +436,7 @@ class ServerTestToolsGenerator {
       Directive.import(endpointsPath),
       Directive.export(serverpodTestUrl, show: const [
         'TestSession',
+        'ConnectionClosedException',
         'ServerpodUnauthenticatedException',
         'ServerpodInsufficientAccessException',
         'RollbackDatabase',
