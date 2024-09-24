@@ -17,12 +17,20 @@ class UserEndpoint extends Endpoint {
   /// Removes the users uploaded image, replacing it with the default user
   /// image.
   Future<bool> removeUserImage(Session session) async {
+    if (!AuthConfig.current.userCanEditUserImage) {
+      return false;
+    }
+
     var userId = (await session.authenticated)?.userId;
     return await UserImages.setDefaultUserImage(session, userId!);
   }
 
   /// Sets a new user image for the signed in user.
   Future<bool> setUserImage(Session session, ByteData image) async {
+    if (!AuthConfig.current.userCanEditUserImage) {
+      return false;
+    }
+
     var userId = (await session.authenticated)?.userId;
     return await UserImages.setUserImageFromBytes(
         session, userId!, image.buffer.asUint8List());
@@ -30,6 +38,10 @@ class UserEndpoint extends Endpoint {
 
   /// Changes the name of a user.
   Future<bool> changeUserName(Session session, String userName) async {
+    if (!AuthConfig.current.userCanEditUserName) {
+      return false;
+    }
+
     userName = userName.trim();
     if (userName == '') return false;
 
@@ -41,6 +53,10 @@ class UserEndpoint extends Endpoint {
 
   /// Changes the full name of a user.
   Future<bool> changeFullName(Session session, String fullName) async {
+    if (!AuthConfig.current.userCanEditFullName) {
+      return false;
+    }
+
     fullName = fullName.trim();
     if (fullName == '') return false;
 

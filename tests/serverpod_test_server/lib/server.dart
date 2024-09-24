@@ -41,6 +41,7 @@ void run(List<String> args) async {
       print('Sending reset email to ${userInfo.email} with code $resetCode');
       return true;
     },
+    userCanEditFullName: true,
   ));
 
   // Add route to web server
