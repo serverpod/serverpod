@@ -137,9 +137,9 @@ void main() {
     });
 
     group('then the class named $testClassName', () {
-      test('inherits from TableRow.', () {
+      test('implements TableRow.', () {
         expect(
-            CompilationUnitHelpers.hasExtendsClause(
+            CompilationUnitHelpers.hasImplementsClause(
               maybeClassNamedExample!,
               name: 'TableRow',
             ),
@@ -170,8 +170,8 @@ void main() {
           expect(constructor?.parameters.toSource(), '({int? id})');
         });
 
-        test('passing id to super', () {
-          expect(constructor?.initializers.first.toSource(), 'super(id)');
+        test('initializing id in constructor body', () {
+          expect(constructor?.body.toSource(), '{_id = id;}');
         });
       });
 

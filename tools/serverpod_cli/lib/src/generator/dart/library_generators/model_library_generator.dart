@@ -160,14 +160,25 @@ class SerializableModelLibraryGenerator {
       }
 
       if (serverCode && tableName != null) {
-        classBuilder.extend =
-            refer('TableRow', 'package:serverpod/serverpod.dart');
+        classBuilder.implements.add(
+          refer('TableRow', 'package:serverpod/serverpod.dart'),
+        );
 
         classBuilder.fields.addAll([
           _buildModelClassTableField(className),
         ]);
 
         classBuilder.fields.add(_buildModelClassDBField(className));
+
+        classBuilder.fields.add(Field(
+          (f) => f
+            ..name = '_id'
+            ..type = refer('int?'),
+        ));
+
+        classBuilder.methods.add(_buildIdGetter());
+
+        classBuilder.methods.add(_buildIdSetter());
 
         classBuilder.methods.add(_buildModelClassTableGetter());
       } else {
@@ -619,6 +630,30 @@ class SerializableModelLibraryGenerator {
     );
   }
 
+  Method _buildIdGetter() {
+    return Method(
+      (m) => m
+        ..name = 'id'
+        ..annotations.add(refer('override'))
+        ..type = MethodType.getter
+        ..returns = refer('int?')
+        ..body = const Code('return _id;'),
+    );
+  }
+
+  Method _buildIdSetter() {
+    return Method(
+      (m) => m
+        ..name = 'id'
+        ..annotations.add(refer('override'))
+        ..type = MethodType.setter
+        ..requiredParameters.add(Parameter((p) => p
+          ..name = 'value'
+          ..type = refer('int?')))
+        ..body = const Code('_id = value;'),
+    );
+  }
+
   Field _buildModelClassTableField(String className) {
     return Field((f) => f
       ..static = true
@@ -978,7 +1013,7 @@ class SerializableModelLibraryGenerator {
       }
 
       if (serverCode && tableName != null) {
-        c.initializers.add(refer('super').call([refer('id')]).code);
+        c.body = Block.of([const Code('_id = id;')]);
       }
     });
   }
