@@ -5,13 +5,11 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 /// Holds data corresponding to a row in the database. Concrete classes are
 /// typically generated. Instances of [TableRow] can also be serialized and
 /// either passed to clients or cached.
-abstract class TableRow implements SerializableModel {
-  /// Create a new TableRow object.
-  TableRow([this.id]);
-
+abstract interface class TableRow implements SerializableModel {
   /// The id column of the row. Can be null if this row is not yet stored in
   /// the database.
-  int? id;
+  int? get id;
+  set id(int? value);
 
   /// The table that this row belongs to.
   Table get table;
