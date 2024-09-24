@@ -35,14 +35,14 @@ class FileUploader {
 
     if (_uploadDescription.type == _UploadType.binary) {
       try {
-        var result = await http.post(
+        var request = http.Request(
+          _uploadDescription.httpMethod,
           _uploadDescription.url,
-          body: await _readStreamData(stream),
-          headers: {
-            'Content-Type': 'application/octet-stream',
-            'Accept': '*/*',
-          },
         );
+        request.headers.addAll(_uploadDescription.headers);
+        request.bodyBytes = await _readStreamData(stream);
+
+        var result = await request.send();
         return result.statusCode == 200;
       } catch (e) {
         return false;
@@ -107,6 +107,8 @@ class _UploadDescription {
   late Uri url;
   String? field;
   String? fileName;
+  String httpMethod = 'POST';
+  Map<String, String> headers = {};
   Map<String, String> requestFields = {};
 
   _UploadDescription(String description) {
@@ -119,6 +121,14 @@ class _UploadDescription {
       throw const FormatException('Missing type, can be binary or multipart');
     }
 
+    httpMethod = data['httpMethod'] ?? 'POST';
+    headers = (data['headers'] as Map? ??
+            {
+              'Content-Type': 'application/octet-stream',
+              'Accept': '*/*',
+            })
+        .cast<String, String>()
+      ..remove('host');
     url = Uri.parse(data['url']);
 
     if (type == _UploadType.multipart) {
