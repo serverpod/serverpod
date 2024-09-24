@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
 
+import 'test_stream_manager.dart';
+
 /// Test tools helper to not leak exceptions from awaitable functions.
 /// Used by the generated code.
 Future<T> callAwaitableFunctionAndHandleExceptions<T>(
@@ -10,7 +12,7 @@ Future<T> callAwaitableFunctionAndHandleExceptions<T>(
   try {
     return await call();
   } catch (e) {
-    var handledException = _getException(e);
+    var handledException = getException(e);
     if (handledException != null) {
       throw handledException;
     }
@@ -26,27 +28,17 @@ Future<T> callAwaitableFunctionAndHandleExceptions<T>(
 /// Used by the generated code.
 Future<void> callStreamFunctionAndHandleExceptions<T>(
   Future<Stream<T>> Function() call,
-  StreamController<T> streamController,
+  TestStreamManager streamManager,
 ) async {
   late Stream<T> stream;
   try {
     stream = await call();
   } catch (e) {
-    streamController.addError(_getException(e));
+    streamManager.outputStreamController.addError(getException(e));
     return;
   }
 
-  var subscription = stream.listen((data) {
-    streamController.add(data);
-  }, onError: (e) {
-    streamController.addError(_getException(e));
-  }, onDone: () {
-    streamController.close();
-  });
-
-  streamController.onCancel = () {
-    subscription.cancel();
-  };
+  streamManager.setOutputStream(stream);
 }
 
 /// The user was not authenticated.
@@ -73,7 +65,8 @@ Exception getTestAuthorizationException(
   };
 }
 
-dynamic _getException(dynamic e) {
+/// Returns the exception that should be exposed to the test.
+dynamic getException(dynamic e) {
   switch (e) {
     case NotAuthorizedException():
       return getTestAuthorizationException(e.authenticationFailedResult.reason);

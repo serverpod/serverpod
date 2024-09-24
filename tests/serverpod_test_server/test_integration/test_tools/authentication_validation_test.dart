@@ -91,7 +91,7 @@ void main() {
         expect(result, [0, 1, 2]);
       });
 
-      group('connected to an authenticated streaming method', () {
+      group('when connected to an authenticated streaming method', () {
         late Completer<dynamic> streamClosedCompleter;
         late Completer<int> valueReceivedCompleter;
         late StreamController<int> inStream;
@@ -128,7 +128,7 @@ void main() {
         });
 
         test(
-            'when the authenticated user is revoked then the stream is closed with an error.',
+            'and the authenticated user is revoked then stream is closed with ServerpodUnauthenticatedException.',
             () async {
           await expectLater(
             session.messages.authenticationRevoked(
@@ -150,7 +150,7 @@ void main() {
         });
 
         test(
-            'when the authenticated user is revoked then the stream is closed with an error.',
+            'and the required scope for an endpoint is revoked then stream is closed with ServerpodInsufficientAccessException.',
             () async {
           await expectLater(
             session.messages.authenticationRevoked(
@@ -171,7 +171,7 @@ void main() {
         });
       });
 
-      group('connected to two authenticated streaming methods', () {
+      group('when connected to two authenticated streaming methods', () {
         late Completer<dynamic> streamClosedCompleter1;
         late Completer<int> valueReceivedCompleter1;
         late StreamController<int> inStream1;
@@ -232,7 +232,7 @@ void main() {
         });
 
         test(
-            'when the authenticated user is revoked then streams are closed with errors.',
+            'and the authenticated user is revoked then streams are closed with ServerpodUnauthenticatedException.',
             () async {
           await expectLater(
             session.messages.authenticationRevoked(
@@ -258,7 +258,7 @@ void main() {
         });
 
         test(
-            'when the required scope for an endpoint is revoked then streams are closed with an error.',
+            'and the required scope for an endpoint is revoked then streams are closed with ServerpodInsufficientAccessException.',
             () async {
           await expectLater(
             session.messages.authenticationRevoked(

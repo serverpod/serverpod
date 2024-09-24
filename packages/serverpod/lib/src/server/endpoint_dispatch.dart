@@ -87,8 +87,6 @@ abstract class EndpointDispatch {
       session: callContext.session,
     );
 
-    await methodStreamCallContext.init();
-
     return methodStreamCallContext;
   }
 
@@ -359,8 +357,6 @@ class MethodStreamCallContext {
   /// The input streams to pass to the method.
   final List<StreamParameterDescription> inputStreams;
 
-  OnRevokedAuthenticationCallback? _onRevokedAuthentication;
-
   MessageCentralListenerCallback? _revokedAuthenticationCallback;
 
   final Session _session;
@@ -376,18 +372,35 @@ class MethodStreamCallContext {
     required Session session,
   }) : _session = session;
 
-  /// Initializes the context.
-  Future<void> init() async {
+  /// Call when the stream call is cancelled to do proper cleanup.
+  void onStreamCancelled() {
+    var localRevokedAuthenticationCallback = _revokedAuthenticationCallback;
+    var localAuthenticationInfo = _authenticationInfo;
+
+    if (localRevokedAuthenticationCallback != null &&
+        localAuthenticationInfo != null) {
+      _session.messages.removeListener(
+        MessageCentralServerpodChannels.revokedAuthentication(
+          localAuthenticationInfo.userId,
+        ),
+        localRevokedAuthenticationCallback,
+      );
+    }
+  }
+
+  /// Sets a callback that is called when the authentication is revoked.
+  /// If this is not set, an exception will be thrown when authentication is revoked.
+  Future<void> setOnRevokedAuthenticationCallback(
+    OnRevokedAuthenticationCallback onRevokedAuthenticationCallback,
+  ) async {
     var authenticationIsRequired =
         endpoint.requireLogin || endpoint.requiredScopes.isNotEmpty;
 
     if (authenticationIsRequired) {
       var authenticationInfo = await _session.authenticated;
       if (authenticationInfo == null) {
-        throw NotAuthorizedException(
-          ResultAuthenticationFailed.unauthenticated(
-            'Authentication was required but no authentication info could be retrieved.',
-          ),
+        throw StateError(
+          'Authentication was required but no authentication info could be retrieved.',
         );
       }
 
@@ -410,14 +423,7 @@ class MethodStreamCallContext {
         };
 
         if (authenticationRevokedReason != null) {
-          var localOnRevokedAuthentication = _onRevokedAuthentication;
-          if (localOnRevokedAuthentication == null) {
-            throw StateError(
-              'Authentication was revoked but no callback was set.',
-            );
-          }
-
-          localOnRevokedAuthentication(authenticationRevokedReason);
+          onRevokedAuthenticationCallback(authenticationRevokedReason);
         }
       }
 
@@ -430,30 +436,6 @@ class MethodStreamCallContext {
 
       _revokedAuthenticationCallback = localRevokedAuthenticationCallback;
     }
-  }
-
-  /// Call when the stream call is cancelled to do proper cleanup.
-  void onStreamCancelled() {
-    var localRevokedAuthenticationCallback = _revokedAuthenticationCallback;
-    var localAuthenticationInfo = _authenticationInfo;
-
-    if (localRevokedAuthenticationCallback != null &&
-        localAuthenticationInfo != null) {
-      _session.messages.removeListener(
-        MessageCentralServerpodChannels.revokedAuthentication(
-          localAuthenticationInfo.userId,
-        ),
-        localRevokedAuthenticationCallback,
-      );
-    }
-  }
-
-  /// Sets a callback that is called when the authentication is revoked.
-  /// If this is not set, an exception will be thrown when authentication is revoked.
-  void setOnRevokedAuthenticationCallback(
-    OnRevokedAuthenticationCallback? callback,
-  ) {
-    _onRevokedAuthentication = callback;
   }
 }
 
