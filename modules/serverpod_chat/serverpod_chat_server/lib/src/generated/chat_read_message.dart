@@ -12,14 +12,16 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Message to notify the server that messages have been read.
-abstract class ChatReadMessage extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class ChatReadMessage
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   ChatReadMessage._({
     int? id,
     required this.channel,
     required this.userId,
     required this.lastReadMessageId,
-  }) : super(id);
+  }) {
+    _id = id;
+  }
 
   factory ChatReadMessage({
     int? id,
@@ -41,6 +43,8 @@ abstract class ChatReadMessage extends _i1.TableRow
 
   static const db = ChatReadMessageRepository._();
 
+  int? _id;
+
   /// The channel this that has been read.
   String channel;
 
@@ -49,6 +53,16 @@ abstract class ChatReadMessage extends _i1.TableRow
 
   /// The id of the last read message.
   int lastReadMessageId;
+
+  @override
+  int? get id {
+    return _id;
+  }
+
+  @override
+  set id(int? value) {
+    _id = value;
+  }
 
   @override
   _i1.Table get table => t;

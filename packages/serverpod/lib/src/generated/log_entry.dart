@@ -13,8 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Bindings to a log entry in the database.
-abstract class LogEntry extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class LogEntry implements _i1.TableRow, _i1.ProtocolSerialization {
   LogEntry._({
     int? id,
     required this.sessionLogId,
@@ -27,7 +26,9 @@ abstract class LogEntry extends _i1.TableRow
     this.error,
     this.stackTrace,
     required this.order,
-  }) : super(id);
+  }) {
+    _id = id;
+  }
 
   factory LogEntry({
     int? id,
@@ -63,6 +64,8 @@ abstract class LogEntry extends _i1.TableRow
 
   static const db = LogEntryRepository._();
 
+  int? _id;
+
   /// The id of the session this log entry is associated with.
   int sessionLogId;
 
@@ -92,6 +95,16 @@ abstract class LogEntry extends _i1.TableRow
 
   /// The order of this log entry, used for sorting.
   int order;
+
+  @override
+  int? get id {
+    return _id;
+  }
+
+  @override
+  set id(int? value) {
+    _id = value;
+  }
 
   @override
   _i1.Table get table => t;

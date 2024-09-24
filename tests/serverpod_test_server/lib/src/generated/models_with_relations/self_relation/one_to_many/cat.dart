@@ -12,14 +12,16 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../protocol.dart' as _i2;
 
-abstract class Cat extends _i1.TableRow implements _i1.ProtocolSerialization {
+abstract class Cat implements _i1.TableRow, _i1.ProtocolSerialization {
   Cat._({
     int? id,
     required this.name,
     this.motherId,
     this.mother,
     this.kittens,
-  }) : super(id);
+  }) {
+    _id = id;
+  }
 
   factory Cat({
     int? id,
@@ -48,6 +50,8 @@ abstract class Cat extends _i1.TableRow implements _i1.ProtocolSerialization {
 
   static const db = CatRepository._();
 
+  int? _id;
+
   String name;
 
   int? motherId;
@@ -55,6 +59,16 @@ abstract class Cat extends _i1.TableRow implements _i1.ProtocolSerialization {
   _i2.Cat? mother;
 
   List<_i2.Cat>? kittens;
+
+  @override
+  int? get id {
+    return _id;
+  }
+
+  @override
+  set id(int? value) {
+    _id = value;
+  }
 
   @override
   _i1.Table get table => t;

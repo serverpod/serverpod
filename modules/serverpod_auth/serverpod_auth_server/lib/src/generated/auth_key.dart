@@ -12,8 +12,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Provides a method of access for a user to authenticate with the server.
-abstract class AuthKey extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class AuthKey implements _i1.TableRow, _i1.ProtocolSerialization {
   AuthKey._({
     int? id,
     required this.userId,
@@ -21,7 +20,9 @@ abstract class AuthKey extends _i1.TableRow
     this.key,
     required this.scopeNames,
     required this.method,
-  }) : super(id);
+  }) {
+    _id = id;
+  }
 
   factory AuthKey({
     int? id,
@@ -49,6 +50,8 @@ abstract class AuthKey extends _i1.TableRow
 
   static const db = AuthKeyRepository._();
 
+  int? _id;
+
   /// The id of the user to provide access to.
   int userId;
 
@@ -64,6 +67,16 @@ abstract class AuthKey extends _i1.TableRow
   /// The method of signing in this key was generated through. This can be email
   /// or different social logins.
   String method;
+
+  @override
+  int? get id {
+    return _id;
+  }
+
+  @override
+  set id(int? value) {
+    _id = value;
+  }
 
   @override
   _i1.Table get table => t;

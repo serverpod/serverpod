@@ -11,8 +11,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class DateTimeDefaultMix extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class DateTimeDefaultMix
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   DateTimeDefaultMix._({
     int? id,
     DateTime? dateTimeDefaultAndDefaultModel,
@@ -24,8 +24,9 @@ abstract class DateTimeDefaultMix extends _i1.TableRow
             DateTime.parse('2024-05-01T22:00:00.000Z'),
         dateTimeDefaultModelAndDefaultPersist =
             dateTimeDefaultModelAndDefaultPersist ??
-                DateTime.parse('2024-05-01T22:00:00.000Z'),
-        super(id);
+                DateTime.parse('2024-05-01T22:00:00.000Z') {
+    _id = id;
+  }
 
   factory DateTimeDefaultMix({
     int? id,
@@ -50,11 +51,23 @@ abstract class DateTimeDefaultMix extends _i1.TableRow
 
   static const db = DateTimeDefaultMixRepository._();
 
+  int? _id;
+
   DateTime dateTimeDefaultAndDefaultModel;
 
   DateTime dateTimeDefaultAndDefaultPersist;
 
   DateTime dateTimeDefaultModelAndDefaultPersist;
+
+  @override
+  int? get id {
+    return _id;
+  }
+
+  @override
+  set id(int? value) {
+    _id = value;
+  }
 
   @override
   _i1.Table get table => t;

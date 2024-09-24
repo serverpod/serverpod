@@ -16,8 +16,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// If you need to share a user's info with other users, use the
 /// [UserInfoPublic] instead. You can retrieve a [UserInfoPublic] through the
 /// toPublic() method.
-abstract class UserInfo extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class UserInfo implements _i1.TableRow, _i1.ProtocolSerialization {
   UserInfo._({
     int? id,
     required this.userIdentifier,
@@ -28,7 +27,9 @@ abstract class UserInfo extends _i1.TableRow
     this.imageUrl,
     required this.scopeNames,
     required this.blocked,
-  }) : super(id);
+  }) {
+    _id = id;
+  }
 
   factory UserInfo({
     int? id,
@@ -62,6 +63,8 @@ abstract class UserInfo extends _i1.TableRow
 
   static const db = UserInfoRepository._();
 
+  int? _id;
+
   /// Unique identifier of the user, may contain different information depending
   /// on how the user was created.
   String userIdentifier;
@@ -86,6 +89,16 @@ abstract class UserInfo extends _i1.TableRow
 
   /// True if the user is blocked from signing in.
   bool blocked;
+
+  @override
+  int? get id {
+    return _id;
+  }
+
+  @override
+  set id(int? value) {
+    _id = value;
+  }
 
   @override
   _i1.Table get table => t;

@@ -11,15 +11,16 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class DoubleDefault extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class DoubleDefault
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   DoubleDefault._({
     int? id,
     double? doubleDefault,
     double? doubleDefaultNull,
   })  : doubleDefault = doubleDefault ?? 10.5,
-        doubleDefaultNull = doubleDefaultNull ?? 20.5,
-        super(id);
+        doubleDefaultNull = doubleDefaultNull ?? 20.5 {
+    _id = id;
+  }
 
   factory DoubleDefault({
     int? id,
@@ -40,9 +41,21 @@ abstract class DoubleDefault extends _i1.TableRow
 
   static const db = DoubleDefaultRepository._();
 
+  int? _id;
+
   double doubleDefault;
 
   double? doubleDefaultNull;
+
+  @override
+  int? get id {
+    return _id;
+  }
+
+  @override
+  set id(int? value) {
+    _id = value;
+  }
 
   @override
   _i1.Table get table => t;

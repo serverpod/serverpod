@@ -11,8 +11,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class StringDefaultModel extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class StringDefaultModel
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   StringDefaultModel._({
     int? id,
     String? stringDefaultModel,
@@ -20,8 +20,9 @@ abstract class StringDefaultModel extends _i1.TableRow
   })  : stringDefaultModel =
             stringDefaultModel ?? 'This is a default model value',
         stringDefaultModelNull =
-            stringDefaultModelNull ?? 'This is a default model null value',
-        super(id);
+            stringDefaultModelNull ?? 'This is a default model null value' {
+    _id = id;
+  }
 
   factory StringDefaultModel({
     int? id,
@@ -42,9 +43,21 @@ abstract class StringDefaultModel extends _i1.TableRow
 
   static const db = StringDefaultModelRepository._();
 
+  int? _id;
+
   String stringDefaultModel;
 
   String stringDefaultModelNull;
+
+  @override
+  int? get id {
+    return _id;
+  }
+
+  @override
+  set id(int? value) {
+    _id = value;
+  }
 
   @override
   _i1.Table get table => t;

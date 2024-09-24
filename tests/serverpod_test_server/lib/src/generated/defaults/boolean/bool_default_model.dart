@@ -11,8 +11,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class BoolDefaultModel extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class BoolDefaultModel
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   BoolDefaultModel._({
     int? id,
     bool? boolDefaultModelTrue,
@@ -20,8 +20,9 @@ abstract class BoolDefaultModel extends _i1.TableRow
     bool? boolDefaultModelNullFalse,
   })  : boolDefaultModelTrue = boolDefaultModelTrue ?? true,
         boolDefaultModelFalse = boolDefaultModelFalse ?? false,
-        boolDefaultModelNullFalse = boolDefaultModelNullFalse ?? false,
-        super(id);
+        boolDefaultModelNullFalse = boolDefaultModelNullFalse ?? false {
+    _id = id;
+  }
 
   factory BoolDefaultModel({
     int? id,
@@ -44,11 +45,23 @@ abstract class BoolDefaultModel extends _i1.TableRow
 
   static const db = BoolDefaultModelRepository._();
 
+  int? _id;
+
   bool boolDefaultModelTrue;
 
   bool boolDefaultModelFalse;
 
   bool boolDefaultModelNullFalse;
+
+  @override
+  int? get id {
+    return _id;
+  }
+
+  @override
+  set id(int? value) {
+    _id = value;
+  }
 
   @override
   _i1.Table get table => t;

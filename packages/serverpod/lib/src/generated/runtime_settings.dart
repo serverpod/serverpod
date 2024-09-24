@@ -13,15 +13,17 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Runtime settings of the server.
-abstract class RuntimeSettings extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class RuntimeSettings
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   RuntimeSettings._({
     int? id,
     required this.logSettings,
     required this.logSettingsOverrides,
     required this.logServiceCalls,
     required this.logMalformedCalls,
-  }) : super(id);
+  }) {
+    _id = id;
+  }
 
   factory RuntimeSettings({
     int? id,
@@ -49,6 +51,8 @@ abstract class RuntimeSettings extends _i1.TableRow
 
   static const db = RuntimeSettingsRepository._();
 
+  int? _id;
+
   /// Log settings.
   _i2.LogSettings logSettings;
 
@@ -60,6 +64,16 @@ abstract class RuntimeSettings extends _i1.TableRow
 
   /// True if malformed calls should be logged.
   bool logMalformedCalls;
+
+  @override
+  int? get id {
+    return _id;
+  }
+
+  @override
+  set id(int? value) {
+    _id = value;
+  }
 
   @override
   _i1.Table get table => t;

@@ -12,14 +12,16 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class CityWithLongTableName extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class CityWithLongTableName
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   CityWithLongTableName._({
     int? id,
     required this.name,
     this.citizens,
     this.organizations,
-  }) : super(id);
+  }) {
+    _id = id;
+  }
 
   factory CityWithLongTableName({
     int? id,
@@ -48,11 +50,23 @@ abstract class CityWithLongTableName extends _i1.TableRow
 
   static const db = CityWithLongTableNameRepository._();
 
+  int? _id;
+
   String name;
 
   List<_i2.PersonWithLongTableName>? citizens;
 
   List<_i2.OrganizationWithLongTableName>? organizations;
+
+  @override
+  int? get id {
+    return _id;
+  }
+
+  @override
+  set id(int? value) {
+    _id = value;
+  }
 
   @override
   _i1.Table get table => t;

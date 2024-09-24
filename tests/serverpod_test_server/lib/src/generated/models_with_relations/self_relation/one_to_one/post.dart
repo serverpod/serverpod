@@ -12,14 +12,16 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../protocol.dart' as _i2;
 
-abstract class Post extends _i1.TableRow implements _i1.ProtocolSerialization {
+abstract class Post implements _i1.TableRow, _i1.ProtocolSerialization {
   Post._({
     int? id,
     required this.content,
     this.previous,
     this.nextId,
     this.next,
-  }) : super(id);
+  }) {
+    _id = id;
+  }
 
   factory Post({
     int? id,
@@ -49,6 +51,8 @@ abstract class Post extends _i1.TableRow implements _i1.ProtocolSerialization {
 
   static const db = PostRepository._();
 
+  int? _id;
+
   String content;
 
   _i2.Post? previous;
@@ -56,6 +60,16 @@ abstract class Post extends _i1.TableRow implements _i1.ProtocolSerialization {
   int? nextId;
 
   _i2.Post? next;
+
+  @override
+  int? get id {
+    return _id;
+  }
+
+  @override
+  set id(int? value) {
+    _id = value;
+  }
 
   @override
   _i1.Table get table => t;

@@ -11,8 +11,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class DoubleDefaultMix extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class DoubleDefaultMix
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   DoubleDefaultMix._({
     int? id,
     double? doubleDefaultAndDefaultModel,
@@ -21,8 +21,9 @@ abstract class DoubleDefaultMix extends _i1.TableRow
   })  : doubleDefaultAndDefaultModel = doubleDefaultAndDefaultModel ?? 20.5,
         doubleDefaultAndDefaultPersist = doubleDefaultAndDefaultPersist ?? 10.5,
         doubleDefaultModelAndDefaultPersist =
-            doubleDefaultModelAndDefaultPersist ?? 10.5,
-        super(id);
+            doubleDefaultModelAndDefaultPersist ?? 10.5 {
+    _id = id;
+  }
 
   factory DoubleDefaultMix({
     int? id,
@@ -49,11 +50,23 @@ abstract class DoubleDefaultMix extends _i1.TableRow
 
   static const db = DoubleDefaultMixRepository._();
 
+  int? _id;
+
   double doubleDefaultAndDefaultModel;
 
   double doubleDefaultAndDefaultPersist;
 
   double doubleDefaultModelAndDefaultPersist;
+
+  @override
+  int? get id {
+    return _id;
+  }
+
+  @override
+  set id(int? value) {
+    _id = value;
+  }
 
   @override
   _i1.Table get table => t;

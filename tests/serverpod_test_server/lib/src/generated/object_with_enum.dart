@@ -12,8 +12,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
-abstract class ObjectWithEnum extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class ObjectWithEnum
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectWithEnum._({
     int? id,
     required this.testEnum,
@@ -21,7 +21,9 @@ abstract class ObjectWithEnum extends _i1.TableRow
     required this.enumList,
     required this.nullableEnumList,
     required this.enumListList,
-  }) : super(id);
+  }) {
+    _id = id;
+  }
 
   factory ObjectWithEnum({
     int? id,
@@ -57,6 +59,8 @@ abstract class ObjectWithEnum extends _i1.TableRow
 
   static const db = ObjectWithEnumRepository._();
 
+  int? _id;
+
   _i2.TestEnum testEnum;
 
   _i2.TestEnum? nullableEnum;
@@ -66,6 +70,16 @@ abstract class ObjectWithEnum extends _i1.TableRow
   List<_i2.TestEnum?> nullableEnumList;
 
   List<List<_i2.TestEnum>> enumListList;
+
+  @override
+  int? get id {
+    return _id;
+  }
+
+  @override
+  set id(int? value) {
+    _id = value;
+  }
 
   @override
   _i1.Table get table => t;

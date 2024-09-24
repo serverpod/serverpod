@@ -12,12 +12,14 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Just some simple data.
-abstract class SimpleDateTime extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class SimpleDateTime
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   SimpleDateTime._({
     int? id,
     required this.dateTime,
-  }) : super(id);
+  }) {
+    _id = id;
+  }
 
   factory SimpleDateTime({
     int? id,
@@ -36,8 +38,20 @@ abstract class SimpleDateTime extends _i1.TableRow
 
   static const db = SimpleDateTimeRepository._();
 
+  int? _id;
+
   /// The only field of [SimpleDateTime]
   DateTime dateTime;
+
+  @override
+  int? get id {
+    return _id;
+  }
+
+  @override
+  set id(int? value) {
+    _id = value;
+  }
 
   @override
   _i1.Table get table => t;

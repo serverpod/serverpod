@@ -11,13 +11,14 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class UniqueData extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class UniqueData implements _i1.TableRow, _i1.ProtocolSerialization {
   UniqueData._({
     int? id,
     required this.number,
     required this.email,
-  }) : super(id);
+  }) {
+    _id = id;
+  }
 
   factory UniqueData({
     int? id,
@@ -37,9 +38,21 @@ abstract class UniqueData extends _i1.TableRow
 
   static const db = UniqueDataRepository._();
 
+  int? _id;
+
   int number;
 
   String email;
+
+  @override
+  int? get id {
+    return _id;
+  }
+
+  @override
+  set id(int? value) {
+    _id = value;
+  }
 
   @override
   _i1.Table get table => t;

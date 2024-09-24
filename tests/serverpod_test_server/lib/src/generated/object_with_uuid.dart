@@ -11,13 +11,15 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class ObjectWithUuid extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class ObjectWithUuid
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectWithUuid._({
     int? id,
     required this.uuid,
     this.uuidNullable,
-  }) : super(id);
+  }) {
+    _id = id;
+  }
 
   factory ObjectWithUuid({
     int? id,
@@ -40,9 +42,21 @@ abstract class ObjectWithUuid extends _i1.TableRow
 
   static const db = ObjectWithUuidRepository._();
 
+  int? _id;
+
   _i1.UuidValue uuid;
 
   _i1.UuidValue? uuidNullable;
+
+  @override
+  int? get id {
+    return _id;
+  }
+
+  @override
+  set id(int? value) {
+    _id = value;
+  }
 
   @override
   _i1.Table get table => t;

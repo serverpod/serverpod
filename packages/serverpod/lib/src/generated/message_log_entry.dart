@@ -12,8 +12,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A log entry for a message sent in a streaming session.
-abstract class MessageLogEntry extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class MessageLogEntry
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   MessageLogEntry._({
     int? id,
     required this.sessionLogId,
@@ -26,7 +26,9 @@ abstract class MessageLogEntry extends _i1.TableRow
     this.stackTrace,
     required this.slow,
     required this.order,
-  }) : super(id);
+  }) {
+    _id = id;
+  }
 
   factory MessageLogEntry({
     int? id,
@@ -62,6 +64,8 @@ abstract class MessageLogEntry extends _i1.TableRow
 
   static const db = MessageLogEntryRepository._();
 
+  int? _id;
+
   /// Id of the session this entry is associated with.
   int sessionLogId;
 
@@ -93,6 +97,16 @@ abstract class MessageLogEntry extends _i1.TableRow
 
   /// Used for sorting the message log.
   int order;
+
+  @override
+  int? get id {
+    return _id;
+  }
+
+  @override
+  set id(int? value) {
+    _id = value;
+  }
 
   @override
   _i1.Table get table => t;

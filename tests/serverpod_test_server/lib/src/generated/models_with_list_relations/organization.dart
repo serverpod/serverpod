@@ -12,15 +12,16 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-abstract class Organization extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class Organization implements _i1.TableRow, _i1.ProtocolSerialization {
   Organization._({
     int? id,
     required this.name,
     this.people,
     this.cityId,
     this.city,
-  }) : super(id);
+  }) {
+    _id = id;
+  }
 
   factory Organization({
     int? id,
@@ -49,6 +50,8 @@ abstract class Organization extends _i1.TableRow
 
   static const db = OrganizationRepository._();
 
+  int? _id;
+
   String name;
 
   List<_i2.Person>? people;
@@ -56,6 +59,16 @@ abstract class Organization extends _i1.TableRow
   int? cityId;
 
   _i2.City? city;
+
+  @override
+  int? get id {
+    return _id;
+  }
+
+  @override
+  set id(int? value) {
+    _id = value;
+  }
 
   @override
   _i1.Table get table => t;

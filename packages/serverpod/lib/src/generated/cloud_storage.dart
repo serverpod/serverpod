@@ -13,8 +13,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
 /// An entry in the database for an uploaded file.
-abstract class CloudStorageEntry extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class CloudStorageEntry
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   CloudStorageEntry._({
     int? id,
     required this.storageId,
@@ -23,7 +23,9 @@ abstract class CloudStorageEntry extends _i1.TableRow
     this.expiration,
     required this.byteData,
     required this.verified,
-  }) : super(id);
+  }) {
+    _id = id;
+  }
 
   factory CloudStorageEntry({
     int? id,
@@ -55,6 +57,8 @@ abstract class CloudStorageEntry extends _i1.TableRow
 
   static const db = CloudStorageEntryRepository._();
 
+  int? _id;
+
   /// The storageId, typically `public` or `private`.
   String storageId;
 
@@ -72,6 +76,16 @@ abstract class CloudStorageEntry extends _i1.TableRow
 
   /// True if the file has been verified as uploaded.
   bool verified;
+
+  @override
+  int? get id {
+    return _id;
+  }
+
+  @override
+  set id(int? value) {
+    _id = value;
+  }
 
   @override
   _i1.Table get table => t;
