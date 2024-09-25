@@ -14,7 +14,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class DurationDefaultMix
     implements _i1.TableRow, _i1.ProtocolSerialization {
   DurationDefaultMix._({
-    int? id,
+    this.id,
     Duration? durationDefaultAndDefaultModel,
     Duration? durationDefaultAndDefaultPersist,
     Duration? durationDefaultModelAndDefaultPersist,
@@ -42,9 +42,7 @@ abstract class DurationDefaultMix
                   minutes: 10,
                   seconds: 30,
                   milliseconds: 100,
-                ) {
-    _id = id;
-  }
+                );
 
   factory DurationDefaultMix({
     int? id,
@@ -69,23 +67,14 @@ abstract class DurationDefaultMix
 
   static const db = DurationDefaultMixRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   Duration durationDefaultAndDefaultModel;
 
   Duration durationDefaultAndDefaultPersist;
 
   Duration durationDefaultModelAndDefaultPersist;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

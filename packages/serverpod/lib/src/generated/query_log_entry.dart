@@ -15,7 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class QueryLogEntry
     implements _i1.TableRow, _i1.ProtocolSerialization {
   QueryLogEntry._({
-    int? id,
+    this.id,
     required this.serverId,
     required this.sessionLogId,
     this.messageId,
@@ -26,9 +26,7 @@ abstract class QueryLogEntry
     this.stackTrace,
     required this.slow,
     required this.order,
-  }) {
-    _id = id;
-  }
+  });
 
   factory QueryLogEntry({
     int? id,
@@ -64,7 +62,8 @@ abstract class QueryLogEntry
 
   static const db = QueryLogEntryRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   /// The id of the server that handled the query.
   String serverId;
@@ -97,16 +96,6 @@ abstract class QueryLogEntry
 
   /// used for sorting the query log.
   int order;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

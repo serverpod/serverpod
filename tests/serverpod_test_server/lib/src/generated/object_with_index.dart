@@ -14,12 +14,10 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class ObjectWithIndex
     implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectWithIndex._({
-    int? id,
+    this.id,
     required this.indexed,
     required this.indexed2,
-  }) {
-    _id = id;
-  }
+  });
 
   factory ObjectWithIndex({
     int? id,
@@ -39,21 +37,12 @@ abstract class ObjectWithIndex
 
   static const db = ObjectWithIndexRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   int indexed;
 
   int indexed2;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

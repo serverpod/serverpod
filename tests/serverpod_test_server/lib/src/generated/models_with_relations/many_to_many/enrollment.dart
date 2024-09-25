@@ -14,14 +14,12 @@ import '../../protocol.dart' as _i2;
 
 abstract class Enrollment implements _i1.TableRow, _i1.ProtocolSerialization {
   Enrollment._({
-    int? id,
+    this.id,
     required this.studentId,
     this.student,
     required this.courseId,
     this.course,
-  }) {
-    _id = id;
-  }
+  });
 
   factory Enrollment({
     int? id,
@@ -51,7 +49,8 @@ abstract class Enrollment implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = EnrollmentRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   int studentId;
 
@@ -60,16 +59,6 @@ abstract class Enrollment implements _i1.TableRow, _i1.ProtocolSerialization {
   int courseId;
 
   _i2.Course? course;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

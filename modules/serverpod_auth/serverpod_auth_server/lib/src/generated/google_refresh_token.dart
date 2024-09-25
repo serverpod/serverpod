@@ -15,12 +15,10 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class GoogleRefreshToken
     implements _i1.TableRow, _i1.ProtocolSerialization {
   GoogleRefreshToken._({
-    int? id,
+    this.id,
     required this.userId,
     required this.refreshToken,
-  }) {
-    _id = id;
-  }
+  });
 
   factory GoogleRefreshToken({
     int? id,
@@ -40,23 +38,14 @@ abstract class GoogleRefreshToken
 
   static const db = GoogleRefreshTokenRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   /// The user id associated with the token.
   int userId;
 
   /// The token itself.
   String refreshToken;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

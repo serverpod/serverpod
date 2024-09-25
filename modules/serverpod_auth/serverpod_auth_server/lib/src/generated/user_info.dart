@@ -18,7 +18,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// toPublic() method.
 abstract class UserInfo implements _i1.TableRow, _i1.ProtocolSerialization {
   UserInfo._({
-    int? id,
+    this.id,
     required this.userIdentifier,
     this.userName,
     this.fullName,
@@ -27,9 +27,7 @@ abstract class UserInfo implements _i1.TableRow, _i1.ProtocolSerialization {
     this.imageUrl,
     required this.scopeNames,
     required this.blocked,
-  }) {
-    _id = id;
-  }
+  });
 
   factory UserInfo({
     int? id,
@@ -63,7 +61,8 @@ abstract class UserInfo implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = UserInfoRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   /// Unique identifier of the user, may contain different information depending
   /// on how the user was created.
@@ -89,16 +88,6 @@ abstract class UserInfo implements _i1.TableRow, _i1.ProtocolSerialization {
 
   /// True if the user is blocked from signing in.
   bool blocked;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

@@ -14,11 +14,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class IntDefaultPersist
     implements _i1.TableRow, _i1.ProtocolSerialization {
   IntDefaultPersist._({
-    int? id,
+    this.id,
     this.intDefaultPersist,
-  }) {
-    _id = id;
-  }
+  });
 
   factory IntDefaultPersist({
     int? id,
@@ -36,19 +34,10 @@ abstract class IntDefaultPersist
 
   static const db = IntDefaultPersistRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   int? intDefaultPersist;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

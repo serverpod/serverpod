@@ -13,12 +13,10 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ParentUser implements _i1.TableRow, _i1.ProtocolSerialization {
   ParentUser._({
-    int? id,
+    this.id,
     this.name,
     this.userInfoId,
-  }) {
-    _id = id;
-  }
+  });
 
   factory ParentUser({
     int? id,
@@ -38,21 +36,12 @@ abstract class ParentUser implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = ParentUserRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   String? name;
 
   int? userInfoId;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

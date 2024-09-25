@@ -15,11 +15,9 @@ import '../protocol.dart' as _i2;
 abstract class RelationEmptyModel
     implements _i1.TableRow, _i1.ProtocolSerialization {
   RelationEmptyModel._({
-    int? id,
+    this.id,
     this.items,
-  }) {
-    _id = id;
-  }
+  });
 
   factory RelationEmptyModel({
     int? id,
@@ -40,19 +38,10 @@ abstract class RelationEmptyModel
 
   static const db = RelationEmptyModelRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   List<_i2.EmptyModelRelationItem>? items;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

@@ -16,11 +16,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class ReadWriteTestEntry
     implements _i1.TableRow, _i1.ProtocolSerialization {
   ReadWriteTestEntry._({
-    int? id,
+    this.id,
     required this.number,
-  }) {
-    _id = id;
-  }
+  });
 
   factory ReadWriteTestEntry({
     int? id,
@@ -38,20 +36,11 @@ abstract class ReadWriteTestEntry
 
   static const db = ReadWriteTestEntryRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   /// A random number, to verify that the write/read was performed correctly.
   int number;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

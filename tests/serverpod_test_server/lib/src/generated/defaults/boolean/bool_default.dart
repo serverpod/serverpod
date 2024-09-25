@@ -13,15 +13,13 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class BoolDefault implements _i1.TableRow, _i1.ProtocolSerialization {
   BoolDefault._({
-    int? id,
+    this.id,
     bool? boolDefaultTrue,
     bool? boolDefaultFalse,
     bool? boolDefaultNullFalse,
   })  : boolDefaultTrue = boolDefaultTrue ?? true,
         boolDefaultFalse = boolDefaultFalse ?? false,
-        boolDefaultNullFalse = boolDefaultNullFalse ?? false {
-    _id = id;
-  }
+        boolDefaultNullFalse = boolDefaultNullFalse ?? false;
 
   factory BoolDefault({
     int? id,
@@ -43,23 +41,14 @@ abstract class BoolDefault implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = BoolDefaultRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   bool boolDefaultTrue;
 
   bool boolDefaultFalse;
 
   bool? boolDefaultNullFalse;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

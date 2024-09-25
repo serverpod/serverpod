@@ -15,7 +15,7 @@ import 'protocol.dart' as _i3;
 
 abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
   Types._({
-    int? id,
+    this.id,
     this.anInt,
     this.aBool,
     this.aDouble,
@@ -26,9 +26,7 @@ abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
     this.aUuid,
     this.anEnum,
     this.aStringifiedEnum,
-  }) {
-    _id = id;
-  }
+  });
 
   factory Types({
     int? id,
@@ -77,7 +75,8 @@ abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = TypesRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   int? anInt;
 
@@ -98,16 +97,6 @@ abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
   _i3.TestEnum? anEnum;
 
   _i3.TestEnumStringified? aStringifiedEnum;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

@@ -14,7 +14,7 @@ import '../../protocol.dart' as _i2;
 
 abstract class EnumDefault implements _i1.TableRow, _i1.ProtocolSerialization {
   EnumDefault._({
-    int? id,
+    this.id,
     _i2.ByNameEnum? byNameEnumDefault,
     _i2.ByNameEnum? byNameEnumDefaultNull,
     _i2.ByIndexEnum? byIndexEnumDefault,
@@ -23,9 +23,7 @@ abstract class EnumDefault implements _i1.TableRow, _i1.ProtocolSerialization {
         byNameEnumDefaultNull = byNameEnumDefaultNull ?? _i2.ByNameEnum.byName2,
         byIndexEnumDefault = byIndexEnumDefault ?? _i2.ByIndexEnum.byIndex1,
         byIndexEnumDefaultNull =
-            byIndexEnumDefaultNull ?? _i2.ByIndexEnum.byIndex2 {
-    _id = id;
-  }
+            byIndexEnumDefaultNull ?? _i2.ByIndexEnum.byIndex2;
 
   factory EnumDefault({
     int? id,
@@ -58,7 +56,8 @@ abstract class EnumDefault implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = EnumDefaultRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   _i2.ByNameEnum byNameEnumDefault;
 
@@ -67,16 +66,6 @@ abstract class EnumDefault implements _i1.TableRow, _i1.ProtocolSerialization {
   _i2.ByIndexEnum byIndexEnumDefault;
 
   _i2.ByIndexEnum? byIndexEnumDefaultNull;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

@@ -15,7 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class SessionLogEntry
     implements _i1.TableRow, _i1.ProtocolSerialization {
   SessionLogEntry._({
-    int? id,
+    this.id,
     required this.serverId,
     required this.time,
     this.module,
@@ -29,9 +29,7 @@ abstract class SessionLogEntry
     this.authenticatedUserId,
     this.isOpen,
     required this.touched,
-  }) {
-    _id = id;
-  }
+  });
 
   factory SessionLogEntry({
     int? id,
@@ -73,7 +71,8 @@ abstract class SessionLogEntry
 
   static const db = SessionLogEntryRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   /// The id of the server that handled this session.
   String serverId;
@@ -117,16 +116,6 @@ abstract class SessionLogEntry
 
   /// Timestamp of the last time this record was modified.
   DateTime touched;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

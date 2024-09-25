@@ -14,13 +14,11 @@ import '../../protocol.dart' as _i2;
 
 abstract class Company implements _i1.TableRow, _i1.ProtocolSerialization {
   Company._({
-    int? id,
+    this.id,
     required this.name,
     required this.townId,
     this.town,
-  }) {
-    _id = id;
-  }
+  });
 
   factory Company({
     int? id,
@@ -45,23 +43,14 @@ abstract class Company implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = CompanyRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   String name;
 
   int townId;
 
   _i2.Town? town;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

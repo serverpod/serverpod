@@ -13,13 +13,11 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class IntDefault implements _i1.TableRow, _i1.ProtocolSerialization {
   IntDefault._({
-    int? id,
+    this.id,
     int? intDefault,
     int? intDefaultNull,
   })  : intDefault = intDefault ?? 10,
-        intDefaultNull = intDefaultNull ?? 20 {
-    _id = id;
-  }
+        intDefaultNull = intDefaultNull ?? 20;
 
   factory IntDefault({
     int? id,
@@ -39,21 +37,12 @@ abstract class IntDefault implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = IntDefaultRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   int intDefault;
 
   int? intDefaultNull;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

@@ -15,12 +15,10 @@ import '../../protocol.dart' as _i2;
 abstract class EnumDefaultPersist
     implements _i1.TableRow, _i1.ProtocolSerialization {
   EnumDefaultPersist._({
-    int? id,
+    this.id,
     this.byNameEnumDefaultPersist,
     this.byIndexEnumDefaultPersist,
-  }) {
-    _id = id;
-  }
+  });
 
   factory EnumDefaultPersist({
     int? id,
@@ -48,21 +46,12 @@ abstract class EnumDefaultPersist
 
   static const db = EnumDefaultPersistRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   _i2.ByNameEnum? byNameEnumDefaultPersist;
 
   _i2.ByIndexEnum? byIndexEnumDefaultPersist;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

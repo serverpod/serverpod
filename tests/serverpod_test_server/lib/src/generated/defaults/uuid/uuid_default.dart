@@ -14,7 +14,7 @@ import 'package:uuid/uuid.dart' as _i2;
 
 abstract class UuidDefault implements _i1.TableRow, _i1.ProtocolSerialization {
   UuidDefault._({
-    int? id,
+    this.id,
     _i1.UuidValue? uuidDefaultRandom,
     _i1.UuidValue? uuidDefaultRandomNull,
     _i1.UuidValue? uuidDefaultStr,
@@ -24,9 +24,7 @@ abstract class UuidDefault implements _i1.TableRow, _i1.ProtocolSerialization {
         uuidDefaultStr = uuidDefaultStr ??
             _i1.UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
         uuidDefaultStrNull = uuidDefaultStrNull ??
-            _i1.UuidValue.fromString('3f2504e0-4f89-11d3-9a0c-0305e82c3301') {
-    _id = id;
-  }
+            _i1.UuidValue.fromString('3f2504e0-4f89-11d3-9a0c-0305e82c3301');
 
   factory UuidDefault({
     int? id,
@@ -58,7 +56,8 @@ abstract class UuidDefault implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = UuidDefaultRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   _i1.UuidValue uuidDefaultRandom;
 
@@ -67,16 +66,6 @@ abstract class UuidDefault implements _i1.TableRow, _i1.ProtocolSerialization {
   _i1.UuidValue uuidDefaultStr;
 
   _i1.UuidValue? uuidDefaultStrNull;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

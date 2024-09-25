@@ -17,16 +17,14 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class ServerHealthMetric
     implements _i1.TableRow, _i1.ProtocolSerialization {
   ServerHealthMetric._({
-    int? id,
+    this.id,
     required this.name,
     required this.serverId,
     required this.timestamp,
     required this.isHealthy,
     required this.value,
     required this.granularity,
-  }) {
-    _id = id;
-  }
+  });
 
   factory ServerHealthMetric({
     int? id,
@@ -55,7 +53,8 @@ abstract class ServerHealthMetric
 
   static const db = ServerHealthMetricRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   /// The name of the metric.
   String name;
@@ -75,16 +74,6 @@ abstract class ServerHealthMetric
   /// The granularity of this timestamp, null represents 1 minute, other valid
   /// values are 60 minutes and 1440 minutes (one day).
   int granularity;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

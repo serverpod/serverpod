@@ -14,11 +14,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class ObjectWithSelfParent
     implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectWithSelfParent._({
-    int? id,
+    this.id,
     this.other,
-  }) {
-    _id = id;
-  }
+  });
 
   factory ObjectWithSelfParent({
     int? id,
@@ -37,19 +35,10 @@ abstract class ObjectWithSelfParent
 
   static const db = ObjectWithSelfParentRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   int? other;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

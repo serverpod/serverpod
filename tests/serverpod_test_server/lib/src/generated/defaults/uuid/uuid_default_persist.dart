@@ -14,12 +14,10 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class UuidDefaultPersist
     implements _i1.TableRow, _i1.ProtocolSerialization {
   UuidDefaultPersist._({
-    int? id,
+    this.id,
     this.uuidDefaultPersistRandom,
     this.uuidDefaultPersistStr,
-  }) {
-    _id = id;
-  }
+  });
 
   factory UuidDefaultPersist({
     int? id,
@@ -46,21 +44,12 @@ abstract class UuidDefaultPersist
 
   static const db = UuidDefaultPersistRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   _i1.UuidValue? uuidDefaultPersistRandom;
 
   _i1.UuidValue? uuidDefaultPersistStr;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

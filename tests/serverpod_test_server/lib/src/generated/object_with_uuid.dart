@@ -14,12 +14,10 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class ObjectWithUuid
     implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectWithUuid._({
-    int? id,
+    this.id,
     required this.uuid,
     this.uuidNullable,
-  }) {
-    _id = id;
-  }
+  });
 
   factory ObjectWithUuid({
     int? id,
@@ -42,21 +40,12 @@ abstract class ObjectWithUuid
 
   static const db = ObjectWithUuidRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   _i1.UuidValue uuid;
 
   _i1.UuidValue? uuidNullable;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

@@ -15,7 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class MessageLogEntry
     implements _i1.TableRow, _i1.ProtocolSerialization {
   MessageLogEntry._({
-    int? id,
+    this.id,
     required this.sessionLogId,
     required this.serverId,
     required this.messageId,
@@ -26,9 +26,7 @@ abstract class MessageLogEntry
     this.stackTrace,
     required this.slow,
     required this.order,
-  }) {
-    _id = id;
-  }
+  });
 
   factory MessageLogEntry({
     int? id,
@@ -64,7 +62,8 @@ abstract class MessageLogEntry
 
   static const db = MessageLogEntryRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   /// Id of the session this entry is associated with.
   int sessionLogId;
@@ -97,16 +96,6 @@ abstract class MessageLogEntry
 
   /// Used for sorting the message log.
   int order;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

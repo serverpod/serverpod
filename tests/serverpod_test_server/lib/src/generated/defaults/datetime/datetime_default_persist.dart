@@ -14,12 +14,10 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class DateTimeDefaultPersist
     implements _i1.TableRow, _i1.ProtocolSerialization {
   DateTimeDefaultPersist._({
-    int? id,
+    this.id,
     this.dateTimeDefaultPersistNow,
     this.dateTimeDefaultPersistStr,
-  }) {
-    _id = id;
-  }
+  });
 
   factory DateTimeDefaultPersist({
     int? id,
@@ -48,21 +46,12 @@ abstract class DateTimeDefaultPersist
 
   static const db = DateTimeDefaultPersistRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   DateTime? dateTimeDefaultPersistNow;
 
   DateTime? dateTimeDefaultPersistStr;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

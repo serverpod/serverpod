@@ -14,13 +14,11 @@ import '../../protocol.dart' as _i2;
 
 abstract class Comment implements _i1.TableRow, _i1.ProtocolSerialization {
   Comment._({
-    int? id,
+    this.id,
     required this.description,
     required this.orderId,
     this.order,
-  }) {
-    _id = id;
-  }
+  });
 
   factory Comment({
     int? id,
@@ -45,23 +43,14 @@ abstract class Comment implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = CommentRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   String description;
 
   int orderId;
 
   _i2.Order? order;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

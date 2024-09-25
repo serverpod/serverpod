@@ -14,7 +14,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class StringDefaultPersist
     implements _i1.TableRow, _i1.ProtocolSerialization {
   StringDefaultPersist._({
-    int? id,
+    this.id,
     this.stringDefaultPersist,
     this.stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
     this.stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
@@ -24,9 +24,7 @@ abstract class StringDefaultPersist
     this.stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
     this.stringDefaultPersistDoubleQuoteWithOneSingleQuote,
     this.stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
-  }) {
-    _id = id;
-  }
+  });
 
   factory StringDefaultPersist({
     int? id,
@@ -82,7 +80,8 @@ abstract class StringDefaultPersist
 
   static const db = StringDefaultPersistRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   String? stringDefaultPersist;
 
@@ -101,16 +100,6 @@ abstract class StringDefaultPersist
   String? stringDefaultPersistDoubleQuoteWithOneSingleQuote;
 
   String? stringDefaultPersistDoubleQuoteWithTwoSingleQuote;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

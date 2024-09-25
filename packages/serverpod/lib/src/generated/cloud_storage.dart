@@ -16,16 +16,14 @@ import 'dart:typed_data' as _i2;
 abstract class CloudStorageEntry
     implements _i1.TableRow, _i1.ProtocolSerialization {
   CloudStorageEntry._({
-    int? id,
+    this.id,
     required this.storageId,
     required this.path,
     required this.addedTime,
     this.expiration,
     required this.byteData,
     required this.verified,
-  }) {
-    _id = id;
-  }
+  });
 
   factory CloudStorageEntry({
     int? id,
@@ -57,7 +55,8 @@ abstract class CloudStorageEntry
 
   static const db = CloudStorageEntryRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   /// The storageId, typically `public` or `private`.
   String storageId;
@@ -76,16 +75,6 @@ abstract class CloudStorageEntry
 
   /// True if the file has been verified as uploaded.
   bool verified;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

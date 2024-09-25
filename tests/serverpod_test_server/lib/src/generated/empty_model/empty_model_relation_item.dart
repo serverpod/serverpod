@@ -14,11 +14,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class EmptyModelRelationItem
     implements _i1.TableRow, _i1.ProtocolSerialization {
   EmptyModelRelationItem._({
-    int? id,
+    this.id,
     required this.name,
-  }) {
-    _id = id;
-  }
+  });
 
   factory EmptyModelRelationItem({
     int? id,
@@ -37,21 +35,12 @@ abstract class EmptyModelRelationItem
 
   static const db = EmptyModelRelationItemRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   String name;
 
   int? _relationEmptyModelItemsRelationEmptyModelId;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

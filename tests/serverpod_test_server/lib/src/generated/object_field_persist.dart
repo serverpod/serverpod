@@ -15,13 +15,11 @@ import 'protocol.dart' as _i2;
 abstract class ObjectFieldPersist
     implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectFieldPersist._({
-    int? id,
+    this.id,
     required this.normal,
     this.api,
     this.data,
-  }) {
-    _id = id;
-  }
+  });
 
   factory ObjectFieldPersist({
     int? id,
@@ -46,23 +44,14 @@ abstract class ObjectFieldPersist
 
   static const db = ObjectFieldPersistRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   String normal;
 
   String? api;
 
   _i2.SimpleData? data;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

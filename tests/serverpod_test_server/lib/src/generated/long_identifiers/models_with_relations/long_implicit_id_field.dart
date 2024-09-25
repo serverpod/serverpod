@@ -14,11 +14,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class LongImplicitIdField
     implements _i1.TableRow, _i1.ProtocolSerialization {
   LongImplicitIdField._({
-    int? id,
+    this.id,
     required this.name,
-  }) {
-    _id = id;
-  }
+  });
 
   factory LongImplicitIdField({
     int? id,
@@ -36,21 +34,12 @@ abstract class LongImplicitIdField
 
   static const db = LongImplicitIdFieldRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   String name;
 
   int? _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

@@ -15,7 +15,7 @@ import '../../protocol.dart' as _i2;
 abstract class EnumDefaultMix
     implements _i1.TableRow, _i1.ProtocolSerialization {
   EnumDefaultMix._({
-    int? id,
+    this.id,
     _i2.ByNameEnum? byNameEnumDefaultAndDefaultModel,
     _i2.ByNameEnum? byNameEnumDefaultAndDefaultPersist,
     _i2.ByNameEnum? byNameEnumDefaultModelAndDefaultPersist,
@@ -24,9 +24,7 @@ abstract class EnumDefaultMix
         byNameEnumDefaultAndDefaultPersist =
             byNameEnumDefaultAndDefaultPersist ?? _i2.ByNameEnum.byName1,
         byNameEnumDefaultModelAndDefaultPersist =
-            byNameEnumDefaultModelAndDefaultPersist ?? _i2.ByNameEnum.byName1 {
-    _id = id;
-  }
+            byNameEnumDefaultModelAndDefaultPersist ?? _i2.ByNameEnum.byName1;
 
   factory EnumDefaultMix({
     int? id,
@@ -52,23 +50,14 @@ abstract class EnumDefaultMix
 
   static const db = EnumDefaultMixRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   _i2.ByNameEnum byNameEnumDefaultAndDefaultModel;
 
   _i2.ByNameEnum byNameEnumDefaultAndDefaultPersist;
 
   _i2.ByNameEnum byNameEnumDefaultModelAndDefaultPersist;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

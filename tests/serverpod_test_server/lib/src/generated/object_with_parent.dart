@@ -14,11 +14,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class ObjectWithParent
     implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectWithParent._({
-    int? id,
+    this.id,
     required this.other,
-  }) {
-    _id = id;
-  }
+  });
 
   factory ObjectWithParent({
     int? id,
@@ -36,19 +34,10 @@ abstract class ObjectWithParent
 
   static const db = ObjectWithParentRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   int other;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

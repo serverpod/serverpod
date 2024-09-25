@@ -14,13 +14,11 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class ObjectFieldScopes
     implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectFieldScopes._({
-    int? id,
+    this.id,
     required this.normal,
     this.api,
     this.database,
-  }) {
-    _id = id;
-  }
+  });
 
   factory ObjectFieldScopes({
     int? id,
@@ -42,23 +40,14 @@ abstract class ObjectFieldScopes
 
   static const db = ObjectFieldScopesRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   String normal;
 
   String? api;
 
   String? database;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

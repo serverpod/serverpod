@@ -14,16 +14,14 @@ import '../../protocol.dart' as _i2;
 
 abstract class Citizen implements _i1.TableRow, _i1.ProtocolSerialization {
   Citizen._({
-    int? id,
+    this.id,
     required this.name,
     this.address,
     required this.companyId,
     this.company,
     this.oldCompanyId,
     this.oldCompany,
-  }) {
-    _id = id;
-  }
+  });
 
   factory Citizen({
     int? id,
@@ -60,7 +58,8 @@ abstract class Citizen implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = CitizenRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   String name;
 
@@ -73,16 +72,6 @@ abstract class Citizen implements _i1.TableRow, _i1.ProtocolSerialization {
   int? oldCompanyId;
 
   _i2.Company? oldCompany;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

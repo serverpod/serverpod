@@ -13,9 +13,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class EmptyModelWithTable
     implements _i1.TableRow, _i1.ProtocolSerialization {
-  EmptyModelWithTable._({int? id}) {
-    _id = id;
-  }
+  EmptyModelWithTable._({this.id});
 
   factory EmptyModelWithTable({int? id}) = _EmptyModelWithTableImpl;
 
@@ -27,17 +25,8 @@ abstract class EmptyModelWithTable
 
   static const db = EmptyModelWithTableRepository._();
 
-  int? _id;
-
   @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
+  int? id;
 
   @override
   _i1.Table get table => t;

@@ -15,15 +15,13 @@ import 'protocol.dart' as _i2;
 abstract class ObjectWithEnum
     implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectWithEnum._({
-    int? id,
+    this.id,
     required this.testEnum,
     this.nullableEnum,
     required this.enumList,
     required this.nullableEnumList,
     required this.enumListList,
-  }) {
-    _id = id;
-  }
+  });
 
   factory ObjectWithEnum({
     int? id,
@@ -59,7 +57,8 @@ abstract class ObjectWithEnum
 
   static const db = ObjectWithEnumRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   _i2.TestEnum testEnum;
 
@@ -70,16 +69,6 @@ abstract class ObjectWithEnum
   List<_i2.TestEnum?> nullableEnumList;
 
   List<List<_i2.TestEnum>> enumListList;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

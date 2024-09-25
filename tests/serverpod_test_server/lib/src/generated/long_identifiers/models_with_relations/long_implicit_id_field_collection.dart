@@ -15,12 +15,10 @@ import '../../protocol.dart' as _i2;
 abstract class LongImplicitIdFieldCollection
     implements _i1.TableRow, _i1.ProtocolSerialization {
   LongImplicitIdFieldCollection._({
-    int? id,
+    this.id,
     required this.name,
     this.thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
-  }) {
-    _id = id;
-  }
+  });
 
   factory LongImplicitIdFieldCollection({
     int? id,
@@ -48,22 +46,13 @@ abstract class LongImplicitIdFieldCollection
 
   static const db = LongImplicitIdFieldCollectionRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   String name;
 
   List<_i2.LongImplicitIdField>?
       thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

@@ -15,7 +15,7 @@ import 'protocol.dart' as _i2;
 /// Bindings to a log entry in the database.
 abstract class LogEntry implements _i1.TableRow, _i1.ProtocolSerialization {
   LogEntry._({
-    int? id,
+    this.id,
     required this.sessionLogId,
     this.messageId,
     this.reference,
@@ -26,9 +26,7 @@ abstract class LogEntry implements _i1.TableRow, _i1.ProtocolSerialization {
     this.error,
     this.stackTrace,
     required this.order,
-  }) {
-    _id = id;
-  }
+  });
 
   factory LogEntry({
     int? id,
@@ -64,7 +62,8 @@ abstract class LogEntry implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = LogEntryRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   /// The id of the session this log entry is associated with.
   int sessionLogId;
@@ -95,16 +94,6 @@ abstract class LogEntry implements _i1.TableRow, _i1.ProtocolSerialization {
 
   /// The order of this log entry, used for sorting.
   int order;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

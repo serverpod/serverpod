@@ -15,7 +15,7 @@ import 'protocol.dart' as _i2;
 abstract class ObjectWithObject
     implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectWithObject._({
-    int? id,
+    this.id,
     required this.data,
     this.nullableData,
     required this.dataList,
@@ -25,9 +25,7 @@ abstract class ObjectWithObject
     this.nestedDataList,
     this.nestedDataListInMap,
     this.nestedDataMap,
-  }) {
-    _id = id;
-  }
+  });
 
   factory ObjectWithObject({
     int? id,
@@ -106,7 +104,8 @@ abstract class ObjectWithObject
 
   static const db = ObjectWithObjectRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   _i2.SimpleData data;
 
@@ -125,16 +124,6 @@ abstract class ObjectWithObject
   Map<String, List<List<Map<int, _i2.SimpleData>>?>>? nestedDataListInMap;
 
   Map<String, Map<int, _i2.SimpleData>>? nestedDataMap;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

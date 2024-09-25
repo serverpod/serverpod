@@ -14,12 +14,10 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class MultipleMaxFieldName
     implements _i1.TableRow, _i1.ProtocolSerialization {
   MultipleMaxFieldName._({
-    int? id,
+    this.id,
     required this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
     required this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
-  }) {
-    _id = id;
-  }
+  });
 
   factory MultipleMaxFieldName({
     int? id,
@@ -48,23 +46,14 @@ abstract class MultipleMaxFieldName
 
   static const db = MultipleMaxFieldNameRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   String thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1;
 
   String thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2;
 
   int? _relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

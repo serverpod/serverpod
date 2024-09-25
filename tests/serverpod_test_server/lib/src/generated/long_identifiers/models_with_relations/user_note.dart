@@ -13,11 +13,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class UserNote implements _i1.TableRow, _i1.ProtocolSerialization {
   UserNote._({
-    int? id,
+    this.id,
     required this.name,
-  }) {
-    _id = id;
-  }
+  });
 
   factory UserNote({
     int? id,
@@ -35,21 +33,12 @@ abstract class UserNote implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = UserNoteRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   String name;
 
   int? _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

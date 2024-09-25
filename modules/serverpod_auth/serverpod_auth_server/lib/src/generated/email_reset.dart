@@ -14,13 +14,11 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// Database bindings for an email reset.
 abstract class EmailReset implements _i1.TableRow, _i1.ProtocolSerialization {
   EmailReset._({
-    int? id,
+    this.id,
     required this.userId,
     required this.verificationCode,
     required this.expiration,
-  }) {
-    _id = id;
-  }
+  });
 
   factory EmailReset({
     int? id,
@@ -43,7 +41,8 @@ abstract class EmailReset implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = EmailResetRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   /// The id of the user that is resetting his/her password.
   int userId;
@@ -53,16 +52,6 @@ abstract class EmailReset implements _i1.TableRow, _i1.ProtocolSerialization {
 
   /// The expiration time for the password reset.
   DateTime expiration;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

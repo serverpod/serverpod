@@ -16,7 +16,7 @@ import 'protocol.dart' as _i3;
 /// A chat message.
 abstract class ChatMessage implements _i1.TableRow, _i1.ProtocolSerialization {
   ChatMessage._({
-    int? id,
+    this.id,
     required this.channel,
     required this.message,
     required this.time,
@@ -26,9 +26,7 @@ abstract class ChatMessage implements _i1.TableRow, _i1.ProtocolSerialization {
     this.clientMessageId,
     this.sent,
     this.attachments,
-  }) {
-    _id = id;
-  }
+  });
 
   factory ChatMessage({
     int? id,
@@ -68,7 +66,8 @@ abstract class ChatMessage implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = ChatMessageRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   /// The channel this message was posted to.
   String channel;
@@ -96,16 +95,6 @@ abstract class ChatMessage implements _i1.TableRow, _i1.ProtocolSerialization {
 
   /// List of attachments associated with this message.
   List<_i3.ChatMessageAttachment>? attachments;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

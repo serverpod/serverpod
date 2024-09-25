@@ -15,11 +15,9 @@ import 'dart:typed_data' as _i2;
 abstract class ObjectWithByteData
     implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectWithByteData._({
-    int? id,
+    this.id,
     required this.byteData,
-  }) {
-    _id = id;
-  }
+  });
 
   factory ObjectWithByteData({
     int? id,
@@ -38,19 +36,10 @@ abstract class ObjectWithByteData
 
   static const db = ObjectWithByteDataRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   _i2.ByteData byteData;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

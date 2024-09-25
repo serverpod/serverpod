@@ -15,11 +15,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class SimpleDateTime
     implements _i1.TableRow, _i1.ProtocolSerialization {
   SimpleDateTime._({
-    int? id,
+    this.id,
     required this.dateTime,
-  }) {
-    _id = id;
-  }
+  });
 
   factory SimpleDateTime({
     int? id,
@@ -38,20 +36,11 @@ abstract class SimpleDateTime
 
   static const db = SimpleDateTimeRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   /// The only field of [SimpleDateTime]
   DateTime dateTime;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

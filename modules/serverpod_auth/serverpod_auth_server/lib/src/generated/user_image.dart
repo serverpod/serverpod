@@ -14,13 +14,11 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// Database bindings for a user image.
 abstract class UserImage implements _i1.TableRow, _i1.ProtocolSerialization {
   UserImage._({
-    int? id,
+    this.id,
     required this.userId,
     required this.version,
     required this.url,
-  }) {
-    _id = id;
-  }
+  });
 
   factory UserImage({
     int? id,
@@ -42,7 +40,8 @@ abstract class UserImage implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = UserImageRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   /// The id of the user.
   int userId;
@@ -52,16 +51,6 @@ abstract class UserImage implements _i1.TableRow, _i1.ProtocolSerialization {
 
   /// The URL to the image.
   String url;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

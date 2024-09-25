@@ -13,11 +13,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class MaxFieldName implements _i1.TableRow, _i1.ProtocolSerialization {
   MaxFieldName._({
-    int? id,
+    this.id,
     required this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
-  }) {
-    _id = id;
-  }
+  });
 
   factory MaxFieldName({
     int? id,
@@ -39,19 +37,10 @@ abstract class MaxFieldName implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = MaxFieldNameRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   String thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

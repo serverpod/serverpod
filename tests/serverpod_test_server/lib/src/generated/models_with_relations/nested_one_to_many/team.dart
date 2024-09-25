@@ -14,14 +14,12 @@ import '../../protocol.dart' as _i2;
 
 abstract class Team implements _i1.TableRow, _i1.ProtocolSerialization {
   Team._({
-    int? id,
+    this.id,
     required this.name,
     this.arenaId,
     this.arena,
     this.players,
-  }) {
-    _id = id;
-  }
+  });
 
   factory Team({
     int? id,
@@ -50,7 +48,8 @@ abstract class Team implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = TeamRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   String name;
 
@@ -59,16 +58,6 @@ abstract class Team implements _i1.TableRow, _i1.ProtocolSerialization {
   _i2.Arena? arena;
 
   List<_i2.Player>? players;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

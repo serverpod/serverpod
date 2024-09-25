@@ -14,7 +14,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class DateTimeDefault
     implements _i1.TableRow, _i1.ProtocolSerialization {
   DateTimeDefault._({
-    int? id,
+    this.id,
     DateTime? dateTimeDefaultNow,
     DateTime? dateTimeDefaultStr,
     DateTime? dateTimeDefaultStrNull,
@@ -22,9 +22,7 @@ abstract class DateTimeDefault
         dateTimeDefaultStr =
             dateTimeDefaultStr ?? DateTime.parse('2024-05-24T22:00:00.000Z'),
         dateTimeDefaultStrNull = dateTimeDefaultStrNull ??
-            DateTime.parse('2024-05-24T22:00:00.000Z') {
-    _id = id;
-  }
+            DateTime.parse('2024-05-24T22:00:00.000Z');
 
   factory DateTimeDefault({
     int? id,
@@ -52,23 +50,14 @@ abstract class DateTimeDefault
 
   static const db = DateTimeDefaultRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   DateTime dateTimeDefaultNow;
 
   DateTime dateTimeDefaultStr;
 
   DateTime? dateTimeDefaultStrNull;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

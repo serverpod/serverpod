@@ -15,14 +15,12 @@ import '../../protocol.dart' as _i2;
 abstract class OrganizationWithLongTableName
     implements _i1.TableRow, _i1.ProtocolSerialization {
   OrganizationWithLongTableName._({
-    int? id,
+    this.id,
     required this.name,
     this.people,
     this.cityId,
     this.city,
-  }) {
-    _id = id;
-  }
+  });
 
   factory OrganizationWithLongTableName({
     int? id,
@@ -53,7 +51,8 @@ abstract class OrganizationWithLongTableName
 
   static const db = OrganizationWithLongTableNameRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   String name;
 
@@ -62,16 +61,6 @@ abstract class OrganizationWithLongTableName
   int? cityId;
 
   _i2.CityWithLongTableName? city;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

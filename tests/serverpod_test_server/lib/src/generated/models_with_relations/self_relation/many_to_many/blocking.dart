@@ -14,14 +14,12 @@ import '../../../protocol.dart' as _i2;
 
 abstract class Blocking implements _i1.TableRow, _i1.ProtocolSerialization {
   Blocking._({
-    int? id,
+    this.id,
     required this.blockedId,
     this.blocked,
     required this.blockedById,
     this.blockedBy,
-  }) {
-    _id = id;
-  }
+  });
 
   factory Blocking({
     int? id,
@@ -51,7 +49,8 @@ abstract class Blocking implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = BlockingRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   int blockedId;
 
@@ -60,16 +59,6 @@ abstract class Blocking implements _i1.TableRow, _i1.ProtocolSerialization {
   int blockedById;
 
   _i2.Member? blockedBy;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

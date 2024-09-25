@@ -13,12 +13,10 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class UniqueData implements _i1.TableRow, _i1.ProtocolSerialization {
   UniqueData._({
-    int? id,
+    this.id,
     required this.number,
     required this.email,
-  }) {
-    _id = id;
-  }
+  });
 
   factory UniqueData({
     int? id,
@@ -38,21 +36,12 @@ abstract class UniqueData implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = UniqueDataRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   int number;
 
   String email;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

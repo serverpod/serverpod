@@ -14,7 +14,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class DurationDefaultModel
     implements _i1.TableRow, _i1.ProtocolSerialization {
   DurationDefaultModel._({
-    int? id,
+    this.id,
     Duration? durationDefaultModel,
     Duration? durationDefaultModelNull,
   })  : durationDefaultModel = durationDefaultModel ??
@@ -32,9 +32,7 @@ abstract class DurationDefaultModel
               minutes: 20,
               seconds: 40,
               milliseconds: 100,
-            ) {
-    _id = id;
-  }
+            );
 
   factory DurationDefaultModel({
     int? id,
@@ -60,21 +58,12 @@ abstract class DurationDefaultModel
 
   static const db = DurationDefaultModelRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   Duration durationDefaultModel;
 
   Duration? durationDefaultModelNull;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

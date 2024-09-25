@@ -15,15 +15,13 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class FutureCallEntry
     implements _i1.TableRow, _i1.ProtocolSerialization {
   FutureCallEntry._({
-    int? id,
+    this.id,
     required this.name,
     required this.time,
     this.serializedObject,
     required this.serverId,
     this.identifier,
-  }) {
-    _id = id;
-  }
+  });
 
   factory FutureCallEntry({
     int? id,
@@ -49,7 +47,8 @@ abstract class FutureCallEntry
 
   static const db = FutureCallEntryRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   /// Name of the future call. Used to find the correct method to call.
   String name;
@@ -65,16 +64,6 @@ abstract class FutureCallEntry
 
   /// An optional identifier which can be used to cancel the call.
   String? identifier;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

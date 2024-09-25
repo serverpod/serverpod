@@ -15,12 +15,10 @@ import '../../protocol.dart' as _i2;
 abstract class RelationToMultipleMaxFieldName
     implements _i1.TableRow, _i1.ProtocolSerialization {
   RelationToMultipleMaxFieldName._({
-    int? id,
+    this.id,
     required this.name,
     this.multipleMaxFieldNames,
-  }) {
-    _id = id;
-  }
+  });
 
   factory RelationToMultipleMaxFieldName({
     int? id,
@@ -45,21 +43,12 @@ abstract class RelationToMultipleMaxFieldName
 
   static const db = RelationToMultipleMaxFieldNameRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   String name;
 
   List<_i2.MultipleMaxFieldName>? multipleMaxFieldNames;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

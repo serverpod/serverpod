@@ -16,13 +16,11 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class EmailFailedSignIn
     implements _i1.TableRow, _i1.ProtocolSerialization {
   EmailFailedSignIn._({
-    int? id,
+    this.id,
     required this.email,
     required this.time,
     required this.ipAddress,
-  }) {
-    _id = id;
-  }
+  });
 
   factory EmailFailedSignIn({
     int? id,
@@ -44,7 +42,8 @@ abstract class EmailFailedSignIn
 
   static const db = EmailFailedSignInRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   /// Email attempting to sign in with.
   String email;
@@ -54,16 +53,6 @@ abstract class EmailFailedSignIn
 
   /// The IP address of the sign in attempt.
   String ipAddress;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

@@ -17,16 +17,14 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class ServerHealthConnectionInfo
     implements _i1.TableRow, _i1.ProtocolSerialization {
   ServerHealthConnectionInfo._({
-    int? id,
+    this.id,
     required this.serverId,
     required this.timestamp,
     required this.active,
     required this.closing,
     required this.idle,
     required this.granularity,
-  }) {
-    _id = id;
-  }
+  });
 
   factory ServerHealthConnectionInfo({
     int? id,
@@ -56,7 +54,8 @@ abstract class ServerHealthConnectionInfo
 
   static const db = ServerHealthConnectionInfoRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   /// The server associated with this connection info.
   String serverId;
@@ -76,16 +75,6 @@ abstract class ServerHealthConnectionInfo
   /// The granularity of this timestamp, null represents 1 minute, other valid
   /// values are 60 minutes and 1440 minutes (one day).
   int granularity;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

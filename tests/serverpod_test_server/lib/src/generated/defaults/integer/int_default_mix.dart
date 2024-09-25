@@ -14,16 +14,14 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class IntDefaultMix
     implements _i1.TableRow, _i1.ProtocolSerialization {
   IntDefaultMix._({
-    int? id,
+    this.id,
     int? intDefaultAndDefaultModel,
     int? intDefaultAndDefaultPersist,
     int? intDefaultModelAndDefaultPersist,
   })  : intDefaultAndDefaultModel = intDefaultAndDefaultModel ?? 20,
         intDefaultAndDefaultPersist = intDefaultAndDefaultPersist ?? 10,
         intDefaultModelAndDefaultPersist =
-            intDefaultModelAndDefaultPersist ?? 10 {
-    _id = id;
-  }
+            intDefaultModelAndDefaultPersist ?? 10;
 
   factory IntDefaultMix({
     int? id,
@@ -48,23 +46,14 @@ abstract class IntDefaultMix
 
   static const db = IntDefaultMixRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   int intDefaultAndDefaultModel;
 
   int intDefaultAndDefaultPersist;
 
   int intDefaultModelAndDefaultPersist;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

@@ -14,13 +14,11 @@ import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i2;
 
 abstract class ObjectUser implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectUser._({
-    int? id,
+    this.id,
     this.name,
     required this.userInfoId,
     this.userInfo,
-  }) {
-    _id = id;
-  }
+  });
 
   factory ObjectUser({
     int? id,
@@ -45,23 +43,14 @@ abstract class ObjectUser implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static const db = ObjectUserRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   String? name;
 
   int userInfoId;
 
   _i2.UserInfo? userInfo;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;

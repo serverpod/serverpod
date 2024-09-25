@@ -14,11 +14,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class ObjectWithDuration
     implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectWithDuration._({
-    int? id,
+    this.id,
     required this.duration,
-  }) {
-    _id = id;
-  }
+  });
 
   factory ObjectWithDuration({
     int? id,
@@ -37,19 +35,10 @@ abstract class ObjectWithDuration
 
   static const db = ObjectWithDurationRepository._();
 
-  int? _id;
+  @override
+  int? id;
 
   Duration duration;
-
-  @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
 
   @override
   _i1.Table get table => t;
