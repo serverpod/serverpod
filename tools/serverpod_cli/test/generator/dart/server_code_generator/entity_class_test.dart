@@ -166,12 +166,8 @@ void main() {
           expect(constructor, isNotNull, reason: 'No private constructor');
         });
 
-        test('with id param', () {
-          expect(constructor?.parameters.toSource(), '({int? id})');
-        });
-
-        test('initializing id in constructor body', () {
-          expect(constructor?.body.toSource(), '{_id = id;}');
+        test('initializing id in initializer list', () {
+          expect(constructor?.parameters.toSource(), '({this.id})');
         });
       });
 
@@ -198,14 +194,14 @@ void main() {
             reason: 'Missing declaration for table method.');
       });
 
-      test('is NOT generated with id field.', () {
+      test('is generated with id field.', () {
         expect(
             CompilationUnitHelpers.hasFieldDeclaration(
               maybeClassNamedExample!,
               name: 'id',
             ),
-            isFalse,
-            reason: 'Declaration for id field should not be generated.');
+            isTrue,
+            reason: 'Declaration for id field should be generated.');
       });
 
       test('has a static include method.', () {

@@ -8,8 +8,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 abstract interface class TableRow implements SerializableModel {
   /// The id column of the row. Can be null if this row is not yet stored in
   /// the database.
-  int? get id;
-  set id(int? value);
+  int? id;
 
   /// The table that this row belongs to.
   Table get table;

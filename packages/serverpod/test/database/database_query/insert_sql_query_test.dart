@@ -19,19 +19,10 @@ class PersonClass implements TableRow {
   final String name;
   final int age;
 
-  int? _id;
-
-  PersonClass({id, required this.name, required this.age}) : _id = id;
-
   @override
-  int? get id {
-    return _id;
-  }
+  int? id;
 
-  @override
-  set id(int? value) {
-    _id = value;
-  }
+  PersonClass({this.id, required this.name, required this.age});
 
   @override
   Table get table => PersonTable();
@@ -47,19 +38,10 @@ class PersonClass implements TableRow {
 }
 
 class OnlyIdClass implements TableRow {
-  OnlyIdClass({int? id}) : _id = id;
-
-  int? _id;
+  OnlyIdClass({this.id});
 
   @override
-  int? get id {
-    return _id;
-  }
-
-  @override
-  set id(int? value) {
-    _id = value;
-  }
+  int? id;
 
   @override
   Table get table => Table(tableName: 'only_id');

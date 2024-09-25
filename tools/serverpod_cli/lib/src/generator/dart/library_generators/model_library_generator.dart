@@ -161,7 +161,7 @@ class SerializableModelLibraryGenerator {
 
       if (serverCode && tableName != null) {
         classBuilder.implements.add(
-          refer('TableRow', 'package:serverpod/serverpod.dart'),
+          refer('TableRow', serverpodUrl(serverCode)),
         );
 
         classBuilder.fields.addAll([
@@ -172,13 +172,12 @@ class SerializableModelLibraryGenerator {
 
         classBuilder.fields.add(Field(
           (f) => f
-            ..name = '_id'
-            ..type = refer('int?'),
+            ..name = 'id'
+            ..type = refer('int?')
+            ..annotations.add(
+              refer('override'),
+            ),
         ));
-
-        classBuilder.methods.add(_buildIdGetter());
-
-        classBuilder.methods.add(_buildIdSetter());
 
         classBuilder.methods.add(_buildModelClassTableGetter());
       } else {
@@ -630,30 +629,6 @@ class SerializableModelLibraryGenerator {
     );
   }
 
-  Method _buildIdGetter() {
-    return Method(
-      (m) => m
-        ..name = 'id'
-        ..annotations.add(refer('override'))
-        ..type = MethodType.getter
-        ..returns = refer('int?')
-        ..body = const Code('return _id;'),
-    );
-  }
-
-  Method _buildIdSetter() {
-    return Method(
-      (m) => m
-        ..name = 'id'
-        ..annotations.add(refer('override'))
-        ..type = MethodType.setter
-        ..requiredParameters.add(Parameter((p) => p
-          ..name = 'value'
-          ..type = refer('int?')))
-        ..body = const Code('_id = value;'),
-    );
-  }
-
   Field _buildModelClassTableField(String className) {
     return Field((f) => f
       ..static = true
@@ -1011,10 +986,6 @@ class SerializableModelLibraryGenerator {
           refer(field.name).ifNullThen(CodeExpression(defaultCode)).code,
         ]));
       }
-
-      if (serverCode && tableName != null) {
-        c.body = Block.of([const Code('_id = id;')]);
-      }
     });
   }
 
@@ -1084,6 +1055,8 @@ class SerializableModelLibraryGenerator {
 
       bool hasDefaults = field.hasDefauls;
 
+      bool isIdFieldInMainConstructor = field.name == 'id' && setAsToThis;
+
       var type = field.type.reference(
         serverCode,
         nullable: field.type.nullable || hasDefaults,
@@ -1095,8 +1068,10 @@ class SerializableModelLibraryGenerator {
         (p) => p
           ..named = true
           ..required = !(field.type.nullable || hasDefaults)
-          ..type = shouldIncludeType ? type : null
-          ..toThis = !shouldIncludeType && fields.contains(field)
+          ..type =
+              shouldIncludeType && !isIdFieldInMainConstructor ? type : null
+          ..toThis = !shouldIncludeType && fields.contains(field) ||
+              isIdFieldInMainConstructor
           ..toSuper = !shouldIncludeType && inheritedFields.contains(field)
           ..name = field.name,
       );
