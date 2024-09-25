@@ -41,6 +41,7 @@ import 'package:serverpod_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test.dart'
     show
         TestSession,
+        ConnectionClosedException,
         ServerpodUnauthenticatedException,
         ServerpodInsufficientAccessException,
         RollbackDatabase,
@@ -3227,8 +3228,7 @@ class _LoggingEndpoint {
     _i1.TestSession session,
     _i3.Stream<int> input,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>()
-      ..createManagedInputStreams({'input': input});
+    var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
@@ -3245,15 +3245,13 @@ class _LoggingEndpoint {
           requestedInputStreams: ['input'],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
-          {'input': _localTestStreamManager.getInputStream('input')},
-        ) as _i3.Stream<int>);
+          {'input': input},
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -3262,8 +3260,7 @@ class _LoggingEndpoint {
     _i1.TestSession session,
     _i3.Stream<int> input,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>()
-      ..createManagedInputStreams({'input': input});
+    var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
@@ -3280,15 +3277,13 @@ class _LoggingEndpoint {
           requestedInputStreams: ['input'],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
-          {'input': _localTestStreamManager.getInputStream('input')},
-        ) as _i3.Stream<int>);
+          {'input': input},
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -3297,8 +3292,7 @@ class _LoggingEndpoint {
     _i1.TestSession session,
     _i3.Stream<int> input,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>()
-      ..createManagedInputStreams({'input': input});
+    var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
@@ -3315,15 +3309,13 @@ class _LoggingEndpoint {
           requestedInputStreams: ['input'],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
-          {'input': _localTestStreamManager.getInputStream('input')},
-        ) as _i3.Stream<int>);
+          {'input': input},
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -3970,15 +3962,13 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
           {},
-        ) as _i3.Stream<int>);
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -4004,15 +3994,13 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
           {},
-        ) as _i3.Stream<int>);
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -4041,9 +4029,9 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager()
-      ..createManagedInputStreams({'stream': stream});
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    var _localTestStreamManager = _i1.TestStreamManager<int>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
       var _localUniqueSession =
           (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4058,13 +4046,12 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localCallContext.setOnRevokedAuthenticationCallback(
-          _localTestStreamManager.onRevokedAuthentication);
-      return (_localCallContext.method.call(
+      _localTestStreamManager.callStreamMethod(
+        _localCallContext,
         _localUniqueSession.serverpodSession,
-        _localCallContext.arguments,
-        {'stream': _localTestStreamManager.getInputStream('stream')},
-      ) as _i3.Future<int>);
+        {'stream': stream},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
     });
   }
 
@@ -4072,9 +4059,9 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int?> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager()
-      ..createManagedInputStreams({'stream': stream});
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    var _localTestStreamManager = _i1.TestStreamManager<int?>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
       var _localUniqueSession =
           (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4089,13 +4076,12 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localCallContext.setOnRevokedAuthenticationCallback(
-          _localTestStreamManager.onRevokedAuthentication);
-      return (_localCallContext.method.call(
+      _localTestStreamManager.callStreamMethod(
+        _localCallContext,
         _localUniqueSession.serverpodSession,
-        _localCallContext.arguments,
-        {'stream': _localTestStreamManager.getInputStream('stream')},
-      ) as _i3.Future<int?>);
+        {'stream': stream},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
     });
   }
 
@@ -4120,15 +4106,13 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
           {},
-        ) as _i3.Stream<int>);
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -4137,8 +4121,7 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>()
-      ..createManagedInputStreams({'stream': stream});
+    var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
@@ -4155,15 +4138,13 @@ class _MethodStreaming {
           requestedInputStreams: ['stream'],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
-          {'stream': _localTestStreamManager.getInputStream('stream')},
-        ) as _i3.Stream<int>);
+          {'stream': stream},
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -4172,8 +4153,7 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<dynamic> stream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<dynamic>()
-      ..createManagedInputStreams({'stream': stream});
+    var _localTestStreamManager = _i1.TestStreamManager<dynamic>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
@@ -4190,15 +4170,13 @@ class _MethodStreaming {
           requestedInputStreams: ['stream'],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
-          {'stream': _localTestStreamManager.getInputStream('stream')},
-        ) as _i3.Stream<dynamic>);
+          {'stream': stream},
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -4207,8 +4185,7 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int?> stream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int?>()
-      ..createManagedInputStreams({'stream': stream});
+    var _localTestStreamManager = _i1.TestStreamManager<int?>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
@@ -4225,15 +4202,13 @@ class _MethodStreaming {
           requestedInputStreams: ['stream'],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
-          {'stream': _localTestStreamManager.getInputStream('stream')},
-        ) as _i3.Stream<int?>);
+          {'stream': stream},
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -4242,9 +4217,9 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager()
-      ..createManagedInputStreams({'stream': stream});
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    var _localTestStreamManager = _i1.TestStreamManager<void>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
       var _localUniqueSession =
           (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4259,13 +4234,12 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localCallContext.setOnRevokedAuthenticationCallback(
-          _localTestStreamManager.onRevokedAuthentication);
-      return (_localCallContext.method.call(
+      _localTestStreamManager.callStreamMethod(
+        _localCallContext,
         _localUniqueSession.serverpodSession,
-        _localCallContext.arguments,
-        {'stream': _localTestStreamManager.getInputStream('stream')},
-      ) as _i3.Future<void>);
+        {'stream': stream},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
     });
   }
 
@@ -4274,11 +4248,7 @@ class _MethodStreaming {
     _i3.Stream<int> stream1,
     _i3.Stream<int> stream2,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>()
-      ..createManagedInputStreams({
-        'stream1': stream1,
-        'stream2': stream2,
-      });
+    var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
@@ -4298,18 +4268,16 @@ class _MethodStreaming {
           ],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
           {
-            'stream1': _localTestStreamManager.getInputStream('stream1'),
-            'stream2': _localTestStreamManager.getInputStream('stream2'),
+            'stream1': stream1,
+            'stream2': stream2,
           },
-        ) as _i3.Stream<int>);
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -4318,9 +4286,9 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager()
-      ..createManagedInputStreams({'stream': stream});
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    var _localTestStreamManager = _i1.TestStreamManager<void>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
       var _localUniqueSession =
           (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4335,13 +4303,12 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localCallContext.setOnRevokedAuthenticationCallback(
-          _localTestStreamManager.onRevokedAuthentication);
-      return (_localCallContext.method.call(
+      _localTestStreamManager.callStreamMethod(
+        _localCallContext,
         _localUniqueSession.serverpodSession,
-        _localCallContext.arguments,
-        {'stream': _localTestStreamManager.getInputStream('stream')},
-      ) as _i3.Future<void>);
+        {'stream': stream},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
     });
   }
 
@@ -4349,9 +4316,9 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager()
-      ..createManagedInputStreams({'stream': stream});
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    var _localTestStreamManager = _i1.TestStreamManager<int>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
       var _localUniqueSession =
           (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4366,13 +4333,12 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localCallContext.setOnRevokedAuthenticationCallback(
-          _localTestStreamManager.onRevokedAuthentication);
-      return (_localCallContext.method.call(
+      _localTestStreamManager.callStreamMethod(
+        _localCallContext,
         _localUniqueSession.serverpodSession,
-        _localCallContext.arguments,
-        {'stream': _localTestStreamManager.getInputStream('stream')},
-      ) as _i3.Future<int>);
+        {'stream': stream},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
     });
   }
 
@@ -4380,9 +4346,9 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager()
-      ..createManagedInputStreams({'stream': stream});
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    var _localTestStreamManager = _i1.TestStreamManager<int>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
       var _localUniqueSession =
           (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4397,13 +4363,12 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localCallContext.setOnRevokedAuthenticationCallback(
-          _localTestStreamManager.onRevokedAuthentication);
-      return (_localCallContext.method.call(
+      _localTestStreamManager.callStreamMethod(
+        _localCallContext,
         _localUniqueSession.serverpodSession,
-        _localCallContext.arguments,
-        {'stream': _localTestStreamManager.getInputStream('stream')},
-      ) as _i3.Future<int>);
+        {'stream': stream},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
     });
   }
 
@@ -4428,15 +4393,13 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
           {},
-        ) as _i3.Stream<int>);
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -4462,15 +4425,13 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
           {},
-        ) as _i3.Stream<_i11.SimpleData>);
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -4479,8 +4440,7 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<_i11.SimpleData> simpleDataStream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<_i11.SimpleData>()
-      ..createManagedInputStreams({'simpleDataStream': simpleDataStream});
+    var _localTestStreamManager = _i1.TestStreamManager<_i11.SimpleData>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
@@ -4497,18 +4457,13 @@ class _MethodStreaming {
           requestedInputStreams: ['simpleDataStream'],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
-          {
-            'simpleDataStream':
-                _localTestStreamManager.getInputStream('simpleDataStream')
-          },
-        ) as _i3.Stream<_i11.SimpleData>);
+          {'simpleDataStream': simpleDataStream},
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -4623,15 +4578,13 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
           {},
-        ) as _i3.Stream<int>);
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -4641,9 +4594,9 @@ class _MethodStreaming {
     int delay,
     _i3.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager()
-      ..createManagedInputStreams({'stream': stream});
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    var _localTestStreamManager = _i1.TestStreamManager<void>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
       var _localUniqueSession =
           (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4658,13 +4611,12 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localCallContext.setOnRevokedAuthenticationCallback(
-          _localTestStreamManager.onRevokedAuthentication);
-      return (_localCallContext.method.call(
+      _localTestStreamManager.callStreamMethod(
+        _localCallContext,
         _localUniqueSession.serverpodSession,
-        _localCallContext.arguments,
-        {'stream': _localTestStreamManager.getInputStream('stream')},
-      ) as _i3.Future<void>);
+        {'stream': stream},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
     });
   }
 
@@ -4673,9 +4625,9 @@ class _MethodStreaming {
     int delay,
     _i3.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager()
-      ..createManagedInputStreams({'stream': stream});
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    var _localTestStreamManager = _i1.TestStreamManager<void>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
       var _localUniqueSession =
           (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4690,13 +4642,12 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localCallContext.setOnRevokedAuthenticationCallback(
-          _localTestStreamManager.onRevokedAuthentication);
-      return (_localCallContext.method.call(
+      _localTestStreamManager.callStreamMethod(
+        _localCallContext,
         _localUniqueSession.serverpodSession,
-        _localCallContext.arguments,
-        {'stream': _localTestStreamManager.getInputStream('stream')},
-      ) as _i3.Future<void>);
+        {'stream': stream},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
     });
   }
 
@@ -4724,9 +4675,9 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager()
-      ..createManagedInputStreams({'stream': stream});
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    var _localTestStreamManager = _i1.TestStreamManager<void>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
       var _localUniqueSession =
           (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4741,13 +4692,12 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localCallContext.setOnRevokedAuthenticationCallback(
-          _localTestStreamManager.onRevokedAuthentication);
-      return (_localCallContext.method.call(
+      _localTestStreamManager.callStreamMethod(
+        _localCallContext,
         _localUniqueSession.serverpodSession,
-        _localCallContext.arguments,
-        {'stream': _localTestStreamManager.getInputStream('stream')},
-      ) as _i3.Future<void>);
+        {'stream': stream},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
     });
   }
 
@@ -4755,9 +4705,9 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager()
-      ..createManagedInputStreams({'stream': stream});
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    var _localTestStreamManager = _i1.TestStreamManager<void>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
       var _localUniqueSession =
           (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4772,13 +4722,12 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localCallContext.setOnRevokedAuthenticationCallback(
-          _localTestStreamManager.onRevokedAuthentication);
-      return (_localCallContext.method.call(
+      _localTestStreamManager.callStreamMethod(
+        _localCallContext,
         _localUniqueSession.serverpodSession,
-        _localCallContext.arguments,
-        {'stream': _localTestStreamManager.getInputStream('stream')},
-      ) as _i3.Future<void>);
+        {'stream': stream},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
     });
   }
 
@@ -4800,15 +4749,13 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
           {},
-        ) as _i3.Stream<int>);
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -4832,15 +4779,13 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
           {},
-        ) as _i3.Stream<int>);
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -4849,9 +4794,9 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager()
-      ..createManagedInputStreams({'stream': stream});
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    var _localTestStreamManager = _i1.TestStreamManager<void>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
       var _localUniqueSession =
           (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4866,13 +4811,12 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localCallContext.setOnRevokedAuthenticationCallback(
-          _localTestStreamManager.onRevokedAuthentication);
-      return (_localCallContext.method.call(
+      _localTestStreamManager.callStreamMethod(
+        _localCallContext,
         _localUniqueSession.serverpodSession,
-        _localCallContext.arguments,
-        {'stream': _localTestStreamManager.getInputStream('stream')},
-      ) as _i3.Future<void>);
+        {'stream': stream},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
     });
   }
 
@@ -4880,9 +4824,9 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager()
-      ..createManagedInputStreams({'stream': stream});
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    var _localTestStreamManager = _i1.TestStreamManager<void>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
       var _localUniqueSession =
           (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4897,13 +4841,12 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localCallContext.setOnRevokedAuthenticationCallback(
-          _localTestStreamManager.onRevokedAuthentication);
-      return (_localCallContext.method.call(
+      _localTestStreamManager.callStreamMethod(
+        _localCallContext,
         _localUniqueSession.serverpodSession,
-        _localCallContext.arguments,
-        {'stream': _localTestStreamManager.getInputStream('stream')},
-      ) as _i3.Future<void>);
+        {'stream': stream},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
     });
   }
 
@@ -4911,9 +4854,9 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager()
-      ..createManagedInputStreams({'stream': stream});
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    var _localTestStreamManager = _i1.TestStreamManager<int>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
       var _localUniqueSession =
           (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4928,13 +4871,12 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localCallContext.setOnRevokedAuthenticationCallback(
-          _localTestStreamManager.onRevokedAuthentication);
-      return (_localCallContext.method.call(
+      _localTestStreamManager.callStreamMethod(
+        _localCallContext,
         _localUniqueSession.serverpodSession,
-        _localCallContext.arguments,
-        {'stream': _localTestStreamManager.getInputStream('stream')},
-      ) as _i3.Future<int>);
+        {'stream': stream},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
     });
   }
 
@@ -4942,9 +4884,9 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager()
-      ..createManagedInputStreams({'stream': stream});
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    var _localTestStreamManager = _i1.TestStreamManager<int>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
       var _localUniqueSession =
           (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -4959,13 +4901,12 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localCallContext.setOnRevokedAuthenticationCallback(
-          _localTestStreamManager.onRevokedAuthentication);
-      return (_localCallContext.method.call(
+      _localTestStreamManager.callStreamMethod(
+        _localCallContext,
         _localUniqueSession.serverpodSession,
-        _localCallContext.arguments,
-        {'stream': _localTestStreamManager.getInputStream('stream')},
-      ) as _i3.Future<int>);
+        {'stream': stream},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
     });
   }
 
@@ -4987,15 +4928,13 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
           {},
-        ) as _i3.Stream<int>);
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -5018,15 +4957,13 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
           {},
-        ) as _i3.Stream<int>);
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -5035,9 +4972,9 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager()
-      ..createManagedInputStreams({'stream': stream});
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    var _localTestStreamManager = _i1.TestStreamManager<bool>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
       var _localUniqueSession =
           (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -5052,13 +4989,12 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localCallContext.setOnRevokedAuthenticationCallback(
-          _localTestStreamManager.onRevokedAuthentication);
-      return (_localCallContext.method.call(
+      _localTestStreamManager.callStreamMethod(
+        _localCallContext,
         _localUniqueSession.serverpodSession,
-        _localCallContext.arguments,
-        {'stream': _localTestStreamManager.getInputStream('stream')},
-      ) as _i3.Future<bool>);
+        {'stream': stream},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
     });
   }
 
@@ -5066,9 +5002,9 @@ class _MethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager()
-      ..createManagedInputStreams({'stream': stream});
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    var _localTestStreamManager = _i1.TestStreamManager<bool>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
       var _localUniqueSession =
           (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
@@ -5083,13 +5019,12 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localCallContext.setOnRevokedAuthenticationCallback(
-          _localTestStreamManager.onRevokedAuthentication);
-      return (_localCallContext.method.call(
+      _localTestStreamManager.callStreamMethod(
+        _localCallContext,
         _localUniqueSession.serverpodSession,
-        _localCallContext.arguments,
-        {'stream': _localTestStreamManager.getInputStream('stream')},
-      ) as _i3.Future<bool>);
+        {'stream': stream},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
     });
   }
 }
@@ -5122,15 +5057,13 @@ class _AuthenticatedMethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
           {},
-        ) as _i3.Stream<int>);
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -5139,8 +5072,7 @@ class _AuthenticatedMethodStreaming {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>()
-      ..createManagedInputStreams({'stream': stream});
+    var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
@@ -5157,15 +5089,13 @@ class _AuthenticatedMethodStreaming {
           requestedInputStreams: ['stream'],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
-          {'stream': _localTestStreamManager.getInputStream('stream')},
-        ) as _i3.Stream<int>);
+          {'stream': stream},
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -5867,15 +5797,13 @@ class _TestToolsEndpoint {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
           {},
-        ) as _i3.Stream<_i6.UuidValue>);
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -5899,15 +5827,13 @@ class _TestToolsEndpoint {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
           {},
-        ) as _i3.Stream<String?>);
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -5956,15 +5882,13 @@ class _TestToolsEndpoint {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
           {},
-        ) as _i3.Stream<int>);
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -5973,9 +5897,9 @@ class _TestToolsEndpoint {
     _i1.TestSession session,
     _i3.Stream<int> numbers,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager()
-      ..createManagedInputStreams({'numbers': numbers});
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    var _localTestStreamManager = _i1.TestStreamManager<List<int>>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
       var _localUniqueSession =
           (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'testTools',
@@ -5990,13 +5914,12 @@ class _TestToolsEndpoint {
         requestedInputStreams: ['numbers'],
         serializationManager: _serializationManager,
       );
-      _localCallContext.setOnRevokedAuthenticationCallback(
-          _localTestStreamManager.onRevokedAuthentication);
-      return (_localCallContext.method.call(
+      _localTestStreamManager.callStreamMethod(
+        _localCallContext,
         _localUniqueSession.serverpodSession,
-        _localCallContext.arguments,
-        {'numbers': _localTestStreamManager.getInputStream('numbers')},
-      ) as _i3.Future<List<int>>);
+        {'numbers': numbers},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
     });
   }
 
@@ -6004,8 +5927,7 @@ class _TestToolsEndpoint {
     _i1.TestSession session,
     _i3.Stream<int> numbers,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>()
-      ..createManagedInputStreams({'numbers': numbers});
+    var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
@@ -6022,15 +5944,13 @@ class _TestToolsEndpoint {
           requestedInputStreams: ['numbers'],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
-          {'numbers': _localTestStreamManager.getInputStream('numbers')},
-        ) as _i3.Stream<int>);
+          {'numbers': numbers},
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -6079,15 +5999,13 @@ class _TestToolsEndpoint {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
           {},
-        ) as _i3.Stream<int>);
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -6110,15 +6028,13 @@ class _TestToolsEndpoint {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
           {},
-        ) as _i3.Stream<int>);
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -6222,15 +6138,13 @@ class _AuthenticatedTestToolsEndpoint {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
           {},
-        ) as _i3.Stream<int>);
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
@@ -6239,9 +6153,9 @@ class _AuthenticatedTestToolsEndpoint {
     _i1.TestSession session,
     _i3.Stream<int> numbers,
   ) async {
-    var _localTestStreamManager = _i1.TestStreamManager()
-      ..createManagedInputStreams({'numbers': numbers});
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    var _localTestStreamManager = _i1.TestStreamManager<List<int>>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
       var _localUniqueSession =
           (await (session as _i1.InternalTestSession).copyWith(
         endpoint: 'authenticatedTestTools',
@@ -6256,13 +6170,12 @@ class _AuthenticatedTestToolsEndpoint {
         requestedInputStreams: ['numbers'],
         serializationManager: _serializationManager,
       );
-      _localCallContext.setOnRevokedAuthenticationCallback(
-          _localTestStreamManager.onRevokedAuthentication);
-      return (_localCallContext.method.call(
+      _localTestStreamManager.callStreamMethod(
+        _localCallContext,
         _localUniqueSession.serverpodSession,
-        _localCallContext.arguments,
-        {'numbers': _localTestStreamManager.getInputStream('numbers')},
-      ) as _i3.Future<List<int>>);
+        {'numbers': numbers},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
     });
   }
 
@@ -6270,8 +6183,7 @@ class _AuthenticatedTestToolsEndpoint {
     _i1.TestSession session,
     _i3.Stream<int> stream,
   ) {
-    var _localTestStreamManager = _i1.TestStreamManager<int>()
-      ..createManagedInputStreams({'stream': stream});
+    var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
@@ -6288,15 +6200,13 @@ class _AuthenticatedTestToolsEndpoint {
           requestedInputStreams: ['stream'],
           serializationManager: _serializationManager,
         );
-        _localCallContext.setOnRevokedAuthenticationCallback(
-            _localTestStreamManager.onRevokedAuthentication);
-        return (_localCallContext.method.call(
+        _localTestStreamManager.callStreamMethod(
+          _localCallContext,
           _localUniqueSession.serverpodSession,
-          _localCallContext.arguments,
-          {'stream': _localTestStreamManager.getInputStream('stream')},
-        ) as _i3.Stream<int>);
+          {'stream': stream},
+        );
       },
-      _localTestStreamManager,
+      _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
