@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:path/path.dart' as path;
 
@@ -49,7 +50,7 @@ const String _trailer = '''  </ul>
 ''';
 
 Response listDirectory(String fileSystemPath, String dirPath) {
-  final controller = StreamController<List<int>>();
+  final controller = StreamController<Uint8List>();
   const encoding = Utf8Codec();
   const sanitizer = HtmlEscape();
 
@@ -90,7 +91,7 @@ Response listDirectory(String fileSystemPath, String dirPath) {
   });
 
   return Response.ok(
-    body: Body.fromIntStream(
+    body: Body.fromDataStream(
       controller.stream,
     ),
     encoding: encoding,

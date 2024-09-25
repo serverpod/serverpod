@@ -329,7 +329,7 @@ void _handleTransferEncoding(
 
   if (_isChunkedEncoding(transferEncoding)) {
     // If the response is already chunked, decode it to avoid double chunking
-    body = Body.fromIntStream(chunkedCoding.decoder.bind(body.read()));
+    body = Body.fromDataStream(chunkedCoding.decoder.bind(body.read()));
     _setChunkedTransferEncodingHeader(httpResponse);
   } else if (_shouldEnableChunkedEncoding(statusCode, body)) {
     // If content length is unknown and chunking is needed, set chunked encoding

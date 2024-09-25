@@ -215,7 +215,7 @@ Future<Response> _handleFile(
   return Response.ok(
     body: request.method == Method.head
         ? null
-        : Body.fromIntStream(
+        : Body.fromDataStream(
             file.openRead(),
             mimeType: MimeType.parse(contentType!),
           ),
@@ -277,7 +277,7 @@ Response? _fileRangeResponse(
     HttpStatus.partialContent,
     body: request.method == Method.head
         ? null
-        : Body.fromIntStream(
+        : Body.fromDataStream(
             file.openRead(start, end + 1),
             mimeType: MimeType.binary,
           ),
