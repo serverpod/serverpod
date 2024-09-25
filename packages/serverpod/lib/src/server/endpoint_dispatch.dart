@@ -1,8 +1,13 @@
 import 'dart:typed_data';
 
-import 'package:serverpod/protocol.dart';
-import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/authentication/authentication_info.dart';
+import 'package:serverpod/src/authentication/scope.dart';
 import 'package:serverpod/src/server/endpoint_parameter_helper.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+
+import 'endpoint.dart';
+import 'server.dart';
+import 'session.dart';
 
 /// The [EndpointDispatch] is responsible for directing requests to the [Server]
 /// to the correct [Endpoint] and method. Typically, this class is overridden
@@ -61,7 +66,8 @@ abstract class EndpointDispatch {
     required SerializationManager serializationManager,
     required List<String> requestedInputStreams,
   }) async {
-    var callContext = await _getEndpointCallContext(
+    var (methodConnector, endpoint, parsedArguments) =
+        await _getEndpointMethodConnector(
       createSessionCallback: createSessionCallback,
       endpointPath: endpointPath,
       methodName: methodName,
@@ -69,7 +75,6 @@ abstract class EndpointDispatch {
       serializationManager: serializationManager,
     );
 
-    var methodConnector = callContext.method;
     if (methodConnector is! MethodStreamConnector) {
       throw InvalidEndpointMethodTypeException(methodName, endpointPath);
     }
@@ -81,10 +86,9 @@ abstract class EndpointDispatch {
 
     return MethodStreamCallContext(
       method: methodConnector,
-      arguments: callContext.arguments,
+      arguments: parsedArguments,
       inputStreams: inputStreams,
-      endpoint: callContext.endpoint,
-      session: callContext.session,
+      endpoint: endpoint,
     );
   }
 
@@ -95,10 +99,7 @@ abstract class EndpointDispatch {
     required Session session,
     required String endpointPath,
   }) async {
-    var (endpointConnector, _session) =
-        await _getEndpointConnector(endpointPath, (_) => session);
-
-    return endpointConnector;
+    return _getEndpointConnector(endpointPath, (_) => session);
   }
 
   /// Tries to get a [MethodCallContext] for a given endpoint and method name.
@@ -115,7 +116,8 @@ abstract class EndpointDispatch {
     required Map<String, dynamic> parameters,
     required SerializationManager serializationManager,
   }) async {
-    var callContext = await _getEndpointCallContext(
+    var (methodConnector, endpoint, parsedArguments) =
+        await _getEndpointMethodConnector(
       createSessionCallback: createSessionCallback,
       endpointPath: endpointPath,
       methodName: methodName,
@@ -123,19 +125,19 @@ abstract class EndpointDispatch {
       serializationManager: serializationManager,
     );
 
-    var methodConnector = callContext.method;
     if (methodConnector is! MethodConnector) {
       throw InvalidEndpointMethodTypeException(methodName, endpointPath);
     }
 
     return MethodCallContext(
       method: methodConnector,
-      arguments: callContext.arguments,
-      endpoint: callContext.endpoint,
+      arguments: parsedArguments,
+      endpoint: endpoint,
     );
   }
 
-  Future<_CallContext> _getEndpointCallContext({
+  Future<(EndpointMethodConnector, Endpoint, Map<String, dynamic>)>
+      _getEndpointMethodConnector({
     required Session Function(EndpointConnector connector)
         createSessionCallback,
     required String endpointPath,
@@ -143,7 +145,7 @@ abstract class EndpointDispatch {
     required Map<String, dynamic> arguments,
     required SerializationManager serializationManager,
   }) async {
-    var (endpointConnector, session) =
+    var endpointConnector =
         await _getEndpointConnector(endpointPath, createSessionCallback);
 
     var methodConnector = endpointConnector.methodConnectors[methodName];
@@ -158,15 +160,10 @@ abstract class EndpointDispatch {
       serializationManager,
     );
 
-    return _CallContext(
-      method: methodConnector,
-      arguments: parsedArguments,
-      endpoint: endpointConnector.endpoint,
-      session: session,
-    );
+    return (methodConnector, endpointConnector.endpoint, parsedArguments);
   }
 
-  Future<(EndpointConnector, Session)> _getEndpointConnector(
+  Future<EndpointConnector> _getEndpointConnector(
       String endpointPath,
       Session Function(EndpointConnector connector)
           createSessionCallback) async {
@@ -185,7 +182,7 @@ abstract class EndpointDispatch {
     if (authenticationFailedResult != null) {
       throw NotAuthorizedException(authenticationFailedResult);
     }
-    return (connector, session);
+    return connector;
   }
 
   String _endpointFromName(String name) {
@@ -306,20 +303,6 @@ class MethodConnector extends EndpointMethodConnector {
   });
 }
 
-class _CallContext {
-  final EndpointMethodConnector method;
-  final Map<String, dynamic> arguments;
-  final Endpoint endpoint;
-  final Session session;
-
-  _CallContext({
-    required this.method,
-    required this.arguments,
-    required this.endpoint,
-    required this.session,
-  });
-}
-
 /// Context for a [MethodConnector] call
 class MethodCallContext {
   /// The method to call.
@@ -339,10 +322,6 @@ class MethodCallContext {
   });
 }
 
-/// Callback for when the authentication is revoked.
-typedef OnRevokedAuthenticationCallback = void Function(
-    AuthenticationFailureReason authenticationRevokedReason);
-
 /// Context for a [MethodStreamConnector] call
 class MethodStreamCallContext {
   /// The method to call.
@@ -357,89 +336,13 @@ class MethodStreamCallContext {
   /// The input streams to pass to the method.
   final List<StreamParameterDescription> inputStreams;
 
-  MessageCentralListenerCallback? _revokedAuthenticationCallback;
-
-  final Session _session;
-
-  AuthenticationInfo? _authenticationInfo;
-
   /// Creates a new [MethodStreamCallContext].
   MethodStreamCallContext({
     required this.method,
     required this.arguments,
     required this.inputStreams,
     required this.endpoint,
-    required Session session,
-  }) : _session = session;
-
-  /// Call when the stream call is cancelled to do proper cleanup.
-  void onStreamCancelled() {
-    var localRevokedAuthenticationCallback = _revokedAuthenticationCallback;
-    var localAuthenticationInfo = _authenticationInfo;
-
-    if (localRevokedAuthenticationCallback != null &&
-        localAuthenticationInfo != null) {
-      _session.messages.removeListener(
-        MessageCentralServerpodChannels.revokedAuthentication(
-          localAuthenticationInfo.userId,
-        ),
-        localRevokedAuthenticationCallback,
-      );
-    }
-
-    _authenticationInfo = null;
-    _revokedAuthenticationCallback = null;
-  }
-
-  /// Sets a callback that is called when the authentication is revoked.
-  /// If this is not set, an exception will be thrown when authentication is revoked.
-  Future<void> setOnRevokedAuthenticationCallback(
-    OnRevokedAuthenticationCallback onRevokedAuthenticationCallback,
-  ) async {
-    var authenticationIsRequired =
-        endpoint.requireLogin || endpoint.requiredScopes.isNotEmpty;
-
-    if (authenticationIsRequired) {
-      var authenticationInfo = await _session.authenticated;
-      if (authenticationInfo == null) {
-        throw StateError(
-          'Authentication was required but no authentication info could be retrieved.',
-        );
-      }
-
-      _authenticationInfo = authenticationInfo;
-
-      void localRevokedAuthenticationCallback(event) async {
-        var authenticationRevokedReason = switch (event) {
-          RevokedAuthenticationUser _ =>
-            AuthenticationFailureReason.unauthenticated,
-          RevokedAuthenticationAuthId revokedAuthId =>
-            revokedAuthId.authId == authenticationInfo.authId
-                ? AuthenticationFailureReason.unauthenticated
-                : null,
-          RevokedAuthenticationScope revokedScopes => revokedScopes.scopes.any(
-              (s) => endpoint.requiredScopes.map((s) => s.name).contains(s),
-            )
-                ? AuthenticationFailureReason.insufficientAccess
-                : null,
-          _ => null,
-        };
-
-        if (authenticationRevokedReason != null) {
-          onRevokedAuthenticationCallback(authenticationRevokedReason);
-        }
-      }
-
-      _session.messages.addListener(
-        MessageCentralServerpodChannels.revokedAuthentication(
-          authenticationInfo.userId,
-        ),
-        localRevokedAuthenticationCallback,
-      );
-
-      _revokedAuthenticationCallback = localRevokedAuthenticationCallback;
-    }
-  }
+  });
 }
 
 /// Calls a named method referenced in a [MethodStreamConnector].
