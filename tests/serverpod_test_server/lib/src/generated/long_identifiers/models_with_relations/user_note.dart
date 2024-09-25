@@ -11,12 +11,11 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class UserNote extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class UserNote implements _i1.TableRow, _i1.ProtocolSerialization {
   UserNote._({
-    int? id,
+    this.id,
     required this.name,
-  }) : super(id);
+  });
 
   factory UserNote({
     int? id,
@@ -33,6 +32,9 @@ abstract class UserNote extends _i1.TableRow
   static final t = UserNoteTable();
 
   static const db = UserNoteRepository._();
+
+  @override
+  int? id;
 
   String name;
 

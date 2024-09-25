@@ -12,15 +12,15 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class OrganizationWithLongTableName extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class OrganizationWithLongTableName
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   OrganizationWithLongTableName._({
-    int? id,
+    this.id,
     required this.name,
     this.people,
     this.cityId,
     this.city,
-  }) : super(id);
+  });
 
   factory OrganizationWithLongTableName({
     int? id,
@@ -50,6 +50,9 @@ abstract class OrganizationWithLongTableName extends _i1.TableRow
   static final t = OrganizationWithLongTableNameTable();
 
   static const db = OrganizationWithLongTableNameRepository._();
+
+  @override
+  int? id;
 
   String name;
 

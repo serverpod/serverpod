@@ -12,13 +12,13 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class UserNoteCollectionWithALongName extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class UserNoteCollectionWithALongName
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   UserNoteCollectionWithALongName._({
-    int? id,
+    this.id,
     required this.name,
     this.notes,
-  }) : super(id);
+  });
 
   factory UserNoteCollectionWithALongName({
     int? id,
@@ -41,6 +41,9 @@ abstract class UserNoteCollectionWithALongName extends _i1.TableRow
   static final t = UserNoteCollectionWithALongNameTable();
 
   static const db = UserNoteCollectionWithALongNameRepository._();
+
+  @override
+  int? id;
 
   String name;
 

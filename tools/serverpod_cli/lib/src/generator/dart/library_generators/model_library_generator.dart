@@ -160,14 +160,24 @@ class SerializableModelLibraryGenerator {
       }
 
       if (serverCode && tableName != null) {
-        classBuilder.extend =
-            refer('TableRow', 'package:serverpod/serverpod.dart');
+        classBuilder.implements.add(
+          refer('TableRow', serverpodUrl(serverCode)),
+        );
 
         classBuilder.fields.addAll([
           _buildModelClassTableField(className),
         ]);
 
         classBuilder.fields.add(_buildModelClassDBField(className));
+
+        classBuilder.fields.add(Field(
+          (f) => f
+            ..name = 'id'
+            ..type = refer('int?')
+            ..annotations.add(
+              refer('override'),
+            ),
+        ));
 
         classBuilder.methods.add(_buildModelClassTableGetter());
       } else {
@@ -976,10 +986,6 @@ class SerializableModelLibraryGenerator {
           refer(field.name).ifNullThen(CodeExpression(defaultCode)).code,
         ]));
       }
-
-      if (serverCode && tableName != null) {
-        c.initializers.add(refer('super').call([refer('id')]).code);
-      }
     });
   }
 
@@ -1041,11 +1047,7 @@ class SerializableModelLibraryGenerator {
     return [...classDefinition.parentFields, ...fields]
         .where((field) => field.shouldIncludeField(serverCode))
         .map((field) {
-      bool hasPrimaryKey =
-          field.name == 'id' && tableName != null && serverCode;
-
-      bool shouldIncludeType =
-          hasPrimaryKey || !setAsToThis || field.defaultModelValue != null;
+      bool shouldIncludeType = !setAsToThis || field.defaultModelValue != null;
 
       bool hasDefaults = field.hasDefauls;
 

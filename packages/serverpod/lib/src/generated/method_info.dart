@@ -12,13 +12,12 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Information about a server method.
-abstract class MethodInfo extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class MethodInfo implements _i1.TableRow, _i1.ProtocolSerialization {
   MethodInfo._({
-    int? id,
+    this.id,
     required this.endpoint,
     required this.method,
-  }) : super(id);
+  });
 
   factory MethodInfo({
     int? id,
@@ -37,6 +36,9 @@ abstract class MethodInfo extends _i1.TableRow
   static final t = MethodInfoTable();
 
   static const db = MethodInfoRepository._();
+
+  @override
+  int? id;
 
   /// The endpoint of this method.
   String endpoint;

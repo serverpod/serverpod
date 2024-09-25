@@ -11,12 +11,12 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class DurationDefaultPersist extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class DurationDefaultPersist
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   DurationDefaultPersist._({
-    int? id,
+    this.id,
     this.durationDefaultPersist,
-  }) : super(id);
+  });
 
   factory DurationDefaultPersist({
     int? id,
@@ -38,6 +38,9 @@ abstract class DurationDefaultPersist extends _i1.TableRow
   static final t = DurationDefaultPersistTable();
 
   static const db = DurationDefaultPersistRepository._();
+
+  @override
+  int? id;
 
   Duration? durationDefaultPersist;
 

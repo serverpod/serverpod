@@ -12,15 +12,15 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Connects a table for handling uploading of files.
-abstract class CloudStorageDirectUploadEntry extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class CloudStorageDirectUploadEntry
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   CloudStorageDirectUploadEntry._({
-    int? id,
+    this.id,
     required this.storageId,
     required this.path,
     required this.expiration,
     required this.authKey,
-  }) : super(id);
+  });
 
   factory CloudStorageDirectUploadEntry({
     int? id,
@@ -45,6 +45,9 @@ abstract class CloudStorageDirectUploadEntry extends _i1.TableRow
   static final t = CloudStorageDirectUploadEntryTable();
 
   static const db = CloudStorageDirectUploadEntryRepository._();
+
+  @override
+  int? id;
 
   /// The storageId, typically `public` or `private`.
   String storageId;

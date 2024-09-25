@@ -14,17 +14,17 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// Represents a snapshot of a specific health metric. An entry is written every
 /// minute for each server. All health data can be accessed through Serverpod
 /// Insights.
-abstract class ServerHealthMetric extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class ServerHealthMetric
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   ServerHealthMetric._({
-    int? id,
+    this.id,
     required this.name,
     required this.serverId,
     required this.timestamp,
     required this.isHealthy,
     required this.value,
     required this.granularity,
-  }) : super(id);
+  });
 
   factory ServerHealthMetric({
     int? id,
@@ -52,6 +52,9 @@ abstract class ServerHealthMetric extends _i1.TableRow
   static final t = ServerHealthMetricTable();
 
   static const db = ServerHealthMetricRepository._();
+
+  @override
+  int? id;
 
   /// The name of the metric.
   String name;

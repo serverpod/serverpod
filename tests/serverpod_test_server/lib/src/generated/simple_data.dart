@@ -12,12 +12,11 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Just some simple data.
-abstract class SimpleData extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class SimpleData implements _i1.TableRow, _i1.ProtocolSerialization {
   SimpleData._({
-    int? id,
+    this.id,
     required this.num,
-  }) : super(id);
+  });
 
   factory SimpleData({
     int? id,
@@ -34,6 +33,9 @@ abstract class SimpleData extends _i1.TableRow
   static final t = SimpleDataTable();
 
   static const db = SimpleDataRepository._();
+
+  @override
+  int? id;
 
   /// The only field of [SimpleData]
   ///

@@ -12,10 +12,10 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class EnumDefaultModel extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class EnumDefaultModel
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   EnumDefaultModel._({
-    int? id,
+    this.id,
     _i2.ByNameEnum? byNameEnumDefaultModel,
     _i2.ByNameEnum? byNameEnumDefaultModelNull,
     _i2.ByIndexEnum? byIndexEnumDefaultModel,
@@ -27,8 +27,7 @@ abstract class EnumDefaultModel extends _i1.TableRow
         byIndexEnumDefaultModel =
             byIndexEnumDefaultModel ?? _i2.ByIndexEnum.byIndex1,
         byIndexEnumDefaultModelNull =
-            byIndexEnumDefaultModelNull ?? _i2.ByIndexEnum.byIndex2,
-        super(id);
+            byIndexEnumDefaultModelNull ?? _i2.ByIndexEnum.byIndex2;
 
   factory EnumDefaultModel({
     int? id,
@@ -61,6 +60,9 @@ abstract class EnumDefaultModel extends _i1.TableRow
   static final t = EnumDefaultModelTable();
 
   static const db = EnumDefaultModelRepository._();
+
+  @override
+  int? id;
 
   _i2.ByNameEnum byNameEnumDefaultModel;
 

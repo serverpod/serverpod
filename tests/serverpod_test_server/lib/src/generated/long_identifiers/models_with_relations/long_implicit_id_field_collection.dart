@@ -12,13 +12,13 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class LongImplicitIdFieldCollection extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class LongImplicitIdFieldCollection
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   LongImplicitIdFieldCollection._({
-    int? id,
+    this.id,
     required this.name,
     this.thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
-  }) : super(id);
+  });
 
   factory LongImplicitIdFieldCollection({
     int? id,
@@ -45,6 +45,9 @@ abstract class LongImplicitIdFieldCollection extends _i1.TableRow
   static final t = LongImplicitIdFieldCollectionTable();
 
   static const db = LongImplicitIdFieldCollectionRepository._();
+
+  @override
+  int? id;
 
   String name;
 

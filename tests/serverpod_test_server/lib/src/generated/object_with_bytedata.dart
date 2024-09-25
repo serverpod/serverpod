@@ -12,12 +12,12 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
-abstract class ObjectWithByteData extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class ObjectWithByteData
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectWithByteData._({
-    int? id,
+    this.id,
     required this.byteData,
-  }) : super(id);
+  });
 
   factory ObjectWithByteData({
     int? id,
@@ -35,6 +35,9 @@ abstract class ObjectWithByteData extends _i1.TableRow
   static final t = ObjectWithByteDataTable();
 
   static const db = ObjectWithByteDataRepository._();
+
+  @override
+  int? id;
 
   _i2.ByteData byteData;
 

@@ -137,9 +137,9 @@ void main() {
     });
 
     group('then the class named $testClassName', () {
-      test('inherits from TableRow.', () {
+      test('implements TableRow.', () {
         expect(
-            CompilationUnitHelpers.hasExtendsClause(
+            CompilationUnitHelpers.hasImplementsClause(
               maybeClassNamedExample!,
               name: 'TableRow',
             ),
@@ -166,12 +166,8 @@ void main() {
           expect(constructor, isNotNull, reason: 'No private constructor');
         });
 
-        test('with id param', () {
-          expect(constructor?.parameters.toSource(), '({int? id})');
-        });
-
-        test('passing id to super', () {
-          expect(constructor?.initializers.first.toSource(), 'super(id)');
+        test('initializing id in initializer list', () {
+          expect(constructor?.parameters.toSource(), '({this.id})');
         });
       });
 
@@ -198,14 +194,14 @@ void main() {
             reason: 'Missing declaration for table method.');
       });
 
-      test('is NOT generated with id field.', () {
+      test('is generated with id field.', () {
         expect(
             CompilationUnitHelpers.hasFieldDeclaration(
               maybeClassNamedExample!,
               name: 'id',
             ),
-            isFalse,
-            reason: 'Declaration for id field should not be generated.');
+            isTrue,
+            reason: 'Declaration for id field should be generated.');
       });
 
       test('has a static include method.', () {

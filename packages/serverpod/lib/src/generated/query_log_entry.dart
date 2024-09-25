@@ -12,10 +12,10 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A log entry for a database query.
-abstract class QueryLogEntry extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class QueryLogEntry
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   QueryLogEntry._({
-    int? id,
+    this.id,
     required this.serverId,
     required this.sessionLogId,
     this.messageId,
@@ -26,7 +26,7 @@ abstract class QueryLogEntry extends _i1.TableRow
     this.stackTrace,
     required this.slow,
     required this.order,
-  }) : super(id);
+  });
 
   factory QueryLogEntry({
     int? id,
@@ -61,6 +61,9 @@ abstract class QueryLogEntry extends _i1.TableRow
   static final t = QueryLogEntryTable();
 
   static const db = QueryLogEntryRepository._();
+
+  @override
+  int? id;
 
   /// The id of the server that handled the query.
   String serverId;

@@ -14,17 +14,17 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// Represents a snapshot of the number of open connections the server currently
 /// is handling. An entry is written every minute for each server. All health
 /// data can be accessed through Serverpod Insights.
-abstract class ServerHealthConnectionInfo extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class ServerHealthConnectionInfo
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   ServerHealthConnectionInfo._({
-    int? id,
+    this.id,
     required this.serverId,
     required this.timestamp,
     required this.active,
     required this.closing,
     required this.idle,
     required this.granularity,
-  }) : super(id);
+  });
 
   factory ServerHealthConnectionInfo({
     int? id,
@@ -53,6 +53,9 @@ abstract class ServerHealthConnectionInfo extends _i1.TableRow
   static final t = ServerHealthConnectionInfoTable();
 
   static const db = ServerHealthConnectionInfoRepository._();
+
+  @override
+  int? id;
 
   /// The server associated with this connection info.
   String serverId;

@@ -11,14 +11,14 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class ObjectFieldScopes extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class ObjectFieldScopes
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectFieldScopes._({
-    int? id,
+    this.id,
     required this.normal,
     this.api,
     this.database,
-  }) : super(id);
+  });
 
   factory ObjectFieldScopes({
     int? id,
@@ -39,6 +39,9 @@ abstract class ObjectFieldScopes extends _i1.TableRow
   static final t = ObjectFieldScopesTable();
 
   static const db = ObjectFieldScopesRepository._();
+
+  @override
+  int? id;
 
   String normal;
 

@@ -11,10 +11,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class UuidDefaultMix extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class UuidDefaultMix
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   UuidDefaultMix._({
-    int? id,
+    this.id,
     _i1.UuidValue? uuidDefaultAndDefaultModel,
     _i1.UuidValue? uuidDefaultAndDefaultPersist,
     _i1.UuidValue? uuidDefaultModelAndDefaultPersist,
@@ -23,8 +23,7 @@ abstract class UuidDefaultMix extends _i1.TableRow
         uuidDefaultAndDefaultPersist = uuidDefaultAndDefaultPersist ??
             _i1.UuidValue.fromString('6fa459ea-ee8a-3ca4-894e-db77e160355e'),
         uuidDefaultModelAndDefaultPersist = uuidDefaultModelAndDefaultPersist ??
-            _i1.UuidValue.fromString('d9428888-122b-11e1-b85c-61cd3cbb3210'),
-        super(id);
+            _i1.UuidValue.fromString('d9428888-122b-11e1-b85c-61cd3cbb3210');
 
   factory UuidDefaultMix({
     int? id,
@@ -48,6 +47,9 @@ abstract class UuidDefaultMix extends _i1.TableRow
   static final t = UuidDefaultMixTable();
 
   static const db = UuidDefaultMixRepository._();
+
+  @override
+  int? id;
 
   _i1.UuidValue uuidDefaultAndDefaultModel;
 

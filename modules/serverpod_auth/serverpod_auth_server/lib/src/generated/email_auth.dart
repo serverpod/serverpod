@@ -12,14 +12,13 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for a sign in with email.
-abstract class EmailAuth extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class EmailAuth implements _i1.TableRow, _i1.ProtocolSerialization {
   EmailAuth._({
-    int? id,
+    this.id,
     required this.userId,
     required this.email,
     required this.hash,
-  }) : super(id);
+  });
 
   factory EmailAuth({
     int? id,
@@ -40,6 +39,9 @@ abstract class EmailAuth extends _i1.TableRow
   static final t = EmailAuthTable();
 
   static const db = EmailAuthRepository._();
+
+  @override
+  int? id;
 
   /// The id of the user, corresponds to the id field in [UserInfo].
   int userId;

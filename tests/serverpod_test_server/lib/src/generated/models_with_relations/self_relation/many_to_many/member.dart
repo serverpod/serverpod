@@ -12,14 +12,13 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../protocol.dart' as _i2;
 
-abstract class Member extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class Member implements _i1.TableRow, _i1.ProtocolSerialization {
   Member._({
-    int? id,
+    this.id,
     required this.name,
     this.blocking,
     this.blockedBy,
-  }) : super(id);
+  });
 
   factory Member({
     int? id,
@@ -44,6 +43,9 @@ abstract class Member extends _i1.TableRow
   static final t = MemberTable();
 
   static const db = MemberRepository._();
+
+  @override
+  int? id;
 
   String name;
 

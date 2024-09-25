@@ -12,14 +12,14 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class Team extends _i1.TableRow implements _i1.ProtocolSerialization {
+abstract class Team implements _i1.TableRow, _i1.ProtocolSerialization {
   Team._({
-    int? id,
+    this.id,
     required this.name,
     this.arenaId,
     this.arena,
     this.players,
-  }) : super(id);
+  });
 
   factory Team({
     int? id,
@@ -47,6 +47,9 @@ abstract class Team extends _i1.TableRow implements _i1.ProtocolSerialization {
   static final t = TeamTable();
 
   static const db = TeamRepository._();
+
+  @override
+  int? id;
 
   String name;
 

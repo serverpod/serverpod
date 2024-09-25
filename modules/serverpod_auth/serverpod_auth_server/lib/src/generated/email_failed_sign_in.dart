@@ -13,14 +13,14 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database table for tracking failed email sign-ins. Saves IP-address, time,
 /// and email to be prevent brute force attacks.
-abstract class EmailFailedSignIn extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class EmailFailedSignIn
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   EmailFailedSignIn._({
-    int? id,
+    this.id,
     required this.email,
     required this.time,
     required this.ipAddress,
-  }) : super(id);
+  });
 
   factory EmailFailedSignIn({
     int? id,
@@ -41,6 +41,9 @@ abstract class EmailFailedSignIn extends _i1.TableRow
   static final t = EmailFailedSignInTable();
 
   static const db = EmailFailedSignInRepository._();
+
+  @override
+  int? id;
 
   /// Email attempting to sign in with.
   String email;

@@ -12,12 +12,12 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class Arena extends _i1.TableRow implements _i1.ProtocolSerialization {
+abstract class Arena implements _i1.TableRow, _i1.ProtocolSerialization {
   Arena._({
-    int? id,
+    this.id,
     required this.name,
     this.team,
-  }) : super(id);
+  });
 
   factory Arena({
     int? id,
@@ -39,6 +39,9 @@ abstract class Arena extends _i1.TableRow implements _i1.ProtocolSerialization {
   static final t = ArenaTable();
 
   static const db = ArenaRepository._();
+
+  @override
+  int? id;
 
   String name;
 

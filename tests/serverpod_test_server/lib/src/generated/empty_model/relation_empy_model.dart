@@ -12,12 +12,12 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-abstract class RelationEmptyModel extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class RelationEmptyModel
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   RelationEmptyModel._({
-    int? id,
+    this.id,
     this.items,
-  }) : super(id);
+  });
 
   factory RelationEmptyModel({
     int? id,
@@ -37,6 +37,9 @@ abstract class RelationEmptyModel extends _i1.TableRow
   static final t = RelationEmptyModelTable();
 
   static const db = RelationEmptyModelRepository._();
+
+  @override
+  int? id;
 
   List<_i2.EmptyModelRelationItem>? items;
 

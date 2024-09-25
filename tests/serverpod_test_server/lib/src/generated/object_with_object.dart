@@ -12,10 +12,10 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
-abstract class ObjectWithObject extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class ObjectWithObject
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectWithObject._({
-    int? id,
+    this.id,
     required this.data,
     this.nullableData,
     required this.dataList,
@@ -25,7 +25,7 @@ abstract class ObjectWithObject extends _i1.TableRow
     this.nestedDataList,
     this.nestedDataListInMap,
     this.nestedDataMap,
-  }) : super(id);
+  });
 
   factory ObjectWithObject({
     int? id,
@@ -103,6 +103,9 @@ abstract class ObjectWithObject extends _i1.TableRow
   static final t = ObjectWithObjectTable();
 
   static const db = ObjectWithObjectRepository._();
+
+  @override
+  int? id;
 
   _i2.SimpleData data;
 

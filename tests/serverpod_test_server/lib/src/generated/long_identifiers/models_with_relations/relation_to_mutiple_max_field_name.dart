@@ -12,13 +12,13 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class RelationToMultipleMaxFieldName extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class RelationToMultipleMaxFieldName
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   RelationToMultipleMaxFieldName._({
-    int? id,
+    this.id,
     required this.name,
     this.multipleMaxFieldNames,
-  }) : super(id);
+  });
 
   factory RelationToMultipleMaxFieldName({
     int? id,
@@ -42,6 +42,9 @@ abstract class RelationToMultipleMaxFieldName extends _i1.TableRow
   static final t = RelationToMultipleMaxFieldNameTable();
 
   static const db = RelationToMultipleMaxFieldNameRepository._();
+
+  @override
+  int? id;
 
   String name;
 

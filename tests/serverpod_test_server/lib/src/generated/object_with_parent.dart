@@ -11,12 +11,12 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class ObjectWithParent extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class ObjectWithParent
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectWithParent._({
-    int? id,
+    this.id,
     required this.other,
-  }) : super(id);
+  });
 
   factory ObjectWithParent({
     int? id,
@@ -33,6 +33,9 @@ abstract class ObjectWithParent extends _i1.TableRow
   static final t = ObjectWithParentTable();
 
   static const db = ObjectWithParentRepository._();
+
+  @override
+  int? id;
 
   int other;
 

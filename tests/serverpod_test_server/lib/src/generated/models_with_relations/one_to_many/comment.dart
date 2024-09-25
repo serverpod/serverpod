@@ -12,14 +12,13 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class Comment extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class Comment implements _i1.TableRow, _i1.ProtocolSerialization {
   Comment._({
-    int? id,
+    this.id,
     required this.description,
     required this.orderId,
     this.order,
-  }) : super(id);
+  });
 
   factory Comment({
     int? id,
@@ -43,6 +42,9 @@ abstract class Comment extends _i1.TableRow
   static final t = CommentTable();
 
   static const db = CommentRepository._();
+
+  @override
+  int? id;
 
   String description;
 

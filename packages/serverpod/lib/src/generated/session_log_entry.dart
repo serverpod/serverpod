@@ -12,10 +12,10 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Log entry for a session.
-abstract class SessionLogEntry extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class SessionLogEntry
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   SessionLogEntry._({
-    int? id,
+    this.id,
     required this.serverId,
     required this.time,
     this.module,
@@ -29,7 +29,7 @@ abstract class SessionLogEntry extends _i1.TableRow
     this.authenticatedUserId,
     this.isOpen,
     required this.touched,
-  }) : super(id);
+  });
 
   factory SessionLogEntry({
     int? id,
@@ -70,6 +70,9 @@ abstract class SessionLogEntry extends _i1.TableRow
   static final t = SessionLogEntryTable();
 
   static const db = SessionLogEntryRepository._();
+
+  @override
+  int? id;
 
   /// The id of the server that handled this session.
   String serverId;

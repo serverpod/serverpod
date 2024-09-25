@@ -12,13 +12,13 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class EnumDefaultPersist extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class EnumDefaultPersist
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   EnumDefaultPersist._({
-    int? id,
+    this.id,
     this.byNameEnumDefaultPersist,
     this.byIndexEnumDefaultPersist,
-  }) : super(id);
+  });
 
   factory EnumDefaultPersist({
     int? id,
@@ -45,6 +45,9 @@ abstract class EnumDefaultPersist extends _i1.TableRow
   static final t = EnumDefaultPersistTable();
 
   static const db = EnumDefaultPersistRepository._();
+
+  @override
+  int? id;
 
   _i2.ByNameEnum? byNameEnumDefaultPersist;
 

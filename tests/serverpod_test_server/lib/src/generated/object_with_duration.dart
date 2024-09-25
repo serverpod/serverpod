@@ -11,12 +11,12 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class ObjectWithDuration extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class ObjectWithDuration
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectWithDuration._({
-    int? id,
+    this.id,
     required this.duration,
-  }) : super(id);
+  });
 
   factory ObjectWithDuration({
     int? id,
@@ -34,6 +34,9 @@ abstract class ObjectWithDuration extends _i1.TableRow
   static final t = ObjectWithDurationTable();
 
   static const db = ObjectWithDurationRepository._();
+
+  @override
+  int? id;
 
   Duration duration;
 

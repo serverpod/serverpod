@@ -12,14 +12,13 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i2;
 
-abstract class ObjectUser extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class ObjectUser implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectUser._({
-    int? id,
+    this.id,
     this.name,
     required this.userInfoId,
     this.userInfo,
-  }) : super(id);
+  });
 
   factory ObjectUser({
     int? id,
@@ -43,6 +42,9 @@ abstract class ObjectUser extends _i1.TableRow
   static final t = ObjectUserTable();
 
   static const db = ObjectUserRepository._();
+
+  @override
+  int? id;
 
   String? name;
 

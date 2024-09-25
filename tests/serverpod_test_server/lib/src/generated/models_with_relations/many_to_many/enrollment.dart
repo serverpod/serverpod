@@ -12,15 +12,14 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class Enrollment extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class Enrollment implements _i1.TableRow, _i1.ProtocolSerialization {
   Enrollment._({
-    int? id,
+    this.id,
     required this.studentId,
     this.student,
     required this.courseId,
     this.course,
-  }) : super(id);
+  });
 
   factory Enrollment({
     int? id,
@@ -49,6 +48,9 @@ abstract class Enrollment extends _i1.TableRow
   static final t = EnrollmentTable();
 
   static const db = EnrollmentRepository._();
+
+  @override
+  int? id;
 
   int studentId;
 

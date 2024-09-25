@@ -11,13 +11,13 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class BoolDefaultPersist extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class BoolDefaultPersist
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   BoolDefaultPersist._({
-    int? id,
+    this.id,
     this.boolDefaultPersistTrue,
     this.boolDefaultPersistFalse,
-  }) : super(id);
+  });
 
   factory BoolDefaultPersist({
     int? id,
@@ -38,6 +38,9 @@ abstract class BoolDefaultPersist extends _i1.TableRow
   static final t = BoolDefaultPersistTable();
 
   static const db = BoolDefaultPersistRepository._();
+
+  @override
+  int? id;
 
   bool? boolDefaultPersistTrue;
 

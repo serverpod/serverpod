@@ -12,13 +12,13 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-abstract class City extends _i1.TableRow implements _i1.ProtocolSerialization {
+abstract class City implements _i1.TableRow, _i1.ProtocolSerialization {
   City._({
-    int? id,
+    this.id,
     required this.name,
     this.citizens,
     this.organizations,
-  }) : super(id);
+  });
 
   factory City({
     int? id,
@@ -43,6 +43,9 @@ abstract class City extends _i1.TableRow implements _i1.ProtocolSerialization {
   static final t = CityTable();
 
   static const db = CityRepository._();
+
+  @override
+  int? id;
 
   String name;
 

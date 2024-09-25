@@ -12,10 +12,10 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class EnumDefaultMix extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class EnumDefaultMix
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   EnumDefaultMix._({
-    int? id,
+    this.id,
     _i2.ByNameEnum? byNameEnumDefaultAndDefaultModel,
     _i2.ByNameEnum? byNameEnumDefaultAndDefaultPersist,
     _i2.ByNameEnum? byNameEnumDefaultModelAndDefaultPersist,
@@ -24,8 +24,7 @@ abstract class EnumDefaultMix extends _i1.TableRow
         byNameEnumDefaultAndDefaultPersist =
             byNameEnumDefaultAndDefaultPersist ?? _i2.ByNameEnum.byName1,
         byNameEnumDefaultModelAndDefaultPersist =
-            byNameEnumDefaultModelAndDefaultPersist ?? _i2.ByNameEnum.byName1,
-        super(id);
+            byNameEnumDefaultModelAndDefaultPersist ?? _i2.ByNameEnum.byName1;
 
   factory EnumDefaultMix({
     int? id,
@@ -50,6 +49,9 @@ abstract class EnumDefaultMix extends _i1.TableRow
   static final t = EnumDefaultMixTable();
 
   static const db = EnumDefaultMixRepository._();
+
+  @override
+  int? id;
 
   _i2.ByNameEnum byNameEnumDefaultAndDefaultModel;
 

@@ -11,13 +11,13 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class MultipleMaxFieldName extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class MultipleMaxFieldName
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   MultipleMaxFieldName._({
-    int? id,
+    this.id,
     required this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
     required this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
-  }) : super(id);
+  });
 
   factory MultipleMaxFieldName({
     int? id,
@@ -45,6 +45,9 @@ abstract class MultipleMaxFieldName extends _i1.TableRow
   static final t = MultipleMaxFieldNameTable();
 
   static const db = MultipleMaxFieldNameRepository._();
+
+  @override
+  int? id;
 
   String thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1;
 

@@ -13,15 +13,15 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Runtime settings of the server.
-abstract class RuntimeSettings extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class RuntimeSettings
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   RuntimeSettings._({
-    int? id,
+    this.id,
     required this.logSettings,
     required this.logSettingsOverrides,
     required this.logServiceCalls,
     required this.logMalformedCalls,
-  }) : super(id);
+  });
 
   factory RuntimeSettings({
     int? id,
@@ -48,6 +48,9 @@ abstract class RuntimeSettings extends _i1.TableRow
   static final t = RuntimeSettingsTable();
 
   static const db = RuntimeSettingsRepository._();
+
+  @override
+  int? id;
 
   /// Log settings.
   _i2.LogSettings logSettings;

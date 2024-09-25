@@ -11,13 +11,13 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class ObjectWithIndex extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class ObjectWithIndex
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectWithIndex._({
-    int? id,
+    this.id,
     required this.indexed,
     required this.indexed2,
-  }) : super(id);
+  });
 
   factory ObjectWithIndex({
     int? id,
@@ -36,6 +36,9 @@ abstract class ObjectWithIndex extends _i1.TableRow
   static final t = ObjectWithIndexTable();
 
   static const db = ObjectWithIndexRepository._();
+
+  @override
+  int? id;
 
   int indexed;
 

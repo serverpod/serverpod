@@ -12,14 +12,13 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class Address extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class Address implements _i1.TableRow, _i1.ProtocolSerialization {
   Address._({
-    int? id,
+    this.id,
     required this.street,
     this.inhabitantId,
     this.inhabitant,
-  }) : super(id);
+  });
 
   factory Address({
     int? id,
@@ -43,6 +42,9 @@ abstract class Address extends _i1.TableRow
   static final t = AddressTable();
 
   static const db = AddressRepository._();
+
+  @override
+  int? id;
 
   String street;
 

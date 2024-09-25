@@ -11,9 +11,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class EmptyModelWithTable extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
-  EmptyModelWithTable._({int? id}) : super(id);
+abstract class EmptyModelWithTable
+    implements _i1.TableRow, _i1.ProtocolSerialization {
+  EmptyModelWithTable._({this.id});
 
   factory EmptyModelWithTable({int? id}) = _EmptyModelWithTableImpl;
 
@@ -24,6 +24,9 @@ abstract class EmptyModelWithTable extends _i1.TableRow
   static final t = EmptyModelWithTableTable();
 
   static const db = EmptyModelWithTableRepository._();
+
+  @override
+  int? id;
 
   @override
   _i1.Table get table => t;

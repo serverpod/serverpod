@@ -13,15 +13,15 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A request for creating an email signin. Created during the sign up process
 /// to keep track of the user's details and verification code.
-abstract class EmailCreateAccountRequest extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class EmailCreateAccountRequest
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   EmailCreateAccountRequest._({
-    int? id,
+    this.id,
     required this.userName,
     required this.email,
     required this.hash,
     required this.verificationCode,
-  }) : super(id);
+  });
 
   factory EmailCreateAccountRequest({
     int? id,
@@ -45,6 +45,9 @@ abstract class EmailCreateAccountRequest extends _i1.TableRow
   static final t = EmailCreateAccountRequestTable();
 
   static const db = EmailCreateAccountRequestRepository._();
+
+  @override
+  int? id;
 
   /// The name of the user.
   String userName;

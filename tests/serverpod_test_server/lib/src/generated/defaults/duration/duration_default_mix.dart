@@ -11,10 +11,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class DurationDefaultMix extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class DurationDefaultMix
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   DurationDefaultMix._({
-    int? id,
+    this.id,
     Duration? durationDefaultAndDefaultModel,
     Duration? durationDefaultAndDefaultPersist,
     Duration? durationDefaultModelAndDefaultPersist,
@@ -42,8 +42,7 @@ abstract class DurationDefaultMix extends _i1.TableRow
                   minutes: 10,
                   seconds: 30,
                   milliseconds: 100,
-                ),
-        super(id);
+                );
 
   factory DurationDefaultMix({
     int? id,
@@ -67,6 +66,9 @@ abstract class DurationDefaultMix extends _i1.TableRow
   static final t = DurationDefaultMixTable();
 
   static const db = DurationDefaultMixRepository._();
+
+  @override
+  int? id;
 
   Duration durationDefaultAndDefaultModel;
 

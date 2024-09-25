@@ -12,14 +12,14 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
-abstract class RelatedUniqueData extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class RelatedUniqueData
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   RelatedUniqueData._({
-    int? id,
+    this.id,
     required this.uniqueDataId,
     this.uniqueData,
     required this.number,
-  }) : super(id);
+  });
 
   factory RelatedUniqueData({
     int? id,
@@ -43,6 +43,9 @@ abstract class RelatedUniqueData extends _i1.TableRow
   static final t = RelatedUniqueDataTable();
 
   static const db = RelatedUniqueDataRepository._();
+
+  @override
+  int? id;
 
   int uniqueDataId;
 

@@ -12,15 +12,14 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../protocol.dart' as _i2;
 
-abstract class Blocking extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class Blocking implements _i1.TableRow, _i1.ProtocolSerialization {
   Blocking._({
-    int? id,
+    this.id,
     required this.blockedId,
     this.blocked,
     required this.blockedById,
     this.blockedBy,
-  }) : super(id);
+  });
 
   factory Blocking({
     int? id,
@@ -49,6 +48,9 @@ abstract class Blocking extends _i1.TableRow
   static final t = BlockingTable();
 
   static const db = BlockingRepository._();
+
+  @override
+  int? id;
 
   int blockedId;
 

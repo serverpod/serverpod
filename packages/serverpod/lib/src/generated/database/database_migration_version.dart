@@ -12,14 +12,14 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Represents a version of a database migration.
-abstract class DatabaseMigrationVersion extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class DatabaseMigrationVersion
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   DatabaseMigrationVersion._({
-    int? id,
+    this.id,
     required this.module,
     required this.version,
     this.timestamp,
-  }) : super(id);
+  });
 
   factory DatabaseMigrationVersion({
     int? id,
@@ -43,6 +43,9 @@ abstract class DatabaseMigrationVersion extends _i1.TableRow
   static final t = DatabaseMigrationVersionTable();
 
   static const db = DatabaseMigrationVersionRepository._();
+
+  @override
+  int? id;
 
   /// The module the migration belongs to.
   String module;

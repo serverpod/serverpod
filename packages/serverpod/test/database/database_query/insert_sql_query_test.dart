@@ -15,11 +15,14 @@ class PersonTable extends Table {
   List<Column> get columns => [id, name, age];
 }
 
-class PersonClass extends TableRow {
+class PersonClass implements TableRow {
   final String name;
   final int age;
 
-  PersonClass({required this.name, required this.age}) : super(1);
+  @override
+  int? id;
+
+  PersonClass({this.id, required this.name, required this.age});
 
   @override
   Table get table => PersonTable();
@@ -34,8 +37,11 @@ class PersonClass extends TableRow {
   }
 }
 
-class OnlyIdClass extends TableRow {
-  OnlyIdClass() : super(1);
+class OnlyIdClass implements TableRow {
+  OnlyIdClass({this.id});
+
+  @override
+  int? id;
 
   @override
   Table get table => Table(tableName: 'only_id');
