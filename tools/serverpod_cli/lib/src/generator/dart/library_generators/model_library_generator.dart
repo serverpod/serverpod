@@ -1047,15 +1047,9 @@ class SerializableModelLibraryGenerator {
     return [...classDefinition.parentFields, ...fields]
         .where((field) => field.shouldIncludeField(serverCode))
         .map((field) {
-      bool hasPrimaryKey =
-          field.name == 'id' && tableName != null && serverCode;
-
-      bool shouldIncludeType =
-          hasPrimaryKey || !setAsToThis || field.defaultModelValue != null;
+      bool shouldIncludeType = !setAsToThis || field.defaultModelValue != null;
 
       bool hasDefaults = field.hasDefauls;
-
-      bool isIdFieldInMainConstructor = field.name == 'id' && setAsToThis;
 
       var type = field.type.reference(
         serverCode,
@@ -1068,10 +1062,8 @@ class SerializableModelLibraryGenerator {
         (p) => p
           ..named = true
           ..required = !(field.type.nullable || hasDefaults)
-          ..type =
-              shouldIncludeType && !isIdFieldInMainConstructor ? type : null
-          ..toThis = !shouldIncludeType && fields.contains(field) ||
-              isIdFieldInMainConstructor
+          ..type = shouldIncludeType ? type : null
+          ..toThis = !shouldIncludeType && fields.contains(field)
           ..toSuper = !shouldIncludeType && inheritedFields.contains(field)
           ..name = field.name,
       );
