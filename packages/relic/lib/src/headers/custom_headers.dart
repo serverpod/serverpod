@@ -2,7 +2,12 @@ part of '../headers.dart';
 
 final _emptyCustomHeaders = CustomHeaders._empty();
 
-/// Unmodifiable, key-insensitive header map.
+/// CustomHeaders is a case-insensitive, unmodifiable map that stores headers
+/// which are not part of the predefined standard headers in the [Headers] class.
+/// This allows the addition of any non-standard or "custom" headers, enabling
+/// flexibility for handling unknown or vendor-specific headers.
+/// CustomHeaders ensures that even if the header is not natively supported,
+/// it can still be processed and included in requests or responses.
 class CustomHeaders extends UnmodifiableMapView<String, List<String>> {
   factory CustomHeaders.empty() => _emptyCustomHeaders;
 
