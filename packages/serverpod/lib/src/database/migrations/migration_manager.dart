@@ -64,8 +64,10 @@ class MigrationManager {
         warnings.add('Table "${table.name}" is missing.');
         continue;
       }
-      if (!liveTable.like(table)) {
-        warnings.add('Table "${table.name}" is not like the target database.');
+      var mismatches = liveTable.like(table);
+      if (mismatches.isNotEmpty) {
+        warnings.add(
+            'Table "${table.name}" is not like the target database:\n - ${mismatches.join('\n - ')}');
         continue;
       }
     }

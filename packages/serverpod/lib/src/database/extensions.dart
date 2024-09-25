@@ -18,22 +18,6 @@ extension DatabaseComparisons on DatabaseDefinition {
     }
     return null;
   }
-
-  /// Returns true if the database structure is identical to the [other]
-  /// database. Ignores comparisons of Dart types and names.
-  bool like(DatabaseDefinition other) {
-    if (other.tables.length != tables.length) {
-      return false;
-    }
-
-    for (var table in tables) {
-      var otherTable = other.findTableNamed(table.name);
-      if (otherTable == null || !table.like(otherTable)) {
-        return false;
-      }
-    }
-    return true;
-  }
 }
 
 /// Comparison methods for [TableDefinition].
@@ -101,56 +85,88 @@ extension TableComparisons on TableDefinition {
     return null;
   }
 
-  /// Returns true if the table structure is identical to the [other]. Ignores
-  /// comparisons of Dart types and names.
-  bool like(TableDefinition other) {
-    // Columns
+  /// Compares this table definition with [other], returning a list of mismatches.
+  /// The comparison checks columns, indexes, foreign keys, and general table properties.
+  /// Returns an empty list if the tables are identical.
+  List<String> like(TableDefinition other) {
+    List<String> mismatches = [];
+
+    // Compare columns
     if (other.columns.length != columns.length) {
-      return false;
-    }
-    for (var column in columns) {
-      var otherColumn = other.findColumnNamed(column.name);
-      if (otherColumn == null || !column.like(otherColumn)) {
-        return false;
+      mismatches.add(
+          'Column count mismatch: Expected ${columns.length}, found ${other.columns.length}');
+    } else {
+      for (var column in columns) {
+        var otherColumn = other.findColumnNamed(column.name);
+        if (otherColumn == null) {
+          mismatches
+              .add('Column "${column.name}" is missing in the target schema.');
+        } else if (!column.like(otherColumn)) {
+          mismatches
+              .add('Column "${column.name}" does not match the target schema.');
+        }
       }
     }
 
-    // Indexes
+    // Compare indexes
     if (other.indexes.length != indexes.length) {
-      return false;
-    }
-    for (var index in indexes) {
-      var otherIndex = other.findIndexNamed(
-        index.indexName,
-        ignoreCase: true,
-      );
-      if (otherIndex == null ||
-          !index.like(
-            otherIndex,
-            ignoreCase: true,
-          )) {
-        return false;
+      mismatches.add(
+          'Index count mismatch: Expected ${indexes.length}, found ${other.indexes.length}');
+    } else {
+      for (var index in indexes) {
+        var otherIndex = other.findIndexNamed(
+          index.indexName,
+          ignoreCase: true,
+        );
+        if (otherIndex == null) {
+          mismatches.add(
+              'Index "${index.indexName}" is missing in the target schema.');
+        } else if (!index.like(otherIndex, ignoreCase: true)) {
+          mismatches.add(
+              'Index "${index.indexName}" does not match the target schema.');
+        }
       }
     }
 
-    // Foreign keys
+    // Compare foreign keys
     if (other.foreignKeys.length != foreignKeys.length) {
-      return false;
-    }
-    for (var key in foreignKeys) {
-      var otherKey = other.findForeignKeyDefinitionNamed(
-        key.constraintName,
-        ignoreCase: true,
-      );
-      if (otherKey == null || !key.like(otherKey, ignoreCase: true)) {
-        return false;
+      mismatches.add(
+          'Foreign key count mismatch: Expected ${foreignKeys.length}, found ${other.foreignKeys.length}');
+    } else {
+      for (var key in foreignKeys) {
+        var otherKey = other.findForeignKeyDefinitionNamed(
+          key.constraintName,
+          ignoreCase: true,
+        );
+        if (otherKey == null) {
+          mismatches.add(
+              'Foreign key "${key.constraintName}" is missing in the target schema.');
+        } else if (!key.like(otherKey, ignoreCase: true)) {
+          mismatches.add(
+              'Foreign key "${key.constraintName}" does not match the target schema.');
+        }
       }
     }
 
-    // Other fields
-    return other.name == name &&
-        other.tableSpace == tableSpace &&
-        other.schema == schema;
+    // Compare table name
+    if (other.name != name) {
+      mismatches
+          .add('Table name mismatch: Expected "$name", found "${other.name}".');
+    }
+
+    // Compare table space
+    if (other.tableSpace != tableSpace) {
+      mismatches.add(
+          'Tablespace mismatch: Expected "$tableSpace", found "${other.tableSpace}".');
+    }
+
+    // Compare table schema
+    if (other.schema != schema) {
+      mismatches
+          .add('Schema mismatch: Expected "$schema", found "${other.schema}".');
+    }
+
+    return mismatches;
   }
 }
 
