@@ -232,14 +232,18 @@ class ServerTestToolsGenerator {
                 'serializationManager': refer('_serializationManager'),
               }))
               .statement,
-          refer('_localTestStreamManager').property('callStreamMethod').call([
-            refer('_localCallContext'),
-            refer('_localUniqueSession').property('serverpodSession'),
-            literalMap({
-              for (var parameter in streamParameters)
-                literalString(parameter.name): refer(parameter.name).code,
-            }),
-          ]).statement,
+          refer('_localTestStreamManager')
+              .property('callStreamMethod')
+              .call([
+                refer('_localCallContext'),
+                refer('_localUniqueSession').property('serverpodSession'),
+                literalMap({
+                  for (var parameter in streamParameters)
+                    literalString(parameter.name): refer(parameter.name).code,
+                }),
+              ])
+              .awaited
+              .statement,
           if (hasStreamParameter && !returnsStream)
             refer('_localTestStreamManager')
                 .property('outputStreamController')

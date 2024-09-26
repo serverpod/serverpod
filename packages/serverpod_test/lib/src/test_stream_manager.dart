@@ -72,12 +72,12 @@ class TestStreamManager<OutputStreamType> {
   }
 
   /// Inititates a stream method call which opens all needed streams.
-  void callStreamMethod(
+  Future<void> callStreamMethod(
     MethodStreamCallContext callContext,
     Session session,
     Map<String, Stream<dynamic>> inputStreams,
-  ) {
-    _streamManager.createStream(
+  ) async {
+    await _streamManager.createStream(
       methodStreamCallContext: callContext,
       methodStreamId: _methodStreamId,
       session: session,

@@ -6,74 +6,81 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 class _RevokedAuthenticationHandler {
-  MessageCentralListenerCallback? _revokedAuthenticationCallback;
+  final MessageCentralListenerCallback? _revokedAuthenticationCallback;
+  final AuthenticationInfo? _authenticationInfo;
 
-  _RevokedAuthenticationHandler();
+  _RevokedAuthenticationHandler._(
+    AuthenticationInfo authenticationInfo,
+    void Function(dynamic event) revokedAuthenticationCallback,
+  )   : _authenticationInfo = authenticationInfo,
+        _revokedAuthenticationCallback = revokedAuthenticationCallback;
 
   /// Call when the stream call is cancelled to do proper cleanup.
   Future<void> destroy(Session session) async {
     var localRevokedAuthenticationCallback = _revokedAuthenticationCallback;
-    var authenticationInfo = await session.authenticated;
+    var localAuthenticationInfo = _authenticationInfo;
 
     if (localRevokedAuthenticationCallback != null &&
-        authenticationInfo != null) {
+        localAuthenticationInfo != null) {
       session.messages.removeListener(
         MessageCentralServerpodChannels.revokedAuthentication(
-          authenticationInfo.userId,
+          localAuthenticationInfo.userId,
         ),
         localRevokedAuthenticationCallback,
       );
     }
-
-    _revokedAuthenticationCallback = null;
   }
 
-  Future<void> createOnRevokedAuthenticationListener(
+  static Future<_RevokedAuthenticationHandler?> create(
     Endpoint endpoint,
-    Session session,
-    void Function() onRevokedAuthenticationCallback,
-  ) async {
+    Session session, {
+    required void Function() onRevokedAuthentication,
+  }) async {
     var authenticationIsRequired =
         endpoint.requireLogin || endpoint.requiredScopes.isNotEmpty;
-
-    if (authenticationIsRequired) {
-      var authenticationInfo = await session.authenticated;
-      if (authenticationInfo == null) {
-        throw StateError(
-          'Authentication was required but no authentication info could be retrieved.',
-        );
-      }
-
-      void localRevokedAuthenticationCallback(event) async {
-        var authenticationRevokedReason = switch (event) {
-          RevokedAuthenticationUser _ =>
-            AuthenticationFailureReason.unauthenticated,
-          RevokedAuthenticationAuthId revokedAuthId =>
-            revokedAuthId.authId == authenticationInfo.authId
-                ? AuthenticationFailureReason.unauthenticated
-                : null,
-          RevokedAuthenticationScope revokedScopes => revokedScopes.scopes.any(
-              (s) => endpoint.requiredScopes.map((s) => s.name).contains(s),
-            )
-                ? AuthenticationFailureReason.insufficientAccess
-                : null,
-          _ => null,
-        };
-
-        if (authenticationRevokedReason != null) {
-          onRevokedAuthenticationCallback();
-        }
-      }
-
-      session.messages.addListener(
-        MessageCentralServerpodChannels.revokedAuthentication(
-          authenticationInfo.userId,
-        ),
-        localRevokedAuthenticationCallback,
-      );
-
-      _revokedAuthenticationCallback = localRevokedAuthenticationCallback;
+    if (!authenticationIsRequired) {
+      return null;
     }
+
+    var authenticationInfo = await session.authenticated;
+    if (authenticationInfo == null) {
+      throw StateError(
+        'Authentication was required but no authentication info could be retrieved.',
+      );
+    }
+
+    void localRevokedAuthenticationCallback(event) async {
+      var authenticationRevokedReason = switch (event) {
+        RevokedAuthenticationUser _ =>
+          AuthenticationFailureReason.unauthenticated,
+        RevokedAuthenticationAuthId revokedAuthId =>
+          revokedAuthId.authId == authenticationInfo.authId
+              ? AuthenticationFailureReason.unauthenticated
+              : null,
+        RevokedAuthenticationScope revokedScopes => revokedScopes.scopes.any(
+            (s) => endpoint.requiredScopes.map((s) => s.name).contains(s),
+          )
+              ? AuthenticationFailureReason.insufficientAccess
+              : null,
+        _ => null,
+      };
+
+      if (authenticationRevokedReason != null) {
+        onRevokedAuthentication();
+      }
+    }
+
+    session.messages.addListener(
+      MessageCentralServerpodChannels.revokedAuthentication(
+        authenticationInfo.userId,
+      ),
+      localRevokedAuthenticationCallback,
+    );
+
+    return _RevokedAuthenticationHandler._(
+      authenticationInfo,
+      localRevokedAuthenticationCallback,
+    );
   }
 }
 
@@ -107,38 +114,45 @@ class MethodStreamManager {
   final Map<String, _InputStreamContext> _inputStreamContexts = {};
   final Map<String, _OutputStreamContext> _outputStreamContexts = {};
 
-  MethodStreamManager({
-    this.onInputStreamClosed,
-    this.onOutputStreamClosed,
-    this.onOutputStreamError,
-    this.onOutputStreamValue,
-    this.onAllStreamsClosed,
-  });
-
-  void Function(
+  final void Function(
     UuidValue methodStreamId,
     Object? value,
     MethodStreamCallContext methodStreamCallContext,
-  )? onOutputStreamValue;
-  void Function(
+  )? _onOutputStreamValue;
+  final void Function(
     UuidValue methodStreamId,
     Object error,
     StackTrace stackTrace,
     MethodStreamCallContext methodStreamCallContext,
-  )? onOutputStreamError;
-  void Function(
+  )? _onOutputStreamError;
+  final void Function(
     UuidValue methodStreamId,
     CloseReason? closeReason,
     MethodStreamCallContext callContext,
-  )? onOutputStreamClosed;
-  void Function(
+  )? _onOutputStreamClosed;
+  final void Function(
     UuidValue methodStreamId,
     String parameterName,
     CloseReason? closeReason,
     MethodStreamCallContext callContext,
-  )? onInputStreamClosed;
+  )? _onInputStreamClosed;
+  final void Function()? _onAllStreamsClosed;
 
-  void Function()? onAllStreamsClosed;
+  MethodStreamManager({
+    void Function(UuidValue, String, CloseReason?, MethodStreamCallContext)?
+        onInputStreamClosed,
+    void Function(UuidValue, CloseReason?, MethodStreamCallContext)?
+        onOutputStreamClosed,
+    void Function(UuidValue, Object, StackTrace, MethodStreamCallContext)?
+        onOutputStreamError,
+    void Function(UuidValue, Object?, MethodStreamCallContext)?
+        onOutputStreamValue,
+    void Function()? onAllStreamsClosed,
+  })  : _onAllStreamsClosed = onAllStreamsClosed,
+        _onInputStreamClosed = onInputStreamClosed,
+        _onOutputStreamClosed = onOutputStreamClosed,
+        _onOutputStreamError = onOutputStreamError,
+        _onOutputStreamValue = onOutputStreamValue;
 
   Future<void> closeAllStreams() async {
     var inputControllers =
@@ -202,12 +216,12 @@ class MethodStreamManager {
     }
   }
 
-  void createStream({
+  Future<void> createStream({
     required MethodStreamCallContext methodStreamCallContext,
     required UuidValue methodStreamId,
     required Session session,
-  }) {
-    var outputStreamContext = _createOutputController(
+  }) async {
+    var outputStreamContext = await _createOutputController(
       methodStreamCallContext,
       session,
       methodStreamId,
@@ -232,7 +246,7 @@ class MethodStreamManager {
         break;
       case MethodStreamReturnType.futureType:
       case MethodStreamReturnType.voidType:
-        _handleMethodWithFutureReturn(
+        await _handleMethodWithFutureReturn(
           methodStreamCallContext: methodStreamCallContext,
           session: session,
           streamParams: streamParams,
@@ -243,29 +257,17 @@ class MethodStreamManager {
     }
   }
 
-  _OutputStreamContext _createOutputController(
+  Future<_OutputStreamContext> _createOutputController(
     MethodStreamCallContext methodStreamCallContext,
     Session session,
     UuidValue methodStreamId,
-  ) {
+  ) async {
     bool isCancelled = false;
-    var revokedAuthenticationHandler = _RevokedAuthenticationHandler();
-    var outputController = StreamController(onCancel: () async {
-      /// Guard against multiple calls to onCancel
-      /// This is required because we invoke the onCancel
-      /// method manually if the stream is closed by a timeout
-      /// or a request from the client.
-      if (isCancelled) return;
-      isCancelled = true;
-      await revokedAuthenticationHandler.destroy(session);
-      await _closeOutboundStream(methodStreamCallContext, methodStreamId);
-      await session.close();
-    });
-
-    revokedAuthenticationHandler.createOnRevokedAuthenticationListener(
+    var revokedAuthenticationHandler =
+        await _RevokedAuthenticationHandler.create(
       methodStreamCallContext.endpoint,
       session,
-      () => closeStream(
+      onRevokedAuthentication: () => closeStream(
         endpoint: methodStreamCallContext.endpoint.name,
         method: methodStreamCallContext.method.name,
         methodStreamId: methodStreamId,
@@ -273,14 +275,26 @@ class MethodStreamManager {
       ),
     );
 
+    var outputController = StreamController(onCancel: () async {
+      /// Guard against multiple calls to onCancel
+      /// This is required because we invoke the onCancel
+      /// method manually if the stream is closed by a timeout
+      /// or a request from the client.
+      if (isCancelled) return;
+      isCancelled = true;
+      await revokedAuthenticationHandler?.destroy(session);
+      await _closeOutboundStream(methodStreamCallContext, methodStreamId);
+      await session.close();
+    });
+
     late StreamSubscription subscription;
     subscription = outputController.stream.listen(
       (value) {
-        onOutputStreamValue?.call(
+        _onOutputStreamValue?.call(
             methodStreamId, value, methodStreamCallContext);
       },
       onError: (e, s) async {
-        onOutputStreamError?.call(
+        _onOutputStreamError?.call(
             methodStreamId, e, s, methodStreamCallContext);
 
         var streamKey = _buildStreamKey(
@@ -418,7 +432,7 @@ class MethodStreamManager {
           return;
         }
 
-        onInputStreamClosed?.call(
+        _onInputStreamClosed?.call(
           methodStreamId,
           parameterName,
           CloseReason.done,
@@ -479,7 +493,7 @@ class MethodStreamManager {
 
     if (context == null) return;
 
-    onOutputStreamClosed?.call(
+    _onOutputStreamClosed?.call(
         methodStreamId, context.closeReason, callContext);
 
     var inputStreamControllers = <StreamController>[];
@@ -495,7 +509,7 @@ class MethodStreamManager {
         continue;
       }
 
-      onInputStreamClosed?.call(
+      _onInputStreamClosed?.call(
         methodStreamId,
         streamParam.name,
         context.closeReason ?? CloseReason.done,
@@ -508,7 +522,7 @@ class MethodStreamManager {
     await _closeControllers(inputStreamControllers);
 
     if (_outputStreamContexts.isEmpty && _inputStreamContexts.isEmpty) {
-      onAllStreamsClosed?.call();
+      _onAllStreamsClosed?.call();
     }
   }
 
