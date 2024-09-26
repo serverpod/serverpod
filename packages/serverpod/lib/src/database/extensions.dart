@@ -347,7 +347,9 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
           'OnDelete action mismatch: Expected "$onDelete", found "${other.onDelete}".');
     }
 
-    if (matchType != other.matchType) {
+    if (matchType != null &&
+        other.matchType != null &&
+        matchType != other.matchType) {
       mismatches.add(
           'Match type mismatch: Expected "$matchType", found "${other.matchType}".');
     }
