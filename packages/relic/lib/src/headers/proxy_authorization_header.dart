@@ -149,4 +149,3 @@ class BasicProxyAuthorizationHeader extends ProxyAuthorizationHeader {
     return '$prefix$credentials';
   }
 }
-

@@ -26,7 +26,8 @@ void main() {
     test(
         'Given an empty token in the proxy-authorization header, it throws a FormatException',
         () {
-      var httpRequest = HttpRequestMock()..headers.add('proxy-authorization', '');
+      var httpRequest = HttpRequestMock()
+        ..headers.add('proxy-authorization', '');
 
       expect(
         () => Headers.fromHttpRequest(httpRequest),
@@ -34,9 +35,7 @@ void main() {
       );
     });
 
-    test(
-        'Given no proxy-authorization header, it returns null',
-        () {
+    test('Given no proxy-authorization header, it returns null', () {
       var httpRequest = HttpRequestMock();
 
       var headers = Headers.fromHttpRequest(httpRequest);
@@ -78,7 +77,8 @@ void main() {
         'Given a token with the default prefix, it extracts the token value correctly',
         () {
       var token = "Bearer token.value.here";
-      var httpRequest = HttpRequestMock()..headers.add('proxy-authorization', token);
+      var httpRequest = HttpRequestMock()
+        ..headers.add('proxy-authorization', token);
 
       var headers = Headers.fromHttpRequest(httpRequest);
       var header = headers.proxyAuthorization as BearerProxyAuthorizationHeader;
@@ -115,9 +115,7 @@ void main() {
       );
     });
 
-    test(
-        'Given no proxy-authorization header, it returns null',
-        () {
+    test('Given no proxy-authorization header, it returns null', () {
       var httpRequest = HttpRequestMock();
 
       var headers = Headers.fromHttpRequest(httpRequest);
@@ -143,7 +141,8 @@ void main() {
         () {
       var encoded = base64Encode(utf8.encode('username:password'));
       var token = 'NotBasic $encoded';
-      var httpRequest = HttpRequestMock()..headers.add('proxy-authorization', token);
+      var httpRequest = HttpRequestMock()
+        ..headers.add('proxy-authorization', token);
 
       expect(
         () => Headers.fromHttpRequest(httpRequest),
@@ -177,7 +176,8 @@ void main() {
       );
     });
 
-    test('Given an invalid Base64-encoded token in proxy-authorization, it throws a FormatException',
+    test(
+        'Given an invalid Base64-encoded token in proxy-authorization, it throws a FormatException',
         () {
       var invalidBase64Token = 'Basic invalid==base64';
       var httpRequest = HttpRequestMock()
@@ -194,7 +194,8 @@ void main() {
         () {
       var encoded = base64Encode(utf8.encode('usernamepassword')); // No colon
       var token = 'Basic $encoded';
-      var httpRequest = HttpRequestMock()..headers.add('proxy-authorization', token);
+      var httpRequest = HttpRequestMock()
+        ..headers.add('proxy-authorization', token);
 
       expect(
         () => Headers.fromHttpRequest(httpRequest),
