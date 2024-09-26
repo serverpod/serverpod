@@ -77,7 +77,7 @@ class TestStreamManager<OutputStreamType> {
     Session session,
     Map<String, Stream<dynamic>> inputStreams,
   ) async {
-    await _streamManager.createStream(
+    _streamManager.createStream(
       methodStreamCallContext: callContext,
       methodStreamId: _methodStreamId,
       session: session,

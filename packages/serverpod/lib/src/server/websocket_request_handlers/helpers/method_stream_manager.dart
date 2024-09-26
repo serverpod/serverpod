@@ -216,7 +216,7 @@ class MethodStreamManager {
     }
   }
 
-  Future<void> createStream({
+  void createStream({
     required MethodStreamCallContext methodStreamCallContext,
     required UuidValue methodStreamId,
     required Session session,

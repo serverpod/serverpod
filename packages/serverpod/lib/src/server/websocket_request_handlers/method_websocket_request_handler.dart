@@ -321,7 +321,7 @@ class MethodWebsocketRequestHandler {
       throw StateError('MethodStreamSession was not created.');
     }
 
-    await methodStreamManager.createStream(
+    methodStreamManager.createStream(
       session: session,
       methodStreamCallContext: methodStreamCallContext,
       methodStreamId: message.connectionId,
