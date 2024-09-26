@@ -150,6 +150,8 @@ class TestEndpoints {
   late final _TestToolsEndpoint testTools;
 
   late final _AuthenticatedTestToolsEndpoint authenticatedTestTools;
+
+  late final _TestToolsWithArgVariationsEndpoint testToolsWithArgVariations;
 }
 
 class _InternalTestEndpoints extends TestEndpoints
@@ -311,6 +313,10 @@ class _InternalTestEndpoints extends TestEndpoints
       endpoints,
       serializationManager,
     );
+    testToolsWithArgVariations = _TestToolsWithArgVariationsEndpoint(
+      endpoints,
+      serializationManager,
+    );
   }
 }
 
@@ -455,8 +461,9 @@ class _AuthenticationEndpoint {
   _i3.Future<_i4.AuthenticationResponse> authenticate(
     _i1.TestSession session,
     String email,
-    String password,
-  ) async {
+    String password, [
+    List<String>? scopes,
+  ]) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'authentication',
@@ -469,6 +476,7 @@ class _AuthenticationEndpoint {
         parameters: {
           'email': email,
           'password': password,
+          'scopes': scopes,
         },
         serializationManager: _serializationManager,
       );
@@ -1421,7 +1429,10 @@ class _BasicDatabase {
   }
 
   _i3.Future<List<_i11.SimpleData>> findSimpleData(
-      _i1.TestSession session) async {
+    _i1.TestSession session, {
+    required int limit,
+    required int offset,
+  }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'basicDatabase',
@@ -1431,7 +1442,10 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
         methodName: 'findSimpleData',
-        parameters: {},
+        parameters: {
+          'limit': limit,
+          'offset': offset,
+        },
         serializationManager: _serializationManager,
       );
       return (_localCallContext.method.call(
@@ -5186,7 +5200,13 @@ class _NamedParametersEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<bool> namedParametersMethod(_i1.TestSession session) async {
+  _i3.Future<bool> namedParametersMethod(
+    _i1.TestSession session, {
+    required int namedInt,
+    required int intWithDefaultValue,
+    int? nullableInt,
+    int? nullableIntWithDefaultValue,
+  }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'namedParameters',
@@ -5196,7 +5216,12 @@ class _NamedParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'namedParameters',
         methodName: 'namedParametersMethod',
-        parameters: {},
+        parameters: {
+          'namedInt': namedInt,
+          'intWithDefaultValue': intWithDefaultValue,
+          'nullableInt': nullableInt,
+          'nullableIntWithDefaultValue': nullableIntWithDefaultValue,
+        },
         serializationManager: _serializationManager,
       );
       return (_localCallContext.method.call(
@@ -5207,7 +5232,10 @@ class _NamedParametersEndpoint {
   }
 
   _i3.Future<bool> namedParametersMethodEqualInts(
-      _i1.TestSession session) async {
+    _i1.TestSession session, {
+    required int namedInt,
+    int? nullableInt,
+  }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'namedParameters',
@@ -5217,7 +5245,10 @@ class _NamedParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'namedParameters',
         methodName: 'namedParametersMethodEqualInts',
-        parameters: {},
+        parameters: {
+          'namedInt': namedInt,
+          'nullableInt': nullableInt,
+        },
         serializationManager: _serializationManager,
       );
       return (_localCallContext.method.call(
@@ -5238,7 +5269,10 @@ class _OptionalParametersEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<int?> returnOptionalInt(_i1.TestSession session) async {
+  _i3.Future<int?> returnOptionalInt(
+    _i1.TestSession session, [
+    int? optionalInt,
+  ]) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'optionalParameters',
@@ -5248,7 +5282,7 @@ class _OptionalParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'optionalParameters',
         methodName: 'returnOptionalInt',
-        parameters: {},
+        parameters: {'optionalInt': optionalInt},
         serializationManager: _serializationManager,
       );
       return (_localCallContext.method.call(
@@ -5566,8 +5600,9 @@ class _SimpleEndpoint {
 
   _i3.Future<void> setGlobalInt(
     _i1.TestSession session,
-    int? value,
-  ) async {
+    int? value, [
+    int? secondValue,
+  ]) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'simple',
@@ -5577,7 +5612,10 @@ class _SimpleEndpoint {
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'simple',
         methodName: 'setGlobalInt',
-        parameters: {'value': value},
+        parameters: {
+          'value': value,
+          'secondValue': secondValue,
+        },
         serializationManager: _serializationManager,
       );
       return (_localCallContext.method.call(
@@ -6209,5 +6247,224 @@ class _AuthenticatedTestToolsEndpoint {
       _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
+  }
+}
+
+class _TestToolsWithArgVariationsEndpoint {
+  _TestToolsWithArgVariationsEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<String> echoPositionalArg(
+    _i1.TestSession session,
+    String string,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+        endpoint: 'testToolsWithArgVariations',
+        method: 'echoPositionalArg',
+      ) as _i1.InternalTestSession);
+      var _localCallContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => _localUniqueSession.serverpodSession,
+        endpointPath: 'testToolsWithArgVariations',
+        methodName: 'echoPositionalArg',
+        parameters: {'string': string},
+        serializationManager: _serializationManager,
+      );
+      return (_localCallContext.method.call(
+        _localUniqueSession.serverpodSession,
+        _localCallContext.arguments,
+      ) as _i3.Future<String>);
+    });
+  }
+
+  _i3.Future<String> echoNamedArg(
+    _i1.TestSession session, {
+    required String string,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+        endpoint: 'testToolsWithArgVariations',
+        method: 'echoNamedArg',
+      ) as _i1.InternalTestSession);
+      var _localCallContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => _localUniqueSession.serverpodSession,
+        endpointPath: 'testToolsWithArgVariations',
+        methodName: 'echoNamedArg',
+        parameters: {'string': string},
+        serializationManager: _serializationManager,
+      );
+      return (_localCallContext.method.call(
+        _localUniqueSession.serverpodSession,
+        _localCallContext.arguments,
+      ) as _i3.Future<String>);
+    });
+  }
+
+  _i3.Future<String?> echoNullableNamedArg(
+    _i1.TestSession session, {
+    String? string,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+        endpoint: 'testToolsWithArgVariations',
+        method: 'echoNullableNamedArg',
+      ) as _i1.InternalTestSession);
+      var _localCallContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => _localUniqueSession.serverpodSession,
+        endpointPath: 'testToolsWithArgVariations',
+        methodName: 'echoNullableNamedArg',
+        parameters: {'string': string},
+        serializationManager: _serializationManager,
+      );
+      return (_localCallContext.method.call(
+        _localUniqueSession.serverpodSession,
+        _localCallContext.arguments,
+      ) as _i3.Future<String?>);
+    });
+  }
+
+  _i3.Future<String?> echoOptionalArg(
+    _i1.TestSession session, [
+    String? string,
+  ]) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+        endpoint: 'testToolsWithArgVariations',
+        method: 'echoOptionalArg',
+      ) as _i1.InternalTestSession);
+      var _localCallContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => _localUniqueSession.serverpodSession,
+        endpointPath: 'testToolsWithArgVariations',
+        methodName: 'echoOptionalArg',
+        parameters: {'string': string},
+        serializationManager: _serializationManager,
+      );
+      return (_localCallContext.method.call(
+        _localUniqueSession.serverpodSession,
+        _localCallContext.arguments,
+      ) as _i3.Future<String?>);
+    });
+  }
+
+  _i3.Future<List<String?>> echoPositionalAndNamedArgs(
+    _i1.TestSession session,
+    String string1, {
+    required String string2,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+        endpoint: 'testToolsWithArgVariations',
+        method: 'echoPositionalAndNamedArgs',
+      ) as _i1.InternalTestSession);
+      var _localCallContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => _localUniqueSession.serverpodSession,
+        endpointPath: 'testToolsWithArgVariations',
+        methodName: 'echoPositionalAndNamedArgs',
+        parameters: {
+          'string1': string1,
+          'string2': string2,
+        },
+        serializationManager: _serializationManager,
+      );
+      return (_localCallContext.method.call(
+        _localUniqueSession.serverpodSession,
+        _localCallContext.arguments,
+      ) as _i3.Future<List<String?>>);
+    });
+  }
+
+  _i3.Future<List<String?>> echoPositionalAndOptionalArgs(
+    _i1.TestSession session,
+    String string1, [
+    String? string2,
+  ]) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+        endpoint: 'testToolsWithArgVariations',
+        method: 'echoPositionalAndOptionalArgs',
+      ) as _i1.InternalTestSession);
+      var _localCallContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => _localUniqueSession.serverpodSession,
+        endpointPath: 'testToolsWithArgVariations',
+        methodName: 'echoPositionalAndOptionalArgs',
+        parameters: {
+          'string1': string1,
+          'string2': string2,
+        },
+        serializationManager: _serializationManager,
+      );
+      return (_localCallContext.method.call(
+        _localUniqueSession.serverpodSession,
+        _localCallContext.arguments,
+      ) as _i3.Future<List<String?>>);
+    });
+  }
+
+  _i3.Stream<String> echoNamedArgStream(
+    _i1.TestSession session, {
+    required _i3.Stream<String> strings,
+  }) {
+    var _localTestStreamManager = _i1.TestStreamManager<String>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'testToolsWithArgVariations',
+          method: 'echoNamedArgStream',
+        ) as _i1.InternalTestSession);
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession.serverpodSession,
+          endpointPath: 'testToolsWithArgVariations',
+          methodName: 'echoNamedArgStream',
+          arguments: {},
+          requestedInputStreams: ['strings'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession.serverpodSession,
+          {'strings': strings},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
+  _i3.Future<String> echoNamedArgStreamAsFuture(
+    _i1.TestSession session, {
+    required _i3.Stream<String> strings,
+  }) async {
+    var _localTestStreamManager = _i1.TestStreamManager<String>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (await (session as _i1.InternalTestSession).copyWith(
+        endpoint: 'testToolsWithArgVariations',
+        method: 'echoNamedArgStreamAsFuture',
+      ) as _i1.InternalTestSession);
+      var _localCallContext =
+          await _endpointDispatch.getMethodStreamCallContext(
+        createSessionCallback: (_) => _localUniqueSession.serverpodSession,
+        endpointPath: 'testToolsWithArgVariations',
+        methodName: 'echoNamedArgStreamAsFuture',
+        arguments: {},
+        requestedInputStreams: ['strings'],
+        serializationManager: _serializationManager,
+      );
+      await _localTestStreamManager.callStreamMethod(
+        _localCallContext,
+        _localUniqueSession.serverpodSession,
+        {'strings': strings},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
+    });
   }
 }

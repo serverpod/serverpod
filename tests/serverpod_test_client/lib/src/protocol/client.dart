@@ -2140,6 +2140,86 @@ class EndpointAuthenticatedTestTools extends _i1.EndpointRef {
       );
 }
 
+/// {@category Endpoint}
+class EndpointTestToolsWithArgVariations extends _i1.EndpointRef {
+  EndpointTestToolsWithArgVariations(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'testToolsWithArgVariations';
+
+  _i2.Future<String> echoPositionalArg(String string) =>
+      caller.callServerEndpoint<String>(
+        'testToolsWithArgVariations',
+        'echoPositionalArg',
+        {'string': string},
+      );
+
+  _i2.Future<String> echoNamedArg({required String string}) =>
+      caller.callServerEndpoint<String>(
+        'testToolsWithArgVariations',
+        'echoNamedArg',
+        {'string': string},
+      );
+
+  _i2.Future<String?> echoNullableNamedArg({String? string}) =>
+      caller.callServerEndpoint<String?>(
+        'testToolsWithArgVariations',
+        'echoNullableNamedArg',
+        {'string': string},
+      );
+
+  _i2.Future<String?> echoOptionalArg([String? string]) =>
+      caller.callServerEndpoint<String?>(
+        'testToolsWithArgVariations',
+        'echoOptionalArg',
+        {'string': string},
+      );
+
+  _i2.Future<List<String?>> echoPositionalAndNamedArgs(
+    String string1, {
+    required String string2,
+  }) =>
+      caller.callServerEndpoint<List<String?>>(
+        'testToolsWithArgVariations',
+        'echoPositionalAndNamedArgs',
+        {
+          'string1': string1,
+          'string2': string2,
+        },
+      );
+
+  _i2.Future<List<String?>> echoPositionalAndOptionalArgs(
+    String string1, [
+    String? string2,
+  ]) =>
+      caller.callServerEndpoint<List<String?>>(
+        'testToolsWithArgVariations',
+        'echoPositionalAndOptionalArgs',
+        {
+          'string1': string1,
+          'string2': string2,
+        },
+      );
+
+  _i2.Stream<String> echoNamedArgStream(
+          {required _i2.Stream<String> strings}) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<String>, String>(
+        'testToolsWithArgVariations',
+        'echoNamedArgStream',
+        {},
+        {'strings': strings},
+      );
+
+  _i2.Future<String> echoNamedArgStreamAsFuture(
+          {required _i2.Stream<String> strings}) =>
+      caller.callStreamingServerEndpoint<_i2.Future<String>, String>(
+        'testToolsWithArgVariations',
+        'echoNamedArgStreamAsFuture',
+        {},
+        {'strings': strings},
+      );
+}
+
 class _Modules {
   _Modules(Client client) {
     auth = _i3.Caller(client);
@@ -2215,6 +2295,7 @@ class Client extends _i1.ServerpodClientShared {
     subDirTest = EndpointSubDirTest(this);
     testTools = EndpointTestTools(this);
     authenticatedTestTools = EndpointAuthenticatedTestTools(this);
+    testToolsWithArgVariations = EndpointTestToolsWithArgVariations(this);
     modules = _Modules(this);
   }
 
@@ -2294,6 +2375,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointAuthenticatedTestTools authenticatedTestTools;
 
+  late final EndpointTestToolsWithArgVariations testToolsWithArgVariations;
+
   late final _Modules modules;
 
   @override
@@ -2336,6 +2419,7 @@ class Client extends _i1.ServerpodClientShared {
         'subDirTest': subDirTest,
         'testTools': testTools,
         'authenticatedTestTools': authenticatedTestTools,
+        'testToolsWithArgVariations': testToolsWithArgVariations,
       };
 
   @override

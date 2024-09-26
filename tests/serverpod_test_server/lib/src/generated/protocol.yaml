@@ -262,3 +262,12 @@ authenticatedTestTools:
   - returnsStream:
   - returnsListFromInputStream:
   - intEchoStream:
+testToolsWithArgVariations:
+  - echoPositionalArg:
+  - echoNamedArg:
+  - echoNullableNamedArg:
+  - echoOptionalArg:
+  - echoPositionalAndNamedArgs:
+  - echoPositionalAndOptionalArgs:
+  - echoNamedArgStream:
+  - echoNamedArgStreamAsFuture:

@@ -293,6 +293,12 @@ class Endpoints extends _i1.EndpointDispatch {
           'authenticatedTestTools',
           null,
         ),
+      'testToolsWithArgVariations': _i34.TestToolsWithArgVariationsEndpoint()
+        ..initialize(
+          server,
+          'testToolsWithArgVariations',
+          null,
+        ),
     };
     connectors['asyncTasks'] = _i1.EndpointConnector(
       name: 'asyncTasks',
@@ -4603,6 +4609,188 @@ class Endpoints extends _i1.EndpointDispatch {
                   .intEchoStream(
             session,
             streamParams['stream']!.cast<int>(),
+          ),
+        ),
+      },
+    );
+    connectors['testToolsWithArgVariations'] = _i1.EndpointConnector(
+      name: 'testToolsWithArgVariations',
+      endpoint: endpoints['testToolsWithArgVariations']!,
+      methodConnectors: {
+        'echoPositionalArg': _i1.MethodConnector(
+          name: 'echoPositionalArg',
+          params: {
+            'string': _i1.ParameterDescription(
+              name: 'string',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testToolsWithArgVariations']
+                      as _i34.TestToolsWithArgVariationsEndpoint)
+                  .echoPositionalArg(
+            session,
+            params['string'],
+          ),
+        ),
+        'echoNamedArg': _i1.MethodConnector(
+          name: 'echoNamedArg',
+          params: {
+            'string': _i1.ParameterDescription(
+              name: 'string',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testToolsWithArgVariations']
+                      as _i34.TestToolsWithArgVariationsEndpoint)
+                  .echoNamedArg(
+            session,
+            string: params['string'],
+          ),
+        ),
+        'echoNullableNamedArg': _i1.MethodConnector(
+          name: 'echoNullableNamedArg',
+          params: {
+            'string': _i1.ParameterDescription(
+              name: 'string',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testToolsWithArgVariations']
+                      as _i34.TestToolsWithArgVariationsEndpoint)
+                  .echoNullableNamedArg(
+            session,
+            string: params['string'],
+          ),
+        ),
+        'echoOptionalArg': _i1.MethodConnector(
+          name: 'echoOptionalArg',
+          params: {
+            'string': _i1.ParameterDescription(
+              name: 'string',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testToolsWithArgVariations']
+                      as _i34.TestToolsWithArgVariationsEndpoint)
+                  .echoOptionalArg(
+            session,
+            params['string'],
+          ),
+        ),
+        'echoPositionalAndNamedArgs': _i1.MethodConnector(
+          name: 'echoPositionalAndNamedArgs',
+          params: {
+            'string1': _i1.ParameterDescription(
+              name: 'string1',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'string2': _i1.ParameterDescription(
+              name: 'string2',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testToolsWithArgVariations']
+                      as _i34.TestToolsWithArgVariationsEndpoint)
+                  .echoPositionalAndNamedArgs(
+            session,
+            params['string1'],
+            string2: params['string2'],
+          ),
+        ),
+        'echoPositionalAndOptionalArgs': _i1.MethodConnector(
+          name: 'echoPositionalAndOptionalArgs',
+          params: {
+            'string1': _i1.ParameterDescription(
+              name: 'string1',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'string2': _i1.ParameterDescription(
+              name: 'string2',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testToolsWithArgVariations']
+                      as _i34.TestToolsWithArgVariationsEndpoint)
+                  .echoPositionalAndOptionalArgs(
+            session,
+            params['string1'],
+            params['string2'],
+          ),
+        ),
+        'echoNamedArgStream': _i1.MethodStreamConnector(
+          name: 'echoNamedArgStream',
+          params: {},
+          streamParams: {
+            'strings': _i1.StreamParameterDescription<String>(
+              name: 'strings',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['testToolsWithArgVariations']
+                      as _i34.TestToolsWithArgVariationsEndpoint)
+                  .echoNamedArgStream(
+            session,
+            strings: streamParams['strings']!.cast<String>(),
+          ),
+        ),
+        'echoNamedArgStreamAsFuture': _i1.MethodStreamConnector(
+          name: 'echoNamedArgStreamAsFuture',
+          params: {},
+          streamParams: {
+            'strings': _i1.StreamParameterDescription<String>(
+              name: 'strings',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.futureType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['testToolsWithArgVariations']
+                      as _i34.TestToolsWithArgVariationsEndpoint)
+                  .echoNamedArgStreamAsFuture(
+            session,
+            strings: streamParams['strings']!.cast<String>(),
           ),
         ),
       },
