@@ -3245,7 +3245,7 @@ class _LoggingEndpoint {
           requestedInputStreams: ['input'],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {'input': input},
@@ -3277,7 +3277,7 @@ class _LoggingEndpoint {
           requestedInputStreams: ['input'],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {'input': input},
@@ -3309,7 +3309,7 @@ class _LoggingEndpoint {
           requestedInputStreams: ['input'],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {'input': input},
@@ -3962,7 +3962,7 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {},
@@ -3994,7 +3994,7 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {},
@@ -4046,7 +4046,7 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localTestStreamManager.callStreamMethod(
+      await _localTestStreamManager.callStreamMethod(
         _localCallContext,
         _localUniqueSession.serverpodSession,
         {'stream': stream},
@@ -4076,7 +4076,7 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localTestStreamManager.callStreamMethod(
+      await _localTestStreamManager.callStreamMethod(
         _localCallContext,
         _localUniqueSession.serverpodSession,
         {'stream': stream},
@@ -4106,7 +4106,7 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {},
@@ -4138,7 +4138,7 @@ class _MethodStreaming {
           requestedInputStreams: ['stream'],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {'stream': stream},
@@ -4170,7 +4170,7 @@ class _MethodStreaming {
           requestedInputStreams: ['stream'],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {'stream': stream},
@@ -4202,7 +4202,7 @@ class _MethodStreaming {
           requestedInputStreams: ['stream'],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {'stream': stream},
@@ -4234,7 +4234,7 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localTestStreamManager.callStreamMethod(
+      await _localTestStreamManager.callStreamMethod(
         _localCallContext,
         _localUniqueSession.serverpodSession,
         {'stream': stream},
@@ -4268,7 +4268,7 @@ class _MethodStreaming {
           ],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {
@@ -4303,7 +4303,7 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localTestStreamManager.callStreamMethod(
+      await _localTestStreamManager.callStreamMethod(
         _localCallContext,
         _localUniqueSession.serverpodSession,
         {'stream': stream},
@@ -4333,7 +4333,7 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localTestStreamManager.callStreamMethod(
+      await _localTestStreamManager.callStreamMethod(
         _localCallContext,
         _localUniqueSession.serverpodSession,
         {'stream': stream},
@@ -4363,7 +4363,7 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localTestStreamManager.callStreamMethod(
+      await _localTestStreamManager.callStreamMethod(
         _localCallContext,
         _localUniqueSession.serverpodSession,
         {'stream': stream},
@@ -4393,7 +4393,7 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {},
@@ -4425,7 +4425,7 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {},
@@ -4457,7 +4457,7 @@ class _MethodStreaming {
           requestedInputStreams: ['simpleDataStream'],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {'simpleDataStream': simpleDataStream},
@@ -4578,7 +4578,7 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {},
@@ -4611,7 +4611,7 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localTestStreamManager.callStreamMethod(
+      await _localTestStreamManager.callStreamMethod(
         _localCallContext,
         _localUniqueSession.serverpodSession,
         {'stream': stream},
@@ -4642,7 +4642,7 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localTestStreamManager.callStreamMethod(
+      await _localTestStreamManager.callStreamMethod(
         _localCallContext,
         _localUniqueSession.serverpodSession,
         {'stream': stream},
@@ -4692,7 +4692,7 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localTestStreamManager.callStreamMethod(
+      await _localTestStreamManager.callStreamMethod(
         _localCallContext,
         _localUniqueSession.serverpodSession,
         {'stream': stream},
@@ -4722,7 +4722,7 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localTestStreamManager.callStreamMethod(
+      await _localTestStreamManager.callStreamMethod(
         _localCallContext,
         _localUniqueSession.serverpodSession,
         {'stream': stream},
@@ -4749,7 +4749,7 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {},
@@ -4779,7 +4779,7 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {},
@@ -4811,7 +4811,7 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localTestStreamManager.callStreamMethod(
+      await _localTestStreamManager.callStreamMethod(
         _localCallContext,
         _localUniqueSession.serverpodSession,
         {'stream': stream},
@@ -4841,7 +4841,7 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localTestStreamManager.callStreamMethod(
+      await _localTestStreamManager.callStreamMethod(
         _localCallContext,
         _localUniqueSession.serverpodSession,
         {'stream': stream},
@@ -4871,7 +4871,7 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localTestStreamManager.callStreamMethod(
+      await _localTestStreamManager.callStreamMethod(
         _localCallContext,
         _localUniqueSession.serverpodSession,
         {'stream': stream},
@@ -4901,7 +4901,7 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localTestStreamManager.callStreamMethod(
+      await _localTestStreamManager.callStreamMethod(
         _localCallContext,
         _localUniqueSession.serverpodSession,
         {'stream': stream},
@@ -4928,7 +4928,7 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {},
@@ -4957,7 +4957,7 @@ class _MethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {},
@@ -4989,7 +4989,7 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localTestStreamManager.callStreamMethod(
+      await _localTestStreamManager.callStreamMethod(
         _localCallContext,
         _localUniqueSession.serverpodSession,
         {'stream': stream},
@@ -5019,7 +5019,7 @@ class _MethodStreaming {
         requestedInputStreams: ['stream'],
         serializationManager: _serializationManager,
       );
-      _localTestStreamManager.callStreamMethod(
+      await _localTestStreamManager.callStreamMethod(
         _localCallContext,
         _localUniqueSession.serverpodSession,
         {'stream': stream},
@@ -5057,7 +5057,7 @@ class _AuthenticatedMethodStreaming {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {},
@@ -5089,7 +5089,7 @@ class _AuthenticatedMethodStreaming {
           requestedInputStreams: ['stream'],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {'stream': stream},
@@ -5797,7 +5797,7 @@ class _TestToolsEndpoint {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {},
@@ -5827,7 +5827,7 @@ class _TestToolsEndpoint {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {},
@@ -5882,7 +5882,7 @@ class _TestToolsEndpoint {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {},
@@ -5914,7 +5914,7 @@ class _TestToolsEndpoint {
         requestedInputStreams: ['numbers'],
         serializationManager: _serializationManager,
       );
-      _localTestStreamManager.callStreamMethod(
+      await _localTestStreamManager.callStreamMethod(
         _localCallContext,
         _localUniqueSession.serverpodSession,
         {'numbers': numbers},
@@ -5944,7 +5944,7 @@ class _TestToolsEndpoint {
           requestedInputStreams: ['numbers'],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {'numbers': numbers},
@@ -5999,7 +5999,7 @@ class _TestToolsEndpoint {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {},
@@ -6028,7 +6028,7 @@ class _TestToolsEndpoint {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {},
@@ -6138,7 +6138,7 @@ class _AuthenticatedTestToolsEndpoint {
           requestedInputStreams: [],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {},
@@ -6170,7 +6170,7 @@ class _AuthenticatedTestToolsEndpoint {
         requestedInputStreams: ['numbers'],
         serializationManager: _serializationManager,
       );
-      _localTestStreamManager.callStreamMethod(
+      await _localTestStreamManager.callStreamMethod(
         _localCallContext,
         _localUniqueSession.serverpodSession,
         {'numbers': numbers},
@@ -6200,7 +6200,7 @@ class _AuthenticatedTestToolsEndpoint {
           requestedInputStreams: ['stream'],
           serializationManager: _serializationManager,
         );
-        _localTestStreamManager.callStreamMethod(
+        await _localTestStreamManager.callStreamMethod(
           _localCallContext,
           _localUniqueSession.serverpodSession,
           {'stream': stream},
