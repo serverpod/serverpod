@@ -254,7 +254,7 @@ class Server {
     } else if (uri.path == '/v1/websocket') {
       await _dispatchWebSocketUpgradeRequest(
         request,
-        MethodWebsocketRequestHandler().handleWebsocket,
+        MethodWebsocketRequestHandler.handleWebsocket,
       );
       return;
     } else if (uri.path == '/serverpod_cloud_storage') {

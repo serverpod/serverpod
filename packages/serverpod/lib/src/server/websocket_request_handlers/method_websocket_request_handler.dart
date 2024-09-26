@@ -9,17 +9,15 @@ import 'package:serverpod/serverpod.dart';
 /// to a method. It is not intended to be used directly by the user.
 @internal
 class MethodWebsocketRequestHandler {
-  late final MethodStreamManager _methodStreamManager;
-
   /// Handles incoming websocket requests.
   /// Returns a [Future] that completes when the websocket is closed.
-  Future<void> handleWebsocket(
+  static Future<void> handleWebsocket(
     Server server,
     WebSocket webSocket,
     HttpRequest request,
     void Function() onClosed,
   ) async {
-    _methodStreamManager = _createMethodStreamManager(webSocket, server);
+    var methodStreamManager = _createMethodStreamManager(webSocket, server);
 
     try {
       server.serverpod.logVerbose('Method websocket connection established.');
@@ -38,16 +36,18 @@ class MethodWebsocketRequestHandler {
         switch (message) {
           case OpenMethodStreamCommand():
             webSocket.tryAdd(
-              await _handleOpenMethodStreamCommand(server, webSocket, message),
+              await _handleOpenMethodStreamCommand(
+                  server, webSocket, message, methodStreamManager),
             );
             break;
           case OpenMethodStreamResponse():
             break;
           case MethodStreamMessage():
-            _dispatchMethodStreamMessage(message, webSocket, server);
+            _dispatchMethodStreamMessage(
+                message, webSocket, server, methodStreamManager);
             break;
           case CloseMethodStreamCommand():
-            await _methodStreamManager.closeStream(
+            await methodStreamManager.closeStream(
               endpoint: message.endpoint,
               method: message.method,
               namespace: message.connectionId,
@@ -56,7 +56,7 @@ class MethodWebsocketRequestHandler {
             );
             break;
           case MethodStreamSerializableException():
-            _methodStreamManager.dispatchError(
+            methodStreamManager.dispatchError(
               endpoint: message.endpoint,
               error: message.exception,
               method: message.method,
@@ -84,14 +84,14 @@ class MethodWebsocketRequestHandler {
         stderr.writeln('$stackTrace');
       }
     } finally {
-      await _methodStreamManager.closeAllStreams();
+      await methodStreamManager.closeAllStreams();
       // Send a close message to the client.
       await webSocket.close();
       onClosed();
     }
   }
 
-  MethodStreamManager _createMethodStreamManager(
+  static MethodStreamManager _createMethodStreamManager(
     WebSocket webSocket,
     Server server,
   ) {
@@ -160,10 +160,11 @@ class MethodWebsocketRequestHandler {
     );
   }
 
-  void _dispatchMethodStreamMessage(
+  static void _dispatchMethodStreamMessage(
     MethodStreamMessage message,
     WebSocket webSocket,
     Server server,
+    MethodStreamManager methodStreamManager,
   ) {
     if (message.parameter == null) {
       // Assume message is intended for method streams return stream.
@@ -174,7 +175,7 @@ class MethodWebsocketRequestHandler {
       );
     }
 
-    var success = _methodStreamManager.dispatchData(
+    var success = methodStreamManager.dispatchData(
       endpoint: message.endpoint,
       method: message.method,
       namespace: message.connectionId,
@@ -196,10 +197,11 @@ class MethodWebsocketRequestHandler {
     ));
   }
 
-  Future<String> _handleOpenMethodStreamCommand(
+  static Future<String> _handleOpenMethodStreamCommand(
     Server server,
     WebSocket webSocket,
     OpenMethodStreamCommand message,
+    MethodStreamManager methodStreamManager,
   ) async {
     Map<String, dynamic> arguments;
     try {
@@ -314,7 +316,7 @@ class MethodWebsocketRequestHandler {
       throw StateError('MethodStreamSession was not created.');
     }
 
-    _methodStreamManager.createStream(
+    methodStreamManager.createStream(
       session: session,
       methodStreamCallContext: methodStreamCallContext,
       namespace: message.connectionId,
