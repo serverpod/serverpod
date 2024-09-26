@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/serverpod_internal.dart';
 
 import '../serverpod_test.dart';
 

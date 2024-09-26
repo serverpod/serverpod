@@ -4,7 +4,6 @@ library serverpod;
 export 'package:serverpod_shared/src/config.dart';
 
 // Server
-// ignore: invalid_export_of_internal_element
 export 'package:serverpod/server.dart';
 
 // Web server
