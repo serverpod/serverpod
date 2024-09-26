@@ -8,7 +8,7 @@ dependencies:
   serverpod: SERVERPOD_VERSION
 
 dev_dependencies:
-  lints: '>=3.0.0 <5.0.0'
+  lints: '>=3.0.0 <6.0.0'
 
 dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
   serverpod: #--CONDITIONALLY_REMOVE_LINE--#
