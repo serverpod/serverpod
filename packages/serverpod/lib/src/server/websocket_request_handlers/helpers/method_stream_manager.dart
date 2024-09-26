@@ -116,23 +116,23 @@ class MethodStreamManager {
   });
 
   void Function(
-    UuidValue namespace,
+    UuidValue methodStreamId,
     Object? value,
     MethodStreamCallContext methodStreamCallContext,
   )? onOutputStreamValue;
   void Function(
-    UuidValue namespace,
+    UuidValue methodStreamId,
     Object error,
     StackTrace stackTrace,
     MethodStreamCallContext methodStreamCallContext,
   )? onOutputStreamError;
   void Function(
-    UuidValue namespace,
+    UuidValue methodStreamId,
     CloseReason? closeReason,
     MethodStreamCallContext callContext,
   )? onOutputStreamClosed;
   void Function(
-    UuidValue namespace,
+    UuidValue methodStreamId,
     String parameterName,
     CloseReason? closeReason,
     MethodStreamCallContext callContext,
@@ -165,14 +165,14 @@ class MethodStreamManager {
     required String endpoint,
     required String method,
     String? parameter,
-    required UuidValue namespace,
+    required UuidValue methodStreamId,
     required CloseReason reason,
   }) async {
     var streamKey = _buildStreamKey(
       endpoint: endpoint,
       method: method,
       parameter: parameter,
-      namespace: namespace,
+      methodStreamId: methodStreamId,
     );
     if (parameter == null) {
       var context = _outputStreamContexts[streamKey];
@@ -204,16 +204,17 @@ class MethodStreamManager {
 
   void createStream({
     required MethodStreamCallContext methodStreamCallContext,
-    required UuidValue namespace,
+    required UuidValue methodStreamId,
     required Session session,
   }) {
     var outputStreamContext = _createOutputController(
       methodStreamCallContext,
       session,
-      namespace,
+      methodStreamId,
     );
 
-    var inputStreams = _createInputStreams(methodStreamCallContext, namespace);
+    var inputStreams =
+        _createInputStreams(methodStreamCallContext, methodStreamId);
     var streamParams = inputStreams.map(
       (key, value) => MapEntry(key, value.stream),
     );
@@ -226,7 +227,7 @@ class MethodStreamManager {
           streamParams: streamParams,
           outputController: outputStreamContext.controller,
           subscription: outputStreamContext.subscription,
-          namespace: namespace,
+          methodStreamId: methodStreamId,
         );
         break;
       case MethodStreamReturnType.futureType:
@@ -236,7 +237,7 @@ class MethodStreamManager {
           session: session,
           streamParams: streamParams,
           outputController: outputStreamContext.controller,
-          namespace: namespace,
+          methodStreamId: methodStreamId,
         );
         break;
     }
@@ -245,7 +246,7 @@ class MethodStreamManager {
   _OutputStreamContext _createOutputController(
     MethodStreamCallContext methodStreamCallContext,
     Session session,
-    UuidValue namespace,
+    UuidValue methodStreamId,
   ) {
     bool isCancelled = false;
     var revokedAuthenticationHandler = _RevokedAuthenticationHandler();
@@ -257,7 +258,7 @@ class MethodStreamManager {
       if (isCancelled) return;
       isCancelled = true;
       await revokedAuthenticationHandler.destroy(session);
-      await _closeOutboundStream(methodStreamCallContext, namespace);
+      await _closeOutboundStream(methodStreamCallContext, methodStreamId);
       await session.close();
     });
 
@@ -267,7 +268,7 @@ class MethodStreamManager {
       () => closeStream(
         endpoint: methodStreamCallContext.endpoint.name,
         method: methodStreamCallContext.method.name,
-        namespace: namespace,
+        methodStreamId: methodStreamId,
         reason: CloseReason.error,
       ),
     );
@@ -275,15 +276,17 @@ class MethodStreamManager {
     late StreamSubscription subscription;
     subscription = outputController.stream.listen(
       (value) {
-        onOutputStreamValue?.call(namespace, value, methodStreamCallContext);
+        onOutputStreamValue?.call(
+            methodStreamId, value, methodStreamCallContext);
       },
       onError: (e, s) async {
-        onOutputStreamError?.call(namespace, e, s, methodStreamCallContext);
+        onOutputStreamError?.call(
+            methodStreamId, e, s, methodStreamCallContext);
 
         var streamKey = _buildStreamKey(
           endpoint: methodStreamCallContext.endpoint.name,
           method: methodStreamCallContext.method.name,
-          namespace: namespace,
+          methodStreamId: methodStreamId,
         );
         _updateCloseReason(streamKey, CloseReason.error);
 
@@ -302,7 +305,7 @@ class MethodStreamManager {
     _outputStreamContexts[_buildStreamKey(
       endpoint: methodStreamCallContext.endpoint.name,
       method: methodStreamCallContext.method.name,
-      namespace: namespace,
+      methodStreamId: methodStreamId,
     )] = outputStreamContext;
 
     return outputStreamContext;
@@ -324,7 +327,7 @@ class MethodStreamManager {
   bool dispatchData({
     required String endpoint,
     required String method,
-    required UuidValue namespace,
+    required UuidValue methodStreamId,
     String? parameter,
     required Object? value,
   }) {
@@ -332,7 +335,7 @@ class MethodStreamManager {
       endpoint: endpoint,
       method: method,
       parameter: parameter,
-      namespace: namespace,
+      methodStreamId: methodStreamId,
     )];
 
     if (streamContext == null) {
@@ -347,7 +350,7 @@ class MethodStreamManager {
   bool dispatchError({
     required String endpoint,
     required String method,
-    required UuidValue namespace,
+    required UuidValue methodStreamId,
     String? parameter,
     required Object error,
   }) {
@@ -355,7 +358,7 @@ class MethodStreamManager {
       endpoint: endpoint,
       method: method,
       parameter: parameter,
-      namespace: namespace,
+      methodStreamId: methodStreamId,
     )];
 
     if (streamContext == null) {
@@ -370,9 +373,9 @@ class MethodStreamManager {
     required String endpoint,
     required String method,
     String? parameter,
-    required UuidValue namespace,
+    required UuidValue methodStreamId,
   }) =>
-      '$namespace:$endpoint:$method${parameter != null ? ':$parameter' : ''}';
+      '$methodStreamId:$endpoint:$method${parameter != null ? ':$parameter' : ''}';
 
   Future<void> _closeControllers(Iterable<StreamController> controllers) async {
     List<Future<void>> futures = [];
@@ -397,7 +400,7 @@ class MethodStreamManager {
 
   Map<String, StreamController> _createInputStreams(
     MethodStreamCallContext callContext,
-    UuidValue namespace,
+    UuidValue methodStreamId,
   ) {
     var inputStreams = <String, StreamController>{};
 
@@ -408,7 +411,7 @@ class MethodStreamManager {
           endpoint: callContext.endpoint.name,
           method: callContext.method.name,
           parameter: parameterName,
-          namespace: namespace,
+          methodStreamId: methodStreamId,
         ));
 
         if (context == null) {
@@ -416,7 +419,7 @@ class MethodStreamManager {
         }
 
         onInputStreamClosed?.call(
-          namespace,
+          methodStreamId,
           parameterName,
           CloseReason.done,
           callContext,
@@ -428,7 +431,7 @@ class MethodStreamManager {
         endpoint: callContext.endpoint.name,
         method: callContext.method.name,
         parameter: parameterName,
-        namespace: namespace,
+        methodStreamId: methodStreamId,
       )] = _InputStreamContext(controller);
     }
 
@@ -440,12 +443,12 @@ class MethodStreamManager {
     required Session session,
     required Map<String, Stream<dynamic>> streamParams,
     required StreamController outputController,
-    required UuidValue namespace,
+    required UuidValue methodStreamId,
   }) async {
     var streamKey = _buildStreamKey(
       endpoint: methodStreamCallContext.endpoint.name,
       method: methodStreamCallContext.method.name,
-      namespace: namespace,
+      methodStreamId: methodStreamId,
     );
     try {
       var result = await methodStreamCallContext.method
@@ -465,18 +468,19 @@ class MethodStreamManager {
   }
 
   Future<void> _closeOutboundStream(
-      MethodStreamCallContext callContext, UuidValue namespace) async {
+      MethodStreamCallContext callContext, UuidValue methodStreamId) async {
     var context = _outputStreamContexts.remove(
       _buildStreamKey(
         endpoint: callContext.endpoint.name,
         method: callContext.method.name,
-        namespace: namespace,
+        methodStreamId: methodStreamId,
       ),
     );
 
     if (context == null) return;
 
-    onOutputStreamClosed?.call(namespace, context.closeReason, callContext);
+    onOutputStreamClosed?.call(
+        methodStreamId, context.closeReason, callContext);
 
     var inputStreamControllers = <StreamController>[];
     for (var streamParam in callContext.inputStreams) {
@@ -484,7 +488,7 @@ class MethodStreamManager {
         endpoint: callContext.endpoint.name,
         method: callContext.method.name,
         parameter: streamParam.name,
-        namespace: namespace,
+        methodStreamId: methodStreamId,
       ));
 
       if (paramStreamContext == null) {
@@ -492,7 +496,7 @@ class MethodStreamManager {
       }
 
       onInputStreamClosed?.call(
-        namespace,
+        methodStreamId,
         streamParam.name,
         context.closeReason ?? CloseReason.done,
         callContext,
@@ -510,7 +514,7 @@ class MethodStreamManager {
 
   void _handleMethodWithStreamReturn({
     required MethodStreamCallContext methodStreamCallContext,
-    required UuidValue namespace,
+    required UuidValue methodStreamId,
     required Session session,
     required Map<String, Stream<dynamic>> streamParams,
     required StreamController outputController,
@@ -526,7 +530,7 @@ class MethodStreamManager {
         var streamKey = _buildStreamKey(
           endpoint: methodStreamCallContext.endpoint.name,
           method: methodStreamCallContext.method.name,
-          namespace: namespace,
+          methodStreamId: methodStreamId,
         );
 
         var closeReasonIsNotAlreadySetToError =

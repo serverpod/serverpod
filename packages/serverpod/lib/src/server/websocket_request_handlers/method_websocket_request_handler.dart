@@ -50,7 +50,7 @@ class MethodWebsocketRequestHandler {
             await methodStreamManager.closeStream(
               endpoint: message.endpoint,
               method: message.method,
-              namespace: message.connectionId,
+              methodStreamId: message.connectionId,
               parameter: message.parameter,
               reason: message.reason,
             );
@@ -60,7 +60,7 @@ class MethodWebsocketRequestHandler {
               endpoint: message.endpoint,
               error: message.exception,
               method: message.method,
-              namespace: message.connectionId,
+              methodStreamId: message.connectionId,
               parameter: message.parameter,
             );
             break;
@@ -97,7 +97,7 @@ class MethodWebsocketRequestHandler {
   ) {
     return MethodStreamManager(
       onInputStreamClosed: (
-        UuidValue namespace,
+        UuidValue methodStreamId,
         String parameterName,
         CloseReason? closeReason,
         MethodStreamCallContext callContext,
@@ -107,13 +107,13 @@ class MethodWebsocketRequestHandler {
             endpoint: callContext.endpoint.name,
             method: callContext.method.name,
             parameter: parameterName,
-            connectionId: namespace,
+            connectionId: methodStreamId,
             reason: closeReason ?? CloseReason.done,
           ),
         );
       },
       onOutputStreamClosed: (
-        UuidValue namespace,
+        UuidValue methodStreamId,
         CloseReason? closeReason,
         MethodStreamCallContext callContext,
       ) {
@@ -121,13 +121,13 @@ class MethodWebsocketRequestHandler {
           CloseMethodStreamCommand.buildMessage(
             endpoint: callContext.endpoint.name,
             method: callContext.method.name,
-            connectionId: namespace,
+            connectionId: methodStreamId,
             reason: closeReason ?? CloseReason.done,
           ),
         );
       },
       onOutputStreamError: (
-        UuidValue namespace,
+        UuidValue methodStreamId,
         Object error,
         StackTrace _,
         MethodStreamCallContext callContext,
@@ -137,19 +137,22 @@ class MethodWebsocketRequestHandler {
             MethodStreamSerializableException.buildMessage(
               endpoint: callContext.endpoint.name,
               method: callContext.method.name,
-              connectionId: namespace,
+              connectionId: methodStreamId,
               object: error,
               serializationManager: server.serializationManager,
             ),
           );
         }
       },
-      onOutputStreamValue: (UuidValue namespace, Object? value,
-          MethodStreamCallContext callContext) {
+      onOutputStreamValue: (
+        UuidValue methodStreamId,
+        Object? value,
+        MethodStreamCallContext callContext,
+      ) {
         webSocket.tryAdd(MethodStreamMessage.buildMessage(
           endpoint: callContext.endpoint.name,
           method: callContext.method.name,
-          connectionId: namespace,
+          connectionId: methodStreamId,
           object: value,
           serializationManager: server.serializationManager,
         ));
@@ -178,7 +181,7 @@ class MethodWebsocketRequestHandler {
     var success = methodStreamManager.dispatchData(
       endpoint: message.endpoint,
       method: message.method,
-      namespace: message.connectionId,
+      methodStreamId: message.connectionId,
       value: message.object,
       parameter: message.parameter,
     );
@@ -319,7 +322,7 @@ class MethodWebsocketRequestHandler {
     methodStreamManager.createStream(
       session: session,
       methodStreamCallContext: methodStreamCallContext,
-      namespace: message.connectionId,
+      methodStreamId: message.connectionId,
     );
 
     return OpenMethodStreamResponse.buildMessage(

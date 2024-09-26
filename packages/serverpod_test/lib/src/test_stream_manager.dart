@@ -33,14 +33,14 @@ class TestStreamManager<OutputStreamType> {
 
   // ignore: invalid_use_of_internal_member
   late final MethodStreamManager _streamManager;
-  final UuidValue _namespace = const Uuid().v4obj();
+  final UuidValue _methodStreamId = const Uuid().v4obj();
 
   /// Creates a new [TestStreamManager].
   TestStreamManager()
       : outputStreamController = StreamController<OutputStreamType>() {
     _streamManager = MethodStreamManager(
       onOutputStreamClosed: (
-        UuidValue namespace,
+        UuidValue methodStreamId,
         CloseReason? closeReason,
         MethodStreamCallContext context,
       ) {
@@ -51,7 +51,7 @@ class TestStreamManager<OutputStreamType> {
         outputStreamController.close();
       },
       onOutputStreamError: (
-        UuidValue namespace,
+        UuidValue methodStreamId,
         Object error,
         StackTrace stackTrace,
         MethodStreamCallContext context,
@@ -59,7 +59,7 @@ class TestStreamManager<OutputStreamType> {
         outputStreamController.addError(error, stackTrace);
       },
       onOutputStreamValue: (
-        UuidValue namespace,
+        UuidValue methodStreamId,
         Object? value,
         MethodStreamCallContext context,
       ) {
@@ -78,7 +78,7 @@ class TestStreamManager<OutputStreamType> {
   ) {
     _streamManager.createStream(
       methodStreamCallContext: callContext,
-      namespace: _namespace,
+      methodStreamId: _methodStreamId,
       session: session,
     );
 
@@ -88,7 +88,7 @@ class TestStreamManager<OutputStreamType> {
           _streamManager.dispatchData(
             endpoint: callContext.endpoint.name,
             method: callContext.method.name,
-            namespace: _namespace,
+            methodStreamId: _methodStreamId,
             parameter: name,
             value: value,
           );
@@ -97,7 +97,7 @@ class TestStreamManager<OutputStreamType> {
           _streamManager.closeStream(
             endpoint: callContext.endpoint.name,
             method: callContext.method.name,
-            namespace: _namespace,
+            methodStreamId: _methodStreamId,
             parameter: name,
             reason: CloseReason.done,
           );
@@ -106,7 +106,7 @@ class TestStreamManager<OutputStreamType> {
           _streamManager.dispatchError(
             endpoint: callContext.endpoint.name,
             method: callContext.method.name,
-            namespace: _namespace,
+            methodStreamId: _methodStreamId,
             parameter: name,
             error: error,
           );
