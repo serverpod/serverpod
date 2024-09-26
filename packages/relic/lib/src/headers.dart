@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:http_parser/http_parser.dart';
+import 'package:relic/src/method/method.dart';
 
 import 'body.dart';
 
@@ -103,19 +104,19 @@ abstract class Headers {
   final List<String>? acceptEncoding;
   final List<String>? acceptLanguage;
   final List<String>? accessControlRequestHeaders;
-  final String? accessControlRequestMethod;
-  final String? age;
-  final List<String>? allow;
+  final Method? accessControlRequestMethod;
+  final int? age;
+  final List<Method>? allow;
   final AuthorizationHeader? authorization;
   final ConnectionHeader? connection;
   final String? expect;
   final List<String>? ifMatch;
   final List<String>? ifNoneMatch;
   final String? ifRange;
-  final String? maxForwards;
+  final int? maxForwards;
   final String? proxyAuthorization;
   final RangeHeader? range;
-  final String? referer;
+  final Uri? referer;
   final String? userAgent;
   final List<String>? te;
   final List<String>? upgrade;
@@ -293,10 +294,14 @@ abstract class Headers {
       accessControlExposeHeaders: headers[_accessControlExposeHeadersHeader],
       accessControlMaxAge: headers.value(_accessControlMaxAgeHeader),
       accessControlRequestHeaders: headers[_accessControlRequestHeadersHeader],
-      accessControlRequestMethod:
-          headers.value(_accessControlRequestMethodHeader),
-      age: headers.value(_ageHeader),
-      allow: headers[_allowHeader],
+      accessControlRequestMethod: Method.tryParse(
+        headers.value(_accessControlRequestMethodHeader),
+      ),
+      age: int.tryParse(headers.value(_ageHeader) ?? ""),
+      allow: headers[_allowHeader]
+          ?.map((e) => Method.tryParse(e))
+          .nonNulls
+          .toList(),
       contentDisposition: ContentDispositionHeader.tryParse(
         headers.value(_contentDispositionHeader),
       ),
@@ -318,14 +323,14 @@ abstract class Headers {
       ifMatch: headers[_ifMatchHeader],
       ifNoneMatch: headers[_ifNoneMatchHeader],
       ifRange: headers.value(_ifRangeHeader),
-      maxForwards: headers.value(_maxForwardsHeader),
+      maxForwards: int.tryParse(headers.value(_maxForwardsHeader) ?? ''),
       mPragma: headers.value(_pragmaHeader),
       proxyAuthenticate: ProxyAuthenticateHeader.tryParse(
         headers.value(_proxyAuthenticateHeader),
       ),
       proxyAuthorization: headers.value(_proxyAuthorizationHeader),
       range: RangeHeader.tryParse(headers.value(_rangeHeader)),
-      referer: headers.value(_refererHeader),
+      referer: Uri.tryParse(headers.value(_refererHeader) ?? ''),
       retryAfter: RetryAfterHeader.tryParse(headers.value(_retryAfterHeader)),
       server: ServerHeader.tryParse(headers.value(_serverHeader)),
       te: headers[_teHeader],
@@ -361,20 +366,20 @@ abstract class Headers {
     List<String>? acceptLanguage,
     List<String>? acceptRanges,
     List<String>? accessControlRequestHeaders,
-    String? accessControlRequestMethod,
-    String? age,
+    Method? accessControlRequestMethod,
+    int? age,
     AuthorizationHeader? authorization,
     ConnectionHeader? connection,
     String? expect,
     List<String>? ifMatch,
     List<String>? ifNoneMatch,
     String? ifRange,
-    String? maxForwards,
+    int? maxForwards,
     String? mPragma,
     String? proxyAuthorization,
     TransferEncodingHeader? transferEncoding,
     RangeHeader? range,
-    String? referer,
+    Uri? referer,
     List<String>? te,
     List<String>? upgrade,
     String? userAgent,
@@ -422,8 +427,8 @@ abstract class Headers {
     String? accessControlAllowOrigin,
     List<String>? accessControlExposeHeaders,
     String? accessControlMaxAge,
-    String? age,
-    List<String>? allow,
+    int? age,
+    List<Method>? allow,
     ContentDispositionHeader? contentDisposition,
     CacheControlHeader? cacheControl,
     ConnectionHeader? connection,
@@ -630,9 +635,9 @@ abstract class Headers {
     List<String>? accessControlExposeHeaders,
     String? accessControlMaxAge,
     List<String>? accessControlRequestHeaders,
-    String? accessControlRequestMethod,
+    Method? accessControlRequestMethod,
     String? age,
-    List<String>? allow,
+    List<Method>? allow,
     ContentDispositionHeader? contentDisposition,
     AuthorizationHeader? authorization,
     CacheControlHeader? cacheControl,
@@ -648,7 +653,7 @@ abstract class Headers {
     List<String>? ifNoneMatch,
     String? ifRange,
     String? lastModified,
-    String? maxForwards,
+    int? maxForwards,
     String? mPragma,
     ProxyAuthenticateHeader? proxyAuthenticate,
     String? proxyAuthorization,
@@ -1032,11 +1037,11 @@ class _HeadersImpl extends Headers {
       accessControlRequestHeaders: accessControlRequestHeaders is List<String>
           ? accessControlRequestHeaders
           : this.accessControlRequestHeaders,
-      accessControlRequestMethod: accessControlRequestMethod is String
+      accessControlRequestMethod: accessControlRequestMethod is Method
           ? accessControlRequestMethod
           : this.accessControlRequestMethod,
-      age: age is String ? age : this.age,
-      allow: allow is List<String> ? allow : this.allow,
+      age: age is int ? age : this.age,
+      allow: allow is List<Method> ? allow : this.allow,
       contentDisposition: contentDisposition is ContentDispositionHeader
           ? contentDisposition
           : this.contentDisposition,
@@ -1061,7 +1066,7 @@ class _HeadersImpl extends Headers {
       ifNoneMatch: ifNoneMatch is List<String> ? ifNoneMatch : this.ifNoneMatch,
       ifRange: ifRange is String ? ifRange : this.ifRange,
       lastModified: lastModified is DateTime ? lastModified : this.lastModified,
-      maxForwards: maxForwards is String ? maxForwards : this.maxForwards,
+      maxForwards: maxForwards is int ? maxForwards : this.maxForwards,
       mPragma: mPragma is String ? mPragma : this.mPragma,
       proxyAuthenticate: proxyAuthenticate is ProxyAuthenticateHeader
           ? proxyAuthenticate
@@ -1070,7 +1075,7 @@ class _HeadersImpl extends Headers {
           ? proxyAuthorization
           : this.proxyAuthorization,
       range: range is RangeHeader ? range : this.range,
-      referer: referer is String ? referer : this.referer,
+      referer: referer is Uri ? referer : this.referer,
       retryAfter: retryAfter is RetryAfterHeader ? retryAfter : this.retryAfter,
       server: server is ServerHeader ? server : this.server,
       te: te is List<String> ? te : this.te,

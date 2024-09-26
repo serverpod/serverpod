@@ -1,3 +1,5 @@
+import 'package:collection/collection.dart';
+
 /// Represents the HTTP methods used in requests as constants.
 class Method {
   /// The string representation of the HTTP method.
@@ -41,6 +43,15 @@ class Method {
         'method',
         'Invalid method. Supported methods are: ${values.map((m) => m.value).join(', ')}.',
       ),
+    );
+  }
+
+  /// Tries to parse a [method] string and returns the corresponding [Method] instance.
+  ///
+  /// Returns `null` if the method is not found.
+  static Method? tryParse(String? method) {
+    return values.firstWhereOrNull(
+      (m) => m.value.toLowerCase() == method?.toLowerCase(),
     );
   }
 
