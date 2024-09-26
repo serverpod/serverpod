@@ -7,8 +7,10 @@ import 'package:relic/src/method/method.dart';
 
 import 'body.dart';
 
+part 'headers/util/authorization_util.dart';
 part 'headers/custom_headers.dart';
 part 'headers/authorization_header.dart';
+part 'headers/proxy_authorization_header.dart';
 part 'headers/content_range_header.dart';
 part 'headers/cache_control_header.dart';
 part 'headers/content_disposition_header.dart';
@@ -114,7 +116,7 @@ abstract class Headers {
   final List<String>? ifNoneMatch;
   final String? ifRange;
   final int? maxForwards;
-  final String? proxyAuthorization;
+  final ProxyAuthorizationHeader? proxyAuthorization;
   final RangeHeader? range;
   final Uri? referer;
   final String? userAgent;
@@ -328,7 +330,9 @@ abstract class Headers {
       proxyAuthenticate: ProxyAuthenticateHeader.tryParse(
         headers.value(_proxyAuthenticateHeader),
       ),
-      proxyAuthorization: headers.value(_proxyAuthorizationHeader),
+      proxyAuthorization: ProxyAuthorizationHeader._tryParseHttpHeaders(
+        headers,
+      ),
       range: RangeHeader.tryParse(headers.value(_rangeHeader)),
       referer: Uri.tryParse(headers.value(_refererHeader) ?? ''),
       retryAfter: RetryAfterHeader.tryParse(headers.value(_retryAfterHeader)),
@@ -376,7 +380,7 @@ abstract class Headers {
     String? ifRange,
     int? maxForwards,
     String? mPragma,
-    String? proxyAuthorization,
+    ProxyAuthorizationHeader? proxyAuthorization,
     TransferEncodingHeader? transferEncoding,
     RangeHeader? range,
     Uri? referer,
@@ -656,7 +660,7 @@ abstract class Headers {
     int? maxForwards,
     String? mPragma,
     ProxyAuthenticateHeader? proxyAuthenticate,
-    String? proxyAuthorization,
+    ProxyAuthorizationHeader? proxyAuthorization,
     RangeHeader? range,
     String? referer,
     RetryAfterHeader? retryAfter,
@@ -1071,7 +1075,7 @@ class _HeadersImpl extends Headers {
       proxyAuthenticate: proxyAuthenticate is ProxyAuthenticateHeader
           ? proxyAuthenticate
           : this.proxyAuthenticate,
-      proxyAuthorization: proxyAuthorization is String
+      proxyAuthorization: proxyAuthorization is ProxyAuthorizationHeader
           ? proxyAuthorization
           : this.proxyAuthorization,
       range: range is RangeHeader ? range : this.range,
