@@ -103,8 +103,8 @@ void main() {
           inStream = StreamController<int>();
           Stream<int> outStream;
           var authenticatedSession = session.copyWith(
-            authentication:
-                AuthenticationOverride.authenticationInfo(1, {Scope('user')}),
+            authentication: AuthenticationOverride.authenticationInfo(
+                authenticatedUserId, {Scope('user')}),
           );
           outStream = endpoints.authenticatedTestTools.intEchoStream(
             authenticatedSession,
@@ -188,8 +188,8 @@ void main() {
           Stream<int> outStream;
 
           var authenticatedSession = session.copyWith(
-            authentication:
-                AuthenticationOverride.authenticationInfo(1, {Scope('user')}),
+            authentication: AuthenticationOverride.authenticationInfo(
+                authenticatedUserId, {Scope('user')}),
           );
 
           outStream = endpoints.authenticatedTestTools
