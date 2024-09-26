@@ -129,10 +129,10 @@ abstract class Headers {
   /// Response Headers
   final Uri? location;
   final String? xPoweredBy;
-  final String? accessControlAllowCredentials;
+  final bool? accessControlAllowCredentials;
   final String? accessControlAllowOrigin;
   final List<String>? accessControlExposeHeaders;
-  final String? accessControlMaxAge;
+  final int? accessControlMaxAge;
   final CacheControlHeader? cacheControl;
   final List<String>? contentEncoding;
   final List<String>? contentLanguage;
@@ -290,11 +290,14 @@ abstract class Headers {
       acceptEncoding: headers[_acceptEncodingHeader],
       acceptLanguage: headers[_acceptLanguageHeader],
       acceptRanges: headers[_acceptRangesHeader],
-      accessControlAllowCredentials:
-          headers.value(_accessControlAllowCredentialsHeader),
+      accessControlAllowCredentials: bool.tryParse(
+        headers.value(_accessControlAllowCredentialsHeader) ?? '',
+      ),
       accessControlAllowOrigin: headers.value(_accessControlAllowOriginHeader),
       accessControlExposeHeaders: headers[_accessControlExposeHeadersHeader],
-      accessControlMaxAge: headers.value(_accessControlMaxAgeHeader),
+      accessControlMaxAge: int.tryParse(
+        headers.value(_accessControlMaxAgeHeader) ?? '',
+      ),
       accessControlRequestHeaders: headers[_accessControlRequestHeadersHeader],
       accessControlRequestMethod: Method.tryParse(
         headers.value(_accessControlRequestMethodHeader),
@@ -427,10 +430,10 @@ abstract class Headers {
     DateTime? expires,
     Uri? location,
     String? xPoweredBy,
-    String? accessControlAllowCredentials,
+    bool? accessControlAllowCredentials,
     String? accessControlAllowOrigin,
     List<String>? accessControlExposeHeaders,
-    String? accessControlMaxAge,
+    int? accessControlMaxAge,
     int? age,
     List<Method>? allow,
     ContentDispositionHeader? contentDisposition,
@@ -634,10 +637,10 @@ abstract class Headers {
     List<String>? acceptEncoding,
     List<String>? acceptLanguage,
     List<String>? acceptRanges,
-    String? accessControlAllowCredentials,
+    bool? accessControlAllowCredentials,
     String? accessControlAllowOrigin,
     List<String>? accessControlExposeHeaders,
-    String? accessControlMaxAge,
+    int? accessControlMaxAge,
     List<String>? accessControlRequestHeaders,
     Method? accessControlRequestMethod,
     String? age,
@@ -1026,7 +1029,7 @@ class _HeadersImpl extends Headers {
           acceptLanguage is List<String> ? acceptLanguage : this.acceptLanguage,
       acceptRanges:
           acceptRanges is List<String> ? acceptRanges : this.acceptRanges,
-      accessControlAllowCredentials: accessControlAllowCredentials is String
+      accessControlAllowCredentials: accessControlAllowCredentials is bool
           ? accessControlAllowCredentials
           : this.accessControlAllowCredentials,
       accessControlAllowOrigin: accessControlAllowOrigin is String
@@ -1035,7 +1038,7 @@ class _HeadersImpl extends Headers {
       accessControlExposeHeaders: accessControlExposeHeaders is List<String>
           ? accessControlExposeHeaders
           : this.accessControlExposeHeaders,
-      accessControlMaxAge: accessControlMaxAge is String
+      accessControlMaxAge: accessControlMaxAge is int
           ? accessControlMaxAge
           : this.accessControlMaxAge,
       accessControlRequestHeaders: accessControlRequestHeaders is List<String>
