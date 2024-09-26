@@ -257,6 +257,52 @@ class MethodStreamManager {
     }
   }
 
+  /// Dispatches a message to the correct stream controller.
+  bool dispatchData({
+    required String endpoint,
+    required String method,
+    required UuidValue methodStreamId,
+    String? parameter,
+    required Object? value,
+  }) {
+    var streamContext = _inputStreamContexts[_buildStreamKey(
+      endpoint: endpoint,
+      method: method,
+      parameter: parameter,
+      methodStreamId: methodStreamId,
+    )];
+
+    if (streamContext == null) {
+      return false;
+    }
+
+    streamContext.controller.add(value);
+    return true;
+  }
+
+  /// Dispatches an error to the correct stream controller.
+  bool dispatchError({
+    required String endpoint,
+    required String method,
+    required UuidValue methodStreamId,
+    String? parameter,
+    required Object error,
+  }) {
+    var streamContext = _inputStreamContexts[_buildStreamKey(
+      endpoint: endpoint,
+      method: method,
+      parameter: parameter,
+      methodStreamId: methodStreamId,
+    )];
+
+    if (streamContext == null) {
+      return false;
+    }
+
+    streamContext.controller.addError(error);
+    return true;
+  }
+
   Future<_OutputStreamContext> _createOutputController(
     MethodStreamCallContext methodStreamCallContext,
     Session session,
@@ -335,52 +381,6 @@ class MethodStreamManager {
         (value) => value..closeReason = reason,
       );
     }
-  }
-
-  /// Dispatches a message to the correct stream controller.
-  bool dispatchData({
-    required String endpoint,
-    required String method,
-    required UuidValue methodStreamId,
-    String? parameter,
-    required Object? value,
-  }) {
-    var streamContext = _inputStreamContexts[_buildStreamKey(
-      endpoint: endpoint,
-      method: method,
-      parameter: parameter,
-      methodStreamId: methodStreamId,
-    )];
-
-    if (streamContext == null) {
-      return false;
-    }
-
-    streamContext.controller.add(value);
-    return true;
-  }
-
-  /// Dispatches an error to the correct stream controller.
-  bool dispatchError({
-    required String endpoint,
-    required String method,
-    required UuidValue methodStreamId,
-    String? parameter,
-    required Object error,
-  }) {
-    var streamContext = _inputStreamContexts[_buildStreamKey(
-      endpoint: endpoint,
-      method: method,
-      parameter: parameter,
-      methodStreamId: methodStreamId,
-    )];
-
-    if (streamContext == null) {
-      return false;
-    }
-
-    streamContext.controller.addError(error);
-    return true;
   }
 
   String _buildStreamKey({
