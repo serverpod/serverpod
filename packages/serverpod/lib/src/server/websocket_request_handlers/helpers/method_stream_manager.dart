@@ -109,7 +109,7 @@ abstract interface class _StreamContext {
 
 typedef _OnOutputStreamValue = void Function(
   UuidValue methodStreamId,
-  Object value,
+  Object? value,
   MethodStreamCallContext methodStreamCallContext,
 );
 typedef _OnOutputStreamError = void Function(
