@@ -309,7 +309,7 @@ abstract class Headers {
         headers.value(_contentDispositionHeader),
       ),
       cacheControl: CacheControlHeader.tryParse(
-        headers.value(_cacheControlHeader),
+        headers[_cacheControlHeader],
       ),
       connection: ConnectionHeader.tryParse(
         headers.value(_connectionHeader),
