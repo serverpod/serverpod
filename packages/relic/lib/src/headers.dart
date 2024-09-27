@@ -283,9 +283,7 @@ abstract class Headers {
       from: headers.value(_fromHeader),
       host: headers.host,
       port: headers.port,
-      accept: AcceptHeader.tryParse(
-        headers.value(_acceptHeader),
-      ),
+      accept: AcceptHeader.tryParse(headers[_acceptHeader]),
       acceptCharset: headers[_acceptCharsetHeader],
       acceptEncoding: headers[_acceptEncodingHeader],
       acceptLanguage: headers[_acceptLanguageHeader],
