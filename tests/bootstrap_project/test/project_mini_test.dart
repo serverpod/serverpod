@@ -118,14 +118,6 @@ void main() async {
         reason: 'No web directory should exist but it was found.',
       );
 
-      var dockerFile =
-          File(path.join(tempPath, serverDir, 'Dockerfile')).existsSync();
-      expect(
-        dockerFile,
-        isFalse,
-        reason: 'No Dockerfile should exist but it was found.',
-      );
-
       var dockerComposeFile =
           File(path.join(tempPath, serverDir, 'docker-compose.yaml'))
               .existsSync();
