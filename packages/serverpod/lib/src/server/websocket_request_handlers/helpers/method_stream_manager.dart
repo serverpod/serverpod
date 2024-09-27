@@ -106,6 +106,30 @@ abstract interface class _StreamContext {
   StreamController get controller;
 }
 
+typedef _OnOutputStreamValue = void Function(
+  UuidValue methodStreamId,
+  Object value,
+  MethodStreamCallContext methodStreamCallContext,
+);
+typedef _OnOutputStreamError = void Function(
+  UuidValue methodStreamId,
+  Object error,
+  StackTrace stackTrace,
+  MethodStreamCallContext methodStreamCallContext,
+);
+typedef _OnOutputStreamClosed = void Function(
+  UuidValue methodStreamId,
+  CloseReason? closeReason,
+  MethodStreamCallContext callContext,
+);
+typedef _OnInputStreamClosed = void Function(
+  UuidValue methodStreamId,
+  String parameterName,
+  CloseReason? closeReason,
+  MethodStreamCallContext callContext,
+);
+typedef _OnAllStreamsClosed = void Function();
+
 /// Manages the streams for an endpoint method call.
 /// Should only be used by Serverpod packages.
 @internal
@@ -114,40 +138,18 @@ class MethodStreamManager {
   final Map<String, _InputStreamContext> _inputStreamContexts = {};
   final Map<String, _OutputStreamContext> _outputStreamContexts = {};
 
-  final void Function(
-    UuidValue methodStreamId,
-    Object? value,
-    MethodStreamCallContext methodStreamCallContext,
-  )? _onOutputStreamValue;
-  final void Function(
-    UuidValue methodStreamId,
-    Object error,
-    StackTrace stackTrace,
-    MethodStreamCallContext methodStreamCallContext,
-  )? _onOutputStreamError;
-  final void Function(
-    UuidValue methodStreamId,
-    CloseReason? closeReason,
-    MethodStreamCallContext callContext,
-  )? _onOutputStreamClosed;
-  final void Function(
-    UuidValue methodStreamId,
-    String parameterName,
-    CloseReason? closeReason,
-    MethodStreamCallContext callContext,
-  )? _onInputStreamClosed;
-  final void Function()? _onAllStreamsClosed;
+  final _OnOutputStreamValue? _onOutputStreamValue;
+  final _OnOutputStreamError? _onOutputStreamError;
+  final _OnOutputStreamClosed? _onOutputStreamClosed;
+  final _OnInputStreamClosed? _onInputStreamClosed;
+  final _OnAllStreamsClosed? _onAllStreamsClosed;
 
   MethodStreamManager({
-    void Function(UuidValue, String, CloseReason?, MethodStreamCallContext)?
-        onInputStreamClosed,
-    void Function(UuidValue, CloseReason?, MethodStreamCallContext)?
-        onOutputStreamClosed,
-    void Function(UuidValue, Object, StackTrace, MethodStreamCallContext)?
-        onOutputStreamError,
-    void Function(UuidValue, Object?, MethodStreamCallContext)?
-        onOutputStreamValue,
-    void Function()? onAllStreamsClosed,
+    _OnInputStreamClosed? onInputStreamClosed,
+    _OnOutputStreamClosed? onOutputStreamClosed,
+    _OnOutputStreamError? onOutputStreamError,
+    _OnOutputStreamValue? onOutputStreamValue,
+    _OnAllStreamsClosed? onAllStreamsClosed,
   })  : _onAllStreamsClosed = onAllStreamsClosed,
         _onInputStreamClosed = onInputStreamClosed,
         _onOutputStreamClosed = onOutputStreamClosed,
