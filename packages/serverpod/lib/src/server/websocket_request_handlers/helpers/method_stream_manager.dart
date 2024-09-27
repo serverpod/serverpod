@@ -31,7 +31,8 @@ class _RevokedAuthenticationHandler {
     }
   }
 
-  static Future<_RevokedAuthenticationHandler?> create(
+  static Future<_RevokedAuthenticationHandler?>
+      createIfAuthenticationIsRequired(
     Endpoint endpoint,
     Session session, {
     required void Function() onRevokedAuthentication,
@@ -312,7 +313,7 @@ class MethodStreamManager {
   ) async {
     bool isCancelled = false;
     var revokedAuthenticationHandler =
-        await _RevokedAuthenticationHandler.create(
+        await _RevokedAuthenticationHandler.createIfAuthenticationIsRequired(
       methodStreamCallContext.endpoint,
       session,
       onRevokedAuthentication: () => closeStream(
