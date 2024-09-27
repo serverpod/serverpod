@@ -2210,6 +2210,27 @@ class EndpointTestTools extends _i1.EndpointRef {
         'getAllSimpleData',
         {},
       );
+
+  _i2.Future<void> createSimpleDatasInsideTransactions(int data) =>
+      caller.callServerEndpoint<void>(
+        'testTools',
+        'createSimpleDatasInsideTransactions',
+        {'data': data},
+      );
+
+  _i2.Future<void> createSimpleDataAndThrowInsideTransaction(int data) =>
+      caller.callServerEndpoint<void>(
+        'testTools',
+        'createSimpleDataAndThrowInsideTransaction',
+        {'data': data},
+      );
+
+  _i2.Future<void> createSimpleDatasInParallelTransactionCalls() =>
+      caller.callServerEndpoint<void>(
+        'testTools',
+        'createSimpleDatasInParallelTransactionCalls',
+        {},
+      );
 }
 
 /// {@category Endpoint}

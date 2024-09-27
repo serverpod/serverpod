@@ -38,23 +38,14 @@ import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_fie
     as _i20;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
-export 'package:serverpod_test/serverpod_test.dart'
-    show
-        TestSession,
-        ConnectionClosedException,
-        ServerpodUnauthenticatedException,
-        ServerpodInsufficientAccessException,
-        RollbackDatabase,
-        ResetTestSessions,
-        flushMicrotasks,
-        AuthenticationOverride;
+export 'package:serverpod_test/serverpod_test_public_exports.dart';
 
 @_i1.isTestGroup
 withServerpod(
   String testGroupName,
   _i1.TestClosure<TestEndpoints> testClosure, {
   _i1.ResetTestSessions? resetTestSessions,
-  _i1.RollbackDatabase? rollbackDatabase,
+  _i1.DatabaseTestConfig? databaseTestConfig,
   String? runMode,
   bool? enableSessionLogging,
   bool? applyMigrations,
@@ -69,7 +60,7 @@ withServerpod(
       applyMigrations: applyMigrations,
     ),
     maybeResetTestSessions: resetTestSessions,
-    maybeRollbackDatabase: rollbackDatabase,
+    maybeDatabaseTestConfig: databaseTestConfig,
     maybeEnableSessionLogging: enableSessionLogging,
   )(testClosure);
 }
@@ -6426,6 +6417,73 @@ class _TestToolsEndpoint {
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<_i11.SimpleData>>);
+    });
+  }
+
+  _i3.Future<void> createSimpleDatasInsideTransactions(
+    _i1.TestSession session,
+    int data,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+        endpoint: 'testTools',
+        method: 'createSimpleDatasInsideTransactions',
+      ) as _i1.InternalTestSession);
+      var _localCallContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => _localUniqueSession.serverpodSession,
+        endpointPath: 'testTools',
+        methodName: 'createSimpleDatasInsideTransactions',
+        parameters: {'data': data},
+        serializationManager: _serializationManager,
+      );
+      return (_localCallContext.method.call(
+        _localUniqueSession.serverpodSession,
+        _localCallContext.arguments,
+      ) as _i3.Future<void>);
+    });
+  }
+
+  _i3.Future<void> createSimpleDataAndThrowInsideTransaction(
+    _i1.TestSession session,
+    int data,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+        endpoint: 'testTools',
+        method: 'createSimpleDataAndThrowInsideTransaction',
+      ) as _i1.InternalTestSession);
+      var _localCallContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => _localUniqueSession.serverpodSession,
+        endpointPath: 'testTools',
+        methodName: 'createSimpleDataAndThrowInsideTransaction',
+        parameters: {'data': data},
+        serializationManager: _serializationManager,
+      );
+      return (_localCallContext.method.call(
+        _localUniqueSession.serverpodSession,
+        _localCallContext.arguments,
+      ) as _i3.Future<void>);
+    });
+  }
+
+  _i3.Future<void> createSimpleDatasInParallelTransactionCalls(
+      _i1.TestSession session) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+        endpoint: 'testTools',
+        method: 'createSimpleDatasInParallelTransactionCalls',
+      ) as _i1.InternalTestSession);
+      var _localCallContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => _localUniqueSession.serverpodSession,
+        endpointPath: 'testTools',
+        methodName: 'createSimpleDatasInParallelTransactionCalls',
+        parameters: {},
+        serializationManager: _serializationManager,
+      );
+      return (_localCallContext.method.call(
+        _localUniqueSession.serverpodSession,
+        _localCallContext.arguments,
+      ) as _i3.Future<void>);
     });
   }
 }
