@@ -34,24 +34,31 @@ class Method {
 
   /// Parses a [method] string and returns the corresponding [Method] instance.
   ///
-  /// Throws an [ArgumentError] if the method is invalid.
+  /// Throws an [ArgumentError] if the [method] string is empty.
+  /// If the method is not found in the predefined values,
+  /// it returns a new [Method] instance with the method name in uppercase.
   static Method parse(String method) {
+    if (method.isEmpty) {
+      throw ArgumentError.value(method, 'method', 'cannot be empty.');
+    }
+
     return values.firstWhere(
       (m) => m.value.toLowerCase() == method.toLowerCase(),
-      orElse: () => throw ArgumentError.value(
-        method,
-        'method',
-        'Invalid method. Supported methods are: ${values.map((m) => m.value).join(', ')}.',
-      ),
+      orElse: () => Method(method.toUpperCase()),
     );
   }
 
   /// Tries to parse a [method] string and returns the corresponding [Method] instance.
   ///
-  /// Returns `null` if the method is not found.
+  /// Returns `null` if the [method] is `null` or empty.
+  /// If the method is not found in the predefined values,
+  /// it returns a new [Method] instance with the method name in uppercase.
   static Method? tryParse(String? method) {
-    return values.firstWhereOrNull(
-      (m) => m.value.toLowerCase() == method?.toLowerCase(),
+    if (method == null || method.isEmpty) return null;
+
+    return values.firstWhere(
+      (m) => m.value.toLowerCase() == method.toLowerCase(),
+      orElse: () => Method(method.toUpperCase()),
     );
   }
 
