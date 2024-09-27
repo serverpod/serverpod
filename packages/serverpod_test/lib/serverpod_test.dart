@@ -1,6 +1,6 @@
 library serverpod_test;
 
-export 'src/with_serverpod.dart';
+export 'src/with_serverpod.dart' hide ConfigRuntimeChecks;
 export 'src/test_session.dart';
 export 'src/util.dart';
 

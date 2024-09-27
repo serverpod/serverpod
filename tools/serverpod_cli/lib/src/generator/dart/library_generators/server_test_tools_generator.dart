@@ -394,9 +394,9 @@ class ServerTestToolsGenerator {
             ..named = true
             ..type = refer('ResetTestSessions?', serverpodTestUrl)),
           Parameter((p) => p
-            ..name = 'rollbackDatabase'
+            ..name = 'databaseTestConfig'
             ..named = true
-            ..type = refer('RollbackDatabase?', serverpodTestUrl)),
+            ..type = refer('DatabaseTestConfig?', serverpodTestUrl)),
           Parameter((p) => p
             ..name = 'runMode'
             ..named = true
@@ -433,7 +433,7 @@ class ServerTestToolsGenerator {
           ],
           {
             'maybeResetTestSessions': refer('resetTestSessions'),
-            'maybeRollbackDatabase': refer('rollbackDatabase'),
+            'maybeDatabaseTestConfig': refer('databaseTestConfig'),
             'maybeEnableSessionLogging': refer('enableSessionLogging'),
           },
         ).call([
@@ -455,16 +455,7 @@ class ServerTestToolsGenerator {
     library.directives.addAll([
       Directive.import(protocolPackageImportPath),
       Directive.import(endpointsPath),
-      Directive.export(serverpodTestUrl, show: const [
-        'TestSession',
-        'ConnectionClosedException',
-        'ServerpodUnauthenticatedException',
-        'ServerpodInsufficientAccessException',
-        'RollbackDatabase',
-        'ResetTestSessions',
-        'flushMicrotasks',
-        'AuthenticationOverride',
-      ]),
+      Directive.export(serverpodTestPublicExportsUrl),
     ]);
   }
 }

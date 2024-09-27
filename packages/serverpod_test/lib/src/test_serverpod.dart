@@ -1,4 +1,6 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_test/src/database_proxy.dart';
+import 'package:serverpod_test/src/transaction_manager.dart';
 import 'package:serverpod_test/src/with_serverpod.dart';
 
 /// Internal test endpoints interface that contains implementation details
@@ -16,7 +18,18 @@ abstract interface class InternalTestEndpoints {
 class InternalServerpodSession extends Session {
   /// The transaction that is used by the session.
   @override
-  Transaction? transaction;
+  Transaction? get transaction => transactionManager.currentTransaction;
+
+  @override
+  Database get db => _dbProxy;
+
+  late DatabaseProxy _dbProxy;
+
+  /// The database test configuration.
+  final DatabaseTestConfig databaseTestConfig;
+
+  /// The transaction manager to manage the Serverpod session's transactions.
+  late final TransactionManager transactionManager;
 
   /// Creates a new internal serverpod session.
   InternalServerpodSession({
@@ -24,8 +37,16 @@ class InternalServerpodSession extends Session {
     required super.method,
     required super.server,
     required super.enableLogging,
-    this.transaction,
-  });
+    required this.databaseTestConfig,
+    TransactionManager? transactionManager,
+  }) {
+    this.transactionManager = transactionManager ?? TransactionManager(this);
+    _dbProxy = DatabaseProxy(
+      super.db,
+      databaseTestConfig,
+      this.transactionManager,
+    );
+  }
 }
 
 List<String> _getServerpodStartUpArgs(String? runMode, bool? applyMigrations) =>
@@ -84,16 +105,18 @@ class TestServerpod<T extends InternalTestEndpoints> {
   /// Creates a new Serverpod session.
   InternalServerpodSession createSession({
     bool enableLogging = false,
-    Transaction? transaction,
+    required DatabaseTestConfig databaseTestConfig,
     String endpoint = '',
     String method = '',
+    TransactionManager? transactionManager,
   }) {
     return InternalServerpodSession(
       server: _serverpod.server,
       enableLogging: enableLogging,
       endpoint: endpoint,
       method: method,
-      transaction: transaction,
+      databaseTestConfig: databaseTestConfig,
+      transactionManager: transactionManager,
     );
   }
 }

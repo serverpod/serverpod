@@ -66,7 +66,7 @@ void main() {
             expect(result.length, 0);
           });
         },
-        rollbackDatabase: RollbackDatabase.afterEach,
+        databaseTestConfig: DatabaseTestConfig.rollbackAfterEach(),
         runMode: ServerpodRunMode.production,
       );
 
@@ -114,7 +114,7 @@ void main() {
             expect(result[1].num, 222);
           });
         },
-        rollbackDatabase: RollbackDatabase.afterEach,
+        databaseTestConfig: DatabaseTestConfig.rollbackAfterEach(),
         runMode: ServerpodRunMode.production,
       );
 
@@ -126,46 +126,6 @@ void main() {
           expect(result.length, 0);
         });
       }, runMode: ServerpodRunMode.production);
-    });
-
-    group('when creating a transaction in the test', () {
-      withServerpod(
-        '',
-        (endpoints, session) {
-          test('then the database is updated according to the change',
-              () async {
-            await session.db.transaction((transaction) async {
-              await SimpleData.db.insert(session, [SimpleData(num: 111)],
-                  transaction: transaction);
-            });
-
-            final result = await SimpleData.db.find(session);
-
-            expect(result.length, 1);
-
-            expect(result.first.num, 111);
-          });
-
-          test('then the change is not rolled back', () async {
-            final result = await SimpleData.db.find(session);
-            expect(result.length, 1);
-          });
-        },
-        rollbackDatabase: RollbackDatabase.afterEach,
-        runMode: ServerpodRunMode.production,
-      );
-
-      withServerpod(
-        'then the database has to be cleaned up in the next `withServerpod` by setting rollbackDatabase to never',
-        (endpoints, session) {
-          tearDownAll(() async {
-            await SimpleData.db
-                .deleteWhere(session, where: (_) => Constant.bool(true));
-          });
-        },
-        rollbackDatabase: RollbackDatabase.never,
-        runMode: ServerpodRunMode.production,
-      );
     });
 
     withServerpod(
@@ -205,7 +165,7 @@ void main() {
           expect(resultFromOriginalSession[1].num, 222);
         });
       },
-      rollbackDatabase: RollbackDatabase.afterEach,
+      databaseTestConfig: DatabaseTestConfig.rollbackAfterEach(),
       runMode: ServerpodRunMode.production,
     );
   });
@@ -241,7 +201,7 @@ void main() {
             expect(result[1].num, 222);
           });
         },
-        rollbackDatabase: RollbackDatabase.afterAll,
+        databaseTestConfig: DatabaseTestConfig.rollbackAfterAll(),
         runMode: ServerpodRunMode.production,
       );
 
@@ -291,7 +251,7 @@ void main() {
             expect(result[3].num, 222);
           });
         },
-        rollbackDatabase: RollbackDatabase.afterAll,
+        databaseTestConfig: DatabaseTestConfig.rollbackAfterAll(),
         runMode: ServerpodRunMode.production,
       );
 
@@ -326,7 +286,7 @@ void main() {
             expect(result[1].num, 222);
           });
         },
-        rollbackDatabase: RollbackDatabase.afterAll,
+        databaseTestConfig: DatabaseTestConfig.rollbackAfterAll(),
         runMode: ServerpodRunMode.production,
       );
 
@@ -365,7 +325,7 @@ void main() {
           expect(result[1].num, 222);
         });
       },
-      rollbackDatabase: RollbackDatabase.never,
+      databaseTestConfig: DatabaseTestConfig.rollbacksDisabled(),
       runMode: ServerpodRunMode.production,
     );
 
@@ -387,7 +347,7 @@ void main() {
           expect(result[1].num, 222);
         });
       },
-      rollbackDatabase: RollbackDatabase.never,
+      databaseTestConfig: DatabaseTestConfig.rollbacksDisabled(),
       runMode: ServerpodRunMode.production,
     );
   });

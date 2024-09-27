@@ -14,3 +14,5 @@ String serverpodProtocolUrl(bool serverCode) {
 
 /// The import url of the serverpod test package.
 const String serverpodTestUrl = 'package:serverpod_test/serverpod_test.dart';
+const String serverpodTestPublicExportsUrl =
+    'package:serverpod_test/serverpod_test_public_exports.dart';
