@@ -1,5 +1,3 @@
-import 'package:collection/collection.dart';
-
 /// Represents the HTTP methods used in requests as constants.
 class Method {
   /// The string representation of the HTTP method.
