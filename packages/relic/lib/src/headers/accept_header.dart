@@ -16,24 +16,25 @@ class AcceptHeader {
   /// This method splits the header by commas, trims each media type, and processes
   /// the MIME types along with optional `q` values.
   factory AcceptHeader.fromHeaderValue(dynamic value) {
+    final mediaTypes = <MediaType>[];
     if (value is String) {
-      final mediaTypes = value.isEmpty
-          ? <MediaType>[]
-          : value
-              .split(',')
-              .map((part) => MediaType.parse(part.trim()))
-              .toList();
-      return AcceptHeader(mediaTypes);
-    }
-    if (value is List<String>) {
-      final mediaTypes = value
-          .where((e) => e.isNotEmpty)
-          .map((part) => MediaType.parse(part.trim()))
-          .toList();
-      return AcceptHeader(mediaTypes);
+      mediaTypes.addAll(
+        value
+            .split(',')
+            .where((e) => e.isNotEmpty)
+            .map((part) => MediaType.parse(part.trim())),
+      );
+    } else if (value is List<String>) {
+      mediaTypes.addAll(
+        value
+            .where((e) => e.isNotEmpty)
+            .map((part) => MediaType.parse(part.trim())),
+      );
+    } else {
+      throw FormatException('Invalid Accept header');
     }
 
-    throw FormatException('Invalid Accept header');
+    return AcceptHeader(mediaTypes);
   }
 
   /// Static method that attempts to parse the Accept header and returns `null` if the value is `null`.
