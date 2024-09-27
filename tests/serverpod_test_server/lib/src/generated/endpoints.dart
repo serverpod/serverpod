@@ -4561,6 +4561,50 @@ class Endpoints extends _i1.EndpointDispatch {
             params['n'],
           ),
         ),
+        'returnsListFromInputStream': _i1.MethodStreamConnector(
+          name: 'returnsListFromInputStream',
+          params: {},
+          streamParams: {
+            'numbers': _i1.StreamParameterDescription<int>(
+              name: 'numbers',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.futureType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['authenticatedTestTools']
+                      as _i34.AuthenticatedTestToolsEndpoint)
+                  .returnsListFromInputStream(
+            session,
+            streamParams['numbers']!.cast<int>(),
+          ),
+        ),
+        'intEchoStream': _i1.MethodStreamConnector(
+          name: 'intEchoStream',
+          params: {},
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<int>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['authenticatedTestTools']
+                      as _i34.AuthenticatedTestToolsEndpoint)
+                  .intEchoStream(
+            session,
+            streamParams['stream']!.cast<int>(),
+          ),
+        ),
       },
     );
     modules['serverpod_auth'] = _i47.Endpoints()..initializeEndpoints(server);

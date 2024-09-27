@@ -113,7 +113,7 @@ class ServerTestToolsGenerator {
                 Parameter(
                   (p) => p
                     ..name = parameter.name
-                    ..type = parameter.type.reference(false, config: config),
+                    ..type = parameter.type.reference(true, config: config),
                 ),
             ],
           );
@@ -133,7 +133,7 @@ class ServerTestToolsGenerator {
       (methodBuilder) => methodBuilder
         ..modifier = MethodModifier.async
         ..body = Block.of([
-          refer('var uniqueSession')
+          refer('var _localUniqueSession')
               .assign(refer('session')
                   .asA(refer('InternalTestSession', serverpodTestUrl))
                   .property('copyWith')
@@ -142,7 +142,7 @@ class ServerTestToolsGenerator {
                 'method': literalString(method.name),
               }).asA(refer('InternalTestSession', serverpodTestUrl)))
               .statement,
-          refer('var callContext')
+          refer('var _localCallContext')
               .assign(refer('_endpointDispatch')
                   .awaited
                   .property('getMethodCallContext')
@@ -151,7 +151,7 @@ class ServerTestToolsGenerator {
                   ..requiredParameters.add(
                     Parameter((p) => p..name = '_'),
                   )
-                  ..body = refer('uniqueSession')
+                  ..body = refer('_localUniqueSession')
                       .property('serverpodSession')
                       .code).closure,
                 'endpointPath': literalString(endpoint.name),
@@ -163,12 +163,12 @@ class ServerTestToolsGenerator {
                 'serializationManager': refer('_serializationManager'),
               }))
               .statement,
-          refer('callContext')
+          refer('_localCallContext')
               .property('method')
               .property('call')
               .call([
-                refer('uniqueSession').property('serverpodSession'),
-                refer('callContext').property('arguments'),
+                refer('_localUniqueSession').property('serverpodSession'),
+                refer('_localCallContext').property('arguments'),
               ])
               .asA(method.returnType.reference(true, config: config))
               .returned
@@ -198,7 +198,7 @@ class ServerTestToolsGenerator {
       (methodBuilder) => methodBuilder
         ..modifier = MethodModifier.async
         ..body = Block.of([
-          refer('var uniqueSession')
+          refer('var _localUniqueSession')
               .assign(refer('session')
                   .asA(refer('InternalTestSession', serverpodTestUrl))
                   .property('copyWith')
@@ -209,7 +209,7 @@ class ServerTestToolsGenerator {
                   .awaited
                   .asA(refer('InternalTestSession', serverpodTestUrl)))
               .statement,
-          refer('var callContext')
+          refer('var _localCallContext')
               .assign(refer('_endpointDispatch')
                   .awaited
                   .property('getMethodStreamCallContext')
@@ -218,7 +218,7 @@ class ServerTestToolsGenerator {
                   ..requiredParameters.add(
                     Parameter((p) => p..name = '_'),
                   )
-                  ..body = refer('uniqueSession')
+                  ..body = refer('_localUniqueSession')
                       .property('serverpodSession')
                       .code).closure,
                 'endpointPath': literalString(endpoint.name),
@@ -232,45 +232,65 @@ class ServerTestToolsGenerator {
                 'serializationManager': refer('_serializationManager'),
               }))
               .statement,
-          refer('callContext')
-              .property('method')
-              .property('call')
+          refer('_localTestStreamManager')
+              .property('callStreamMethod')
               .call([
-                refer('uniqueSession').property('serverpodSession'),
-                refer('callContext').property('arguments'),
+                refer('_localCallContext'),
+                refer('_localUniqueSession').property('serverpodSession'),
                 literalMap({
                   for (var parameter in streamParameters)
-                    literalString(parameter.name): refer(parameter.name),
+                    literalString(parameter.name): refer(parameter.name).code,
                 }),
               ])
-              .asA(method.returnType.reference(true, config: config))
-              .returned
+              .awaited
               .statement,
+          if (hasStreamParameter && !returnsStream)
+            refer('_localTestStreamManager')
+                .property('outputStreamController')
+                .property('stream')
+                .returned
+                .statement,
         ])
         ..returns,
     ).closure;
 
-    if (returnsStream) {
-      var streamGeneric = method.returnType.generics.first;
-      var streamControllerType = TypeReference((b) => b
-        ..symbol = 'StreamController'
-        ..url = 'dart:async'
-        ..types.add(streamGeneric.reference(true, config: config)));
+    var testStreamManagerType = TypeReference((b) {
+      var typeRef = b
+        ..symbol = 'TestStreamManager'
+        ..url = serverpodTestUrl;
+      typeRef.types.add(
+        method.returnType.generics.first.reference(true, config: config),
+      );
+    });
 
+    var streamManagerInstance = testStreamManagerType.newInstance([]);
+
+    var streamManagerDeclaration = refer('var _localTestStreamManager')
+        .assign(streamManagerInstance)
+        .statement;
+
+    if (returnsStream) {
       return Block.of([
-        refer('var streamController')
-            .assign(streamControllerType.newInstance([]))
+        streamManagerDeclaration,
+        refer('callStreamFunctionAndHandleExceptions', serverpodTestUrl).call([
+          closure,
+          refer('_localTestStreamManager').property('outputStreamController'),
+        ]).statement,
+        refer('_localTestStreamManager')
+            .property('outputStreamController')
+            .property('stream')
+            .returned
             .statement,
-        refer('callStreamFunctionAndHandleExceptions', serverpodTestUrl)
-            .call([closure, refer('streamController')]).statement,
-        refer('streamController').property('stream').returned.statement,
       ]);
     }
 
-    return refer('callAwaitableFunctionAndHandleExceptions', serverpodTestUrl)
-        .call([closure])
-        .returned
-        .statement;
+    return Block.of([
+      streamManagerDeclaration,
+      refer(
+        'callAwaitableFunctionWithStreamInputAndHandleExceptions',
+        serverpodTestUrl,
+      ).call([closure]).returned.statement,
+    ]);
   }
 
   Class _buildPublicTestEndpointsClass() {
@@ -420,6 +440,7 @@ class ServerTestToolsGenerator {
       Directive.import(endpointsPath),
       Directive.export(serverpodTestUrl, show: const [
         'TestSession',
+        'ConnectionClosedException',
         'ServerpodUnauthenticatedException',
         'ServerpodInsufficientAccessException',
         'RollbackDatabase',

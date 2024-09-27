@@ -52,6 +52,7 @@ void main() {
         matches(
             r"export\s+'package:serverpod_test/serverpod_test\.dart'\s+show\s+"
             r'TestSession,\s+'
+            r'ConnectionClosedException,\s+'
             r'ServerpodUnauthenticatedException,\s+'
             r'ServerpodInsufficientAccessException,\s+'
             r'RollbackDatabase,\s+'
@@ -480,8 +481,10 @@ void main() {
     test(
       'then the the method body contains a call to the correct exception handler function.',
       () {
-        expect(testToolsFile,
-            contains('callAwaitableFunctionAndHandleExceptions('));
+        expect(
+            testToolsFile,
+            contains(
+                'callAwaitableFunctionWithStreamInputAndHandleExceptions('));
       },
       skip: testToolsFile == null,
     );

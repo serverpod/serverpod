@@ -260,3 +260,5 @@ testTools:
 authenticatedTestTools:
   - returnsString:
   - returnsStream:
+  - returnsListFromInputStream:
+  - intEchoStream:
