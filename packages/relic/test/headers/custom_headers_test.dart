@@ -1,7 +1,7 @@
 import 'package:relic/relic.dart';
 import 'package:test/test.dart';
 
-import 'mocks/http_request_mock.dart';
+import '../mocks/http_request_mock.dart';
 
 void main() {
   group('CustomHeaders', () {
