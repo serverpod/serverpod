@@ -1,24 +1,7 @@
-# This is a workflow to deploy your Serverpod to a single machine using docker-compose. This is useful for testing and small deployments. For larger deployments, you should use the deployment-aws.yml or deployment-gcp.yml workflows.
-# To reduce the workload on the machine we do not use redis in this deployment. If you want to use redis, you need to add it to the docker-compose file and the serverpod configuration.
-# You need to setup the correct hostnames in the docker-compose-production file AND the serverpod configuration file.
-# Before deploying this workflow, you need to set up the following secrets in your repository settings:
-# PAT_GITHUB: A GitHub token with the repo scope
-# PAT_USER_GITHUB: GitHub username for the PAT
-#
-# ## Server setup ##
-# on your vps / server you need to generate a keypair and add the public key to the authorized_keys file
-## ssh-keygen -t rsa -b 4096
-## cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-# now copy the private key and add it to the secrets in the github repository
-## cat ~/.ssh/id_rsa
-# SSH_PRIVATE_KEY: The private key for the SSH connection which you just 'cat'ed
-# SSH_HOST: The host for the SSH connection -> IP or domain
-# SSH_USER: The user for the SSH connection -> often root
-
-name: Deploy to docker
+name: Deploy to Docker
 on:
   push:
-    branches: [deployment-docker-production]
+    branches: [main]
   workflow_dispatch:
     inputs:
       target:
