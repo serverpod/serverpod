@@ -96,7 +96,7 @@ services:
       - "traefik.http.routers.insights.tls.certresolver=myresolver"
       - "traefik.http.services.insights-service.loadbalancer.server.port=${SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT}"
 
-      - "traefik.http.routers.web.rule=Host=(`${SERVERPOD_WEB_SERVER_PUBLIC_HOST}`)"
+      - "traefik.http.routers.web.rule=Host(`${SERVERPOD_WEB_SERVER_PUBLIC_HOST}`)"
       - "traefik.http.routers.web.entrypoints=websecure"
       - "traefik.http.routers.web.service=web-service"
       - "traefik.http.routers.web.tls.certresolver=myresolver"
