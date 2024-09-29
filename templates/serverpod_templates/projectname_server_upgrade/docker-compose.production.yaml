@@ -88,19 +88,19 @@ services:
       - "traefik.http.routers.api.entrypoints=websecure"
       - "traefik.http.routers.api.service=api-service"
       - "traefik.http.routers.api.tls.certresolver=myresolver"
-      - "traefik.http.services.api-service.loadbalancer.server.port=${SERVERPOD_API_SERVER_PUBLIC_PORT}"
+      - "traefik.http.services.api-service.loadbalancer.server.port=${SERVERPOD_API_SERVER_PORT}"
 
       - "traefik.http.routers.insights.rule=Host(`${SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST}`)"
       - "traefik.http.routers.insights.entrypoints=websecure"
       - "traefik.http.routers.insights.service=insights-service"
       - "traefik.http.routers.insights.tls.certresolver=myresolver"
-      - "traefik.http.services.insights-service.loadbalancer.server.port=${SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT}"
+      - "traefik.http.services.insights-service.loadbalancer.server.port=${SERVERPOD_INSIGHTS_SERVER_PORT}"
 
       - "traefik.http.routers.web.rule=Host(`${SERVERPOD_WEB_SERVER_PUBLIC_HOST}`)"
       - "traefik.http.routers.web.entrypoints=websecure"
       - "traefik.http.routers.web.service=web-service"
       - "traefik.http.routers.web.tls.certresolver=myresolver"
-      - "traefik.http.services.web-service.loadbalancer.server.port=${SERVERPOD_WEB_SERVER_PUBLIC_PORT}"
+      - "traefik.http.services.web-service.loadbalancer.server.port=${SERVERPOD_WEB_SERVER_PORT}"
     depends_on:
       postgres:
         condition: service_healthy
