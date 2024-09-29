@@ -131,7 +131,7 @@ users are allowed to SSH into the server. If it doesn't exist, add it at the end
 of the file. If there are multiple users, separate them with spaces:
 
 ```text
-AllowUsers github-actions
+AllowUsers root github-actions
 ```
 
 To save and exit the file, press `Ctrl + X`, then `Y`, and finally `Enter`.
@@ -246,6 +246,13 @@ The following will configure serverpod and the database:
 | SERVERPOD_API_SERVER_PUBLIC_HOST      | The domain for the API server, this must be the same value as configured in the section [Preparing the domain](#preparing-the-domain)      |
 | SERVERPOD_WEB_SERVER_PUBLIC_HOST      | The domain for the Web server, this must be the same value as configured in the section [Preparing the domain](#preparing-the-domain)      |
 | SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST | The domain for the Insights server, this must be the same value as configured in the section [Preparing the domain](#preparing-the-domain) |
+| SERVERPOD_SERVICE_SECRET              | The same value as in your local passwords.yaml file, required to connect using the Serverpod app                                           |
+
+TODO add service secrets otherwise insights server will not work
+
+TODO explain to configure traefik certificate mail for SSL
+
+TODO add code in deployment to create letsencrypt directory with correct permissions
 
 ## Configuring the action
 
