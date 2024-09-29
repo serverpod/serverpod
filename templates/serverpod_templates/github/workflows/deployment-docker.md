@@ -22,7 +22,7 @@ the docker-compose-production file AND the serverpod configuration file.
   - [Firewall configuration](#firewall-configuration)
 - [Preparing the domain](#preparing-the-domain)
 - [Preparing the repository](#preparing-the-repository)
-  - [Getting a GitHub Personal Access Token (optional)](#getting-a-github-personal-access-token-optional)
+  - [Getting a GitHub Personal Access Token](#getting-a-github-personal-access-token)
   - [Adding the secrets to the repository](#adding-the-secrets-to-the-repository)
 - [Configuring the action](#configuring-the-action)
 - [Running the action](#running-the-action)
@@ -208,13 +208,7 @@ The full domain will be `api.your-domain.com`, `web.your-domain.com`, and `insig
 
 ## Preparing the repository
 
-### Getting a GitHub Personal Access Token (optional)
-
-If your serverpod projects has to access other repositories, i.e., to install
-private packages, you need to create a GitHub Personal Access Token (PAT) and
-add it to the repository secrets.
-
-Otherwise you can skip this step.
+### Getting a GitHub Personal Access Token
 
 Create a new Personal-Access-Token (PAT) on GitHub.
 Click on your profile picture in the top right corner, go to settings, (very
@@ -234,13 +228,13 @@ At the bottom, click on "Generate token", copy the token and save it somewhere s
 Go to your serverpod project repository, "Settings" -> "Secrets and variables"
 -> "Actions" and create the following secrets:
 
-| Secret Name     | Required | Value                                                               |
-| --------------- | -------- | ------------------------------------------------------------------- |
-| PAT_USER_GITHUB | optional | Your GitHub username here                                           |
-| PAT_GITHUB      | optional | Your GitHub PAT token here                                          |
-| SSH_HOST        | required | The IP address of your server here                                  |
-| SSH_USER        | required | The username you created on the server here, e.g., "github-actions" |
-| SSH_PRIVATE_KEY | required | The private key you generated on the server here                    |
+| Secret Name     | Value                                                               |
+| --------------- | ------------------------------------------------------------------- |
+| PAT_USER_GITHUB | Your GitHub username here                                           |
+| PAT_GITHUB      | Your GitHub PAT token here                                          |
+| SSH_HOST        | The IP address of your server here                                  |
+| SSH_USER        | The username you created on the server here, e.g., "github-actions" |
+| SSH_PRIVATE_KEY | The private key you generated on the server here                    |
 
 The following will configure serverpod and the database:
 
