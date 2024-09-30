@@ -336,7 +336,7 @@ abstract class Headers {
       ),
       range: RangeHeader.tryParse(headers[_rangeHeader]),
       referer: Uri.tryParse(headers.value(_refererHeader) ?? ''),
-      retryAfter: RetryAfterHeader.tryParse(headers.value(_retryAfterHeader)),
+      retryAfter: RetryAfterHeader.tryParse(headers[_retryAfterHeader]),
       server: ServerHeader.tryParse(headers.value(_serverHeader)),
       te: headers[_teHeader],
       trailer: headers[_trailerHeader],
