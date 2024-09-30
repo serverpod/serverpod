@@ -345,7 +345,7 @@ abstract class Headers {
       ),
       upgrade: headers[_upgradeHeader],
       userAgent: headers.value(_userAgentHeader),
-      vary: VaryHeader.tryParse(headers.value(_varyHeader)),
+      vary: VaryHeader.tryParse(headers[_varyHeader]),
       via: headers[_viaHeader],
       warning: headers[_warningHeader],
       wwwAuthenticate: headers[_wwwAuthenticateHeader],
