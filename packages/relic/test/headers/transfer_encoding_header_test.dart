@@ -8,7 +8,7 @@ void main() {
     test('TransferEncodingHeader should parse multiple transfer encodings', () {
       var headerValue = 'chunked, gzip';
       var transferEncodingHeader =
-          TransferEncodingHeader.fromHeaderValue(headerValue);
+          TransferEncodingHeader.fromHeaderValue([headerValue]);
 
       expect(transferEncodingHeader.encodings.length, equals(2));
       expect(transferEncodingHeader.encodings.contains('chunked'), isTrue);
@@ -18,14 +18,14 @@ void main() {
     test('TransferEncodingHeader should parse a single encoding', () {
       var headerValue = 'chunked';
       var transferEncodingHeader =
-          TransferEncodingHeader.fromHeaderValue(headerValue);
+          TransferEncodingHeader.fromHeaderValue([headerValue]);
 
       expect(transferEncodingHeader.encodings.length, equals(1));
       expect(transferEncodingHeader.encodings.contains('chunked'), isTrue);
     });
 
     test('TransferEncodingHeader should handle empty string as input', () {
-      var transferEncodingHeader = TransferEncodingHeader.fromHeaderValue('');
+      var transferEncodingHeader = TransferEncodingHeader.fromHeaderValue(['']);
       expect(transferEncodingHeader.encodings, isEmpty);
     });
 
@@ -38,7 +38,7 @@ void main() {
     test('TransferEncodingHeader should contain a specific encoding', () {
       var headerValue = 'chunked, gzip';
       var transferEncodingHeader =
-          TransferEncodingHeader.fromHeaderValue(headerValue);
+          TransferEncodingHeader.fromHeaderValue([headerValue]);
 
       expect(transferEncodingHeader.containsEncoding('chunked'), isTrue);
       expect(transferEncodingHeader.containsEncoding('deflate'), isFalse);

@@ -20,15 +20,7 @@ class RangeHeader {
   /// Parses the Range header value and returns a [RangeHeader] instance.
   ///
   /// This method processes the range header and extracts the byte range.
-  factory RangeHeader.fromHeaderValue(dynamic value) {
-    if (value is String) {
-      value = value;
-    } else if (value is List<String>) {
-      value = value.first;
-    } else {
-      throw FormatException('Invalid Range header format');
-    }
-
+  factory RangeHeader.fromHeaderValue(String value) {
     final regex = RegExp(r'bytes=(\d*)-(\d*)');
     final match = regex.firstMatch(value);
 
@@ -45,9 +37,10 @@ class RangeHeader {
   }
 
   /// Static method that attempts to parse the Range header and returns `null` if the value is `null`.
-  static RangeHeader? tryParse(dynamic value) {
-    if (value == null) return null;
-    return RangeHeader.fromHeaderValue(value);
+  static RangeHeader? tryParse(List<String>? value) {
+    final first = value?.firstOrNull;
+    if (first == null) return null;
+    return RangeHeader.fromHeaderValue(first);
   }
 
   /// Converts the [RangeHeader] instance into a string representation suitable for HTTP headers.

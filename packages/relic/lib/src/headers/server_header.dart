@@ -21,15 +21,7 @@ class ServerHeader {
   ///
   /// This method splits the header value by the forward slash (`/`) to extract
   /// the server name and version if provided.
-  factory ServerHeader.fromHeaderValue(dynamic value) {
-    if (value is String) {
-      value = value;
-    } else if (value is List<String>) {
-      value = value.first;
-    } else {
-      throw FormatException('Invalid Server header format');
-    }
-
+  factory ServerHeader.fromHeaderValue(String value) {
     final parts = value.split('/');
     final name = parts[0].trim();
     final version = parts.length > 1 ? parts[1].trim() : null;
@@ -38,9 +30,10 @@ class ServerHeader {
   }
 
   /// Static method that attempts to parse the Server header and returns `null` if the value is `null`.
-  static ServerHeader? tryParse(dynamic value) {
-    if (value == null) return null;
-    return ServerHeader.fromHeaderValue(value);
+  static ServerHeader? tryParse(List<String>? value) {
+    final first = value?.firstOrNull;
+    if (first == null) return null;
+    return ServerHeader.fromHeaderValue(first);
   }
 
   /// Converts the [ServerHeader] instance into a string representation suitable for HTTP headers.

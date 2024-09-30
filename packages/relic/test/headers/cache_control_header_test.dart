@@ -7,7 +7,7 @@ void main() {
   group('CacheControlHeader Class Tests', () {
     test('CacheControlHeader should parse valid header values correctly', () {
       var headerValue = 'no-cache, no-store, max-age=3600';
-      var cacheControlHeader = CacheControlHeader.fromHeaderValue(headerValue);
+      var cacheControlHeader = CacheControlHeader.fromHeaderValue([headerValue]);
 
       expect(cacheControlHeader.noCache, isTrue);
       expect(cacheControlHeader.noStore, isTrue);
@@ -19,7 +19,7 @@ void main() {
         'CacheControlHeader should handle max-age and stale-while-revalidate values',
         () {
       var headerValue = 'max-age=600, stale-while-revalidate=120';
-      var cacheControlHeader = CacheControlHeader.fromHeaderValue(headerValue);
+      var cacheControlHeader = CacheControlHeader.fromHeaderValue([headerValue]);
 
       expect(cacheControlHeader.maxAge, equals(600));
       expect(cacheControlHeader.staleWhileRevalidate, equals(120));
@@ -31,7 +31,7 @@ void main() {
         'CacheControlHeader should parse public and private caching directives',
         () {
       var headerValue = 'public, private';
-      var cacheControlHeader = CacheControlHeader.fromHeaderValue(headerValue);
+      var cacheControlHeader = CacheControlHeader.fromHeaderValue([headerValue]);
 
       expect(cacheControlHeader.publicCache, isTrue);
       expect(cacheControlHeader.privateCache, isTrue);
@@ -47,7 +47,7 @@ void main() {
     });
 
     test('CacheControlHeader should handle an empty string as input', () {
-      var cacheControlHeader = CacheControlHeader.fromHeaderValue('');
+      var cacheControlHeader = CacheControlHeader.fromHeaderValue(['']);
       expect(cacheControlHeader.noCache, isFalse);
       expect(cacheControlHeader.noStore, isFalse);
       expect(cacheControlHeader.maxAge, isNull);

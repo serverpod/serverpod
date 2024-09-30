@@ -37,23 +37,14 @@ class CacheControlHeader {
   ///
   /// This method splits the header value by commas, trims each directive, and processes
   /// common cache directives like `no-cache`, `no-store`, `max-age`, etc.
-  factory CacheControlHeader.fromHeaderValue(dynamic value) {
-    final directives = [];
-    if (value is String) {
-      directives.addAll(value.split(',').map((directive) => directive.trim()));
-    } else if (value is List<String>) {
-      directives.addAll(
-        value.fold(
-          [],
-          (a, b) => [
-            ...a,
-            ...b.split(',').map((directive) => directive.trim()),
-          ],
-        ),
-      );
-    } else {
-      throw FormatException('Invalid Cache Control header');
-    }
+  factory CacheControlHeader.fromHeaderValue(List<String> value) {
+    final directives = value.fold(
+      [],
+      (a, b) => [
+        ...a,
+        ...b.split(',').map((directive) => directive.trim()),
+      ],
+    );
 
     bool noCache = directives.contains('no-cache');
     bool noStore = directives.contains('no-store');
@@ -83,7 +74,7 @@ class CacheControlHeader {
   /// Static method that attempts to parse the Cache-Control header value and returns `null` if the value is `null`.
   ///
   /// This method safely parses the Cache-Control header value or returns `null` if the input is invalid or `null`.
-  static CacheControlHeader? tryParse(dynamic value) {
+  static CacheControlHeader? tryParse(List<String>? value) {
     if (value == null) return null;
     return CacheControlHeader.fromHeaderValue(value);
   }

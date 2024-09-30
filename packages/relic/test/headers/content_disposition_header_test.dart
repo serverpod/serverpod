@@ -10,7 +10,7 @@ void main() {
         () {
       var headerValue = 'inline';
       var contentDispositionHeader =
-          ContentDispositionHeader.fromHeaderValue(headerValue);
+          ContentDispositionHeader.fromHeaderValue([headerValue]);
 
       expect(contentDispositionHeader.type, equals('inline'));
       expect(contentDispositionHeader.filename, isNull);
@@ -21,7 +21,7 @@ void main() {
         () {
       var headerValue = 'attachment; filename="file.txt"';
       var contentDispositionHeader =
-          ContentDispositionHeader.fromHeaderValue(headerValue);
+          ContentDispositionHeader.fromHeaderValue([headerValue]);
 
       expect(contentDispositionHeader.type, equals('attachment'));
       expect(contentDispositionHeader.filename, equals('file.txt'));
@@ -32,7 +32,7 @@ void main() {
         () {
       var headerValue = 'attachment; filename="my file with spaces.txt"';
       var contentDispositionHeader =
-          ContentDispositionHeader.fromHeaderValue(headerValue);
+          ContentDispositionHeader.fromHeaderValue([headerValue]);
 
       expect(contentDispositionHeader.type, equals('attachment'));
       expect(

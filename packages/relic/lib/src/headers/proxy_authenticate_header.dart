@@ -16,36 +16,23 @@ class ProxyAuthenticateHeader {
   /// Parses the Proxy-Authenticate header value and returns a [ProxyAuthenticateHeader] instance.
   ///
   /// This method splits the value by commas and trims each authentication scheme.
-  factory ProxyAuthenticateHeader.fromHeaderValue(dynamic value) {
-    final schemes = <String>[];
-
-    if (value is String) {
-      schemes.addAll(
-        value
+  factory ProxyAuthenticateHeader.fromHeaderValue(List<String> value) {
+    final schemes = value.fold(
+      <String>[],
+      (a, b) => <String>[
+        ...a,
+        ...b
             .split(',')
             .where((schemes) => schemes.isNotEmpty)
-            .map((scheme) => scheme.trim()),
-      );
-    } else if (value is List<String>) {
-      schemes.addAll(
-        value.fold(
-          [],
-          (a, b) => [
-            ...a,
-            ...b
-                .split(',')
-                .where((schemes) => schemes.isNotEmpty)
-                .map((schemes) => schemes.trim()),
-          ],
-        ),
-      );
-    }
+            .map((schemes) => schemes.trim()),
+      ],
+    ).toList();
 
     return ProxyAuthenticateHeader(schemes: schemes);
   }
 
   /// Static method that attempts to parse the Proxy-Authenticate header and returns `null` if the value is `null`.
-  static ProxyAuthenticateHeader? tryParse(dynamic value) {
+  static ProxyAuthenticateHeader? tryParse(List<String>? value) {
     if (value == null) return null;
     return ProxyAuthenticateHeader.fromHeaderValue(value);
   }

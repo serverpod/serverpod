@@ -7,7 +7,7 @@ void main() {
   group('AcceptHeader Class Tests', () {
     test('AcceptHeader should parse valid header values correctly', () {
       var headerValue = 'text/html, application/json';
-      var acceptHeader = AcceptHeader.fromHeaderValue(headerValue);
+      var acceptHeader = AcceptHeader.fromHeaderValue([headerValue]);
 
       expect(acceptHeader.mediaTypes.length, equals(2));
       expect(acceptHeader.mediaTypes[0].mimeType, equals('text/html'));
@@ -16,7 +16,7 @@ void main() {
 
     test('AcceptHeader should handle MIME types with quality values (q)', () {
       var headerValue = 'text/html; q=0.8, application/json; q=0.9';
-      var acceptHeader = AcceptHeader.fromHeaderValue(headerValue);
+      var acceptHeader = AcceptHeader.fromHeaderValue([headerValue]);
 
       expect(acceptHeader.mediaTypes.length, equals(2));
       expect(acceptHeader.mediaTypes[0].mimeType, equals('text/html'));
@@ -32,14 +32,14 @@ void main() {
     });
 
     test('AcceptHeader should handle an empty string as input', () {
-      var acceptHeader = AcceptHeader.fromHeaderValue('');
+      var acceptHeader = AcceptHeader.fromHeaderValue(['']);
       expect(acceptHeader.mediaTypes, isEmpty);
     });
 
     test('AcceptHeader should return valid string representation of header',
         () {
       var headerValue = 'text/html, application/json';
-      var acceptHeader = AcceptHeader.fromHeaderValue(headerValue);
+      var acceptHeader = AcceptHeader.fromHeaderValue([headerValue]);
       var result = acceptHeader.toString();
 
       expect(result, equals('text/html, application/json'));
@@ -48,7 +48,7 @@ void main() {
     test('AcceptHeader should handle complex MIME types with parameters', () {
       var headerValue =
           'text/html; charset=utf-8, application/json; version=1.0';
-      var acceptHeader = AcceptHeader.fromHeaderValue(headerValue);
+      var acceptHeader = AcceptHeader.fromHeaderValue([headerValue]);
 
       expect(acceptHeader.mediaTypes.length, equals(2));
       expect(acceptHeader.mediaTypes[0].mimeType, equals('text/html'));

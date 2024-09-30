@@ -21,15 +21,7 @@ class RetryAfterHeader {
   /// Parses the Retry-After header value and returns a [RetryAfterHeader] instance.
   ///
   /// This method checks if the value is an integer (for delay) or a date string.
-  factory RetryAfterHeader.fromHeaderValue(dynamic value) {
-    if (value is String) {
-      value = value;
-    } else if (value is List<String>) {
-      value = value.first;
-    } else {
-      throw FormatException('Invalid Retry After header format');
-    }
-
+  factory RetryAfterHeader.fromHeaderValue(String value) {
     final delay = int.tryParse(value);
     if (delay != null) {
       return RetryAfterHeader(delay: delay);
@@ -40,9 +32,10 @@ class RetryAfterHeader {
   }
 
   /// Static method that attempts to parse the Retry-After header and returns `null` if the value is `null`.
-  static RetryAfterHeader? tryParse(dynamic value) {
-    if (value == null) return null;
-    return RetryAfterHeader.fromHeaderValue(value);
+  static RetryAfterHeader? tryParse(List<String>? value) {
+    final first = value?.firstOrNull;
+    if (first == null) return null;
+    return RetryAfterHeader.fromHeaderValue(first);
   }
 
   /// Converts the [RetryAfterHeader] instance into a string representation suitable for HTTP headers.

@@ -17,37 +17,23 @@ class ConnectionHeader {
   /// Parses the Connection header value and returns a [ConnectionHeader] instance.
   ///
   /// This method splits the value by commas and trims each directive.
-  factory ConnectionHeader.fromHeaderValue(dynamic value) {
-    final directives = <String>[];
-    if (value is String) {
-      directives.addAll(
-        value
-            .split(',')
-            .where((e) => e.isNotEmpty)
-            .map((directive) => directive.trim()),
-      );
-    } else if (value is List<String>) {
-      directives.addAll(
-        value.fold(
-          [],
+  factory ConnectionHeader.fromHeaderValue(List<String> value) {
+    final directives = value
+        .fold(
+          <String>[],
           (a, b) => [
             ...a,
-            ...b
-                .split(',')
-                .where((directive) => directive.isNotEmpty)
-                .map((directive) => directive.trim()),
+            ...b.split(',').map((directive) => directive.trim()),
           ],
-        ),
-      );
-    } else {
-      throw FormatException('Invalid Connection header format');
-    }
+        )
+        .where((e) => e.isNotEmpty)
+        .toList();
 
     return ConnectionHeader(directives: directives);
   }
 
   /// Static method that attempts to parse the Connection header and returns `null` if the value is `null`.
-  static ConnectionHeader? tryParse(dynamic value) {
+  static ConnectionHeader? tryParse(List<String>? value) {
     if (value == null) return null;
     return ConnectionHeader.fromHeaderValue(value);
   }

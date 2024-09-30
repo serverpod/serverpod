@@ -16,36 +16,23 @@ class TransferEncodingHeader {
   /// Parses the Transfer-Encoding header value and returns a [TransferEncodingHeader] instance.
   ///
   /// This method splits the value by commas and trims each encoding.
-  factory TransferEncodingHeader.fromHeaderValue(dynamic value) {
-    final encodings = <String>[];
-
-    if (value is String) {
-      encodings.addAll(
-        value
+  factory TransferEncodingHeader.fromHeaderValue(List<String> value) {
+    final encodings = value.fold(
+      <String>[],
+      (a, b) => <String>[
+        ...a,
+        ...b
             .split(',')
             .where((encoding) => encoding.isNotEmpty)
             .map((encoding) => encoding.trim()),
-      );
-    } else if (value is List<String>) {
-      encodings.addAll(
-        value.fold(
-          [],
-          (a, b) => [
-            ...a,
-            ...b
-                .split(',')
-                .where((encoding) => encoding.isNotEmpty)
-                .map((encoding) => encoding.trim()),
-          ],
-        ),
-      );
-    }
+      ],
+    ).toList();
 
     return TransferEncodingHeader(encodings: encodings);
   }
 
   /// Static method that attempts to parse the Transfer-Encoding header and returns `null` if the value is `null`.
-  static TransferEncodingHeader? tryParse(dynamic value) {
+  static TransferEncodingHeader? tryParse(List<String>? value) {
     if (value == null) return null;
     return TransferEncodingHeader.fromHeaderValue(value);
   }

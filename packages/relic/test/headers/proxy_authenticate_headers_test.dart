@@ -9,7 +9,7 @@ void main() {
         () {
       var headerValue = 'Basic';
       var proxyAuthenticateHeader =
-          ProxyAuthenticateHeader.fromHeaderValue(headerValue);
+          ProxyAuthenticateHeader.fromHeaderValue([headerValue]);
 
       expect(proxyAuthenticateHeader.schemes.length, equals(1));
       expect(proxyAuthenticateHeader.schemes.contains('Basic'), isTrue);
@@ -19,7 +19,7 @@ void main() {
         () {
       var headerValue = 'Basic, Digest, Bearer';
       var proxyAuthenticateHeader =
-          ProxyAuthenticateHeader.fromHeaderValue(headerValue);
+          ProxyAuthenticateHeader.fromHeaderValue([headerValue]);
 
       expect(proxyAuthenticateHeader.schemes.length, equals(3));
       expect(proxyAuthenticateHeader.schemes.contains('Basic'), isTrue);
@@ -28,7 +28,7 @@ void main() {
     });
 
     test('ProxyAuthenticateHeader should handle empty string as input', () {
-      var proxyAuthenticateHeader = ProxyAuthenticateHeader.fromHeaderValue('');
+      var proxyAuthenticateHeader = ProxyAuthenticateHeader.fromHeaderValue(['']);
       expect(proxyAuthenticateHeader.schemes, isEmpty);
     });
 
@@ -43,7 +43,7 @@ void main() {
         () {
       var headerValue = 'Basic, Bearer';
       var proxyAuthenticateHeader =
-          ProxyAuthenticateHeader.fromHeaderValue(headerValue);
+          ProxyAuthenticateHeader.fromHeaderValue([headerValue]);
 
       expect(proxyAuthenticateHeader.containsScheme('Bearer'), isTrue);
       expect(proxyAuthenticateHeader.containsScheme('Digest'), isFalse);

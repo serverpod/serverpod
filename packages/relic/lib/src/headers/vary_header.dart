@@ -16,30 +16,18 @@ class VaryHeader {
   /// Parses the Vary header value and returns a [VaryHeader] instance.
   ///
   /// This method splits the value by commas and trims each field.
-  factory VaryHeader.fromHeaderValue(dynamic value) {
-    final fields = <String>[];
-
-    if (value is String) {
-      fields.addAll(
-        value
+  factory VaryHeader.fromHeaderValue(List<String> value) {
+    final fields = value.fold(
+      <String>[],
+      (a, b) => <String>[
+        ...a,
+        ...b
             .split(',')
             .where((field) => field.isNotEmpty)
             .map((field) => field.trim()),
-      );
-    } else if (value is List<String>) {
-      fields.addAll(
-        value.fold(
-          [],
-          (a, b) => [
-            ...a,
-            ...b
-                .split(',')
-                .where((field) => field.isNotEmpty)
-                .map((field) => field.trim()),
-          ],
-        ),
-      );
-    }
+      ],
+    ).toList();
+
     return VaryHeader(fields: fields);
   }
 

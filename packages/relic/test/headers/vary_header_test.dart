@@ -7,7 +7,7 @@ void main() {
   group('VaryHeader Class Tests', () {
     test('VaryHeader should parse multiple vary fields', () {
       var headerValue = 'Accept-Encoding, User-Agent';
-      var varyHeader = VaryHeader.fromHeaderValue(headerValue);
+      var varyHeader = VaryHeader.fromHeaderValue([headerValue]);
 
       expect(varyHeader.fields.length, equals(2));
       expect(varyHeader.fields.contains('Accept-Encoding'), isTrue);
@@ -16,14 +16,14 @@ void main() {
 
     test('VaryHeader should parse a single vary field', () {
       var headerValue = 'Accept-Encoding';
-      var varyHeader = VaryHeader.fromHeaderValue(headerValue);
+      var varyHeader = VaryHeader.fromHeaderValue([headerValue]);
 
       expect(varyHeader.fields.length, equals(1));
       expect(varyHeader.fields.contains('Accept-Encoding'), isTrue);
     });
 
     test('VaryHeader should handle empty string as input', () {
-      var varyHeader = VaryHeader.fromHeaderValue('');
+      var varyHeader = VaryHeader.fromHeaderValue(['']);
       expect(varyHeader.fields, isEmpty);
     });
 
@@ -34,7 +34,7 @@ void main() {
 
     test('VaryHeader should add a new field if not already present', () {
       var headerValue = 'Accept-Encoding';
-      var varyHeader = VaryHeader.fromHeaderValue(headerValue);
+      var varyHeader = VaryHeader.fromHeaderValue([headerValue]);
 
       var updatedVaryHeader = varyHeader.addField('User-Agent');
       expect(updatedVaryHeader.fields.length, equals(2));
@@ -43,7 +43,7 @@ void main() {
 
     test('VaryHeader should not add a duplicate field', () {
       var headerValue = 'Accept-Encoding';
-      var varyHeader = VaryHeader.fromHeaderValue(headerValue);
+      var varyHeader = VaryHeader.fromHeaderValue([headerValue]);
 
       var updatedVaryHeader = varyHeader.addField('Accept-Encoding');
       expect(updatedVaryHeader.fields.length, equals(1));
@@ -51,7 +51,7 @@ void main() {
 
     test('VaryHeader should remove a field', () {
       var headerValue = 'Accept-Encoding, User-Agent';
-      var varyHeader = VaryHeader.fromHeaderValue(headerValue);
+      var varyHeader = VaryHeader.fromHeaderValue([headerValue]);
 
       var updatedVaryHeader = varyHeader.removeField('User-Agent');
       expect(updatedVaryHeader.fields.length, equals(1));
@@ -60,7 +60,7 @@ void main() {
 
     test('VaryHeader should contain a specific field', () {
       var headerValue = 'Accept-Encoding, User-Agent';
-      var varyHeader = VaryHeader.fromHeaderValue(headerValue);
+      var varyHeader = VaryHeader.fromHeaderValue([headerValue]);
 
       expect(varyHeader.containsField('User-Agent'), isTrue);
       expect(varyHeader.containsField('Authorization'), isFalse);

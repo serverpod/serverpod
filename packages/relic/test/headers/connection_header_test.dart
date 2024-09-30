@@ -9,7 +9,7 @@ void main() {
         'ConnectionHeader should parse valid Connection header with single directive',
         () {
       var headerValue = 'keep-alive';
-      var connectionHeader = ConnectionHeader.fromHeaderValue(headerValue);
+      var connectionHeader = ConnectionHeader.fromHeaderValue([headerValue]);
 
       expect(connectionHeader.directives.length, equals(1));
       expect(connectionHeader.isKeepAlive, isTrue);
@@ -18,7 +18,7 @@ void main() {
 
     test('ConnectionHeader should parse multiple connection directives', () {
       var headerValue = 'upgrade, keep-alive';
-      var connectionHeader = ConnectionHeader.fromHeaderValue(headerValue);
+      var connectionHeader = ConnectionHeader.fromHeaderValue([headerValue]);
 
       expect(connectionHeader.directives.length, equals(2));
       expect(connectionHeader.isKeepAlive, isTrue);
@@ -28,7 +28,7 @@ void main() {
 
     test('ConnectionHeader should handle `close` directive', () {
       var headerValue = 'close';
-      var connectionHeader = ConnectionHeader.fromHeaderValue(headerValue);
+      var connectionHeader = ConnectionHeader.fromHeaderValue([headerValue]);
 
       expect(connectionHeader.directives.length, equals(1));
       expect(connectionHeader.isClose, isTrue);
@@ -36,7 +36,7 @@ void main() {
     });
 
     test('ConnectionHeader should handle empty string as input', () {
-      var connectionHeader = ConnectionHeader.fromHeaderValue('');
+      var connectionHeader = ConnectionHeader.fromHeaderValue(['']);
       expect(connectionHeader.directives, isEmpty);
     });
 
