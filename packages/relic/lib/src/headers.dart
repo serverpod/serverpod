@@ -329,7 +329,7 @@ abstract class Headers {
       maxForwards: int.tryParse(headers.value(_maxForwardsHeader) ?? ''),
       mPragma: headers.value(_pragmaHeader),
       proxyAuthenticate: ProxyAuthenticateHeader.tryParse(
-        headers.value(_proxyAuthenticateHeader),
+        headers[_proxyAuthenticateHeader],
       ),
       proxyAuthorization: ProxyAuthorizationHeader._tryParseHttpHeaders(
         headers,
