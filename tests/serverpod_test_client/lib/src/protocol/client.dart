@@ -1361,6 +1361,117 @@ class EndpointMapParameters extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointMethodSignaturePermutations extends _i1.EndpointRef {
+  EndpointMethodSignaturePermutations(_i1.EndpointCaller caller)
+      : super(caller);
+
+  @override
+  String get name => 'methodSignaturePermutations';
+
+  _i2.Future<String> echoPositionalArg(String string) =>
+      caller.callServerEndpoint<String>(
+        'methodSignaturePermutations',
+        'echoPositionalArg',
+        {'string': string},
+      );
+
+  _i2.Future<String> echoNamedArg({required String string}) =>
+      caller.callServerEndpoint<String>(
+        'methodSignaturePermutations',
+        'echoNamedArg',
+        {'string': string},
+      );
+
+  _i2.Future<String?> echoNullableNamedArg({String? string}) =>
+      caller.callServerEndpoint<String?>(
+        'methodSignaturePermutations',
+        'echoNullableNamedArg',
+        {'string': string},
+      );
+
+  _i2.Future<String?> echoOptionalArg([String? string]) =>
+      caller.callServerEndpoint<String?>(
+        'methodSignaturePermutations',
+        'echoOptionalArg',
+        {'string': string},
+      );
+
+  _i2.Future<List<String?>> echoPositionalAndNamedArgs(
+    String string1, {
+    required String string2,
+  }) =>
+      caller.callServerEndpoint<List<String?>>(
+        'methodSignaturePermutations',
+        'echoPositionalAndNamedArgs',
+        {
+          'string1': string1,
+          'string2': string2,
+        },
+      );
+
+  _i2.Future<List<String?>> echoPositionalAndNullableNamedArgs(
+    String string1, {
+    String? string2,
+  }) =>
+      caller.callServerEndpoint<List<String?>>(
+        'methodSignaturePermutations',
+        'echoPositionalAndNullableNamedArgs',
+        {
+          'string1': string1,
+          'string2': string2,
+        },
+      );
+
+  _i2.Future<List<String?>> echoPositionalAndOptionalArgs(
+    String string1, [
+    String? string2,
+  ]) =>
+      caller.callServerEndpoint<List<String?>>(
+        'methodSignaturePermutations',
+        'echoPositionalAndOptionalArgs',
+        {
+          'string1': string1,
+          'string2': string2,
+        },
+      );
+
+  _i2.Stream<String> echoNamedArgStream(
+          {required _i2.Stream<String> strings}) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<String>, String>(
+        'methodSignaturePermutations',
+        'echoNamedArgStream',
+        {},
+        {'strings': strings},
+      );
+
+  _i2.Future<String> echoNamedArgStreamAsFuture(
+          {required _i2.Stream<String> strings}) =>
+      caller.callStreamingServerEndpoint<_i2.Future<String>, String>(
+        'methodSignaturePermutations',
+        'echoNamedArgStreamAsFuture',
+        {},
+        {'strings': strings},
+      );
+
+  _i2.Stream<String> echoPositionalArgStream(_i2.Stream<String> strings) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<String>, String>(
+        'methodSignaturePermutations',
+        'echoPositionalArgStream',
+        {},
+        {'strings': strings},
+      );
+
+  _i2.Future<String> echoPositionalArgStreamAsFuture(
+          _i2.Stream<String> strings) =>
+      caller.callStreamingServerEndpoint<_i2.Future<String>, String>(
+        'methodSignaturePermutations',
+        'echoPositionalArgStreamAsFuture',
+        {},
+        {'strings': strings},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointMethodStreaming extends _i1.EndpointRef {
   EndpointMethodStreaming(_i1.EndpointCaller caller) : super(caller);
 
@@ -2199,6 +2310,7 @@ class Client extends _i1.ServerpodClientShared {
     streamQueryLogging = EndpointStreamQueryLogging(this);
     loggingDisabled = EndpointLoggingDisabled(this);
     mapParameters = EndpointMapParameters(this);
+    methodSignaturePermutations = EndpointMethodSignaturePermutations(this);
     methodStreaming = EndpointMethodStreaming(this);
     authenticatedMethodStreaming = EndpointAuthenticatedMethodStreaming(this);
     moduleSerialization = EndpointModuleSerialization(this);
@@ -2262,6 +2374,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointMapParameters mapParameters;
 
+  late final EndpointMethodSignaturePermutations methodSignaturePermutations;
+
   late final EndpointMethodStreaming methodStreaming;
 
   late final EndpointAuthenticatedMethodStreaming authenticatedMethodStreaming;
@@ -2320,6 +2434,7 @@ class Client extends _i1.ServerpodClientShared {
         'streamQueryLogging': streamQueryLogging,
         'loggingDisabled': loggingDisabled,
         'mapParameters': mapParameters,
+        'methodSignaturePermutations': methodSignaturePermutations,
         'methodStreaming': methodStreaming,
         'authenticatedMethodStreaming': authenticatedMethodStreaming,
         'moduleSerialization': moduleSerialization,

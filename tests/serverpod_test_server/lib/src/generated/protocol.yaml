@@ -167,6 +167,18 @@ mapParameters:
   - returnNullableSimpleDataMapNullableSimpleData:
   - returnDurationMap:
   - returnDurationMapNullableDurations:
+methodSignaturePermutations:
+  - echoPositionalArg:
+  - echoNamedArg:
+  - echoNullableNamedArg:
+  - echoOptionalArg:
+  - echoPositionalAndNamedArgs:
+  - echoPositionalAndNullableNamedArgs:
+  - echoPositionalAndOptionalArgs:
+  - echoNamedArgStream:
+  - echoNamedArgStreamAsFuture:
+  - echoPositionalArgStream:
+  - echoPositionalArgStreamAsFuture:
 methodStreaming:
   - simpleStream:
   - neverEndingStreamWithDelay:

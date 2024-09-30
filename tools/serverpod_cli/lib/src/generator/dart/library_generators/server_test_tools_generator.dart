@@ -96,7 +96,7 @@ class ServerTestToolsGenerator {
       (methodBuilder) {
         bool returnsStream = method.returnType.isStreamType;
         bool hasStreamParameter =
-            method.parameters.any((p) => p.type.isStreamType);
+            method.allParameters.any((p) => p.type.isStreamType);
 
         methodBuilder
           ..name = method.name
@@ -110,10 +110,27 @@ class ServerTestToolsGenerator {
                   ..type = refer('TestSession', serverpodTestUrl),
               ),
               for (var parameter in method.parameters)
+                Parameter((p) => p
+                  ..name = parameter.name
+                  ..type = parameter.type.reference(true, config: config)),
+            ],
+          )
+          ..optionalParameters.addAll(
+            [
+              for (var parameter in method.parametersPositional)
                 Parameter(
                   (p) => p
                     ..name = parameter.name
-                    ..type = parameter.type.reference(true, config: config),
+                    ..type = parameter.type.reference(true, config: config)
+                    ..named = false,
+                ),
+              for (var parameter in method.parametersNamed)
+                Parameter(
+                  (p) => p
+                    ..name = parameter.name
+                    ..type = parameter.type.reference(true, config: config)
+                    ..named = true
+                    ..required = parameter.required,
                 ),
             ],
           );
@@ -157,7 +174,7 @@ class ServerTestToolsGenerator {
                 'endpointPath': literalString(endpoint.name),
                 'methodName': literalString(method.name),
                 'parameters': literalMap({
-                  for (var parameter in method.parameters)
+                  for (var parameter in method.allParameters)
                     literalString(parameter.name): refer(parameter.name).code,
                 }),
                 'serializationManager': refer('_serializationManager'),
@@ -190,9 +207,9 @@ class ServerTestToolsGenerator {
     required returnsStream,
   }) {
     var parameters =
-        method.parameters.where((p) => !p.type.isStreamType).toList();
+        method.allParameters.where((p) => !p.type.isStreamType).toList();
     var streamParameters =
-        method.parameters.where((p) => p.type.isStreamType).toList();
+        method.allParameters.where((p) => p.type.isStreamType).toList();
 
     var closure = Method(
       (methodBuilder) => methodBuilder

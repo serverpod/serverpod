@@ -58,6 +58,12 @@ abstract base class MethodDefinition {
   /// The named parameters of this method.
   final List<ParameterDefinition> parametersNamed;
 
+  List<ParameterDefinition> get allParameters => [
+        ...parameters,
+        ...parametersPositional,
+        ...parametersNamed,
+      ];
+
   const MethodDefinition({
     required this.name,
     required this.documentationComment,
