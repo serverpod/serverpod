@@ -306,7 +306,7 @@ abstract class Headers {
           .nonNulls
           .toList(),
       contentDisposition: ContentDispositionHeader.tryParse(
-        headers.value(_contentDispositionHeader),
+        headers[_contentDispositionHeader],
       ),
       cacheControl: CacheControlHeader.tryParse(
         headers[_cacheControlHeader],

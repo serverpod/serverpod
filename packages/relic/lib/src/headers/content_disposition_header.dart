@@ -21,8 +21,32 @@ class ContentDispositionHeader {
   /// Parses the Content-Disposition header value and returns a [ContentDispositionHeader] instance.
   ///
   /// This method splits the header by `;` and processes the type and filename.
-  factory ContentDispositionHeader.fromHeaderValue(String value) {
-    final parts = value.split(';').map((part) => part.trim()).toList();
+  factory ContentDispositionHeader.fromHeaderValue(dynamic value) {
+    final parts = <String>[];
+    if (value is String) {
+      parts.addAll(value
+          .split(';')
+          .where((part) => part.isNotEmpty)
+          .map((part) => part.trim()));
+    } else if (value is List<String>) {
+      parts.addAll(
+        value.fold(
+          [],
+          (a, b) => [
+            ...a,
+            ...b
+                .split(';')
+                .where((part) => part.isNotEmpty)
+                .map((part) => part.trim()),
+          ],
+        ),
+      );
+    }
+
+    if (parts.isEmpty) {
+      throw FormatException('Invalid Content Disposition header');
+    }
+
     final type = parts.first;
     String? filename;
 
@@ -38,7 +62,7 @@ class ContentDispositionHeader {
   }
 
   /// Static method that attempts to parse the Content-Disposition header and returns `null` if the value is `null`.
-  static ContentDispositionHeader? tryParse(String? value) {
+  static ContentDispositionHeader? tryParse(dynamic value) {
     if (value == null) return null;
     return ContentDispositionHeader.fromHeaderValue(value);
   }
