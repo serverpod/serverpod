@@ -3,11 +3,12 @@ import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:http_parser/http_parser.dart';
+import 'package:relic/src/headers/extension/http_headers_extension.dart';
 import 'package:relic/src/method/method.dart';
 
 import 'body.dart';
 
-part 'headers/util/authorization_util.dart';
+part 'headers/util/headers_util.dart';
 part 'headers/custom_headers.dart';
 part 'headers/authorization_header.dart';
 part 'headers/proxy_authorization_header.dart';
@@ -277,78 +278,78 @@ abstract class Headers {
       date: headers.date,
       expires: headers.expires,
       ifModifiedSince: headers.ifModifiedSince,
-      lastModified: headers.value(_lastModifiedHeader) != null
-          ? parseHttpDate(headers.value(_lastModifiedHeader)!)
+      lastModified: headers.getValue(_lastModifiedHeader) != null
+          ? parseHttpDate(headers.getValue(_lastModifiedHeader)!)
           : null,
-      from: headers.value(_fromHeader),
+      from: headers.getValue(_fromHeader),
       host: headers.host,
       port: headers.port,
-      accept: AcceptHeader.tryParse(headers[_acceptHeader]),
-      acceptCharset: headers[_acceptCharsetHeader],
-      acceptEncoding: headers[_acceptEncodingHeader],
-      acceptLanguage: headers[_acceptLanguageHeader],
-      acceptRanges: headers[_acceptRangesHeader],
+      accept: AcceptHeader.tryParse(headers.getValue(_acceptHeader)),
+      acceptCharset: headers.getValue(_acceptCharsetHeader),
+      acceptEncoding: headers.getValue(_acceptEncodingHeader),
+      acceptLanguage: headers.getValue(_acceptLanguageHeader),
+      acceptRanges: headers.getValue(_acceptRangesHeader),
       accessControlAllowCredentials: bool.tryParse(
-        headers.value(_accessControlAllowCredentialsHeader) ?? '',
+        headers.getValue(_accessControlAllowCredentialsHeader) ?? '',
       ),
-      accessControlAllowOrigin: headers.value(_accessControlAllowOriginHeader),
-      accessControlExposeHeaders: headers[_accessControlExposeHeadersHeader],
+      accessControlAllowOrigin: headers.getValue(_accessControlAllowOriginHeader),
+      accessControlExposeHeaders: headers.getValue(_accessControlExposeHeadersHeader),
       accessControlMaxAge: int.tryParse(
-        headers.value(_accessControlMaxAgeHeader) ?? '',
+        headers.getValue(_accessControlMaxAgeHeader) ?? '',
       ),
-      accessControlRequestHeaders: headers[_accessControlRequestHeadersHeader],
+      accessControlRequestHeaders: headers.getValue(_accessControlRequestHeadersHeader),
       accessControlRequestMethod: Method.tryParse(
-        headers.value(_accessControlRequestMethodHeader),
+        headers.getValue(_accessControlRequestMethodHeader),
       ),
-      age: int.tryParse(headers.value(_ageHeader) ?? ""),
-      allow: headers[_allowHeader]
+      age: int.tryParse(headers.getValue(_ageHeader) ?? ""),
+      allow: headers.getValue(_allowHeader)
           ?.map((e) => Method.tryParse(e))
           .nonNulls
           .toList(),
       contentDisposition: ContentDispositionHeader.tryParse(
-        headers[_contentDispositionHeader],
+        headers.getValue(_contentDispositionHeader),
       ),
       cacheControl: CacheControlHeader.tryParse(
-        headers[_cacheControlHeader],
+        headers.getValue(_cacheControlHeader),
       ),
       connection: ConnectionHeader.tryParse(
-        headers[_connectionHeader],
+        headers.getValue(_connectionHeader),
       ),
-      contentEncoding: headers[_contentEncodingHeader],
-      contentLanguage: headers[_contentLanguageHeader],
-      contentLocation: headers.value(_contentLocationHeader),
-      contentMD5: headers.value(_contentMD5Header),
+      contentEncoding: headers.getValue(_contentEncodingHeader),
+      contentLanguage: headers.getValue(_contentLanguageHeader),
+      contentLocation: headers.getValue(_contentLocationHeader),
+      contentMD5: headers.getValue(_contentMD5Header),
       contentRange: ContentRangeHeader.tryParse(
-        headers[_contentRangeHeader],
+        headers.getValue(_contentRangeHeader),
       ),
-      etag: ETagHeader.tryParse(headers[_etagHeader]),
-      expect: headers.value(_expectHeader),
-      ifMatch: headers[_ifMatchHeader],
-      ifNoneMatch: headers[_ifNoneMatchHeader],
-      ifRange: headers.value(_ifRangeHeader),
-      maxForwards: int.tryParse(headers.value(_maxForwardsHeader) ?? ''),
-      mPragma: headers.value(_pragmaHeader),
+      etag: ETagHeader.tryParse(headers.getValue(_etagHeader)),
+      expect: headers.getValue(_expectHeader),
+      ifMatch: headers.getValue(_ifMatchHeader),
+      ifNoneMatch: headers.getValue(_ifNoneMatchHeader),
+      ifRange: headers.getValue(_ifRangeHeader),
+      maxForwards: int.tryParse(headers.getValue(_maxForwardsHeader) ?? ''),
+      mPragma: headers.getValue(_pragmaHeader),
       proxyAuthenticate: ProxyAuthenticateHeader.tryParse(
-        headers[_proxyAuthenticateHeader],
+        headers.getValue(_proxyAuthenticateHeader),
       ),
       proxyAuthorization: ProxyAuthorizationHeader._tryParseHttpHeaders(
         headers,
       ),
-      range: RangeHeader.tryParse(headers[_rangeHeader]),
-      referer: Uri.tryParse(headers.value(_refererHeader) ?? ''),
-      retryAfter: RetryAfterHeader.tryParse(headers[_retryAfterHeader]),
-      server: ServerHeader.tryParse(headers[_serverHeader]),
-      te: headers[_teHeader],
-      trailer: headers[_trailerHeader],
+      range: RangeHeader.tryParse(headers.getValue(_rangeHeader)),
+      referer: Uri.tryParse(headers.getValue(_refererHeader) ?? ''),
+      retryAfter: RetryAfterHeader.tryParse(headers.getValue(_retryAfterHeader)),
+      server: ServerHeader.tryParse(headers.getValue(_serverHeader)),
+      te: headers.getValue(_teHeader),
+      trailer: headers.getValue(_trailerHeader),
       transferEncoding: TransferEncodingHeader.tryParse(
-        headers[_transferEncodingHeader],
+        headers.getValue(_transferEncodingHeader),
       ),
-      upgrade: headers[_upgradeHeader],
-      userAgent: headers.value(_userAgentHeader),
-      vary: VaryHeader.tryParse(headers[_varyHeader]),
-      via: headers[_viaHeader],
-      warning: headers[_warningHeader],
-      wwwAuthenticate: headers[_wwwAuthenticateHeader],
+      upgrade: headers.getValue(_upgradeHeader),
+      userAgent: headers.getValue(_userAgentHeader),
+      vary: VaryHeader.tryParse(headers.getValue(_varyHeader)),
+      via: headers.getValue(_viaHeader),
+      warning: headers.getValue(_warningHeader),
+      wwwAuthenticate: headers.getValue(_wwwAuthenticateHeader),
       custom: CustomHeaders._fromHttpHeaders(
         headers,
         excludedHeaders: _managedHeaders,
