@@ -319,7 +319,7 @@ abstract class Headers {
       contentLocation: headers.value(_contentLocationHeader),
       contentMD5: headers.value(_contentMD5Header),
       contentRange: ContentRangeHeader.tryParse(
-        headers.value(_contentRangeHeader),
+        headers[_contentRangeHeader],
       ),
       etag: ETagHeader.tryParse(headers.value(_etagHeader)),
       expect: headers.value(_expectHeader),

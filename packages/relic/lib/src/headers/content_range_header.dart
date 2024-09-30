@@ -26,7 +26,15 @@ class ContentRangeHeader {
   ///
   /// This method validates the format of the Content-Range string and parses
   /// the byte range and total size (if available).
-  factory ContentRangeHeader.fromHeaderValue(String value) {
+  factory ContentRangeHeader.fromHeaderValue(dynamic value) {
+    if (value is List<String>) {
+      value = value.first;
+    } else if (value is String) {
+      value = value;
+    } else {
+      throw FormatException('Invalid Content-Range header format');
+    }
+
     final regex = RegExp(r'bytes (\d+)-(\d+)/(\d+|\*)');
     final match = regex.firstMatch(value);
 
@@ -48,7 +56,7 @@ class ContentRangeHeader {
   /// Static method that attempts to parse the Content-Range header value and returns `null` if the value is null.
   ///
   /// This method allows safe parsing by returning `null` only if the input value is `null`, otherwise it proceeds with parsing.
-  static ContentRangeHeader? tryParse(String? value) {
+  static ContentRangeHeader? tryParse(dynamic value) {
     if (value == null) return null;
     return ContentRangeHeader.fromHeaderValue(value);
   }
