@@ -341,7 +341,7 @@ abstract class Headers {
       te: headers[_teHeader],
       trailer: headers[_trailerHeader],
       transferEncoding: TransferEncodingHeader.tryParse(
-        headers.value(_transferEncodingHeader),
+        headers[_transferEncodingHeader],
       ),
       upgrade: headers[_upgradeHeader],
       userAgent: headers.value(_userAgentHeader),
