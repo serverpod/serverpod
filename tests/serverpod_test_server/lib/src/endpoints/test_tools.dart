@@ -146,6 +146,14 @@ class TestToolsWithArgVariationsEndpoint extends Endpoint {
     return [string1, string2];
   }
 
+  Future<List<String?>> echoPositionalAndNullableNamedArgs(
+    Session session,
+    String string1, {
+    String? string2,
+  }) async {
+    return [string1, string2];
+  }
+
   Future<List<String?>> echoPositionalAndOptionalArgs(
       Session session, String string1,
       [String? string2]) async {

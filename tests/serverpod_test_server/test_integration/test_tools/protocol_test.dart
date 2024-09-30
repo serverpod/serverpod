@@ -61,6 +61,31 @@ void main() {
     });
 
     test(
+        'when calling method with positional and nullable named args when passing value then echoes args',
+        () async {
+      final result = await endpoints.testToolsWithArgVariations
+          .echoPositionalAndNullableNamedArgs(
+        session,
+        'PositionalArg',
+        string2: 'NamedArg',
+      );
+
+      expect(result, ['PositionalArg', 'NamedArg']);
+    });
+
+    test(
+        'when calling method with positional and named args without passing named arg then echoes null',
+        () async {
+      final result = await endpoints.testToolsWithArgVariations
+          .echoPositionalAndNullableNamedArgs(
+        session,
+        'PositionalArg',
+      );
+
+      expect(result, ['PositionalArg', null]);
+    });
+
+    test(
         'when calling method with positional and optional args then echoes both args',
         () async {
       final result = await endpoints.testToolsWithArgVariations
@@ -71,6 +96,18 @@ void main() {
       );
 
       expect(result, ['PositionalArg', 'OptionalArg']);
+    });
+
+    test(
+        'when calling method with positional and optional args without passing value then echoes null',
+        () async {
+      final result = await endpoints.testToolsWithArgVariations
+          .echoPositionalAndOptionalArgs(
+        session,
+        'PositionalArg',
+      );
+
+      expect(result, ['PositionalArg', null]);
     });
 
     test('when calling method with named stream arg then echoes stream',
