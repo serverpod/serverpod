@@ -20,26 +20,32 @@ class RangeHeader {
   /// Parses the Range header value and returns a [RangeHeader] instance.
   ///
   /// This method processes the range header and extracts the byte range.
-  factory RangeHeader.fromHeaderValue(String value) {
-    final regex = RegExp(r'bytes=(\d*)-(\d*)');
-    final match = regex.firstMatch(value);
-
-    if (match != null) {
-      final start = match.group(1)?.isNotEmpty == true
-          ? int.parse(match.group(1)!)
-          : null;
-      final end = match.group(2)?.isNotEmpty == true
-          ? int.parse(match.group(2)!)
-          : null;
-
-      return RangeHeader(start: start, end: end);
+  factory RangeHeader.fromHeaderValue(dynamic value) {
+    if (value is String) {
+      value = value;
+    } else if (value is List<String>) {
+      value = value.first;
     } else {
       throw FormatException('Invalid Range header format');
     }
+
+    final regex = RegExp(r'bytes=(\d*)-(\d*)');
+    final match = regex.firstMatch(value);
+
+    if (match == null) {
+      throw FormatException('Invalid Range header format');
+    }
+
+    final start =
+        match.group(1)?.isNotEmpty == true ? int.parse(match.group(1)!) : null;
+    final end =
+        match.group(2)?.isNotEmpty == true ? int.parse(match.group(2)!) : null;
+
+    return RangeHeader(start: start, end: end);
   }
 
   /// Static method that attempts to parse the Range header and returns `null` if the value is `null`.
-  static RangeHeader? tryParse(String? value) {
+  static RangeHeader? tryParse(dynamic value) {
     if (value == null) return null;
     return RangeHeader.fromHeaderValue(value);
   }

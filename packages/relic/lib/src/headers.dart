@@ -334,7 +334,7 @@ abstract class Headers {
       proxyAuthorization: ProxyAuthorizationHeader._tryParseHttpHeaders(
         headers,
       ),
-      range: RangeHeader.tryParse(headers.value(_rangeHeader)),
+      range: RangeHeader.tryParse(headers[_rangeHeader]),
       referer: Uri.tryParse(headers.value(_refererHeader) ?? ''),
       retryAfter: RetryAfterHeader.tryParse(headers.value(_retryAfterHeader)),
       server: ServerHeader.tryParse(headers.value(_serverHeader)),
