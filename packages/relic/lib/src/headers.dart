@@ -321,7 +321,7 @@ abstract class Headers {
       contentRange: ContentRangeHeader.tryParse(
         headers[_contentRangeHeader],
       ),
-      etag: ETagHeader.tryParse(headers.value(_etagHeader)),
+      etag: ETagHeader.tryParse(headers[_etagHeader]),
       expect: headers.value(_expectHeader),
       ifMatch: headers[_ifMatchHeader],
       ifNoneMatch: headers[_ifNoneMatchHeader],

@@ -20,15 +20,28 @@ class ETagHeader {
   /// Parses the ETag header value and returns an [ETagHeader] instance.
   ///
   /// This method checks if the ETag is weak (prefixed with `W/`) and processes the value accordingly.
-  factory ETagHeader.fromHeaderValue(String value) {
+  factory ETagHeader.fromHeaderValue(dynamic value) {
+    if (value is String) {
+      value = value;
+    } else if (value is List<String>) {
+      value = value.first;
+    } else {
+      throw FormatException('Invalid ETag header format');
+    }
+
     final isWeak = value.startsWith('W/');
     final tagValue = isWeak ? value.substring(2).trim() : value.trim();
+
+    // Ensure ETag value is enclosed in double quotes.
+    if (!tagValue.startsWith('"') || !tagValue.endsWith('"')) {
+      throw FormatException('Invalid ETag format: missing quotes');
+    }
 
     return ETagHeader(value: tagValue.replaceAll('"', ''), isWeak: isWeak);
   }
 
   /// Static method that attempts to parse the ETag header and returns `null` if the value is `null`.
-  static ETagHeader? tryParse(String? value) {
+  static ETagHeader? tryParse(dynamic value) {
     if (value == null) return null;
     return ETagHeader.fromHeaderValue(value);
   }
