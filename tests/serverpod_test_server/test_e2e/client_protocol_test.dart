@@ -64,7 +64,7 @@ void main() {
   });
 
   test(
-      'when calling method with positional and nullable named args when passing value then echoes args',
+      'when calling method with positional and nullable named args with named arg then echoes args',
       () async {
     final result = await client.methodSignaturePermutations
         .echoPositionalAndNullableNamedArgs(
