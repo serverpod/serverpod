@@ -312,7 +312,7 @@ abstract class Headers {
         headers[_cacheControlHeader],
       ),
       connection: ConnectionHeader.tryParse(
-        headers.value(_connectionHeader),
+        headers[_connectionHeader],
       ),
       contentEncoding: headers[_contentEncodingHeader],
       contentLanguage: headers[_contentLanguageHeader],
