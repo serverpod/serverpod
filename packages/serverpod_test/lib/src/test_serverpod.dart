@@ -1,5 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_test/src/database_proxy.dart';
+import 'package:serverpod_test/src/test_database_proxy.dart';
 import 'package:serverpod_test/src/transaction_manager.dart';
 import 'package:serverpod_test/src/with_serverpod.dart';
 
