@@ -80,7 +80,9 @@ class TestToolsEndpoint extends Endpoint {
   }
 
   Future<void> createSimpleDatasInsideTransactions(
-      Session session, int data) async {
+    Session session,
+    int data,
+  ) async {
     await session.db.transaction((transaction) async {
       await SimpleData.db.insertRow(
         session,
@@ -103,7 +105,9 @@ class TestToolsEndpoint extends Endpoint {
   }
 
   Future<void> createSimpleDataAndThrowInsideTransaction(
-      Session session, int data) async {
+    Session session,
+    int data,
+  ) async {
     await session.db.transaction((transaction) async {
       await SimpleData.db.insertRow(
         session,
@@ -129,7 +133,8 @@ class TestToolsEndpoint extends Endpoint {
   }
 
   Future<void> createSimpleDatasInParallelTransactionCalls(
-      Session session) async {
+    Session session,
+  ) async {
     Future<void> createSimpleDataInTransaction(int num) async {
       await session.db.transaction((transaction) async {
         await SimpleData.db.insertRow(
