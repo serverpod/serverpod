@@ -34,7 +34,7 @@ class TransactionManager {
     late Transaction localTransaction;
 
     unawaited(
-      (serverpodSession.db as DatabaseProxy).transaction(
+      (serverpodSession.db as TestDatabaseProxy).transaction(
         (newTransaction) async {
           localTransaction = newTransaction;
 

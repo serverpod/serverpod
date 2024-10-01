@@ -4,13 +4,13 @@ import 'package:serverpod_test/src/transaction_manager.dart';
 import 'with_serverpod.dart';
 
 /// A database proxy that forwards all calls to the provided database.
-class DatabaseProxy implements Database {
+class TestDatabaseProxy implements Database {
   final Database _db;
-  final DatabaseTestConfig _databaseTestConfig;
+  final RollbackDatabase _rollbackDatabase;
   final TransactionManager _transactionManager;
 
-  /// Creates a new [DatabaseProxy]
-  DatabaseProxy(this._db, this._databaseTestConfig, this._transactionManager);
+  /// Creates a new [TestDatabaseProxy]
+  TestDatabaseProxy(this._db, this._rollbackDatabase, this._transactionManager);
 
   @override
   Future<int> count<T extends TableRow>({
@@ -130,7 +130,7 @@ class DatabaseProxy implements Database {
     TransactionFunction<R> transactionFunction, {
     isUserCall = true,
   }) async {
-    if (!isUserCall || _databaseTestConfig.areRollbacksDisabled) {
+    if (!isUserCall || _rollbackDatabase == RollbackDatabase.disabled) {
       return _db.transaction(transactionFunction);
     }
 
@@ -143,8 +143,8 @@ class DatabaseProxy implements Database {
       await _transactionManager.addSavePoint(lock: true);
     } on ConcurrentTransactionsException {
       throw InvalidConfigurationException(
-        'Several calls to `transaction` was made concurrently which is not supported with the current database test configuration. '
-        'Disable rolling back the database by setting `databaseTestConfig` to `DatabaseTestConfig.rollbacksDisabled()`.',
+        'Concurrent calls to transaction are not supported when database rollbacks are enabled. '
+        'Disable rolling back the database by setting `rollbackDatabase` to `RollbackDatabase.disabled`.',
       );
     }
 

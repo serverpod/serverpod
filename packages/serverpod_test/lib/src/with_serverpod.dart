@@ -46,15 +46,15 @@ enum ResetTestSessions {
 }
 
 /// Options for when to rollback the database during the test lifecycle.
-enum _RollbackDatabase {
+enum RollbackDatabase {
   /// After each test. This is the default.
   afterEach,
 
   /// After all tests.
   afterAll,
 
-  /// Never rollback the database.
-  never,
+  /// Disable rolling back the database.
+  disabled,
 }
 
 /// The test closure that is called by the `withServerpod` test helper.
@@ -62,50 +62,6 @@ typedef TestClosure<T> = void Function(
   T endpoints,
   TestSession testSession,
 );
-
-/// Internal helper extension for the [DatabaseTestConfig] class.
-extension ConfigRuntimeChecks on DatabaseTestConfig {
-  /// Returns true if rollbacks are disabled.
-  bool get areRollbacksDisabled => _rollbackDatabase == _RollbackDatabase.never;
-}
-
-/// Configuration object for how `withServerpod` should handle the database.
-class DatabaseTestConfig {
-  final _RollbackDatabase _rollbackDatabase;
-
-  /// Creates a new database test configuration.
-  DatabaseTestConfig._({
-    _RollbackDatabase rollbackDatabase = _RollbackDatabase.afterEach,
-  }) : _rollbackDatabase = rollbackDatabase;
-
-  /// Rolls back the database after each test. This is the default.
-  /// Will throw an [InvalidConfigurationException] if several calls to `transaction` are made concurrently
-  /// since this is not supported by the test tools.
-  /// In this case, disable rolling back the database by setting `databaseTestConfig` to `DatabaseTestConfig.rollbacksDisabled()`.
-  factory DatabaseTestConfig.rollbackAfterEach() {
-    return DatabaseTestConfig._(
-      rollbackDatabase: _RollbackDatabase.afterEach,
-    );
-  }
-
-  /// Rolls back the database after all tests.
-  /// Will throw an [InvalidConfigurationException] if several calls to `transaction` are made concurrently
-  /// since this is not supported by the test tools.
-  /// In this case, disable rolling back the database by setting `databaseTestConfig` to `DatabaseTestConfig.rollbacksDisabled()`.
-  factory DatabaseTestConfig.rollbackAfterAll() {
-    return DatabaseTestConfig._(
-      rollbackDatabase: _RollbackDatabase.afterAll,
-    );
-  }
-
-  /// Does not rollback the database.
-  /// All database changes are persisted and has to be cleaned up manually.
-  factory DatabaseTestConfig.rollbacksDisabled() {
-    return DatabaseTestConfig._(
-      rollbackDatabase: _RollbackDatabase.never,
-    );
-  }
-}
 
 /// Builds the `withServerpod` test helper.
 /// Used by the generated code.
@@ -115,16 +71,15 @@ void Function(TestClosure<T>)
   String testGroupName,
   TestServerpod<T> testServerpod, {
   ResetTestSessions? maybeResetTestSessions,
-  DatabaseTestConfig? maybeDatabaseTestConfig,
+  RollbackDatabase? maybeRollbackDatabase,
   bool? maybeEnableSessionLogging,
 }) {
   var resetTestSessions = maybeResetTestSessions ?? ResetTestSessions.afterEach;
-  var databaseConfig =
-      maybeDatabaseTestConfig ?? DatabaseTestConfig.rollbackAfterEach();
+  var rollbackDatabase = maybeRollbackDatabase ?? RollbackDatabase.afterEach;
   List<InternalTestSession> allTestSessions = [];
 
   var mainServerpodSession = testServerpod.createSession(
-    databaseTestConfig: databaseConfig,
+    rollbackDatabase: rollbackDatabase,
   );
 
   TransactionManager transactionManager =
@@ -144,15 +99,15 @@ void Function(TestClosure<T>)
       setUpAll(() async {
         await testServerpod.start();
 
-        if (databaseConfig._rollbackDatabase == _RollbackDatabase.afterAll ||
-            databaseConfig._rollbackDatabase == _RollbackDatabase.afterEach) {
+        if (rollbackDatabase == RollbackDatabase.afterAll ||
+            rollbackDatabase == RollbackDatabase.afterEach) {
           await transactionManager.createTransaction();
           await transactionManager.addSavePoint();
         }
       });
 
       tearDown(() async {
-        if (databaseConfig._rollbackDatabase == _RollbackDatabase.afterEach) {
+        if (rollbackDatabase == RollbackDatabase.afterEach) {
           await transactionManager.rollbacktoPreviousSavePoint();
           await transactionManager.addSavePoint();
         }
@@ -167,8 +122,8 @@ void Function(TestClosure<T>)
       });
 
       tearDownAll(() async {
-        if (databaseConfig._rollbackDatabase == _RollbackDatabase.afterAll ||
-            databaseConfig._rollbackDatabase == _RollbackDatabase.afterEach) {
+        if (rollbackDatabase == RollbackDatabase.afterAll ||
+            rollbackDatabase == RollbackDatabase.afterEach) {
           await transactionManager.cancelTransaction();
         }
 

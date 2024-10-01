@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_test/serverpod_test.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
@@ -92,8 +93,7 @@ void main() {
               .createSimpleDatasInsideTransactions(session, 123);
         });
 
-        test("then finds SimpleDatas using the test session's transaction",
-            () async {
+        test("then finds SimpleDatas", () async {
           final simpleDatas = await SimpleData.db.find(session);
           expect(simpleDatas.length, 2);
           expect(simpleDatas[0].num, 123);
@@ -145,7 +145,7 @@ void main() {
                 predicate<InvalidConfigurationException>(
                   (e) => e.message.contains(
                       'Several calls to `transaction` was made concurrently which is not supported with the current database test configuration. '
-                      'Disable rolling back the database by setting `databaseTestConfig` to `DatabaseTestConfig.rollbacksDisabled()`.'),
+                      'Disable rolling back the database by setting `databaseTestConfig` to `RollbackDatabase.disabled`.'),
                 ),
               ),
             ),
@@ -160,7 +160,7 @@ void main() {
       });
     },
     runMode: ServerpodRunMode.production,
-    databaseTestConfig: DatabaseTestConfig.rollbackAfterEach(),
+    rollbackDatabase: RollbackDatabase.afterEach,
   );
 
   group('Given TestToolsEndpoint and rollbackDatabase afterAll', () {
@@ -173,8 +173,7 @@ void main() {
                 .createSimpleDatasInsideTransactions(session, 123);
           });
 
-          test("then finds SimpleDatas using the test session's transaction",
-              () async {
+          test("then finds SimpleDatas", () async {
             final simpleDatas = await SimpleData.db.find(session);
             expect(simpleDatas.length, 2);
             expect(simpleDatas[0].num, 123);
@@ -191,7 +190,7 @@ void main() {
           });
         },
         runMode: ServerpodRunMode.production,
-        databaseTestConfig: DatabaseTestConfig.rollbackAfterAll(),
+        rollbackDatabase: RollbackDatabase.afterAll,
       );
 
       withServerpod(
@@ -225,7 +224,7 @@ void main() {
             expect(simpleDatas.first.num, 123);
           });
         },
-        databaseTestConfig: DatabaseTestConfig.rollbackAfterAll(),
+        rollbackDatabase: RollbackDatabase.afterAll,
         runMode: ServerpodRunMode.production,
       );
 
@@ -256,7 +255,7 @@ void main() {
                   predicate<InvalidConfigurationException>(
                     (e) => e.message.contains(
                       'Several calls to `transaction` was made concurrently which is not supported with the current database test configuration. '
-                      'Disable rolling back the database by setting `databaseTestConfig` to `DatabaseTestConfig.rollbacksDisabled()`.',
+                      'Disable rolling back the database by setting `databaseTestConfig` to `RollbackDatabase.disabled`.',
                     ),
                   ),
                 ),
@@ -264,7 +263,7 @@ void main() {
             );
           });
         },
-        databaseTestConfig: DatabaseTestConfig.rollbackAfterAll(),
+        rollbackDatabase: RollbackDatabase.afterAll,
         runMode: ServerpodRunMode.production,
       );
 
@@ -309,7 +308,7 @@ void main() {
           });
         },
         runMode: ServerpodRunMode.production,
-        databaseTestConfig: DatabaseTestConfig.rollbacksDisabled(),
+        rollbackDatabase: RollbackDatabase.disabled,
       );
 
       withServerpod(
@@ -333,7 +332,7 @@ void main() {
           });
         },
         runMode: ServerpodRunMode.production,
-        databaseTestConfig: DatabaseTestConfig.rollbacksDisabled(),
+        rollbackDatabase: RollbackDatabase.disabled,
       );
     });
 
@@ -355,7 +354,7 @@ void main() {
             expect(simpleDatas.first.num, 123);
           });
         },
-        databaseTestConfig: DatabaseTestConfig.rollbacksDisabled(),
+        rollbackDatabase: RollbackDatabase.disabled,
         runMode: ServerpodRunMode.production,
       );
 
@@ -375,7 +374,7 @@ void main() {
             expect(simpleDatas, hasLength(1));
           });
         },
-        databaseTestConfig: DatabaseTestConfig.rollbacksDisabled(),
+        rollbackDatabase: RollbackDatabase.disabled,
         runMode: ServerpodRunMode.production,
       );
     });
@@ -401,7 +400,7 @@ void main() {
           expect(simpleDatas, hasLength(4));
         });
       },
-      databaseTestConfig: DatabaseTestConfig.rollbacksDisabled(),
+      rollbackDatabase: RollbackDatabase.disabled,
       runMode: ServerpodRunMode.production,
     );
   });

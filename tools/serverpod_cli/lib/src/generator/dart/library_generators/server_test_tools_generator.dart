@@ -394,9 +394,9 @@ class ServerTestToolsGenerator {
             ..named = true
             ..type = refer('ResetTestSessions?', serverpodTestUrl)),
           Parameter((p) => p
-            ..name = 'databaseTestConfig'
+            ..name = 'rollbackDatabase'
             ..named = true
-            ..type = refer('DatabaseTestConfig?', serverpodTestUrl)),
+            ..type = refer('RollbackDatabase?', serverpodTestUrl)),
           Parameter((p) => p
             ..name = 'runMode'
             ..named = true
@@ -433,7 +433,7 @@ class ServerTestToolsGenerator {
           ],
           {
             'maybeResetTestSessions': refer('resetTestSessions'),
-            'maybeDatabaseTestConfig': refer('databaseTestConfig'),
+            'maybeRollbackDatabase': refer('rollbackDatabase'),
             'maybeEnableSessionLogging': refer('enableSessionLogging'),
           },
         ).call([

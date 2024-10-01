@@ -4,10 +4,10 @@ export 'serverpod_test.dart'
     show
         AuthenticationOverride,
         ConnectionClosedException,
-        DatabaseTestConfig,
         flushMicrotasks,
         InvalidConfigurationException,
         ResetTestSessions,
+        RollbackDatabase,
         ServerpodInsufficientAccessException,
         ServerpodUnauthenticatedException,
         TestClosure,

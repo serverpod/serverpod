@@ -66,7 +66,7 @@ void main() {
             expect(result.length, 0);
           });
         },
-        databaseTestConfig: DatabaseTestConfig.rollbackAfterEach(),
+        rollbackDatabase: RollbackDatabase.afterEach,
         runMode: ServerpodRunMode.production,
       );
 
@@ -114,7 +114,7 @@ void main() {
             expect(result[1].num, 222);
           });
         },
-        databaseTestConfig: DatabaseTestConfig.rollbackAfterEach(),
+        rollbackDatabase: RollbackDatabase.afterEach,
         runMode: ServerpodRunMode.production,
       );
 
@@ -165,7 +165,7 @@ void main() {
           expect(resultFromOriginalSession[1].num, 222);
         });
       },
-      databaseTestConfig: DatabaseTestConfig.rollbackAfterEach(),
+      rollbackDatabase: RollbackDatabase.afterEach,
       runMode: ServerpodRunMode.production,
     );
   });
@@ -201,7 +201,7 @@ void main() {
             expect(result[1].num, 222);
           });
         },
-        databaseTestConfig: DatabaseTestConfig.rollbackAfterAll(),
+        rollbackDatabase: RollbackDatabase.afterAll,
         runMode: ServerpodRunMode.production,
       );
 
@@ -251,7 +251,7 @@ void main() {
             expect(result[3].num, 222);
           });
         },
-        databaseTestConfig: DatabaseTestConfig.rollbackAfterAll(),
+        rollbackDatabase: RollbackDatabase.afterAll,
         runMode: ServerpodRunMode.production,
       );
 
@@ -286,7 +286,7 @@ void main() {
             expect(result[1].num, 222);
           });
         },
-        databaseTestConfig: DatabaseTestConfig.rollbackAfterAll(),
+        rollbackDatabase: RollbackDatabase.afterAll,
         runMode: ServerpodRunMode.production,
       );
 
@@ -325,7 +325,7 @@ void main() {
           expect(result[1].num, 222);
         });
       },
-      databaseTestConfig: DatabaseTestConfig.rollbacksDisabled(),
+      rollbackDatabase: RollbackDatabase.disabled,
       runMode: ServerpodRunMode.production,
     );
 
@@ -347,7 +347,7 @@ void main() {
           expect(result[1].num, 222);
         });
       },
-      databaseTestConfig: DatabaseTestConfig.rollbacksDisabled(),
+      rollbackDatabase: RollbackDatabase.disabled,
       runMode: ServerpodRunMode.production,
     );
   });

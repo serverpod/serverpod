@@ -23,10 +23,10 @@ class InternalServerpodSession extends Session {
   @override
   Database get db => _dbProxy;
 
-  late DatabaseProxy _dbProxy;
+  late TestDatabaseProxy _dbProxy;
 
   /// The database test configuration.
-  final DatabaseTestConfig databaseTestConfig;
+  final RollbackDatabase rollbackDatabase;
 
   /// The transaction manager to manage the Serverpod session's transactions.
   late final TransactionManager transactionManager;
@@ -37,13 +37,13 @@ class InternalServerpodSession extends Session {
     required super.method,
     required super.server,
     required super.enableLogging,
-    required this.databaseTestConfig,
+    required this.rollbackDatabase,
     TransactionManager? transactionManager,
   }) {
     this.transactionManager = transactionManager ?? TransactionManager(this);
-    _dbProxy = DatabaseProxy(
+    _dbProxy = TestDatabaseProxy(
       super.db,
-      databaseTestConfig,
+      rollbackDatabase,
       this.transactionManager,
     );
   }
@@ -105,7 +105,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
   /// Creates a new Serverpod session.
   InternalServerpodSession createSession({
     bool enableLogging = false,
-    required DatabaseTestConfig databaseTestConfig,
+    required RollbackDatabase rollbackDatabase,
     String endpoint = '',
     String method = '',
     TransactionManager? transactionManager,
@@ -115,7 +115,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
       enableLogging: enableLogging,
       endpoint: endpoint,
       method: method,
-      databaseTestConfig: databaseTestConfig,
+      rollbackDatabase: rollbackDatabase,
       transactionManager: transactionManager,
     );
   }

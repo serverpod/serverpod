@@ -101,7 +101,7 @@ class InternalTestSession extends TestSession {
       enableLogging: enableLogging ?? _enableLogging,
       endpoint: endpoint,
       method: method,
-      databaseTestConfig: serverpodSession.databaseTestConfig,
+      rollbackDatabase: serverpodSession.rollbackDatabase,
       transactionManager: serverpodSession.transactionManager,
     );
 
@@ -128,7 +128,7 @@ class InternalTestSession extends TestSession {
     _authenticationOverride = null;
     serverpodSession = _testServerpod.createSession(
       enableLogging: _enableLogging,
-      databaseTestConfig: serverpodSession.databaseTestConfig,
+      rollbackDatabase: serverpodSession.rollbackDatabase,
       transactionManager: serverpodSession.transactionManager,
     );
     _configureServerpodSession(serverpodSession);
