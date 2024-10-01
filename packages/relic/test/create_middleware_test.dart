@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:relic/relic.dart';
+import 'package:relic/src/headers.dart';
 import 'package:test/test.dart';
 
 import 'test_util.dart';
@@ -14,7 +15,7 @@ void main() {
         .addHandler((request) {
       return syncHandler(
         request,
-        headers: Headers.request(from: 'innerHandler'),
+        headers: Headers.request(from: FromHeader(['innerHandler'])),
       );
     });
 

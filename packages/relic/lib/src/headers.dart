@@ -25,6 +25,7 @@ part 'headers/server_header.dart';
 part 'headers/proxy_authenticate_header.dart';
 part 'headers/transfer_encoding_header.dart';
 part 'headers/host_header.dart';
+part 'headers/from_header.dart';
 
 abstract class Headers {
   // Request Headers
@@ -101,7 +102,7 @@ abstract class Headers {
   final DateTime? lastModified;
 
   /// Request Headers
-  final String? from;
+  final FromHeader? from;
   final HostHeader? host;
   final List<String>? acceptCharset;
   final List<String>? acceptEncoding;
@@ -280,7 +281,9 @@ abstract class Headers {
       lastModified: headers.value(_lastModifiedHeader) != null
           ? parseHttpDate(headers.value(_lastModifiedHeader)!)
           : null,
-      from: headers.parseSingleValue(_fromHeader),
+      from: FromHeader.tryParse(
+        headers[_fromHeader],
+      ),
       host: HostHeader.tryParse(
         headers.host ?? headers.parseSingleValue(_hostHeader),
         port: headers.port,
@@ -367,7 +370,7 @@ abstract class Headers {
   factory Headers.request({
     DateTime? date,
     DateTime? ifModifiedSince,
-    String? from,
+    FromHeader? from,
     HostHeader? host,
     AcceptHeader? accept,
     List<String>? acceptCharset,
@@ -628,7 +631,7 @@ abstract class Headers {
     DateTime? date,
     DateTime? expires,
     DateTime? ifModifiedSince,
-    String? from,
+    FromHeader? from,
     HostHeader? host,
     Uri? location,
     String? xPoweredBy,
@@ -1012,7 +1015,7 @@ class _HeadersImpl extends Headers {
       expires: expires is DateTime? ? expires : this.expires,
       ifModifiedSince:
           ifModifiedSince is DateTime? ? ifModifiedSince : this.ifModifiedSince,
-      from: from is String? ? from : this.from,
+      from: from is FromHeader ? from : this.from,
       host: host is HostHeader ? host : this.host,
       location: location is Uri? ? location : this.location,
       xPoweredBy: xPoweredBy is String? ? xPoweredBy : this.xPoweredBy,
