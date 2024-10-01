@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:http_parser/http_parser.dart';
+import 'package:relic/src/headers/extension/http_headers_extension.dart';
 import 'package:relic/src/method/method.dart';
 
 import 'body.dart';
@@ -23,6 +24,7 @@ part 'headers/vary_header.dart';
 part 'headers/server_header.dart';
 part 'headers/proxy_authenticate_header.dart';
 part 'headers/transfer_encoding_header.dart';
+part 'headers/host_header.dart';
 
 abstract class Headers {
   // Request Headers
@@ -100,8 +102,7 @@ abstract class Headers {
 
   /// Request Headers
   final String? from;
-  final String? host;
-  final int? port;
+  final HostHeader? host;
   final List<String>? acceptCharset;
   final List<String>? acceptEncoding;
   final List<String>? acceptLanguage;
@@ -219,7 +220,6 @@ abstract class Headers {
     this.ifModifiedSince,
     this.from,
     this.host,
-    this.port,
     this.location,
     this.xPoweredBy,
     this.accept,
@@ -280,28 +280,30 @@ abstract class Headers {
       lastModified: headers.value(_lastModifiedHeader) != null
           ? parseHttpDate(headers.value(_lastModifiedHeader)!)
           : null,
-      from: headers.value(_fromHeader),
-      host: headers.host,
-      port: headers.port,
+      from: headers.parseSingleValue(_fromHeader),
+      host: HostHeader.tryParse(
+        headers.host ?? headers.parseSingleValue(_hostHeader),
+        port: headers.port,
+      ),
       accept: AcceptHeader.tryParse(headers[_acceptHeader]),
       acceptCharset: headers[_acceptCharsetHeader],
       acceptEncoding: headers[_acceptEncodingHeader],
       acceptLanguage: headers[_acceptLanguageHeader],
       acceptRanges: headers[_acceptRangesHeader],
       accessControlAllowCredentials: bool.tryParse(
-        headers[_accessControlAllowCredentialsHeader]?.firstOrNull ?? '',
+        headers.parseSingleValue(_accessControlAllowCredentialsHeader) ?? '',
       ),
       accessControlAllowOrigin:
-          headers[_accessControlAllowOriginHeader]?.firstOrNull,
+          headers.parseSingleValue(_accessControlAllowOriginHeader),
       accessControlExposeHeaders: headers[_accessControlExposeHeadersHeader],
       accessControlMaxAge: int.tryParse(
-        headers[_accessControlMaxAgeHeader]?.firstOrNull ?? '',
+        headers.parseSingleValue(_accessControlMaxAgeHeader) ?? '',
       ),
       accessControlRequestHeaders: headers[_accessControlRequestHeadersHeader],
       accessControlRequestMethod: Method.tryParse(
-        headers[_accessControlRequestMethodHeader]?.firstOrNull,
+        headers.parseSingleValue(_accessControlRequestMethodHeader),
       ),
-      age: int.tryParse(headers[_ageHeader]?.firstOrNull ?? ""),
+      age: int.tryParse(headers.parseSingleValue(_ageHeader) ?? ""),
       allow: headers[_allowHeader]
           ?.map((e) => Method.tryParse(e))
           .nonNulls
@@ -317,20 +319,20 @@ abstract class Headers {
       ),
       contentEncoding: headers[_contentEncodingHeader],
       contentLanguage: headers[_contentLanguageHeader],
-      contentLocation: headers[_contentLocationHeader]?.firstOrNull,
-      contentMD5: headers[_contentMD5Header]?.firstOrNull,
+      contentLocation: headers.parseSingleValue(_contentLocationHeader),
+      contentMD5: headers.parseSingleValue(_contentMD5Header),
       contentRange: ContentRangeHeader.tryParse(
         headers[_contentRangeHeader],
       ),
       etag: ETagHeader.tryParse(headers[_etagHeader]),
-      expect: headers[_expectHeader]?.firstOrNull,
+      expect: headers.parseSingleValue(_expectHeader),
       ifMatch: headers[_ifMatchHeader],
       ifNoneMatch: headers[_ifNoneMatchHeader],
-      ifRange: headers[_ifRangeHeader]?.firstOrNull,
+      ifRange: headers.parseSingleValue(_ifRangeHeader),
       maxForwards: int.tryParse(
-        headers[_maxForwardsHeader]?.firstOrNull ?? '',
+        headers.parseSingleValue(_maxForwardsHeader) ?? '',
       ),
-      mPragma: headers[_pragmaHeader]?.firstOrNull,
+      mPragma: headers.parseSingleValue(_pragmaHeader),
       proxyAuthenticate: ProxyAuthenticateHeader.tryParse(
         headers[_proxyAuthenticateHeader],
       ),
@@ -338,7 +340,7 @@ abstract class Headers {
         headers,
       ),
       range: RangeHeader.tryParse(headers[_rangeHeader]),
-      referer: Uri.tryParse(headers[_refererHeader]?.firstOrNull ?? ''),
+      referer: Uri.tryParse(headers.parseSingleValue(_refererHeader) ?? ''),
       retryAfter: RetryAfterHeader.tryParse(headers[_retryAfterHeader]),
       server: ServerHeader.tryParse(headers[_serverHeader]),
       te: headers[_teHeader],
@@ -347,7 +349,7 @@ abstract class Headers {
         headers[_transferEncodingHeader],
       ),
       upgrade: headers[_upgradeHeader],
-      userAgent: headers[_userAgentHeader]?.firstOrNull,
+      userAgent: headers.parseSingleValue(_userAgentHeader),
       vary: VaryHeader.tryParse(headers[_varyHeader]),
       via: headers[_viaHeader],
       warning: headers[_warningHeader],
@@ -366,8 +368,7 @@ abstract class Headers {
     DateTime? date,
     DateTime? ifModifiedSince,
     String? from,
-    String? host,
-    int? port,
+    HostHeader? host,
     AcceptHeader? accept,
     List<String>? acceptCharset,
     List<String>? acceptEncoding,
@@ -398,7 +399,6 @@ abstract class Headers {
       ifModifiedSince: ifModifiedSince,
       from: from,
       host: host,
-      port: port,
       accept: accept,
       acceptCharset: acceptCharset,
       acceptEncoding: acceptEncoding,
@@ -510,8 +510,8 @@ abstract class Headers {
       headers.set(_lastModifiedHeader, formatHttpDate(lastModified!));
     }
 
-    headers.host = host;
-    headers.port = port;
+    headers.host = host?.host;
+    headers.port = host?.port;
 
     if (from != null) headers.set(_fromHeader, from!);
     if (location != null) headers.set(_locationHeader, location!);
@@ -629,8 +629,7 @@ abstract class Headers {
     DateTime? expires,
     DateTime? ifModifiedSince,
     String? from,
-    String? host,
-    int? port,
+    HostHeader? host,
     Uri? location,
     String? xPoweredBy,
     AcceptHeader? accept,
@@ -690,7 +689,7 @@ abstract class Headers {
       if (expires != null) '$_expiresHeader: $expires',
       if (ifModifiedSince != null) '$_ifModifiedSinceHeader: $ifModifiedSince',
       if (from != null) '$_fromHeader: $from',
-      if (host != null) '$_hostHeader: $host${port != null ? ':$port' : ''}',
+      if (host != null) '$_hostHeader: $host',
       if (location != null) '$_locationHeader: $location',
       if (xPoweredBy != null) '$_xPoweredByHeader: $xPoweredBy',
       if (accept != null) '$_acceptHeader: $accept!',
@@ -769,7 +768,7 @@ abstract class Headers {
       if (expires != null) _expiresHeader: '$expires',
       if (ifModifiedSince != null) _ifModifiedSinceHeader: '$ifModifiedSince',
       if (from != null) _fromHeader: from!,
-      if (host != null) _hostHeader: port != null ? '$host:$port' : host!,
+      if (host != null) _hostHeader: host!,
       if (location != null) _locationHeader: location.toString(),
       if (xPoweredBy != null) _xPoweredByHeader: xPoweredBy!,
       if (accept != null) _acceptHeader: accept!,
@@ -837,7 +836,6 @@ abstract class Headers {
         ifModifiedSince == null &&
         from == null &&
         host == null &&
-        port == null &&
         location == null &&
         xPoweredBy == null &&
         (accept == null || accept!.mediaTypes.isEmpty) &&
@@ -903,7 +901,6 @@ class _HeadersImpl extends Headers {
     super.ifModifiedSince,
     super.from,
     super.host,
-    super.port,
     super.location,
     super.xPoweredBy,
     super.accept,
@@ -962,7 +959,6 @@ class _HeadersImpl extends Headers {
     Object? from = _Undefined,
     Object? host = _Undefined,
     Object? location = _Undefined,
-    Object? port = _Undefined,
     Object? xPoweredBy = _Undefined,
     Object? accept = _Undefined,
     Object? acceptCharset = _Undefined,
@@ -1017,8 +1013,7 @@ class _HeadersImpl extends Headers {
       ifModifiedSince:
           ifModifiedSince is DateTime? ? ifModifiedSince : this.ifModifiedSince,
       from: from is String? ? from : this.from,
-      host: host is String? ? host : this.host,
-      port: port is int? ? port : this.port,
+      host: host is HostHeader ? host : this.host,
       location: location is Uri? ? location : this.location,
       xPoweredBy: xPoweredBy is String? ? xPoweredBy : this.xPoweredBy,
       accept: accept is AcceptHeader ? accept : this.accept,
@@ -1120,7 +1115,6 @@ class _HeadersImpl extends Headers {
       ifModifiedSince: other.ifModifiedSince,
       from: other.from,
       host: other.host,
-      port: other.port,
       location: other.location,
       xPoweredBy: other.xPoweredBy,
       accept: other.accept,

@@ -28,7 +28,8 @@ void main() {
     });
 
     test('ProxyAuthenticateHeader should handle empty string as input', () {
-      var proxyAuthenticateHeader = ProxyAuthenticateHeader.fromHeaderValue(['']);
+      var proxyAuthenticateHeader =
+          ProxyAuthenticateHeader.fromHeaderValue(['']);
       expect(proxyAuthenticateHeader.schemes, isEmpty);
     });
 
