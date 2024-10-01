@@ -45,7 +45,7 @@ withServerpod(
   String testGroupName,
   _i1.TestClosure<TestEndpoints> testClosure, {
   _i1.ResetTestSessions? resetTestSessions,
-  _i1.DatabaseTestConfig? databaseTestConfig,
+  _i1.RollbackDatabase? rollbackDatabase,
   String? runMode,
   bool? enableSessionLogging,
   bool? applyMigrations,
@@ -60,7 +60,7 @@ withServerpod(
       applyMigrations: applyMigrations,
     ),
     maybeResetTestSessions: resetTestSessions,
-    maybeDatabaseTestConfig: databaseTestConfig,
+    maybeRollbackDatabase: rollbackDatabase,
     maybeEnableSessionLogging: enableSessionLogging,
   )(testClosure);
 }
