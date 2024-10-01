@@ -269,6 +269,9 @@ testTools:
   - listenForNumbersOnSharedStream:
   - createSimpleData:
   - getAllSimpleData:
+  - createSimpleDatasInsideTransactions:
+  - createSimpleDataAndThrowInsideTransaction:
+  - createSimpleDatasInParallelTransactionCalls:
 authenticatedTestTools:
   - returnsString:
   - returnsStream:

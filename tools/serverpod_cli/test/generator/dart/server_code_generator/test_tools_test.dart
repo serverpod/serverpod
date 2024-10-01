@@ -49,16 +49,8 @@ void main() {
     test('then components needed by the end user are exported', () {
       expect(
         testToolsFile,
-        matches(
-            r"export\s+'package:serverpod_test/serverpod_test\.dart'\s+show\s+"
-            r'TestSession,\s+'
-            r'ConnectionClosedException,\s+'
-            r'ServerpodUnauthenticatedException,\s+'
-            r'ServerpodInsufficientAccessException,\s+'
-            r'RollbackDatabase,\s+'
-            r'ResetTestSessions,\s+'
-            r'flushMicrotasks,\s+'
-            r'AuthenticationOverride;'),
+        contains(
+            "export 'package:serverpod_test/serverpod_test_public_exports.dart'"),
       );
     }, skip: testToolsFile == null);
 

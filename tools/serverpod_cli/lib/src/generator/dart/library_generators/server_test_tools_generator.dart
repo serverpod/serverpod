@@ -455,16 +455,7 @@ class ServerTestToolsGenerator {
     library.directives.addAll([
       Directive.import(protocolPackageImportPath),
       Directive.import(endpointsPath),
-      Directive.export(serverpodTestUrl, show: const [
-        'TestSession',
-        'ConnectionClosedException',
-        'ServerpodUnauthenticatedException',
-        'ServerpodInsufficientAccessException',
-        'RollbackDatabase',
-        'ResetTestSessions',
-        'flushMicrotasks',
-        'AuthenticationOverride',
-      ]),
+      Directive.export(serverpodTestPublicExportsUrl),
     ]);
   }
 }

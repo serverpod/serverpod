@@ -70,29 +70,22 @@ class InternalTestSession extends TestSession {
   @override
   MessageCentralAccess get messages => serverpodSession.messages;
 
-  Transaction? _transaction;
   @override
-  Transaction? get transaction => _transaction;
-
-  set transaction(Transaction? transaction) {
-    _transaction = transaction;
-    serverpodSession.transaction = transaction;
-  }
+  Transaction? get transaction =>
+      serverpodSession.transactionManager.currentTransaction;
 
   /// Creates a new internal test session.
   InternalTestSession(
     TestServerpod testServerpod, {
     AuthenticationOverride? authenticationOverride,
     InternalTestSession? sessionWithDatabaseConnection,
-    Transaction? transaction,
     required bool enableLogging,
     required List<InternalTestSession> allTestSessions,
     required this.serverpodSession,
   })  : _allTestSessions = allTestSessions,
         _authenticationOverride = authenticationOverride,
         _testServerpod = testServerpod,
-        _enableLogging = enableLogging,
-        _transaction = transaction {
+        _enableLogging = enableLogging {
     _allTestSessions.add(this);
     _configureServerpodSession(serverpodSession);
   }
@@ -106,9 +99,10 @@ class InternalTestSession extends TestSession {
   }) {
     var newServerpodSession = _testServerpod.createSession(
       enableLogging: enableLogging ?? _enableLogging,
-      transaction: transaction,
       endpoint: endpoint,
       method: method,
+      rollbackDatabase: serverpodSession.rollbackDatabase,
+      transactionManager: serverpodSession.transactionManager,
     );
 
     return InternalTestSession(
@@ -116,7 +110,6 @@ class InternalTestSession extends TestSession {
       allTestSessions: _allTestSessions,
       authenticationOverride: authentication ?? _authenticationOverride,
       enableLogging: enableLogging ?? _enableLogging,
-      transaction: transaction,
       serverpodSession: newServerpodSession,
     );
   }
@@ -134,8 +127,9 @@ class InternalTestSession extends TestSession {
     await serverpodSession.close();
     _authenticationOverride = null;
     serverpodSession = _testServerpod.createSession(
-      transaction: _transaction,
       enableLogging: _enableLogging,
+      rollbackDatabase: serverpodSession.rollbackDatabase,
+      transactionManager: serverpodSession.transactionManager,
     );
     _configureServerpodSession(serverpodSession);
   }

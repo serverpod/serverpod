@@ -4647,6 +4647,54 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['testTools'] as _i35.TestToolsEndpoint)
                   .getAllSimpleData(session),
         ),
+        'createSimpleDatasInsideTransactions': _i1.MethodConnector(
+          name: 'createSimpleDatasInsideTransactions',
+          params: {
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testTools'] as _i35.TestToolsEndpoint)
+                  .createSimpleDatasInsideTransactions(
+            session,
+            params['data'],
+          ),
+        ),
+        'createSimpleDataAndThrowInsideTransaction': _i1.MethodConnector(
+          name: 'createSimpleDataAndThrowInsideTransaction',
+          params: {
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testTools'] as _i35.TestToolsEndpoint)
+                  .createSimpleDataAndThrowInsideTransaction(
+            session,
+            params['data'],
+          ),
+        ),
+        'createSimpleDatasInParallelTransactionCalls': _i1.MethodConnector(
+          name: 'createSimpleDatasInParallelTransactionCalls',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testTools'] as _i35.TestToolsEndpoint)
+                  .createSimpleDatasInParallelTransactionCalls(session),
+        ),
         'returnsSessionIdFromStream': _i1.MethodStreamConnector(
           name: 'returnsSessionIdFromStream',
           params: {},

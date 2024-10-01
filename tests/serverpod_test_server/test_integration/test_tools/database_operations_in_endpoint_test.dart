@@ -82,4 +82,326 @@ void main() {
     },
     runMode: ServerpodRunMode.production,
   );
+
+  withServerpod(
+    'Given TestToolsEndpoint and rollbackDatabase afterEach',
+    (endpoints, session) {
+      group('when calling createSimpleDatasInsideTransactions', () {
+        setUpAll(() async {
+          await endpoints.testTools
+              .createSimpleDatasInsideTransactions(session, 123);
+        });
+
+        test("then finds SimpleDatas", () async {
+          final simpleDatas = await SimpleData.db.find(session);
+          expect(simpleDatas.length, 2);
+          expect(simpleDatas[0].num, 123);
+          expect(simpleDatas[1].num, 123);
+        });
+
+        test('then should have been rolled back in the next test', () async {
+          var simpleDatas = await SimpleData.db.find(session);
+
+          expect(simpleDatas, hasLength(0));
+        });
+      });
+
+      group('when calling createSimpleDataAndThrowInsideTransaction', () {
+        setUpAll(() async {
+          try {
+            await endpoints.testTools
+                .createSimpleDataAndThrowInsideTransaction(session, 123);
+          } catch (e) {}
+        });
+
+        test('then only one transaction should have been comitted', () async {
+          var simpleDatas = await SimpleData.db.find(session);
+
+          expect(simpleDatas, hasLength(1));
+          expect(simpleDatas.first.num, 123);
+        });
+
+        test('then should have been rolled back in the next test', () async {
+          var simpleDatas = await SimpleData.db.find(session);
+
+          expect(simpleDatas, hasLength(0));
+        });
+      });
+
+      group('when calling createSimpleDatasInParallelTransactionCalls', () {
+        late Future endpointCall;
+        setUpAll(() async {
+          endpointCall = endpoints.testTools
+              .createSimpleDatasInParallelTransactionCalls(session);
+        });
+
+        test('then should enter invariant state and throw', () async {
+          await expectLater(
+            endpointCall,
+            throwsA(
+              allOf(
+                isA<InvalidConfigurationException>(),
+                predicate<InvalidConfigurationException>(
+                  (e) => e.message.contains(
+                    'Concurrent calls to transaction are not supported when database rollbacks are enabled. '
+                    'Disable rolling back the database by setting `rollbackDatabase` to `RollbackDatabase.disabled`.',
+                  ),
+                ),
+              ),
+            ),
+          );
+        });
+
+        test('then should have been rolled back in the next test', () async {
+          var simpleDatas = await SimpleData.db.find(session);
+
+          expect(simpleDatas, hasLength(0));
+        });
+      });
+    },
+    runMode: ServerpodRunMode.production,
+    rollbackDatabase: RollbackDatabase.afterEach,
+  );
+
+  group('Given TestToolsEndpoint and rollbackDatabase afterAll', () {
+    group('when calling createSimpleDatasInsideTransactions', () {
+      withServerpod(
+        '',
+        (endpoints, session) {
+          setUpAll(() async {
+            await endpoints.testTools
+                .createSimpleDatasInsideTransactions(session, 123);
+          });
+
+          test("then finds SimpleDatas", () async {
+            final simpleDatas = await SimpleData.db.find(session);
+            expect(simpleDatas.length, 2);
+            expect(simpleDatas[0].num, 123);
+            expect(simpleDatas[1].num, 123);
+          });
+
+          test('then should not have been rolled back in the next test',
+              () async {
+            var simpleDatas = await SimpleData.db.find(session);
+
+            expect(simpleDatas, hasLength(2));
+            expect(simpleDatas[0].num, 123);
+            expect(simpleDatas[1].num, 123);
+          });
+        },
+        runMode: ServerpodRunMode.production,
+        rollbackDatabase: RollbackDatabase.afterAll,
+      );
+
+      withServerpod(
+        'when fetching SimpleData in the next withServerpod',
+        (endpoints, session) {
+          test('then should have been rolled back', () async {
+            var simpleDatas = await SimpleData.db.find(session);
+
+            expect(simpleDatas, hasLength(0));
+          });
+        },
+        runMode: ServerpodRunMode.production,
+      );
+    });
+
+    group('when calling createSimpleDataAndThrowInsideTransaction', () {
+      withServerpod(
+        '',
+        (endpoints, session) {
+          setUpAll(() async {
+            try {
+              await endpoints.testTools
+                  .createSimpleDataAndThrowInsideTransaction(session, 123);
+            } catch (e) {}
+          });
+
+          test('then only one transaction should have been comitted', () async {
+            var simpleDatas = await SimpleData.db.find(session);
+
+            expect(simpleDatas, hasLength(1));
+            expect(simpleDatas.first.num, 123);
+          });
+        },
+        rollbackDatabase: RollbackDatabase.afterAll,
+        runMode: ServerpodRunMode.production,
+      );
+
+      withServerpod(
+        'when fetching SimpleData in the next withServerpod',
+        (endpoints, session) {
+          test('then should have been rolled back', () async {
+            var simpleDatas = await SimpleData.db.find(session);
+
+            expect(simpleDatas, hasLength(0));
+          });
+        },
+        runMode: ServerpodRunMode.production,
+      );
+    });
+
+    group('when calling createSimpleDatasInParallelTransactionCalls', () {
+      withServerpod(
+        '',
+        (endpoints, session) {
+          test('then should enter invariant state and throw', () async {
+            await expectLater(
+              endpoints.testTools
+                  .createSimpleDatasInParallelTransactionCalls(session),
+              throwsA(
+                allOf(
+                  isA<InvalidConfigurationException>(),
+                  predicate<InvalidConfigurationException>(
+                    (e) => e.message.contains(
+                      'Concurrent calls to transaction are not supported when database rollbacks are enabled. '
+                      'Disable rolling back the database by setting `rollbackDatabase` to `RollbackDatabase.disabled`.',
+                    ),
+                  ),
+                ),
+              ),
+            );
+          });
+        },
+        rollbackDatabase: RollbackDatabase.afterAll,
+        runMode: ServerpodRunMode.production,
+      );
+
+      withServerpod(
+        'when fetching SimpleData in the next withServerpod',
+        (endpoints, session) {
+          test('then should have been rolled back', () async {
+            var simpleDatas = await SimpleData.db.find(session);
+
+            expect(simpleDatas, hasLength(0));
+          });
+        },
+        runMode: ServerpodRunMode.production,
+      );
+    });
+  });
+
+  group('Given TestToolsEndpoint and rollbackDatabase disabled', () {
+    group('when calling createSimpleDatasInsideTransactions', () {
+      withServerpod(
+        '',
+        (endpoints, session) {
+          setUpAll(() async {
+            await endpoints.testTools
+                .createSimpleDatasInsideTransactions(session, 123);
+          });
+
+          test("then finds SimpleDatas in the test", () async {
+            final simpleDatas = await SimpleData.db.find(session);
+            expect(simpleDatas.length, 2);
+            expect(simpleDatas[0].num, 123);
+            expect(simpleDatas[1].num, 123);
+          });
+
+          test('then should not have been rolled back in the next test',
+              () async {
+            var simpleDatas = await SimpleData.db.find(session);
+
+            expect(simpleDatas, hasLength(2));
+            expect(simpleDatas[0].num, 123);
+            expect(simpleDatas[1].num, 123);
+          });
+        },
+        runMode: ServerpodRunMode.production,
+        rollbackDatabase: RollbackDatabase.disabled,
+      );
+
+      withServerpod(
+        'when fetching SimpleData in the next withServerpod',
+        (endpoints, session) {
+          tearDownAll(() async {
+            await SimpleData.db.deleteWhere(
+              session,
+              where: (_) => Constant.bool(true),
+            );
+          });
+
+          test(
+              'then should not have been rolled back and has to be deleted manually',
+              () async {
+            var simpleDatas = await SimpleData.db.find(session);
+
+            expect(simpleDatas, hasLength(2));
+            expect(simpleDatas[0].num, 123);
+            expect(simpleDatas[1].num, 123);
+          });
+        },
+        runMode: ServerpodRunMode.production,
+        rollbackDatabase: RollbackDatabase.disabled,
+      );
+    });
+
+    group('when calling createSimpleDataAndThrowInsideTransaction', () {
+      withServerpod(
+        '',
+        (endpoints, session) {
+          setUpAll(() async {
+            try {
+              await endpoints.testTools
+                  .createSimpleDataAndThrowInsideTransaction(session, 123);
+            } catch (e) {}
+          });
+
+          test('then only one transaction should have been comitted', () async {
+            var simpleDatas = await SimpleData.db.find(session);
+
+            expect(simpleDatas, hasLength(1));
+            expect(simpleDatas.first.num, 123);
+          });
+        },
+        rollbackDatabase: RollbackDatabase.disabled,
+        runMode: ServerpodRunMode.production,
+      );
+
+      withServerpod(
+        'when fetching SimpleData in the next withServerpod',
+        (endpoints, session) {
+          tearDownAll(() async {
+            await SimpleData.db.deleteWhere(
+              session,
+              where: (_) => Constant.bool(true),
+            );
+          });
+
+          test('then only committed data should have persisted', () async {
+            var simpleDatas = await SimpleData.db.find(session);
+
+            expect(simpleDatas, hasLength(1));
+          });
+        },
+        rollbackDatabase: RollbackDatabase.disabled,
+        runMode: ServerpodRunMode.production,
+      );
+    });
+
+    withServerpod(
+      'when calling createSimpleDatasInParallelTransactionCalls',
+      (endpoints, session) {
+        setUpAll(() async {
+          await endpoints.testTools
+              .createSimpleDatasInParallelTransactionCalls(session);
+        });
+
+        tearDownAll(() async {
+          await SimpleData.db.deleteWhere(
+            session,
+            where: (_) => Constant.bool(true),
+          );
+        });
+
+        test('then should execute and commit all transactions', () async {
+          var simpleDatas = await SimpleData.db.find(session);
+
+          expect(simpleDatas, hasLength(4));
+        });
+      },
+      rollbackDatabase: RollbackDatabase.disabled,
+      runMode: ServerpodRunMode.production,
+    );
+  });
 }
