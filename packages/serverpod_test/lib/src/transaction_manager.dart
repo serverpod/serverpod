@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_test/src/database_proxy.dart';
+
+import 'test_serverpod.dart';
 
 /// Thrown when trying to create a new transaction while another transaction is ongoing.
 class ConcurrentTransactionsException implements Exception {}
@@ -16,7 +17,7 @@ class TransactionManager {
   late Completer _endTransactionScopeCompleter;
 
   /// The underlying Serverpod session.
-  late Session serverpodSession;
+  late InternalServerpodSession serverpodSession;
 
   /// Creates a new [TransactionManager] instance.
   TransactionManager(this.serverpodSession);
@@ -34,7 +35,7 @@ class TransactionManager {
     late Transaction localTransaction;
 
     unawaited(
-      (serverpodSession.db as TestDatabaseProxy).transaction(
+      serverpodSession.db.transaction(
         (newTransaction) async {
           localTransaction = newTransaction;
 

@@ -1,5 +1,4 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_test/serverpod_test.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
@@ -144,8 +143,9 @@ void main() {
                 isA<InvalidConfigurationException>(),
                 predicate<InvalidConfigurationException>(
                   (e) => e.message.contains(
-                      'Several calls to `transaction` was made concurrently which is not supported with the current database test configuration. '
-                      'Disable rolling back the database by setting `databaseTestConfig` to `RollbackDatabase.disabled`.'),
+                    'Concurrent calls to transaction are not supported when database rollbacks are enabled. '
+                    'Disable rolling back the database by setting `rollbackDatabase` to `RollbackDatabase.disabled`.',
+                  ),
                 ),
               ),
             ),
@@ -254,8 +254,8 @@ void main() {
                   isA<InvalidConfigurationException>(),
                   predicate<InvalidConfigurationException>(
                     (e) => e.message.contains(
-                      'Several calls to `transaction` was made concurrently which is not supported with the current database test configuration. '
-                      'Disable rolling back the database by setting `databaseTestConfig` to `RollbackDatabase.disabled`.',
+                      'Concurrent calls to transaction are not supported when database rollbacks are enabled. '
+                      'Disable rolling back the database by setting `rollbackDatabase` to `RollbackDatabase.disabled`.',
                     ),
                   ),
                 ),

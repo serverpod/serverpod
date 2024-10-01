@@ -21,7 +21,7 @@ class InternalServerpodSession extends Session {
   Transaction? get transaction => transactionManager.currentTransaction;
 
   @override
-  Database get db => _dbProxy;
+  TestDatabaseProxy get db => _dbProxy;
 
   late TestDatabaseProxy _dbProxy;
 
