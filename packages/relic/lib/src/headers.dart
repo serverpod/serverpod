@@ -26,6 +26,7 @@ part 'headers/proxy_authenticate_header.dart';
 part 'headers/transfer_encoding_header.dart';
 part 'headers/host_header.dart';
 part 'headers/from_header.dart';
+part 'headers/if_range_header.dart';
 
 abstract class Headers {
   // Request Headers
@@ -70,7 +71,6 @@ abstract class Headers {
   static const _contentEncodingHeader = "content-encoding";
   static const _contentLanguageHeader = "content-language";
   static const _contentLocationHeader = "content-location";
-  static const _contentMD5Header = "content-md5";
   static const _contentRangeHeader = "content-range";
   static const _dateHeader = "date";
   static const _etagHeader = "etag";
@@ -116,7 +116,7 @@ abstract class Headers {
   final String? expect;
   final List<String>? ifMatch;
   final List<String>? ifNoneMatch;
-  final String? ifRange;
+  final IfRangeHeader? ifRange;
   final int? maxForwards;
   final ProxyAuthorizationHeader? proxyAuthorization;
   final RangeHeader? range;
@@ -132,14 +132,13 @@ abstract class Headers {
   final Uri? location;
   final String? xPoweredBy;
   final bool? accessControlAllowCredentials;
-  final String? accessControlAllowOrigin;
+  final Uri? accessControlAllowOrigin;
   final List<String>? accessControlExposeHeaders;
   final int? accessControlMaxAge;
   final CacheControlHeader? cacheControl;
   final List<String>? contentEncoding;
   final List<String>? contentLanguage;
-  final String? contentLocation;
-  final String? contentMD5;
+  final Uri? contentLocation;
   final ContentRangeHeader? contentRange;
   final ETagHeader? etag;
   final ProxyAuthenticateHeader? proxyAuthenticate;
@@ -186,7 +185,6 @@ abstract class Headers {
     _contentLanguageHeader,
     _contentLengthHeader,
     _contentLocationHeader,
-    _contentMD5Header,
     _contentRangeHeader,
     _etagHeader,
     _expectHeader,
@@ -243,7 +241,6 @@ abstract class Headers {
     this.contentEncoding,
     this.contentLanguage,
     this.contentLocation,
-    this.contentMD5,
     this.contentRange,
     this.etag,
     this.expect,
@@ -282,81 +279,88 @@ abstract class Headers {
           ? parseHttpDate(headers.value(_lastModifiedHeader)!)
           : null,
       from: FromHeader.tryParse(
-        headers[_fromHeader],
+        headers.parseMultipleValue(_fromHeader),
       ),
       host: HostHeader.tryParse(
         headers.host ?? headers.parseSingleValue(_hostHeader),
         port: headers.port,
       ),
-      accept: AcceptHeader.tryParse(headers[_acceptHeader]),
-      acceptCharset: headers[_acceptCharsetHeader],
-      acceptEncoding: headers[_acceptEncodingHeader],
-      acceptLanguage: headers[_acceptLanguageHeader],
-      acceptRanges: headers[_acceptRangesHeader],
+      xPoweredBy: headers.parseSingleValue(_xPoweredByHeader),
+      accept: AcceptHeader.tryParse(headers.parseMultipleValue(_acceptHeader)),
+      acceptCharset: headers.parseMultipleValue(_acceptCharsetHeader),
+      acceptEncoding: headers.parseMultipleValue(_acceptEncodingHeader),
+      acceptLanguage: headers.parseMultipleValue(_acceptLanguageHeader),
+      acceptRanges: headers.parseMultipleValue(_acceptRangesHeader),
       accessControlAllowCredentials: bool.tryParse(
         headers.parseSingleValue(_accessControlAllowCredentialsHeader) ?? '',
       ),
       accessControlAllowOrigin:
-          headers.parseSingleValue(_accessControlAllowOriginHeader),
-      accessControlExposeHeaders: headers[_accessControlExposeHeadersHeader],
+          headers.parseUri(_accessControlAllowOriginHeader),
+      accessControlExposeHeaders:
+          headers.parseMultipleValue(_accessControlExposeHeadersHeader),
       accessControlMaxAge: int.tryParse(
         headers.parseSingleValue(_accessControlMaxAgeHeader) ?? '',
       ),
-      accessControlRequestHeaders: headers[_accessControlRequestHeadersHeader],
+      accessControlRequestHeaders:
+          headers.parseMultipleValue(_accessControlRequestHeadersHeader),
       accessControlRequestMethod: Method.tryParse(
         headers.parseSingleValue(_accessControlRequestMethodHeader),
       ),
       age: int.tryParse(headers.parseSingleValue(_ageHeader) ?? ""),
-      allow: headers[_allowHeader]
+      allow: headers
+          .parseMultipleValue(_allowHeader)
           ?.map((e) => Method.tryParse(e))
           .nonNulls
           .toList(),
       contentDisposition: ContentDispositionHeader.tryParse(
-        headers[_contentDispositionHeader],
+        headers.parseMultipleValue(_contentDispositionHeader),
       ),
       cacheControl: CacheControlHeader.tryParse(
-        headers[_cacheControlHeader],
+        headers.parseMultipleValue(_cacheControlHeader),
       ),
       connection: ConnectionHeader.tryParse(
-        headers[_connectionHeader],
+        headers.parseMultipleValue(_connectionHeader),
       ),
-      contentEncoding: headers[_contentEncodingHeader],
-      contentLanguage: headers[_contentLanguageHeader],
-      contentLocation: headers.parseSingleValue(_contentLocationHeader),
-      contentMD5: headers.parseSingleValue(_contentMD5Header),
+      contentEncoding: headers.parseMultipleValue(_contentEncodingHeader),
+      contentLanguage: headers.parseMultipleValue(_contentLanguageHeader),
+      contentLocation: headers.parseUri(_contentLocationHeader),
       contentRange: ContentRangeHeader.tryParse(
-        headers[_contentRangeHeader],
+        headers.parseMultipleValue(_contentRangeHeader),
       ),
-      etag: ETagHeader.tryParse(headers[_etagHeader]),
+      etag: ETagHeader.tryParse(headers.parseMultipleValue(_etagHeader)),
       expect: headers.parseSingleValue(_expectHeader),
-      ifMatch: headers[_ifMatchHeader],
-      ifNoneMatch: headers[_ifNoneMatchHeader],
-      ifRange: headers.parseSingleValue(_ifRangeHeader),
+      ifMatch: headers.parseMultipleValue(_ifMatchHeader),
+      ifNoneMatch: headers.parseMultipleValue(_ifNoneMatchHeader),
+      ifRange: IfRangeHeader.tryParse(
+        headers.parseSingleValue(_ifRangeHeader),
+      ),
       maxForwards: int.tryParse(
         headers.parseSingleValue(_maxForwardsHeader) ?? '',
       ),
       mPragma: headers.parseSingleValue(_pragmaHeader),
       proxyAuthenticate: ProxyAuthenticateHeader.tryParse(
-        headers[_proxyAuthenticateHeader],
+        headers.parseMultipleValue(_proxyAuthenticateHeader),
       ),
       proxyAuthorization: ProxyAuthorizationHeader._tryParseHttpHeaders(
         headers,
       ),
-      range: RangeHeader.tryParse(headers[_rangeHeader]),
-      referer: Uri.tryParse(headers.parseSingleValue(_refererHeader) ?? ''),
-      retryAfter: RetryAfterHeader.tryParse(headers[_retryAfterHeader]),
-      server: ServerHeader.tryParse(headers[_serverHeader]),
-      te: headers[_teHeader],
-      trailer: headers[_trailerHeader],
+      range: RangeHeader.tryParse(headers.parseMultipleValue(_rangeHeader)),
+      referer: headers.parseUri(_refererHeader),
+      retryAfter: RetryAfterHeader.tryParse(
+          headers.parseMultipleValue(_retryAfterHeader)),
+      server: ServerHeader.tryParse(headers.parseMultipleValue(_serverHeader)),
+      te: headers.parseMultipleValue(_teHeader),
+      trailer: headers.parseMultipleValue(_trailerHeader),
       transferEncoding: TransferEncodingHeader.tryParse(
-        headers[_transferEncodingHeader],
+        headers.parseMultipleValue(_transferEncodingHeader),
       ),
-      upgrade: headers[_upgradeHeader],
+      upgrade: headers.parseMultipleValue(_upgradeHeader),
       userAgent: headers.parseSingleValue(_userAgentHeader),
-      vary: VaryHeader.tryParse(headers[_varyHeader]),
-      via: headers[_viaHeader],
-      warning: headers[_warningHeader],
-      wwwAuthenticate: headers[_wwwAuthenticateHeader],
+      location: headers.parseUri(_locationHeader),
+      vary: VaryHeader.tryParse(headers.parseMultipleValue(_varyHeader)),
+      via: headers.parseMultipleValue(_viaHeader),
+      warning: headers.parseMultipleValue(_warningHeader),
+      wwwAuthenticate: headers.parseMultipleValue(_wwwAuthenticateHeader),
       custom: CustomHeaders._fromHttpHeaders(
         headers,
         excludedHeaders: _managedHeaders,
@@ -385,7 +389,7 @@ abstract class Headers {
     String? expect,
     List<String>? ifMatch,
     List<String>? ifNoneMatch,
-    String? ifRange,
+    IfRangeHeader? ifRange,
     int? maxForwards,
     String? mPragma,
     ProxyAuthorizationHeader? proxyAuthorization,
@@ -435,7 +439,7 @@ abstract class Headers {
     Uri? location,
     String? xPoweredBy,
     bool? accessControlAllowCredentials,
-    String? accessControlAllowOrigin,
+    Uri? accessControlAllowOrigin,
     List<String>? accessControlExposeHeaders,
     int? accessControlMaxAge,
     int? age,
@@ -446,8 +450,7 @@ abstract class Headers {
     List<String>? contentEncoding,
     List<String>? contentLanguage,
     List<String>? acceptRanges,
-    String? contentLocation,
-    String? contentMD5,
+    Uri? contentLocation,
     ContentRangeHeader? contentRange,
     ETagHeader? etag,
     DateTime? lastModified,
@@ -480,7 +483,6 @@ abstract class Headers {
       contentLanguage: contentLanguage,
       acceptRanges: acceptRanges,
       contentLocation: contentLocation,
-      contentMD5: contentMD5,
       contentRange: contentRange,
       etag: etag,
       lastModified: lastModified,
@@ -574,7 +576,6 @@ abstract class Headers {
     if (contentLocation != null) {
       headers.set(_contentLocationHeader, contentLocation!);
     }
-    if (contentMD5 != null) headers.set(_contentMD5Header, contentMD5!);
     if (contentRange != null) headers.set(_contentRangeHeader, contentRange!);
     if (etag != null) headers.set(_etagHeader, etag!);
     if (expect != null) headers.set(_expectHeader, expect!);
@@ -641,7 +642,7 @@ abstract class Headers {
     List<String>? acceptLanguage,
     List<String>? acceptRanges,
     bool? accessControlAllowCredentials,
-    String? accessControlAllowOrigin,
+    Uri? accessControlAllowOrigin,
     List<String>? accessControlExposeHeaders,
     int? accessControlMaxAge,
     List<String>? accessControlRequestHeaders,
@@ -654,14 +655,13 @@ abstract class Headers {
     ConnectionHeader? connection,
     List<String>? contentEncoding,
     List<String>? contentLanguage,
-    String? contentLocation,
-    String? contentMD5,
+    Uri? contentLocation,
     ContentRangeHeader? contentRange,
     ETagHeader? etag,
     String? expect,
     List<String>? ifMatch,
     List<String>? ifNoneMatch,
-    String? ifRange,
+    IfRangeHeader? ifRange,
     String? lastModified,
     int? maxForwards,
     String? mPragma,
@@ -726,7 +726,6 @@ abstract class Headers {
       if (contentLanguage != null)
         '$_contentLanguageHeader: ${contentLanguage!.join(', ')}',
       if (contentLocation != null) '$_contentLocationHeader: $contentLocation',
-      if (contentMD5 != null) '$_contentMD5Header: $contentMD5',
       if (contentRange != null) '$_contentRangeHeader: $contentRange',
       if (etag != null) '$_etagHeader: $etag',
       if (expect != null) '$_expectHeader: $expect',
@@ -799,7 +798,6 @@ abstract class Headers {
       if (contentEncoding != null) _contentEncodingHeader: contentEncoding!,
       if (contentLanguage != null) _contentLanguageHeader: contentLanguage!,
       if (contentLocation != null) _contentLocationHeader: contentLocation!,
-      if (contentMD5 != null) _contentMD5Header: contentMD5!,
       if (contentRange != null) _contentRangeHeader: contentRange!,
       if (etag != null) _etagHeader: etag!,
       if (expect != null) _expectHeader: expect!,
@@ -862,7 +860,6 @@ abstract class Headers {
         (contentEncoding == null || contentEncoding!.isEmpty) &&
         (contentLanguage == null || contentLanguage!.isEmpty) &&
         contentLocation == null &&
-        contentMD5 == null &&
         contentRange == null &&
         etag == null &&
         expect == null &&
@@ -926,7 +923,6 @@ class _HeadersImpl extends Headers {
     super.contentEncoding,
     super.contentLanguage,
     super.contentLocation,
-    super.contentMD5,
     super.contentRange,
     super.etag,
     super.expect,
@@ -984,7 +980,6 @@ class _HeadersImpl extends Headers {
     Object? contentEncoding = _Undefined,
     Object? contentLanguage = _Undefined,
     Object? contentLocation = _Undefined,
-    Object? contentMD5 = _Undefined,
     Object? contentRange = _Undefined,
     Object? etag = _Undefined,
     Object? expect = _Undefined,
@@ -1031,7 +1026,7 @@ class _HeadersImpl extends Headers {
       accessControlAllowCredentials: accessControlAllowCredentials is bool
           ? accessControlAllowCredentials
           : this.accessControlAllowCredentials,
-      accessControlAllowOrigin: accessControlAllowOrigin is String
+      accessControlAllowOrigin: accessControlAllowOrigin is Uri
           ? accessControlAllowOrigin
           : this.accessControlAllowOrigin,
       accessControlExposeHeaders: accessControlExposeHeaders is List<String>
@@ -1062,15 +1057,14 @@ class _HeadersImpl extends Headers {
           ? contentLanguage
           : this.contentLanguage,
       contentLocation:
-          contentLocation is String ? contentLocation : this.contentLocation,
-      contentMD5: contentMD5 is String ? contentMD5 : this.contentMD5,
+          contentLocation is Uri ? contentLocation : this.contentLocation,
       contentRange:
           contentRange is ContentRangeHeader ? contentRange : this.contentRange,
       etag: etag is ETagHeader ? etag : this.etag,
       expect: expect is String ? expect : this.expect,
       ifMatch: ifMatch is List<String> ? ifMatch : this.ifMatch,
       ifNoneMatch: ifNoneMatch is List<String> ? ifNoneMatch : this.ifNoneMatch,
-      ifRange: ifRange is String ? ifRange : this.ifRange,
+      ifRange: ifRange is IfRangeHeader ? ifRange : this.ifRange,
       lastModified: lastModified is DateTime ? lastModified : this.lastModified,
       maxForwards: maxForwards is int ? maxForwards : this.maxForwards,
       mPragma: mPragma is String ? mPragma : this.mPragma,
@@ -1140,7 +1134,6 @@ class _HeadersImpl extends Headers {
       contentEncoding: other.contentEncoding,
       contentLanguage: other.contentLanguage,
       contentLocation: other.contentLocation,
-      contentMD5: other.contentMD5,
       contentRange: other.contentRange,
       etag: other.etag,
       expect: other.expect,

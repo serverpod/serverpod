@@ -105,15 +105,12 @@ void main() {
       expect(acceptHeader.mediaTypes[1].mimeType, equals('application/json'));
     });
 
-    test(
-        'Given an empty Accept header, it should return an empty list of media types',
-        () {
+    test('Given an empty Accept header, it should return null', () {
       var httpRequest = HttpRequestMock()..headers.add('Accept', '');
 
       var headers = Headers.fromHttpRequest(httpRequest);
-      var acceptHeader = headers.accept;
 
-      expect(acceptHeader!.mediaTypes, isEmpty);
+      expect(headers.accept, isNull);
     });
   });
 }

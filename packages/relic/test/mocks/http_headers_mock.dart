@@ -9,7 +9,12 @@ class HttpHeadersMock implements HttpHeaders {
     if (!_headers.containsKey(lowerName)) {
       _headers[lowerName] = [];
     }
-    _headers[lowerName]!.add(value.toString());
+
+    if (value.toString().isNotEmpty) {
+      _headers[lowerName]!.add(
+        value.toString(),
+      );
+    }
   }
 
   @override
@@ -17,6 +22,13 @@ class HttpHeadersMock implements HttpHeaders {
     _headers.forEach((name, values) {
       action(name, values);
     });
+  }
+
+  @override
+  String? value(String name) {
+    var values = _headers[name] ?? [];
+    if (values.length <= 1) return values.firstOrNull;
+    return null;
   }
 
   @override
