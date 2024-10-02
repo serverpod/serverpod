@@ -37,10 +37,9 @@ class RangeHeader {
   }
 
   /// Static method that attempts to parse the Range header and returns `null` if the value is `null`.
-  static RangeHeader? tryParse(List<String>? value) {
-    final first = value?.firstOrNull;
-    if (first == null) return null;
-    return RangeHeader.fromHeaderValue(first);
+  static RangeHeader? tryParse(String? value) {
+    if (value == null) return null;
+    return RangeHeader.fromHeaderValue(value);
   }
 
   /// Converts the [RangeHeader] instance into a string representation suitable for HTTP headers.

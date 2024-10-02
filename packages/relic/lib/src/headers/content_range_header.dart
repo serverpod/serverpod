@@ -48,10 +48,9 @@ class ContentRangeHeader {
   /// Static method that attempts to parse the Content-Range header value and returns `null` if the value is null.
   ///
   /// This method allows safe parsing by returning `null` only if the input value is `null`, otherwise it proceeds with parsing.
-  static ContentRangeHeader? tryParse(List<String>? value) {
-    final first = value?.firstOrNull;
-    if (first == null) return null;
-    return ContentRangeHeader.fromHeaderValue(first);
+  static ContentRangeHeader? tryParse(String? value) {
+    if (value == null) return null;
+    return ContentRangeHeader.fromHeaderValue(value);
   }
 
   /// Returns the full content range string in the format "bytes start-end/totalSize".

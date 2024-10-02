@@ -32,10 +32,9 @@ class RetryAfterHeader {
   }
 
   /// Static method that attempts to parse the Retry-After header and returns `null` if the value is `null`.
-  static RetryAfterHeader? tryParse(List<String>? value) {
-    final first = value?.firstOrNull;
-    if (first == null) return null;
-    return RetryAfterHeader.fromHeaderValue(first);
+  static RetryAfterHeader? tryParse(String? value) {
+    if (value == null) return null;
+    return RetryAfterHeader.fromHeaderValue(value);
   }
 
   /// Converts the [RetryAfterHeader] instance into a string representation suitable for HTTP headers.

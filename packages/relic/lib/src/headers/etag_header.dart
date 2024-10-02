@@ -33,10 +33,9 @@ class ETagHeader {
   }
 
   /// Static method that attempts to parse the ETag header and returns `null` if the value is `null`.
-  static ETagHeader? tryParse(List<String>? value) {
-    final first = value?.firstOrNull;
-    if (first == null) return null;
-    return ETagHeader.fromHeaderValue(first);
+  static ETagHeader? tryParse(String? value) {
+    if (value == null) return null;
+    return ETagHeader.fromHeaderValue(value);
   }
 
   /// Converts the [ETagHeader] instance into a string representation suitable for HTTP headers.

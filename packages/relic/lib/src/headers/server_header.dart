@@ -30,10 +30,9 @@ class ServerHeader {
   }
 
   /// Static method that attempts to parse the Server header and returns `null` if the value is `null`.
-  static ServerHeader? tryParse(List<String>? value) {
-    final first = value?.firstOrNull;
-    if (first == null) return null;
-    return ServerHeader.fromHeaderValue(first);
+  static ServerHeader? tryParse(String? value) {
+    if (value == null) return null;
+    return ServerHeader.fromHeaderValue(value);
   }
 
   /// Converts the [ServerHeader] instance into a string representation suitable for HTTP headers.

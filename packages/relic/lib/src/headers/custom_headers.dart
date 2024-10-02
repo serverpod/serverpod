@@ -32,7 +32,19 @@ class CustomHeaders extends UnmodifiableMapView<String, List<String>> {
       if (excludedHeaders.contains(name.toLowerCase())) {
         return;
       }
-      custom.add(MapEntry(name, values));
+
+      
+
+      custom.add(MapEntry(
+        name,
+        values.fold(
+          [],
+          (a, b) => [
+            ...a,
+            ...b.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty)
+          ],
+        ),
+      ));
     });
 
     if (custom.isEmpty) return _emptyCustomHeaders;
