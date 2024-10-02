@@ -94,8 +94,10 @@ void main() {
 
       final response = await makeRequest(handler, '/files');
       expect(response.statusCode, HttpStatus.movedPermanently);
-      expect(response.headers,
-          containsPair(HttpHeaders.locationHeader, 'http://localhost/files/'));
+      expect(
+        response.headers.location,
+        Uri.parse('http://localhost/files/'),
+      );
     });
 
     test('access "/files/" dir', () async {

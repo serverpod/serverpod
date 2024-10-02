@@ -98,7 +98,7 @@ void main() {
         () async {
       var headers = await getServerRequestHeaders(
         server: server,
-        headers: {'Retry-After': 'Wed, 21 Oct 2015 07:28:00 GMT'}, 
+        headers: {'Retry-After': 'Wed, 21 Oct 2015 07:28:00 GMT'},
       );
       var retryAfterHeader = headers.retryAfter;
 

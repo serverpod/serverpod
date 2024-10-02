@@ -161,7 +161,6 @@ class Request extends Message {
       body: Body.fromHttpRequest(request),
       onHijack: onHijack,
       context: {},
-      
     );
   }
 

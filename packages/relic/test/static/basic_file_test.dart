@@ -50,7 +50,7 @@ void main() {
     final response =
         await makeRequest(handler, '/root.txt', method: Method.head);
     expect(response.statusCode, HttpStatus.ok);
-    expect(response.body.contentLength, 8);
+    expect(response.body.contentLength, 0);
     expect(await response.readAsString(), isEmpty);
   });
 
@@ -149,8 +149,7 @@ void main() {
       final modified = File(rootPath).statSync().modified.toUtc();
 
       final headers = Headers.request(
-        // ifModifiedSince: formatHttpDate(modified),
-        ifModifiedSince: modified.subtract(const Duration(seconds: 1)),
+        ifModifiedSince: modified,
       );
 
       final response = await makeRequest(

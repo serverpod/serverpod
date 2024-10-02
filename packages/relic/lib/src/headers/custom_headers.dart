@@ -33,8 +33,6 @@ class CustomHeaders extends UnmodifiableMapView<String, List<String>> {
         return;
       }
 
-      
-
       custom.add(MapEntry(
         name,
         values.fold(

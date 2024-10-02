@@ -217,8 +217,12 @@ Future<Response> _handleFile(
         ? null
         : Body.fromDataStream(
             file.openRead(),
-            mimeType: MimeType.parse(contentType!),
+            mimeType: MimeType.tryParse(contentType),
+            contentLength: file.lengthSync(),
           ),
+    headers: Headers.response(
+      lastModified: file.lastModifiedSync(),
+    ),
   );
 }
 
@@ -279,6 +283,7 @@ Response? _fileRangeResponse(
         ? null
         : Body.fromDataStream(
             file.openRead(start, end + 1),
+            encoding: null,
             mimeType: MimeType.binary,
           ),
     headers: headers.copyWith(

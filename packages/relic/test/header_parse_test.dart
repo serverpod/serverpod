@@ -32,7 +32,9 @@ void main() {
       );
     });
 
-    test('Given an invalid Date header, it should throw InvalidHeaderValueException in strict mode', () async {
+    test(
+        'Given an invalid Date header, it should throw InvalidHeaderValueException in strict mode',
+        () async {
       expect(
         () async => await getServerRequestHeaders(
           server: server,
@@ -43,7 +45,9 @@ void main() {
       );
     });
 
-    test('Given a missing Date header, it should return null in non-strict mode', () async {
+    test(
+        'Given a missing Date header, it should return null in non-strict mode',
+        () async {
       Headers headers = await getServerRequestHeaders(
         server: server,
         headers: {},
@@ -54,7 +58,8 @@ void main() {
   });
 
   group('Content-Range Header Tests', () {
-    test('Given a valid Content-Range header, it should parse correctly', () async {
+    test('Given a valid Content-Range header, it should parse correctly',
+        () async {
       Headers headers = await getServerRequestHeaders(
         server: server,
         headers: {'Content-Range': 'bytes 0-499/1234'},
@@ -65,7 +70,9 @@ void main() {
       expect(headers.contentRange!.totalSize, equals(1234));
     });
 
-    test('Given an invalid Content-Range header, it should throw InvalidHeaderValueException in strict mode', () async {
+    test(
+        'Given an invalid Content-Range header, it should throw InvalidHeaderValueException in strict mode',
+        () async {
       expect(
         () async => await getServerRequestHeaders(
           server: server,
@@ -76,7 +83,8 @@ void main() {
       );
     });
 
-    test('Given an empty Content-Range header, it should return null', () async {
+    test('Given an empty Content-Range header, it should return null',
+        () async {
       Headers headers = await getServerRequestHeaders(
         server: server,
         headers: {'Content-Range': ''},
@@ -87,7 +95,9 @@ void main() {
   });
 
   group('Content-Disposition Header Tests', () {
-    test('Given a valid Content-Disposition header with filename, it should parse correctly', () async {
+    test(
+        'Given a valid Content-Disposition header with filename, it should parse correctly',
+        () async {
       Headers headers = await getServerRequestHeaders(
         server: server,
         headers: {'Content-Disposition': 'attachment; filename="file.txt"'},
@@ -96,7 +106,9 @@ void main() {
       expect(headers.contentDisposition!.filename, equals('file.txt'));
     });
 
-    test('Given an invalid Content-Disposition header, it should throw InvalidHeaderValueException in strict mode', () async {
+    test(
+        'Given an invalid Content-Disposition header, it should throw InvalidHeaderValueException in strict mode',
+        () async {
       expect(
         () async => await getServerRequestHeaders(
           server: server,
@@ -107,7 +119,8 @@ void main() {
       );
     });
 
-    test('Given an empty Content-Disposition header, it should return null', () async {
+    test('Given an empty Content-Disposition header, it should return null',
+        () async {
       Headers headers = await getServerRequestHeaders(
         server: server,
         headers: {'Content-Disposition': ''},
@@ -118,7 +131,9 @@ void main() {
   });
 
   group('Accept-Encoding Header Tests', () {
-    test('Given a valid Accept-Encoding header, it should parse multiple values', () async {
+    test(
+        'Given a valid Accept-Encoding header, it should parse multiple values',
+        () async {
       Headers headers = await getServerRequestHeaders(
         server: server,
         headers: {'Accept-Encoding': 'gzip, deflate, br'},
@@ -127,7 +142,9 @@ void main() {
       expect(headers.acceptEncoding, equals(['gzip', 'deflate', 'br']));
     });
 
-    test('Given an invalid Accept-Encoding header, it should throw InvalidHeaderValueException in strict mode', () async {
+    test(
+        'Given an invalid Accept-Encoding header, it should throw InvalidHeaderValueException in strict mode',
+        () async {
       expect(
         () async => await getServerRequestHeaders(
           server: server,
@@ -138,7 +155,8 @@ void main() {
       );
     });
 
-    test('Given an empty Accept-Encoding header, it should return null', () async {
+    test('Given an empty Accept-Encoding header, it should return null',
+        () async {
       Headers headers = await getServerRequestHeaders(
         server: server,
         headers: {'Accept-Encoding': ''},
@@ -149,7 +167,8 @@ void main() {
   });
 
   group('Referer Header Tests', () {
-    test('Given a valid Referer header, it should parse as URI correctly', () async {
+    test('Given a valid Referer header, it should parse as URI correctly',
+        () async {
       Headers headers = await getServerRequestHeaders(
         server: server,
         headers: {'Referer': 'https://example.com'},
@@ -158,7 +177,9 @@ void main() {
       expect(headers.referer!.toString(), equals('https://example.com'));
     });
 
-    test('Given an invalid Referer header, it should throw InvalidHeaderValueException in strict mode', () async {
+    test(
+        'Given an invalid Referer header, it should throw InvalidHeaderValueException in strict mode',
+        () async {
       expect(
         () async => await getServerRequestHeaders(
           server: server,

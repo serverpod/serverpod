@@ -69,12 +69,12 @@ class Body {
   factory Body.fromDataStream(
     Stream<List<int>> body, {
     Encoding? encoding = utf8,
-    MimeType mimeType = MimeType.plainText,
-    int? length,
+    MimeType? mimeType = MimeType.plainText,
+    int? contentLength,
   }) {
     return Body._(
       body,
-      length,
+      contentLength,
       encoding: encoding,
       mimeType: mimeType,
     );

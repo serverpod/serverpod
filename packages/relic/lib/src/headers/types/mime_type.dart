@@ -51,6 +51,11 @@ class MimeType {
     );
   }
 
+  static MimeType? tryParse(String? value) {
+    if (value == null) return null;
+    return MimeType.parse(value);
+  }
+
   @override
   String toString() => '$primaryType/$subType';
 }
