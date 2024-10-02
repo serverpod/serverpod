@@ -168,7 +168,10 @@ class MethodStreamManager {
     var closeSubscriptionFutures = outboundStreamContexts.map(
       (c) => c.subscription.cancel().timeout(
             _closeTimeout,
-            onTimeout: () => c.controller.onCancel?.call(),
+            onTimeout: () async {
+              await c.controller.onCancel?.call();
+              return null;
+            } as Future<Null> Function()?,
           ),
     );
 
