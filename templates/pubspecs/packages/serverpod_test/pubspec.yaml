@@ -17,6 +17,8 @@ dependencies:
   meta: ^1.8.0
 
 dependency_overrides:
+  relic:
+    path: ../relic
   serverpod:
     path: ../serverpod
   serverpod_shared:

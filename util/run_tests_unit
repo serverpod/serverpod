@@ -14,6 +14,7 @@ declare -a projectPaths=(
     "packages/serverpod_client"
     "packages/serverpod_shared" 
     "packages/serverpod_serialization"
+    "packages/relic"
     "tests/serverpod_test_client"
     "tests/serverpod_test_server"
     "modules/serverpod_auth/serverpod_auth_server"
