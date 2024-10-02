@@ -142,12 +142,12 @@ class SerializableModelFieldDefinition {
   // default valdatabase
   final dynamic defaultPersistValue;
 
-  /// returns true if one of the defauls its not null
-  bool get hasDefauls =>
+  /// returns true if one of the defaults its not null
+  bool get hasDefaults =>
       defaultModelValue != null || defaultPersistValue != null;
 
   /// returns true if only has database default
-  bool get hasOnlyDatabaseDefauls =>
+  bool get hasOnlyDatabaseDefaults =>
       defaultModelValue == null && defaultPersistValue != null;
 
   /// If set the field is a relation to another table. The type of the relation

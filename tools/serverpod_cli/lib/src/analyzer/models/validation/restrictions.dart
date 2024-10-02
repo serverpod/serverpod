@@ -1265,7 +1265,7 @@ class Restrictions {
       );
     }
 
-    if (field.hasOnlyDatabaseDefauls && !field.type.nullable) {
+    if (field.hasOnlyDatabaseDefaults && !field.type.nullable) {
       errors.add(
         SourceSpanSeverityException(
           'When setting only the "defaultPersist" key, its type should be nullable',

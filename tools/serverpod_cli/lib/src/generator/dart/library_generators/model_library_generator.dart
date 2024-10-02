@@ -967,7 +967,7 @@ class SerializableModelLibraryGenerator {
       ));
 
       for (SerializableModelFieldDefinition field in fields) {
-        if (!field.hasDefauls) continue;
+        if (!field.hasDefaults) continue;
 
         Code? defaultCode = _getDefaultValue(
           classDefinition,
@@ -1043,7 +1043,7 @@ class SerializableModelLibraryGenerator {
         .map((field) {
       bool shouldIncludeType = !setAsToThis || field.defaultModelValue != null;
 
-      bool hasDefaults = field.hasDefauls;
+      bool hasDefaults = field.hasDefaults;
 
       var type = field.type.reference(
         serverCode,
