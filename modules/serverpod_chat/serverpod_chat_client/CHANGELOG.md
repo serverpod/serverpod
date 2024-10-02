@@ -1,3 +1,6 @@
+## 2.1.3
+ - fix: Includes Dockerfile for Serverpod Mini projects.
+
 ## 2.1.2
  - fix: Supports updating full user name in auth module.
  - fix: Adds missing transaction parameter in `deleteWhere` query.
