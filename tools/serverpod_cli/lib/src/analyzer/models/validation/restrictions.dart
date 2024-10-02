@@ -228,7 +228,8 @@ class Restrictions {
       ];
     }
 
-    var parentClass = parsedModels.findByClassName(parentClassName);
+    var parentClass =
+        parsedModels.findByClassName(parentClassName) as ClassDefinition?;
 
     if (parentClass == null) {
       return [
@@ -243,15 +244,6 @@ class Restrictions {
       return [
         SourceSpanSeverityException(
           'You can only extend classes from your own project.',
-          span,
-        )
-      ];
-    }
-
-    if (parentClass is ClassDefinition && parentClass.tableName != null) {
-      return [
-        SourceSpanSeverityException(
-          'A parent class cannot have a table definition. Please remove the "table" property from the class "$parentClassName".',
           span,
         )
       ];
@@ -299,6 +291,20 @@ class Restrictions {
       return [
         SourceSpanSeverityException(
           'The table name "$tableName" exceeds the $_maxTableNameLength character table name limitation.',
+          span,
+        )
+      ];
+    }
+
+    var currentModel =
+        parsedModels.findByTableName(tableName) as ClassDefinition;
+
+    var ancestorWithTable = _findOtherTableClassInHierarchy(currentModel);
+
+    if (ancestorWithTable != null) {
+      return [
+        SourceSpanSeverityException(
+          '${currentModel.className} cannot have a table, another class in its hierarchy already declares a table "${ancestorWithTable.className}".',
           span,
         )
       ];
@@ -1377,5 +1383,30 @@ class Restrictions {
     if (definition is ClassDefinition) classDefinitions.add(definition);
 
     return classDefinitions;
+  }
+
+  ClassDefinition? _getParentClass(ClassDefinition currentClass) {
+    if (currentClass.extendsClass is! ResolvedInheritanceDefinition) {
+      return null;
+    }
+
+    return (currentClass.extendsClass as ResolvedInheritanceDefinition)
+        .classDefinition;
+  }
+
+  ClassDefinition? _findOtherTableClassInHierarchy(
+    ClassDefinition currentModel,
+  ) {
+    var parentModel = _getParentClass(currentModel);
+
+    while (parentModel != null) {
+      if (_hasTableDefined(parentModel)) {
+        return parentModel;
+      }
+
+      parentModel = _getParentClass(parentModel);
+    }
+
+    return null;
   }
 }

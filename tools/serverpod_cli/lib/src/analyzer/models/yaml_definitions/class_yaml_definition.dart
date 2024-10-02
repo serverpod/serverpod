@@ -30,17 +30,11 @@ class ClassYamlDefinition {
         valueRestriction: restrictions.validateExtendingClassName,
         isHidden: !restrictions.config
             .isExperimentalFeatureEnabled(ExperimentalFeature.inheritance),
-        mutuallyExclusiveKeys: {
-          Keyword.table,
-        },
       ),
       ValidateNode(
         Keyword.table,
         keyRestriction: restrictions.validateTableNameKey,
         valueRestriction: restrictions.validateTableName,
-        mutuallyExclusiveKeys: {
-          Keyword.extendsClass,
-        },
       ),
       ValidateNode(
         Keyword.managedMigration,

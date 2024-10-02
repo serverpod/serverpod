@@ -92,163 +92,125 @@ void main() {
     });
 
     test(
-        'Given a child-class is defined with the table property, then an error is collected that child-classes cannot have a table',
+        'Given a child class of a external class, then an error is collected that only classes from within the project can be extended',
         () {
       var modelSources = [
-        ModelSourceBuilder().withYaml(
-          '''
-          class: Example
-          fields:
-            name: String
-          ''',
-        ).build(),
-        ModelSourceBuilder().withFileName('example2').withYaml(
-          '''
-          class: ExampleChildClass
-          extends: Example
-          table: example_child_class
-          fields:
-            age: int
-          ''',
-        ).build(),
-      ];
-
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-          .validateAll();
-
-      expect(
-        collector.errors,
-        isNotEmpty,
-        reason: 'Expected an error but none was generated.',
-      );
-
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'The "extends" property is mutually exclusive with the "table" property.',
-      );
-    });
-
-    test(
-        'Given a child-class extends a class with a table defined, then collect an error that parent class cannot have a table',
-        () {
-      var modelSources = [
-        ModelSourceBuilder().withYaml(
-          '''
-          class: Example
-          table: example
-          fields:
-            name: String
-          ''',
-        ).build(),
-        ModelSourceBuilder().withFileName('example2').withYaml(
-          '''
-          class: ExampleChildClass
-          extends: Example
-          fields:
-            age: int
-          ''',
-        ).build(),
-      ];
-
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-          .validateAll();
-
-      expect(
-        collector.errors,
-        isNotEmpty,
-        reason: 'Expected an error but none was generated.',
-      );
-
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'A parent class cannot have a table definition. Please remove the "table" property from the class "Example".',
-      );
-    });
-  });
-
-  test(
-      'Given a child class of a external class, then an error is collected that only classes from within the project can be extended',
-      () {
-    var modelSources = [
-      ModelSourceBuilder()
-          .withYaml(
-            '''
+        ModelSourceBuilder()
+            .withYaml(
+              '''
           class: ExampleForeignClass
           fields:
             name: String
           ''',
-          )
-          .withModuleAlias('ModelSourceBuilder')
-          .build(),
-      ModelSourceBuilder().withFileName('example2').withYaml(
-        '''
+            )
+            .withModuleAlias('ModelSourceBuilder')
+            .build(),
+        ModelSourceBuilder().withFileName('example2').withYaml(
+          '''
           class: ExampleChildClass
           extends: ExampleForeignClass
           fields:
             age: int
           ''',
-      ).build(),
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-        .validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+          .validateAll();
 
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error but none was generated.',
-    );
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
 
-    var error = collector.errors.first;
-    expect(
-      error.message,
-      'You can only extend classes from your own project.',
-    );
-  });
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'You can only extend classes from your own project.',
+      );
+    });
 
-  test(
-      'Given a child-class when inheritance is not enabled, then error is collected that the "extends" property is not allowed',
-      () {
-    var modelSources = [
-      ModelSourceBuilder().withYaml(
-        '''
+    test(
+        'Given a child-class when inheritance is not enabled, then error is collected that the "extends" property is not allowed',
+        () {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
           class: Example
           fields:
             name: String
           ''',
-      ).build(),
-      ModelSourceBuilder().withFileName('example2').withYaml(
-        '''
+        ).build(),
+        ModelSourceBuilder().withFileName('example2').withYaml(
+          '''
           class: ExampleChildClass
           extends: Example
           fields:
             age: int
           ''',
-      ).build(),
-    ];
+        ).build(),
+      ];
 
-    var generatorConfig = GeneratorConfigBuilder().build();
+      var generatorConfig = GeneratorConfigBuilder().build();
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer(
-            generatorConfig, modelSources, onErrorsCollector(collector))
-        .validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+              generatorConfig, modelSources, onErrorsCollector(collector))
+          .validateAll();
 
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error but none was generated.',
-    );
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
 
-    var error = collector.errors.first;
-    expect(
-      error.message,
-      'The "extends" property is not allowed for class type. Valid keys are {class, table, managedMigration, serverOnly, fields, indexes}.',
-    );
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The "extends" property is not allowed for class type. Valid keys are {class, table, managedMigration, serverOnly, fields, indexes}.',
+      );
+    });
+
+    test(
+        'Given a child-class with table, When the parent-class also has a table, then error is collected that only one class in hierarchy can have a table',
+        () {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example_table
+          fields:
+            name: String
+          ''',
+        ).build(),
+        ModelSourceBuilder().withFileName('example2').withYaml(
+          '''
+          class: ExampleChildClass
+          table: example_child_table
+          extends: Example
+          fields:
+            age: int
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'ExampleChildClass cannot have a table, another class in its hierarchy already declares a table "Example".',
+      );
+    });
   });
 }
