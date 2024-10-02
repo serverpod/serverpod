@@ -22,12 +22,14 @@ abstract class Message {
 
   /// Returns the MIME type from the Content-Type header, if available.
   String? get mimeType {
-    return "${body.contentType.mimeType}";
+    if (body.contentType == null) return null;
+    return "${body.contentType!.mimeType}";
   }
 
   /// Returns the encoding specified in the Content-Type header, or null if not specified.
   Encoding? get encoding {
-    return body.contentType.encoding;
+    if (body.contentType == null) return null;
+    return body.contentType!.encoding;
   }
 
   /// Reads the body as a stream of bytes. Can only be called once.
@@ -35,7 +37,7 @@ abstract class Message {
 
   /// Reads the body as a string, decoding it using the specified or detected encoding.
   Future<String> readAsString([Encoding? encoding]) {
-    encoding ??= body.contentType.encoding ?? utf8;
+    encoding ??= body.contentType?.encoding ?? utf8;
     return encoding.decodeStream(read());
   }
 

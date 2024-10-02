@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:collection/collection.dart';
 import 'package:http_parser/http_parser.dart';
 
 import 'body.dart';
@@ -306,52 +305,47 @@ class Response extends Message {
 
     httpResponse.statusCode = statusCode;
 
-    // An adapter must not add or modify the `Transfer-Encoding` parameter, but
-    // the Dart SDK sets it by default. Set this before we fill in
-    // [response.headers] so that the user or relic server can explicitly override it if
-    // necessary.
-    httpResponse.headers.chunkedTransferEncoding = false;
+    headers.applyHeaders(
+      httpResponse,
+      body,
+      poweredByHeader: poweredByHeader,
+    );
 
-    headers.applyHeaders(httpResponse, body, poweredByHeader: poweredByHeader);
+    var mBody = _handleTransferEncoding(
+      httpResponse,
+      headers.transferEncoding,
+      statusCode,
+      body,
+    );
 
-    _handleTransferEncoding(httpResponse, statusCode, body);
-
-    return httpResponse.addStream(read()).then((_) => httpResponse.close());
+    return httpResponse
+        .addStream(mBody.read())
+        .then((_) => httpResponse.close());
   }
 }
 
-void _handleTransferEncoding(
+Body _handleTransferEncoding(
   HttpResponse httpResponse,
+  TransferEncodingHeader? transferEncoding,
   int statusCode,
   Body body,
 ) {
-  var transferEncoding = httpResponse.headers['transfer-encoding'];
-
-  if (_isChunkedEncoding(transferEncoding)) {
-    // If the response is already chunked, decode it to avoid double chunking
+  if (transferEncoding?.isChunked == true) {
+    // If the response is already chunked, decode it to avoid double chunking.
     body = Body.fromDataStream(chunkedCoding.decoder.bind(body.read()));
-    _setChunkedTransferEncodingHeader(httpResponse);
+    httpResponse.headers.set(HttpHeaders.transferEncodingHeader, 'chunked');
+    return body;
   } else if (_shouldEnableChunkedEncoding(statusCode, body)) {
-    // If content length is unknown and chunking is needed, set chunked encoding
-    _setChunkedTransferEncodingHeader(httpResponse);
+    // If content length is unknown and chunking is needed, set chunked encoding.
+    httpResponse.headers.set(HttpHeaders.transferEncodingHeader, 'chunked');
   }
-}
-
-bool _isChunkedEncoding(List<String>? transferEncoding) {
-  // Check if the 'Transfer-Encoding' header indicates chunked encoding
-  return transferEncoding != null &&
-      !equalsIgnoreAsciiCase(transferEncoding.first, 'identity');
+  return body;
 }
 
 bool _shouldEnableChunkedEncoding(int statusCode, Body body) {
-  // Determine if chunked encoding should be enabled based on status and body
   return statusCode >= 200 &&
       statusCode != 204 &&
       statusCode != 304 &&
       body.contentLength == null &&
-      body.contentType.mimeType.toString() != 'multipart/byteranges';
-}
-
-void _setChunkedTransferEncodingHeader(HttpResponse httpResponse) {
-  httpResponse.headers.set(HttpHeaders.transferEncodingHeader, 'chunked');
+      body.contentType?.mimeType.toString() != 'multipart/byteranges';
 }

@@ -158,9 +158,10 @@ class Request extends Message {
         request,
         strict: strictHeaders,
       ),
-      body: Body.fromDataStream(request),
+      body: Body.fromHttpRequest(request),
       onHijack: onHijack,
       context: {},
+      
     );
   }
 

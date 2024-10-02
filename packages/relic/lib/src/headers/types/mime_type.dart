@@ -1,3 +1,5 @@
+import 'dart:io';
+
 class MimeType {
   static const plainText = MimeType('text', 'plain');
 
@@ -39,6 +41,14 @@ class MimeType {
       throw FormatException('Invalid mime type $type');
     }
     return MimeType(primaryType, subType);
+  }
+
+  static MimeType? byContentType(ContentType? type) {
+    if (type == null) return null;
+    return MimeType(
+      type.primaryType,
+      type.subType,
+    );
   }
 
   @override

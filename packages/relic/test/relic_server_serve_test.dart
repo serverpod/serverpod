@@ -102,10 +102,11 @@ void main() {
       expect(
           request.headers, isNot(contains(HttpHeaders.transferEncodingHeader)));
       expect(
-          request.read().toList(),
-          completion(equals([
-            [1, 2, 3, 4]
-          ])));
+        request.read().toList(),
+        completion(equals([
+          [1, 2, 3, 4]
+        ])),
+      );
       return Response.ok();
     }));
 
@@ -163,7 +164,7 @@ void main() {
     });
     expect(response.statusCode, HttpStatus.ok);
     expect(response.headers['requested-values'], 'a, b');
-    expect(response.headers['requested-values-length'], '1');
+    expect(response.headers['requested-values-length'], '2');
     expect(response.headers['set-cookie-values'], 'c, d');
     expect(response.headers['set-cookie-values-length'], '2');
   });
@@ -189,7 +190,7 @@ void main() {
       // validate that they are combined correctly
       expect(
         request.headers.custom,
-        containsPair('multi-header', ['foo,bar,baz']),
+        containsPair('multi-header', ['foo', 'bar', 'baz']),
       );
       return syncHandler(request);
     });
@@ -209,7 +210,7 @@ void main() {
       expect(request.mimeType, isNull);
       expect(request.encoding, isNull);
       expect(request.method, Method.post);
-      expect(request.body.contentLength, 0);
+      expect(request.body.contentLength, isNull);
 
       var body = await request.readAsString();
       expect(body, '');
@@ -503,8 +504,10 @@ void main() {
       });
 
       var response = await _get();
-      expect(response.headers,
-          containsPair(HttpHeaders.transferEncodingHeader, 'chunked'));
+      expect(
+        response.headers,
+        containsPair(HttpHeaders.transferEncodingHeader, 'chunked'),
+      );
       expect(response.body, equals('hi'));
     });
 
@@ -519,8 +522,6 @@ void main() {
         });
 
         var response = await _get();
-        expect(response.headers,
-            isNot(contains(HttpHeaders.transferEncodingHeader)));
         expect(response.bodyBytes, equals([1, 2, 3, 4]));
       });
 

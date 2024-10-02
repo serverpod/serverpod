@@ -42,6 +42,11 @@ class TransferEncodingHeader {
     return encodings.contains(encoding);
   }
 
+  /// Checks if the Transfer-Encoding contains `chunked`.
+  bool get isChunked {
+    return encodings.map((e) => e.toLowerCase()).contains('chunked');
+  }
+
   /// Converts the [TransferEncodingHeader] instance into a string representation suitable for HTTP headers.
   ///
   /// This method generates the header string by concatenating the encodings with commas.

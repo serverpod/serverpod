@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:relic/src/headers/types/body_type.dart';
@@ -20,14 +21,16 @@ class Body {
   /// determined efficiently.
   final int? contentLength;
 
-  final BodyType contentType;
+  final BodyType? contentType;
 
   Body._(
     this._stream,
     this.contentLength, {
     Encoding? encoding,
-    required MimeType mimeType,
-  }) : contentType = BodyType(mimeType: mimeType, encoding: encoding);
+    MimeType? mimeType,
+  }) : contentType = mimeType == null
+            ? null
+            : BodyType(mimeType: mimeType, encoding: encoding);
 
   factory Body.empty({
     Encoding encoding = utf8,
@@ -39,6 +42,15 @@ class Body {
         encoding: encoding,
         mimeType: mimeType,
       );
+
+  factory Body.fromHttpRequest(HttpRequest request) {
+    return Body._(
+      request,
+      request.contentLength <= 0 ? null : request.contentLength,
+      encoding: Encoding.getByName(request.headers.contentType?.charset),
+      mimeType: MimeType.byContentType(request.headers.contentType),
+    );
+  }
 
   factory Body.fromString(
     String body, {
@@ -58,10 +70,11 @@ class Body {
     Stream<List<int>> body, {
     Encoding? encoding = utf8,
     MimeType mimeType = MimeType.plainText,
+    int? length,
   }) {
     return Body._(
       body,
-      null,
+      length,
       encoding: encoding,
       mimeType: mimeType,
     );
@@ -93,5 +106,15 @@ class Body {
     }
     _stream = null;
     return stream;
+  }
+
+  ContentType? getContentType() {
+    var mContentType = contentType;
+    if (mContentType == null) return null;
+    return ContentType(
+      mContentType.mimeType.primaryType,
+      mContentType.mimeType.subType,
+      charset: mContentType.encoding?.name,
+    );
   }
 }

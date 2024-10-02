@@ -574,6 +574,7 @@ abstract class Headers {
     DateTime? expires,
     Uri? location,
     String? xPoweredBy,
+    FromHeader? from,
     bool? accessControlAllowCredentials,
     Uri? accessControlAllowOrigin,
     List<String>? accessControlExposeHeaders,
@@ -612,6 +613,7 @@ abstract class Headers {
       accessControlMaxAge: accessControlMaxAge,
       age: age,
       allow: allow,
+      from: from,
       contentDisposition: contentDisposition,
       cacheControl: cacheControl,
       connection: connection,
@@ -757,11 +759,7 @@ abstract class Headers {
     headers.contentLength = body.contentLength ?? 0;
 
     // Set the content type from the Body
-    headers.contentType = io.ContentType(
-      body.contentType.mimeType.primaryType,
-      body.contentType.mimeType.subType,
-      charset: body.contentType.encoding?.name,
-    );
+    headers.contentType = body.getContentType();
   }
 
   Headers copyWith({
