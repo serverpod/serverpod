@@ -373,13 +373,13 @@ void main() {
 
   group('X-Powered-By header', () {
     const poweredBy = 'x-powered-by';
-    test('defaults to "Dart with package:shelf"', () async {
+    test('defaults to "Dart with package:relic_server"', () async {
       await _scheduleServer(syncHandler);
 
       var response = await _get();
       expect(
         response.headers,
-        containsPair(poweredBy, 'Dart with package:shelf'),
+        containsPair(poweredBy, 'Dart with package:relic_server'),
       );
     });
 
