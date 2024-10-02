@@ -89,6 +89,8 @@ class ClassDefinition extends SerializableModelDefinition {
         .firstWhere((element) => element.name == name, orElse: () => null);
   }
 
+  /// Returns the `ClassDefinition` of the parent class.
+  /// If there is no parent class, `null` is returned.
   ClassDefinition? get parentClass {
     var extendsClass = this.extendsClass;
     if (extendsClass is! ResolvedInheritanceDefinition) return null;
@@ -96,8 +98,22 @@ class ClassDefinition extends SerializableModelDefinition {
     return extendsClass.classDefinition;
   }
 
+  /// Returns a list of all fields in the parent class.
+  /// If there is no parent class, an empty list is returned.
   List<SerializableModelFieldDefinition> get parentFields =>
       parentClass?.fields ?? [];
+
+  /// Returns a list of all fields in this class, including inherited fields.
+  /// It ensures that the 'id' field, if present, is always included at the beginning of the list.
+  List<SerializableModelFieldDefinition> get allFields {
+    bool hasIdField = fields.any((element) => element.name == 'id');
+
+    return [
+      if (hasIdField) fields.firstWhere((element) => element.name == 'id'),
+      ...parentFields,
+      ...fields.where((element) => element.name != 'id'),
+    ];
+  }
 
   bool get isParentClass => childClasses.isNotEmpty;
 }

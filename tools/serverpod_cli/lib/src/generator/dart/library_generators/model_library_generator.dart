@@ -40,7 +40,7 @@ class SerializableModelLibraryGenerator {
   ) {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
-    var fields = classDefinition.fields;
+    var fields = classDefinition.allFields;
 
     var buildRepository = BuildRepositoryClass(
       serverCode: serverCode,
@@ -135,7 +135,6 @@ class SerializableModelLibraryGenerator {
         field.relation is ListRelationDefinition);
 
     var parentClass = classDefinition.parentClass;
-    var parentClassFields = classDefinition.parentFields;
 
     return Class((classBuilder) {
       classBuilder
@@ -191,7 +190,7 @@ class SerializableModelLibraryGenerator {
       }
 
       classBuilder.fields.addAll(_buildModelClassFields(
-        fields,
+        classDefinition.fields,
         tableName,
         classDefinition.subDirParts,
       ));
@@ -211,7 +210,7 @@ class SerializableModelLibraryGenerator {
           ),
         _buildModelClassFromJsonConstructor(
           className,
-          [...parentClassFields, ...fields],
+          fields,
           classDefinition,
         )
       ]);
@@ -226,14 +225,12 @@ class SerializableModelLibraryGenerator {
         classBuilder.methods.add(_buildCopyWithMethod(classDefinition, fields));
       }
       // Serialization
-      classBuilder.methods
-          .add(_buildModelClassToJsonMethod([...parentClassFields, ...fields]));
+      classBuilder.methods.add(_buildModelClassToJsonMethod(fields));
 
       // Serialization for database and everything
       if (serverCode) {
         classBuilder.methods.add(
-          _buildModelClassToJsonForProtocolMethod(
-              [...parentClassFields, ...fields]),
+          _buildModelClassToJsonForProtocolMethod(fields),
         );
 
         if (tableName != null) {
@@ -413,7 +410,7 @@ class SerializableModelLibraryGenerator {
         ..optionalParameters.addAll(
           _buildAbstractCopyWithParameters(
             classDefinition,
-            [...classDefinition.parentFields, ...fields],
+            fields,
           ),
         )
         ..returns = refer(className);
@@ -431,9 +428,7 @@ class SerializableModelLibraryGenerator {
           m.annotations.add(refer('override'));
         }
         m.optionalParameters.addAll(
-          [...classDefinition.parentFields, ...fields]
-              .where((field) => field.shouldIncludeField(serverCode))
-              .map(
+          fields.where((field) => field.shouldIncludeField(serverCode)).map(
             (field) {
               var fieldType = field.type.reference(
                 serverCode,
@@ -472,7 +467,7 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
-    return [...classDefinition.parentFields, ...fields]
+    return fields
         .where((field) => field.shouldIncludeField(serverCode))
         .fold({}, (map, field) {
       Expression assignment = _buildDeepCloneTree(
@@ -1021,11 +1016,9 @@ class SerializableModelLibraryGenerator {
         setAsToThis: false,
       ));
 
-      Map<String, Expression> namedParams = [
-        ...classDefinition.parentFields,
-        ...fields
-      ].where((field) => field.shouldIncludeField(serverCode)).fold({},
-          (map, field) {
+      Map<String, Expression> namedParams = fields
+          .where((field) => field.shouldIncludeField(serverCode))
+          .fold({}, (map, field) {
         return {
           ...map,
           field.name: refer(field.name),
@@ -1042,9 +1035,10 @@ class SerializableModelLibraryGenerator {
     String? tableName, {
     required bool setAsToThis,
   }) {
+    var classFields = classDefinition.fields;
     var inheritedFields = classDefinition.parentFields;
 
-    return [...classDefinition.parentFields, ...fields]
+    return fields
         .where((field) => field.shouldIncludeField(serverCode))
         .map((field) {
       bool shouldIncludeType = !setAsToThis || field.defaultModelValue != null;
@@ -1063,7 +1057,7 @@ class SerializableModelLibraryGenerator {
           ..named = true
           ..required = !(field.type.nullable || hasDefaults)
           ..type = shouldIncludeType ? type : null
-          ..toThis = !shouldIncludeType && fields.contains(field)
+          ..toThis = !shouldIncludeType && classFields.contains(field)
           ..toSuper = !shouldIncludeType && inheritedFields.contains(field)
           ..name = field.name,
       );
@@ -1154,7 +1148,9 @@ class SerializableModelLibraryGenerator {
       return Parameter(
         (p) => p
           ..named = true
-          ..type = type
+          ..type = field.name == 'id' && classDefinition.parentClass != null
+              ? refer('Object?')
+              : type
           ..name = field.name,
       );
     }).toList();
