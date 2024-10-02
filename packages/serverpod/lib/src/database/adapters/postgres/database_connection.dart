@@ -358,7 +358,7 @@ class DatabaseConnection {
     Session session,
     String query, {
     int? timeoutInSeconds,
-    Transaction? transaction,
+    required Transaction? transaction,
     bool ignoreRows = false,
     bool simpleQueryMode = false,
     QueryParameters? parameters,
@@ -473,7 +473,7 @@ class DatabaseConnection {
     Session session,
     String query, {
     int? timeoutInSeconds,
-    Transaction? transaction,
+    required Transaction? transaction,
   }) async {
     var result = await _query(
       session,
@@ -505,6 +505,7 @@ class DatabaseConnection {
       table,
       include,
       result,
+      transaction,
     );
 
     return result
@@ -555,6 +556,7 @@ class DatabaseConnection {
     Table table,
     Include? include,
     Iterable<Map<String, dynamic>> previousResultSet,
+    Transaction? transaction,
   ) async {
     if (include == null) return {};
 
@@ -597,13 +599,18 @@ class DatabaseConnection {
             .withInclude(nestedInclude.include)
             .build();
 
-        var includeListResult = await _mappedResultsQuery(session, query);
+        var includeListResult = await _mappedResultsQuery(
+          session,
+          query,
+          transaction: transaction,
+        );
 
         var resolvedLists = await _queryIncludedLists(
           session,
           nestedInclude.table,
           nestedInclude,
           includeListResult,
+          transaction,
         );
 
         var resolvedList = includeListResult
@@ -627,6 +634,7 @@ class DatabaseConnection {
           relativeRelationTable,
           nestedInclude,
           previousResultSet,
+          transaction,
         );
 
         resolvedListRelations.addAll(resolvedNestedListRelations);
