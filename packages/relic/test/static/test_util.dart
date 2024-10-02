@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:path/path.dart' as p;
 import 'package:relic/relic.dart';
 import 'package:relic/src/method/method.dart';
+import 'package:relic/src/relic_server.dart';
 import 'package:relic/src/static/extension/datetime_extension.dart';
 import 'package:test/test.dart';
+import 'package:http/http.dart' as http;
 
 final p.Context _ctx = p.url;
 
@@ -74,3 +78,34 @@ class _SecondResolutionDateTimeMatcher extends Matcher {
 
 bool _datesEqualToSecond(DateTime d1, DateTime d2) =>
     d1.toSecondResolution.isAtSameMomentAs(d2.toSecondResolution);
+
+/// Sends a mock HTTP GET request to the [server] and returns the parsed headers.
+///
+/// - [server]: The [RelicServer] to send the request to.
+/// - [headers]: A [Map] of headers to include in the request.
+/// - [strictHeaders]: Enforces strict header parsing if set to `true` (default: `false`).
+///
+/// Returns a [Future] that completes with the [Headers] from the request or throws an error.
+
+Future<Headers> getServerRequestHeaders({
+  required RelicServer server,
+  required Map<String, String> headers,
+  bool strictHeaders = false,
+}) async {
+  final Completer<Headers> completer = Completer();
+
+  server.mount(
+    (Request request) {
+      completer.complete(request.headers);
+      return Response.ok();
+    },
+    strictHeaders: strictHeaders,
+    exceptionHandler: (error, stackTrace) async {
+      completer.completeError(error);
+      return Response.internalServerError();
+    },
+  );
+
+  http.get(server.url, headers: headers);
+  return completer.future.timeout(const Duration(seconds: 1));
+}

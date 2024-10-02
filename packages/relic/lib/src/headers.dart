@@ -268,99 +268,235 @@ abstract class Headers {
     CustomHeaders? custom,
   }) : custom = custom ?? CustomHeaders.empty();
 
-  factory Headers.fromHttpRequest(io.HttpRequest request) {
+  factory Headers.fromHttpRequest(
+    io.HttpRequest request, {
+    bool strict = false,
+  }) {
     var headers = request.headers;
 
     return _HeadersImpl(
       date: headers.date,
       expires: headers.expires,
       ifModifiedSince: headers.ifModifiedSince,
-      lastModified: headers.value(_lastModifiedHeader) != null
-          ? parseHttpDate(headers.value(_lastModifiedHeader)!)
-          : null,
+      lastModified: headers.parseDate(
+        _lastModifiedHeader,
+        strict: strict,
+      ),
       from: FromHeader.tryParse(
-        headers.parseMultipleValue(_fromHeader),
+        headers.parseMultipleValue(
+          _fromHeader,
+          strict: strict,
+        ),
       ),
       host: HostHeader.tryParse(
-        headers.host ?? headers.parseSingleValue(_hostHeader),
+        headers.host ??
+            headers.parseSingleValue(
+              _hostHeader,
+              strict: strict,
+            ),
         port: headers.port,
       ),
-      xPoweredBy: headers.parseSingleValue(_xPoweredByHeader),
-      accept: AcceptHeader.tryParse(headers.parseMultipleValue(_acceptHeader)),
-      acceptCharset: headers.parseMultipleValue(_acceptCharsetHeader),
-      acceptEncoding: headers.parseMultipleValue(_acceptEncodingHeader),
-      acceptLanguage: headers.parseMultipleValue(_acceptLanguageHeader),
-      acceptRanges: headers.parseMultipleValue(_acceptRangesHeader),
-      accessControlAllowCredentials: bool.tryParse(
-        headers.parseSingleValue(_accessControlAllowCredentialsHeader) ?? '',
+      xPoweredBy: headers.parseSingleValue(
+        _xPoweredByHeader,
+        strict: strict,
       ),
-      accessControlAllowOrigin:
-          headers.parseUri(_accessControlAllowOriginHeader),
-      accessControlExposeHeaders:
-          headers.parseMultipleValue(_accessControlExposeHeadersHeader),
-      accessControlMaxAge: int.tryParse(
-        headers.parseSingleValue(_accessControlMaxAgeHeader) ?? '',
+      accept: AcceptHeader.tryParse(headers.parseMultipleValue(
+        _acceptHeader,
+        strict: strict,
+      )),
+      acceptCharset: headers.parseMultipleValue(
+        _acceptCharsetHeader,
+        strict: strict,
       ),
-      accessControlRequestHeaders:
-          headers.parseMultipleValue(_accessControlRequestHeadersHeader),
+      acceptEncoding: headers.parseMultipleValue(
+        _acceptEncodingHeader,
+        strict: strict,
+      ),
+      acceptLanguage: headers.parseMultipleValue(
+        _acceptLanguageHeader,
+        strict: strict,
+      ),
+      acceptRanges: headers.parseMultipleValue(
+        _acceptRangesHeader,
+        strict: strict,
+      ),
+      accessControlAllowCredentials: headers.parseBool(
+        _accessControlAllowCredentialsHeader,
+        strict: strict,
+      ),
+      accessControlAllowOrigin: headers.parseUri(
+        _accessControlAllowOriginHeader,
+        strict: strict,
+      ),
+      accessControlExposeHeaders: headers.parseMultipleValue(
+        _accessControlExposeHeadersHeader,
+        strict: strict,
+      ),
+      accessControlMaxAge: headers.parseInt(
+        _accessControlMaxAgeHeader,
+        strict: strict,
+      ),
+      accessControlRequestHeaders: headers.parseMultipleValue(
+        _accessControlRequestHeadersHeader,
+        strict: strict,
+      ),
       accessControlRequestMethod: Method.tryParse(
-        headers.parseSingleValue(_accessControlRequestMethodHeader),
+        headers.parseSingleValue(
+          _accessControlRequestMethodHeader,
+          strict: strict,
+        ),
       ),
-      age: int.tryParse(headers.parseSingleValue(_ageHeader) ?? ""),
+      age: headers.parseInt(
+        _ageHeader,
+        strict: strict,
+      ),
       allow: headers
-          .parseMultipleValue(_allowHeader)
+          .parseMultipleValue(
+            _allowHeader,
+            strict: strict,
+          )
           ?.map((e) => Method.tryParse(e))
           .nonNulls
           .toList(),
       contentDisposition: ContentDispositionHeader.tryParse(
-        headers.parseMultipleValue(_contentDispositionHeader),
+        headers.parseMultipleValue(
+          _contentDispositionHeader,
+          strict: strict,
+        ),
       ),
       cacheControl: CacheControlHeader.tryParse(
-        headers.parseMultipleValue(_cacheControlHeader),
+        headers.parseMultipleValue(
+          _cacheControlHeader,
+          strict: strict,
+        ),
       ),
       connection: ConnectionHeader.tryParse(
-        headers.parseMultipleValue(_connectionHeader),
+        headers.parseMultipleValue(
+          _connectionHeader,
+          strict: strict,
+        ),
       ),
-      contentEncoding: headers.parseMultipleValue(_contentEncodingHeader),
-      contentLanguage: headers.parseMultipleValue(_contentLanguageHeader),
-      contentLocation: headers.parseUri(_contentLocationHeader),
+      contentEncoding: headers.parseMultipleValue(
+        _contentEncodingHeader,
+        strict: strict,
+      ),
+      contentLanguage: headers.parseMultipleValue(
+        _contentLanguageHeader,
+        strict: strict,
+      ),
+      contentLocation: headers.parseUri(
+        _contentLocationHeader,
+        strict: strict,
+      ),
       contentRange: ContentRangeHeader.tryParse(
-        headers.parseMultipleValue(_contentRangeHeader),
+        headers.parseSingleValue(
+          _contentRangeHeader,
+          strict: strict,
+        ),
       ),
-      etag: ETagHeader.tryParse(headers.parseMultipleValue(_etagHeader)),
-      expect: headers.parseSingleValue(_expectHeader),
-      ifMatch: headers.parseMultipleValue(_ifMatchHeader),
-      ifNoneMatch: headers.parseMultipleValue(_ifNoneMatchHeader),
+      etag: ETagHeader.tryParse(headers.parseSingleValue(
+        _etagHeader,
+        strict: strict,
+      )),
+      expect: headers.parseSingleValue(
+        _expectHeader,
+        strict: strict,
+      ),
+      ifMatch: headers.parseMultipleValue(
+        _ifMatchHeader,
+        strict: strict,
+      ),
+      ifNoneMatch: headers.parseMultipleValue(
+        _ifNoneMatchHeader,
+        strict: strict,
+      ),
       ifRange: IfRangeHeader.tryParse(
-        headers.parseSingleValue(_ifRangeHeader),
+        headers.parseSingleValue(
+          _ifRangeHeader,
+          strict: strict,
+        ),
       ),
-      maxForwards: int.tryParse(
-        headers.parseSingleValue(_maxForwardsHeader) ?? '',
+      maxForwards: headers.parseInt(
+        _maxForwardsHeader,
+        strict: strict,
       ),
-      mPragma: headers.parseSingleValue(_pragmaHeader),
+      mPragma: headers.parseSingleValue(
+        _pragmaHeader,
+        strict: strict,
+      ),
       proxyAuthenticate: ProxyAuthenticateHeader.tryParse(
-        headers.parseMultipleValue(_proxyAuthenticateHeader),
+        headers.parseMultipleValue(
+          _proxyAuthenticateHeader,
+          strict: strict,
+        ),
       ),
       proxyAuthorization: ProxyAuthorizationHeader._tryParseHttpHeaders(
         headers,
       ),
-      range: RangeHeader.tryParse(headers.parseMultipleValue(_rangeHeader)),
-      referer: headers.parseUri(_refererHeader),
-      retryAfter: RetryAfterHeader.tryParse(
-          headers.parseMultipleValue(_retryAfterHeader)),
-      server: ServerHeader.tryParse(headers.parseMultipleValue(_serverHeader)),
-      te: headers.parseMultipleValue(_teHeader),
-      trailer: headers.parseMultipleValue(_trailerHeader),
-      transferEncoding: TransferEncodingHeader.tryParse(
-        headers.parseMultipleValue(_transferEncodingHeader),
+      range: RangeHeader.tryParse(headers.parseSingleValue(
+        _rangeHeader,
+        strict: strict,
+      )),
+      referer: headers.parseUri(
+        _refererHeader,
+        strict: strict,
       ),
-      upgrade: headers.parseMultipleValue(_upgradeHeader),
-      userAgent: headers.parseSingleValue(_userAgentHeader),
-      location: headers.parseUri(_locationHeader),
-      vary: VaryHeader.tryParse(headers.parseMultipleValue(_varyHeader)),
-      via: headers.parseMultipleValue(_viaHeader),
-      warning: headers.parseMultipleValue(_warningHeader),
-      wwwAuthenticate: headers.parseMultipleValue(_wwwAuthenticateHeader),
+      retryAfter: RetryAfterHeader.tryParse(
+        headers.parseSingleValue(
+          _retryAfterHeader,
+          strict: strict,
+        ),
+      ),
+      server: ServerHeader.tryParse(
+        headers.parseSingleValue(
+          _serverHeader,
+          strict: strict,
+        ),
+      ),
+      te: headers.parseMultipleValue(
+        _teHeader,
+        strict: strict,
+      ),
+      trailer: headers.parseMultipleValue(
+        _trailerHeader,
+        strict: strict,
+      ),
+      transferEncoding: TransferEncodingHeader.tryParse(
+        headers.parseMultipleValue(
+          _transferEncodingHeader,
+          strict: strict,
+        ),
+      ),
+      upgrade: headers.parseMultipleValue(
+        _upgradeHeader,
+        strict: strict,
+      ),
+      userAgent: headers.parseSingleValue(
+        _userAgentHeader,
+        strict: strict,
+      ),
+      location: headers.parseUri(
+        _locationHeader,
+        strict: strict,
+      ),
+      vary: VaryHeader.tryParse(
+        headers.parseMultipleValue(
+          _varyHeader,
+          strict: strict,
+        ),
+      ),
+      via: headers.parseMultipleValue(
+        _viaHeader,
+        strict: strict,
+      ),
+      warning: headers.parseMultipleValue(
+        _warningHeader,
+        strict: strict,
+      ),
+      wwwAuthenticate: headers.parseMultipleValue(
+        _wwwAuthenticateHeader,
+        strict: strict,
+      ),
       custom: CustomHeaders._fromHttpHeaders(
         headers,
         excludedHeaders: _managedHeaders,

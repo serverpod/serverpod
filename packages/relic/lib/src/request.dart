@@ -138,7 +138,10 @@ class Request extends Message {
           onHijack: onHijack == null ? null : _OnHijack(onHijack),
         );
 
-  factory Request.fromHttpRequest(io.HttpRequest request) {
+  factory Request.fromHttpRequest(
+    io.HttpRequest request, {
+    bool strictHeaders = false,
+  }) {
     void onHijack(void Function(StreamChannel<List<int>>) callback) {
       request.response
           .detachSocket(writeHeaders: false)
@@ -151,7 +154,10 @@ class Request extends Message {
       cookies: request.cookies,
       connectionInfo: request.connectionInfo,
       protocolVersion: request.protocolVersion,
-      headers: Headers.fromHttpRequest(request),
+      headers: Headers.fromHttpRequest(
+        request,
+        strict: strictHeaders,
+      ),
       body: Body.fromDataStream(request),
       onHijack: onHijack,
       context: {},

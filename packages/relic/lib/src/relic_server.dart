@@ -17,13 +17,14 @@ class RelicServer {
   /// Whether [mount] has been called.
   Handler? _handler;
 
+  /// Optional handler for exceptions.
+  ExceptionHandler? _exceptionHandler;
+
   Uri get url {
     if (server.address.isLoopback) {
       return Uri(scheme: 'http', host: 'localhost', port: server.port);
     }
 
-    // IPv6 addresses in URLs need to be enclosed in square brackets to avoid
-    // URL ambiguity with the ":" in the address.
     if (server.address.type == InternetAddressType.IPv6) {
       return Uri(
         scheme: 'http',
@@ -80,25 +81,33 @@ class RelicServer {
   /// Mounts a handler to the server. Only one handler can be mounted at a time.
   void mount(
     Handler handler, {
+    ExceptionHandler? exceptionHandler,
     String? poweredByHeader = 'Dart with package:relic_server',
+    bool strictHeaders = false,
   }) {
     if (_handler != null) {
       throw StateError("Can't mount two handlers for the same server.");
     }
     _handler = handler;
-    _serveRequests(poweredByHeader: poweredByHeader);
+    _exceptionHandler = exceptionHandler;
+    _serveRequests(
+      poweredByHeader: poweredByHeader,
+      strictHeaders: strictHeaders,
+    );
   }
 
   Future<void> close() => server.close();
 
   void _serveRequests({
     required String? poweredByHeader,
+    required bool strictHeaders,
   }) {
     catchTopLevelErrors(() {
       server.listen(
         (request) => _handleRequest(
           request,
           poweredByHeader: poweredByHeader,
+          strictHeaders: strictHeaders,
         ),
       );
     }, (error, stackTrace) {
@@ -113,6 +122,7 @@ class RelicServer {
   Future<void> _handleRequest(
     HttpRequest request, {
     required String? poweredByHeader,
+    required bool strictHeaders,
   }) async {
     var handler = _handler;
     if (handler == null) {
@@ -123,19 +133,30 @@ class RelicServer {
 
     Request relicRequest;
     try {
-      relicRequest = Request.fromHttpRequest(request);
+      relicRequest = Request.fromHttpRequest(
+        request,
+        strictHeaders: strictHeaders,
+      );
     } catch (error, stackTrace) {
       _logTopLevelError('Error parsing request.\n$error', stackTrace);
 
-      var response = (error is ArgumentError &&
-              (error.name == 'method' || error.name == 'requestedUri'))
-          ? Response.badRequest()
-          : Response.internalServerError();
+      if (_exceptionHandler != null) {
+        (await _exceptionHandler!(error, stackTrace)).writeHttpResponse(
+          request.response,
+          poweredByHeader: poweredByHeader,
+        );
+      } else {
+        var response = (error is ArgumentError &&
+                (error.name == 'method' || error.name == 'requestedUri'))
+            ? Response.badRequest()
+            : Response.internalServerError();
 
-      await response.writeHttpResponse(
-        request.response,
-        poweredByHeader: poweredByHeader,
-      );
+        await response.writeHttpResponse(
+          request.response,
+          poweredByHeader: poweredByHeader,
+        );
+      }
+
       return;
     }
 
@@ -143,9 +164,7 @@ class RelicServer {
     try {
       response = await handler(relicRequest);
     } on HijackException catch (error, stackTrace) {
-      // A HijackException should bypass the response-writing logic entirely.
       if (!relicRequest.canHijack) return;
-      // If the request wasn't hijacked, we shouldn't be seeing this exception.
       _logError(
         relicRequest,
         "Caught HijackException, but the request wasn't hijacked.",
@@ -158,8 +177,11 @@ class RelicServer {
         'Error thrown by handler.\n$error',
         stackTrace,
       );
-      response = Response.internalServerError();
-      return;
+      if (_exceptionHandler != null) {
+        response = await _exceptionHandler!(error, stackTrace);
+      } else {
+        response = Response.internalServerError();
+      }
     }
 
     if (relicRequest.canHijack) {
@@ -170,12 +192,10 @@ class RelicServer {
       return;
     }
 
-    var message = StringBuffer()
-      ..writeln('Got a response for hijacked request '
-          '${relicRequest.method} ${relicRequest.requestedUri}:')
-      ..writeln(response.statusCode)
-      ..writeln(response.headers);
-    throw Exception(message.toString().trim());
+    await response.writeHttpResponse(
+      request.response,
+      poweredByHeader: poweredByHeader,
+    );
   }
 }
 
@@ -184,7 +204,6 @@ void _logError(
   String message,
   StackTrace stackTrace,
 ) {
-  // Add information about the request itself.
   var buffer = StringBuffer();
   buffer.write('${request.method} ${request.requestedUri.path}');
   if (request.requestedUri.query.isNotEmpty) {

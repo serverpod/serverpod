@@ -49,6 +49,7 @@ Future<io.HttpServer> serve(
   int? backlog,
   bool shared = false,
   String? poweredByHeader = 'Dart with package:relic_server',
+  bool strictHeaders = false,
 }) async {
   backlog ??= 0;
 
@@ -67,6 +68,10 @@ Future<io.HttpServer> serve(
         shared: shared,
       ),
   };
-  server.mount(handler, poweredByHeader: poweredByHeader);
+  server.mount(
+    handler,
+    poweredByHeader: poweredByHeader,
+    strictHeaders: strictHeaders,
+  );
   return server.server;
 }

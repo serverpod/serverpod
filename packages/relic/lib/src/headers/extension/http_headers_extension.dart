@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:http_parser/http_parser.dart';
+import 'package:relic/src/headers/exception/invalid_header_value_exception.dart';
 
 /// Extension on `HttpHeaders` to provide utility methods for parsing header values.
 extension HttpHeadersExtension on HttpHeaders {
@@ -6,53 +8,73 @@ extension HttpHeadersExtension on HttpHeaders {
   ///
   /// - If a single value is found, it is returned.
   /// - If multiple values are present, the first value is returned.
-  /// - If the header is one that shouldn't be split by commas (e.g., `If-Range`), it won't split the value.
   /// - Returns `null` if no value is found.
-  String? parseSingleValue(String key) {
-    // Try to retrieve a single value using the value() method
+  /// - Throws an [InvalidHeaderValueException] if `strict` is `true` and the header has an empty or unexpected value.
+  ///
+  /// [strict] determines whether an exception is thrown for invalid or unexpected header values.
+  String? parseSingleValue(
+    String key, {
+    required bool strict,
+  }) {
     var singleValue = value(key);
-    if (singleValue != null) return singleValue;
-
-    // Check for multiple values in the header
-    var multiValues = this[key];
-
-    // For headers that shouldn't be split (e.g., 'If-Range'), return the first value
-    if (_shouldNotSplitHeader(key)) {
-      return multiValues?.firstOrNull;
+    if (singleValue != null) {
+      if (singleValue.isEmpty) {
+        if (strict) {
+          throw InvalidHeaderValueException(
+            "Header '$key' is present but has an empty value.",
+          );
+        }
+        return null;
+      }
+      return singleValue;
     }
 
-    // If the header can be split and contains only one value, return it
+    var multiValues = this[key];
+
     if (multiValues != null && multiValues.length == 1) {
       return multiValues.first;
     }
 
-    // If multiple values are present, return the first value (log warning if necessary)
+    if (strict) {
+      throw InvalidHeaderValueException(
+        "Header '$key' is present but has multiple values; expected a single value.",
+      );
+    }
+
     return multiValues?.firstOrNull;
   }
 
   /// Parses and returns multiple header values associated with [key] as a `List<String>`.
   ///
-  /// - For headers that should not be split by commas (e.g., `If-Range`), returns the values without splitting.
   /// - For headers that can be split, splits the values by commas and trims any whitespace.
   /// - Returns `null` if no values are found.
-  List<String>? parseMultipleValue(String key) {
+  /// - Throws an [InvalidHeaderValueException] if `strict` is `true` and the header contains only empty values.
+  ///
+  /// [strict] determines whether an exception is thrown for invalid or unexpected header values.
+  List<String>? parseMultipleValue(
+    String key, {
+    required bool strict,
+  }) {
     List<String>? multiValues = this[key];
 
     if (multiValues == null) return null;
 
-    var values = switch (_shouldNotSplitHeader(key)) {
-      true => multiValues,
-      false => multiValues.fold<List<String>>(
+    var values = multiValues
+        .fold<List<String>>(
           [],
           (a, b) => [
             ...a,
             ...b.split(',').map((value) => value.trim()),
           ],
-        ),
-    }
+        )
         .where((e) => e.isNotEmpty)
-        .map((e) => e.trim())
         .toList();
+
+    if (values.isEmpty && strict) {
+      throw InvalidHeaderValueException(
+        "Header '$key' is present but contains only empty values.",
+      );
+    }
 
     return values.isEmpty ? null : values;
   }
@@ -61,25 +83,90 @@ extension HttpHeadersExtension on HttpHeaders {
   ///
   /// - Returns a valid `Uri` if the header value contains a valid absolute URI.
   /// - Returns `null` if the value is invalid or empty.
-  Uri? parseUri(String key) {
-    var value = parseSingleValue(key);
+  /// - Throws an [InvalidHeaderValueException] if `strict` is `true` and the URI is invalid.
+  ///
+  /// [strict] determines whether an exception is thrown for invalid URIs.
+  Uri? parseUri(
+    String key, {
+    required bool strict,
+  }) {
+    var value = parseSingleValue(key, strict: strict);
     if (value == null || value.isEmpty) return null;
 
     final uri = Uri.tryParse(value);
-    return (uri != null && uri.isAbsolute) ? uri : null;
+
+    if (uri == null && strict) {
+      throw InvalidHeaderValueException(
+        "Header '$key' contains an invalid URI: $value.",
+      );
+    }
+
+    return uri;
   }
 
-  /// Determines whether the header specified by [key] should not be split by commas.
+  /// Parses a date from the header value associated with [key].
   ///
-  /// This is useful for headers like `If-Range` and `Date`, where commas may be part of the value.
-  bool _shouldNotSplitHeader(String key) {
-    const nonSplittingHeaders = {
-      'if-range',
-      'date',
-      'last-modified',
-      'etag',
-    };
+  /// - Returns a valid `DateTime` if the header value contains a valid date.
+  /// - Throws an [InvalidHeaderValueException] if the date is invalid, regardless of the `strict` flag.
+  DateTime? parseDate(
+    String key, {
+    required bool strict,
+  }) {
+    var singleValue = value(key);
+    if (singleValue == null) return null;
 
-    return nonSplittingHeaders.contains(key.toLowerCase());
+    try {
+      return parseHttpDate(singleValue);
+    } catch (e) {
+      throw InvalidHeaderValueException(
+        "Header '$key' contains an invalid date: $singleValue.",
+      );
+    }
+  }
+
+  /// Parses an integer from the header value associated with [key].
+  ///
+  /// - Returns a valid `int` if the header value contains a valid integer.
+  /// - Throws an [InvalidHeaderValueException] if `strict` is `true` and the integer is invalid.
+  ///
+  /// [strict] determines whether an exception is thrown for invalid integers.
+  int? parseInt(
+    String key, {
+    required bool strict,
+  }) {
+    var singleValue = value(key);
+    if (singleValue == null) return null;
+
+    final parsedInt = int.tryParse(singleValue);
+
+    if (parsedInt == null && strict) {
+      throw InvalidHeaderValueException(
+        "Header '$key' contains an invalid integer: $singleValue.",
+      );
+    }
+    return parsedInt;
+  }
+
+  /// Parses a boolean from the header value associated with [key].
+  ///
+  /// - Returns a valid `bool` if the header value contains a valid boolean.
+  /// - Throws an [InvalidHeaderValueException] if `strict` is `true` and the boolean is invalid.
+  ///
+  /// [strict] determines whether an exception is thrown for invalid booleans.
+  bool? parseBool(
+    String key, {
+    required bool strict,
+  }) {
+    var singleValue = value(key);
+    if (singleValue == null) return null;
+
+    final parsedBool = bool.tryParse(singleValue);
+
+    if (parsedBool == null && strict) {
+      throw InvalidHeaderValueException(
+        "Header '$key' contains an invalid boolean: $singleValue.",
+      );
+    }
+    return parsedBool;
   }
 }
