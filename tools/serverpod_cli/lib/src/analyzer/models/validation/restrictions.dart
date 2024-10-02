@@ -214,44 +214,6 @@ class Restrictions {
     return [];
   }
 
-  List<SourceSpanSeverityException> validateExtendingClassName(
-    String parentNodeName,
-    dynamic parentClassName,
-    SourceSpan? span,
-  ) {
-    if (parentClassName is! String) {
-      return [
-        SourceSpanSeverityException(
-          'The "${Keyword.extendsClass} type must be a String.',
-          span,
-        )
-      ];
-    }
-
-    var parentClass =
-        parsedModels.findByClassName(parentClassName) as ClassDefinition?;
-
-    if (parentClass == null) {
-      return [
-        SourceSpanSeverityException(
-          'The class "$parentClassName" was not found in any model.',
-          span,
-        )
-      ];
-    }
-
-    if (parentClass.moduleAlias != defaultModuleAlias) {
-      return [
-        SourceSpanSeverityException(
-          'You can only extend classes from your own project.',
-          span,
-        )
-      ];
-    }
-
-    return [];
-  }
-
   List<SourceSpanSeverityException> validateTableName(
     String parentNodeName,
     dynamic tableName,
@@ -305,6 +267,44 @@ class Restrictions {
       return [
         SourceSpanSeverityException(
           '${currentModel.className} cannot have a table, another class in its hierarchy already declares a table "${ancestorWithTable.className}".',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateExtendingClassName(
+    String parentNodeName,
+    dynamic parentClassName,
+    SourceSpan? span,
+  ) {
+    if (parentClassName is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.extendsClass} type must be a String.',
+          span,
+        )
+      ];
+    }
+
+    var parentClass =
+        parsedModels.findByClassName(parentClassName) as ClassDefinition?;
+
+    if (parentClass == null) {
+      return [
+        SourceSpanSeverityException(
+          'The class "$parentClassName" was not found in any model.',
+          span,
+        )
+      ];
+    }
+
+    if (parentClass.moduleAlias != defaultModuleAlias) {
+      return [
+        SourceSpanSeverityException(
+          'You can only extend classes from your own project.',
           span,
         )
       ];
