@@ -41,6 +41,10 @@ class MethodStreaming extends Endpoint {
     return stream.first;
   }
 
+  Stream<int?> getBroadcastStream(Session session) {
+    return StreamController<int?>.broadcast().stream;
+  }
+
   Stream<int> intStreamFromValue(Session session, int value) async* {
     for (var i in List.generate(value, (index) => index)) {
       yield i;
