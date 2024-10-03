@@ -3499,6 +3499,19 @@ class Endpoints extends _i1.EndpointDispatch {
             streamParams['stream']!.cast<int?>(),
           ),
         ),
+        'getBroadcastStream': _i1.MethodStreamConnector(
+          name: 'getBroadcastStream',
+          params: {},
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i23.MethodStreaming)
+                  .getBroadcastStream(session),
+        ),
         'intStreamFromValue': _i1.MethodStreamConnector(
           name: 'intStreamFromValue',
           params: {

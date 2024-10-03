@@ -4398,6 +4398,35 @@ class _MethodStreaming {
     });
   }
 
+  _i3.Stream<int?> getBroadcastStream(_i1.TestSession session) {
+    var _localTestStreamManager = _i1.TestStreamManager<int?>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (await (session as _i1.InternalTestSession).copyWith(
+          endpoint: 'methodStreaming',
+          method: 'getBroadcastStream',
+        ) as _i1.InternalTestSession);
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession.serverpodSession,
+          endpointPath: 'methodStreaming',
+          methodName: 'getBroadcastStream',
+          arguments: {},
+          requestedInputStreams: [],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession.serverpodSession,
+          {},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
   _i3.Stream<int> intStreamFromValue(
     _i1.TestSession session,
     int value,
