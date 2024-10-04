@@ -220,11 +220,9 @@ class ServerTestToolsGenerator {
                   .asA(refer('InternalTestSession', serverpodTestUrl))
                   .property('copyWith')
                   .call([], {
-                    'endpoint': literalString(endpoint.name),
-                    'method': literalString(method.name),
-                  })
-                  .awaited
-                  .asA(refer('InternalTestSession', serverpodTestUrl)))
+                'endpoint': literalString(endpoint.name),
+                'method': literalString(method.name),
+              }).asA(refer('InternalTestSession', serverpodTestUrl)))
               .statement,
           refer('var _localCallContext')
               .assign(refer('_endpointDispatch')
@@ -457,5 +455,7 @@ class ServerTestToolsGenerator {
       Directive.import(endpointsPath),
       Directive.export(serverpodTestPublicExportsUrl),
     ]);
+
+    library.ignoreForFile.add('no_leading_underscores_for_local_identifiers');
   }
 }
