@@ -171,6 +171,8 @@ class MethodStreamManager {
             onTimeout: () async {
               await c.controller.onCancel?.call();
               return null;
+              // This type case is needed to avoid a runtime exception
+              // Filed as bug on dart-lang/sdk: https://github.com/dart-lang/sdk/issues/56846
             } as Future<Null> Function()?,
           ),
     );
