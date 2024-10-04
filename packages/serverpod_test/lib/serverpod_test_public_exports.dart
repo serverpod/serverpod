@@ -7,7 +7,7 @@ export 'serverpod_test.dart'
     show
         AuthenticationOverride,
         ConnectionClosedException,
-        flushMicrotasks,
+        flushEventQueue,
         InvalidConfigurationException,
         RollbackDatabase,
         ServerpodInsufficientAccessException,
