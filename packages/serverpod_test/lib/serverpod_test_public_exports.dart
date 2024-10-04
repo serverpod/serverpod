@@ -9,7 +9,6 @@ export 'serverpod_test.dart'
         ConnectionClosedException,
         flushMicrotasks,
         InvalidConfigurationException,
-        ResetTestSessions,
         RollbackDatabase,
         ServerpodInsufficientAccessException,
         ServerpodUnauthenticatedException,

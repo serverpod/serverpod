@@ -121,11 +121,9 @@ class InternalTestSession extends TestSession {
     }
   }
 
-  /// Resets the internal state of the test session
-  /// and recreates the underlying Serverpod session.
-  Future<void> resetState() async {
+  /// Recreates the underlying Serverpod session.
+  Future<void> recreateServerpodSession() async {
     await serverpodSession.close();
-    _authenticationOverride = null;
     serverpodSession = _testServerpod.createSession(
       enableLogging: _enableLogging,
       rollbackDatabase: serverpodSession.rollbackDatabase,

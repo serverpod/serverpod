@@ -388,10 +388,6 @@ class ServerTestToolsGenerator {
         ])
         ..optionalParameters.addAll([
           Parameter((p) => p
-            ..name = 'resetTestSessions'
-            ..named = true
-            ..type = refer('ResetTestSessions?', serverpodTestUrl)),
-          Parameter((p) => p
             ..name = 'rollbackDatabase'
             ..named = true
             ..type = refer('RollbackDatabase?', serverpodTestUrl)),
@@ -430,7 +426,6 @@ class ServerTestToolsGenerator {
             ),
           ],
           {
-            'maybeResetTestSessions': refer('resetTestSessions'),
             'maybeRollbackDatabase': refer('rollbackDatabase'),
             'maybeEnableSessionLogging': refer('enableSessionLogging'),
           },
