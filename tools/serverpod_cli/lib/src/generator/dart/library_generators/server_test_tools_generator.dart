@@ -180,16 +180,26 @@ class ServerTestToolsGenerator {
                 'serializationManager': refer('_serializationManager'),
               }))
               .statement,
-          refer('_localCallContext')
-              .property('method')
-              .property('call')
-              .call([
-                refer('_localUniqueSession').property('serverpodSession'),
-                refer('_localCallContext').property('arguments'),
-              ])
-              .asA(method.returnType.reference(true, config: config))
-              .returned
+          refer('var _localReturnValue')
+              .assign(
+                refer('_localCallContext')
+                    .property('method')
+                    .property('call')
+                    .call([
+                      refer('_localUniqueSession').property('serverpodSession'),
+                      refer('_localCallContext').property('arguments'),
+                    ])
+                    .asA(method.returnType.reference(true, config: config))
+                    .awaited,
+              )
               .statement,
+          refer('_localUniqueSession')
+              .property('serverpodSession')
+              .property('close')
+              .call([])
+              .awaited
+              .statement,
+          refer('_localReturnValue').returned.statement,
         ])
         ..returns,
     ).closure;
