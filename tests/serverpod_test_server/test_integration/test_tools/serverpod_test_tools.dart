@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_test/serverpod_test.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
@@ -44,7 +46,6 @@ export 'package:serverpod_test/serverpod_test_public_exports.dart';
 withServerpod(
   String testGroupName,
   _i1.TestClosure<TestEndpoints> testClosure, {
-  _i1.ResetTestSessions? resetTestSessions,
   _i1.RollbackDatabase? rollbackDatabase,
   String? runMode,
   bool? enableSessionLogging,
@@ -59,7 +60,6 @@ withServerpod(
       runMode: runMode,
       applyMigrations: applyMigrations,
     ),
-    maybeResetTestSessions: resetTestSessions,
     maybeRollbackDatabase: rollbackDatabase,
     maybeEnableSessionLogging: enableSessionLogging,
   )(testClosure);
@@ -341,10 +341,12 @@ class _AsyncTasksEndpoint {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -364,10 +366,12 @@ class _AsyncTasksEndpoint {
         parameters: {'seconds': seconds},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -395,10 +399,12 @@ class _AuthenticationEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -415,10 +421,12 @@ class _AuthenticationEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<int>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -442,10 +450,12 @@ class _AuthenticationEndpoint {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -471,10 +481,12 @@ class _AuthenticationEndpoint {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i4.AuthenticationResponse>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -491,10 +503,12 @@ class _AuthenticationEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -518,10 +532,12 @@ class _AuthenticationEndpoint {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -552,10 +568,12 @@ class _BasicTypesEndpoint {
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<int?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -575,10 +593,12 @@ class _BasicTypesEndpoint {
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<double?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -598,10 +618,12 @@ class _BasicTypesEndpoint {
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<bool?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -621,10 +643,12 @@ class _BasicTypesEndpoint {
         parameters: {'dateTime': dateTime},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<DateTime?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -644,10 +668,12 @@ class _BasicTypesEndpoint {
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<String?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -667,10 +693,12 @@ class _BasicTypesEndpoint {
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i5.ByteData?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -690,10 +718,12 @@ class _BasicTypesEndpoint {
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Duration?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -713,10 +743,12 @@ class _BasicTypesEndpoint {
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i6.UuidValue?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -744,10 +776,12 @@ class _CloudStorageEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -771,10 +805,12 @@ class _CloudStorageEndpoint {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -794,10 +830,12 @@ class _CloudStorageEndpoint {
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i5.ByteData?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -817,10 +855,12 @@ class _CloudStorageEndpoint {
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<bool?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -840,10 +880,12 @@ class _CloudStorageEndpoint {
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -863,10 +905,12 @@ class _CloudStorageEndpoint {
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<String?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -886,10 +930,12 @@ class _CloudStorageEndpoint {
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<String?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -909,10 +955,12 @@ class _CloudStorageEndpoint {
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<bool>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -947,10 +995,12 @@ class _S3CloudStorageEndpoint {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -970,10 +1020,12 @@ class _S3CloudStorageEndpoint {
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i5.ByteData?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -993,10 +1045,12 @@ class _S3CloudStorageEndpoint {
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<bool?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1016,10 +1070,12 @@ class _S3CloudStorageEndpoint {
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1039,10 +1095,12 @@ class _S3CloudStorageEndpoint {
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<String?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1062,10 +1120,12 @@ class _S3CloudStorageEndpoint {
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<String?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1085,10 +1145,12 @@ class _S3CloudStorageEndpoint {
         parameters: {'path': path},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<bool>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -1117,10 +1179,12 @@ class _CustomClassProtocolEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i7.ProtocolCustomClass>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -1151,10 +1215,12 @@ class _CustomTypesEndpoint {
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i8.CustomClass>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1174,10 +1240,12 @@ class _CustomTypesEndpoint {
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i8.CustomClass?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1197,10 +1265,12 @@ class _CustomTypesEndpoint {
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i8.CustomClass2>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1220,10 +1290,12 @@ class _CustomTypesEndpoint {
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i8.CustomClass2?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1243,10 +1315,12 @@ class _CustomTypesEndpoint {
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i9.ExternalCustomClass>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1266,10 +1340,12 @@ class _CustomTypesEndpoint {
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i9.ExternalCustomClass?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1289,10 +1365,12 @@ class _CustomTypesEndpoint {
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i10.FreezedCustomClass>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1312,10 +1390,12 @@ class _CustomTypesEndpoint {
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i10.FreezedCustomClass?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -1343,10 +1423,12 @@ class _BasicDatabase {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1366,10 +1448,12 @@ class _BasicDatabase {
         parameters: {'num': num},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1389,10 +1473,12 @@ class _BasicDatabase {
         parameters: {'num': num},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1412,10 +1498,12 @@ class _BasicDatabase {
         parameters: {'numRows': numRows},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1439,10 +1527,12 @@ class _BasicDatabase {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<_i11.SimpleData>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1462,10 +1552,12 @@ class _BasicDatabase {
         parameters: {'num': num},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i11.SimpleData?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1485,10 +1577,12 @@ class _BasicDatabase {
         parameters: {'id': id},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i11.SimpleData?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1516,10 +1610,12 @@ class _BasicDatabase {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i12.SimpleDataList?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1539,10 +1635,12 @@ class _BasicDatabase {
         parameters: {'simpleData': simpleData},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i11.SimpleData>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1562,10 +1660,12 @@ class _BasicDatabase {
         parameters: {'simpleData': simpleData},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i11.SimpleData>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1585,10 +1685,12 @@ class _BasicDatabase {
         parameters: {'simpleData': simpleData},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<int>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1605,10 +1707,12 @@ class _BasicDatabase {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<int>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1625,10 +1729,12 @@ class _BasicDatabase {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<int>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1648,10 +1754,12 @@ class _BasicDatabase {
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i13.Types>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1671,10 +1779,12 @@ class _BasicDatabase {
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i13.Types>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1691,10 +1801,12 @@ class _BasicDatabase {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<int?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1711,10 +1823,12 @@ class _BasicDatabase {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<int>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1734,10 +1848,12 @@ class _BasicDatabase {
         parameters: {'id': id},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i13.Types?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1757,10 +1873,12 @@ class _BasicDatabase {
         parameters: {'id': id},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<int?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1780,10 +1898,12 @@ class _BasicDatabase {
         parameters: {'object': object},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i14.ObjectWithEnum>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1803,10 +1923,12 @@ class _BasicDatabase {
         parameters: {'id': id},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i14.ObjectWithEnum?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1826,10 +1948,12 @@ class _BasicDatabase {
         parameters: {'object': object},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i15.ObjectWithObject>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1849,10 +1973,12 @@ class _BasicDatabase {
         parameters: {'id': id},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i15.ObjectWithObject?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1869,10 +1995,12 @@ class _BasicDatabase {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<int>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1889,10 +2017,12 @@ class _BasicDatabase {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<bool>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -1923,10 +2053,12 @@ class _TransactionsDatabaseEndpoint {
         parameters: {'num': num},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -1952,10 +2084,12 @@ class _TransactionsDatabaseEndpoint {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<bool>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -1986,10 +2120,12 @@ class _DeprecationEndpoint {
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2006,10 +2142,12 @@ class _DeprecationEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<double>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -2037,10 +2175,12 @@ class _EchoRequestEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<String?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2060,10 +2200,12 @@ class _EchoRequestEndpoint {
         parameters: {'headerName': headerName},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<String>?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -2098,10 +2240,12 @@ class _EmailAuthTestMethods {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<String?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2121,10 +2265,12 @@ class _EmailAuthTestMethods {
         parameters: {'email': email},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<String?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2141,10 +2287,12 @@ class _EmailAuthTestMethods {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2170,10 +2318,12 @@ class _EmailAuthTestMethods {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<bool>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -2201,10 +2351,12 @@ class _ExceptionTestEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<String>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2221,10 +2373,12 @@ class _ExceptionTestEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<String>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2241,10 +2395,12 @@ class _ExceptionTestEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<String>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -2272,10 +2428,12 @@ class _FailedCallsEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2292,10 +2450,12 @@ class _FailedCallsEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2313,10 +2473,12 @@ class _FailedCallsEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<bool>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2333,10 +2495,12 @@ class _FailedCallsEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2353,10 +2517,12 @@ class _FailedCallsEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -2387,10 +2553,12 @@ class _FieldScopesEndpoint {
         parameters: {'object': object},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2408,10 +2576,12 @@ class _FieldScopesEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i16.ObjectFieldScopes?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -2442,10 +2612,12 @@ class _FutureCallsEndpoint {
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -2476,10 +2648,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<int>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2499,10 +2673,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<List<int>>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2522,10 +2698,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<int>?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2545,10 +2723,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<List<int>?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2568,10 +2748,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<List<int>>?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2591,10 +2773,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<int?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2614,10 +2798,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<int?>?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2637,10 +2823,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<double>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2660,10 +2848,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<double?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2683,10 +2873,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<bool>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2706,10 +2898,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<bool?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2729,10 +2923,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<String>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2752,10 +2948,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<String?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2775,10 +2973,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<DateTime>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2798,10 +2998,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<DateTime?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2821,10 +3023,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<_i5.ByteData>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2844,10 +3048,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<_i5.ByteData?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2867,10 +3073,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<_i11.SimpleData>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2890,10 +3098,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<_i11.SimpleData?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2913,10 +3123,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<_i11.SimpleData>?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2937,10 +3149,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<_i11.SimpleData?>?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2960,10 +3174,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<Duration>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -2983,10 +3199,12 @@ class _ListParametersEndpoint {
         parameters: {'list': list},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<Duration?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -3017,10 +3235,12 @@ class _LoggingEndpoint {
         parameters: {'seconds': seconds},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3040,10 +3260,12 @@ class _LoggingEndpoint {
         parameters: {'queries': queries},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3060,10 +3282,12 @@ class _LoggingEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3083,10 +3307,12 @@ class _LoggingEndpoint {
         parameters: {'delayMillis': delayMillis},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3103,10 +3329,12 @@ class _LoggingEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3123,10 +3351,12 @@ class _LoggingEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3150,10 +3380,12 @@ class _LoggingEndpoint {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3173,10 +3405,12 @@ class _LoggingEndpoint {
         parameters: {'message': message},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3202,10 +3436,12 @@ class _LoggingEndpoint {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3222,10 +3458,12 @@ class _LoggingEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3237,7 +3475,7 @@ class _LoggingEndpoint {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'logging',
           method: 'streamEmpty',
         ) as _i1.InternalTestSession);
@@ -3269,7 +3507,7 @@ class _LoggingEndpoint {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'logging',
           method: 'streamLogging',
         ) as _i1.InternalTestSession);
@@ -3301,7 +3539,7 @@ class _LoggingEndpoint {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'logging',
           method: 'streamQueryLogging',
         ) as _i1.InternalTestSession);
@@ -3366,10 +3604,12 @@ class _LoggingDisabledEndpoint {
         parameters: {'message': message},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -3400,10 +3640,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, int>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3423,10 +3665,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, int>?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3446,10 +3690,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, Map<String, int>>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3469,10 +3715,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, int?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3492,10 +3740,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, int?>?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3515,10 +3765,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<int, int>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3538,10 +3790,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<_i17.TestEnum, int>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3561,10 +3815,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, _i17.TestEnum>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3584,10 +3840,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, double>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3607,10 +3865,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, double?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3630,10 +3890,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, bool>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3653,10 +3915,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, bool?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3676,10 +3940,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, String>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3699,10 +3965,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, String?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3722,10 +3990,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, DateTime>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3745,10 +4015,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, DateTime?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3768,10 +4040,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, _i5.ByteData>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3791,10 +4065,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, _i5.ByteData?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3814,10 +4090,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, _i11.SimpleData>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3838,10 +4116,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, _i11.SimpleData?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3861,10 +4141,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, _i11.SimpleData>?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3885,10 +4167,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, _i11.SimpleData?>?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3908,10 +4192,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, Duration>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3931,10 +4217,12 @@ class _MapParametersEndpoint {
         parameters: {'map': map},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<Map<String, Duration?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -3965,10 +4253,12 @@ class _MethodSignaturePermutationsEndpoint {
         parameters: {'string': string},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<String>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -3988,10 +4278,12 @@ class _MethodSignaturePermutationsEndpoint {
         parameters: {'string': string},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<String>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -4011,10 +4303,12 @@ class _MethodSignaturePermutationsEndpoint {
         parameters: {'string': string},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<String?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -4034,10 +4328,12 @@ class _MethodSignaturePermutationsEndpoint {
         parameters: {'string': string},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<String?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -4061,10 +4357,12 @@ class _MethodSignaturePermutationsEndpoint {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<String?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -4088,10 +4386,12 @@ class _MethodSignaturePermutationsEndpoint {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<String?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -4115,10 +4415,12 @@ class _MethodSignaturePermutationsEndpoint {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<String?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -4130,7 +4432,7 @@ class _MethodSignaturePermutationsEndpoint {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'methodSignaturePermutations',
           method: 'echoNamedArgStream',
         ) as _i1.InternalTestSession);
@@ -4161,8 +4463,7 @@ class _MethodSignaturePermutationsEndpoint {
     var _localTestStreamManager = _i1.TestStreamManager<String>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (await (session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodSignaturePermutations',
         method: 'echoNamedArgStreamAsFuture',
       ) as _i1.InternalTestSession);
@@ -4192,7 +4493,7 @@ class _MethodSignaturePermutationsEndpoint {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'methodSignaturePermutations',
           method: 'echoPositionalArgStream',
         ) as _i1.InternalTestSession);
@@ -4223,8 +4524,7 @@ class _MethodSignaturePermutationsEndpoint {
     var _localTestStreamManager = _i1.TestStreamManager<String>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (await (session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodSignaturePermutations',
         method: 'echoPositionalArgStreamAsFuture',
       ) as _i1.InternalTestSession);
@@ -4262,7 +4562,7 @@ class _MethodStreaming {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'methodStreaming',
           method: 'simpleStream',
         ) as _i1.InternalTestSession);
@@ -4294,7 +4594,7 @@ class _MethodStreaming {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'methodStreaming',
           method: 'neverEndingStreamWithDelay',
         ) as _i1.InternalTestSession);
@@ -4331,10 +4631,12 @@ class _MethodStreaming {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -4345,8 +4647,7 @@ class _MethodStreaming {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (await (session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'intReturnFromStream',
       ) as _i1.InternalTestSession);
@@ -4375,8 +4676,7 @@ class _MethodStreaming {
     var _localTestStreamManager = _i1.TestStreamManager<int?>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (await (session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'nullableIntReturnFromStream',
       ) as _i1.InternalTestSession);
@@ -4406,7 +4706,7 @@ class _MethodStreaming {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'methodStreaming',
           method: 'intStreamFromValue',
         ) as _i1.InternalTestSession);
@@ -4438,7 +4738,7 @@ class _MethodStreaming {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'methodStreaming',
           method: 'intEchoStream',
         ) as _i1.InternalTestSession);
@@ -4470,7 +4770,7 @@ class _MethodStreaming {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'methodStreaming',
           method: 'dynamicEchoStream',
         ) as _i1.InternalTestSession);
@@ -4502,7 +4802,7 @@ class _MethodStreaming {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'methodStreaming',
           method: 'nullableIntEchoStream',
         ) as _i1.InternalTestSession);
@@ -4533,8 +4833,7 @@ class _MethodStreaming {
     var _localTestStreamManager = _i1.TestStreamManager<void>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (await (session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'voidReturnAfterStream',
       ) as _i1.InternalTestSession);
@@ -4565,7 +4864,7 @@ class _MethodStreaming {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'methodStreaming',
           method: 'multipleIntEchoStreams',
         ) as _i1.InternalTestSession);
@@ -4602,8 +4901,7 @@ class _MethodStreaming {
     var _localTestStreamManager = _i1.TestStreamManager<void>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (await (session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'directVoidReturnWithStreamInput',
       ) as _i1.InternalTestSession);
@@ -4632,8 +4930,7 @@ class _MethodStreaming {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (await (session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'directOneIntReturnWithStreamInput',
       ) as _i1.InternalTestSession);
@@ -4662,8 +4959,7 @@ class _MethodStreaming {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (await (session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'simpleInputReturnStream',
       ) as _i1.InternalTestSession);
@@ -4693,7 +4989,7 @@ class _MethodStreaming {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'methodStreaming',
           method: 'simpleStreamWithParameter',
         ) as _i1.InternalTestSession);
@@ -4725,7 +5021,7 @@ class _MethodStreaming {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'methodStreaming',
           method: 'simpleDataStream',
         ) as _i1.InternalTestSession);
@@ -4757,7 +5053,7 @@ class _MethodStreaming {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'methodStreaming',
           method: 'simpleInOutDataStream',
         ) as _i1.InternalTestSession);
@@ -4794,10 +5090,12 @@ class _MethodStreaming {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -4817,10 +5115,12 @@ class _MethodStreaming {
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -4840,10 +5140,12 @@ class _MethodStreaming {
         parameters: {'value': value},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<int>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -4863,10 +5165,12 @@ class _MethodStreaming {
         parameters: {'delay': delay},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -4878,7 +5182,7 @@ class _MethodStreaming {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'methodStreaming',
           method: 'delayedStreamResponse',
         ) as _i1.InternalTestSession);
@@ -4910,8 +5214,7 @@ class _MethodStreaming {
     var _localTestStreamManager = _i1.TestStreamManager<void>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (await (session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'delayedNeverListenedInputStream',
       ) as _i1.InternalTestSession);
@@ -4941,8 +5244,7 @@ class _MethodStreaming {
     var _localTestStreamManager = _i1.TestStreamManager<void>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (await (session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'delayedPausedInputStream',
       ) as _i1.InternalTestSession);
@@ -4977,10 +5279,12 @@ class _MethodStreaming {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -4991,8 +5295,7 @@ class _MethodStreaming {
     var _localTestStreamManager = _i1.TestStreamManager<void>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (await (session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'inStreamThrowsException',
       ) as _i1.InternalTestSession);
@@ -5021,8 +5324,7 @@ class _MethodStreaming {
     var _localTestStreamManager = _i1.TestStreamManager<void>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (await (session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'inStreamThrowsSerializableException',
       ) as _i1.InternalTestSession);
@@ -5049,7 +5351,7 @@ class _MethodStreaming {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'methodStreaming',
           method: 'outStreamThrowsException',
         ) as _i1.InternalTestSession);
@@ -5079,7 +5381,7 @@ class _MethodStreaming {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'methodStreaming',
           method: 'outStreamThrowsSerializableException',
         ) as _i1.InternalTestSession);
@@ -5110,8 +5412,7 @@ class _MethodStreaming {
     var _localTestStreamManager = _i1.TestStreamManager<void>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (await (session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'throwsExceptionVoid',
       ) as _i1.InternalTestSession);
@@ -5140,8 +5441,7 @@ class _MethodStreaming {
     var _localTestStreamManager = _i1.TestStreamManager<void>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (await (session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'throwsSerializableExceptionVoid',
       ) as _i1.InternalTestSession);
@@ -5170,8 +5470,7 @@ class _MethodStreaming {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (await (session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'throwsException',
       ) as _i1.InternalTestSession);
@@ -5200,8 +5499,7 @@ class _MethodStreaming {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (await (session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'throwsSerializableException',
       ) as _i1.InternalTestSession);
@@ -5228,7 +5526,7 @@ class _MethodStreaming {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'methodStreaming',
           method: 'throwsExceptionStream',
         ) as _i1.InternalTestSession);
@@ -5257,7 +5555,7 @@ class _MethodStreaming {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'methodStreaming',
           method: 'throwsSerializableExceptionStream',
         ) as _i1.InternalTestSession);
@@ -5288,8 +5586,7 @@ class _MethodStreaming {
     var _localTestStreamManager = _i1.TestStreamManager<bool>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (await (session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'didInputStreamHaveError',
       ) as _i1.InternalTestSession);
@@ -5318,8 +5615,7 @@ class _MethodStreaming {
     var _localTestStreamManager = _i1.TestStreamManager<bool>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (await (session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'methodStreaming',
         method: 'didInputStreamHaveSerializableExceptionError',
       ) as _i1.InternalTestSession);
@@ -5357,7 +5653,7 @@ class _AuthenticatedMethodStreaming {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'authenticatedMethodStreaming',
           method: 'simpleStream',
         ) as _i1.InternalTestSession);
@@ -5389,7 +5685,7 @@ class _AuthenticatedMethodStreaming {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'authenticatedMethodStreaming',
           method: 'intEchoStream',
         ) as _i1.InternalTestSession);
@@ -5437,10 +5733,12 @@ class _ModuleSerializationEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<bool>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -5460,10 +5758,12 @@ class _ModuleSerializationEndpoint {
         parameters: {'object': object},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i18.ModuleClass>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -5481,10 +5781,12 @@ class _ModuleSerializationEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i19.ModuleDatatype>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -5523,10 +5825,12 @@ class _NamedParametersEndpoint {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<bool>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -5550,10 +5854,12 @@ class _NamedParametersEndpoint {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<bool>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -5584,10 +5890,12 @@ class _OptionalParametersEndpoint {
         parameters: {'optionalInt': optionalInt},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<int?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -5622,10 +5930,12 @@ class _RedisEndpoint {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -5649,10 +5959,12 @@ class _RedisEndpoint {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -5672,10 +5984,12 @@ class _RedisEndpoint {
         parameters: {'key': key},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i11.SimpleData?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -5695,10 +6009,12 @@ class _RedisEndpoint {
         parameters: {'key': key},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -5715,10 +6031,12 @@ class _RedisEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -5738,10 +6056,12 @@ class _RedisEndpoint {
         parameters: {'channel': channel},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i11.SimpleData?>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -5765,10 +6085,12 @@ class _RedisEndpoint {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -5785,10 +6107,12 @@ class _RedisEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<int>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -5817,10 +6141,12 @@ class _ServerOnlyScopedFieldModelEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i20.ScopeServerOnlyField>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -5848,10 +6174,12 @@ class _SignInRequiredEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<bool>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -5879,10 +6207,12 @@ class _AdminScopeRequiredEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<bool>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -5917,10 +6247,12 @@ class _SimpleEndpoint {
         },
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -5937,10 +6269,12 @@ class _SimpleEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -5957,10 +6291,12 @@ class _SimpleEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<int>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -5980,10 +6316,12 @@ class _SimpleEndpoint {
         parameters: {'name': name},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<String>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -6025,10 +6363,12 @@ class _SubSubDirTestEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<String>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -6056,10 +6396,12 @@ class _SubDirTestEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<String>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -6087,10 +6429,12 @@ class _TestToolsEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i6.UuidValue>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -6108,10 +6452,12 @@ class _TestToolsEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<String?>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -6121,7 +6467,7 @@ class _TestToolsEndpoint {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'testTools',
           method: 'returnsSessionIdFromStream',
         ) as _i1.InternalTestSession);
@@ -6151,7 +6497,7 @@ class _TestToolsEndpoint {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'testTools',
           method: 'returnsSessionEndpointAndMethodFromStream',
         ) as _i1.InternalTestSession);
@@ -6191,10 +6537,12 @@ class _TestToolsEndpoint {
         parameters: {'string': string},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<String>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -6206,7 +6554,7 @@ class _TestToolsEndpoint {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'testTools',
           method: 'returnsStream',
         ) as _i1.InternalTestSession);
@@ -6237,8 +6585,7 @@ class _TestToolsEndpoint {
     var _localTestStreamManager = _i1.TestStreamManager<List<int>>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (await (session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'testTools',
         method: 'returnsListFromInputStream',
       ) as _i1.InternalTestSession);
@@ -6268,7 +6615,7 @@ class _TestToolsEndpoint {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'testTools',
           method: 'returnsStreamFromInputStream',
         ) as _i1.InternalTestSession);
@@ -6308,10 +6655,12 @@ class _TestToolsEndpoint {
         parameters: {'number': number},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -6323,7 +6672,7 @@ class _TestToolsEndpoint {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'testTools',
           method: 'postNumberToSharedStreamAndReturnStream',
         ) as _i1.InternalTestSession);
@@ -6352,7 +6701,7 @@ class _TestToolsEndpoint {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'testTools',
           method: 'listenForNumbersOnSharedStream',
         ) as _i1.InternalTestSession);
@@ -6392,10 +6741,12 @@ class _TestToolsEndpoint {
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -6413,10 +6764,12 @@ class _TestToolsEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<List<_i11.SimpleData>>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -6436,10 +6789,12 @@ class _TestToolsEndpoint {
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -6459,10 +6814,12 @@ class _TestToolsEndpoint {
         parameters: {'data': data},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -6480,10 +6837,12 @@ class _TestToolsEndpoint {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 }
@@ -6514,10 +6873,12 @@ class _AuthenticatedTestToolsEndpoint {
         parameters: {'string': string},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<String>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -6529,7 +6890,7 @@ class _AuthenticatedTestToolsEndpoint {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'authenticatedTestTools',
           method: 'returnsStream',
         ) as _i1.InternalTestSession);
@@ -6560,8 +6921,7 @@ class _AuthenticatedTestToolsEndpoint {
     var _localTestStreamManager = _i1.TestStreamManager<List<int>>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (await (session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
         endpoint: 'authenticatedTestTools',
         method: 'returnsListFromInputStream',
       ) as _i1.InternalTestSession);
@@ -6591,7 +6951,7 @@ class _AuthenticatedTestToolsEndpoint {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'authenticatedTestTools',
           method: 'intEchoStream',
         ) as _i1.InternalTestSession);
