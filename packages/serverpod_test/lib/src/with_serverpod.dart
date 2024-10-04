@@ -1,7 +1,7 @@
 import 'package:test/test.dart';
 
 import 'test_serverpod.dart';
-import 'test_session.dart';
+import 'test_session_builder.dart';
 import 'test_stream_manager.dart';
 import 'transaction_manager.dart';
 
@@ -49,8 +49,8 @@ enum RollbackDatabase {
 
 /// The test closure that is called by the `withServerpod` test helper.
 typedef TestClosure<T> = void Function(
+  TestSessionBuilder testSession,
   T endpoints,
-  TestSession testSession,
 );
 
 /// Builds the `withServerpod` test helper.
@@ -64,7 +64,7 @@ void Function(TestClosure<T>)
   bool? maybeEnableSessionLogging,
 }) {
   var rollbackDatabase = maybeRollbackDatabase ?? RollbackDatabase.afterEach;
-  List<InternalTestSession> allTestSessions = [];
+  List<InternalServerpodSession> allTestSessions = [];
 
   var mainServerpodSession = testServerpod.createSession(
     rollbackDatabase: rollbackDatabase,
@@ -73,11 +73,11 @@ void Function(TestClosure<T>)
   TransactionManager transactionManager =
       mainServerpodSession.transactionManager;
 
-  InternalTestSession mainTestSession = InternalTestSession(
+  InternalTestSessionBuilder mainTestSession = InternalTestSessionBuilder(
     testServerpod,
     allTestSessions: allTestSessions,
     enableLogging: maybeEnableSessionLogging ?? false,
-    serverpodSession: mainServerpodSession,
+    mainServerpodSession: mainServerpodSession,
   );
 
   return (
@@ -100,10 +100,6 @@ void Function(TestClosure<T>)
           await transactionManager.addSavePoint();
         }
 
-        for (var testSession in allTestSessions) {
-          await testSession.recreateServerpodSession();
-        }
-
         await GlobalStreamManager.closeAllStreams();
       });
 
@@ -114,14 +110,14 @@ void Function(TestClosure<T>)
         }
 
         for (var testSession in allTestSessions) {
-          await testSession.destroy();
+          await testSession.close();
         }
         allTestSessions.clear();
 
         await testServerpod.shutdown();
       });
 
-      testClosure(testServerpod.testEndpoints, mainTestSession);
+      testClosure(mainTestSession, testServerpod.testEndpoints);
     });
   };
 }

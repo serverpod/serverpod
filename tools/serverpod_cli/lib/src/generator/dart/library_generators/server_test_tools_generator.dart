@@ -106,8 +106,8 @@ class ServerTestToolsGenerator {
             [
               Parameter(
                 (p) => p
-                  ..name = 'session'
-                  ..type = refer('TestSession', serverpodTestUrl),
+                  ..name = 'sessionBuilder'
+                  ..type = refer('TestSessionBuilder', serverpodTestUrl),
               ),
               for (var parameter in method.parameters)
                 Parameter((p) => p
@@ -151,13 +151,13 @@ class ServerTestToolsGenerator {
         ..modifier = MethodModifier.async
         ..body = Block.of([
           refer('var _localUniqueSession')
-              .assign(refer('session')
-                  .asA(refer('InternalTestSession', serverpodTestUrl))
-                  .property('copyWith')
+              .assign(refer('sessionBuilder')
+                  .asA(refer('InternalTestSessionBuilder', serverpodTestUrl))
+                  .property('internalBuild')
                   .call([], {
                 'endpoint': literalString(endpoint.name),
                 'method': literalString(method.name),
-              }).asA(refer('InternalTestSession', serverpodTestUrl)))
+              }))
               .statement,
           refer('var _localCallContext')
               .assign(refer('_endpointDispatch')
@@ -168,9 +168,7 @@ class ServerTestToolsGenerator {
                   ..requiredParameters.add(
                     Parameter((p) => p..name = '_'),
                   )
-                  ..body = refer('_localUniqueSession')
-                      .property('serverpodSession')
-                      .code).closure,
+                  ..body = refer('_localUniqueSession').code).closure,
                 'endpointPath': literalString(endpoint.name),
                 'methodName': literalString(method.name),
                 'parameters': literalMap({
@@ -186,7 +184,7 @@ class ServerTestToolsGenerator {
                     .property('method')
                     .property('call')
                     .call([
-                      refer('_localUniqueSession').property('serverpodSession'),
+                      refer('_localUniqueSession'),
                       refer('_localCallContext').property('arguments'),
                     ])
                     .asA(method.returnType.reference(true, config: config))
@@ -194,7 +192,6 @@ class ServerTestToolsGenerator {
               )
               .statement,
           refer('_localUniqueSession')
-              .property('serverpodSession')
               .property('close')
               .call([])
               .awaited
@@ -226,13 +223,13 @@ class ServerTestToolsGenerator {
         ..modifier = MethodModifier.async
         ..body = Block.of([
           refer('var _localUniqueSession')
-              .assign(refer('session')
-                  .asA(refer('InternalTestSession', serverpodTestUrl))
-                  .property('copyWith')
+              .assign(refer('sessionBuilder')
+                  .asA(refer('InternalTestSessionBuilder', serverpodTestUrl))
+                  .property('internalBuild')
                   .call([], {
                 'endpoint': literalString(endpoint.name),
                 'method': literalString(method.name),
-              }).asA(refer('InternalTestSession', serverpodTestUrl)))
+              }))
               .statement,
           refer('var _localCallContext')
               .assign(refer('_endpointDispatch')
@@ -243,9 +240,7 @@ class ServerTestToolsGenerator {
                   ..requiredParameters.add(
                     Parameter((p) => p..name = '_'),
                   )
-                  ..body = refer('_localUniqueSession')
-                      .property('serverpodSession')
-                      .code).closure,
+                  ..body = refer('_localUniqueSession').code).closure,
                 'endpointPath': literalString(endpoint.name),
                 'methodName': literalString(method.name),
                 'arguments': literalMap({
@@ -261,7 +256,7 @@ class ServerTestToolsGenerator {
               .property('callStreamMethod')
               .call([
                 refer('_localCallContext'),
-                refer('_localUniqueSession').property('serverpodSession'),
+                refer('_localUniqueSession'),
                 literalMap({
                   for (var parameter in streamParameters)
                     literalString(parameter.name): refer(parameter.name).code,

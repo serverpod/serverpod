@@ -337,7 +337,7 @@ void main() {
         expect(
             testToolsFile,
             matches(
-                r'Future<String> futureMethod\(_i\d\.TestSession session\) async \{'));
+                r'Future<String> futureMethod\(_i\d\.TestSessionBuilder sessionBuilder\) async \{'));
       },
       skip: testToolsFile == null,
     );
@@ -396,7 +396,7 @@ void main() {
         expect(
             testToolsFile,
             matches(
-                r'Stream<String> streamMethod\(_i\d\.TestSession session\) \{'));
+                r'Stream<String> streamMethod\(_i\d\.TestSessionBuilder sessionBuilder\) \{'));
       },
       skip: testToolsFile == null,
     );
@@ -459,7 +459,7 @@ void main() {
         expect(
             testToolsFile,
             contains('  Future<String> nonStreamMethod(\n'
-                '    _i1.TestSession session, {\n'
+                '    _i1.TestSessionBuilder sessionBuilder, {\n'
                 '    required String stringParam,\n'
                 '  }) async {\n'));
       },
@@ -525,7 +525,7 @@ void main() {
         expect(
             testToolsFile,
             contains('  Future<String> nonStreamMethod(\n'
-                '    _i1.TestSession session, [\n'
+                '    _i1.TestSessionBuilder sessionBuilder, [\n'
                 '    String? stringParam,\n'
                 '  ]) async {'));
       },
@@ -590,7 +590,7 @@ void main() {
         expect(
             testToolsFile,
             contains('  Future<String> nonStreamMethod(\n'
-                '    _i1.TestSession session, {\n'
+                '    _i1.TestSessionBuilder sessionBuilder, {\n'
                 '    String? stringParam,\n'
                 '  }) async {\n'));
       },
@@ -655,7 +655,7 @@ void main() {
         expect(
             testToolsFile,
             contains('  Future<String> streamMethod(\n'
-                '    _i1.TestSession session,\n'
+                '    _i1.TestSessionBuilder sessionBuilder,\n'
                 '    Stream<String> streamParam,\n'
                 '  ) async {'));
       },
@@ -722,7 +722,7 @@ void main() {
         expect(
             testToolsFile,
             contains('  Future<String> streamMethod(\n'
-                '    _i1.TestSession session, {\n'
+                '    _i1.TestSessionBuilder sessionBuilder, {\n'
                 '    required Stream<String> streamParam,\n'
                 '  }) async {'));
       },
@@ -793,7 +793,7 @@ void main() {
         expect(
             testToolsFile,
             contains('  Stream<String> streamMethod(\n'
-                '    _i1.TestSession session,\n'
+                '    _i1.TestSessionBuilder sessionBuilder,\n'
                 '    Stream<String> streamParam,\n'
                 '  ) {'));
       },

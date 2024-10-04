@@ -322,15 +322,16 @@ class _AsyncTasksEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<void> insertRowToSimpleDataAfterDelay(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int num,
     int seconds,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'asyncTasks',
         method: 'insertRowToSimpleDataAfterDelay',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'asyncTasks',
@@ -351,14 +352,15 @@ class _AsyncTasksEndpoint {
   }
 
   _i3.Future<void> throwExceptionAfterDelay(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int seconds,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'asyncTasks',
         method: 'throwExceptionAfterDelay',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'asyncTasks',
@@ -386,12 +388,13 @@ class _AuthenticationEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<void> removeAllUsers(_i1.TestSession session) async {
+  _i3.Future<void> removeAllUsers(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'authentication',
         method: 'removeAllUsers',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'authentication',
@@ -408,12 +411,13 @@ class _AuthenticationEndpoint {
     });
   }
 
-  _i3.Future<int> countUsers(_i1.TestSession session) async {
+  _i3.Future<int> countUsers(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'authentication',
         method: 'countUsers',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'authentication',
@@ -431,15 +435,16 @@ class _AuthenticationEndpoint {
   }
 
   _i3.Future<void> createUser(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String email,
     String password,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'authentication',
         method: 'createUser',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'authentication',
@@ -460,16 +465,17 @@ class _AuthenticationEndpoint {
   }
 
   _i3.Future<_i4.AuthenticationResponse> authenticate(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String email,
     String password, [
     List<String>? scopes,
   ]) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'authentication',
         method: 'authenticate',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'authentication',
@@ -490,12 +496,13 @@ class _AuthenticationEndpoint {
     });
   }
 
-  _i3.Future<void> signOut(_i1.TestSession session) async {
+  _i3.Future<void> signOut(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'authentication',
         method: 'signOut',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'authentication',
@@ -513,15 +520,16 @@ class _AuthenticationEndpoint {
   }
 
   _i3.Future<void> updateScopes(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int userId,
     List<String> scopes,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'authentication',
         method: 'updateScopes',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'authentication',
@@ -553,14 +561,15 @@ class _BasicTypesEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<int?> testInt(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicTypes',
         method: 'testInt',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicTypes',
@@ -578,14 +587,15 @@ class _BasicTypesEndpoint {
   }
 
   _i3.Future<double?> testDouble(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     double? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicTypes',
         method: 'testDouble',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicTypes',
@@ -603,14 +613,15 @@ class _BasicTypesEndpoint {
   }
 
   _i3.Future<bool?> testBool(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     bool? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicTypes',
         method: 'testBool',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicTypes',
@@ -628,14 +639,15 @@ class _BasicTypesEndpoint {
   }
 
   _i3.Future<DateTime?> testDateTime(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     DateTime? dateTime,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicTypes',
         method: 'testDateTime',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicTypes',
@@ -653,14 +665,15 @@ class _BasicTypesEndpoint {
   }
 
   _i3.Future<String?> testString(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicTypes',
         method: 'testString',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicTypes',
@@ -678,14 +691,15 @@ class _BasicTypesEndpoint {
   }
 
   _i3.Future<_i5.ByteData?> testByteData(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i5.ByteData? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicTypes',
         method: 'testByteData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicTypes',
@@ -703,14 +717,15 @@ class _BasicTypesEndpoint {
   }
 
   _i3.Future<Duration?> testDuration(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Duration? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicTypes',
         method: 'testDuration',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicTypes',
@@ -728,14 +743,15 @@ class _BasicTypesEndpoint {
   }
 
   _i3.Future<_i6.UuidValue?> testUuid(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i6.UuidValue? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicTypes',
         method: 'testUuid',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicTypes',
@@ -763,12 +779,13 @@ class _CloudStorageEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<void> reset(_i1.TestSession session) async {
+  _i3.Future<void> reset(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'cloudStorage',
         method: 'reset',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'cloudStorage',
@@ -786,15 +803,16 @@ class _CloudStorageEndpoint {
   }
 
   _i3.Future<void> storePublicFile(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String path,
     _i5.ByteData byteData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'cloudStorage',
         method: 'storePublicFile',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'cloudStorage',
@@ -815,14 +833,15 @@ class _CloudStorageEndpoint {
   }
 
   _i3.Future<_i5.ByteData?> retrievePublicFile(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'cloudStorage',
         method: 'retrievePublicFile',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'cloudStorage',
@@ -840,14 +859,15 @@ class _CloudStorageEndpoint {
   }
 
   _i3.Future<bool?> existsPublicFile(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'cloudStorage',
         method: 'existsPublicFile',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'cloudStorage',
@@ -865,14 +885,15 @@ class _CloudStorageEndpoint {
   }
 
   _i3.Future<void> deletePublicFile(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'cloudStorage',
         method: 'deletePublicFile',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'cloudStorage',
@@ -890,14 +911,15 @@ class _CloudStorageEndpoint {
   }
 
   _i3.Future<String?> getPublicUrlForFile(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'cloudStorage',
         method: 'getPublicUrlForFile',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'cloudStorage',
@@ -915,14 +937,15 @@ class _CloudStorageEndpoint {
   }
 
   _i3.Future<String?> getDirectFilePostUrl(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'cloudStorage',
         method: 'getDirectFilePostUrl',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'cloudStorage',
@@ -940,14 +963,15 @@ class _CloudStorageEndpoint {
   }
 
   _i3.Future<bool> verifyDirectFileUpload(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'cloudStorage',
         method: 'verifyDirectFileUpload',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'cloudStorage',
@@ -976,15 +1000,16 @@ class _S3CloudStorageEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<void> storePublicFile(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String path,
     _i5.ByteData byteData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 's3CloudStorage',
         method: 'storePublicFile',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 's3CloudStorage',
@@ -1005,14 +1030,15 @@ class _S3CloudStorageEndpoint {
   }
 
   _i3.Future<_i5.ByteData?> retrievePublicFile(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 's3CloudStorage',
         method: 'retrievePublicFile',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 's3CloudStorage',
@@ -1030,14 +1056,15 @@ class _S3CloudStorageEndpoint {
   }
 
   _i3.Future<bool?> existsPublicFile(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 's3CloudStorage',
         method: 'existsPublicFile',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 's3CloudStorage',
@@ -1055,14 +1082,15 @@ class _S3CloudStorageEndpoint {
   }
 
   _i3.Future<void> deletePublicFile(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 's3CloudStorage',
         method: 'deletePublicFile',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 's3CloudStorage',
@@ -1080,14 +1108,15 @@ class _S3CloudStorageEndpoint {
   }
 
   _i3.Future<String?> getPublicUrlForFile(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 's3CloudStorage',
         method: 'getPublicUrlForFile',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 's3CloudStorage',
@@ -1105,14 +1134,15 @@ class _S3CloudStorageEndpoint {
   }
 
   _i3.Future<String?> getDirectFilePostUrl(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 's3CloudStorage',
         method: 'getDirectFilePostUrl',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 's3CloudStorage',
@@ -1130,14 +1160,15 @@ class _S3CloudStorageEndpoint {
   }
 
   _i3.Future<bool> verifyDirectFileUpload(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String path,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 's3CloudStorage',
         method: 'verifyDirectFileUpload',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 's3CloudStorage',
@@ -1166,12 +1197,13 @@ class _CustomClassProtocolEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<_i7.ProtocolCustomClass> getProtocolField(
-      _i1.TestSession session) async {
+      _i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'customClassProtocol',
         method: 'getProtocolField',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'customClassProtocol',
@@ -1200,14 +1232,15 @@ class _CustomTypesEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<_i8.CustomClass> returnCustomClass(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i8.CustomClass data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'customTypes',
         method: 'returnCustomClass',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'customTypes',
@@ -1225,14 +1258,15 @@ class _CustomTypesEndpoint {
   }
 
   _i3.Future<_i8.CustomClass?> returnCustomClassNullable(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i8.CustomClass? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'customTypes',
         method: 'returnCustomClassNullable',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'customTypes',
@@ -1250,14 +1284,15 @@ class _CustomTypesEndpoint {
   }
 
   _i3.Future<_i8.CustomClass2> returnCustomClass2(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i8.CustomClass2 data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'customTypes',
         method: 'returnCustomClass2',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'customTypes',
@@ -1275,14 +1310,15 @@ class _CustomTypesEndpoint {
   }
 
   _i3.Future<_i8.CustomClass2?> returnCustomClass2Nullable(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i8.CustomClass2? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'customTypes',
         method: 'returnCustomClass2Nullable',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'customTypes',
@@ -1300,14 +1336,15 @@ class _CustomTypesEndpoint {
   }
 
   _i3.Future<_i9.ExternalCustomClass> returnExternalCustomClass(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i9.ExternalCustomClass data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'customTypes',
         method: 'returnExternalCustomClass',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'customTypes',
@@ -1325,14 +1362,15 @@ class _CustomTypesEndpoint {
   }
 
   _i3.Future<_i9.ExternalCustomClass?> returnExternalCustomClassNullable(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i9.ExternalCustomClass? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'customTypes',
         method: 'returnExternalCustomClassNullable',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'customTypes',
@@ -1350,14 +1388,15 @@ class _CustomTypesEndpoint {
   }
 
   _i3.Future<_i10.FreezedCustomClass> returnFreezedCustomClass(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i10.FreezedCustomClass data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'customTypes',
         method: 'returnFreezedCustomClass',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'customTypes',
@@ -1375,14 +1414,15 @@ class _CustomTypesEndpoint {
   }
 
   _i3.Future<_i10.FreezedCustomClass?> returnFreezedCustomClassNullable(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i10.FreezedCustomClass? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'customTypes',
         method: 'returnFreezedCustomClassNullable',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'customTypes',
@@ -1410,12 +1450,14 @@ class _BasicDatabase {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<void> deleteAllSimpleTestData(_i1.TestSession session) async {
+  _i3.Future<void> deleteAllSimpleTestData(
+      _i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'deleteAllSimpleTestData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1433,14 +1475,15 @@ class _BasicDatabase {
   }
 
   _i3.Future<void> deleteSimpleTestDataLessThan(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int num,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'deleteSimpleTestDataLessThan',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1458,14 +1501,15 @@ class _BasicDatabase {
   }
 
   _i3.Future<void> findAndDeleteSimpleTestData(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int num,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'findAndDeleteSimpleTestData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1483,14 +1527,15 @@ class _BasicDatabase {
   }
 
   _i3.Future<void> createSimpleTestData(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int numRows,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'createSimpleTestData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1508,15 +1553,16 @@ class _BasicDatabase {
   }
 
   _i3.Future<List<_i11.SimpleData>> findSimpleData(
-    _i1.TestSession session, {
+    _i1.TestSessionBuilder session, {
     required int limit,
     required int offset,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'findSimpleData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1537,14 +1583,15 @@ class _BasicDatabase {
   }
 
   _i3.Future<_i11.SimpleData?> findFirstRowSimpleData(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int num,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'findFirstRowSimpleData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1562,14 +1609,15 @@ class _BasicDatabase {
   }
 
   _i3.Future<_i11.SimpleData?> findByIdSimpleData(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int id,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'findByIdSimpleData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1587,17 +1635,18 @@ class _BasicDatabase {
   }
 
   _i3.Future<_i12.SimpleDataList?> findSimpleDataRowsLessThan(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int num,
     int offset,
     int limit,
     bool descending,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'findSimpleDataRowsLessThan',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1620,14 +1669,15 @@ class _BasicDatabase {
   }
 
   _i3.Future<_i11.SimpleData> insertRowSimpleData(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i11.SimpleData simpleData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'insertRowSimpleData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1645,14 +1695,15 @@ class _BasicDatabase {
   }
 
   _i3.Future<_i11.SimpleData> updateRowSimpleData(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i11.SimpleData simpleData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'updateRowSimpleData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1670,14 +1721,15 @@ class _BasicDatabase {
   }
 
   _i3.Future<int> deleteRowSimpleData(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i11.SimpleData simpleData,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'deleteRowSimpleData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1694,12 +1746,14 @@ class _BasicDatabase {
     });
   }
 
-  _i3.Future<List<int>> deleteWhereSimpleData(_i1.TestSession session) async {
+  _i3.Future<List<int>> deleteWhereSimpleData(
+      _i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'deleteWhereSimpleData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1716,12 +1770,13 @@ class _BasicDatabase {
     });
   }
 
-  _i3.Future<int> countSimpleData(_i1.TestSession session) async {
+  _i3.Future<int> countSimpleData(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'countSimpleData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1739,14 +1794,15 @@ class _BasicDatabase {
   }
 
   _i3.Future<_i13.Types> insertTypes(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i13.Types value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'insertTypes',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1764,14 +1820,15 @@ class _BasicDatabase {
   }
 
   _i3.Future<_i13.Types> updateTypes(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i13.Types value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'updateTypes',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1788,12 +1845,13 @@ class _BasicDatabase {
     });
   }
 
-  _i3.Future<int?> countTypesRows(_i1.TestSession session) async {
+  _i3.Future<int?> countTypesRows(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'countTypesRows',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1810,12 +1868,13 @@ class _BasicDatabase {
     });
   }
 
-  _i3.Future<List<int>> deleteAllInTypes(_i1.TestSession session) async {
+  _i3.Future<List<int>> deleteAllInTypes(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'deleteAllInTypes',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1833,14 +1892,15 @@ class _BasicDatabase {
   }
 
   _i3.Future<_i13.Types?> getTypes(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int id,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'getTypes',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1858,14 +1918,15 @@ class _BasicDatabase {
   }
 
   _i3.Future<int?> getTypesRawQuery(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int id,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'getTypesRawQuery',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1883,14 +1944,15 @@ class _BasicDatabase {
   }
 
   _i3.Future<_i14.ObjectWithEnum> storeObjectWithEnum(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i14.ObjectWithEnum object,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'storeObjectWithEnum',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1908,14 +1970,15 @@ class _BasicDatabase {
   }
 
   _i3.Future<_i14.ObjectWithEnum?> getObjectWithEnum(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int id,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'getObjectWithEnum',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1933,14 +1996,15 @@ class _BasicDatabase {
   }
 
   _i3.Future<_i15.ObjectWithObject> storeObjectWithObject(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i15.ObjectWithObject object,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'storeObjectWithObject',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1958,14 +2022,15 @@ class _BasicDatabase {
   }
 
   _i3.Future<_i15.ObjectWithObject?> getObjectWithObject(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int id,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'getObjectWithObject',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -1982,12 +2047,13 @@ class _BasicDatabase {
     });
   }
 
-  _i3.Future<int> deleteAll(_i1.TestSession session) async {
+  _i3.Future<int> deleteAll(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'deleteAll',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -2004,12 +2070,13 @@ class _BasicDatabase {
     });
   }
 
-  _i3.Future<bool> testByteDataStore(_i1.TestSession session) async {
+  _i3.Future<bool> testByteDataStore(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'basicDatabase',
         method: 'testByteDataStore',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'basicDatabase',
@@ -2038,14 +2105,15 @@ class _TransactionsDatabaseEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<void> removeRow(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int num,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'transactionsDatabase',
         method: 'removeRow',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'transactionsDatabase',
@@ -2063,16 +2131,17 @@ class _TransactionsDatabaseEndpoint {
   }
 
   _i3.Future<bool> updateInsertDelete(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int numUpdate,
     int numInsert,
     int numDelete,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'transactionsDatabase',
         method: 'updateInsertDelete',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'transactionsDatabase',
@@ -2105,14 +2174,15 @@ class _DeprecationEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<void> setGlobalDouble(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     double? value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'deprecation',
         method: 'setGlobalDouble',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'deprecation',
@@ -2129,12 +2199,13 @@ class _DeprecationEndpoint {
     });
   }
 
-  _i3.Future<double> getGlobalDouble(_i1.TestSession session) async {
+  _i3.Future<double> getGlobalDouble(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'deprecation',
         method: 'getGlobalDouble',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'deprecation',
@@ -2162,12 +2233,14 @@ class _EchoRequestEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<String?> echoAuthenticationKey(_i1.TestSession session) async {
+  _i3.Future<String?> echoAuthenticationKey(
+      _i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'echoRequest',
         method: 'echoAuthenticationKey',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'echoRequest',
@@ -2185,14 +2258,15 @@ class _EchoRequestEndpoint {
   }
 
   _i3.Future<List<String>?> echoHttpHeader(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String headerName,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'echoRequest',
         method: 'echoHttpHeader',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'echoRequest',
@@ -2221,15 +2295,16 @@ class _EmailAuthTestMethods {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<String?> findVerificationCode(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String userName,
     String email,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'emailAuthTestMethods',
         method: 'findVerificationCode',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'emailAuthTestMethods',
@@ -2250,14 +2325,15 @@ class _EmailAuthTestMethods {
   }
 
   _i3.Future<String?> findResetCode(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String email,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'emailAuthTestMethods',
         method: 'findResetCode',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'emailAuthTestMethods',
@@ -2274,12 +2350,13 @@ class _EmailAuthTestMethods {
     });
   }
 
-  _i3.Future<void> tearDown(_i1.TestSession session) async {
+  _i3.Future<void> tearDown(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'emailAuthTestMethods',
         method: 'tearDown',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'emailAuthTestMethods',
@@ -2297,16 +2374,17 @@ class _EmailAuthTestMethods {
   }
 
   _i3.Future<bool> createUser(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String userName,
     String email,
     String password,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'emailAuthTestMethods',
         method: 'createUser',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'emailAuthTestMethods',
@@ -2338,12 +2416,14 @@ class _ExceptionTestEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<String> throwNormalException(_i1.TestSession session) async {
+  _i3.Future<String> throwNormalException(
+      _i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'exceptionTest',
         method: 'throwNormalException',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'exceptionTest',
@@ -2360,12 +2440,14 @@ class _ExceptionTestEndpoint {
     });
   }
 
-  _i3.Future<String> throwExceptionWithData(_i1.TestSession session) async {
+  _i3.Future<String> throwExceptionWithData(
+      _i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'exceptionTest',
         method: 'throwExceptionWithData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'exceptionTest',
@@ -2382,12 +2464,14 @@ class _ExceptionTestEndpoint {
     });
   }
 
-  _i3.Future<String> workingWithoutException(_i1.TestSession session) async {
+  _i3.Future<String> workingWithoutException(
+      _i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'exceptionTest',
         method: 'workingWithoutException',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'exceptionTest',
@@ -2415,12 +2499,13 @@ class _FailedCallsEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<void> failedCall(_i1.TestSession session) async {
+  _i3.Future<void> failedCall(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'failedCalls',
         method: 'failedCall',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'failedCalls',
@@ -2437,12 +2522,13 @@ class _FailedCallsEndpoint {
     });
   }
 
-  _i3.Future<void> failedDatabaseQuery(_i1.TestSession session) async {
+  _i3.Future<void> failedDatabaseQuery(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'failedCalls',
         method: 'failedDatabaseQuery',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'failedCalls',
@@ -2460,12 +2546,13 @@ class _FailedCallsEndpoint {
   }
 
   _i3.Future<bool> failedDatabaseQueryCaughtException(
-      _i1.TestSession session) async {
+      _i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'failedCalls',
         method: 'failedDatabaseQueryCaughtException',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'failedCalls',
@@ -2482,12 +2569,13 @@ class _FailedCallsEndpoint {
     });
   }
 
-  _i3.Future<void> slowCall(_i1.TestSession session) async {
+  _i3.Future<void> slowCall(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'failedCalls',
         method: 'slowCall',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'failedCalls',
@@ -2504,12 +2592,13 @@ class _FailedCallsEndpoint {
     });
   }
 
-  _i3.Future<void> caughtException(_i1.TestSession session) async {
+  _i3.Future<void> caughtException(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'failedCalls',
         method: 'caughtException',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'failedCalls',
@@ -2538,14 +2627,15 @@ class _FieldScopesEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<void> storeObject(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i16.ObjectFieldScopes object,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'fieldScopes',
         method: 'storeObject',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'fieldScopes',
@@ -2563,12 +2653,13 @@ class _FieldScopesEndpoint {
   }
 
   _i3.Future<_i16.ObjectFieldScopes?> retrieveObject(
-      _i1.TestSession session) async {
+      _i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'fieldScopes',
         method: 'retrieveObject',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'fieldScopes',
@@ -2597,14 +2688,15 @@ class _FutureCallsEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<void> makeFutureCall(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i11.SimpleData? data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'futureCalls',
         method: 'makeFutureCall',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'futureCalls',
@@ -2633,14 +2725,15 @@ class _ListParametersEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<List<int>> returnIntList(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<int> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnIntList',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -2658,14 +2751,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<List<int>>> returnIntListList(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<List<int>> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnIntListList',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -2683,14 +2777,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<int>?> returnIntListNullable(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<int>? list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnIntListNullable',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -2708,14 +2803,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<List<int>?>> returnIntListNullableList(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<List<int>?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnIntListNullableList',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -2733,14 +2829,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<List<int>>?> returnIntListListNullable(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<List<int>>? list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnIntListListNullable',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -2758,14 +2855,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<int?>> returnIntListNullableInts(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<int?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnIntListNullableInts',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -2783,14 +2881,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<int?>?> returnNullableIntListNullableInts(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<int?>? list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnNullableIntListNullableInts',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -2808,14 +2907,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<double>> returnDoubleList(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<double> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnDoubleList',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -2833,14 +2933,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<double?>> returnDoubleListNullableDoubles(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<double?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnDoubleListNullableDoubles',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -2858,14 +2959,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<bool>> returnBoolList(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<bool> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnBoolList',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -2883,14 +2985,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<bool?>> returnBoolListNullableBools(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<bool?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnBoolListNullableBools',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -2908,14 +3011,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<String>> returnStringList(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<String> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnStringList',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -2933,14 +3037,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<String?>> returnStringListNullableStrings(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<String?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnStringListNullableStrings',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -2958,14 +3063,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<DateTime>> returnDateTimeList(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<DateTime> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnDateTimeList',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -2983,14 +3089,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<DateTime?>> returnDateTimeListNullableDateTimes(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<DateTime?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnDateTimeListNullableDateTimes',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -3008,14 +3115,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<_i5.ByteData>> returnByteDataList(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<_i5.ByteData> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnByteDataList',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -3033,14 +3141,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<_i5.ByteData?>> returnByteDataListNullableByteDatas(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<_i5.ByteData?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnByteDataListNullableByteDatas',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -3058,14 +3167,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<_i11.SimpleData>> returnSimpleDataList(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<_i11.SimpleData> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnSimpleDataList',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -3083,14 +3193,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<_i11.SimpleData?>> returnSimpleDataListNullableSimpleData(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<_i11.SimpleData?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnSimpleDataListNullableSimpleData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -3108,14 +3219,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<_i11.SimpleData>?> returnSimpleDataListNullable(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<_i11.SimpleData>? list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnSimpleDataListNullable',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -3134,14 +3246,15 @@ class _ListParametersEndpoint {
 
   _i3.Future<List<_i11.SimpleData?>?>
       returnNullableSimpleDataListNullableSimpleData(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<_i11.SimpleData?>? list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnNullableSimpleDataListNullableSimpleData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -3159,14 +3272,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<Duration>> returnDurationList(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<Duration> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnDurationList',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -3184,14 +3298,15 @@ class _ListParametersEndpoint {
   }
 
   _i3.Future<List<Duration?>> returnDurationListNullableDurations(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     List<Duration?> list,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'listParameters',
         method: 'returnDurationListNullableDurations',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'listParameters',
@@ -3220,14 +3335,15 @@ class _LoggingEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<void> slowQueryMethod(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int seconds,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'logging',
         method: 'slowQueryMethod',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'logging',
@@ -3245,14 +3361,15 @@ class _LoggingEndpoint {
   }
 
   _i3.Future<void> queryMethod(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int queries,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'logging',
         method: 'queryMethod',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'logging',
@@ -3269,12 +3386,13 @@ class _LoggingEndpoint {
     });
   }
 
-  _i3.Future<void> failedQueryMethod(_i1.TestSession session) async {
+  _i3.Future<void> failedQueryMethod(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'logging',
         method: 'failedQueryMethod',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'logging',
@@ -3292,14 +3410,15 @@ class _LoggingEndpoint {
   }
 
   _i3.Future<void> slowMethod(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int delayMillis,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'logging',
         method: 'slowMethod',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'logging',
@@ -3316,12 +3435,13 @@ class _LoggingEndpoint {
     });
   }
 
-  _i3.Future<void> failingMethod(_i1.TestSession session) async {
+  _i3.Future<void> failingMethod(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'logging',
         method: 'failingMethod',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'logging',
@@ -3338,12 +3458,13 @@ class _LoggingEndpoint {
     });
   }
 
-  _i3.Future<void> emptyMethod(_i1.TestSession session) async {
+  _i3.Future<void> emptyMethod(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'logging',
         method: 'emptyMethod',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'logging',
@@ -3361,15 +3482,16 @@ class _LoggingEndpoint {
   }
 
   _i3.Future<void> log(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String message,
     List<int> logLevels,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'logging',
         method: 'log',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'logging',
@@ -3390,14 +3512,15 @@ class _LoggingEndpoint {
   }
 
   _i3.Future<void> logInfo(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String message,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'logging',
         method: 'logInfo',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'logging',
@@ -3415,16 +3538,17 @@ class _LoggingEndpoint {
   }
 
   _i3.Future<void> logDebugAndInfoAndError(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String debug,
     String info,
     String error,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'logging',
         method: 'logDebugAndInfoAndError',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'logging',
@@ -3445,12 +3569,13 @@ class _LoggingEndpoint {
     });
   }
 
-  _i3.Future<void> twoQueries(_i1.TestSession session) async {
+  _i3.Future<void> twoQueries(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'logging',
         method: 'twoQueries',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'logging',
@@ -3468,17 +3593,17 @@ class _LoggingEndpoint {
   }
 
   _i3.Stream<int> streamEmpty(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> input,
   ) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'logging',
           method: 'streamEmpty',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -3500,17 +3625,17 @@ class _LoggingEndpoint {
   }
 
   _i3.Stream<int> streamLogging(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> input,
   ) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'logging',
           method: 'streamLogging',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -3532,17 +3657,17 @@ class _LoggingEndpoint {
   }
 
   _i3.Stream<int> streamQueryLogging(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> input,
   ) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'logging',
           method: 'streamQueryLogging',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -3589,14 +3714,15 @@ class _LoggingDisabledEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<void> logInfo(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String message,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'loggingDisabled',
         method: 'logInfo',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'loggingDisabled',
@@ -3625,14 +3751,15 @@ class _MapParametersEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<Map<String, int>> returnIntMap(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, int> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnIntMap',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -3650,14 +3777,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<String, int>?> returnIntMapNullable(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, int>? map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnIntMapNullable',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -3675,14 +3803,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<String, Map<String, int>>> returnNestedIntMap(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, Map<String, int>> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnNestedIntMap',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -3700,14 +3829,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<String, int?>> returnIntMapNullableInts(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, int?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnIntMapNullableInts',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -3725,14 +3855,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<String, int?>?> returnNullableIntMapNullableInts(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, int?>? map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnNullableIntMapNullableInts',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -3750,14 +3881,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<int, int>> returnIntIntMap(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<int, int> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnIntIntMap',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -3775,14 +3907,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<_i17.TestEnum, int>> returnEnumIntMap(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<_i17.TestEnum, int> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnEnumIntMap',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -3800,14 +3933,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<String, _i17.TestEnum>> returnEnumMap(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, _i17.TestEnum> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnEnumMap',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -3825,14 +3959,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<String, double>> returnDoubleMap(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, double> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnDoubleMap',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -3850,14 +3985,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<String, double?>> returnDoubleMapNullableDoubles(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, double?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnDoubleMapNullableDoubles',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -3875,14 +4011,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<String, bool>> returnBoolMap(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, bool> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnBoolMap',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -3900,14 +4037,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<String, bool?>> returnBoolMapNullableBools(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, bool?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnBoolMapNullableBools',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -3925,14 +4063,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<String, String>> returnStringMap(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, String> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnStringMap',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -3950,14 +4089,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<String, String?>> returnStringMapNullableStrings(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, String?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnStringMapNullableStrings',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -3975,14 +4115,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<String, DateTime>> returnDateTimeMap(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, DateTime> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnDateTimeMap',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -4000,14 +4141,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<String, DateTime?>> returnDateTimeMapNullableDateTimes(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, DateTime?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnDateTimeMapNullableDateTimes',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -4025,14 +4167,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<String, _i5.ByteData>> returnByteDataMap(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, _i5.ByteData> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnByteDataMap',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -4050,14 +4193,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<String, _i5.ByteData?>> returnByteDataMapNullableByteDatas(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, _i5.ByteData?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnByteDataMapNullableByteDatas',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -4075,14 +4219,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<String, _i11.SimpleData>> returnSimpleDataMap(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, _i11.SimpleData> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnSimpleDataMap',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -4101,14 +4246,15 @@ class _MapParametersEndpoint {
 
   _i3.Future<Map<String, _i11.SimpleData?>>
       returnSimpleDataMapNullableSimpleData(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, _i11.SimpleData?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnSimpleDataMapNullableSimpleData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -4126,14 +4272,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<String, _i11.SimpleData>?> returnSimpleDataMapNullable(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, _i11.SimpleData>? map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnSimpleDataMapNullable',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -4152,14 +4299,15 @@ class _MapParametersEndpoint {
 
   _i3.Future<Map<String, _i11.SimpleData?>?>
       returnNullableSimpleDataMapNullableSimpleData(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, _i11.SimpleData?>? map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnNullableSimpleDataMapNullableSimpleData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -4177,14 +4325,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<String, Duration>> returnDurationMap(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, Duration> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnDurationMap',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -4202,14 +4351,15 @@ class _MapParametersEndpoint {
   }
 
   _i3.Future<Map<String, Duration?>> returnDurationMapNullableDurations(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     Map<String, Duration?> map,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'mapParameters',
         method: 'returnDurationMapNullableDurations',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'mapParameters',
@@ -4238,14 +4388,15 @@ class _MethodSignaturePermutationsEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<String> echoPositionalArg(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String string,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodSignaturePermutations',
         method: 'echoPositionalArg',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'methodSignaturePermutations',
@@ -4263,14 +4414,15 @@ class _MethodSignaturePermutationsEndpoint {
   }
 
   _i3.Future<String> echoNamedArg(
-    _i1.TestSession session, {
+    _i1.TestSessionBuilder session, {
     required String string,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodSignaturePermutations',
         method: 'echoNamedArg',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'methodSignaturePermutations',
@@ -4288,14 +4440,15 @@ class _MethodSignaturePermutationsEndpoint {
   }
 
   _i3.Future<String?> echoNullableNamedArg(
-    _i1.TestSession session, {
+    _i1.TestSessionBuilder session, {
     String? string,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodSignaturePermutations',
         method: 'echoNullableNamedArg',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'methodSignaturePermutations',
@@ -4313,14 +4466,15 @@ class _MethodSignaturePermutationsEndpoint {
   }
 
   _i3.Future<String?> echoOptionalArg(
-    _i1.TestSession session, [
+    _i1.TestSessionBuilder session, [
     String? string,
   ]) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodSignaturePermutations',
         method: 'echoOptionalArg',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'methodSignaturePermutations',
@@ -4338,15 +4492,16 @@ class _MethodSignaturePermutationsEndpoint {
   }
 
   _i3.Future<List<String?>> echoPositionalAndNamedArgs(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String string1, {
     required String string2,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodSignaturePermutations',
         method: 'echoPositionalAndNamedArgs',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'methodSignaturePermutations',
@@ -4367,15 +4522,16 @@ class _MethodSignaturePermutationsEndpoint {
   }
 
   _i3.Future<List<String?>> echoPositionalAndNullableNamedArgs(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String string1, {
     String? string2,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodSignaturePermutations',
         method: 'echoPositionalAndNullableNamedArgs',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'methodSignaturePermutations',
@@ -4396,15 +4552,16 @@ class _MethodSignaturePermutationsEndpoint {
   }
 
   _i3.Future<List<String?>> echoPositionalAndOptionalArgs(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String string1, [
     String? string2,
   ]) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodSignaturePermutations',
         method: 'echoPositionalAndOptionalArgs',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'methodSignaturePermutations',
@@ -4425,17 +4582,17 @@ class _MethodSignaturePermutationsEndpoint {
   }
 
   _i3.Stream<String> echoNamedArgStream(
-    _i1.TestSession session, {
+    _i1.TestSessionBuilder session, {
     required _i3.Stream<String> strings,
   }) {
     var _localTestStreamManager = _i1.TestStreamManager<String>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'methodSignaturePermutations',
           method: 'echoNamedArgStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -4457,16 +4614,17 @@ class _MethodSignaturePermutationsEndpoint {
   }
 
   _i3.Future<String> echoNamedArgStreamAsFuture(
-    _i1.TestSession session, {
+    _i1.TestSessionBuilder session, {
     required _i3.Stream<String> strings,
   }) async {
     var _localTestStreamManager = _i1.TestStreamManager<String>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodSignaturePermutations',
         method: 'echoNamedArgStreamAsFuture',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext =
           await _endpointDispatch.getMethodStreamCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -4486,17 +4644,17 @@ class _MethodSignaturePermutationsEndpoint {
   }
 
   _i3.Stream<String> echoPositionalArgStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<String> strings,
   ) {
     var _localTestStreamManager = _i1.TestStreamManager<String>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'methodSignaturePermutations',
           method: 'echoPositionalArgStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -4518,16 +4676,17 @@ class _MethodSignaturePermutationsEndpoint {
   }
 
   _i3.Future<String> echoPositionalArgStreamAsFuture(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<String> strings,
   ) async {
     var _localTestStreamManager = _i1.TestStreamManager<String>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodSignaturePermutations',
         method: 'echoPositionalArgStreamAsFuture',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext =
           await _endpointDispatch.getMethodStreamCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -4557,15 +4716,15 @@ class _MethodStreaming {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Stream<int> simpleStream(_i1.TestSession session) {
+  _i3.Stream<int> simpleStream(_i1.TestSessionBuilder session) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'methodStreaming',
           method: 'simpleStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -4587,17 +4746,17 @@ class _MethodStreaming {
   }
 
   _i3.Stream<int> neverEndingStreamWithDelay(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int millisecondsDelay,
   ) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'methodStreaming',
           method: 'neverEndingStreamWithDelay',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -4618,12 +4777,13 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i3.Future<void> methodCallEndpoint(_i1.TestSession session) async {
+  _i3.Future<void> methodCallEndpoint(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'methodCallEndpoint',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
@@ -4641,16 +4801,17 @@ class _MethodStreaming {
   }
 
   _i3.Future<int> intReturnFromStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> stream,
   ) async {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'intReturnFromStream',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext =
           await _endpointDispatch.getMethodStreamCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -4670,16 +4831,17 @@ class _MethodStreaming {
   }
 
   _i3.Future<int?> nullableIntReturnFromStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int?> stream,
   ) async {
     var _localTestStreamManager = _i1.TestStreamManager<int?>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'nullableIntReturnFromStream',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext =
           await _endpointDispatch.getMethodStreamCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -4698,15 +4860,15 @@ class _MethodStreaming {
     });
   }
 
-  _i3.Stream<int?> getBroadcastStream(_i1.TestSession session) {
+  _i3.Stream<int?> getBroadcastStream(_i1.TestSessionBuilder session) {
     var _localTestStreamManager = _i1.TestStreamManager<int?>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'methodStreaming',
           method: 'getBroadcastStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -4727,12 +4889,14 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i3.Future<bool> wasBroadcastStreamCanceled(_i1.TestSession session) async {
+  _i3.Future<bool> wasBroadcastStreamCanceled(
+      _i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'wasBroadcastStreamCanceled',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
@@ -4750,12 +4914,13 @@ class _MethodStreaming {
   }
 
   _i3.Future<bool> wasSessionWillCloseListenerCalled(
-      _i1.TestSession session) async {
+      _i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'wasSessionWillCloseListenerCalled',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
@@ -4773,17 +4938,17 @@ class _MethodStreaming {
   }
 
   _i3.Stream<int> intStreamFromValue(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int value,
   ) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'methodStreaming',
           method: 'intStreamFromValue',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -4805,17 +4970,17 @@ class _MethodStreaming {
   }
 
   _i3.Stream<int> intEchoStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> stream,
   ) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'methodStreaming',
           method: 'intEchoStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -4837,17 +5002,17 @@ class _MethodStreaming {
   }
 
   _i3.Stream<dynamic> dynamicEchoStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<dynamic> stream,
   ) {
     var _localTestStreamManager = _i1.TestStreamManager<dynamic>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'methodStreaming',
           method: 'dynamicEchoStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -4869,17 +5034,17 @@ class _MethodStreaming {
   }
 
   _i3.Stream<int?> nullableIntEchoStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int?> stream,
   ) {
     var _localTestStreamManager = _i1.TestStreamManager<int?>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'methodStreaming',
           method: 'nullableIntEchoStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -4901,16 +5066,17 @@ class _MethodStreaming {
   }
 
   _i3.Future<void> voidReturnAfterStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> stream,
   ) async {
     var _localTestStreamManager = _i1.TestStreamManager<void>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'voidReturnAfterStream',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext =
           await _endpointDispatch.getMethodStreamCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -4930,7 +5096,7 @@ class _MethodStreaming {
   }
 
   _i3.Stream<int> multipleIntEchoStreams(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> stream1,
     _i3.Stream<int> stream2,
   ) {
@@ -4938,10 +5104,10 @@ class _MethodStreaming {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'methodStreaming',
           method: 'multipleIntEchoStreams',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -4969,16 +5135,17 @@ class _MethodStreaming {
   }
 
   _i3.Future<void> directVoidReturnWithStreamInput(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> stream,
   ) async {
     var _localTestStreamManager = _i1.TestStreamManager<void>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'directVoidReturnWithStreamInput',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext =
           await _endpointDispatch.getMethodStreamCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -4998,16 +5165,17 @@ class _MethodStreaming {
   }
 
   _i3.Future<int> directOneIntReturnWithStreamInput(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> stream,
   ) async {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'directOneIntReturnWithStreamInput',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext =
           await _endpointDispatch.getMethodStreamCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5027,16 +5195,17 @@ class _MethodStreaming {
   }
 
   _i3.Future<int> simpleInputReturnStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> stream,
   ) async {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'simpleInputReturnStream',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext =
           await _endpointDispatch.getMethodStreamCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5056,17 +5225,17 @@ class _MethodStreaming {
   }
 
   _i3.Stream<int> simpleStreamWithParameter(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int value,
   ) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'methodStreaming',
           method: 'simpleStreamWithParameter',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5088,17 +5257,17 @@ class _MethodStreaming {
   }
 
   _i3.Stream<_i11.SimpleData> simpleDataStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int value,
   ) {
     var _localTestStreamManager = _i1.TestStreamManager<_i11.SimpleData>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'methodStreaming',
           method: 'simpleDataStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5120,17 +5289,17 @@ class _MethodStreaming {
   }
 
   _i3.Stream<_i11.SimpleData> simpleInOutDataStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<_i11.SimpleData> simpleDataStream,
   ) {
     var _localTestStreamManager = _i1.TestStreamManager<_i11.SimpleData>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'methodStreaming',
           method: 'simpleInOutDataStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5151,12 +5320,13 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i3.Future<void> simpleEndpoint(_i1.TestSession session) async {
+  _i3.Future<void> simpleEndpoint(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'simpleEndpoint',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
@@ -5174,14 +5344,15 @@ class _MethodStreaming {
   }
 
   _i3.Future<void> intParameter(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'intParameter',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
@@ -5199,14 +5370,15 @@ class _MethodStreaming {
   }
 
   _i3.Future<int> doubleInputValue(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int value,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'doubleInputValue',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
@@ -5224,14 +5396,15 @@ class _MethodStreaming {
   }
 
   _i3.Future<void> delayedResponse(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int delay,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'delayedResponse',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
@@ -5249,17 +5422,17 @@ class _MethodStreaming {
   }
 
   _i3.Stream<int> delayedStreamResponse(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int delay,
   ) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'methodStreaming',
           method: 'delayedStreamResponse',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5281,17 +5454,18 @@ class _MethodStreaming {
   }
 
   _i3.Future<void> delayedNeverListenedInputStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int delay,
     _i3.Stream<int> stream,
   ) async {
     var _localTestStreamManager = _i1.TestStreamManager<void>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'delayedNeverListenedInputStream',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext =
           await _endpointDispatch.getMethodStreamCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5311,17 +5485,18 @@ class _MethodStreaming {
   }
 
   _i3.Future<void> delayedPausedInputStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int delay,
     _i3.Stream<int> stream,
   ) async {
     var _localTestStreamManager = _i1.TestStreamManager<void>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'delayedPausedInputStream',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext =
           await _endpointDispatch.getMethodStreamCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5340,12 +5515,14 @@ class _MethodStreaming {
     });
   }
 
-  _i3.Future<void> completeAllDelayedResponses(_i1.TestSession session) async {
+  _i3.Future<void> completeAllDelayedResponses(
+      _i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'completeAllDelayedResponses',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'methodStreaming',
@@ -5363,16 +5540,17 @@ class _MethodStreaming {
   }
 
   _i3.Future<void> inStreamThrowsException(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> stream,
   ) async {
     var _localTestStreamManager = _i1.TestStreamManager<void>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'inStreamThrowsException',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext =
           await _endpointDispatch.getMethodStreamCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5392,16 +5570,17 @@ class _MethodStreaming {
   }
 
   _i3.Future<void> inStreamThrowsSerializableException(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> stream,
   ) async {
     var _localTestStreamManager = _i1.TestStreamManager<void>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'inStreamThrowsSerializableException',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext =
           await _endpointDispatch.getMethodStreamCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5420,15 +5599,15 @@ class _MethodStreaming {
     });
   }
 
-  _i3.Stream<int> outStreamThrowsException(_i1.TestSession session) {
+  _i3.Stream<int> outStreamThrowsException(_i1.TestSessionBuilder session) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'methodStreaming',
           method: 'outStreamThrowsException',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5450,15 +5629,15 @@ class _MethodStreaming {
   }
 
   _i3.Stream<int> outStreamThrowsSerializableException(
-      _i1.TestSession session) {
+      _i1.TestSessionBuilder session) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'methodStreaming',
           method: 'outStreamThrowsSerializableException',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5480,16 +5659,17 @@ class _MethodStreaming {
   }
 
   _i3.Future<void> throwsExceptionVoid(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> stream,
   ) async {
     var _localTestStreamManager = _i1.TestStreamManager<void>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'throwsExceptionVoid',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext =
           await _endpointDispatch.getMethodStreamCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5509,16 +5689,17 @@ class _MethodStreaming {
   }
 
   _i3.Future<void> throwsSerializableExceptionVoid(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> stream,
   ) async {
     var _localTestStreamManager = _i1.TestStreamManager<void>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'throwsSerializableExceptionVoid',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext =
           await _endpointDispatch.getMethodStreamCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5538,16 +5719,17 @@ class _MethodStreaming {
   }
 
   _i3.Future<int> throwsException(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> stream,
   ) async {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'throwsException',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext =
           await _endpointDispatch.getMethodStreamCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5567,16 +5749,17 @@ class _MethodStreaming {
   }
 
   _i3.Future<int> throwsSerializableException(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> stream,
   ) async {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'throwsSerializableException',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext =
           await _endpointDispatch.getMethodStreamCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5595,15 +5778,15 @@ class _MethodStreaming {
     });
   }
 
-  _i3.Stream<int> throwsExceptionStream(_i1.TestSession session) {
+  _i3.Stream<int> throwsExceptionStream(_i1.TestSessionBuilder session) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'methodStreaming',
           method: 'throwsExceptionStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5624,15 +5807,16 @@ class _MethodStreaming {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i3.Stream<int> throwsSerializableExceptionStream(_i1.TestSession session) {
+  _i3.Stream<int> throwsSerializableExceptionStream(
+      _i1.TestSessionBuilder session) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'methodStreaming',
           method: 'throwsSerializableExceptionStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5654,16 +5838,17 @@ class _MethodStreaming {
   }
 
   _i3.Future<bool> didInputStreamHaveError(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> stream,
   ) async {
     var _localTestStreamManager = _i1.TestStreamManager<bool>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'didInputStreamHaveError',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext =
           await _endpointDispatch.getMethodStreamCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5683,16 +5868,17 @@ class _MethodStreaming {
   }
 
   _i3.Future<bool> didInputStreamHaveSerializableExceptionError(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> stream,
   ) async {
     var _localTestStreamManager = _i1.TestStreamManager<bool>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'methodStreaming',
         method: 'didInputStreamHaveSerializableExceptionError',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext =
           await _endpointDispatch.getMethodStreamCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5722,15 +5908,15 @@ class _AuthenticatedMethodStreaming {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Stream<int> simpleStream(_i1.TestSession session) {
+  _i3.Stream<int> simpleStream(_i1.TestSessionBuilder session) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'authenticatedMethodStreaming',
           method: 'simpleStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5752,17 +5938,17 @@ class _AuthenticatedMethodStreaming {
   }
 
   _i3.Stream<int> intEchoStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> stream,
   ) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'authenticatedMethodStreaming',
           method: 'intEchoStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -5794,12 +5980,13 @@ class _ModuleSerializationEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<bool> serializeModuleObject(_i1.TestSession session) async {
+  _i3.Future<bool> serializeModuleObject(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'moduleSerialization',
         method: 'serializeModuleObject',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'moduleSerialization',
@@ -5817,14 +6004,15 @@ class _ModuleSerializationEndpoint {
   }
 
   _i3.Future<_i18.ModuleClass> modifyModuleObject(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i18.ModuleClass object,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'moduleSerialization',
         method: 'modifyModuleObject',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'moduleSerialization',
@@ -5842,12 +6030,13 @@ class _ModuleSerializationEndpoint {
   }
 
   _i3.Future<_i19.ModuleDatatype> serializeNestedModuleObject(
-      _i1.TestSession session) async {
+      _i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'moduleSerialization',
         method: 'serializeNestedModuleObject',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'moduleSerialization',
@@ -5876,17 +6065,18 @@ class _NamedParametersEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<bool> namedParametersMethod(
-    _i1.TestSession session, {
+    _i1.TestSessionBuilder session, {
     required int namedInt,
     required int intWithDefaultValue,
     int? nullableInt,
     int? nullableIntWithDefaultValue,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'namedParameters',
         method: 'namedParametersMethod',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'namedParameters',
@@ -5909,15 +6099,16 @@ class _NamedParametersEndpoint {
   }
 
   _i3.Future<bool> namedParametersMethodEqualInts(
-    _i1.TestSession session, {
+    _i1.TestSessionBuilder session, {
     required int namedInt,
     int? nullableInt,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'namedParameters',
         method: 'namedParametersMethodEqualInts',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'namedParameters',
@@ -5949,14 +6140,15 @@ class _OptionalParametersEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<int?> returnOptionalInt(
-    _i1.TestSession session, [
+    _i1.TestSessionBuilder session, [
     int? optionalInt,
   ]) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'optionalParameters',
         method: 'returnOptionalInt',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'optionalParameters',
@@ -5985,15 +6177,16 @@ class _RedisEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<void> setSimpleData(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String key,
     _i11.SimpleData data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'redis',
         method: 'setSimpleData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'redis',
@@ -6014,15 +6207,16 @@ class _RedisEndpoint {
   }
 
   _i3.Future<void> setSimpleDataWithLifetime(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String key,
     _i11.SimpleData data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'redis',
         method: 'setSimpleDataWithLifetime',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'redis',
@@ -6043,14 +6237,15 @@ class _RedisEndpoint {
   }
 
   _i3.Future<_i11.SimpleData?> getSimpleData(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String key,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'redis',
         method: 'getSimpleData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'redis',
@@ -6068,14 +6263,15 @@ class _RedisEndpoint {
   }
 
   _i3.Future<void> deleteSimpleData(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String key,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'redis',
         method: 'deleteSimpleData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'redis',
@@ -6092,12 +6288,14 @@ class _RedisEndpoint {
     });
   }
 
-  _i3.Future<void> resetMessageCentralTest(_i1.TestSession session) async {
+  _i3.Future<void> resetMessageCentralTest(
+      _i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'redis',
         method: 'resetMessageCentralTest',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'redis',
@@ -6115,14 +6313,15 @@ class _RedisEndpoint {
   }
 
   _i3.Future<_i11.SimpleData?> listenToChannel(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String channel,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'redis',
         method: 'listenToChannel',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'redis',
@@ -6140,15 +6339,16 @@ class _RedisEndpoint {
   }
 
   _i3.Future<void> postToChannel(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String channel,
     _i11.SimpleData data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'redis',
         method: 'postToChannel',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'redis',
@@ -6168,12 +6368,14 @@ class _RedisEndpoint {
     });
   }
 
-  _i3.Future<int> countSubscribedChannels(_i1.TestSession session) async {
+  _i3.Future<int> countSubscribedChannels(
+      _i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'redis',
         method: 'countSubscribedChannels',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'redis',
@@ -6202,12 +6404,13 @@ class _ServerOnlyScopedFieldModelEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<_i20.ScopeServerOnlyField> getScopeServerOnlyField(
-      _i1.TestSession session) async {
+      _i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'serverOnlyScopedFieldModel',
         method: 'getScopeServerOnlyField',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'serverOnlyScopedFieldModel',
@@ -6235,12 +6438,13 @@ class _SignInRequiredEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<bool> testMethod(_i1.TestSession session) async {
+  _i3.Future<bool> testMethod(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'signInRequired',
         method: 'testMethod',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'signInRequired',
@@ -6268,12 +6472,13 @@ class _AdminScopeRequiredEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<bool> testMethod(_i1.TestSession session) async {
+  _i3.Future<bool> testMethod(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'adminScopeRequired',
         method: 'testMethod',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'adminScopeRequired',
@@ -6302,15 +6507,16 @@ class _SimpleEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<void> setGlobalInt(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int? value, [
     int? secondValue,
   ]) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'simple',
         method: 'setGlobalInt',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'simple',
@@ -6330,12 +6536,13 @@ class _SimpleEndpoint {
     });
   }
 
-  _i3.Future<void> addToGlobalInt(_i1.TestSession session) async {
+  _i3.Future<void> addToGlobalInt(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'simple',
         method: 'addToGlobalInt',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'simple',
@@ -6352,12 +6559,13 @@ class _SimpleEndpoint {
     });
   }
 
-  _i3.Future<int> getGlobalInt(_i1.TestSession session) async {
+  _i3.Future<int> getGlobalInt(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'simple',
         method: 'getGlobalInt',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'simple',
@@ -6375,14 +6583,15 @@ class _SimpleEndpoint {
   }
 
   _i3.Future<String> hello(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String name,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'simple',
         method: 'hello',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'simple',
@@ -6424,12 +6633,13 @@ class _SubSubDirTestEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<String> testMethod(_i1.TestSession session) async {
+  _i3.Future<String> testMethod(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'subSubDirTest',
         method: 'testMethod',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'subSubDirTest',
@@ -6457,12 +6667,13 @@ class _SubDirTestEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<String> testMethod(_i1.TestSession session) async {
+  _i3.Future<String> testMethod(_i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'subDirTest',
         method: 'testMethod',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'subDirTest',
@@ -6490,12 +6701,14 @@ class _TestToolsEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i6.UuidValue> returnsSessionId(_i1.TestSession session) async {
+  _i3.Future<_i6.UuidValue> returnsSessionId(
+      _i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'testTools',
         method: 'returnsSessionId',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'testTools',
@@ -6513,12 +6726,13 @@ class _TestToolsEndpoint {
   }
 
   _i3.Future<List<String?>> returnsSessionEndpointAndMethod(
-      _i1.TestSession session) async {
+      _i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'testTools',
         method: 'returnsSessionEndpointAndMethod',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'testTools',
@@ -6536,15 +6750,15 @@ class _TestToolsEndpoint {
   }
 
   _i3.Stream<_i6.UuidValue> returnsSessionIdFromStream(
-      _i1.TestSession session) {
+      _i1.TestSessionBuilder session) {
     var _localTestStreamManager = _i1.TestStreamManager<_i6.UuidValue>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'testTools',
           method: 'returnsSessionIdFromStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -6566,15 +6780,15 @@ class _TestToolsEndpoint {
   }
 
   _i3.Stream<String?> returnsSessionEndpointAndMethodFromStream(
-      _i1.TestSession session) {
+      _i1.TestSessionBuilder session) {
     var _localTestStreamManager = _i1.TestStreamManager<String?>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'testTools',
           method: 'returnsSessionEndpointAndMethodFromStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -6596,14 +6810,15 @@ class _TestToolsEndpoint {
   }
 
   _i3.Future<String> returnsString(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String string,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'testTools',
         method: 'returnsString',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'testTools',
@@ -6621,17 +6836,17 @@ class _TestToolsEndpoint {
   }
 
   _i3.Stream<int> returnsStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int n,
   ) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'testTools',
           method: 'returnsStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -6653,16 +6868,17 @@ class _TestToolsEndpoint {
   }
 
   _i3.Future<List<int>> returnsListFromInputStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> numbers,
   ) async {
     var _localTestStreamManager = _i1.TestStreamManager<List<int>>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'testTools',
         method: 'returnsListFromInputStream',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext =
           await _endpointDispatch.getMethodStreamCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -6682,17 +6898,17 @@ class _TestToolsEndpoint {
   }
 
   _i3.Stream<int> returnsStreamFromInputStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> numbers,
   ) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'testTools',
           method: 'returnsStreamFromInputStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -6714,14 +6930,15 @@ class _TestToolsEndpoint {
   }
 
   _i3.Future<void> postNumberToSharedStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int number,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'testTools',
         method: 'postNumberToSharedStream',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'testTools',
@@ -6739,17 +6956,17 @@ class _TestToolsEndpoint {
   }
 
   _i3.Stream<int> postNumberToSharedStreamAndReturnStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int number,
   ) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'testTools',
           method: 'postNumberToSharedStreamAndReturnStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -6770,15 +6987,16 @@ class _TestToolsEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
-  _i3.Stream<int> listenForNumbersOnSharedStream(_i1.TestSession session) {
+  _i3.Stream<int> listenForNumbersOnSharedStream(
+      _i1.TestSessionBuilder session) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'testTools',
           method: 'listenForNumbersOnSharedStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -6800,14 +7018,15 @@ class _TestToolsEndpoint {
   }
 
   _i3.Future<void> createSimpleData(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'testTools',
         method: 'createSimpleData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'testTools',
@@ -6825,12 +7044,13 @@ class _TestToolsEndpoint {
   }
 
   _i3.Future<List<_i11.SimpleData>> getAllSimpleData(
-      _i1.TestSession session) async {
+      _i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'testTools',
         method: 'getAllSimpleData',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'testTools',
@@ -6848,14 +7068,15 @@ class _TestToolsEndpoint {
   }
 
   _i3.Future<void> createSimpleDatasInsideTransactions(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'testTools',
         method: 'createSimpleDatasInsideTransactions',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'testTools',
@@ -6873,14 +7094,15 @@ class _TestToolsEndpoint {
   }
 
   _i3.Future<void> createSimpleDataAndThrowInsideTransaction(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int data,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'testTools',
         method: 'createSimpleDataAndThrowInsideTransaction',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'testTools',
@@ -6898,12 +7120,13 @@ class _TestToolsEndpoint {
   }
 
   _i3.Future<void> createSimpleDatasInParallelTransactionCalls(
-      _i1.TestSession session) async {
+      _i1.TestSessionBuilder session) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'testTools',
         method: 'createSimpleDatasInParallelTransactionCalls',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'testTools',
@@ -6932,14 +7155,15 @@ class _AuthenticatedTestToolsEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<String> returnsString(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     String string,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'authenticatedTestTools',
         method: 'returnsString',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
         endpointPath: 'authenticatedTestTools',
@@ -6957,17 +7181,17 @@ class _AuthenticatedTestToolsEndpoint {
   }
 
   _i3.Stream<int> returnsStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     int n,
   ) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'authenticatedTestTools',
           method: 'returnsStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -6989,16 +7213,17 @@ class _AuthenticatedTestToolsEndpoint {
   }
 
   _i3.Future<List<int>> returnsListFromInputStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> numbers,
   ) async {
     var _localTestStreamManager = _i1.TestStreamManager<List<int>>();
     return _i1
         .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
-      var _localUniqueSession = ((session as _i1.InternalTestSession).copyWith(
+      var _localUniqueSession =
+          ((session as _i1.InternalTestSessionBuilder).copyWith(
         endpoint: 'authenticatedTestTools',
         method: 'returnsListFromInputStream',
-      ) as _i1.InternalTestSession);
+      ) as _i1.InternalTestSessionBuilder);
       var _localCallContext =
           await _endpointDispatch.getMethodStreamCallContext(
         createSessionCallback: (_) => _localUniqueSession.serverpodSession,
@@ -7018,17 +7243,17 @@ class _AuthenticatedTestToolsEndpoint {
   }
 
   _i3.Stream<int> intEchoStream(
-    _i1.TestSession session,
+    _i1.TestSessionBuilder session,
     _i3.Stream<int> stream,
   ) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            ((session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSessionBuilder).copyWith(
           endpoint: 'authenticatedTestTools',
           method: 'intEchoStream',
-        ) as _i1.InternalTestSession);
+        ) as _i1.InternalTestSessionBuilder);
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession.serverpodSession,
