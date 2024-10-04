@@ -131,7 +131,7 @@ void main() {
             'and the authenticated user is revoked then stream is closed with ConnectionClosedException.',
             () async {
           await expectLater(
-            session.messages.authenticationRevoked(
+            session.serverpodSession.messages.authenticationRevoked(
               authenticatedUserId,
               RevokedAuthenticationUser(),
             ),
@@ -153,7 +153,7 @@ void main() {
             'and the required scope for an endpoint is revoked then stream is closed with ConnectionClosedException.',
             () async {
           await expectLater(
-            session.messages.authenticationRevoked(
+            session.serverpodSession.messages.authenticationRevoked(
               authenticatedUserId,
               RevokedAuthenticationScope(scopes: ['user']),
             ),
@@ -235,7 +235,7 @@ void main() {
             'and the authenticated user is revoked then streams are closed with ConnectionClosedException.',
             () async {
           await expectLater(
-            session.messages.authenticationRevoked(
+            session.serverpodSession.messages.authenticationRevoked(
               authenticatedUserId,
               RevokedAuthenticationUser(),
             ),
@@ -261,7 +261,7 @@ void main() {
             'and the required scope for an endpoint is revoked then streams are closed with ConnectionClosedException.',
             () async {
           await expectLater(
-            session.messages.authenticationRevoked(
+            session.serverpodSession.messages.authenticationRevoked(
               authenticatedUserId,
               RevokedAuthenticationScope(scopes: ['user']),
             ),
