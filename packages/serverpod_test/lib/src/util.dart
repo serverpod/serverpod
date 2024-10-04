@@ -1,4 +1,4 @@
-/// Test helper to flush all pending microtasks.
+/// Test helper to flush the event queue.
 /// Useful for waiting for async events to complete before continuing the test.
 ///
 /// For example, if depending on a generator function to execute up to its `yield`, then the
@@ -9,8 +9,8 @@
 /// await flushEventQueue();
 /// ```
 ///
-/// Implemenation note: `Future.delayed` will be put on the event loop since it's a timer.
-/// Items on the event loop are not processed until all pending microtasks are completed.
-Future<void> flushMicrotasks() {
+/// Implemenation note: `Future.delayed` will be put last in the event queue since it's a timer.
+/// This will ensure that all other events are processed before the `Future.delayed` event.
+Future<void> flushEventQueue() {
   return Future.delayed(Duration.zero);
 }

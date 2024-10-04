@@ -36,8 +36,8 @@ abstract class TestSession implements DatabaseAccessor {
   /// AuthenticationInfo for the session.
   Future<AuthenticationInfo?> get authenticationInfo;
 
-  /// Access to the message central
-  MessageCentralAccess get messages;
+  /// Gets the unerlying Serverpod session
+  Session get serverpodSession;
 
   /// Creates a new unique session with the provided properties.
   /// This is useful for setting up different session states in the tests
@@ -57,6 +57,7 @@ class InternalTestSession extends TestSession {
   final bool _enableLogging;
 
   /// The underlying Serverpod session
+  @override
   InternalServerpodSession serverpodSession;
 
   @override
@@ -66,9 +67,6 @@ class InternalTestSession extends TestSession {
   Future<AuthenticationInfo?> get authenticationInfo async {
     return serverpodSession.authenticated;
   }
-
-  @override
-  MessageCentralAccess get messages => serverpodSession.messages;
 
   @override
   Transaction? get transaction =>
@@ -121,11 +119,9 @@ class InternalTestSession extends TestSession {
     }
   }
 
-  /// Resets the internal state of the test session
-  /// and recreates the underlying Serverpod session.
-  Future<void> resetState() async {
+  /// Recreates the underlying Serverpod session.
+  Future<void> recreateServerpodSession() async {
     await serverpodSession.close();
-    _authenticationOverride = null;
     serverpodSession = _testServerpod.createSession(
       enableLogging: _enableLogging,
       rollbackDatabase: serverpodSession.rollbackDatabase,

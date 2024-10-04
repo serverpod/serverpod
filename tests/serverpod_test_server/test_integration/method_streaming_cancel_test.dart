@@ -25,7 +25,7 @@ void main() {
 
         var stream = endpoints.methodStreaming.getBroadcastStream(session);
         // Wait for the stream to be created, otherwise cancel is called before creation
-        await flushMicrotasks();
+        await flushEventQueue();
 
         var subscription = stream.listen((event) {});
         await subscription.cancel();
@@ -45,7 +45,7 @@ void main() {
 
         var stream = endpoints.methodStreaming.getBroadcastStream(session);
         // Wait for the stream to be created, otherwise cancel is called before creation
-        await flushMicrotasks();
+        await flushEventQueue();
 
         var subscription = stream.listen((event) {});
         await subscription.cancel();

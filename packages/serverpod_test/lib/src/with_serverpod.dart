@@ -35,16 +35,6 @@ class InvalidConfigurationException implements Exception {
   }
 }
 
-/// Options for when to reset the test session and recreate
-/// the underlying Serverpod session during the test lifecycle.
-enum ResetTestSessions {
-  /// After each test. This is the default.
-  afterEach,
-
-  /// After all tests.
-  afterAll,
-}
-
 /// Options for when to rollback the database during the test lifecycle.
 enum RollbackDatabase {
   /// After each test. This is the default.
@@ -70,11 +60,9 @@ void Function(TestClosure<T>)
     buildWithServerpod<T extends InternalTestEndpoints>(
   String testGroupName,
   TestServerpod<T> testServerpod, {
-  ResetTestSessions? maybeResetTestSessions,
   RollbackDatabase? maybeRollbackDatabase,
   bool? maybeEnableSessionLogging,
 }) {
-  var resetTestSessions = maybeResetTestSessions ?? ResetTestSessions.afterEach;
   var rollbackDatabase = maybeRollbackDatabase ?? RollbackDatabase.afterEach;
   List<InternalTestSession> allTestSessions = [];
 
@@ -112,10 +100,8 @@ void Function(TestClosure<T>)
           await transactionManager.addSavePoint();
         }
 
-        if (resetTestSessions == ResetTestSessions.afterEach) {
-          for (var testSession in allTestSessions) {
-            await testSession.resetState();
-          }
+        for (var testSession in allTestSessions) {
+          await testSession.recreateServerpodSession();
         }
 
         await GlobalStreamManager.closeAllStreams();
