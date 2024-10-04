@@ -41,6 +41,38 @@ class MethodStreaming extends Endpoint {
     return stream.first;
   }
 
+  static const cancelStreamChannelName = 'cancelStreamChannel';
+  static const sessionClosedChannelName = 'sessionClosedChannel';
+  Stream<int?> getBroadcastStream(Session session) {
+    session.addWillCloseListener((localSession) {
+      localSession.messages
+          .postMessage(sessionClosedChannelName, SimpleData(num: 1));
+    });
+    var stream = StreamController<int?>.broadcast(
+      onCancel: () {
+        session.messages
+            .postMessage(cancelStreamChannelName, SimpleData(num: 1));
+      },
+    );
+    return stream.stream;
+  }
+
+  Future<bool> wasBroadcastStreamCanceled(Session session) async {
+    var streamWasCanceled = Completer<bool>();
+    session.messages.addListener(cancelStreamChannelName, (data) {
+      streamWasCanceled.complete(true);
+    });
+    return streamWasCanceled.future;
+  }
+
+  Future<bool> wasSessionWillCloseListenerCalled(Session session) async {
+    var sessionWillCloseListenerWasCalled = Completer<bool>();
+    session.messages.addListener(sessionClosedChannelName, (data) {
+      sessionWillCloseListenerWasCalled.complete(true);
+    });
+    return sessionWillCloseListenerWasCalled.future;
+  }
+
   Stream<int> intStreamFromValue(Session session, int value) async* {
     for (var i in List.generate(value, (index) => index)) {
       yield i;

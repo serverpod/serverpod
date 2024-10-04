@@ -3345,6 +3345,26 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['methodStreaming'] as _i23.MethodStreaming)
                   .methodCallEndpoint(session),
         ),
+        'wasBroadcastStreamCanceled': _i1.MethodConnector(
+          name: 'wasBroadcastStreamCanceled',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['methodStreaming'] as _i23.MethodStreaming)
+                  .wasBroadcastStreamCanceled(session),
+        ),
+        'wasSessionWillCloseListenerCalled': _i1.MethodConnector(
+          name: 'wasSessionWillCloseListenerCalled',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['methodStreaming'] as _i23.MethodStreaming)
+                  .wasSessionWillCloseListenerCalled(session),
+        ),
         'simpleEndpoint': _i1.MethodConnector(
           name: 'simpleEndpoint',
           params: {},
@@ -3498,6 +3518,19 @@ class Endpoints extends _i1.EndpointDispatch {
             session,
             streamParams['stream']!.cast<int?>(),
           ),
+        ),
+        'getBroadcastStream': _i1.MethodStreamConnector(
+          name: 'getBroadcastStream',
+          params: {},
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i23.MethodStreaming)
+                  .getBroadcastStream(session),
         ),
         'intStreamFromValue': _i1.MethodStreamConnector(
           name: 'intStreamFromValue',
