@@ -69,6 +69,10 @@ class TestStreamManager<OutputStreamType> {
     );
 
     GlobalStreamManager.add(_streamManager);
+
+    outputStreamController.onCancel = () async {
+      await _streamManager.closeAllStreams();
+    };
   }
 
   /// Inititates a stream method call which opens all needed streams.

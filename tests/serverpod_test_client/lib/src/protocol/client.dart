@@ -1517,6 +1517,28 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'stream': stream},
       );
 
+  _i2.Stream<int?> getBroadcastStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int?>, int?>(
+        'methodStreaming',
+        'getBroadcastStream',
+        {},
+        {},
+      );
+
+  _i2.Future<bool> wasBroadcastStreamCanceled() =>
+      caller.callServerEndpoint<bool>(
+        'methodStreaming',
+        'wasBroadcastStreamCanceled',
+        {},
+      );
+
+  _i2.Future<bool> wasSessionWillCloseListenerCalled() =>
+      caller.callServerEndpoint<bool>(
+        'methodStreaming',
+        'wasSessionWillCloseListenerCalled',
+        {},
+      );
+
   _i2.Stream<int> intStreamFromValue(int value) =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'methodStreaming',
