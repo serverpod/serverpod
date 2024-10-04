@@ -4703,7 +4703,7 @@ class _MethodStreaming {
     _i1.callStreamFunctionAndHandleExceptions(
       () async {
         var _localUniqueSession =
-            (await (session as _i1.InternalTestSession).copyWith(
+            ((session as _i1.InternalTestSession).copyWith(
           endpoint: 'methodStreaming',
           method: 'getBroadcastStream',
         ) as _i1.InternalTestSession);
@@ -4740,10 +4740,12 @@ class _MethodStreaming {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<bool>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
@@ -4761,10 +4763,12 @@ class _MethodStreaming {
         parameters: {},
         serializationManager: _serializationManager,
       );
-      return (_localCallContext.method.call(
+      var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession.serverpodSession,
         _localCallContext.arguments,
       ) as _i3.Future<bool>);
+      await _localUniqueSession.serverpodSession.close();
+      return _localReturnValue;
     });
   }
 
