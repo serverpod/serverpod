@@ -130,18 +130,6 @@ extension TableComparisons on TableDefinition {
       }
     }
 
-    for (var otherColumn in other.columns) {
-      if (findColumnNamed(otherColumn.name) == null) {
-        mismatches.add(
-          ColumnComparisonWarning(
-            mismatch: 'extra',
-            expected: 'none',
-            found: otherColumn.name,
-          ),
-        );
-      }
-    }
-
     // Compare indexes
     for (var index in indexes) {
       var otherIndex = other.findIndexNamed(index.indexName, ignoreCase: true);
@@ -210,6 +198,7 @@ extension TableComparisons on TableDefinition {
         );
       }
     }
+
     return mismatches;
   }
 }

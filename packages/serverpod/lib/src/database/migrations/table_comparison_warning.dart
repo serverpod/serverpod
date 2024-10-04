@@ -41,7 +41,7 @@ abstract class ComparisonWarning<T extends ComparisonWarning<T>> {
 
     // Write the main mismatch message with proper indentation.
     buffer.write(indentLevel == 0 ? indent : '$indent - ');
-    buffer.write(_buildMessage(indent));
+    buffer.write(_buildMessage(indent, indentLevel));
 
     // Recursively format sub-warnings with increased indentation.
     for (var sub in subs) {
@@ -72,11 +72,11 @@ abstract class ComparisonWarning<T extends ComparisonWarning<T>> {
   /// Builds the message string based on the available fields.
   /// If the mismatch contains sub-details (e.g., "Expected" and "Found"),
   /// they are printed accordingly.
-  String _buildMessage(String space) {
+  String _buildMessage(String space, int indentLevel) {
     StringBuffer buffer = StringBuffer();
 
     // Handle case 1: Main mismatch with name and type
-    if (name != null && mismatch != null) {
+    if (name != null && mismatch != null && indentLevel == 0) {
       buffer.write('$name $mismatch mismatch:');
     }
     // Handle case 2: Only the mismatch is present, e.g., sub-warnings

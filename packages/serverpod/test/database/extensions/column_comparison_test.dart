@@ -59,59 +59,6 @@ void main() {
     );
 
     test(
-      'when the target table has an extra column then mismatches include extra column',
-      () {
-        var tableA = TableDefinition(
-          name: 'test_table',
-          schema: 'public',
-          columns: [
-            ColumnDefinition(
-              name: 'id',
-              columnType: ColumnType.integer,
-              isNullable: false,
-              dartType: 'int',
-            ),
-          ],
-          foreignKeys: [],
-          indexes: [],
-          managed: true,
-        );
-
-        var tableB = TableDefinition(
-          name: 'test_table',
-          schema: 'public',
-          columns: [
-            ColumnDefinition(
-              name: 'id',
-              columnType: ColumnType.integer,
-              isNullable: false,
-              dartType: 'int',
-            ),
-            ColumnDefinition(
-              name: 'name',
-              columnType: ColumnType.text,
-              isNullable: false,
-              dartType: 'String',
-            ),
-          ],
-          foreignKeys: [],
-          indexes: [],
-          managed: true,
-        );
-
-        var mismatches = tableA.like(tableB);
-
-        expect(mismatches.length, 1);
-        expect(mismatches.first.subs, isEmpty);
-
-        expect(mismatches.first, isA<ColumnComparisonWarning>());
-        expect(mismatches.first.mismatch, equals('extra'));
-        expect(mismatches.first.found, equals('name'));
-        expect(mismatches.first.expected, equals('none'));
-      },
-    );
-
-    test(
       'when columns have different types then mismatches include column type mismatch',
       () {
         var tableA = TableDefinition(
