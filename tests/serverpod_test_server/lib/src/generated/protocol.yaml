@@ -186,6 +186,8 @@ methodStreaming:
   - intReturnFromStream:
   - nullableIntReturnFromStream:
   - getBroadcastStream:
+  - wasBroadcastStreamCanceled:
+  - wasSessionWillCloseListenerCalled:
   - intStreamFromValue:
   - intEchoStream:
   - dynamicEchoStream:
