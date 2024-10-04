@@ -17,15 +17,44 @@ void main() {
       });
 
       test(
-        'when calling an endpoint returning a broadcast stream and cancelling '
-        'then will cancel',
-        () async {
-          var stream = endpoints.methodStreaming.getBroadcastStream(session);
-          var subscription = stream.listen((event) {});
+          'when calling an endpoint returning a broadcast stream and cancelling '
+          'then it should cancel and trigger the onCancel hook on the stream controller',
+          () async {
+        var wasStreamCancelled =
+            endpoints.methodStreaming.wasBroadcastStreamCanceled(session);
 
-          await expectLater(subscription.cancel(), completes);
-        },
-      );
+        var stream = endpoints.methodStreaming.getBroadcastStream(session);
+        // Wait for the stream to be created, otherwise cancel is called before creation
+        await flushMicrotasks();
+
+        var subscription = stream.listen((event) {});
+        await subscription.cancel();
+
+        await expectLater(
+          wasStreamCancelled,
+          completion(true),
+        );
+      });
+
+      test(
+          'when calling an endpoint returning a broadcast stream and cancelling '
+          'then it should close the session and call its will close listener',
+          () async {
+        var wasSessionWillCloseListenerCalled = endpoints.methodStreaming
+            .wasSessionWillCloseListenerCalled(session);
+
+        var stream = endpoints.methodStreaming.getBroadcastStream(session);
+        // Wait for the stream to be created, otherwise cancel is called before creation
+        await flushMicrotasks();
+
+        var subscription = stream.listen((event) {});
+        await subscription.cancel();
+
+        await expectLater(
+          wasSessionWillCloseListenerCalled,
+          completion(true),
+        );
+      });
     },
     runMode: ServerpodRunMode.production,
   );
