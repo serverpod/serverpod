@@ -214,52 +214,6 @@ class Restrictions {
     return [];
   }
 
-  List<SourceSpanSeverityException> validateExtendingClassName(
-    String parentNodeName,
-    dynamic parentClassName,
-    SourceSpan? span,
-  ) {
-    if (parentClassName is! String) {
-      return [
-        SourceSpanSeverityException(
-          'The "${Keyword.extendsClass} type must be a String.',
-          span,
-        )
-      ];
-    }
-
-    var parentClass = parsedModels.findByClassName(parentClassName);
-
-    if (parentClass == null) {
-      return [
-        SourceSpanSeverityException(
-          'The class "$parentClassName" was not found in any model.',
-          span,
-        )
-      ];
-    }
-
-    if (parentClass.moduleAlias != defaultModuleAlias) {
-      return [
-        SourceSpanSeverityException(
-          'You can only extend classes from your own project.',
-          span,
-        )
-      ];
-    }
-
-    if (parentClass is ClassDefinition && parentClass.tableName != null) {
-      return [
-        SourceSpanSeverityException(
-          'A parent class cannot have a table definition. Please remove the "table" property from the class "$parentClassName".',
-          span,
-        )
-      ];
-    }
-
-    return [];
-  }
-
   List<SourceSpanSeverityException> validateTableName(
     String parentNodeName,
     dynamic tableName,
@@ -299,6 +253,56 @@ class Restrictions {
       return [
         SourceSpanSeverityException(
           'The table name "$tableName" exceeds the $_maxTableNameLength character table name limitation.',
+          span,
+        )
+      ];
+    }
+
+    var currentModel = parsedModels.findByTableName(tableName);
+
+    var ancestorWithTable = _findTableClassInParentClasses(currentModel);
+
+    if (ancestorWithTable != null) {
+      return [
+        SourceSpanSeverityException(
+          'The "table" property is not allowed because another class, "${ancestorWithTable.className}", in the class hierarchy already has one defined. Only one table definition is allowed when using inheritance.',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateExtendingClassName(
+    String parentNodeName,
+    dynamic parentClassName,
+    SourceSpan? span,
+  ) {
+    if (parentClassName is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.extendsClass} type must be a String.',
+          span,
+        )
+      ];
+    }
+
+    var parentClass = parsedModels.findByClassName(parentClassName);
+
+    if (parentClass == null) {
+      return [
+        SourceSpanSeverityException(
+          'The class "$parentClassName" was not found in any model.',
+          span,
+        )
+      ];
+    }
+
+    if (parentClass.moduleAlias != defaultModuleAlias) {
+      return [
+        SourceSpanSeverityException(
+          'You can only extend classes from your own project.',
           span,
         )
       ];
@@ -1259,7 +1263,7 @@ class Restrictions {
       );
     }
 
-    if (field.hasOnlyDatabaseDefauls && !field.type.nullable) {
+    if (field.hasOnlyDatabaseDefaults && !field.type.nullable) {
       errors.add(
         SourceSpanSeverityException(
           'When setting only the "defaultPersist" key, its type should be nullable',
@@ -1377,5 +1381,31 @@ class Restrictions {
     if (definition is ClassDefinition) classDefinitions.add(definition);
 
     return classDefinitions;
+  }
+
+  ClassDefinition? _getParentClass(ClassDefinition currentClass) {
+    if (currentClass.extendsClass is! ResolvedInheritanceDefinition) {
+      return null;
+    }
+
+    return (currentClass.extendsClass as ResolvedInheritanceDefinition)
+        .classDefinition;
+  }
+
+  ClassDefinition? _findTableClassInParentClasses(
+    SerializableModelDefinition? currentModel,
+  ) {
+    if (currentModel is! ClassDefinition) return null;
+    var parentModel = _getParentClass(currentModel);
+
+    while (parentModel != null) {
+      if (_hasTableDefined(parentModel)) {
+        return parentModel;
+      }
+
+      parentModel = _getParentClass(parentModel);
+    }
+
+    return null;
   }
 }

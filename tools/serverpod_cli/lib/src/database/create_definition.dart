@@ -24,7 +24,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
           dartName: classDefinition.className,
           schema: 'public',
           columns: [
-            for (var column in classDefinition.fields)
+            for (var column in classDefinition.fieldsIncludingInherited)
               if (column.shouldSerializeFieldForDatabase(true))
                 ColumnDefinition(
                   name: column.name,
