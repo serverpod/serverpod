@@ -100,17 +100,17 @@ class ClassDefinition extends SerializableModelDefinition {
 
   /// Returns a list of all fields in the parent class.
   /// If there is no parent class, an empty list is returned.
-  List<SerializableModelFieldDefinition> get parentFields =>
-      parentClass?.fields ?? [];
+  List<SerializableModelFieldDefinition> get inheritedFields =>
+      parentClass?.fieldsIncludingInherited ?? [];
 
   /// Returns a list of all fields in this class, including inherited fields.
   /// It ensures that the 'id' field, if present, is always included at the beginning of the list.
-  List<SerializableModelFieldDefinition> get allFields {
+  List<SerializableModelFieldDefinition> get fieldsIncludingInherited {
     bool hasIdField = fields.any((element) => element.name == 'id');
 
     return [
       if (hasIdField) fields.firstWhere((element) => element.name == 'id'),
-      ...parentFields,
+      ...inheritedFields,
       ...fields.where((element) => element.name != 'id'),
     ];
   }

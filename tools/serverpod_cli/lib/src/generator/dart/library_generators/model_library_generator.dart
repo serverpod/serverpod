@@ -40,7 +40,7 @@ class SerializableModelLibraryGenerator {
   ) {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
-    var fields = classDefinition.allFields;
+    var fields = classDefinition.fieldsIncludingInherited;
 
     var buildRepository = BuildRepositoryClass(
       serverCode: serverCode,
@@ -1036,7 +1036,7 @@ class SerializableModelLibraryGenerator {
     required bool setAsToThis,
   }) {
     var classFields = classDefinition.fields;
-    var inheritedFields = classDefinition.parentFields;
+    var inheritedFields = classDefinition.inheritedFields;
 
     return fields
         .where((field) => field.shouldIncludeField(serverCode))
