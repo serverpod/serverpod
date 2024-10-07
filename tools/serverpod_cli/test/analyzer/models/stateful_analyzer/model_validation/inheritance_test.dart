@@ -92,7 +92,7 @@ void main() {
     });
 
     test(
-        'Given a child class of a external class, then an error is collected that only classes from within the project can be extended',
+        'Given a child-class that extends an external class, then an error is collected that only classes from within the project can be extended',
         () {
       var modelSources = [
         ModelSourceBuilder()
@@ -209,7 +209,7 @@ void main() {
       var error = collector.errors.first;
       expect(
         error.message,
-        'ExampleChildClass cannot have a table, another class in its hierarchy already declares a table "Example".',
+        'The "table" property is not allowed because another class, "Example", in the class hierarchy already has one defined. Only one table definition is allowed when using inheritance.',
       );
     });
   });

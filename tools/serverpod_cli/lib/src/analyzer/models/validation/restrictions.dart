@@ -258,15 +258,14 @@ class Restrictions {
       ];
     }
 
-    var currentModel =
-        parsedModels.findByTableName(tableName) as ClassDefinition;
+    var currentModel = parsedModels.findByTableName(tableName);
 
-    var ancestorWithTable = _findOtherTableClassInHierarchy(currentModel);
+    var ancestorWithTable = _findTableClassInParentClasses(currentModel);
 
     if (ancestorWithTable != null) {
       return [
         SourceSpanSeverityException(
-          '${currentModel.className} cannot have a table, another class in its hierarchy already declares a table "${ancestorWithTable.className}".',
+          'The "table" property is not allowed because another class, "${ancestorWithTable.className}", in the class hierarchy already has one defined. Only one table definition is allowed when using inheritance.',
           span,
         )
       ];
@@ -289,8 +288,7 @@ class Restrictions {
       ];
     }
 
-    var parentClass =
-        parsedModels.findByClassName(parentClassName) as ClassDefinition?;
+    var parentClass = parsedModels.findByClassName(parentClassName);
 
     if (parentClass == null) {
       return [
@@ -1394,9 +1392,10 @@ class Restrictions {
         .classDefinition;
   }
 
-  ClassDefinition? _findOtherTableClassInHierarchy(
-    ClassDefinition currentModel,
+  ClassDefinition? _findTableClassInParentClasses(
+    SerializableModelDefinition? currentModel,
   ) {
+    if (currentModel is! ClassDefinition) return null;
     var parentModel = _getParentClass(currentModel);
 
     while (parentModel != null) {
