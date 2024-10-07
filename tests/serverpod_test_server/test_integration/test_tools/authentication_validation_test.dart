@@ -9,15 +9,16 @@ import 'serverpod_test_tools.dart';
 void main() {
   withServerpod(
     'Given AuthenticatedTestToolsEndpoint',
-    (endpoints, session) {
+    (sessionBuilder, endpoints) {
       test(
           'when not authenticated and calling returnsString then throws ServerpodUnauthenticatedException',
           () async {
-        session = session.copyWith(
-            authentication: AuthenticationOverride.unauthenticated());
+        sessionBuilder = sessionBuilder.copyWith(
+          authentication: AuthenticationOverride.unauthenticated(),
+        );
 
-        final result =
-            endpoints.authenticatedTestTools.returnsString(session, "Hello");
+        final result = endpoints.authenticatedTestTools
+            .returnsString(sessionBuilder, "Hello");
         await expectLater(
             result, throwsA(isA<ServerpodUnauthenticatedException>()));
       });
@@ -25,19 +26,19 @@ void main() {
       test(
           'when not having sufficient access scopes and calling returnsString then throws ServerpodInsufficientAccessException',
           () async {
-        session = session.copyWith(
+        sessionBuilder = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(1234, {}),
         );
 
-        final result =
-            endpoints.authenticatedTestTools.returnsString(session, "Hello");
+        final result = endpoints.authenticatedTestTools
+            .returnsString(sessionBuilder, "Hello");
         await expectLater(
             result, throwsA(isA<ServerpodInsufficientAccessException>()));
       });
 
       test('when authorized and calling returnsString then echoes string',
           () async {
-        session = session.copyWith(
+        sessionBuilder = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
             1234,
             {Scope('user')},
@@ -45,18 +46,19 @@ void main() {
         );
 
         final result = await endpoints.authenticatedTestTools
-            .returnsString(session, "Hello");
+            .returnsString(sessionBuilder, "Hello");
         expect(result, "Hello");
       });
 
       test(
           'when not authenticated and calling returnsStream then throws ServerpodUnauthenticatedException',
           () async {
-        session = session.copyWith(
+        sessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.unauthenticated());
 
-        final result =
-            endpoints.authenticatedTestTools.returnsStream(session, 3).toList();
+        final result = endpoints.authenticatedTestTools
+            .returnsStream(sessionBuilder, 3)
+            .toList();
         await expectLater(
             result, throwsA(isA<ServerpodUnauthenticatedException>()));
       });
@@ -64,21 +66,22 @@ void main() {
       test(
           'when not having sufficient access scopes and calling returnsStream then throws ServerpodInsufficientAccessException',
           () async {
-        session = session.copyWith(
+        sessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
           1234,
           {},
         ));
 
-        final result =
-            endpoints.authenticatedTestTools.returnsStream(session, 3).toList();
+        final result = endpoints.authenticatedTestTools
+            .returnsStream(sessionBuilder, 3)
+            .toList();
         await expectLater(
             result, throwsA(isA<ServerpodInsufficientAccessException>()));
       });
 
       test('when authorized and calling returnsStream then returns a stream',
           () async {
-        session = session.copyWith(
+        sessionBuilder = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
             1234,
             {Scope('user')},
@@ -86,7 +89,7 @@ void main() {
         );
 
         final result = await endpoints.authenticatedTestTools
-            .returnsStream(session, 3)
+            .returnsStream(sessionBuilder, 3)
             .toList();
         expect(result, [0, 1, 2]);
       });
@@ -97,17 +100,20 @@ void main() {
         late StreamController<int> inStream;
 
         var authenticatedUserId = 1;
+        var authenticatedSessionBuilder = sessionBuilder.copyWith(
+          authentication: AuthenticationOverride.authenticationInfo(
+              authenticatedUserId, {Scope('user')}),
+        );
+
+        late Session session;
 
         setUp(() async {
+          session = authenticatedSessionBuilder.build();
           streamClosedCompleter = Completer<dynamic>();
           inStream = StreamController<int>();
           Stream<int> outStream;
-          var authenticatedSession = session.copyWith(
-            authentication: AuthenticationOverride.authenticationInfo(
-                authenticatedUserId, {Scope('user')}),
-          );
           outStream = endpoints.authenticatedTestTools.intEchoStream(
-            authenticatedSession,
+            authenticatedSessionBuilder,
             inStream.stream,
           );
 
@@ -127,11 +133,15 @@ void main() {
           assert(valueReceivedCompleter.isCompleted);
         });
 
+        tearDown(() async {
+          await session.close();
+        });
+
         test(
             'and the authenticated user is revoked then stream is closed with ConnectionClosedException.',
             () async {
           await expectLater(
-            session.serverpodSession.messages.authenticationRevoked(
+            session.messages.authenticationRevoked(
               authenticatedUserId,
               RevokedAuthenticationUser(),
             ),
@@ -153,7 +163,7 @@ void main() {
             'and the required scope for an endpoint is revoked then stream is closed with ConnectionClosedException.',
             () async {
           await expectLater(
-            session.serverpodSession.messages.authenticationRevoked(
+            session.messages.authenticationRevoked(
               authenticatedUserId,
               RevokedAuthenticationScope(scopes: ['user']),
             ),
@@ -181,13 +191,20 @@ void main() {
         late StreamController<int> inStream2;
 
         var authenticatedUserId = 1;
+        var authenticatedSessionBuilder = sessionBuilder.copyWith(
+          authentication: AuthenticationOverride.authenticationInfo(
+              authenticatedUserId, {Scope('user')}),
+        );
+
+        late Session session;
 
         setUp(() async {
+          session = authenticatedSessionBuilder.build();
           streamClosedCompleter1 = Completer<dynamic>();
           inStream1 = StreamController<int>();
           Stream<int> outStream;
 
-          var authenticatedSession = session.copyWith(
+          var authenticatedSession = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
                 authenticatedUserId, {Scope('user')}),
           );
@@ -231,11 +248,15 @@ void main() {
           assert(valueReceivedCompleter2.isCompleted);
         });
 
+        tearDown(() async {
+          await session.close();
+        });
+
         test(
             'and the authenticated user is revoked then streams are closed with ConnectionClosedException.',
             () async {
           await expectLater(
-            session.serverpodSession.messages.authenticationRevoked(
+            session.messages.authenticationRevoked(
               authenticatedUserId,
               RevokedAuthenticationUser(),
             ),
@@ -261,7 +282,7 @@ void main() {
             'and the required scope for an endpoint is revoked then streams are closed with ConnectionClosedException.',
             () async {
           await expectLater(
-            session.serverpodSession.messages.authenticationRevoked(
+            session.messages.authenticationRevoked(
               authenticatedUserId,
               RevokedAuthenticationScope(scopes: ['user']),
             ),

@@ -5,10 +5,10 @@ import 'serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given calling `copyWith` on the session',
-    (endpoints, session) {
-      group('when setting a new shared session on the group level', () {
-        TestSession modifiedSession = session.copyWith(
+    'Given calling `copyWith` on the session builder',
+    (sessionBuilder, endpoints) {
+      group('when setting a new shared session builder on the group level', () {
+        TestSessionBuilder modifiedSessionBuilder = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
             123,
             {},
@@ -16,32 +16,32 @@ void main() {
         );
 
         test(
-            'then the first test gets the modifiedSession according to the group assignment',
+            'then the first test gets the modifiedSessionBuilder according to the group assignment',
             () async {
           await expectLater(
-            modifiedSession.authenticationInfo,
+            modifiedSessionBuilder.build().authenticated,
             completion((a) => a.userId == 123),
           );
         });
         test(
-            'then the second test gets the modifiedSession according to the group assignment',
+            'then the second test gets the modifiedSessionBuilder according to the group assignment',
             () async {
           await expectLater(
-            modifiedSession.authenticationInfo,
+            modifiedSessionBuilder.build().authenticated,
             completion((a) => a.userId == 123),
           );
         });
       });
 
       group(
-          'when setting a new shared session on the group level '
-          'and copying the session in the first test', () {
-        TestSession modifiedSession = session.copyWith(
+          'when setting a new shared session builder on the group level '
+          'and copying the session builder in the first test', () {
+        TestSessionBuilder modifiedSessionBuilder = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.unauthenticated(),
         );
 
         test('then the first test can change it', () async {
-          modifiedSession = session.copyWith(
+          modifiedSessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
               123,
               {},
@@ -49,16 +49,16 @@ void main() {
           );
 
           await expectLater(
-            modifiedSession.authenticationInfo,
+            modifiedSessionBuilder.build().authenticated,
             completion((a) => a.userId == 123),
           );
         });
 
         test(
-            'then the second test gets the modifiedSession according to the first test',
+            'then the second test gets the modifiedSessionBuilder according to the first test',
             () async {
           await expectLater(
-            modifiedSession.authenticationInfo,
+            modifiedSessionBuilder.build().authenticated,
             completion((a) => a.userId == 123),
           );
         });

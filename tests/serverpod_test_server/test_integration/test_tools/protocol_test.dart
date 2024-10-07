@@ -4,17 +4,17 @@ import 'package:test/test.dart';
 import 'serverpod_test_tools.dart';
 
 void main() {
-  withServerpod('Given TestToolsEndpoint', (endpoints, session) {
+  withServerpod('Given TestToolsEndpoint', (sessionBuilder, endpoints) {
     test('when calling method with positional arg then echoes the value',
         () async {
       final result = await endpoints.methodSignaturePermutations
-          .echoPositionalArg(session, 'PositionalArg');
+          .echoPositionalArg(sessionBuilder, 'PositionalArg');
       expect(result, 'PositionalArg');
     });
 
     test('when calling method with named arg then echoes the value', () async {
       final result = await endpoints.methodSignaturePermutations
-          .echoNamedArg(session, string: 'NamedArg');
+          .echoNamedArg(sessionBuilder, string: 'NamedArg');
       expect(result, 'NamedArg');
     });
 
@@ -22,7 +22,7 @@ void main() {
         'when calling method with a nullable named arg with value then echoes value',
         () async {
       final result = await endpoints.methodSignaturePermutations
-          .echoNullableNamedArg(session, string: 'NamedArg');
+          .echoNullableNamedArg(sessionBuilder, string: 'NamedArg');
       expect(result, 'NamedArg');
     });
 
@@ -30,21 +30,21 @@ void main() {
         'when calling method with a nullable named arg without passing value then echoes null',
         () async {
       final result = await endpoints.methodSignaturePermutations
-          .echoNullableNamedArg(session);
+          .echoNullableNamedArg(sessionBuilder);
       expect(result, isNull);
     });
 
     test('when calling method with optional arg then echoes the value',
         () async {
       final result = await endpoints.methodSignaturePermutations
-          .echoOptionalArg(session, 'OptionalArg');
+          .echoOptionalArg(sessionBuilder, 'OptionalArg');
       expect(result, 'OptionalArg');
     });
 
     test('when calling method with optional arg without value then echoes null',
         () async {
-      final result =
-          await endpoints.methodSignaturePermutations.echoOptionalArg(session);
+      final result = await endpoints.methodSignaturePermutations
+          .echoOptionalArg(sessionBuilder);
       expect(result, isNull);
     });
 
@@ -52,7 +52,7 @@ void main() {
         () async {
       final result = await endpoints.methodSignaturePermutations
           .echoPositionalAndNamedArgs(
-        session,
+        sessionBuilder,
         'PositionalArg',
         string2: 'NamedArg',
       );
@@ -65,7 +65,7 @@ void main() {
         () async {
       final result = await endpoints.methodSignaturePermutations
           .echoPositionalAndNullableNamedArgs(
-        session,
+        sessionBuilder,
         'PositionalArg',
         string2: 'NamedArg',
       );
@@ -78,7 +78,7 @@ void main() {
         () async {
       final result = await endpoints.methodSignaturePermutations
           .echoPositionalAndNullableNamedArgs(
-        session,
+        sessionBuilder,
         'PositionalArg',
       );
 
@@ -90,7 +90,7 @@ void main() {
         () async {
       final result = await endpoints.methodSignaturePermutations
           .echoPositionalAndOptionalArgs(
-        session,
+        sessionBuilder,
         'PositionalArg',
         'OptionalArg',
       );
@@ -103,7 +103,7 @@ void main() {
         () async {
       final result = await endpoints.methodSignaturePermutations
           .echoPositionalAndOptionalArgs(
-        session,
+        sessionBuilder,
         'PositionalArg',
       );
 
@@ -114,7 +114,7 @@ void main() {
         () async {
       final result = await endpoints.methodSignaturePermutations
           .echoNamedArgStream(
-            session,
+            sessionBuilder,
             strings: Stream.fromIterable(['NamedArg']),
           )
           .toList();
@@ -126,7 +126,7 @@ void main() {
         () async {
       final result = await endpoints.methodSignaturePermutations
           .echoNamedArgStreamAsFuture(
-        session,
+        sessionBuilder,
         strings: Stream.fromIterable(['NamedArg']),
       );
 
@@ -137,7 +137,7 @@ void main() {
         () async {
       final result = await endpoints.methodSignaturePermutations
           .echoPositionalArgStream(
-            session,
+            sessionBuilder,
             Stream.fromIterable(['PositionalArg']),
           )
           .toList();
@@ -149,7 +149,7 @@ void main() {
         () async {
       final result = await endpoints.methodSignaturePermutations
           .echoPositionalArgStreamAsFuture(
-        session,
+        sessionBuilder,
         Stream.fromIterable(['NamedArg']),
       );
 

@@ -6,16 +6,16 @@ import 'serverpod_test_tools.dart';
 void main() {
   withServerpod(
     'Given TestToolsEndpoint',
-    (endpoints, session) {
+    (sessionBuilder, endpoints) {
       test('when calling returnsString then echoes string', () async {
         final result =
-            await endpoints.testTools.returnsString(session, "Hello");
+            await endpoints.testTools.returnsString(sessionBuilder, "Hello");
         expect(result, 'Hello');
       });
 
       test('when calling returnsStream then returns a stream', () async {
         final result =
-            await endpoints.testTools.returnsStream(session, 3).toList();
+            await endpoints.testTools.returnsStream(sessionBuilder, 3).toList();
         expect(result, [0, 1, 2]);
       });
 
@@ -24,7 +24,7 @@ void main() {
           () async {
         final stream = Stream<int>.fromIterable([1, 2, 3, 4, 5]);
         final result = await endpoints.testTools
-            .returnsListFromInputStream(session, stream);
+            .returnsListFromInputStream(sessionBuilder, stream);
         expect(result, [1, 2, 3, 4, 5]);
       });
 
@@ -32,21 +32,21 @@ void main() {
           'when calling returnsStreamFromInputStream then echoes the input stream back',
           () async {
         final stream = Stream<int>.fromIterable([1, 2, 3, 4, 5]);
-        final result =
-            endpoints.testTools.returnsStreamFromInputStream(session, stream);
+        final result = endpoints.testTools
+            .returnsStreamFromInputStream(sessionBuilder, stream);
         await expectLater(result, emitsInOrder([1, 2, 3, 4, 5]));
       });
 
       test(
           'when calling postNumberToSharedStream and listenForNumbersOnSharedStream with different sessions then number should be echoed',
           () async {
-        var userSession1 = session.copyWith(
+        var userSession1 = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
             1,
             {},
           ),
         );
-        var userSession2 = session.copyWith(
+        var userSession2 = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
             2,
             {},
@@ -67,10 +67,10 @@ void main() {
           'when calling postNumberToSharedStreamAndReturnStream without listening to the return stream then number should still be posted',
           () async {
         var stream =
-            endpoints.testTools.listenForNumbersOnSharedStream(session);
+            endpoints.testTools.listenForNumbersOnSharedStream(sessionBuilder);
 
         endpoints.testTools
-            .postNumberToSharedStreamAndReturnStream(session, 111);
+            .postNumberToSharedStreamAndReturnStream(sessionBuilder, 111);
 
         await expectLater(stream.take(1), emitsInOrder([111]));
       });

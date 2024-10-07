@@ -13,4 +13,4 @@ export 'serverpod_test.dart'
         ServerpodInsufficientAccessException,
         ServerpodUnauthenticatedException,
         TestClosure,
-        TestSession;
+        TestSessionBuilder;

@@ -7,55 +7,62 @@ import 'serverpod_test_tools.dart';
 void main() {
   withServerpod(
     'Given TestToolsEndpoint',
-    (endpoints, session) {
+    (sessionBuilder, endpoints) {
+      var session = sessionBuilder.build();
+
       test(
           'when calling createSimpleData then creates a SimpleData in the database',
           () async {
-        await endpoints.testTools.createSimpleData(session, 123);
+        await endpoints.testTools.createSimpleData(sessionBuilder, 123);
 
         final result = await SimpleData.db.find(session);
         expect(result.length, 1);
         expect(result.first.num, 123);
       });
 
-      group('when two calls to createSimpleData with different sessions', () {
-        late TestSession firstSession;
-        late TestSession secondSession;
+      group(
+          'when two calls to createSimpleData with different session builders',
+          () {
+        late TestSessionBuilder firstSessionBuilder;
+        late TestSessionBuilder secondSessionBuilder;
         setUp(() async {
-          firstSession = session.copyWith(
+          firstSessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
               111,
               {},
             ),
           );
-          secondSession = session.copyWith(
+          secondSessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
               222,
               {},
             ),
           );
 
-          await endpoints.testTools.createSimpleData(firstSession, 111);
-          await endpoints.testTools.createSimpleData(secondSession, 222);
+          await endpoints.testTools.createSimpleData(firstSessionBuilder, 111);
+          await endpoints.testTools.createSimpleData(secondSessionBuilder, 222);
         });
 
-        test('then the first session can see the created data', () async {
+        test('then the first session builder can see the created data',
+            () async {
           var fetchedSimpleDatas =
-              await endpoints.testTools.getAllSimpleData(firstSession);
+              await endpoints.testTools.getAllSimpleData(firstSessionBuilder);
           expect(fetchedSimpleDatas.length, 2);
           expect(fetchedSimpleDatas[0].num, 111);
           expect(fetchedSimpleDatas[1].num, 222);
         });
-        test('then the second session can see the created data', () async {
+        test('then the second session builder can see the created data',
+            () async {
           var fetchedSimpleDatas =
-              await endpoints.testTools.getAllSimpleData(secondSession);
+              await endpoints.testTools.getAllSimpleData(secondSessionBuilder);
           expect(fetchedSimpleDatas.length, 2);
           expect(fetchedSimpleDatas[0].num, 111);
           expect(fetchedSimpleDatas[1].num, 222);
         });
-        test('then the original session can see the created data', () async {
+        test('then the original session builder can see the created data',
+            () async {
           var fetchedSimpleDatas =
-              await endpoints.testTools.getAllSimpleData(session);
+              await endpoints.testTools.getAllSimpleData(sessionBuilder);
           expect(fetchedSimpleDatas.length, 2);
           expect(fetchedSimpleDatas[0].num, 111);
           expect(fetchedSimpleDatas[1].num, 222);
@@ -71,7 +78,8 @@ void main() {
         });
 
         test('then returns all SimpleData in the database', () async {
-          var result = await endpoints.testTools.getAllSimpleData(session);
+          var result =
+              await endpoints.testTools.getAllSimpleData(sessionBuilder);
 
           expect(result.length, 2);
 
@@ -85,11 +93,12 @@ void main() {
 
   withServerpod(
     'Given TestToolsEndpoint and rollbackDatabase afterEach',
-    (endpoints, session) {
+    (sessionBuilder, endpoints) {
+      var session = sessionBuilder.build();
       group('when calling createSimpleDatasInsideTransactions', () {
         setUpAll(() async {
           await endpoints.testTools
-              .createSimpleDatasInsideTransactions(session, 123);
+              .createSimpleDatasInsideTransactions(sessionBuilder, 123);
         });
 
         test("then finds SimpleDatas", () async {
@@ -110,7 +119,7 @@ void main() {
         setUpAll(() async {
           try {
             await endpoints.testTools
-                .createSimpleDataAndThrowInsideTransaction(session, 123);
+                .createSimpleDataAndThrowInsideTransaction(sessionBuilder, 123);
           } catch (e) {}
         });
 
@@ -132,7 +141,7 @@ void main() {
         late Future endpointCall;
         setUpAll(() async {
           endpointCall = endpoints.testTools
-              .createSimpleDatasInParallelTransactionCalls(session);
+              .createSimpleDatasInParallelTransactionCalls(sessionBuilder);
         });
 
         test('then should enter invariant state and throw', () async {
@@ -167,10 +176,12 @@ void main() {
     group('when calling createSimpleDatasInsideTransactions', () {
       withServerpod(
         '',
-        (endpoints, session) {
+        (sessionBuilder, endpoints) {
+          var session = sessionBuilder.build();
+
           setUpAll(() async {
             await endpoints.testTools
-                .createSimpleDatasInsideTransactions(session, 123);
+                .createSimpleDatasInsideTransactions(sessionBuilder, 123);
           });
 
           test("then finds SimpleDatas", () async {
@@ -195,7 +206,8 @@ void main() {
 
       withServerpod(
         'when fetching SimpleData in the next withServerpod',
-        (endpoints, session) {
+        (sessionBuilder, endpoints) {
+          var session = sessionBuilder.build();
           test('then should have been rolled back', () async {
             var simpleDatas = await SimpleData.db.find(session);
 
@@ -209,11 +221,14 @@ void main() {
     group('when calling createSimpleDataAndThrowInsideTransaction', () {
       withServerpod(
         '',
-        (endpoints, session) {
+        (sessionBuilder, endpoints) {
+          var session = sessionBuilder.build();
+
           setUpAll(() async {
             try {
               await endpoints.testTools
-                  .createSimpleDataAndThrowInsideTransaction(session, 123);
+                  .createSimpleDataAndThrowInsideTransaction(
+                      sessionBuilder, 123);
             } catch (e) {}
           });
 
@@ -230,7 +245,8 @@ void main() {
 
       withServerpod(
         'when fetching SimpleData in the next withServerpod',
-        (endpoints, session) {
+        (sessionBuilder, endpoints) {
+          var session = sessionBuilder.build();
           test('then should have been rolled back', () async {
             var simpleDatas = await SimpleData.db.find(session);
 
@@ -244,11 +260,11 @@ void main() {
     group('when calling createSimpleDatasInParallelTransactionCalls', () {
       withServerpod(
         '',
-        (endpoints, session) {
+        (sessionBuilder, endpoints) {
           test('then should enter invariant state and throw', () async {
             await expectLater(
               endpoints.testTools
-                  .createSimpleDatasInParallelTransactionCalls(session),
+                  .createSimpleDatasInParallelTransactionCalls(sessionBuilder),
               throwsA(
                 allOf(
                   isA<InvalidConfigurationException>(),
@@ -269,7 +285,9 @@ void main() {
 
       withServerpod(
         'when fetching SimpleData in the next withServerpod',
-        (endpoints, session) {
+        (sessionBuilder, endpoints) {
+          var session = sessionBuilder.build();
+
           test('then should have been rolled back', () async {
             var simpleDatas = await SimpleData.db.find(session);
 
@@ -285,10 +303,11 @@ void main() {
     group('when calling createSimpleDatasInsideTransactions', () {
       withServerpod(
         '',
-        (endpoints, session) {
+        (sessionBuilder, endpoints) {
+          var session = sessionBuilder.build();
           setUpAll(() async {
             await endpoints.testTools
-                .createSimpleDatasInsideTransactions(session, 123);
+                .createSimpleDatasInsideTransactions(sessionBuilder, 123);
           });
 
           test("then finds SimpleDatas in the test", () async {
@@ -313,7 +332,8 @@ void main() {
 
       withServerpod(
         'when fetching SimpleData in the next withServerpod',
-        (endpoints, session) {
+        (sessionBuilder, endpoints) {
+          var session = sessionBuilder.build();
           tearDownAll(() async {
             await SimpleData.db.deleteWhere(
               session,
@@ -339,11 +359,13 @@ void main() {
     group('when calling createSimpleDataAndThrowInsideTransaction', () {
       withServerpod(
         '',
-        (endpoints, session) {
+        (sessionBuilder, endpoints) {
+          var session = sessionBuilder.build();
           setUpAll(() async {
             try {
               await endpoints.testTools
-                  .createSimpleDataAndThrowInsideTransaction(session, 123);
+                  .createSimpleDataAndThrowInsideTransaction(
+                      sessionBuilder, 123);
             } catch (e) {}
           });
 
@@ -360,7 +382,9 @@ void main() {
 
       withServerpod(
         'when fetching SimpleData in the next withServerpod',
-        (endpoints, session) {
+        (sessionBuilder, endpoints) {
+          var session = sessionBuilder.build();
+
           tearDownAll(() async {
             await SimpleData.db.deleteWhere(
               session,
@@ -381,10 +405,11 @@ void main() {
 
     withServerpod(
       'when calling createSimpleDatasInParallelTransactionCalls',
-      (endpoints, session) {
+      (sessionBuilder, endpoints) {
+        var session = sessionBuilder.build();
         setUpAll(() async {
           await endpoints.testTools
-              .createSimpleDatasInParallelTransactionCalls(session);
+              .createSimpleDatasInParallelTransactionCalls(sessionBuilder);
         });
 
         tearDownAll(() async {
