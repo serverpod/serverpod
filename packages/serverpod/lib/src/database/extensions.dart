@@ -99,7 +99,7 @@ extension TableComparisons on TableDefinition {
     }
 
     // Compare table managed property
-    if (other.managed != managed) {
+    if (managed != null && other.managed != null && managed != other.managed) {
       mismatches.add(
         TableComparisonWarning(
           mismatch: 'managed property',
