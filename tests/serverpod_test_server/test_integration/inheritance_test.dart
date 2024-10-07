@@ -26,7 +26,7 @@ void main() async {
   });
 
   test(
-      'Given an instantiated child-class when inserted into the parent-class table, then the child-class should be retrievable from the parent-class table',
+      'Given an instantiated child-class when inserted into the parent-class table, then inherited fields should be retrievable from the parent-class table',
       () async {
     var childClass = ChildClass(
       grandParentField: 'grandParentField',
