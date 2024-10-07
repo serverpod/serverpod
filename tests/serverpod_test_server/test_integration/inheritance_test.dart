@@ -14,7 +14,7 @@ void main() async {
   tearDownAll(() async => await _deleteAll(session));
 
   test(
-      'Given a class extends another class, then the child-class is a sub-type parent-class',
+      'Given a class that extends another class, then the child-class is a sub-type of the parent-class',
       () {
     var childClass = ChildClass(
       grandParentField: 'grandParentField',
@@ -26,7 +26,7 @@ void main() async {
   });
 
   test(
-      'Given a ChildClass is instantiated and inserted into the ParentClass table, then the ChildClass should be retrievable from the ParentClass table',
+      'Given an instantiated ChildClass when inserted into the ParentClass table, then the ChildClass should be retrievable from the ParentClass table',
       () async {
     var childClass = ChildClass(
       grandParentField: 'grandParentField',
@@ -38,7 +38,7 @@ void main() async {
     var parentDbFirstRow = await ParentClass.db.findFirstRow(session);
 
     expect(childInParentDb.id, parentDbFirstRow!.id);
-    expect(childInParentDb.grandParentField, parentDbFirstRow.grandParentField);
-    expect(childInParentDb.parentField, parentDbFirstRow.parentField);
+    expect(childClass.grandParentField, parentDbFirstRow.grandParentField);
+    expect(childClass.parentField, parentDbFirstRow.parentField);
   });
 }
