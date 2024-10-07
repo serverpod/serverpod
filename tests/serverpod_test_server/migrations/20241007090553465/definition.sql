@@ -534,6 +534,15 @@ CREATE TABLE "organization_with_long_table_name_that_is_still_valid" (
 );
 
 --
+-- Class ParentClass as table parent_class_table
+--
+CREATE TABLE "parent_class_table" (
+    "id" bigserial PRIMARY KEY,
+    "grandParentField" text NOT NULL,
+    "parentField" text NOT NULL
+);
+
+--
 -- Class ParentUser as table parent_user
 --
 CREATE TABLE "parent_user" (
@@ -1451,9 +1460,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20240917083244622', now())
+    VALUES ('serverpod_test', '20241007090553465', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240917083244622', "timestamp" = now();
+    DO UPDATE SET "version" = '20241007090553465', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth
