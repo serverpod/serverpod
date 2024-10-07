@@ -317,6 +317,7 @@ class Server {
       }
 
       request.response.statusCode = HttpStatus.badRequest;
+      request.response.writeln(result.errorDescription);
       await request.response.close();
       return;
     } else if (result is ResultAuthenticationFailed) {
@@ -526,11 +527,8 @@ class Server {
       return ResultInvalidParams(e.message);
     } on NotAuthorizedException catch (e) {
       return e.authenticationFailedResult;
-    } on InvalidParametersException catch (e, stackTrace) {
-      var sessionLogId =
-          await maybeSession?.close(error: e, stackTrace: stackTrace);
-      return ResultInternalServerError(
-          e.toString(), stackTrace, sessionLogId ?? 0);
+    } on InvalidParametersException catch (e) {
+      return ResultInvalidParams(e.message);
     } on SerializableException catch (exception) {
       return ExceptionResult(model: exception);
     } on Exception catch (e, stackTrace) {
