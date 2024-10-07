@@ -73,7 +73,8 @@ void Function(TestClosure<T>)
   TransactionManager transactionManager =
       mainServerpodSession.transactionManager;
 
-  InternalTestSessionBuilder mainTestSession = InternalTestSessionBuilder(
+  InternalTestSessionBuilder mainTestSessionBuilder =
+      InternalTestSessionBuilder(
     testServerpod,
     allTestSessions: allTestSessions,
     enableLogging: maybeEnableSessionLogging ?? false,
@@ -117,7 +118,7 @@ void Function(TestClosure<T>)
         await testServerpod.shutdown();
       });
 
-      testClosure(mainTestSession, testServerpod.testEndpoints);
+      testClosure(mainTestSessionBuilder, testServerpod.testEndpoints);
     });
   };
 }
