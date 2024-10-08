@@ -32,6 +32,18 @@ void main() {
               isUnique: false,
               isPrimary: false,
             ),
+            IndexDefinition(
+              indexName: 'idx_id2',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'id',
+                ),
+              ],
+              type: 'btree',
+              isUnique: false,
+              isPrimary: false,
+            ),
           ],
           foreignKeys: [],
           managed: true,
@@ -48,20 +60,39 @@ void main() {
               dartType: 'int',
             ),
           ],
-          indexes: [],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_id',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'id',
+                ),
+              ],
+              type: 'btree',
+              isUnique: true,
+              isPrimary: true,
+            ),
+          ],
           foreignKeys: [],
           managed: true,
         );
 
         var mismatches = tableA.like(tableB);
 
-        expect(mismatches.length, 1);
-        expect(mismatches.first.subs, isEmpty);
-
+        expect(mismatches.length, 2);
         expect(mismatches.first, isA<IndexComparisonWarning>());
-        expect(mismatches.first.mismatch, equals('missing index'));
-        expect(mismatches.first.expected, equals('idx_id'));
-        expect(mismatches.first.found, equals('none'));
+        expect(mismatches.first.subs.length, 2);
+        expect(mismatches.first.subs.first.expected, equals('false'));
+        expect(mismatches.first.subs.first.found, equals('true'));
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
+        expect(mismatches.first.subs.last.expected, equals('false'));
+        expect(mismatches.first.subs.last.found, equals('true'));
+        expect(mismatches.first.subs.last.isMismatch, isTrue);
+        expect(mismatches.last, isA<IndexComparisonWarning>());
+        expect(mismatches.last.expected, equals('idx_id2'));
+        expect(mismatches.last.found, isNull);
+        expect(mismatches.last.isMissing, isTrue);
       },
     );
 
@@ -129,12 +160,11 @@ void main() {
         var mismatches = tableA.like(tableB);
 
         expect(mismatches.length, 1);
-        expect(mismatches.first.subs, isNotEmpty);
-
         expect(mismatches.first, isA<IndexComparisonWarning>());
-        expect(mismatches.first.subs.first.mismatch, equals('type'));
+        expect(mismatches.first.subs.length, 1);
         expect(mismatches.first.subs.first.expected, equals('btree'));
         expect(mismatches.first.subs.first.found, equals('hash'));
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
       },
     );
 
@@ -202,12 +232,11 @@ void main() {
         var mismatches = tableA.like(tableB);
 
         expect(mismatches.length, 1);
-        expect(mismatches.first.subs, isNotEmpty);
-
         expect(mismatches.first, isA<IndexComparisonWarning>());
-        expect(mismatches.first.subs.first.mismatch, equals('uniqueness'));
+        expect(mismatches.first.subs.length, 1);
         expect(mismatches.first.subs.first.expected, equals('true'));
         expect(mismatches.first.subs.first.found, equals('false'));
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
       },
     );
 
@@ -277,12 +306,11 @@ void main() {
         var mismatches = tableA.like(tableB);
 
         expect(mismatches.length, 1);
-        expect(mismatches.first.subs, isNotEmpty);
-
         expect(mismatches.first, isA<IndexComparisonWarning>());
-        expect(mismatches.first.subs.first.mismatch, equals('predicate'));
+        expect(mismatches.first.subs.length, 1);
         expect(mismatches.first.subs.first.expected, equals('id > 0'));
         expect(mismatches.first.subs.first.found, equals('id < 100'));
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
       },
     );
 
@@ -352,12 +380,11 @@ void main() {
         var mismatches = tableA.like(tableB);
 
         expect(mismatches.length, 1);
-        expect(mismatches.first.subs, isNotEmpty);
-
         expect(mismatches.first, isA<IndexComparisonWarning>());
-        expect(mismatches.first.subs.first.mismatch, equals('tablespace'));
+        expect(mismatches.first.subs.length, 1);
         expect(mismatches.first.subs.first.expected, equals('tablespace_a'));
         expect(mismatches.first.subs.first.found, equals('tablespace_b'));
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
       },
     );
   });

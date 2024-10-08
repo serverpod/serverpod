@@ -61,11 +61,12 @@ void main() {
 
         expect(mismatches.length, 1);
         expect(mismatches.first.subs, isEmpty);
-
         expect(mismatches.first, isA<TableComparisonWarning>());
-        expect(mismatches.first.mismatch, equals('name'));
         expect(mismatches.first.expected, equals('test_table_a'));
         expect(mismatches.first.found, equals('test_table_b'));
+        expect(mismatches.first.isMismatch, isTrue);
+        expect(mismatches.first.isMissing, isFalse);
+        expect(mismatches.first.isAdded, isFalse);
       },
     );
 
@@ -94,11 +95,12 @@ void main() {
 
         expect(mismatches.length, 1);
         expect(mismatches.first.subs, isEmpty);
-
         expect(mismatches.first, isA<TableComparisonWarning>());
-        expect(mismatches.first.mismatch, equals('schema'));
         expect(mismatches.first.expected, equals('schema_a'));
         expect(mismatches.first.found, equals('schema_b'));
+        expect(mismatches.first.isMismatch, isTrue);
+        expect(mismatches.first.isMissing, isFalse);
+        expect(mismatches.first.isAdded, isFalse);
       },
     );
 
@@ -143,11 +145,12 @@ void main() {
 
         expect(mismatches.length, 1);
         expect(mismatches.first.subs, isEmpty);
-
         expect(mismatches.first, isA<TableComparisonWarning>());
-        expect(mismatches.first.mismatch, equals('tablespace'));
         expect(mismatches.first.expected, equals('tablespace_a'));
         expect(mismatches.first.found, equals('tablespace_b'));
+        expect(mismatches.first.isMismatch, isTrue);
+        expect(mismatches.first.isMissing, isFalse);
+        expect(mismatches.first.isAdded, isFalse);
       },
     );
 
@@ -190,11 +193,12 @@ void main() {
 
         expect(mismatches.length, 1);
         expect(mismatches.first.subs, isEmpty);
-
         expect(mismatches.first, isA<TableComparisonWarning>());
-        expect(mismatches.first.mismatch, equals('managed property'));
         expect(mismatches.first.expected, equals('true'));
         expect(mismatches.first.found, equals('false'));
+        expect(mismatches.first.isMismatch, isTrue);
+        expect(mismatches.first.isMissing, isFalse);
+        expect(mismatches.first.isAdded, isFalse);
       },
     );
 
@@ -223,11 +227,12 @@ void main() {
 
         expect(mismatches.length, 1);
         expect(mismatches.first.subs, isEmpty);
-
         expect(mismatches.first, isA<TableComparisonWarning>());
-        expect(mismatches.first.mismatch, equals('name'));
         expect(mismatches.first.expected, equals('Test_Table'));
         expect(mismatches.first.found, equals('test_table'));
+        expect(mismatches.first.isMismatch, isTrue);
+        expect(mismatches.first.isMissing, isFalse);
+        expect(mismatches.first.isAdded, isFalse);
       },
     );
 
@@ -272,11 +277,12 @@ void main() {
 
         expect(mismatches.length, 1);
         expect(mismatches.first.subs, isEmpty);
-
         expect(mismatches.first, isA<TableComparisonWarning>());
-        expect(mismatches.first.mismatch, equals('tablespace'));
         expect(mismatches.first.expected, isNull);
         expect(mismatches.first.found, equals('tablespace_b'));
+        expect(mismatches.first.isMismatch, isFalse);
+        expect(mismatches.first.isMissing, isFalse);
+        expect(mismatches.first.isAdded, isTrue);
       },
     );
   });

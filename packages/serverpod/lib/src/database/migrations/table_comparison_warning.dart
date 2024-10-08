@@ -1,39 +1,54 @@
 /// A generic class representing a comparison warning or mismatch when comparing
 /// database entities (e.g., tables, columns, indexes, or foreign keys).
 ///
-/// This class is designed to store a primary name (e.g., Table, Column, Index),
-/// along with a mismatch description, expected value, and found value if applicable.
-/// The comparison may include sub-warnings to represent more specific issues within
-/// the primary entity.
+/// This class stores information about the mismatch, including the expected and found values
+/// when applicable. It can also contain sub-warnings for more detailed comparison issues
+/// within the primary entity.
 abstract class ComparisonWarning<T extends ComparisonWarning<T>> {
-  /// The primary name describing the object being compared (e.g., Table, Column, Index).
-  final String? name;
+  /// The parent comparison warning, if this is a sub-warning.
+  final T? parent;
 
-  /// The type of mismatch that occurred (e.g., "Type", "Nullability").
-  final String? mismatch;
+  /// The type of entity being compared (e.g., "table", "column").
+  final String type;
 
-  /// The expected value (if applicable).
+  /// The name of the entity being compared.
+  final String name;
+
+  /// The expected value in the comparison, if any.
   final String? expected;
 
-  /// The actual found value (if applicable).
+  /// The actual value found during the comparison, if any.
   final String? found;
+
+  /// True if the entity is missing (expected but not found).
+  final bool isMissing;
+
+  /// True if the entity is newly added (found but not expected).
+  final bool isAdded;
+
+  /// True if the entity's properties mismatch (expected vs found).
+  final bool isMismatch;
 
   /// A list of sub-warnings providing more detailed context or representing
   /// nested issues related to the primary warning.
   final List<T> subs;
 
-  /// Creates a new [ComparisonWarning] with optional [name], [mismatch], [expected], and [found].
-  /// The [subs] list starts empty but can be populated using [addSub] or [addSubs].
+  /// Creates a new [ComparisonWarning] with the given type, name, and optional expected
+  /// and found values. Initializes the [subs] list and sets flags for missing,
+  /// added, and mismatch states.
   ComparisonWarning({
-    this.name,
-    this.mismatch,
-    this.expected,
-    this.found,
-  }) : subs = [];
+    this.parent,
+    required this.type,
+    required this.name,
+    this.expected, // The expected value in comparison.
+    this.found, // The found value in comparison.
+  })  : isMissing = expected != null && found == null,
+        isAdded = expected == null && found != null,
+        isMismatch = expected != null && found != null && expected != found,
+        subs = [];
 
   /// Generates a formatted string representation of the warning and its sub-warnings.
-  /// The output is indented according to the [indentLevel], making it easier to
-  /// read hierarchically nested warnings.
+  /// The output is indented according to the [indentLevel] for hierarchical clarity.
   @override
   String toString({int indentLevel = 0}) {
     StringBuffer buffer = StringBuffer();
@@ -41,7 +56,7 @@ abstract class ComparisonWarning<T extends ComparisonWarning<T>> {
 
     // Write the main mismatch message with proper indentation.
     buffer.write(indentLevel == 0 ? indent : '$indent - ');
-    buffer.write(_buildMessage(indent, indentLevel));
+    buffer.write(_buildMessage());
 
     // Recursively format sub-warnings with increased indentation.
     for (var sub in subs) {
@@ -51,147 +66,158 @@ abstract class ComparisonWarning<T extends ComparisonWarning<T>> {
     return buffer.toString();
   }
 
-  /// Adds a single sub-warning [sub] to the current warning.
+  /// Abstract method for returning a copy of this warning with a new parent.
   ///
-  /// This method supports creating a structured hierarchy of warnings,
-  /// where each sub-warning provides further details on the primary warning.
+  /// This is used when adding sub-warnings to associate them with their parent.
+  T withParent(T parent);
+
+  /// Adds a single sub-warning [sub] to the current warning, setting the parent-child relationship.
+  ///
+  /// This method allows the creation of structured hierarchies of warnings, where
+  /// each sub-warning provides further details on the primary comparison issue.
   T addSub(T sub) {
-    subs.add(sub);
+    subs.add(sub.withParent(this as T));
     return this as T;
   }
 
-  /// Adds multiple sub-warnings at once.
+  /// Adds multiple sub-warnings at once, assigning them the current warning as their parent.
   ///
-  /// This method allows batch addition of sub-warnings, which is useful when
-  /// adding several related warnings to a comparison.
+  /// This method is useful when adding several related warnings in a batch to a comparison.
   T addSubs(List<T> subs) {
-    this.subs.addAll(subs);
+    this.subs.addAll(subs.map((e) => e.withParent(this as T)));
     return this as T;
   }
 
-  /// Builds the message string based on the available fields.
-  /// If the mismatch contains sub-details (e.g., "Expected" and "Found"),
-  /// they are printed accordingly.
-  String _buildMessage(String space, int indentLevel) {
+  /// Builds the comparison warning message based on the available fields.
+  ///
+  /// The message indicates whether the entity is missing, added, or mismatched,
+  /// and prints the expected and found values if applicable.
+  String _buildMessage() {
     StringBuffer buffer = StringBuffer();
 
-    // Handle case 1: Main mismatch with name and type
-    if (name != null && mismatch != null && indentLevel == 0) {
-      buffer.write('$name $mismatch mismatch:');
+    if (isMissing) {
+      buffer.write('Missing $type "$name".');
+    } else if (isMismatch) {
+      // If this is the top-level mismatch, provide context about the mismatch.
+      if (parent == null) {
+        buffer.write('$type "$name" mismatch: ');
+      }
+      buffer.write('expected $name "$expected", found "$found".');
+    } else if (isAdded) {
+      buffer.write('New $type "$name" added.');
+    } else {
+      // Fallback for cases where both expected and found are null.
+      buffer.write('$type "$name" mismatch: ');
     }
-    // Handle case 2: Only the mismatch is present, e.g., sub-warnings
-    else if (mismatch != null) {
-      buffer.write('$mismatch mismatch:');
-    }
-    // If there's no mismatch, handle it as a general mismatch
-    else if (name != null) {
-      buffer.write('$name mismatch:');
-    }
-
-    // Include details about expected and found values, if they exist
-    if (expected != null || found != null) {
-      buffer.writeln();
-      buffer.write('$space$space - expected "$expected", found "$found".');
-    }
-
     return buffer.toString();
   }
 }
 
-/// Concrete implementation for table comparison warnings.
+/// Concrete class for table comparison warnings.
 ///
-/// This class represents warnings generated when comparing table definitions
-/// in a database schema. It allows for capturing mismatches related to
-/// table properties, such as table name or schema differences.
+/// Represents warnings generated when comparing table definitions in a database schema.
+/// Captures issues related to table properties, such as name, schema, or tablespace mismatches.
 class TableComparisonWarning extends ComparisonWarning<TableComparisonWarning> {
-  /// Creates a new [TableComparisonWarning] with optional [mismatch], [expected], and [found].
-  /// The [name] for this class is automatically set to 'Table'.
+  /// Creates a new [TableComparisonWarning] instance.
   TableComparisonWarning({
-    super.mismatch,
+    super.parent,
+    required super.name,
     super.expected,
     super.found,
-  }) : super(name: 'Table');
+  }) : super(type: 'Table');
 
-  /// Allows creating a sub-warning for a table comparison (used for nested warnings).
-  TableComparisonWarning.sub({
-    super.mismatch,
-    super.expected,
-    super.found,
-  });
+  @override
+  TableComparisonWarning withParent(TableComparisonWarning parent) {
+    return TableComparisonWarning(
+      parent: parent,
+      name: name,
+      expected: expected,
+      found: found,
+    );
+  }
 }
 
-/// Specialized warning for column comparison
+/// Specialized class for column comparison warnings.
 ///
-/// This class represents warnings generated when comparing columns in a table.
-/// It captures issues related to column properties such as type, nullability,
-/// or default values.
+/// Represents warnings generated when comparing columns within tables, capturing
+/// mismatches related to type, nullability, default values, or other column properties.
 class ColumnComparisonWarning
     extends ComparisonWarning<ColumnComparisonWarning> {
-  /// Creates a new [ColumnComparisonWarning] with optional [mismatch], [expected], and [found].
-  /// The [name] for this class is automatically set to 'Column'.
+  /// Creates a new [ColumnComparisonWarning] instance.
   ColumnComparisonWarning({
-    super.mismatch,
+    super.parent,
+    required super.name,
     super.expected,
     super.found,
-  }) : super(name: 'Column');
+  }) : super(type: 'Column');
 
-  /// Allows creating a sub-warning for a column comparison (used for nested warnings).
-  ColumnComparisonWarning.sub({
-    super.mismatch,
-    super.expected,
-    super.found,
-  });
+  @override
+  ColumnComparisonWarning withParent(ColumnComparisonWarning parent) {
+    return ColumnComparisonWarning(
+      parent: parent,
+      name: name,
+      expected: expected,
+      found: found,
+    );
+  }
 }
 
-/// Specialized warning for index comparison
+/// Specialized class for index comparison warnings.
 ///
-/// This class represents warnings generated when comparing indexes in a table.
-/// It captures issues such as index type, uniqueness, or tablespace mismatches.
+/// Represents warnings generated when comparing indexes in a table, capturing
+/// mismatches such as index type, uniqueness, or tablespace differences.
 class IndexComparisonWarning extends ComparisonWarning<IndexComparisonWarning> {
-  /// Creates a new [IndexComparisonWarning] with optional [mismatch], [expected], and [found].
-  /// The [name] for this class is automatically set to 'Index'.
+  /// Creates a new [IndexComparisonWarning] instance.
   IndexComparisonWarning({
-    super.mismatch,
+    super.parent,
+    required super.name,
     super.expected,
     super.found,
-  }) : super(name: 'Index');
+  }) : super(type: 'Index');
 
-  /// Allows creating a sub-warning for a index comparison (used for nested warnings).
-  IndexComparisonWarning.sub({
-    super.mismatch,
-    super.expected,
-    super.found,
-  });
+  @override
+  IndexComparisonWarning withParent(IndexComparisonWarning parent) {
+    return IndexComparisonWarning(
+      parent: parent,
+      name: name,
+      expected: expected,
+      found: found,
+    );
+  }
 }
 
-/// Specialized warning for foreign key comparison
+/// Specialized class for foreign key comparison warnings.
 ///
-/// This class represents warnings related to foreign key mismatches, such as
-/// differences in reference tables, actions on delete or update, and match types.
+/// Represents warnings related to foreign key constraints, such as mismatches
+/// in reference tables, actions on delete or update, or match types.
 class ForeignKeyComparisonWarning
     extends ComparisonWarning<ForeignKeyComparisonWarning> {
-  /// Creates a new [ForeignKeyComparisonWarning] with optional [mismatch], [expected], and [found].
-  /// The [name] for this class is automatically set to 'Foreign Key'.
+  /// Creates a new [ForeignKeyComparisonWarning] instance.
   ForeignKeyComparisonWarning({
-    super.mismatch,
+    super.parent,
+    required super.name,
     super.expected,
     super.found,
-  }) : super(name: 'Foreign Key');
+  }) : super(type: 'Foreign key');
 
-  /// Allows creating a sub-warning for a foreign key comparison (used for nested warnings).
-  ForeignKeyComparisonWarning.sub({
-    super.mismatch,
-    super.expected,
-    super.found,
-  });
+  @override
+  ForeignKeyComparisonWarning withParent(ForeignKeyComparisonWarning parent) {
+    return ForeignKeyComparisonWarning(
+      parent: parent,
+      name: name,
+      expected: expected,
+      found: found,
+    );
+  }
 }
 
-/// An extension on the list of [ComparisonWarning]s to provide
-/// a method to convert the list into a list of formatted string representations.
+/// Extension on a list of comparison warnings to provide a method for converting
+/// the list into a list of formatted string representations.
+///
+/// This allows for easier printing or logging of comparison warnings.
 extension ListExt<ComparisonWarning> on List<ComparisonWarning> {
-  /// Converts the list of comparison warnings into a list of formatted strings.
-  ///
-  /// Each string is a formatted version of the warning, including its sub-warnings.
+  /// Converts the list of comparison warnings into a list of formatted strings,
+  /// where each string is the result of calling [toString] on the warning.
   List<String> asStringList() {
     return fold(
       <String>[],

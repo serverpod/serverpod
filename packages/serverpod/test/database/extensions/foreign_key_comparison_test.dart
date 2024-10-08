@@ -55,11 +55,12 @@ void main() {
 
         expect(mismatches.length, 1);
         expect(mismatches.first.subs, isEmpty);
-
         expect(mismatches.first, isA<ForeignKeyComparisonWarning>());
-        expect(mismatches.first.mismatch, equals('missing'));
         expect(mismatches.first.expected, equals('fk_user'));
-        expect(mismatches.first.found, equals('none'));
+        expect(mismatches.first.found, isNull);
+        expect(mismatches.first.isMissing, isTrue);
+        expect(mismatches.first.isAdded, isFalse);
+        expect(mismatches.first.isMismatch, isFalse);
       },
     );
 
@@ -124,13 +125,13 @@ void main() {
 
         expect(mismatches.length, 1);
         expect(mismatches.first.subs, isNotEmpty);
-
         expect(mismatches.first, isA<ForeignKeyComparisonWarning>());
-
         expect(mismatches.first.subs.first, isA<ForeignKeyComparisonWarning>());
-        expect(mismatches.first.subs.first.mismatch, equals('onUpdate action'));
         expect(mismatches.first.subs.first.expected, equals('noAction'));
         expect(mismatches.first.subs.first.found, equals('cascade'));
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
+        expect(mismatches.first.subs.first.isMissing, isFalse);
+        expect(mismatches.first.subs.first.isAdded, isFalse);
       },
     );
   });

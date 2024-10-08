@@ -15,7 +15,7 @@ void main() {
             ColumnDefinition(
               name: 'id',
               columnType: ColumnType.integer,
-              isNullable: false,
+              isNullable: true,
               dartType: 'int',
             ),
             ColumnDefinition(
@@ -37,7 +37,7 @@ void main() {
             ColumnDefinition(
               name: 'id',
               columnType: ColumnType.integer,
-              isNullable: false,
+              isNullable: true,
               dartType: 'int',
             ),
           ],
@@ -50,11 +50,11 @@ void main() {
 
         expect(mismatches.length, 1);
         expect(mismatches.first.subs, isEmpty);
-
         expect(mismatches.first, isA<ColumnComparisonWarning>());
-        expect(mismatches.first.mismatch, equals('missing'));
         expect(mismatches.first.expected, equals('age'));
-        expect(mismatches.first.found, equals('none'));
+        expect(mismatches.first.found, isNull);
+        expect(mismatches.first.isMissing, isTrue);
+        expect(mismatches.first.isAdded, isFalse);
       },
     );
 
@@ -66,7 +66,7 @@ void main() {
           schema: 'public',
           columns: [
             ColumnDefinition(
-              name: 'value',
+              name: 'firstname',
               columnType: ColumnType.integer,
               isNullable: false,
               dartType: 'int',
@@ -82,9 +82,9 @@ void main() {
           schema: 'public',
           columns: [
             ColumnDefinition(
-              name: 'value',
+              name: 'firstname',
               columnType: ColumnType.text,
-              isNullable: false,
+              isNullable: true,
               dartType: 'String',
             ),
           ],
@@ -97,11 +97,10 @@ void main() {
 
         expect(mismatches.length, 1);
         expect(mismatches.first.subs, isNotEmpty);
-
         expect(mismatches.first, isA<ColumnComparisonWarning>());
-        expect(mismatches.first.subs.first.mismatch, equals('type'));
         expect(mismatches.first.subs.first.expected, equals('integer'));
         expect(mismatches.first.subs.first.found, equals('text'));
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
       },
     );
 
@@ -144,11 +143,10 @@ void main() {
 
         expect(mismatches.length, 1);
         expect(mismatches.first.subs, isNotEmpty);
-
         expect(mismatches.first, isA<ColumnComparisonWarning>());
-        expect(mismatches.first.subs.first.mismatch, equals('nullability'));
         expect(mismatches.first.subs.first.expected, equals('false'));
         expect(mismatches.first.subs.first.found, equals('true'));
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
       },
     );
 
@@ -193,11 +191,10 @@ void main() {
 
         expect(mismatches.length, 1);
         expect(mismatches.first.subs, isNotEmpty);
-
         expect(mismatches.first, isA<ColumnComparisonWarning>());
-        expect(mismatches.first.subs.first.mismatch, equals('default value'));
         expect(mismatches.first.subs.first.expected, equals('1'));
         expect(mismatches.first.subs.first.found, equals('2'));
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
       },
     );
   });

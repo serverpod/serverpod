@@ -10,8 +10,7 @@ extension DatabaseComparisons on DatabaseDefinition {
     return (findTableNamed(tableName) != null);
   }
 
-  /// Finds a table by its name, or returns null if no table with the given
-  /// name.
+  /// Finds a table by its name, or returns null if no table with the given name.
   TableDefinition? findTableNamed(String tableName) {
     return tables.firstWhereOrNull((table) => table.name == tableName);
   }
@@ -34,22 +33,19 @@ extension TableComparisons on TableDefinition {
     return findForeignKeyDefinitionNamed(keyName) != null;
   }
 
-  /// Finds a column by its name, or returns null if no column with the given
-  /// name is found.
+  /// Finds a column by its name, or returns null if no column with the given name is found.
   ColumnDefinition? findColumnNamed(String columnName) {
     return columns.firstWhereOrNull((column) => column.name == columnName);
   }
 
-  /// Finds an index by its name, or returns null if no index with the given
-  /// name is found.
+  /// Finds an index by its name, or returns null if no index with the given name is found.
   IndexDefinition? findIndexNamed(String indexName, {bool ignoreCase = false}) {
     return indexes.firstWhereOrNull((index) => ignoreCase
         ? index.indexName.toLowerCase() == indexName.toLowerCase()
         : index.indexName == indexName);
   }
 
-  /// Finds a foreign key by its name, or returns null if no key with the
-  /// given name is found.
+  /// Finds a foreign key by its name, or returns null if no key with the given name is found.
   ForeignKeyDefinition? findForeignKeyDefinitionNamed(
     String keyName, {
     bool ignoreCase = false,
@@ -60,142 +56,112 @@ extension TableComparisons on TableDefinition {
   }
 
   /// Compares this table definition with [other], returning a list of mismatches.
-  /// The comparison checks columns, indexes, foreign keys, and general table properties.
-  /// Returns an empty list if the tables are identical.
   List<ComparisonWarning> like(TableDefinition other) {
     List<ComparisonWarning> mismatches = [];
 
-    // Compare table name
     if (other.name != name) {
       mismatches.add(
         TableComparisonWarning(
-          mismatch: 'name',
+          name: 'name',
           expected: name,
           found: other.name,
         ),
       );
     }
 
-    // Compare table space
     if (other.tableSpace != tableSpace) {
       mismatches.add(
         TableComparisonWarning(
-          mismatch: 'tablespace',
+          name: 'tablespace',
           expected: tableSpace,
           found: other.tableSpace,
         ),
       );
     }
 
-    // Compare table schema
     if (other.schema != schema) {
       mismatches.add(
         TableComparisonWarning(
-          mismatch: 'schema',
+          name: 'schema',
           expected: schema,
           found: other.schema,
         ),
       );
     }
 
-    // Compare table managed property
     if (managed != null && other.managed != null && managed != other.managed) {
       mismatches.add(
         TableComparisonWarning(
-          mismatch: 'managed property',
+          name: 'managed property',
           expected: '$managed',
           found: '${other.managed}',
         ),
       );
     }
 
-    // Compare columns
     for (var column in columns) {
       var otherColumn = other.findColumnNamed(column.name);
       if (otherColumn == null) {
         mismatches.add(
           ColumnComparisonWarning(
-            mismatch: 'missing',
+            name: column.name,
             expected: column.name,
-            found: 'none',
+            found: null,
           ),
         );
       } else {
         var columnMismatches = column.like(otherColumn);
         if (columnMismatches.isNotEmpty) {
-          mismatches.add(
-            ColumnComparisonWarning().addSubs(columnMismatches),
-          );
+          mismatches.add(ColumnComparisonWarning(
+            name: column.name,
+          ).addSubs(columnMismatches));
         }
       }
     }
 
-    // Compare indexes
     for (var index in indexes) {
       var otherIndex = other.findIndexNamed(index.indexName, ignoreCase: true);
       if (otherIndex == null) {
         mismatches.add(
           IndexComparisonWarning(
-            mismatch: 'missing index',
+            name: index.indexName,
             expected: index.indexName,
-            found: 'none',
+            found: null,
           ),
         );
       } else {
         var indexMismatches = index.like(otherIndex, ignoreCase: true);
         if (indexMismatches.isNotEmpty) {
-          mismatches.add(
-            IndexComparisonWarning().addSubs(indexMismatches),
-          );
+          mismatches.add(IndexComparisonWarning(
+            name: index.indexName,
+          ).addSubs(indexMismatches));
         }
       }
     }
 
-    for (var otherIndex in other.indexes) {
-      if (findIndexNamed(otherIndex.indexName, ignoreCase: true) == null) {
-        mismatches.add(
-          IndexComparisonWarning(
-            mismatch: 'extra index',
-            expected: 'none',
-            found: otherIndex.indexName,
-          ),
-        );
-      }
-    }
-
-    // Compare foreign keys
-    for (var key in foreignKeys) {
-      var otherKey = other.findForeignKeyDefinitionNamed(key.constraintName,
-          ignoreCase: true);
-      if (otherKey == null) {
+    for (var foreignKey in foreignKeys) {
+      var otherForeignKey = other.findForeignKeyDefinitionNamed(
+        foreignKey.constraintName,
+        ignoreCase: true,
+      );
+      if (otherForeignKey == null) {
         mismatches.add(
           ForeignKeyComparisonWarning(
-            mismatch: 'missing',
-            expected: key.constraintName,
-            found: 'none',
+            name: foreignKey.constraintName,
+            expected: foreignKey.constraintName,
+            found: null,
           ),
         );
       } else {
-        var keyMismatches = key.like(otherKey, ignoreCase: true);
-        if (keyMismatches.isNotEmpty) {
+        var foreignKeyMismatches =
+            foreignKey.like(otherForeignKey, ignoreCase: true);
+        if (foreignKeyMismatches.isNotEmpty) {
           mismatches.add(
-            ForeignKeyComparisonWarning().addSubs(keyMismatches),
+            ForeignKeyComparisonWarning(
+              name: foreignKey.constraintName,
+            ).addSubs(foreignKeyMismatches),
           );
         }
-      }
-    }
-
-    for (var otherKey in other.foreignKeys) {
-      if (findForeignKeyDefinitionNamed(otherKey.constraintName,
-              ignoreCase: true) ==
-          null) {
-        mismatches.add(
-          ForeignKeyComparisonWarning(
-            mismatch: 'extra foreign key',
-            expected: 'none',
-            found: otherKey.constraintName,
-          ),
-        );
       }
     }
 
@@ -206,14 +172,13 @@ extension TableComparisons on TableDefinition {
 /// Comparison methods for [ColumnDefinition].
 extension ColumnComparisons on ColumnDefinition {
   /// Compares this column definition with [other], returning a list of mismatches.
-  /// Returns an empty list if the columns are identical.
   List<ColumnComparisonWarning> like(ColumnDefinition other) {
     List<ColumnComparisonWarning> mismatches = [];
 
     if (name != other.name) {
       mismatches.add(
-        ColumnComparisonWarning.sub(
-          mismatch: 'name',
+        ColumnComparisonWarning(
+          name: name,
           expected: name,
           found: other.name,
         ),
@@ -222,8 +187,8 @@ extension ColumnComparisons on ColumnDefinition {
 
     if (!columnType.like(other.columnType)) {
       mismatches.add(
-        ColumnComparisonWarning.sub(
-          mismatch: 'type',
+        ColumnComparisonWarning(
+          name: 'type',
           expected: '$columnType',
           found: '${other.columnType}',
         ),
@@ -232,8 +197,8 @@ extension ColumnComparisons on ColumnDefinition {
 
     if (isNullable != other.isNullable) {
       mismatches.add(
-        ColumnComparisonWarning.sub(
-          mismatch: 'nullability',
+        ColumnComparisonWarning(
+          name: 'isNullable',
           expected: '$isNullable',
           found: '${other.isNullable}',
         ),
@@ -242,8 +207,8 @@ extension ColumnComparisons on ColumnDefinition {
 
     if (columnDefault != other.columnDefault) {
       mismatches.add(
-        ColumnComparisonWarning.sub(
-          mismatch: 'default value',
+        ColumnComparisonWarning(
+          name: 'default value',
           expected: '$columnDefault',
           found: '${other.columnDefault}',
         ),
@@ -257,39 +222,28 @@ extension ColumnComparisons on ColumnDefinition {
 /// Comparison methods for [IndexDefinition].
 extension IndexComparisons on IndexDefinition {
   /// Compares this index definition with [other], returning a list of mismatches.
-  /// Returns an empty list if the indexes are identical.
   List<IndexComparisonWarning> like(
     IndexDefinition other, {
     bool ignoreCase = false,
   }) {
     List<IndexComparisonWarning> mismatches = [];
 
-    if (ignoreCase) {
-      if (indexName.toLowerCase() != other.indexName.toLowerCase()) {
-        mismatches.add(
-          IndexComparisonWarning.sub(
-            mismatch: 'name',
-            expected: indexName,
-            found: other.indexName,
-          ),
-        );
-      }
-    } else {
-      if (indexName != other.indexName) {
-        mismatches.add(
-          IndexComparisonWarning.sub(
-            mismatch: 'name',
-            expected: indexName,
-            found: other.indexName,
-          ),
-        );
-      }
+    if (ignoreCase &&
+            indexName.toLowerCase() != other.indexName.toLowerCase() ||
+        !ignoreCase && indexName != other.indexName) {
+      mismatches.add(
+        IndexComparisonWarning(
+          name: 'name',
+          expected: indexName,
+          found: other.indexName,
+        ),
+      );
     }
 
     if (type != other.type) {
       mismatches.add(
-        IndexComparisonWarning.sub(
-          mismatch: 'type',
+        IndexComparisonWarning(
+          name: 'type',
           expected: type,
           found: other.type,
         ),
@@ -298,8 +252,8 @@ extension IndexComparisons on IndexDefinition {
 
     if (isUnique != other.isUnique) {
       mismatches.add(
-        IndexComparisonWarning.sub(
-          mismatch: 'uniqueness',
+        IndexComparisonWarning(
+          name: 'isUnique',
           expected: '$isUnique',
           found: '${other.isUnique}',
         ),
@@ -308,8 +262,8 @@ extension IndexComparisons on IndexDefinition {
 
     if (isPrimary != other.isPrimary) {
       mismatches.add(
-        IndexComparisonWarning.sub(
-          mismatch: 'primary key',
+        IndexComparisonWarning(
+          name: 'isPrimary',
           expected: '$isPrimary',
           found: '${other.isPrimary}',
         ),
@@ -318,28 +272,28 @@ extension IndexComparisons on IndexDefinition {
 
     if (predicate != other.predicate) {
       mismatches.add(
-        IndexComparisonWarning.sub(
-          mismatch: 'predicate',
-          expected: predicate ?? 'none',
-          found: other.predicate ?? 'none',
+        IndexComparisonWarning(
+          name: 'predicate',
+          expected: predicate,
+          found: other.predicate,
         ),
       );
     }
 
     if (tableSpace != other.tableSpace) {
       mismatches.add(
-        IndexComparisonWarning.sub(
-          mismatch: 'tablespace',
-          expected: tableSpace ?? 'none',
-          found: other.tableSpace ?? 'none',
+        IndexComparisonWarning(
+          name: 'tableSpace',
+          expected: tableSpace,
+          found: other.tableSpace,
         ),
       );
     }
 
     if (elements.length != other.elements.length) {
       mismatches.add(
-        IndexComparisonWarning.sub(
-          mismatch: 'element count',
+        IndexComparisonWarning(
+          name: 'elements',
           expected: '${elements.length}',
           found: '${other.elements.length}',
         ),
@@ -360,16 +314,13 @@ extension IndexComparisons on IndexDefinition {
 /// Comparison methods for [IndexElementDefinition].
 extension IndexElementDefinitionComparison on IndexElementDefinition {
   /// Compares this index element with [other], returning a list of mismatches.
-  /// Returns an empty list if the elements are identical.
-  List<IndexComparisonWarning> like(
-    IndexElementDefinition other,
-  ) {
+  List<IndexComparisonWarning> like(IndexElementDefinition other) {
     List<IndexComparisonWarning> mismatches = [];
 
     if (type != other.type) {
       mismatches.add(
-        IndexComparisonWarning.sub(
-          mismatch: 'element type',
+        IndexComparisonWarning(
+          name: 'element type',
           expected: '$type',
           found: '${other.type}',
         ),
@@ -378,8 +329,8 @@ extension IndexElementDefinitionComparison on IndexElementDefinition {
 
     if (definition != other.definition) {
       mismatches.add(
-        IndexComparisonWarning.sub(
-          mismatch: 'element definition',
+        IndexComparisonWarning(
+          name: 'element definition',
           expected: definition,
           found: other.definition,
         ),
@@ -393,39 +344,29 @@ extension IndexElementDefinitionComparison on IndexElementDefinition {
 /// Comparison methods for [ForeignKeyDefinition].
 extension ForeignKeyComparisons on ForeignKeyDefinition {
   /// Compares this foreign key definition with [other], returning a list of mismatches.
-  /// Returns an empty list if the foreign keys are identical.
   List<ForeignKeyComparisonWarning> like(
     ForeignKeyDefinition other, {
     bool ignoreCase = false,
   }) {
     List<ForeignKeyComparisonWarning> mismatches = [];
 
-    if (ignoreCase) {
-      if (constraintName.toLowerCase() != other.constraintName.toLowerCase()) {
-        mismatches.add(
-          ForeignKeyComparisonWarning.sub(
-            mismatch: 'constraint name',
-            expected: constraintName,
-            found: other.constraintName,
-          ),
-        );
-      }
-    } else {
-      if (constraintName != other.constraintName) {
-        mismatches.add(
-          ForeignKeyComparisonWarning.sub(
-            mismatch: 'constraint name',
-            expected: constraintName,
-            found: other.constraintName,
-          ),
-        );
-      }
+    if (ignoreCase &&
+            constraintName.toLowerCase() !=
+                other.constraintName.toLowerCase() ||
+        !ignoreCase && constraintName != other.constraintName) {
+      mismatches.add(
+        ForeignKeyComparisonWarning(
+          name: 'name',
+          expected: constraintName,
+          found: other.constraintName,
+        ),
+      );
     }
 
     if (!const ListEquality().equals(columns, other.columns)) {
       mismatches.add(
-        ForeignKeyComparisonWarning.sub(
-          mismatch: 'columns',
+        ForeignKeyComparisonWarning(
+          name: 'columns',
           expected: '$columns',
           found: '${other.columns}',
         ),
@@ -434,8 +375,8 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
 
     if (referenceTable != other.referenceTable) {
       mismatches.add(
-        ForeignKeyComparisonWarning.sub(
-          mismatch: 'reference table',
+        ForeignKeyComparisonWarning(
+          name: 'reference table',
           expected: referenceTable,
           found: other.referenceTable,
         ),
@@ -444,8 +385,8 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
 
     if (referenceTableSchema != other.referenceTableSchema) {
       mismatches.add(
-        ForeignKeyComparisonWarning.sub(
-          mismatch: 'reference schema',
+        ForeignKeyComparisonWarning(
+          name: 'reference schema',
           expected: referenceTableSchema,
           found: other.referenceTableSchema,
         ),
@@ -455,8 +396,8 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
     if (!const ListEquality()
         .equals(referenceColumns, other.referenceColumns)) {
       mismatches.add(
-        ForeignKeyComparisonWarning.sub(
-          mismatch: 'reference columns',
+        ForeignKeyComparisonWarning(
+          name: 'reference columns',
           expected: '$referenceColumns',
           found: '${other.referenceColumns}',
         ),
@@ -465,8 +406,8 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
 
     if (onUpdate != other.onUpdate) {
       mismatches.add(
-        ForeignKeyComparisonWarning.sub(
-          mismatch: 'onUpdate action',
+        ForeignKeyComparisonWarning(
+          name: 'onUpdate action',
           expected: '$onUpdate',
           found: '${other.onUpdate}',
         ),
@@ -475,8 +416,8 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
 
     if (onDelete != other.onDelete) {
       mismatches.add(
-        ForeignKeyComparisonWarning.sub(
-          mismatch: 'onDelete action',
+        ForeignKeyComparisonWarning(
+          name: 'onDelete action',
           expected: '$onDelete',
           found: '${other.onDelete}',
         ),
@@ -487,8 +428,8 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
         other.matchType != null &&
         matchType != other.matchType) {
       mismatches.add(
-        ForeignKeyComparisonWarning.sub(
-          mismatch: 'match type',
+        ForeignKeyComparisonWarning(
+          name: 'match type',
           expected: '$matchType',
           found: '${other.matchType}',
         ),
@@ -508,9 +449,7 @@ extension FilterGenerator on Filter {
       var columnDefinition = tableDefinition.findColumnNamed(constraint.column);
       if (columnDefinition == null) {
         throw Exception(
-          'Column "${constraint.column}" not found in table '
-          '"${tableDefinition.name}".',
-        );
+            'Column "${constraint.column}" not found in table "${tableDefinition.name}".');
       }
 
       var expression = constraint.toQuery(columnDefinition);
@@ -549,9 +488,7 @@ extension FilterConstraintGenerator on FilterConstraint {
       }
     } else {
       throw Exception(
-        'Unsupported column type ${columnDefinition.columnType} for column '
-        '"${columnDefinition.name}".',
-      );
+          'Unsupported column type ${columnDefinition.columnType} for column "${columnDefinition.name}".');
     }
 
     switch (type) {

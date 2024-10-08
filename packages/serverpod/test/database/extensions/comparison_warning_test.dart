@@ -7,16 +7,15 @@ void main() {
       'Given a column with no subs when toString is called then the correct output is returned',
       () {
         var warning = ColumnComparisonWarning(
-          mismatch: 'missing column',
+          name: 'age',
           expected: 'age',
-          found: 'none',
+          found: null,
         );
 
         expect(
           warning.toString(),
           equals(
-            '''Column missing column mismatch:
- - expected "age", found "none".''',
+            '''Missing Column "age".''',
           ),
         );
       },
@@ -26,19 +25,19 @@ void main() {
       'Given a column with one sub when toString is called then the correct output is returned',
       () {
         var subWarning = ColumnComparisonWarning(
-          mismatch: 'type',
+          name: 'firstname',
           expected: 'integer',
           found: 'text',
         );
 
-        var warning = ColumnComparisonWarning().addSub(subWarning);
+        var warning =
+            ColumnComparisonWarning(name: 'firstname').addSub(subWarning);
 
         expect(
           warning.toString(),
           equals(
-            '''Column mismatch:
-   - type mismatch:
-     - expected "integer", found "text".''',
+            '''Column "firstname" mismatch: 
+   - expected firstname "integer", found "text".''',
           ),
         );
       },
@@ -48,28 +47,26 @@ void main() {
       'Given a column with multiple subs when toString is called then the correct output is returned',
       () {
         var subWarning1 = ColumnComparisonWarning(
-          mismatch: 'type',
+          name: 'firstname',
           expected: 'integer',
           found: 'text',
         );
 
         var subWarning2 = ColumnComparisonWarning(
-          mismatch: 'nullability',
+          name: 'nullability',
           expected: 'false',
           found: 'true',
         );
 
-        var warning =
-            ColumnComparisonWarning().addSubs([subWarning1, subWarning2]);
+        var warning = ColumnComparisonWarning(name: 'firstname')
+            .addSubs([subWarning1, subWarning2]);
 
         expect(
           warning.toString(),
           equals(
-            '''Column mismatch:
-   - type mismatch:
-     - expected "integer", found "text".
-   - nullability mismatch:
-     - expected "false", found "true".''',
+            '''Column "firstname" mismatch: 
+   - expected firstname "integer", found "text".
+   - expected nullability "false", found "true".''',
           ),
         );
       },
@@ -79,16 +76,15 @@ void main() {
       'Given a foreign key with no subs when toString is called then the correct output is returned',
       () {
         var warning = ForeignKeyComparisonWarning(
-          mismatch: 'missing foreign key',
+          name: 'fk_user',
           expected: 'fk_user',
-          found: 'none',
+          found: null,
         );
 
         expect(
           warning.toString(),
           equals(
-            '''Foreign Key missing foreign key mismatch:
- - expected "fk_user", found "none".''',
+            '''Missing Foreign key "fk_user".''',
           ),
         );
       },
@@ -98,19 +94,19 @@ void main() {
       'Given a foreign key with one sub when toString is called then the correct output is returned',
       () {
         var subWarning = ForeignKeyComparisonWarning(
-          mismatch: 'onUpdate action',
+          name: 'onUpdate',
           expected: 'noAction',
           found: 'cascade',
         );
 
-        var warning = ForeignKeyComparisonWarning().addSub(subWarning);
+        var warning =
+            ForeignKeyComparisonWarning(name: 'fk_user').addSub(subWarning);
 
         expect(
           warning.toString(),
           equals(
-            '''Foreign Key mismatch:
-   - onUpdate action mismatch:
-     - expected "noAction", found "cascade".''',
+            '''Foreign key "fk_user" mismatch: 
+   - expected onUpdate "noAction", found "cascade".''',
           ),
         );
       },
@@ -120,28 +116,26 @@ void main() {
       'Given a foreign key with multiple subs when toString is called then the correct output is returned',
       () {
         var subWarning1 = ForeignKeyComparisonWarning(
-          mismatch: 'onUpdate action',
+          name: 'onUpdate',
           expected: 'noAction',
           found: 'cascade',
         );
 
         var subWarning2 = ForeignKeyComparisonWarning(
-          mismatch: 'onDelete action',
+          name: 'onDelete',
           expected: 'noAction',
           found: 'restrict',
         );
 
-        var warning =
-            ForeignKeyComparisonWarning().addSubs([subWarning1, subWarning2]);
+        var warning = ForeignKeyComparisonWarning(name: 'fk_user')
+            .addSubs([subWarning1, subWarning2]);
 
         expect(
           warning.toString(),
           equals(
-            '''Foreign Key mismatch:
-   - onUpdate action mismatch:
-     - expected "noAction", found "cascade".
-   - onDelete action mismatch:
-     - expected "noAction", found "restrict".''',
+            '''Foreign key "fk_user" mismatch: 
+   - expected onUpdate "noAction", found "cascade".
+   - expected onDelete "noAction", found "restrict".''',
           ),
         );
       },
