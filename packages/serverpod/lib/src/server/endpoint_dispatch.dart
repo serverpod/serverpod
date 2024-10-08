@@ -449,14 +449,35 @@ class ResultInvalidParams extends Result {
   }
 }
 
-/// The result of a failed [EndpointDispatch.getMethodStreamCallContext], [EndpointDispatch.getMethodCallContext] or [EndpointDispatch.getEndpointConnector] call.
-abstract class GetAuthorizedEndpointMethodException implements Exception {
+/// The result of a failed [Endpoint] method call where the
+/// endpoint was not found.
+class ResultNoSuchEndpoint extends Result {
+  /// Description of the error.
+  final String errorDescription;
+
+  /// Creates a new [ResultNoSuchEndpoint] object.
+  ResultNoSuchEndpoint(this.errorDescription);
+
+  @override
+  String toString() {
+    return errorDescription;
+  }
+}
+
+/// The result of a failed [EndpointDispatch.getMethodStreamCallContext],
+/// [EndpointDispatch.getMethodCallContext] or [EndpointDispatch.getEndpointConnector] call.
+abstract class EndpointDispatchException implements Exception {
   /// Description of the error.
   String get message;
+
+  @override
+  String toString() {
+    return 'Endpoint dispatch error: $message';
+  }
 }
 
 /// The user is not authorized to access the endpoint.
-class NotAuthorizedException implements GetAuthorizedEndpointMethodException {
+class NotAuthorizedException extends EndpointDispatchException {
   @override
   String message;
 
@@ -469,8 +490,7 @@ class NotAuthorizedException implements GetAuthorizedEndpointMethodException {
 }
 
 /// The endpoint was not found.
-class EndpointNotFoundException
-    implements GetAuthorizedEndpointMethodException {
+class EndpointNotFoundException extends EndpointDispatchException {
   @override
   String message = 'Endpoint not found';
 
@@ -479,7 +499,7 @@ class EndpointNotFoundException
 }
 
 /// The endpoint method was not found.
-class MethodNotFoundException implements GetAuthorizedEndpointMethodException {
+class MethodNotFoundException extends EndpointDispatchException {
   @override
   String message = 'Method not found';
 
@@ -488,8 +508,7 @@ class MethodNotFoundException implements GetAuthorizedEndpointMethodException {
 }
 
 /// The found endpoint method was not of the expected type.
-class InvalidEndpointMethodTypeException
-    implements GetAuthorizedEndpointMethodException {
+class InvalidEndpointMethodTypeException extends EndpointDispatchException {
   @override
   String get message =>
       'Endpoint method $_methodName in $_endpointPath is not of the expected type.';
@@ -503,8 +522,7 @@ class InvalidEndpointMethodTypeException
 }
 
 /// The input parameters were invalid.
-class InvalidParametersException
-    implements GetAuthorizedEndpointMethodException {
+class InvalidParametersException extends EndpointDispatchException {
   @override
   String message = 'Invalid parameters';
 

@@ -106,8 +106,7 @@ void main() {
       var url = Uri.parse(
           '${serverUrl}serverpod_cloud_storage?method=file&foo=testdir/myfile2.bin');
       var response = await http.get(url);
-      // TODO: Actual response should probably be 400 (see server todo with verification of parameters).
-      expect(response.statusCode, equals(500));
+      expect(response.statusCode, equals(400));
     });
 
     test('Attempt retrieve file through URL with invalid method', () async {
