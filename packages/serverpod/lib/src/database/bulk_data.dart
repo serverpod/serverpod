@@ -32,10 +32,12 @@ class DatabaseBulkData {
       );
     }
 
-    if (!liveTableDefinition.like(targetTableDefinition)) {
+    var mismatches = liveTableDefinition.like(targetTableDefinition);
+    if (mismatches.isNotEmpty) {
       throw BulkDataException(
-        message: 'The "$table" table definition does not match the live '
-            'database.',
+        message:
+            'The "$table" table definition does not match the live database:\n'
+            '- ${mismatches.join('\n- ')}',
       );
     }
 
