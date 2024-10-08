@@ -393,10 +393,6 @@ class ServerTestToolsGenerator {
         ])
         ..optionalParameters.addAll([
           Parameter((p) => p
-            ..name = 'rollbackDatabase'
-            ..named = true
-            ..type = refer('RollbackDatabase?', serverpodTestUrl)),
-          Parameter((p) => p
             ..name = 'runMode'
             ..named = true
             ..type = refer('String?')),
@@ -404,11 +400,16 @@ class ServerTestToolsGenerator {
             ..name = 'enableSessionLogging'
             ..named = true
             ..type = refer('bool?')),
-          if (config.isFeatureEnabled(ServerpodFeature.database))
+          if (config.isFeatureEnabled(ServerpodFeature.database)) ...[
+            Parameter((p) => p
+              ..name = 'rollbackDatabase'
+              ..named = true
+              ..type = refer('RollbackDatabase?', serverpodTestUrl)),
             Parameter((p) => p
               ..name = 'applyMigrations'
               ..named = true
-              ..type = refer('bool?')),
+              ..type = refer('bool?'))
+          ],
         ])
         ..body = refer(
                 'buildWithServerpod<_InternalTestEndpoints>', serverpodTestUrl)
@@ -427,11 +428,17 @@ class ServerTestToolsGenerator {
                     config.isFeatureEnabled(ServerpodFeature.database)
                         ? refer('applyMigrations')
                         : literalBool(false),
+                'isDatabaseEnabled': literalBool(
+                  config.isFeatureEnabled(ServerpodFeature.database),
+                ),
               },
             ),
           ],
           {
-            'maybeRollbackDatabase': refer('rollbackDatabase'),
+            'maybeRollbackDatabase':
+                config.isFeatureEnabled(ServerpodFeature.database)
+                    ? refer('rollbackDatabase')
+                    : literalNull,
             'maybeEnableSessionLogging': refer('enableSessionLogging'),
           },
         ).call([

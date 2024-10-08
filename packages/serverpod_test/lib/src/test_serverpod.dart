@@ -18,18 +18,32 @@ abstract interface class InternalTestEndpoints {
 class InternalServerpodSession extends Session {
   /// The transaction that is used by the session.
   @override
-  Transaction? get transaction => transactionManager.currentTransaction;
+  Transaction? get transaction {
+    var localTransactionManager = transactionManager;
+    if (localTransactionManager == null) {
+      throw StateError(
+          'Database is not enabled for this project, but transaction was accessed.');
+    }
+    return localTransactionManager.currentTransaction;
+  }
 
   @override
-  TestDatabaseProxy get db => _dbProxy;
+  TestDatabaseProxy get db {
+    var localDbProxy = _dbProxy;
+    if (localDbProxy == null) {
+      throw StateError(
+          'Database is not enabled for this project, but db was accessed.');
+    }
+    return localDbProxy;
+  }
 
-  late TestDatabaseProxy _dbProxy;
+  late final TestDatabaseProxy? _dbProxy;
 
   /// The database test configuration.
   final RollbackDatabase rollbackDatabase;
 
   /// The transaction manager to manage the Serverpod session's transactions.
-  late final TransactionManager transactionManager;
+  late final TransactionManager? transactionManager;
 
   /// Creates a new internal serverpod session.
   InternalServerpodSession({
@@ -38,14 +52,24 @@ class InternalServerpodSession extends Session {
     required super.server,
     required super.enableLogging,
     required this.rollbackDatabase,
+    required bool isDatabaseEnabled,
     TransactionManager? transactionManager,
   }) {
-    this.transactionManager = transactionManager ?? TransactionManager(this);
+    if (!isDatabaseEnabled) {
+      this.transactionManager = null;
+      _dbProxy = null;
+      return;
+    }
+
+    var localTransactionManager =
+        transactionManager ?? TransactionManager(this);
     _dbProxy = TestDatabaseProxy(
       super.db,
       rollbackDatabase,
-      this.transactionManager,
+      localTransactionManager,
     );
+
+    this.transactionManager = localTransactionManager;
   }
 }
 
@@ -63,13 +87,17 @@ class TestServerpod<T extends InternalTestEndpoints> {
 
   final Serverpod _serverpod;
 
+  /// Whether the database is enabled and supported by the project configuration.
+  final bool isDatabaseEnabled;
+
   /// Creates a new test serverpod instance.
   TestServerpod({
-    required this.testEndpoints,
-    required SerializationManagerServer serializationManager,
-    required EndpointDispatch endpoints,
-    String? runMode,
     bool? applyMigrations,
+    required EndpointDispatch endpoints,
+    required SerializationManagerServer serializationManager,
+    required this.isDatabaseEnabled,
+    required this.testEndpoints,
+    String? runMode,
   }) : _serverpod = Serverpod(
           _getServerpodStartUpArgs(
             runMode,
@@ -117,6 +145,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
       method: method,
       rollbackDatabase: rollbackDatabase,
       transactionManager: transactionManager,
+      isDatabaseEnabled: isDatabaseEnabled,
     );
   }
 }

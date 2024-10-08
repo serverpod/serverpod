@@ -135,15 +135,29 @@ class GeneratorConfig {
       ];
 
   final List<String>? _relativeServerTestToolsPathParts;
+  static const _defaultRelativeServerTestToolsPathParts = [
+    'integration_test',
+    'test_tools'
+  ];
+
   List<String>? get generatedServerTestToolsPathParts {
     var localRelativeServerTestToolsPathParts =
         _relativeServerTestToolsPathParts;
-    if (localRelativeServerTestToolsPathParts == null) return null;
+    if (localRelativeServerTestToolsPathParts != null) {
+      return [
+        ...serverPackageDirectoryPathParts,
+        ...localRelativeServerTestToolsPathParts
+      ];
+    }
 
-    return [
-      ...serverPackageDirectoryPathParts,
-      ...localRelativeServerTestToolsPathParts
-    ];
+    if (isExperimentalFeatureEnabled(ExperimentalFeature.testToolsForMini)) {
+      return [
+        ...serverPackageDirectoryPathParts,
+        ..._defaultRelativeServerTestToolsPathParts
+      ];
+    }
+
+    return null;
   }
 
   /// The path parts to the protocol directory in the dart client package.

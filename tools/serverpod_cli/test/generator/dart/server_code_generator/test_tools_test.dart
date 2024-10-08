@@ -64,9 +64,9 @@ void main() {
               r'withServerpod\(\n'
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
-              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  bool\? applyMigrations,\n'
               r'\}\)',
             ));
@@ -122,7 +122,7 @@ void main() {
     var testToolsFile = codeMap[expectedFileName];
 
     test(
-      'then test tools file has `withServerpod` function without `applyMigrations` parameter',
+      'then test tools file has `withServerpod` function without `rollbackDatabase` and `applyMigrations` parameters',
       () {
         expect(
             testToolsFile,
@@ -131,7 +131,6 @@ void main() {
               r'withServerpod\(\n'
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
-              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  bool\? enableSessionLogging,\n'
               r'\}\)',
@@ -176,9 +175,9 @@ void main() {
               r'withServerpod\(\n'
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
-              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  bool\? applyMigrations,\n'
               r'\}\)',
             ));
@@ -255,9 +254,9 @@ void main() {
               r'withServerpod\(\n'
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
-              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  bool\? applyMigrations,\n'
               r'\}\)',
             ));

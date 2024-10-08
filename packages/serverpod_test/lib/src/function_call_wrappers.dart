@@ -73,7 +73,7 @@ class ServerpodInsufficientAccessException implements Exception {
 
 /// Thrown if a stream connection is closed with an error.
 /// For example, if the user authentication was revoked.
-class ConnectionClosedException {
+class ConnectionClosedException implements Exception {
   /// Creates a new [ConnectionClosedException].
   const ConnectionClosedException();
 }
