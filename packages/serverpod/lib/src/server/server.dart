@@ -436,8 +436,7 @@ class Server {
     var path = uri.pathSegments.join('/');
     var endpointComponents = path.split('.');
     if (endpointComponents.isEmpty || endpointComponents.length > 2) {
-      return ResultNoSuchEndpoint(
-          'Endpoint $path is not a valid endpoint name');
+      return ResultInvalidParams('Endpoint $path is not a valid endpoint name');
     }
 
     // Read query parameters
