@@ -42,7 +42,7 @@ void main() {
     });
 
     test(
-        'when calling an endpoint method with misspelled endpoint path '
+        'when calling an endpoint method with non-existing endpoint path '
         'then it should respond with 404 not found', () async {
       final nonExistingPath =
           'path_${Uuid().v4().replaceAll('-', '_').toLowerCase()}';
@@ -59,7 +59,7 @@ void main() {
     });
 
     test(
-        'when calling an endpoint method with misspelled method name '
+        'when calling an endpoint method with non-existing method name '
         'then it should respond with 400 bad request', () async {
       final nonExistingName =
           'path_${Uuid().v4().replaceAll('-', '_').toLowerCase()}';
