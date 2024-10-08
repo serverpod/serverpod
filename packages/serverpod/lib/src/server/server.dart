@@ -310,7 +310,17 @@ class Server {
 
     var result = await _handleUriCall(uri, body!, request);
 
-    if (result is ResultInvalidParams) {
+    if (result is ResultNoSuchEndpoint) {
+      if (serverpod.runtimeSettings.logMalformedCalls) {
+        // TODO: Log to database?
+        stderr.writeln('Malformed call: $result');
+      }
+
+      request.response.statusCode = HttpStatus.notFound;
+      request.response.writeln(result.errorDescription);
+      await request.response.close();
+      return;
+    } else if (result is ResultInvalidParams) {
       if (serverpod.runtimeSettings.logMalformedCalls) {
         // TODO: Log to database?
         stderr.writeln('Malformed call: $result');
@@ -426,7 +436,8 @@ class Server {
     var path = uri.pathSegments.join('/');
     var endpointComponents = path.split('.');
     if (endpointComponents.isEmpty || endpointComponents.length > 2) {
-      return ResultInvalidParams('Endpoint $path is not a valid endpoint name');
+      return ResultNoSuchEndpoint(
+          'Endpoint $path is not a valid endpoint name');
     }
 
     // Read query parameters
@@ -524,7 +535,7 @@ class Server {
     } on InvalidEndpointMethodTypeException catch (e) {
       return ResultInvalidParams(e.message);
     } on EndpointNotFoundException catch (e) {
-      return ResultInvalidParams(e.message);
+      return ResultNoSuchEndpoint(e.message);
     } on NotAuthorizedException catch (e) {
       return e.authenticationFailedResult;
     } on InvalidParametersException catch (e) {
