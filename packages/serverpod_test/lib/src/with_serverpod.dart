@@ -63,12 +63,14 @@ void Function(TestClosure<T>)
   RollbackDatabase? maybeRollbackDatabase,
   bool? maybeEnableSessionLogging,
 }) {
-  var rollbackDatabase = switch (testServerpod.isDatabaseEnabled) {
-    true => maybeRollbackDatabase ?? RollbackDatabase.afterEach,
-    (false) => RollbackDatabase.disabled
-  };
+  var rollbackDatabase = maybeRollbackDatabase ?? RollbackDatabase.afterEach;
 
-  List<InternalServerpodSession> allTestSessions = [];
+  var rollbacksEnabled = rollbackDatabase != RollbackDatabase.disabled;
+  if (rollbacksEnabled && !testServerpod.isDatabaseEnabled) {
+    throw InitializationException(
+      'Rollbacks where enabled but the database is not enabled in for this project configuration.',
+    );
+  }
 
   var mainServerpodSession = testServerpod.createSession(
     rollbackDatabase: rollbackDatabase,
@@ -77,7 +79,25 @@ void Function(TestClosure<T>)
   TransactionManager? transactionManager;
   if (testServerpod.isDatabaseEnabled) {
     transactionManager = mainServerpodSession.transactionManager;
+    if (transactionManager == null) {
+      throw InitializationException(
+        'The transaction manager is null but database is enabled.',
+      );
+    }
   }
+
+  TransactionManager getTransactionManager() {
+    var localTransactionManager = transactionManager;
+    if (localTransactionManager == null) {
+      throw StateError(
+        'The transaction manager is null.',
+      );
+    }
+
+    return localTransactionManager;
+  }
+
+  List<InternalServerpodSession> allTestSessions = [];
 
   InternalTestSessionBuilder mainTestSessionBuilder =
       InternalTestSessionBuilder(
@@ -96,12 +116,7 @@ void Function(TestClosure<T>)
 
         if (rollbackDatabase == RollbackDatabase.afterAll ||
             rollbackDatabase == RollbackDatabase.afterEach) {
-          var localTransactionManager = transactionManager;
-          if (localTransactionManager == null) {
-            throw StateError(
-              'The transaction manager is null.',
-            );
-          }
+          var localTransactionManager = getTransactionManager();
 
           await localTransactionManager.createTransaction();
           await localTransactionManager.addSavePoint();
@@ -110,12 +125,8 @@ void Function(TestClosure<T>)
 
       tearDown(() async {
         if (rollbackDatabase == RollbackDatabase.afterEach) {
-          var localTransactionManager = transactionManager;
-          if (localTransactionManager == null) {
-            throw StateError(
-              'The transaction manager is null.',
-            );
-          }
+          var localTransactionManager = getTransactionManager();
+
           await localTransactionManager.rollbackToPreviousSavePoint();
           await localTransactionManager.addSavePoint();
         }
@@ -126,12 +137,8 @@ void Function(TestClosure<T>)
       tearDownAll(() async {
         if (rollbackDatabase == RollbackDatabase.afterAll ||
             rollbackDatabase == RollbackDatabase.afterEach) {
-          var localTransactionManager = transactionManager;
-          if (localTransactionManager == null) {
-            throw StateError(
-              'The transaction manager is null.',
-            );
-          }
+          var localTransactionManager = getTransactionManager();
+
           await localTransactionManager.cancelTransaction();
         }
 
