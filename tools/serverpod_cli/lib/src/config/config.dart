@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:package_config/package_config.dart';
+import 'package:path/path.dart' as p;
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
@@ -10,7 +11,6 @@ import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
-import 'package:path/path.dart' as p;
 
 import '../generator/types.dart';
 
@@ -141,6 +141,10 @@ class GeneratorConfig {
   ];
 
   List<String>? get generatedServerTestToolsPathParts {
+    if (!isExperimentalFeatureEnabled(ExperimentalFeature.testTools)) {
+      return null;
+    }
+
     var localRelativeServerTestToolsPathParts =
         _relativeServerTestToolsPathParts;
     if (localRelativeServerTestToolsPathParts != null) {
@@ -150,7 +154,8 @@ class GeneratorConfig {
       ];
     }
 
-    if (isExperimentalFeatureEnabled(ExperimentalFeature.testToolsForMini)) {
+    var isServerpodMini = !isFeatureEnabled(ServerpodFeature.database);
+    if (isServerpodMini) {
       return [
         ...serverPackageDirectoryPathParts,
         ..._defaultRelativeServerTestToolsPathParts

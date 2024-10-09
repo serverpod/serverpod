@@ -17,7 +17,7 @@ enum ExperimentalFeature {
   inheritance,
   // TODO: Remove when test templates are generated and the feature is public
   // Tracked by issue: https://github.com/serverpod/serverpod/issues/2734
-  testToolsForMini;
+  testTools;
 
   static ExperimentalFeature fromString(String value) {
     for (var feature in ExperimentalFeature.values) {
