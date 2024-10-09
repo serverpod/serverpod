@@ -116,7 +116,7 @@ void Function(TestClosure<T>)
               'The transaction manager is null.',
             );
           }
-          await localTransactionManager.rollbacktoPreviousSavePoint();
+          await localTransactionManager.rollbackToPreviousSavePoint();
           await localTransactionManager.addSavePoint();
         }
 

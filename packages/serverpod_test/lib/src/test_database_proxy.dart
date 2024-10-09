@@ -153,7 +153,7 @@ class TestDatabaseProxy implements Database {
       await _transactionManager.removePreviousSavePoint(unlock: true);
       return result;
     } catch (e) {
-      await _transactionManager.rollbacktoPreviousSavePoint(unlock: true);
+      await _transactionManager.rollbackToPreviousSavePoint(unlock: true);
       rethrow;
     }
   }
