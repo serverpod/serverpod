@@ -2012,6 +2012,22 @@ class EndpointServerOnlyScopedFieldModel extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointServerOnlyScopedFieldChildModel extends _i1.EndpointRef {
+  EndpointServerOnlyScopedFieldChildModel(_i1.EndpointCaller caller)
+      : super(caller);
+
+  @override
+  String get name => 'serverOnlyScopedFieldChildModel';
+
+  _i2.Future<_i19.ScopeServerOnlyField> getProtocolField() =>
+      caller.callServerEndpoint<_i19.ScopeServerOnlyField>(
+        'serverOnlyScopedFieldChildModel',
+        'getProtocolField',
+        {},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointSignInRequired extends _i1.EndpointRef {
   EndpointSignInRequired(_i1.EndpointCaller caller) : super(caller);
 
@@ -2361,6 +2377,8 @@ class Client extends _i1.ServerpodClientShared {
     optionalParameters = EndpointOptionalParameters(this);
     redis = EndpointRedis(this);
     serverOnlyScopedFieldModel = EndpointServerOnlyScopedFieldModel(this);
+    serverOnlyScopedFieldChildModel =
+        EndpointServerOnlyScopedFieldChildModel(this);
     signInRequired = EndpointSignInRequired(this);
     adminScopeRequired = EndpointAdminScopeRequired(this);
     simple = EndpointSimple(this);
@@ -2433,6 +2451,9 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointServerOnlyScopedFieldModel serverOnlyScopedFieldModel;
 
+  late final EndpointServerOnlyScopedFieldChildModel
+      serverOnlyScopedFieldChildModel;
+
   late final EndpointSignInRequired signInRequired;
 
   late final EndpointAdminScopeRequired adminScopeRequired;
@@ -2485,6 +2506,7 @@ class Client extends _i1.ServerpodClientShared {
         'optionalParameters': optionalParameters,
         'redis': redis,
         'serverOnlyScopedFieldModel': serverOnlyScopedFieldModel,
+        'serverOnlyScopedFieldChildModel': serverOnlyScopedFieldChildModel,
         'signInRequired': signInRequired,
         'adminScopeRequired': adminScopeRequired,
         'simple': simple,

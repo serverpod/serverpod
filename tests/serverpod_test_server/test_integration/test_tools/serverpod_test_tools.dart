@@ -126,6 +126,9 @@ class TestEndpoints {
 
   late final _ServerOnlyScopedFieldModelEndpoint serverOnlyScopedFieldModel;
 
+  late final _ServerOnlyScopedFieldChildModelEndpoint
+      serverOnlyScopedFieldChildModel;
+
   late final _SignInRequiredEndpoint signInRequired;
 
   late final _AdminScopeRequiredEndpoint adminScopeRequired;
@@ -269,6 +272,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     serverOnlyScopedFieldModel = _ServerOnlyScopedFieldModelEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    serverOnlyScopedFieldChildModel = _ServerOnlyScopedFieldChildModelEndpoint(
       endpoints,
       serializationManager,
     );
@@ -6424,6 +6431,41 @@ class _ServerOnlyScopedFieldModelEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'serverOnlyScopedFieldModel',
         methodName: 'getScopeServerOnlyField',
+        parameters: {},
+        serializationManager: _serializationManager,
+      );
+      var _localReturnValue = await (_localCallContext.method.call(
+        _localUniqueSession,
+        _localCallContext.arguments,
+      ) as _i3.Future<_i20.ScopeServerOnlyField>);
+      await _localUniqueSession.close();
+      return _localReturnValue;
+    });
+  }
+}
+
+class _ServerOnlyScopedFieldChildModelEndpoint {
+  _ServerOnlyScopedFieldChildModelEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<_i20.ScopeServerOnlyField> getProtocolField(
+      _i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'serverOnlyScopedFieldChildModel',
+        method: 'getProtocolField',
+      );
+      var _localCallContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => _localUniqueSession,
+        endpointPath: 'serverOnlyScopedFieldChildModel',
+        methodName: 'getProtocolField',
         parameters: {},
         serializationManager: _serializationManager,
       );
