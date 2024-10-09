@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:serverpod_cli/src/test_util/builders/enum_definition_builder.dart';
 import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
@@ -159,7 +160,11 @@ void main() {
       () {
     var configWithTestToolsPath = GeneratorConfigBuilder()
         .withName(projectName)
-        .withRelativeServerTestToolsPathParts(
+        .withEnabledExperimentalFeatures(
+      [
+        ExperimentalFeature.testTools,
+      ],
+    ).withRelativeServerTestToolsPathParts(
       [
         'integration_test',
         'serverpod_test_tools',

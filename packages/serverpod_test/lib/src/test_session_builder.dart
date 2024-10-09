@@ -6,8 +6,10 @@ import 'test_serverpod.dart';
 abstract class AuthenticationOverride {
   /// Sets the session to be authenticated with the provided userId and scope.
   static AuthenticationOverride authenticationInfo(
-          int userId, Set<Scope> scopes,
-          {String? authId}) =>
+    int userId,
+    Set<Scope> scopes, {
+    String? authId,
+  }) =>
       _AuthenticationInfoOverride(userId, scopes, authId: authId);
 
   /// Sets the session to be unauthenticated. This is the default.

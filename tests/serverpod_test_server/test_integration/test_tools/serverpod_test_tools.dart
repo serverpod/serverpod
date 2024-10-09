@@ -46,9 +46,9 @@ export 'package:serverpod_test/serverpod_test_public_exports.dart';
 withServerpod(
   String testGroupName,
   _i1.TestClosure<TestEndpoints> testClosure, {
-  _i1.RollbackDatabase? rollbackDatabase,
   String? runMode,
   bool? enableSessionLogging,
+  _i1.RollbackDatabase? rollbackDatabase,
   bool? applyMigrations,
 }) {
   _i1.buildWithServerpod<_InternalTestEndpoints>(
@@ -59,6 +59,7 @@ withServerpod(
       serializationManager: Protocol(),
       runMode: runMode,
       applyMigrations: applyMigrations,
+      isDatabaseEnabled: true,
     ),
     maybeRollbackDatabase: rollbackDatabase,
     maybeEnableSessionLogging: enableSessionLogging,

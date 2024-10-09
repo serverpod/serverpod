@@ -97,7 +97,7 @@ class TransactionManager {
   }
 
   /// Rolls back the database to the previous save point in the current transaction.
-  Future<void> rollbacktoPreviousSavePoint({bool unlock = false}) async {
+  Future<void> rollbackToPreviousSavePoint({bool unlock = false}) async {
     var savePointId = await removePreviousSavePoint(unlock: unlock);
 
     await serverpodSession.db.unsafeExecute(
