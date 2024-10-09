@@ -308,6 +308,15 @@ class Restrictions {
       ];
     }
 
+    if (parentClass.serverOnly && !documentDefinition!.serverOnly) {
+      return [
+        SourceSpanSeverityException(
+          'You cannot extend a server only class from a client class.',
+          span,
+        )
+      ];
+    }
+
     return [];
   }
 
