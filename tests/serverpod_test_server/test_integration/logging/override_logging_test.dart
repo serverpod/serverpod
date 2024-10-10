@@ -20,7 +20,7 @@ void main() {
   });
 
   tearDown(() async {
-    await await session.close();
+    await session.close();
     await server.shutdown(exitProcess: false);
   });
 

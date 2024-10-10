@@ -1,0 +1,9 @@
+apiServer:
+  port: 8080
+  publicHost: "localhost"
+  publicPort: 8080
+  publicScheme: "http"
+
+sessionLogs:
+  persistentEnabled: true
+  consoleEnabled: true

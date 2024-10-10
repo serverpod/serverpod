@@ -174,19 +174,28 @@ abstract class Session implements DatabaseAccessor {
   LogWriter _createLogWriter(Session session, LogSettingsManager settings) {
     var logSettings = settings.getLogSettingsForSession(session);
 
-    LogWriter logWriter = switch (Features.enablePersistentLogging) {
-      (true) => DatabaseLogWriter(
+    var logWriters = <LogWriter>[];
+
+    if (Features.enablePersistentLogging) {
+      logWriters.add(
+        DatabaseLogWriter(
           logWriterSession: session.serverpod.internalSession,
         ),
-      (false) => StdOutLogWriter(session),
-    };
+      );
+    }
+
+    if (Features.enableConsoleLogging) {
+      logWriters.add(StdOutLogWriter(session));
+    }
 
     if ((_isLongLived(session)) &&
         logSettings.logStreamingSessionsContinuously) {
-      return logWriter;
+      return MultipleLogWriter(logWriters);
     }
 
-    return CachedLogWriter(logWriter);
+    return MultipleLogWriter(
+      logWriters.map((writer) => CachedLogWriter(writer)).toList(),
+    );
   }
 
   bool _initialized = false;
