@@ -12,19 +12,13 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-abstract class ScopeServerOnlyField
+class ScopeServerOnlyField
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  ScopeServerOnlyField._({
+  ScopeServerOnlyField({
     this.allScope,
     this.serverOnlyScope,
     this.nested,
   });
-
-  factory ScopeServerOnlyField({
-    _i2.Types? allScope,
-    _i2.Types? serverOnlyScope,
-    _i2.ScopeServerOnlyField? nested,
-  }) = _ScopeServerOnlyFieldImpl;
 
   factory ScopeServerOnlyField.fromJson(
       Map<String, dynamic> jsonSerialization) {
@@ -51,10 +45,21 @@ abstract class ScopeServerOnlyField
   _i2.ScopeServerOnlyField? nested;
 
   ScopeServerOnlyField copyWith({
-    _i2.Types? allScope,
-    _i2.Types? serverOnlyScope,
-    _i2.ScopeServerOnlyField? nested,
-  });
+    Object? allScope = _Undefined,
+    Object? serverOnlyScope = _Undefined,
+    Object? nested = _Undefined,
+  }) {
+    return ScopeServerOnlyField(
+      allScope: allScope is _i2.Types? ? allScope : this.allScope?.copyWith(),
+      serverOnlyScope: serverOnlyScope is _i2.Types?
+          ? serverOnlyScope
+          : this.serverOnlyScope?.copyWith(),
+      nested: nested is _i2.ScopeServerOnlyField?
+          ? nested
+          : this.nested?.copyWith(),
+    );
+  }
+
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -79,32 +84,3 @@ abstract class ScopeServerOnlyField
 }
 
 class _Undefined {}
-
-class _ScopeServerOnlyFieldImpl extends ScopeServerOnlyField {
-  _ScopeServerOnlyFieldImpl({
-    _i2.Types? allScope,
-    _i2.Types? serverOnlyScope,
-    _i2.ScopeServerOnlyField? nested,
-  }) : super._(
-          allScope: allScope,
-          serverOnlyScope: serverOnlyScope,
-          nested: nested,
-        );
-
-  @override
-  ScopeServerOnlyField copyWith({
-    Object? allScope = _Undefined,
-    Object? serverOnlyScope = _Undefined,
-    Object? nested = _Undefined,
-  }) {
-    return ScopeServerOnlyField(
-      allScope: allScope is _i2.Types? ? allScope : this.allScope?.copyWith(),
-      serverOnlyScope: serverOnlyScope is _i2.Types?
-          ? serverOnlyScope
-          : this.serverOnlyScope?.copyWith(),
-      nested: nested is _i2.ScopeServerOnlyField?
-          ? nested
-          : this.nested?.copyWith(),
-    );
-  }
-}

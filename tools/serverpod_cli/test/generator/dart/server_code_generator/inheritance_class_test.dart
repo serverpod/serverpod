@@ -348,4 +348,68 @@ void main() {
       });
     }, skip: maybeClassNamedExampleTable == null);
   });
+
+  group(
+      'Given a child-class with a nullable field inheriting a nullable field when generating code',
+      () {
+    var models = [
+      ClassDefinitionBuilder()
+          .withClassName(parentClassName)
+          .withFileName(parentClassFileName)
+          .withSimpleField('name', 'String', nullable: true)
+          .withChildClasses(
+        [
+          ClassDefinitionBuilder()
+              .withClassName(childClassName)
+              .withFileName(childClassFileName)
+              .withSimpleField('age', 'int', nullable: true)
+              .build(),
+        ],
+      ).build(),
+      ClassDefinitionBuilder()
+          .withClassName(childClassName)
+          .withFileName(childClassFileName)
+          .withTableName(childTableName)
+          .withSimpleField('age', 'int', nullable: true)
+          .withExtendsClass(
+            ClassDefinitionBuilder()
+                .withClassName(parentClassName)
+                .withFileName(parentClassFileName)
+                .withSimpleField('name', 'String', nullable: true)
+                .build(),
+          )
+          .build(),
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var compilationUnit =
+        parseString(content: codeMap[childExpectedFilePath]!).unit;
+
+    group('Then the $childClassName', () {
+      var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        compilationUnit,
+        name: childClassName,
+      );
+
+      group('has a copyWith method', () {
+        var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          childClass!,
+          name: 'copyWith',
+        );
+
+        test(
+            'with named params where nullable-inherited fields are "Object?" and nullable-local fields are typed',
+            () {
+          expect(
+            copyWithMethod?.parameters?.toSource(),
+            '({int? id, Object? name, int? age})',
+          );
+        }, skip: copyWithMethod == null);
+      });
+    });
+  });
 }

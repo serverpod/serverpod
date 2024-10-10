@@ -35,7 +35,9 @@ import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
     as _i18;
 import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field.dart'
     as _i19;
-import 'protocol.dart' as _i20;
+import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field_child.dart'
+    as _i20;
+import 'protocol.dart' as _i21;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -2012,6 +2014,22 @@ class EndpointServerOnlyScopedFieldModel extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointServerOnlyScopedFieldChildModel extends _i1.EndpointRef {
+  EndpointServerOnlyScopedFieldChildModel(_i1.EndpointCaller caller)
+      : super(caller);
+
+  @override
+  String get name => 'serverOnlyScopedFieldChildModel';
+
+  _i2.Future<_i20.ScopeServerOnlyFieldChild> getProtocolField() =>
+      caller.callServerEndpoint<_i20.ScopeServerOnlyFieldChild>(
+        'serverOnlyScopedFieldChildModel',
+        'getProtocolField',
+        {},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointSignInRequired extends _i1.EndpointRef {
   EndpointSignInRequired(_i1.EndpointCaller caller) : super(caller);
 
@@ -2321,7 +2339,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i20.Protocol(),
+          _i21.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
@@ -2361,6 +2379,8 @@ class Client extends _i1.ServerpodClientShared {
     optionalParameters = EndpointOptionalParameters(this);
     redis = EndpointRedis(this);
     serverOnlyScopedFieldModel = EndpointServerOnlyScopedFieldModel(this);
+    serverOnlyScopedFieldChildModel =
+        EndpointServerOnlyScopedFieldChildModel(this);
     signInRequired = EndpointSignInRequired(this);
     adminScopeRequired = EndpointAdminScopeRequired(this);
     simple = EndpointSimple(this);
@@ -2433,6 +2453,9 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointServerOnlyScopedFieldModel serverOnlyScopedFieldModel;
 
+  late final EndpointServerOnlyScopedFieldChildModel
+      serverOnlyScopedFieldChildModel;
+
   late final EndpointSignInRequired signInRequired;
 
   late final EndpointAdminScopeRequired adminScopeRequired;
@@ -2485,6 +2508,7 @@ class Client extends _i1.ServerpodClientShared {
         'optionalParameters': optionalParameters,
         'redis': redis,
         'serverOnlyScopedFieldModel': serverOnlyScopedFieldModel,
+        'serverOnlyScopedFieldChildModel': serverOnlyScopedFieldChildModel,
         'signInRequired': signInRequired,
         'adminScopeRequired': adminScopeRequired,
         'simple': simple,

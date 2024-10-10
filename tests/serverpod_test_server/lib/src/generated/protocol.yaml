@@ -243,6 +243,8 @@ redis:
   - countSubscribedChannels:
 serverOnlyScopedFieldModel:
   - getScopeServerOnlyField:
+serverOnlyScopedFieldChildModel:
+  - getProtocolField:
 signInRequired:
   - testMethod:
 adminScopeRequired:

@@ -308,6 +308,21 @@ class Restrictions {
       ];
     }
 
+    var currentModel =
+        parsedModels.findByClassName(documentDefinition!.className);
+
+    var ancestorServerOnlyClass =
+        _findServerOnlyClassInParentClasses(currentModel);
+
+    if (!documentDefinition!.serverOnly && ancestorServerOnlyClass != null) {
+      return [
+        SourceSpanSeverityException(
+          'Cannot extend a "serverOnly" class in the inheritance chain ("${ancestorServerOnlyClass.className}") unless class is marked as "serverOnly".',
+          span,
+        )
+      ];
+    }
+
     return [];
   }
 
@@ -1406,6 +1421,20 @@ class Restrictions {
       parentModel = _getParentClass(parentModel);
     }
 
+    return null;
+  }
+
+  ClassDefinition? _findServerOnlyClassInParentClasses(
+    SerializableModelDefinition? currentModel,
+  ) {
+    if (currentModel is! ClassDefinition) return null;
+    var parentModel = _getParentClass(currentModel);
+
+    while (parentModel != null) {
+      if (parentModel.serverOnly) return parentModel;
+
+      parentModel = _getParentClass(parentModel);
+    }
     return null;
   }
 }
