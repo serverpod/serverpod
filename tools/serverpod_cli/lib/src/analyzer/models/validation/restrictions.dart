@@ -317,7 +317,7 @@ class Restrictions {
     if (!documentDefinition!.serverOnly && ancestorServerOnlyClass != null) {
       return [
         SourceSpanSeverityException(
-          'The class "${documentDefinition!.className}" cannot inherit from the server-only class "${ancestorServerOnlyClass.className}" unless it is also marked as "serverOnly".',
+          'Cannot extend a "serverOnly" class in the inheritance chain ("${ancestorServerOnlyClass.className}") unless class is marked as "serverOnly".',
           span,
         )
       ];
