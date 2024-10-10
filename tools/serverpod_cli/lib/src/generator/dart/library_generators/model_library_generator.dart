@@ -59,8 +59,7 @@ class SerializableModelLibraryGenerator {
           // We need to generate the implementation class for the copyWith method
           // to support differentiating between null and undefined values.
           // https://stackoverflow.com/questions/68009392/dart-custom-copywith-method-with-nullable-properties
-          if (_shouldCreateUndefinedClass(classDefinition, fields))
-            _buildUndefinedClass(),
+          if (_shouldCreateUndefinedClass(fields)) _buildUndefinedClass(),
           if (!classDefinition.isParentClass)
             _buildModelImplClass(
               className,
@@ -253,14 +252,8 @@ class SerializableModelLibraryGenerator {
   }
 
   bool _shouldCreateUndefinedClass(
-    ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
-    if (classDefinition.parentClass != null &&
-        classDefinition.parentClass!.serverOnly) {
-      return true;
-    }
-
     return fields
         .where((field) => field.shouldIncludeField(serverCode))
         .any((field) => field.type.nullable);
@@ -445,19 +438,9 @@ class SerializableModelLibraryGenerator {
                 config: config,
               );
 
-              var isInheritedField =
-                  classDefinition.inheritedFields.contains(field);
-              var isServerOnlyField =
-                  field.scope == ModelFieldScopeDefinition.serverOnly;
-
-              var type =
-                  field.type.nullable || isInheritedField && isServerOnlyField
-                      ? refer('Object?')
-                      : fieldType;
+              var type = field.type.nullable ? refer('Object?') : fieldType;
               var defaultValue =
-                  field.type.nullable || isInheritedField && isServerOnlyField
-                      ? const Code('_Undefined')
-                      : null;
+                  field.type.nullable ? const Code('_Undefined') : null;
 
               return Parameter((p) {
                 p
@@ -495,9 +478,7 @@ class SerializableModelLibraryGenerator {
       );
 
       Expression valueDefinition;
-      if (field.type.nullable ||
-          classDefinition.inheritedFields.contains(field) &&
-              field.scope == ModelFieldScopeDefinition.serverOnly) {
+      if (field.type.nullable) {
         valueDefinition = refer(field.name)
             .isA(field.type.reference(
               serverCode,
@@ -1166,11 +1147,8 @@ class SerializableModelLibraryGenerator {
       );
 
       var isInheritedField = classDefinition.inheritedFields.contains(field);
-      var isServerOnlyField =
-          field.scope == ModelFieldScopeDefinition.serverOnly;
 
-      var type = isServerOnlyField && isInheritedField ||
-              field.type.nullable && isInheritedField
+      var type = field.type.nullable && isInheritedField
           ? refer('Object?')
           : fieldType;
 
