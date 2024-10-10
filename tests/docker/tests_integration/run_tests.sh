@@ -1,5 +1,12 @@
 #!/bin/bash
 
+checkLastExitCode() {
+  local last_exit_code=$?
+  if [ $last_exit_code -ne 0 ]; then
+    exit $last_exit_code
+  fi
+}
+
 # Wait for database to be up (timeout after 60 seconds)
 echo "### Wait for Postgres"
 /app/tests/docker/tests_integration/wait-for-it.sh postgres:5432 -t 60 -- echo "### Postgres is UP"
@@ -16,4 +23,10 @@ pwd
 dart bin/main.dart -m production -r maintenance --apply-migrations
 
 # Run tests
+echo "### Running tests"
 dart test test_integration --concurrency=1
+checkLastExitCode
+
+cd ../serverpod_test_module/serverpod_test_module_server/
+echo $(pwd)
+dart test ./test/integration
