@@ -266,6 +266,7 @@ testTools:
   - returnsString:
   - returnsStream:
   - returnsListFromInputStream:
+  - returnsSimpleDataListFromInputStream:
   - returnsStreamFromInputStream:
   - postNumberToSharedStream:
   - postNumberToSharedStreamAndReturnStream:
@@ -275,6 +276,8 @@ testTools:
   - createSimpleDatasInsideTransactions:
   - createSimpleDataAndThrowInsideTransaction:
   - createSimpleDatasInParallelTransactionCalls:
+  - echoSimpleData:
+  - echoSimpleDatas:
 authenticatedTestTools:
   - returnsString:
   - returnsStream:

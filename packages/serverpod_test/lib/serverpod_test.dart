@@ -8,3 +8,4 @@ export 'src/util.dart';
 export 'src/test_serverpod.dart';
 export 'src/test_stream_manager.dart' hide GlobalStreamManager;
 export 'src/function_call_wrappers.dart';
+export 'src/test_encode.dart';
