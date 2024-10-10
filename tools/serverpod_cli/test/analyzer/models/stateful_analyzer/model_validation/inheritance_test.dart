@@ -249,7 +249,54 @@ void main() {
     var error = collector.errors.first;
     expect(
       error.message,
-      'You cannot extend a server only class from a client class.',
+      'The class "ExampleChildClass" cannot inherit from the server-only class "Example" unless it is also marked as "serverOnly".',
+    );
+  });
+
+  test(
+      'Given a serverOnly child-class, When the parent-class not serverOnly but the grandparent-class is, then error is collected that a client class cannot extend a serverOnly class',
+      () {
+    var modelSources = [
+      ModelSourceBuilder().withYaml(
+        '''
+          class: ExampleGrandparentClass
+          serverOnly: true
+          fields:
+            name: String
+          ''',
+      ).build(),
+      ModelSourceBuilder().withFileName('example1').withYaml(
+        '''
+          class: Example
+          extends: ExampleGrandparentClass
+          fields:
+            name: String
+          ''',
+      ).build(),
+      ModelSourceBuilder().withFileName('example2').withYaml(
+        '''
+          class: ExampleChildClass
+          extends: Example
+          fields:
+            age: int
+          ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error but none was generated.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'The class "Example" cannot inherit from the server-only class "ExampleGrandparentClass" unless it is also marked as "serverOnly".',
     );
   });
 }

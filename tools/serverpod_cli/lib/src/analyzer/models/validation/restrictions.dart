@@ -308,10 +308,16 @@ class Restrictions {
       ];
     }
 
-    if (parentClass.serverOnly && !documentDefinition!.serverOnly) {
+    var currentModel =
+        parsedModels.findByClassName(documentDefinition!.className);
+
+    var ancestorServerOnlyClass =
+        _findServerOnlyClassInParentClasses(currentModel);
+
+    if (!documentDefinition!.serverOnly && ancestorServerOnlyClass != null) {
       return [
         SourceSpanSeverityException(
-          'You cannot extend a server only class from a client class.',
+          'The class "${documentDefinition!.className}" cannot inherit from the server-only class "${ancestorServerOnlyClass.className}" unless it is also marked as "serverOnly".',
           span,
         )
       ];
@@ -1415,6 +1421,20 @@ class Restrictions {
       parentModel = _getParentClass(parentModel);
     }
 
+    return null;
+  }
+
+  ClassDefinition? _findServerOnlyClassInParentClasses(
+    SerializableModelDefinition? currentModel,
+  ) {
+    if (currentModel is! ClassDefinition) return null;
+    var parentModel = _getParentClass(currentModel);
+
+    while (parentModel != null) {
+      if (parentModel.serverOnly) return parentModel;
+
+      parentModel = _getParentClass(parentModel);
+    }
     return null;
   }
 }
