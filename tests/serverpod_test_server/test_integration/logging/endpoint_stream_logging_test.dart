@@ -23,7 +23,7 @@ void main() async {
     tearDown(() async {
       await client.closeStreamingConnection();
       client.close();
-      await await session.close();
+      await session.close();
       await server.shutdown(exitProcess: false);
     });
 
