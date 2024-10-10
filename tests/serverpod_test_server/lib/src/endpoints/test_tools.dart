@@ -35,6 +35,11 @@ class TestToolsEndpoint extends Endpoint {
     return numbers.toList();
   }
 
+  Future<List<SimpleData>> returnsSimpleDataListFromInputStream(
+      Session session, Stream<SimpleData> simpleDatas) async {
+    return simpleDatas.toList();
+  }
+
   Stream<int> returnsStreamFromInputStream(
       Session session, Stream<int> numbers) async* {
     await for (var number in numbers) {
@@ -153,6 +158,20 @@ class TestToolsEndpoint extends Endpoint {
       createSimpleDataInTransaction(3),
       createSimpleDataInTransaction(4),
     ]);
+  }
+
+  Future<SimpleData> echoSimpleData(
+    Session session,
+    SimpleData simpleData,
+  ) async {
+    return simpleData;
+  }
+
+  Future<List<SimpleData>> echoSimpleDatas(
+    Session session,
+    List<SimpleData> simpleDatas,
+  ) async {
+    return simpleDatas;
   }
 }
 

@@ -173,7 +173,9 @@ class ServerTestToolsGenerator {
                 'methodName': literalString(method.name),
                 'parameters': literalMap({
                   for (var parameter in method.allParameters)
-                    literalString(parameter.name): refer(parameter.name).code,
+                    literalString(parameter.name):
+                        refer('testObjectToJson', serverpodTestUrl)
+                            .call([refer(parameter.name)]).code,
                 }),
                 'serializationManager': refer('_serializationManager'),
               }))
