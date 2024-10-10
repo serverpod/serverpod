@@ -38,6 +38,9 @@ class ServerpodConfig {
   /// Authentication key for service protocol.
   late final String? serviceSecret;
 
+  /// Configuration for Session logs.
+  final SessionLogConfig? sessionLogs;
+
   /// Creates a new [ServerpodConfig].
   ServerpodConfig({
     required this.apiServer,
@@ -49,6 +52,7 @@ class ServerpodConfig {
     this.database,
     this.redis,
     this.serviceSecret,
+    this.sessionLogs,
   }) {
     apiServer._name = 'api';
     insightsServer?._name = 'insights';
@@ -126,6 +130,15 @@ class ServerpodConfig {
           )
         : null;
 
+    var sessionLogsConfig = _sessionLogsConfigMap(configMap, environment);
+    var losessionLogs = sessionLogsConfig != null
+        ? SessionLogConfig._fromJson(
+            sessionLogsConfig,
+            ServerpodConfigMap.sessionLogs,
+            databaseEnabled: database != null,
+          )
+        : null;
+
     return ServerpodConfig(
       runMode: runMode,
       serverId: serverId,
@@ -136,6 +149,7 @@ class ServerpodConfig {
       database: database,
       redis: redis,
       serviceSecret: serviceSecret,
+      sessionLogs: losessionLogs,
     );
   }
 
@@ -188,6 +202,7 @@ class ServerpodConfig {
 
     if (database != null) str += database.toString();
     if (redis != null) str += redis.toString();
+    if (sessionLogs != null) str += sessionLogs.toString();
 
     return str;
   }
@@ -386,6 +401,52 @@ class RedisConfig {
   }
 }
 
+/// Configuration for session logging.
+class SessionLogConfig {
+  /// True if persistent logging (e.g., to Redis) should be enabled.
+  final bool persistentEnabled;
+
+  /// True if console logging should be enabled.
+  final bool consoleEnabled;
+
+  /// Creates a new [SessionLogConfig].
+  SessionLogConfig({
+    required this.persistentEnabled,
+    required this.consoleEnabled,
+  });
+
+  factory SessionLogConfig._fromJson(
+    Map logsSetup,
+    String name, {
+    required bool databaseEnabled,
+  }) {
+    var persistent =
+        logsSetup[ServerpodEnv.sessionPersistentLogEnabled.configKey] ?? false;
+
+    if (persistent && !databaseEnabled) {
+      stdout.writeln(
+        'Warning: Persistent session logging is enabled in the configuration, but this project was created without database support. '
+        'Persistent logging is only available when the database is enabled, so the value will be overridden and disabled.',
+      );
+      persistent = false;
+    }
+
+    return SessionLogConfig(
+      persistentEnabled: persistent,
+      consoleEnabled:
+          logsSetup[ServerpodEnv.sessionConsoleLogEnabled.configKey] ?? false,
+    );
+  }
+
+  @override
+  String toString() {
+    var str = '';
+    str += 'session persistent log enabled: $persistentEnabled\n';
+    str += 'session console log enabled: $consoleEnabled\n';
+    return str;
+  }
+}
+
 Map? _insightsConfigMap(
   Map<dynamic, dynamic> configMap,
   Map<String, String> environment,
@@ -446,6 +507,15 @@ Map? _redisConfigMap(Map configMap, Map<String, String> environment) {
     (ServerpodEnv.redisPort, int.parse),
     (ServerpodEnv.redisUser, null),
     (ServerpodEnv.redisEnabled, bool.parse),
+  ]);
+}
+
+Map? _sessionLogsConfigMap(Map configMap, Map<String, String> environment) {
+  var logsConfig = configMap[ServerpodConfigMap.sessionLogs] ?? {};
+
+  return _buildConfigMap(logsConfig, environment, [
+    (ServerpodEnv.sessionPersistentLogEnabled, bool.parse),
+    (ServerpodEnv.sessionConsoleLogEnabled, bool.parse),
   ]);
 }
 
