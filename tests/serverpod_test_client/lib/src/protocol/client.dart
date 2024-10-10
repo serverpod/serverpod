@@ -35,7 +35,9 @@ import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
     as _i18;
 import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field.dart'
     as _i19;
-import 'protocol.dart' as _i20;
+import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field_child.dart'
+    as _i20;
+import 'protocol.dart' as _i21;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -2019,8 +2021,8 @@ class EndpointServerOnlyScopedFieldChildModel extends _i1.EndpointRef {
   @override
   String get name => 'serverOnlyScopedFieldChildModel';
 
-  _i2.Future<_i19.ScopeServerOnlyField> getProtocolField() =>
-      caller.callServerEndpoint<_i19.ScopeServerOnlyField>(
+  _i2.Future<_i20.ScopeServerOnlyFieldChild> getProtocolField() =>
+      caller.callServerEndpoint<_i20.ScopeServerOnlyFieldChild>(
         'serverOnlyScopedFieldChildModel',
         'getProtocolField',
         {},
@@ -2337,7 +2339,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i20.Protocol(),
+          _i21.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,

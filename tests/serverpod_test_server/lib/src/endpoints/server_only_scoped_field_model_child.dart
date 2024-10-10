@@ -4,7 +4,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 
 class ServerOnlyScopedFieldChildModelEndpoint extends Endpoint {
-  Future<ScopeServerOnlyField> getProtocolField(
+  Future<ScopeServerOnlyFieldChild> getProtocolField(
     Session session,
   ) async {
     return ScopeServerOnlyFieldChild(

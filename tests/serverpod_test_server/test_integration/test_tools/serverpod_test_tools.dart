@@ -38,6 +38,8 @@ import 'package:serverpod_test_server/src/generated/module_datatype.dart'
     as _i19;
 import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_field.dart'
     as _i20;
+import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_field_child.dart'
+    as _i21;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -6454,7 +6456,7 @@ class _ServerOnlyScopedFieldChildModelEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i20.ScopeServerOnlyField> getProtocolField(
+  _i3.Future<_i21.ScopeServerOnlyFieldChild> getProtocolField(
       _i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -6472,7 +6474,7 @@ class _ServerOnlyScopedFieldChildModelEndpoint {
       var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession,
         _localCallContext.arguments,
-      ) as _i3.Future<_i20.ScopeServerOnlyField>);
+      ) as _i3.Future<_i21.ScopeServerOnlyFieldChild>);
       await _localUniqueSession.close();
       return _localReturnValue;
     });
