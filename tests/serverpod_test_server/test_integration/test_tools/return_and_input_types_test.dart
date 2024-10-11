@@ -74,6 +74,5 @@ void main() {
         await expectLater(stream.take(1), emitsInOrder([111]));
       });
     },
-    runMode: ServerpodRunMode.production,
   );
 }
