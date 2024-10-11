@@ -25,7 +25,7 @@ void main() {
 
       test(
           'when next test is run '
-          'then should still work', () async {
+          'then database operations should still work', () async {
         await SimpleData.db.insertRow(session, SimpleData(num: 1));
 
         expect(await SimpleData.db.find(session), hasLength(1));
