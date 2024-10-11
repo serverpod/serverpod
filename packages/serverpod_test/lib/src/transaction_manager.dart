@@ -44,7 +44,13 @@ class TransactionManager {
           await _endTransactionScopeCompleter.future;
         },
         isUserCall: false,
-      ),
+      ).catchError((error, stackTrace) {
+        // no-op:
+        // If a database exception occurred during the transaction,
+        // but the exception was caught and the transactions was allowed to complete,
+        // then the transaction will rethrow it when it completes.
+        // This has to be caught, otherwise the dart test runner will fail the test suite.
+      }),
     );
 
     await transactionStartedCompleter.future;
