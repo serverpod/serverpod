@@ -323,6 +323,19 @@ class Restrictions {
       ];
     }
 
+    var duplicatedField = _findFieldWithDuplicatedName(currentModel);
+    var ancestorWithDuplicatedField =
+        _findAncestorWithDuplicatedFieldName(currentModel);
+
+    if (duplicatedField != null && ancestorWithDuplicatedField != null) {
+      return [
+        SourceSpanSeverityException(
+          'You cannot declare "${currentModel?.className}" with field: "${duplicatedField.name}" as it is already declared in "${ancestorWithDuplicatedField.className}".',
+          span,
+        )
+      ];
+    }
+
     return [];
   }
 
@@ -1407,16 +1420,25 @@ class Restrictions {
         .classDefinition;
   }
 
-  ClassDefinition? _findTableClassInParentClasses(
+  /// Traverses up the class hierarchy from [currentModel], applying [findFunction] to each parent.
+  /// Returns the first non-null result from [findFunction], or `null` if no match is found.
+  ///
+  /// ```dart
+  /// var serverOnlyAncestor = _findInHierarchy(
+  ///   currentModel,
+  ///  (ClassDefinition ancestor) => ancestor.serverOnly ? ancestor : null,
+  /// );
+  /// ```
+  T? _findInHierarchy<T>(
     SerializableModelDefinition? currentModel,
+    T? Function(ClassDefinition) findFunction,
   ) {
     if (currentModel is! ClassDefinition) return null;
     var parentModel = _getParentClass(currentModel);
 
     while (parentModel != null) {
-      if (_hasTableDefined(parentModel)) {
-        return parentModel;
-      }
+      var result = findFunction(parentModel);
+      if (result != null) return result;
 
       parentModel = _getParentClass(parentModel);
     }
@@ -1424,17 +1446,70 @@ class Restrictions {
     return null;
   }
 
+  ClassDefinition? _findTableClassInParentClasses(
+    SerializableModelDefinition? currentModel,
+  ) {
+    return _findInHierarchy(
+      currentModel,
+      (ClassDefinition ancestor) =>
+          ancestor.tableName != null ? ancestor : null,
+    );
+  }
+
   ClassDefinition? _findServerOnlyClassInParentClasses(
     SerializableModelDefinition? currentModel,
   ) {
-    if (currentModel is! ClassDefinition) return null;
-    var parentModel = _getParentClass(currentModel);
+    return _findInHierarchy(
+      currentModel,
+      (ClassDefinition ancestor) => ancestor.serverOnly ? ancestor : null,
+    );
+  }
 
-    while (parentModel != null) {
-      if (parentModel.serverOnly) return parentModel;
+  ClassDefinition? _findAncestorWithDuplicatedFieldName(
+    SerializableModelDefinition? currentModel,
+  ) {
+    return _findInHierarchy(
+      currentModel,
+      (ClassDefinition ancestor) {
+        if (currentModel is! ClassDefinition) return null;
 
-      parentModel = _getParentClass(parentModel);
-    }
-    return null;
+        var fieldNames = currentModel.fields.map((field) => field.name);
+        var parentFieldNames = ancestor.fields.map((field) => field.name);
+
+        var duplicates = fieldNames
+            .where((name) => parentFieldNames.contains(name) && name != 'id');
+
+        if (duplicates.isNotEmpty) {
+          return ancestor;
+        }
+
+        return null;
+      },
+    );
+  }
+
+  SerializableModelFieldDefinition? _findFieldWithDuplicatedName(
+    SerializableModelDefinition? currentModel,
+  ) {
+    return _findInHierarchy(
+      currentModel,
+      (ClassDefinition ancestor) {
+        if (currentModel is! ClassDefinition) return null;
+
+        var fieldNames = currentModel.fields.map((field) => field.name);
+        var parentFieldNames = ancestor.fields.map((field) => field.name);
+
+        var duplicates = fieldNames
+            .where((name) => parentFieldNames.contains(name) && name != 'id');
+
+        if (duplicates.isNotEmpty) {
+          return ancestor.fields
+              .where((field) => duplicates.contains(field.name))
+              .first;
+        }
+
+        return null;
+      },
+    );
   }
 }
