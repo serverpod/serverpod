@@ -4758,7 +4758,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'simpleData': _i1.ParameterDescription(
               name: 'simpleData',
-              type: _i1.getType<_i41.SimpleData>(),
+              type: _i1.getType<_i42.SimpleData>(),
               nullable: false,
             )
           },
@@ -4766,7 +4766,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['testTools'] as _i35.TestToolsEndpoint).echoSimpleData(
+              (endpoints['testTools'] as _i36.TestToolsEndpoint).echoSimpleData(
             session,
             params['simpleData'],
           ),
@@ -4776,7 +4776,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'simpleDatas': _i1.ParameterDescription(
               name: 'simpleDatas',
-              type: _i1.getType<List<_i41.SimpleData>>(),
+              type: _i1.getType<List<_i42.SimpleData>>(),
               nullable: false,
             )
           },
@@ -4784,7 +4784,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['testTools'] as _i35.TestToolsEndpoint)
+              (endpoints['testTools'] as _i36.TestToolsEndpoint)
                   .echoSimpleDatas(
             session,
             params['simpleDatas'],
@@ -4862,7 +4862,7 @@ class Endpoints extends _i1.EndpointDispatch {
           name: 'returnsSimpleDataListFromInputStream',
           params: {},
           streamParams: {
-            'simpleDatas': _i1.StreamParameterDescription<_i41.SimpleData>(
+            'simpleDatas': _i1.StreamParameterDescription<_i42.SimpleData>(
               name: 'simpleDatas',
               nullable: false,
             )
@@ -4873,10 +4873,10 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
             Map<String, Stream> streamParams,
           ) =>
-              (endpoints['testTools'] as _i35.TestToolsEndpoint)
+              (endpoints['testTools'] as _i36.TestToolsEndpoint)
                   .returnsSimpleDataListFromInputStream(
             session,
-            streamParams['simpleDatas']!.cast<_i41.SimpleData>(),
+            streamParams['simpleDatas']!.cast<_i42.SimpleData>(),
           ),
         ),
         'returnsStreamFromInputStream': _i1.MethodStreamConnector(

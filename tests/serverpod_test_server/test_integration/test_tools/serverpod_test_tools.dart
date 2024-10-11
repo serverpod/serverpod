@@ -6469,7 +6469,7 @@ class _ServerOnlyScopedFieldChildModelEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'serverOnlyScopedFieldChildModel',
         methodName: 'getProtocolField',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
