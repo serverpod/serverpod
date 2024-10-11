@@ -232,7 +232,7 @@ class AddressRepository {
   final detachRow = const AddressDetachRowRepository._();
 
   Future<List<Address>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<AddressTable>? where,
     int? limit,
     int? offset,
@@ -242,20 +242,20 @@ class AddressRepository {
     _i1.Transaction? transaction,
     AddressInclude? include,
   }) async {
-    return databaseAccessor.db.find<Address>(
+    return session.db.find<Address>(
       where: where?.call(Address.t),
       orderBy: orderBy?.call(Address.t),
       orderByList: orderByList?.call(Address.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
       include: include,
     );
   }
 
   Future<Address?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<AddressTable>? where,
     int? offset,
     _i1.OrderByBuilder<AddressTable>? orderBy,
@@ -264,121 +264,121 @@ class AddressRepository {
     _i1.Transaction? transaction,
     AddressInclude? include,
   }) async {
-    return databaseAccessor.db.findFirstRow<Address>(
+    return session.db.findFirstRow<Address>(
       where: where?.call(Address.t),
       orderBy: orderBy?.call(Address.t),
       orderByList: orderByList?.call(Address.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
       include: include,
     );
   }
 
   Future<Address?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     int id, {
     _i1.Transaction? transaction,
     AddressInclude? include,
   }) async {
-    return databaseAccessor.db.findById<Address>(
+    return session.db.findById<Address>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
       include: include,
     );
   }
 
   Future<List<Address>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<Address> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<Address>(
+    return session.db.insert<Address>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<Address> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Address row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<Address>(
+    return session.db.insertRow<Address>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<Address>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<Address> rows, {
     _i1.ColumnSelections<AddressTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<Address>(
+    return session.db.update<Address>(
       rows,
       columns: columns?.call(Address.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<Address> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Address row, {
     _i1.ColumnSelections<AddressTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<Address>(
+    return session.db.updateRow<Address>(
       row,
       columns: columns?.call(Address.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<Address>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<Address> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<Address>(
+    return session.db.delete<Address>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<Address> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Address row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<Address>(
+    return session.db.deleteRow<Address>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<Address>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     required _i1.WhereExpressionBuilder<AddressTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<Address>(
+    return session.db.deleteWhere<Address>(
       where: where(Address.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<AddressTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<Address>(
+    return session.db.count<Address>(
       where: where?.call(Address.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }
@@ -387,7 +387,7 @@ class AddressAttachRowRepository {
   const AddressAttachRowRepository._();
 
   Future<void> inhabitant(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Address address,
     _i2.Citizen inhabitant, {
     _i1.Transaction? transaction,
@@ -400,10 +400,10 @@ class AddressAttachRowRepository {
     }
 
     var $address = address.copyWith(inhabitantId: inhabitant.id);
-    await databaseAccessor.db.updateRow<Address>(
+    await session.db.updateRow<Address>(
       $address,
       columns: [Address.t.inhabitantId],
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }
@@ -412,7 +412,7 @@ class AddressDetachRowRepository {
   const AddressDetachRowRepository._();
 
   Future<void> inhabitant(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Address address, {
     _i1.Transaction? transaction,
   }) async {
@@ -421,10 +421,10 @@ class AddressDetachRowRepository {
     }
 
     var $address = address.copyWith(inhabitantId: null);
-    await databaseAccessor.db.updateRow<Address>(
+    await session.db.updateRow<Address>(
       $address,
       columns: [Address.t.inhabitantId],
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

@@ -171,7 +171,7 @@ class SimpleDateTimeRepository {
   const SimpleDateTimeRepository._();
 
   Future<List<SimpleDateTime>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
     int? limit,
     int? offset,
@@ -180,19 +180,19 @@ class SimpleDateTimeRepository {
     _i1.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<SimpleDateTime>(
+    return session.db.find<SimpleDateTime>(
       where: where?.call(SimpleDateTime.t),
       orderBy: orderBy?.call(SimpleDateTime.t),
       orderByList: orderByList?.call(SimpleDateTime.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<SimpleDateTime?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
     int? offset,
     _i1.OrderByBuilder<SimpleDateTimeTable>? orderBy,
@@ -200,118 +200,118 @@ class SimpleDateTimeRepository {
     _i1.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<SimpleDateTime>(
+    return session.db.findFirstRow<SimpleDateTime>(
       where: where?.call(SimpleDateTime.t),
       orderBy: orderBy?.call(SimpleDateTime.t),
       orderByList: orderByList?.call(SimpleDateTime.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<SimpleDateTime?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<SimpleDateTime>(
+    return session.db.findById<SimpleDateTime>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<SimpleDateTime>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<SimpleDateTime> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<SimpleDateTime>(
+    return session.db.insert<SimpleDateTime>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<SimpleDateTime> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     SimpleDateTime row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<SimpleDateTime>(
+    return session.db.insertRow<SimpleDateTime>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<SimpleDateTime>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<SimpleDateTime> rows, {
     _i1.ColumnSelections<SimpleDateTimeTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<SimpleDateTime>(
+    return session.db.update<SimpleDateTime>(
       rows,
       columns: columns?.call(SimpleDateTime.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<SimpleDateTime> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     SimpleDateTime row, {
     _i1.ColumnSelections<SimpleDateTimeTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<SimpleDateTime>(
+    return session.db.updateRow<SimpleDateTime>(
       row,
       columns: columns?.call(SimpleDateTime.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<SimpleDateTime>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<SimpleDateTime> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<SimpleDateTime>(
+    return session.db.delete<SimpleDateTime>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<SimpleDateTime> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     SimpleDateTime row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<SimpleDateTime>(
+    return session.db.deleteRow<SimpleDateTime>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<SimpleDateTime>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     required _i1.WhereExpressionBuilder<SimpleDateTimeTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<SimpleDateTime>(
+    return session.db.deleteWhere<SimpleDateTime>(
       where: where(SimpleDateTime.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<SimpleDateTime>(
+    return session.db.count<SimpleDateTime>(
       where: where?.call(SimpleDateTime.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

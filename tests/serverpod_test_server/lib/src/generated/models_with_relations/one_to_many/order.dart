@@ -303,7 +303,7 @@ class OrderRepository {
   final attachRow = const OrderAttachRowRepository._();
 
   Future<List<Order>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<OrderTable>? where,
     int? limit,
     int? offset,
@@ -313,20 +313,20 @@ class OrderRepository {
     _i1.Transaction? transaction,
     OrderInclude? include,
   }) async {
-    return databaseAccessor.db.find<Order>(
+    return session.db.find<Order>(
       where: where?.call(Order.t),
       orderBy: orderBy?.call(Order.t),
       orderByList: orderByList?.call(Order.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
       include: include,
     );
   }
 
   Future<Order?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<OrderTable>? where,
     int? offset,
     _i1.OrderByBuilder<OrderTable>? orderBy,
@@ -335,121 +335,121 @@ class OrderRepository {
     _i1.Transaction? transaction,
     OrderInclude? include,
   }) async {
-    return databaseAccessor.db.findFirstRow<Order>(
+    return session.db.findFirstRow<Order>(
       where: where?.call(Order.t),
       orderBy: orderBy?.call(Order.t),
       orderByList: orderByList?.call(Order.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
       include: include,
     );
   }
 
   Future<Order?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     int id, {
     _i1.Transaction? transaction,
     OrderInclude? include,
   }) async {
-    return databaseAccessor.db.findById<Order>(
+    return session.db.findById<Order>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
       include: include,
     );
   }
 
   Future<List<Order>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<Order> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<Order>(
+    return session.db.insert<Order>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<Order> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Order row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<Order>(
+    return session.db.insertRow<Order>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<Order>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<Order> rows, {
     _i1.ColumnSelections<OrderTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<Order>(
+    return session.db.update<Order>(
       rows,
       columns: columns?.call(Order.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<Order> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Order row, {
     _i1.ColumnSelections<OrderTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<Order>(
+    return session.db.updateRow<Order>(
       row,
       columns: columns?.call(Order.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<Order>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<Order> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<Order>(
+    return session.db.delete<Order>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<Order> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Order row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<Order>(
+    return session.db.deleteRow<Order>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<Order>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     required _i1.WhereExpressionBuilder<OrderTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<Order>(
+    return session.db.deleteWhere<Order>(
       where: where(Order.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<OrderTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<Order>(
+    return session.db.count<Order>(
       where: where?.call(Order.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }
@@ -458,7 +458,7 @@ class OrderAttachRepository {
   const OrderAttachRepository._();
 
   Future<void> comments(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Order order,
     List<_i2.Comment> comment, {
     _i1.Transaction? transaction,
@@ -471,10 +471,10 @@ class OrderAttachRepository {
     }
 
     var $comment = comment.map((e) => e.copyWith(orderId: order.id)).toList();
-    await databaseAccessor.db.update<_i2.Comment>(
+    await session.db.update<_i2.Comment>(
       $comment,
       columns: [_i2.Comment.t.orderId],
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }
@@ -483,7 +483,7 @@ class OrderAttachRowRepository {
   const OrderAttachRowRepository._();
 
   Future<void> customer(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Order order,
     _i2.Customer customer, {
     _i1.Transaction? transaction,
@@ -496,15 +496,15 @@ class OrderAttachRowRepository {
     }
 
     var $order = order.copyWith(customerId: customer.id);
-    await databaseAccessor.db.updateRow<Order>(
+    await session.db.updateRow<Order>(
       $order,
       columns: [Order.t.customerId],
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<void> comments(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Order order,
     _i2.Comment comment, {
     _i1.Transaction? transaction,
@@ -517,10 +517,10 @@ class OrderAttachRowRepository {
     }
 
     var $comment = comment.copyWith(orderId: order.id);
-    await databaseAccessor.db.updateRow<_i2.Comment>(
+    await session.db.updateRow<_i2.Comment>(
       $comment,
       columns: [_i2.Comment.t.orderId],
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

@@ -263,7 +263,7 @@ class ObjectWithEnumRepository {
   const ObjectWithEnumRepository._();
 
   Future<List<ObjectWithEnum>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<ObjectWithEnumTable>? where,
     int? limit,
     int? offset,
@@ -272,19 +272,19 @@ class ObjectWithEnumRepository {
     _i1.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<ObjectWithEnum>(
+    return session.db.find<ObjectWithEnum>(
       where: where?.call(ObjectWithEnum.t),
       orderBy: orderBy?.call(ObjectWithEnum.t),
       orderByList: orderByList?.call(ObjectWithEnum.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ObjectWithEnum?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<ObjectWithEnumTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithEnumTable>? orderBy,
@@ -292,118 +292,118 @@ class ObjectWithEnumRepository {
     _i1.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<ObjectWithEnum>(
+    return session.db.findFirstRow<ObjectWithEnum>(
       where: where?.call(ObjectWithEnum.t),
       orderBy: orderBy?.call(ObjectWithEnum.t),
       orderByList: orderByList?.call(ObjectWithEnum.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ObjectWithEnum?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<ObjectWithEnum>(
+    return session.db.findById<ObjectWithEnum>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ObjectWithEnum>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<ObjectWithEnum> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<ObjectWithEnum>(
+    return session.db.insert<ObjectWithEnum>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ObjectWithEnum> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     ObjectWithEnum row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<ObjectWithEnum>(
+    return session.db.insertRow<ObjectWithEnum>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ObjectWithEnum>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<ObjectWithEnum> rows, {
     _i1.ColumnSelections<ObjectWithEnumTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<ObjectWithEnum>(
+    return session.db.update<ObjectWithEnum>(
       rows,
       columns: columns?.call(ObjectWithEnum.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ObjectWithEnum> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     ObjectWithEnum row, {
     _i1.ColumnSelections<ObjectWithEnumTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<ObjectWithEnum>(
+    return session.db.updateRow<ObjectWithEnum>(
       row,
       columns: columns?.call(ObjectWithEnum.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ObjectWithEnum>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<ObjectWithEnum> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<ObjectWithEnum>(
+    return session.db.delete<ObjectWithEnum>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ObjectWithEnum> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     ObjectWithEnum row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<ObjectWithEnum>(
+    return session.db.deleteRow<ObjectWithEnum>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ObjectWithEnum>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     required _i1.WhereExpressionBuilder<ObjectWithEnumTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<ObjectWithEnum>(
+    return session.db.deleteWhere<ObjectWithEnum>(
       where: where(ObjectWithEnum.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<ObjectWithEnumTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<ObjectWithEnum>(
+    return session.db.count<ObjectWithEnum>(
       where: where?.call(ObjectWithEnum.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }
