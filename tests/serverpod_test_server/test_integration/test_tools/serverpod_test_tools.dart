@@ -38,6 +38,8 @@ import 'package:serverpod_test_server/src/generated/module_datatype.dart'
     as _i19;
 import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_field.dart'
     as _i20;
+import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_field_child.dart'
+    as _i21;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -126,6 +128,9 @@ class TestEndpoints {
   late final _RedisEndpoint redis;
 
   late final _ServerOnlyScopedFieldModelEndpoint serverOnlyScopedFieldModel;
+
+  late final _ServerOnlyScopedFieldChildModelEndpoint
+      serverOnlyScopedFieldChildModel;
 
   late final _SignInRequiredEndpoint signInRequired;
 
@@ -270,6 +275,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     serverOnlyScopedFieldModel = _ServerOnlyScopedFieldModelEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    serverOnlyScopedFieldChildModel = _ServerOnlyScopedFieldChildModelEndpoint(
       endpoints,
       serializationManager,
     );
@@ -6432,6 +6441,41 @@ class _ServerOnlyScopedFieldModelEndpoint {
         _localUniqueSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i20.ScopeServerOnlyField>);
+      await _localUniqueSession.close();
+      return _localReturnValue;
+    });
+  }
+}
+
+class _ServerOnlyScopedFieldChildModelEndpoint {
+  _ServerOnlyScopedFieldChildModelEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<_i21.ScopeServerOnlyFieldChild> getProtocolField(
+      _i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'serverOnlyScopedFieldChildModel',
+        method: 'getProtocolField',
+      );
+      var _localCallContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => _localUniqueSession,
+        endpointPath: 'serverOnlyScopedFieldChildModel',
+        methodName: 'getProtocolField',
+        parameters: {},
+        serializationManager: _serializationManager,
+      );
+      var _localReturnValue = await (_localCallContext.method.call(
+        _localUniqueSession,
+        _localCallContext.arguments,
+      ) as _i3.Future<_i21.ScopeServerOnlyFieldChild>);
       await _localUniqueSession.close();
       return _localReturnValue;
     });

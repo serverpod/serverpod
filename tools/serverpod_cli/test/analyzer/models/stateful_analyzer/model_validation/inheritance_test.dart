@@ -213,4 +213,90 @@ void main() {
       );
     });
   });
+
+  test(
+      'Given a child-class, When the parent-class is serverOnly but the child-class is not, then error is collected that a client class cannot extend a serverOnly class',
+      () {
+    var modelSources = [
+      ModelSourceBuilder().withYaml(
+        '''
+          class: Example
+          serverOnly: true
+          fields:
+            name: String
+          ''',
+      ).build(),
+      ModelSourceBuilder().withFileName('example2').withYaml(
+        '''
+          class: ExampleChildClass
+          extends: Example
+          fields:
+            age: int
+          ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error but none was generated.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'Cannot extend a "serverOnly" class in the inheritance chain ("Example") unless class is marked as "serverOnly".',
+    );
+  });
+
+  test(
+      'Given a serverOnly child-class, When the parent-class is not serverOnly but the grandparent-class is, then error is collected that a client class cannot extend a serverOnly class',
+      () {
+    var modelSources = [
+      ModelSourceBuilder().withYaml(
+        '''
+          class: ExampleGrandparentClass
+          serverOnly: true
+          fields:
+            name: String
+          ''',
+      ).build(),
+      ModelSourceBuilder().withFileName('example1').withYaml(
+        '''
+          class: Example
+          extends: ExampleGrandparentClass
+          fields:
+            name: String
+          ''',
+      ).build(),
+      ModelSourceBuilder().withFileName('example2').withYaml(
+        '''
+          class: ExampleChildClass
+          extends: Example
+          fields:
+            age: int
+          ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error but none was generated.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'Cannot extend a "serverOnly" class in the inheritance chain ("ExampleGrandparentClass") unless class is marked as "serverOnly".',
+    );
+  });
 }

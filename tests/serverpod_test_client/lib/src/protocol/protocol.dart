@@ -113,33 +113,34 @@ import 'object_with_uuid.dart' as _i92;
 import 'related_unique_data.dart' as _i93;
 import 'scopes/scope_none_fields.dart' as _i94;
 import 'scopes/scope_server_only_field.dart' as _i95;
-import 'scopes/serverOnly/default_server_only_class.dart' as _i96;
-import 'scopes/serverOnly/default_server_only_enum.dart' as _i97;
-import 'scopes/serverOnly/not_server_only_class.dart' as _i98;
-import 'scopes/serverOnly/not_server_only_enum.dart' as _i99;
-import 'scopes/server_only_class_field.dart' as _i100;
-import 'simple_data.dart' as _i101;
-import 'simple_data_list.dart' as _i102;
-import 'simple_data_map.dart' as _i103;
-import 'simple_data_object.dart' as _i104;
-import 'simple_date_time.dart' as _i105;
-import 'test_enum.dart' as _i106;
-import 'test_enum_stringified.dart' as _i107;
-import 'types.dart' as _i108;
-import 'types_list.dart' as _i109;
-import 'types_map.dart' as _i110;
-import 'unique_data.dart' as _i111;
-import 'protocol.dart' as _i112;
+import 'scopes/scope_server_only_field_child.dart' as _i96;
+import 'scopes/serverOnly/default_server_only_class.dart' as _i97;
+import 'scopes/serverOnly/default_server_only_enum.dart' as _i98;
+import 'scopes/serverOnly/not_server_only_class.dart' as _i99;
+import 'scopes/serverOnly/not_server_only_enum.dart' as _i100;
+import 'scopes/server_only_class_field.dart' as _i101;
+import 'simple_data.dart' as _i102;
+import 'simple_data_list.dart' as _i103;
+import 'simple_data_map.dart' as _i104;
+import 'simple_data_object.dart' as _i105;
+import 'simple_date_time.dart' as _i106;
+import 'test_enum.dart' as _i107;
+import 'test_enum_stringified.dart' as _i108;
+import 'types.dart' as _i109;
+import 'types_list.dart' as _i110;
+import 'types_map.dart' as _i111;
+import 'unique_data.dart' as _i112;
+import 'protocol.dart' as _i113;
 import 'package:serverpod_test_module_client/serverpod_test_module_client.dart'
-    as _i113;
-import 'dart:typed_data' as _i114;
-import 'package:serverpod_test_client/src/custom_classes.dart' as _i115;
-import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i116;
-import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i117;
+    as _i114;
+import 'dart:typed_data' as _i115;
+import 'package:serverpod_test_client/src/custom_classes.dart' as _i116;
+import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i117;
+import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i118;
 import 'package:serverpod_test_client/src/protocol_custom_classes.dart'
-    as _i118;
-import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i119;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i120;
+    as _i119;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i120;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i121;
 export 'defaults/boolean/bool_default.dart';
 export 'defaults/boolean/bool_default_mix.dart';
 export 'defaults/boolean/bool_default_model.dart';
@@ -234,6 +235,7 @@ export 'object_with_uuid.dart';
 export 'related_unique_data.dart';
 export 'scopes/scope_none_fields.dart';
 export 'scopes/scope_server_only_field.dart';
+export 'scopes/scope_server_only_field_child.dart';
 export 'scopes/serverOnly/default_server_only_class.dart';
 export 'scopes/serverOnly/default_server_only_enum.dart';
 export 'scopes/serverOnly/not_server_only_class.dart';
@@ -547,53 +549,56 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i95.ScopeServerOnlyField) {
       return _i95.ScopeServerOnlyField.fromJson(data) as T;
     }
-    if (t == _i96.DefaultServerOnlyClass) {
-      return _i96.DefaultServerOnlyClass.fromJson(data) as T;
+    if (t == _i96.ScopeServerOnlyFieldChild) {
+      return _i96.ScopeServerOnlyFieldChild.fromJson(data) as T;
     }
-    if (t == _i97.DefaultServerOnlyEnum) {
-      return _i97.DefaultServerOnlyEnum.fromJson(data) as T;
+    if (t == _i97.DefaultServerOnlyClass) {
+      return _i97.DefaultServerOnlyClass.fromJson(data) as T;
     }
-    if (t == _i98.NotServerOnlyClass) {
-      return _i98.NotServerOnlyClass.fromJson(data) as T;
+    if (t == _i98.DefaultServerOnlyEnum) {
+      return _i98.DefaultServerOnlyEnum.fromJson(data) as T;
     }
-    if (t == _i99.NotServerOnlyEnum) {
-      return _i99.NotServerOnlyEnum.fromJson(data) as T;
+    if (t == _i99.NotServerOnlyClass) {
+      return _i99.NotServerOnlyClass.fromJson(data) as T;
     }
-    if (t == _i100.ServerOnlyClassField) {
-      return _i100.ServerOnlyClassField.fromJson(data) as T;
+    if (t == _i100.NotServerOnlyEnum) {
+      return _i100.NotServerOnlyEnum.fromJson(data) as T;
     }
-    if (t == _i101.SimpleData) {
-      return _i101.SimpleData.fromJson(data) as T;
+    if (t == _i101.ServerOnlyClassField) {
+      return _i101.ServerOnlyClassField.fromJson(data) as T;
     }
-    if (t == _i102.SimpleDataList) {
-      return _i102.SimpleDataList.fromJson(data) as T;
+    if (t == _i102.SimpleData) {
+      return _i102.SimpleData.fromJson(data) as T;
     }
-    if (t == _i103.SimpleDataMap) {
-      return _i103.SimpleDataMap.fromJson(data) as T;
+    if (t == _i103.SimpleDataList) {
+      return _i103.SimpleDataList.fromJson(data) as T;
     }
-    if (t == _i104.SimpleDataObject) {
-      return _i104.SimpleDataObject.fromJson(data) as T;
+    if (t == _i104.SimpleDataMap) {
+      return _i104.SimpleDataMap.fromJson(data) as T;
     }
-    if (t == _i105.SimpleDateTime) {
-      return _i105.SimpleDateTime.fromJson(data) as T;
+    if (t == _i105.SimpleDataObject) {
+      return _i105.SimpleDataObject.fromJson(data) as T;
     }
-    if (t == _i106.TestEnum) {
-      return _i106.TestEnum.fromJson(data) as T;
+    if (t == _i106.SimpleDateTime) {
+      return _i106.SimpleDateTime.fromJson(data) as T;
     }
-    if (t == _i107.TestEnumStringified) {
-      return _i107.TestEnumStringified.fromJson(data) as T;
+    if (t == _i107.TestEnum) {
+      return _i107.TestEnum.fromJson(data) as T;
     }
-    if (t == _i108.Types) {
-      return _i108.Types.fromJson(data) as T;
+    if (t == _i108.TestEnumStringified) {
+      return _i108.TestEnumStringified.fromJson(data) as T;
     }
-    if (t == _i109.TypesList) {
-      return _i109.TypesList.fromJson(data) as T;
+    if (t == _i109.Types) {
+      return _i109.Types.fromJson(data) as T;
     }
-    if (t == _i110.TypesMap) {
-      return _i110.TypesMap.fromJson(data) as T;
+    if (t == _i110.TypesList) {
+      return _i110.TypesList.fromJson(data) as T;
     }
-    if (t == _i111.UniqueData) {
-      return _i111.UniqueData.fromJson(data) as T;
+    if (t == _i111.TypesMap) {
+      return _i111.TypesMap.fromJson(data) as T;
+    }
+    if (t == _i112.UniqueData) {
+      return _i112.UniqueData.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.BoolDefault?>()) {
       return (data != null ? _i2.BoolDefault.fromJson(data) : null) as T;
@@ -911,63 +916,69 @@ class Protocol extends _i1.SerializationManager {
       return (data != null ? _i95.ScopeServerOnlyField.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i96.DefaultServerOnlyClass?>()) {
-      return (data != null ? _i96.DefaultServerOnlyClass.fromJson(data) : null)
+    if (t == _i1.getType<_i96.ScopeServerOnlyFieldChild?>()) {
+      return (data != null
+          ? _i96.ScopeServerOnlyFieldChild.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i97.DefaultServerOnlyClass?>()) {
+      return (data != null ? _i97.DefaultServerOnlyClass.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i97.DefaultServerOnlyEnum?>()) {
-      return (data != null ? _i97.DefaultServerOnlyEnum.fromJson(data) : null)
+    if (t == _i1.getType<_i98.DefaultServerOnlyEnum?>()) {
+      return (data != null ? _i98.DefaultServerOnlyEnum.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i98.NotServerOnlyClass?>()) {
-      return (data != null ? _i98.NotServerOnlyClass.fromJson(data) : null)
+    if (t == _i1.getType<_i99.NotServerOnlyClass?>()) {
+      return (data != null ? _i99.NotServerOnlyClass.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i99.NotServerOnlyEnum?>()) {
-      return (data != null ? _i99.NotServerOnlyEnum.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i100.ServerOnlyClassField?>()) {
-      return (data != null ? _i100.ServerOnlyClassField.fromJson(data) : null)
+    if (t == _i1.getType<_i100.NotServerOnlyEnum?>()) {
+      return (data != null ? _i100.NotServerOnlyEnum.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i101.SimpleData?>()) {
-      return (data != null ? _i101.SimpleData.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i102.SimpleDataList?>()) {
-      return (data != null ? _i102.SimpleDataList.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i103.SimpleDataMap?>()) {
-      return (data != null ? _i103.SimpleDataMap.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i104.SimpleDataObject?>()) {
-      return (data != null ? _i104.SimpleDataObject.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i105.SimpleDateTime?>()) {
-      return (data != null ? _i105.SimpleDateTime.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i106.TestEnum?>()) {
-      return (data != null ? _i106.TestEnum.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i107.TestEnumStringified?>()) {
-      return (data != null ? _i107.TestEnumStringified.fromJson(data) : null)
+    if (t == _i1.getType<_i101.ServerOnlyClassField?>()) {
+      return (data != null ? _i101.ServerOnlyClassField.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i108.Types?>()) {
-      return (data != null ? _i108.Types.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i102.SimpleData?>()) {
+      return (data != null ? _i102.SimpleData.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i109.TypesList?>()) {
-      return (data != null ? _i109.TypesList.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i103.SimpleDataList?>()) {
+      return (data != null ? _i103.SimpleDataList.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i110.TypesMap?>()) {
-      return (data != null ? _i110.TypesMap.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i104.SimpleDataMap?>()) {
+      return (data != null ? _i104.SimpleDataMap.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i111.UniqueData?>()) {
-      return (data != null ? _i111.UniqueData.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i105.SimpleDataObject?>()) {
+      return (data != null ? _i105.SimpleDataObject.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<List<_i112.EmptyModelRelationItem>?>()) {
+    if (t == _i1.getType<_i106.SimpleDateTime?>()) {
+      return (data != null ? _i106.SimpleDateTime.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i107.TestEnum?>()) {
+      return (data != null ? _i107.TestEnum.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i108.TestEnumStringified?>()) {
+      return (data != null ? _i108.TestEnumStringified.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i109.Types?>()) {
+      return (data != null ? _i109.Types.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i110.TypesList?>()) {
+      return (data != null ? _i110.TypesList.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i111.TypesMap?>()) {
+      return (data != null ? _i111.TypesMap.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i112.UniqueData?>()) {
+      return (data != null ? _i112.UniqueData.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<List<_i113.EmptyModelRelationItem>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i112.EmptyModelRelationItem>(e))
+              .map((e) => deserialize<_i113.EmptyModelRelationItem>(e))
               .toList()
           : null) as dynamic;
     }
@@ -975,118 +986,118 @@ class Protocol extends _i1.SerializationManager {
       return (data as List).map((e) => deserialize<String>(e)).toList()
           as dynamic;
     }
-    if (t == _i1.getType<List<_i112.PersonWithLongTableName>?>()) {
+    if (t == _i1.getType<List<_i113.PersonWithLongTableName>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i112.PersonWithLongTableName>(e))
+              .map((e) => deserialize<_i113.PersonWithLongTableName>(e))
               .toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.OrganizationWithLongTableName>?>()) {
+    if (t == _i1.getType<List<_i113.OrganizationWithLongTableName>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i112.OrganizationWithLongTableName>(e))
+              .map((e) => deserialize<_i113.OrganizationWithLongTableName>(e))
               .toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.PersonWithLongTableName>?>()) {
+    if (t == _i1.getType<List<_i113.PersonWithLongTableName>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i112.PersonWithLongTableName>(e))
+              .map((e) => deserialize<_i113.PersonWithLongTableName>(e))
               .toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.LongImplicitIdField>?>()) {
+    if (t == _i1.getType<List<_i113.LongImplicitIdField>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i112.LongImplicitIdField>(e))
+              .map((e) => deserialize<_i113.LongImplicitIdField>(e))
               .toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.MultipleMaxFieldName>?>()) {
+    if (t == _i1.getType<List<_i113.MultipleMaxFieldName>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i112.MultipleMaxFieldName>(e))
+              .map((e) => deserialize<_i113.MultipleMaxFieldName>(e))
               .toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.UserNote>?>()) {
+    if (t == _i1.getType<List<_i113.UserNote>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i112.UserNote>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i113.UserNote>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.UserNoteWithALongName>?>()) {
+    if (t == _i1.getType<List<_i113.UserNoteWithALongName>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i112.UserNoteWithALongName>(e))
+              .map((e) => deserialize<_i113.UserNoteWithALongName>(e))
               .toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.Person>?>()) {
+    if (t == _i1.getType<List<_i113.Person>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i112.Person>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i113.Person>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.Organization>?>()) {
+    if (t == _i1.getType<List<_i113.Organization>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i112.Organization>(e))
+              .map((e) => deserialize<_i113.Organization>(e))
               .toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.Person>?>()) {
+    if (t == _i1.getType<List<_i113.Person>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i112.Person>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i113.Person>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.Enrollment>?>()) {
+    if (t == _i1.getType<List<_i113.Enrollment>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i112.Enrollment>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i113.Enrollment>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.Enrollment>?>()) {
+    if (t == _i1.getType<List<_i113.Enrollment>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i112.Enrollment>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i113.Enrollment>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.Player>?>()) {
+    if (t == _i1.getType<List<_i113.Player>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i112.Player>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i113.Player>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.Order>?>()) {
+    if (t == _i1.getType<List<_i113.Order>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i112.Order>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i113.Order>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.Comment>?>()) {
+    if (t == _i1.getType<List<_i113.Comment>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i112.Comment>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i113.Comment>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.Blocking>?>()) {
+    if (t == _i1.getType<List<_i113.Blocking>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i112.Blocking>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i113.Blocking>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.Blocking>?>()) {
+    if (t == _i1.getType<List<_i113.Blocking>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i112.Blocking>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i113.Blocking>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.Cat>?>()) {
+    if (t == _i1.getType<List<_i113.Cat>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i112.Cat>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i113.Cat>(e)).toList()
           : null) as dynamic;
     }
-    if (t == List<_i113.ModuleClass>) {
+    if (t == List<_i114.ModuleClass>) {
       return (data as List)
-          .map((e) => deserialize<_i113.ModuleClass>(e))
+          .map((e) => deserialize<_i114.ModuleClass>(e))
           .toList() as dynamic;
     }
-    if (t == Map<String, _i113.ModuleClass>) {
+    if (t == Map<String, _i114.ModuleClass>) {
       return (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<_i113.ModuleClass>(v)))
+              deserialize<String>(k), deserialize<_i114.ModuleClass>(v)))
           as dynamic;
     }
     if (t == List<int>) {
@@ -1106,25 +1117,25 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List).map((e) => deserialize<int?>(e)).toList()
           : null) as dynamic;
     }
-    if (t == List<_i112.SimpleData>) {
+    if (t == List<_i113.SimpleData>) {
       return (data as List)
-          .map((e) => deserialize<_i112.SimpleData>(e))
+          .map((e) => deserialize<_i113.SimpleData>(e))
           .toList() as dynamic;
     }
-    if (t == _i1.getType<List<_i112.SimpleData>?>()) {
+    if (t == _i1.getType<List<_i113.SimpleData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i112.SimpleData>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i113.SimpleData>(e)).toList()
           : null) as dynamic;
     }
-    if (t == List<_i112.SimpleData?>) {
+    if (t == List<_i113.SimpleData?>) {
       return (data as List)
-          .map((e) => deserialize<_i112.SimpleData?>(e))
+          .map((e) => deserialize<_i113.SimpleData?>(e))
           .toList() as dynamic;
     }
-    if (t == _i1.getType<List<_i112.SimpleData?>?>()) {
+    if (t == _i1.getType<List<_i113.SimpleData?>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i112.SimpleData?>(e))
+              .map((e) => deserialize<_i113.SimpleData?>(e))
               .toList()
           : null) as dynamic;
     }
@@ -1146,22 +1157,22 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List).map((e) => deserialize<DateTime?>(e)).toList()
           : null) as dynamic;
     }
-    if (t == List<_i114.ByteData>) {
-      return (data as List).map((e) => deserialize<_i114.ByteData>(e)).toList()
+    if (t == List<_i115.ByteData>) {
+      return (data as List).map((e) => deserialize<_i115.ByteData>(e)).toList()
           as dynamic;
     }
-    if (t == _i1.getType<List<_i114.ByteData>?>()) {
+    if (t == _i1.getType<List<_i115.ByteData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i114.ByteData>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i115.ByteData>(e)).toList()
           : null) as dynamic;
     }
-    if (t == List<_i114.ByteData?>) {
-      return (data as List).map((e) => deserialize<_i114.ByteData?>(e)).toList()
+    if (t == List<_i115.ByteData?>) {
+      return (data as List).map((e) => deserialize<_i115.ByteData?>(e)).toList()
           as dynamic;
     }
-    if (t == _i1.getType<List<_i114.ByteData?>?>()) {
+    if (t == _i1.getType<List<_i115.ByteData?>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i114.ByteData?>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i115.ByteData?>(e)).toList()
           : null) as dynamic;
     }
     if (t == List<Duration>) {
@@ -1222,25 +1233,25 @@ class Protocol extends _i1.SerializationManager {
               (k, v) => MapEntry(deserialize<String>(k), deserialize<int?>(v)))
           : null) as dynamic;
     }
-    if (t == _i115.CustomClass3) {
-      return _i115.CustomClass3.fromJson(data) as T;
+    if (t == _i116.CustomClass3) {
+      return _i116.CustomClass3.fromJson(data) as T;
     }
-    if (t == List<_i112.TestEnum>) {
-      return (data as List).map((e) => deserialize<_i112.TestEnum>(e)).toList()
+    if (t == List<_i113.TestEnum>) {
+      return (data as List).map((e) => deserialize<_i113.TestEnum>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i112.TestEnum?>) {
-      return (data as List).map((e) => deserialize<_i112.TestEnum?>(e)).toList()
+    if (t == List<_i113.TestEnum?>) {
+      return (data as List).map((e) => deserialize<_i113.TestEnum?>(e)).toList()
           as dynamic;
     }
-    if (t == List<List<_i112.TestEnum>>) {
+    if (t == List<List<_i113.TestEnum>>) {
       return (data as List)
-          .map((e) => deserialize<List<_i112.TestEnum>>(e))
+          .map((e) => deserialize<List<_i113.TestEnum>>(e))
           .toList() as dynamic;
     }
-    if (t == Map<String, _i112.SimpleData>) {
+    if (t == Map<String, _i113.SimpleData>) {
       return (data as Map).map((k, v) => MapEntry(
-          deserialize<String>(k), deserialize<_i112.SimpleData>(v))) as dynamic;
+          deserialize<String>(k), deserialize<_i113.SimpleData>(v))) as dynamic;
     }
     if (t == Map<String, String>) {
       return (data as Map).map((k, v) =>
@@ -1251,9 +1262,9 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<String>(k), deserialize<DateTime>(v)))
           as dynamic;
     }
-    if (t == Map<String, _i114.ByteData>) {
+    if (t == Map<String, _i115.ByteData>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i114.ByteData>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i115.ByteData>(v)))
           as dynamic;
     }
     if (t == Map<String, Duration>) {
@@ -1266,9 +1277,9 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<String>(k), deserialize<_i1.UuidValue>(v)))
           as dynamic;
     }
-    if (t == Map<String, _i112.SimpleData?>) {
+    if (t == Map<String, _i113.SimpleData?>) {
       return (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<_i112.SimpleData?>(v)))
+              deserialize<String>(k), deserialize<_i113.SimpleData?>(v)))
           as dynamic;
     }
     if (t == Map<String, String?>) {
@@ -1280,9 +1291,9 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<String>(k), deserialize<DateTime?>(v)))
           as dynamic;
     }
-    if (t == Map<String, _i114.ByteData?>) {
+    if (t == Map<String, _i115.ByteData?>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i114.ByteData?>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i115.ByteData?>(v)))
           as dynamic;
     }
     if (t == Map<String, Duration?>) {
@@ -1300,53 +1311,53 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<int>(e['k']), deserialize<int>(e['v']))))
           as dynamic;
     }
-    if (t == _i1.getType<List<_i112.SimpleData>?>()) {
+    if (t == _i1.getType<List<_i113.SimpleData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i112.SimpleData>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i113.SimpleData>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.SimpleData?>?>()) {
+    if (t == _i1.getType<List<_i113.SimpleData?>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i112.SimpleData?>(e))
+              .map((e) => deserialize<_i113.SimpleData?>(e))
               .toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<List<_i112.SimpleData>>?>()) {
+    if (t == _i1.getType<List<List<_i113.SimpleData>>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<List<_i112.SimpleData>>(e))
+              .map((e) => deserialize<List<_i113.SimpleData>>(e))
               .toList()
           : null) as dynamic;
     }
     if (t ==
-        _i1.getType<Map<String, List<List<Map<int, _i112.SimpleData>>?>>?>()) {
+        _i1.getType<Map<String, List<List<Map<int, _i113.SimpleData>>?>>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(deserialize<String>(k),
-              deserialize<List<List<Map<int, _i112.SimpleData>>?>>(v)))
+              deserialize<List<List<Map<int, _i113.SimpleData>>?>>(v)))
           : null) as dynamic;
     }
-    if (t == List<List<Map<int, _i112.SimpleData>>?>) {
+    if (t == List<List<Map<int, _i113.SimpleData>>?>) {
       return (data as List)
-          .map((e) => deserialize<List<Map<int, _i112.SimpleData>>?>(e))
+          .map((e) => deserialize<List<Map<int, _i113.SimpleData>>?>(e))
           .toList() as dynamic;
     }
-    if (t == _i1.getType<List<Map<int, _i112.SimpleData>>?>()) {
+    if (t == _i1.getType<List<Map<int, _i113.SimpleData>>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<Map<int, _i112.SimpleData>>(e))
+              .map((e) => deserialize<Map<int, _i113.SimpleData>>(e))
               .toList()
           : null) as dynamic;
     }
-    if (t == Map<int, _i112.SimpleData>) {
+    if (t == Map<int, _i113.SimpleData>) {
       return Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<int>(e['k']), deserialize<_i112.SimpleData>(e['v']))))
+              deserialize<int>(e['k']), deserialize<_i113.SimpleData>(e['v']))))
           as dynamic;
     }
-    if (t == _i1.getType<Map<String, Map<int, _i112.SimpleData>>?>()) {
+    if (t == _i1.getType<Map<String, Map<int, _i113.SimpleData>>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(deserialize<String>(k),
-              deserialize<Map<int, _i112.SimpleData>>(v)))
+              deserialize<Map<int, _i113.SimpleData>>(v)))
           : null) as dynamic;
     }
     if (t == _i1.getType<List<int>?>()) {
@@ -1374,9 +1385,9 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List).map((e) => deserialize<String>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i114.ByteData>?>()) {
+    if (t == _i1.getType<List<_i115.ByteData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i114.ByteData>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i115.ByteData>(e)).toList()
           : null) as dynamic;
     }
     if (t == _i1.getType<List<Duration>?>()) {
@@ -1389,44 +1400,44 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List).map((e) => deserialize<_i1.UuidValue>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.TestEnum>?>()) {
+    if (t == _i1.getType<List<_i113.TestEnum>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i112.TestEnum>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i113.TestEnum>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.TestEnumStringified>?>()) {
+    if (t == _i1.getType<List<_i113.TestEnumStringified>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i112.TestEnumStringified>(e))
+              .map((e) => deserialize<_i113.TestEnumStringified>(e))
               .toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i112.Types>?>()) {
+    if (t == _i1.getType<List<_i113.Types>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i112.Types>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i113.Types>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<Map<String, _i112.Types>>?>()) {
+    if (t == _i1.getType<List<Map<String, _i113.Types>>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<Map<String, _i112.Types>>(e))
+              .map((e) => deserialize<Map<String, _i113.Types>>(e))
               .toList()
           : null) as dynamic;
     }
-    if (t == Map<String, _i112.Types>) {
+    if (t == Map<String, _i113.Types>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i112.Types>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i113.Types>(v)))
           as dynamic;
     }
-    if (t == _i1.getType<List<List<_i112.Types>>?>()) {
+    if (t == _i1.getType<List<List<_i113.Types>>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<List<_i112.Types>>(e))
+              .map((e) => deserialize<List<_i113.Types>>(e))
               .toList()
           : null) as dynamic;
     }
-    if (t == List<_i112.Types>) {
-      return (data as List).map((e) => deserialize<_i112.Types>(e)).toList()
+    if (t == List<_i113.Types>) {
+      return (data as List).map((e) => deserialize<_i113.Types>(e)).toList()
           as dynamic;
     }
     if (t == _i1.getType<Map<int, String>?>()) {
@@ -1459,10 +1470,10 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<String>(k), deserialize<String>(v)))
           : null) as dynamic;
     }
-    if (t == _i1.getType<Map<_i114.ByteData, String>?>()) {
+    if (t == _i1.getType<Map<_i115.ByteData, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<_i114.ByteData>(e['k']),
+              deserialize<_i115.ByteData>(e['k']),
               deserialize<String>(e['v']))))
           : null) as dynamic;
     }
@@ -1478,42 +1489,42 @@ class Protocol extends _i1.SerializationManager {
               deserialize<_i1.UuidValue>(e['k']), deserialize<String>(e['v']))))
           : null) as dynamic;
     }
-    if (t == _i1.getType<Map<_i112.TestEnum, String>?>()) {
+    if (t == _i1.getType<Map<_i113.TestEnum, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<_i112.TestEnum>(e['k']),
+              deserialize<_i113.TestEnum>(e['k']),
               deserialize<String>(e['v']))))
           : null) as dynamic;
     }
-    if (t == _i1.getType<Map<_i112.TestEnumStringified, String>?>()) {
+    if (t == _i1.getType<Map<_i113.TestEnumStringified, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<_i112.TestEnumStringified>(e['k']),
+              deserialize<_i113.TestEnumStringified>(e['k']),
               deserialize<String>(e['v']))))
           : null) as dynamic;
     }
-    if (t == _i1.getType<Map<_i112.Types, String>?>()) {
+    if (t == _i1.getType<Map<_i113.Types, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<_i112.Types>(e['k']), deserialize<String>(e['v']))))
+              deserialize<_i113.Types>(e['k']), deserialize<String>(e['v']))))
           : null) as dynamic;
     }
-    if (t == _i1.getType<Map<Map<_i112.Types, String>, String>?>()) {
+    if (t == _i1.getType<Map<Map<_i113.Types, String>, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<Map<_i112.Types, String>>(e['k']),
+              deserialize<Map<_i113.Types, String>>(e['k']),
               deserialize<String>(e['v']))))
           : null) as dynamic;
     }
-    if (t == Map<_i112.Types, String>) {
+    if (t == Map<_i113.Types, String>) {
       return Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<_i112.Types>(e['k']), deserialize<String>(e['v']))))
+              deserialize<_i113.Types>(e['k']), deserialize<String>(e['v']))))
           as dynamic;
     }
-    if (t == _i1.getType<Map<List<_i112.Types>, String>?>()) {
+    if (t == _i1.getType<Map<List<_i113.Types>, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<List<_i112.Types>>(e['k']),
+              deserialize<List<_i113.Types>>(e['k']),
               deserialize<String>(e['v']))))
           : null) as dynamic;
     }
@@ -1547,10 +1558,10 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<String>(k), deserialize<String>(v)))
           : null) as dynamic;
     }
-    if (t == _i1.getType<Map<String, _i114.ByteData>?>()) {
+    if (t == _i1.getType<Map<String, _i115.ByteData>?>()) {
       return (data != null
           ? (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i114.ByteData>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i115.ByteData>(v)))
           : null) as dynamic;
     }
     if (t == _i1.getType<Map<String, Duration>?>()) {
@@ -1565,34 +1576,34 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<String>(k), deserialize<_i1.UuidValue>(v)))
           : null) as dynamic;
     }
-    if (t == _i1.getType<Map<String, _i112.TestEnum>?>()) {
+    if (t == _i1.getType<Map<String, _i113.TestEnum>?>()) {
       return (data != null
           ? (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i112.TestEnum>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i113.TestEnum>(v)))
           : null) as dynamic;
     }
-    if (t == _i1.getType<Map<String, _i112.TestEnumStringified>?>()) {
+    if (t == _i1.getType<Map<String, _i113.TestEnumStringified>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(deserialize<String>(k),
-              deserialize<_i112.TestEnumStringified>(v)))
+              deserialize<_i113.TestEnumStringified>(v)))
           : null) as dynamic;
     }
-    if (t == _i1.getType<Map<String, _i112.Types>?>()) {
+    if (t == _i1.getType<Map<String, _i113.Types>?>()) {
       return (data != null
           ? (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i112.Types>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i113.Types>(v)))
           : null) as dynamic;
     }
-    if (t == _i1.getType<Map<String, Map<String, _i112.Types>>?>()) {
+    if (t == _i1.getType<Map<String, Map<String, _i113.Types>>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<Map<String, _i112.Types>>(v)))
+              deserialize<String>(k), deserialize<Map<String, _i113.Types>>(v)))
           : null) as dynamic;
     }
-    if (t == _i1.getType<Map<String, List<_i112.Types>>?>()) {
+    if (t == _i1.getType<Map<String, List<_i113.Types>>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<List<_i112.Types>>(v)))
+              deserialize<String>(k), deserialize<List<_i113.Types>>(v)))
           : null) as dynamic;
     }
     if (t == _i1.getType<List<String>?>()) {
@@ -1604,9 +1615,9 @@ class Protocol extends _i1.SerializationManager {
       return (data as List).map((e) => deserialize<String>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i116.SimpleData>) {
+    if (t == List<_i117.SimpleData>) {
       return (data as List)
-          .map((e) => deserialize<_i116.SimpleData>(e))
+          .map((e) => deserialize<_i117.SimpleData>(e))
           .toList() as dynamic;
     }
     if (t == List<int>) {
@@ -1697,40 +1708,40 @@ class Protocol extends _i1.SerializationManager {
       return (data as List).map((e) => deserialize<DateTime?>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i114.ByteData>) {
-      return (data as List).map((e) => deserialize<_i114.ByteData>(e)).toList()
+    if (t == List<_i115.ByteData>) {
+      return (data as List).map((e) => deserialize<_i115.ByteData>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i114.ByteData?>) {
-      return (data as List).map((e) => deserialize<_i114.ByteData?>(e)).toList()
+    if (t == List<_i115.ByteData?>) {
+      return (data as List).map((e) => deserialize<_i115.ByteData?>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i116.SimpleData?>) {
+    if (t == List<_i117.SimpleData?>) {
       return (data as List)
-          .map((e) => deserialize<_i116.SimpleData?>(e))
+          .map((e) => deserialize<_i117.SimpleData?>(e))
           .toList() as dynamic;
     }
-    if (t == _i1.getType<List<_i116.SimpleData>?>()) {
+    if (t == _i1.getType<List<_i117.SimpleData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i116.SimpleData>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i117.SimpleData>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i116.SimpleData>?>()) {
+    if (t == _i1.getType<List<_i117.SimpleData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i116.SimpleData>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i117.SimpleData>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i116.SimpleData?>?>()) {
+    if (t == _i1.getType<List<_i117.SimpleData?>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i116.SimpleData?>(e))
+              .map((e) => deserialize<_i117.SimpleData?>(e))
               .toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i116.SimpleData?>?>()) {
+    if (t == _i1.getType<List<_i117.SimpleData?>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i116.SimpleData?>(e))
+              .map((e) => deserialize<_i117.SimpleData?>(e))
               .toList()
           : null) as dynamic;
     }
@@ -1785,14 +1796,14 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<int>(e['k']), deserialize<int>(e['v']))))
           as dynamic;
     }
-    if (t == Map<_i117.TestEnum, int>) {
+    if (t == Map<_i118.TestEnum, int>) {
       return Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<_i117.TestEnum>(e['k']), deserialize<int>(e['v']))))
+              deserialize<_i118.TestEnum>(e['k']), deserialize<int>(e['v']))))
           as dynamic;
     }
-    if (t == Map<String, _i117.TestEnum>) {
+    if (t == Map<String, _i118.TestEnum>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i117.TestEnum>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i118.TestEnum>(v)))
           as dynamic;
     }
     if (t == Map<String, double>) {
@@ -1831,47 +1842,47 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<String>(k), deserialize<DateTime?>(v)))
           as dynamic;
     }
-    if (t == Map<String, _i114.ByteData>) {
+    if (t == Map<String, _i115.ByteData>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i114.ByteData>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i115.ByteData>(v)))
           as dynamic;
     }
-    if (t == Map<String, _i114.ByteData?>) {
+    if (t == Map<String, _i115.ByteData?>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i114.ByteData?>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i115.ByteData?>(v)))
           as dynamic;
     }
-    if (t == Map<String, _i116.SimpleData>) {
+    if (t == Map<String, _i117.SimpleData>) {
       return (data as Map).map((k, v) => MapEntry(
-          deserialize<String>(k), deserialize<_i116.SimpleData>(v))) as dynamic;
+          deserialize<String>(k), deserialize<_i117.SimpleData>(v))) as dynamic;
     }
-    if (t == Map<String, _i116.SimpleData?>) {
+    if (t == Map<String, _i117.SimpleData?>) {
       return (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<_i116.SimpleData?>(v)))
+              deserialize<String>(k), deserialize<_i117.SimpleData?>(v)))
           as dynamic;
     }
-    if (t == _i1.getType<Map<String, _i116.SimpleData>?>()) {
+    if (t == _i1.getType<Map<String, _i117.SimpleData>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<_i116.SimpleData>(v)))
+              deserialize<String>(k), deserialize<_i117.SimpleData>(v)))
           : null) as dynamic;
     }
-    if (t == _i1.getType<Map<String, _i116.SimpleData>?>()) {
+    if (t == _i1.getType<Map<String, _i117.SimpleData>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<_i116.SimpleData>(v)))
+              deserialize<String>(k), deserialize<_i117.SimpleData>(v)))
           : null) as dynamic;
     }
-    if (t == _i1.getType<Map<String, _i116.SimpleData?>?>()) {
+    if (t == _i1.getType<Map<String, _i117.SimpleData?>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<_i116.SimpleData?>(v)))
+              deserialize<String>(k), deserialize<_i117.SimpleData?>(v)))
           : null) as dynamic;
     }
-    if (t == _i1.getType<Map<String, _i116.SimpleData?>?>()) {
+    if (t == _i1.getType<Map<String, _i117.SimpleData?>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<_i116.SimpleData?>(v)))
+              deserialize<String>(k), deserialize<_i117.SimpleData?>(v)))
           : null) as dynamic;
     }
     if (t == Map<String, Duration>) {
@@ -1884,47 +1895,47 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<String>(k), deserialize<Duration?>(v)))
           as dynamic;
     }
-    if (t == _i115.CustomClass) {
-      return _i115.CustomClass.fromJson(data) as T;
+    if (t == _i116.CustomClass) {
+      return _i116.CustomClass.fromJson(data) as T;
     }
-    if (t == _i115.CustomClass2) {
-      return _i115.CustomClass2.fromJson(data) as T;
+    if (t == _i116.CustomClass2) {
+      return _i116.CustomClass2.fromJson(data) as T;
     }
-    if (t == _i118.ProtocolCustomClass) {
-      return _i118.ProtocolCustomClass.fromJson(data) as T;
+    if (t == _i119.ProtocolCustomClass) {
+      return _i119.ProtocolCustomClass.fromJson(data) as T;
     }
-    if (t == _i119.ExternalCustomClass) {
-      return _i119.ExternalCustomClass.fromJson(data) as T;
+    if (t == _i120.ExternalCustomClass) {
+      return _i120.ExternalCustomClass.fromJson(data) as T;
     }
-    if (t == _i119.FreezedCustomClass) {
-      return _i119.FreezedCustomClass.fromJson(data) as T;
+    if (t == _i120.FreezedCustomClass) {
+      return _i120.FreezedCustomClass.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i115.CustomClass?>()) {
-      return (data != null ? _i115.CustomClass.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i116.CustomClass?>()) {
+      return (data != null ? _i116.CustomClass.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i115.CustomClass2?>()) {
-      return (data != null ? _i115.CustomClass2.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i116.CustomClass2?>()) {
+      return (data != null ? _i116.CustomClass2.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i115.CustomClass3?>()) {
-      return (data != null ? _i115.CustomClass3.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i116.CustomClass3?>()) {
+      return (data != null ? _i116.CustomClass3.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i118.ProtocolCustomClass?>()) {
-      return (data != null ? _i118.ProtocolCustomClass.fromJson(data) : null)
+    if (t == _i1.getType<_i119.ProtocolCustomClass?>()) {
+      return (data != null ? _i119.ProtocolCustomClass.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i119.ExternalCustomClass?>()) {
-      return (data != null ? _i119.ExternalCustomClass.fromJson(data) : null)
+    if (t == _i1.getType<_i120.ExternalCustomClass?>()) {
+      return (data != null ? _i120.ExternalCustomClass.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i119.FreezedCustomClass?>()) {
-      return (data != null ? _i119.FreezedCustomClass.fromJson(data) : null)
+    if (t == _i1.getType<_i120.FreezedCustomClass?>()) {
+      return (data != null ? _i120.FreezedCustomClass.fromJson(data) : null)
           as T;
     }
     try {
-      return _i120.Protocol().deserialize<T>(data, t);
+      return _i121.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i113.Protocol().deserialize<T>(data, t);
+      return _i114.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -1933,22 +1944,22 @@ class Protocol extends _i1.SerializationManager {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i115.CustomClass) {
+    if (data is _i116.CustomClass) {
       return 'CustomClass';
     }
-    if (data is _i115.CustomClass2) {
+    if (data is _i116.CustomClass2) {
       return 'CustomClass2';
     }
-    if (data is _i115.CustomClass3) {
+    if (data is _i116.CustomClass3) {
       return 'CustomClass3';
     }
-    if (data is _i118.ProtocolCustomClass) {
+    if (data is _i119.ProtocolCustomClass) {
       return 'ProtocolCustomClass';
     }
-    if (data is _i119.ExternalCustomClass) {
+    if (data is _i120.ExternalCustomClass) {
       return 'ExternalCustomClass';
     }
-    if (data is _i119.FreezedCustomClass) {
+    if (data is _i120.FreezedCustomClass) {
       return 'FreezedCustomClass';
     }
     if (data is _i2.BoolDefault) {
@@ -2233,59 +2244,62 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i95.ScopeServerOnlyField) {
       return 'ScopeServerOnlyField';
     }
-    if (data is _i96.DefaultServerOnlyClass) {
+    if (data is _i96.ScopeServerOnlyFieldChild) {
+      return 'ScopeServerOnlyFieldChild';
+    }
+    if (data is _i97.DefaultServerOnlyClass) {
       return 'DefaultServerOnlyClass';
     }
-    if (data is _i97.DefaultServerOnlyEnum) {
+    if (data is _i98.DefaultServerOnlyEnum) {
       return 'DefaultServerOnlyEnum';
     }
-    if (data is _i98.NotServerOnlyClass) {
+    if (data is _i99.NotServerOnlyClass) {
       return 'NotServerOnlyClass';
     }
-    if (data is _i99.NotServerOnlyEnum) {
+    if (data is _i100.NotServerOnlyEnum) {
       return 'NotServerOnlyEnum';
     }
-    if (data is _i100.ServerOnlyClassField) {
+    if (data is _i101.ServerOnlyClassField) {
       return 'ServerOnlyClassField';
     }
-    if (data is _i101.SimpleData) {
+    if (data is _i102.SimpleData) {
       return 'SimpleData';
     }
-    if (data is _i102.SimpleDataList) {
+    if (data is _i103.SimpleDataList) {
       return 'SimpleDataList';
     }
-    if (data is _i103.SimpleDataMap) {
+    if (data is _i104.SimpleDataMap) {
       return 'SimpleDataMap';
     }
-    if (data is _i104.SimpleDataObject) {
+    if (data is _i105.SimpleDataObject) {
       return 'SimpleDataObject';
     }
-    if (data is _i105.SimpleDateTime) {
+    if (data is _i106.SimpleDateTime) {
       return 'SimpleDateTime';
     }
-    if (data is _i106.TestEnum) {
+    if (data is _i107.TestEnum) {
       return 'TestEnum';
     }
-    if (data is _i107.TestEnumStringified) {
+    if (data is _i108.TestEnumStringified) {
       return 'TestEnumStringified';
     }
-    if (data is _i108.Types) {
+    if (data is _i109.Types) {
       return 'Types';
     }
-    if (data is _i109.TypesList) {
+    if (data is _i110.TypesList) {
       return 'TypesList';
     }
-    if (data is _i110.TypesMap) {
+    if (data is _i111.TypesMap) {
       return 'TypesMap';
     }
-    if (data is _i111.UniqueData) {
+    if (data is _i112.UniqueData) {
       return 'UniqueData';
     }
-    className = _i120.Protocol().getClassNameForObject(data);
+    className = _i121.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
-    className = _i113.Protocol().getClassNameForObject(data);
+    className = _i114.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_test_module.$className';
     }
@@ -2295,22 +2309,22 @@ class Protocol extends _i1.SerializationManager {
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
     if (data['className'] == 'CustomClass') {
-      return deserialize<_i115.CustomClass>(data['data']);
+      return deserialize<_i116.CustomClass>(data['data']);
     }
     if (data['className'] == 'CustomClass2') {
-      return deserialize<_i115.CustomClass2>(data['data']);
+      return deserialize<_i116.CustomClass2>(data['data']);
     }
     if (data['className'] == 'CustomClass3') {
-      return deserialize<_i115.CustomClass3>(data['data']);
+      return deserialize<_i116.CustomClass3>(data['data']);
     }
     if (data['className'] == 'ProtocolCustomClass') {
-      return deserialize<_i118.ProtocolCustomClass>(data['data']);
+      return deserialize<_i119.ProtocolCustomClass>(data['data']);
     }
     if (data['className'] == 'ExternalCustomClass') {
-      return deserialize<_i119.ExternalCustomClass>(data['data']);
+      return deserialize<_i120.ExternalCustomClass>(data['data']);
     }
     if (data['className'] == 'FreezedCustomClass') {
-      return deserialize<_i119.FreezedCustomClass>(data['data']);
+      return deserialize<_i120.FreezedCustomClass>(data['data']);
     }
     if (data['className'] == 'BoolDefault') {
       return deserialize<_i2.BoolDefault>(data['data']);
@@ -2594,61 +2608,64 @@ class Protocol extends _i1.SerializationManager {
     if (data['className'] == 'ScopeServerOnlyField') {
       return deserialize<_i95.ScopeServerOnlyField>(data['data']);
     }
+    if (data['className'] == 'ScopeServerOnlyFieldChild') {
+      return deserialize<_i96.ScopeServerOnlyFieldChild>(data['data']);
+    }
     if (data['className'] == 'DefaultServerOnlyClass') {
-      return deserialize<_i96.DefaultServerOnlyClass>(data['data']);
+      return deserialize<_i97.DefaultServerOnlyClass>(data['data']);
     }
     if (data['className'] == 'DefaultServerOnlyEnum') {
-      return deserialize<_i97.DefaultServerOnlyEnum>(data['data']);
+      return deserialize<_i98.DefaultServerOnlyEnum>(data['data']);
     }
     if (data['className'] == 'NotServerOnlyClass') {
-      return deserialize<_i98.NotServerOnlyClass>(data['data']);
+      return deserialize<_i99.NotServerOnlyClass>(data['data']);
     }
     if (data['className'] == 'NotServerOnlyEnum') {
-      return deserialize<_i99.NotServerOnlyEnum>(data['data']);
+      return deserialize<_i100.NotServerOnlyEnum>(data['data']);
     }
     if (data['className'] == 'ServerOnlyClassField') {
-      return deserialize<_i100.ServerOnlyClassField>(data['data']);
+      return deserialize<_i101.ServerOnlyClassField>(data['data']);
     }
     if (data['className'] == 'SimpleData') {
-      return deserialize<_i101.SimpleData>(data['data']);
+      return deserialize<_i102.SimpleData>(data['data']);
     }
     if (data['className'] == 'SimpleDataList') {
-      return deserialize<_i102.SimpleDataList>(data['data']);
+      return deserialize<_i103.SimpleDataList>(data['data']);
     }
     if (data['className'] == 'SimpleDataMap') {
-      return deserialize<_i103.SimpleDataMap>(data['data']);
+      return deserialize<_i104.SimpleDataMap>(data['data']);
     }
     if (data['className'] == 'SimpleDataObject') {
-      return deserialize<_i104.SimpleDataObject>(data['data']);
+      return deserialize<_i105.SimpleDataObject>(data['data']);
     }
     if (data['className'] == 'SimpleDateTime') {
-      return deserialize<_i105.SimpleDateTime>(data['data']);
+      return deserialize<_i106.SimpleDateTime>(data['data']);
     }
     if (data['className'] == 'TestEnum') {
-      return deserialize<_i106.TestEnum>(data['data']);
+      return deserialize<_i107.TestEnum>(data['data']);
     }
     if (data['className'] == 'TestEnumStringified') {
-      return deserialize<_i107.TestEnumStringified>(data['data']);
+      return deserialize<_i108.TestEnumStringified>(data['data']);
     }
     if (data['className'] == 'Types') {
-      return deserialize<_i108.Types>(data['data']);
+      return deserialize<_i109.Types>(data['data']);
     }
     if (data['className'] == 'TypesList') {
-      return deserialize<_i109.TypesList>(data['data']);
+      return deserialize<_i110.TypesList>(data['data']);
     }
     if (data['className'] == 'TypesMap') {
-      return deserialize<_i110.TypesMap>(data['data']);
+      return deserialize<_i111.TypesMap>(data['data']);
     }
     if (data['className'] == 'UniqueData') {
-      return deserialize<_i111.UniqueData>(data['data']);
+      return deserialize<_i112.UniqueData>(data['data']);
     }
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
-      return _i120.Protocol().deserializeByClassName(data);
+      return _i121.Protocol().deserializeByClassName(data);
     }
     if (data['className'].startsWith('serverpod_test_module.')) {
       data['className'] = data['className'].substring(22);
-      return _i113.Protocol().deserializeByClassName(data);
+      return _i114.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
