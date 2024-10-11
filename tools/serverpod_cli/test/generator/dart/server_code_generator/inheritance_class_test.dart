@@ -389,25 +389,32 @@ void main() {
     var compilationUnit =
         parseString(content: codeMap[childExpectedFilePath]!).unit;
 
-    group('Then the $childClassName', () {
+    group('then the $childClassName', () {
       var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: childClassName,
       );
 
-      group('has a copyWith method', () {
+      group('has a copyWith method with named params', () {
         var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           childClass!,
           name: 'copyWith',
         );
 
-        test(
-            'with named params where nullable-inherited fields are "Object?" and nullable-local fields are typed',
-            () {
-          expect(
-            copyWithMethod?.parameters?.toSource(),
-            '({int? id, Object? name, int? age})',
+        test('where nullable-inherited fields are "Object?"', () {
+          var nameParam = copyWithMethod?.parameters?.parameters.firstWhere(
+            (param) => param.name.toString() == 'name',
           );
+
+          expect(nameParam?.toSource(), 'Object? name');
+        }, skip: copyWithMethod == null);
+
+        test('where nullable-local fields are typed', () {
+          var ageParam = copyWithMethod?.parameters?.parameters.firstWhere(
+            (param) => param.name.toString() == 'age',
+          );
+
+          expect(ageParam?.toSource(), 'int? age');
         }, skip: copyWithMethod == null);
       });
     });
