@@ -281,7 +281,7 @@ class ServerHealthConnectionInfoRepository {
   const ServerHealthConnectionInfoRepository._();
 
   Future<List<ServerHealthConnectionInfo>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? limit,
     int? offset,
@@ -290,19 +290,19 @@ class ServerHealthConnectionInfoRepository {
     _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<ServerHealthConnectionInfo>(
+    return session.db.find<ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ServerHealthConnectionInfo?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? offset,
     _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
@@ -310,118 +310,118 @@ class ServerHealthConnectionInfoRepository {
     _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<ServerHealthConnectionInfo>(
+    return session.db.findFirstRow<ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ServerHealthConnectionInfo?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<ServerHealthConnectionInfo>(
+    return session.db.findById<ServerHealthConnectionInfo>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ServerHealthConnectionInfo>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<ServerHealthConnectionInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<ServerHealthConnectionInfo>(
+    return session.db.insert<ServerHealthConnectionInfo>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ServerHealthConnectionInfo> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     ServerHealthConnectionInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<ServerHealthConnectionInfo>(
+    return session.db.insertRow<ServerHealthConnectionInfo>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ServerHealthConnectionInfo>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<ServerHealthConnectionInfo> rows, {
     _i1.ColumnSelections<ServerHealthConnectionInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<ServerHealthConnectionInfo>(
+    return session.db.update<ServerHealthConnectionInfo>(
       rows,
       columns: columns?.call(ServerHealthConnectionInfo.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ServerHealthConnectionInfo> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     ServerHealthConnectionInfo row, {
     _i1.ColumnSelections<ServerHealthConnectionInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<ServerHealthConnectionInfo>(
+    return session.db.updateRow<ServerHealthConnectionInfo>(
       row,
       columns: columns?.call(ServerHealthConnectionInfo.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ServerHealthConnectionInfo>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<ServerHealthConnectionInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<ServerHealthConnectionInfo>(
+    return session.db.delete<ServerHealthConnectionInfo>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ServerHealthConnectionInfo> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     ServerHealthConnectionInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<ServerHealthConnectionInfo>(
+    return session.db.deleteRow<ServerHealthConnectionInfo>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ServerHealthConnectionInfo>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     required _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<ServerHealthConnectionInfo>(
+    return session.db.deleteWhere<ServerHealthConnectionInfo>(
       where: where(ServerHealthConnectionInfo.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<ServerHealthConnectionInfo>(
+    return session.db.count<ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

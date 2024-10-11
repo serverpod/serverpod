@@ -211,7 +211,7 @@ class EmailAuthRepository {
   const EmailAuthRepository._();
 
   Future<List<EmailAuth>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     int? limit,
     int? offset,
@@ -220,19 +220,19 @@ class EmailAuthRepository {
     _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<EmailAuth>(
+    return session.db.find<EmailAuth>(
       where: where?.call(EmailAuth.t),
       orderBy: orderBy?.call(EmailAuth.t),
       orderByList: orderByList?.call(EmailAuth.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<EmailAuth?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmailAuthTable>? orderBy,
@@ -240,118 +240,118 @@ class EmailAuthRepository {
     _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<EmailAuth>(
+    return session.db.findFirstRow<EmailAuth>(
       where: where?.call(EmailAuth.t),
       orderBy: orderBy?.call(EmailAuth.t),
       orderByList: orderByList?.call(EmailAuth.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<EmailAuth?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<EmailAuth>(
+    return session.db.findById<EmailAuth>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<EmailAuth>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<EmailAuth> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<EmailAuth>(
+    return session.db.insert<EmailAuth>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<EmailAuth> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     EmailAuth row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<EmailAuth>(
+    return session.db.insertRow<EmailAuth>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<EmailAuth>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<EmailAuth> rows, {
     _i1.ColumnSelections<EmailAuthTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<EmailAuth>(
+    return session.db.update<EmailAuth>(
       rows,
       columns: columns?.call(EmailAuth.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<EmailAuth> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     EmailAuth row, {
     _i1.ColumnSelections<EmailAuthTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<EmailAuth>(
+    return session.db.updateRow<EmailAuth>(
       row,
       columns: columns?.call(EmailAuth.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<EmailAuth>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<EmailAuth> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<EmailAuth>(
+    return session.db.delete<EmailAuth>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<EmailAuth> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     EmailAuth row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<EmailAuth>(
+    return session.db.deleteRow<EmailAuth>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<EmailAuth>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     required _i1.WhereExpressionBuilder<EmailAuthTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<EmailAuth>(
+    return session.db.deleteWhere<EmailAuth>(
       where: where(EmailAuth.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<EmailAuth>(
+    return session.db.count<EmailAuth>(
       where: where?.call(EmailAuth.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

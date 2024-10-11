@@ -297,7 +297,7 @@ class PersonWithLongTableNameRepository {
   final detachRow = const PersonWithLongTableNameDetachRowRepository._();
 
   Future<List<PersonWithLongTableName>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
     int? limit,
     int? offset,
@@ -307,20 +307,20 @@ class PersonWithLongTableNameRepository {
     _i1.Transaction? transaction,
     PersonWithLongTableNameInclude? include,
   }) async {
-    return databaseAccessor.db.find<PersonWithLongTableName>(
+    return session.db.find<PersonWithLongTableName>(
       where: where?.call(PersonWithLongTableName.t),
       orderBy: orderBy?.call(PersonWithLongTableName.t),
       orderByList: orderByList?.call(PersonWithLongTableName.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
       include: include,
     );
   }
 
   Future<PersonWithLongTableName?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
@@ -329,121 +329,121 @@ class PersonWithLongTableNameRepository {
     _i1.Transaction? transaction,
     PersonWithLongTableNameInclude? include,
   }) async {
-    return databaseAccessor.db.findFirstRow<PersonWithLongTableName>(
+    return session.db.findFirstRow<PersonWithLongTableName>(
       where: where?.call(PersonWithLongTableName.t),
       orderBy: orderBy?.call(PersonWithLongTableName.t),
       orderByList: orderByList?.call(PersonWithLongTableName.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
       include: include,
     );
   }
 
   Future<PersonWithLongTableName?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     int id, {
     _i1.Transaction? transaction,
     PersonWithLongTableNameInclude? include,
   }) async {
-    return databaseAccessor.db.findById<PersonWithLongTableName>(
+    return session.db.findById<PersonWithLongTableName>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
       include: include,
     );
   }
 
   Future<List<PersonWithLongTableName>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<PersonWithLongTableName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<PersonWithLongTableName>(
+    return session.db.insert<PersonWithLongTableName>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<PersonWithLongTableName> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     PersonWithLongTableName row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<PersonWithLongTableName>(
+    return session.db.insertRow<PersonWithLongTableName>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<PersonWithLongTableName>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<PersonWithLongTableName> rows, {
     _i1.ColumnSelections<PersonWithLongTableNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<PersonWithLongTableName>(
+    return session.db.update<PersonWithLongTableName>(
       rows,
       columns: columns?.call(PersonWithLongTableName.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<PersonWithLongTableName> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     PersonWithLongTableName row, {
     _i1.ColumnSelections<PersonWithLongTableNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<PersonWithLongTableName>(
+    return session.db.updateRow<PersonWithLongTableName>(
       row,
       columns: columns?.call(PersonWithLongTableName.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<PersonWithLongTableName>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<PersonWithLongTableName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<PersonWithLongTableName>(
+    return session.db.delete<PersonWithLongTableName>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<PersonWithLongTableName> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     PersonWithLongTableName row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<PersonWithLongTableName>(
+    return session.db.deleteRow<PersonWithLongTableName>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<PersonWithLongTableName>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     required _i1.WhereExpressionBuilder<PersonWithLongTableNameTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<PersonWithLongTableName>(
+    return session.db.deleteWhere<PersonWithLongTableName>(
       where: where(PersonWithLongTableName.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<PersonWithLongTableName>(
+    return session.db.count<PersonWithLongTableName>(
       where: where?.call(PersonWithLongTableName.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }
@@ -452,7 +452,7 @@ class PersonWithLongTableNameAttachRowRepository {
   const PersonWithLongTableNameAttachRowRepository._();
 
   Future<void> organization(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     PersonWithLongTableName personWithLongTableName,
     _i2.OrganizationWithLongTableName organization, {
     _i1.Transaction? transaction,
@@ -466,10 +466,10 @@ class PersonWithLongTableNameAttachRowRepository {
 
     var $personWithLongTableName =
         personWithLongTableName.copyWith(organizationId: organization.id);
-    await databaseAccessor.db.updateRow<PersonWithLongTableName>(
+    await session.db.updateRow<PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [PersonWithLongTableName.t.organizationId],
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }
@@ -478,7 +478,7 @@ class PersonWithLongTableNameDetachRowRepository {
   const PersonWithLongTableNameDetachRowRepository._();
 
   Future<void> organization(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     PersonWithLongTableName personwithlongtablename, {
     _i1.Transaction? transaction,
   }) async {
@@ -488,10 +488,10 @@ class PersonWithLongTableNameDetachRowRepository {
 
     var $personwithlongtablename =
         personwithlongtablename.copyWith(organizationId: null);
-    await databaseAccessor.db.updateRow<PersonWithLongTableName>(
+    await session.db.updateRow<PersonWithLongTableName>(
       $personwithlongtablename,
       columns: [PersonWithLongTableName.t.organizationId],
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

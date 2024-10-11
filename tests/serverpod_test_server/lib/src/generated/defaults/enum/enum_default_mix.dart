@@ -234,7 +234,7 @@ class EnumDefaultMixRepository {
   const EnumDefaultMixRepository._();
 
   Future<List<EnumDefaultMix>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<EnumDefaultMixTable>? where,
     int? limit,
     int? offset,
@@ -243,19 +243,19 @@ class EnumDefaultMixRepository {
     _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<EnumDefaultMix>(
+    return session.db.find<EnumDefaultMix>(
       where: where?.call(EnumDefaultMix.t),
       orderBy: orderBy?.call(EnumDefaultMix.t),
       orderByList: orderByList?.call(EnumDefaultMix.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<EnumDefaultMix?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<EnumDefaultMixTable>? where,
     int? offset,
     _i1.OrderByBuilder<EnumDefaultMixTable>? orderBy,
@@ -263,118 +263,118 @@ class EnumDefaultMixRepository {
     _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<EnumDefaultMix>(
+    return session.db.findFirstRow<EnumDefaultMix>(
       where: where?.call(EnumDefaultMix.t),
       orderBy: orderBy?.call(EnumDefaultMix.t),
       orderByList: orderByList?.call(EnumDefaultMix.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<EnumDefaultMix?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<EnumDefaultMix>(
+    return session.db.findById<EnumDefaultMix>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<EnumDefaultMix>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<EnumDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<EnumDefaultMix>(
+    return session.db.insert<EnumDefaultMix>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<EnumDefaultMix> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     EnumDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<EnumDefaultMix>(
+    return session.db.insertRow<EnumDefaultMix>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<EnumDefaultMix>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<EnumDefaultMix> rows, {
     _i1.ColumnSelections<EnumDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<EnumDefaultMix>(
+    return session.db.update<EnumDefaultMix>(
       rows,
       columns: columns?.call(EnumDefaultMix.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<EnumDefaultMix> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     EnumDefaultMix row, {
     _i1.ColumnSelections<EnumDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<EnumDefaultMix>(
+    return session.db.updateRow<EnumDefaultMix>(
       row,
       columns: columns?.call(EnumDefaultMix.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<EnumDefaultMix>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<EnumDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<EnumDefaultMix>(
+    return session.db.delete<EnumDefaultMix>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<EnumDefaultMix> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     EnumDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<EnumDefaultMix>(
+    return session.db.deleteRow<EnumDefaultMix>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<EnumDefaultMix>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     required _i1.WhereExpressionBuilder<EnumDefaultMixTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<EnumDefaultMix>(
+    return session.db.deleteWhere<EnumDefaultMix>(
       where: where(EnumDefaultMix.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<EnumDefaultMixTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<EnumDefaultMix>(
+    return session.db.count<EnumDefaultMix>(
       where: where?.call(EnumDefaultMix.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

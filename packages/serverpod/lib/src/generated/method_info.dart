@@ -190,7 +190,7 @@ class MethodInfoRepository {
   const MethodInfoRepository._();
 
   Future<List<MethodInfo>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<MethodInfoTable>? where,
     int? limit,
     int? offset,
@@ -199,19 +199,19 @@ class MethodInfoRepository {
     _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<MethodInfo>(
+    return session.db.find<MethodInfo>(
       where: where?.call(MethodInfo.t),
       orderBy: orderBy?.call(MethodInfo.t),
       orderByList: orderByList?.call(MethodInfo.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<MethodInfo?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<MethodInfoTable>? where,
     int? offset,
     _i1.OrderByBuilder<MethodInfoTable>? orderBy,
@@ -219,118 +219,118 @@ class MethodInfoRepository {
     _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<MethodInfo>(
+    return session.db.findFirstRow<MethodInfo>(
       where: where?.call(MethodInfo.t),
       orderBy: orderBy?.call(MethodInfo.t),
       orderByList: orderByList?.call(MethodInfo.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<MethodInfo?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<MethodInfo>(
+    return session.db.findById<MethodInfo>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<MethodInfo>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<MethodInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<MethodInfo>(
+    return session.db.insert<MethodInfo>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<MethodInfo> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     MethodInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<MethodInfo>(
+    return session.db.insertRow<MethodInfo>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<MethodInfo>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<MethodInfo> rows, {
     _i1.ColumnSelections<MethodInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<MethodInfo>(
+    return session.db.update<MethodInfo>(
       rows,
       columns: columns?.call(MethodInfo.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<MethodInfo> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     MethodInfo row, {
     _i1.ColumnSelections<MethodInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<MethodInfo>(
+    return session.db.updateRow<MethodInfo>(
       row,
       columns: columns?.call(MethodInfo.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<MethodInfo>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<MethodInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<MethodInfo>(
+    return session.db.delete<MethodInfo>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<MethodInfo> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     MethodInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<MethodInfo>(
+    return session.db.deleteRow<MethodInfo>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<MethodInfo>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     required _i1.WhereExpressionBuilder<MethodInfoTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<MethodInfo>(
+    return session.db.deleteWhere<MethodInfo>(
       where: where(MethodInfo.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<MethodInfoTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<MethodInfo>(
+    return session.db.count<MethodInfo>(
       where: where?.call(MethodInfo.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

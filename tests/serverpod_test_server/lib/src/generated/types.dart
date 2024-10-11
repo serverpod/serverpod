@@ -358,7 +358,7 @@ class TypesRepository {
   const TypesRepository._();
 
   Future<List<Types>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<TypesTable>? where,
     int? limit,
     int? offset,
@@ -367,19 +367,19 @@ class TypesRepository {
     _i1.OrderByListBuilder<TypesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<Types>(
+    return session.db.find<Types>(
       where: where?.call(Types.t),
       orderBy: orderBy?.call(Types.t),
       orderByList: orderByList?.call(Types.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<Types?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<TypesTable>? where,
     int? offset,
     _i1.OrderByBuilder<TypesTable>? orderBy,
@@ -387,118 +387,118 @@ class TypesRepository {
     _i1.OrderByListBuilder<TypesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<Types>(
+    return session.db.findFirstRow<Types>(
       where: where?.call(Types.t),
       orderBy: orderBy?.call(Types.t),
       orderByList: orderByList?.call(Types.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<Types?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<Types>(
+    return session.db.findById<Types>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<Types>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<Types> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<Types>(
+    return session.db.insert<Types>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<Types> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Types row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<Types>(
+    return session.db.insertRow<Types>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<Types>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<Types> rows, {
     _i1.ColumnSelections<TypesTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<Types>(
+    return session.db.update<Types>(
       rows,
       columns: columns?.call(Types.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<Types> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Types row, {
     _i1.ColumnSelections<TypesTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<Types>(
+    return session.db.updateRow<Types>(
       row,
       columns: columns?.call(Types.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<Types>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<Types> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<Types>(
+    return session.db.delete<Types>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<Types> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Types row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<Types>(
+    return session.db.deleteRow<Types>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<Types>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     required _i1.WhereExpressionBuilder<TypesTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<Types>(
+    return session.db.deleteWhere<Types>(
       where: where(Types.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<TypesTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<Types>(
+    return session.db.count<Types>(
       where: where?.call(Types.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }
