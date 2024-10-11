@@ -92,7 +92,7 @@ class _ModuleEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'module',
         methodName: 'hello',
-        parameters: {'name': _i1.testObjectToJson(name)},
+        parameters: _i1.testObjectToJson({'name': name}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -118,7 +118,7 @@ class _ModuleEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'module',
         methodName: 'modifyModuleObject',
-        parameters: {'object': _i1.testObjectToJson(object)},
+        parameters: _i1.testObjectToJson({'object': object}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
