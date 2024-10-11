@@ -229,3 +229,45 @@ class StdOutLogWriter extends LogWriter {
     return _logId;
   }
 }
+
+@internal
+class MultipleLogWriter extends LogWriter {
+  final List<LogWriter> _logWriters;
+
+  MultipleLogWriter(this._logWriters);
+
+  @override
+  Future<int> closeLog(SessionLogEntry entry) async {
+    var response =
+        await Future.wait(_logWriters.map((writer) => writer.closeLog(entry)));
+    return response.firstOrNull ?? 0;
+  }
+
+  @override
+  Future<void> logEntry(LogEntry entry) async {
+    await Future.wait(
+      _logWriters.map((writer) => writer.logEntry(entry)),
+    );
+  }
+
+  @override
+  Future<void> logMessage(MessageLogEntry entry) async {
+    await Future.wait(
+      _logWriters.map((writer) => writer.logMessage(entry)),
+    );
+  }
+
+  @override
+  Future<void> logQuery(QueryLogEntry entry) async {
+    await Future.wait(
+      _logWriters.map((writer) => writer.logQuery(entry)),
+    );
+  }
+
+  @override
+  Future<void> openLog(SessionLogEntry entry) async {
+    await Future.wait(
+      _logWriters.map((writer) => writer.openLog(entry)),
+    );
+  }
+}
