@@ -60,4 +60,4 @@ dart $CLI generate --no-analytics --experimental-features=all
 
 echo "\ntests/serverpod_test_module/serverpod_test_module_server"
 cd $BASE/tests/serverpod_test_module/serverpod_test_module_server
-dart $CLI generate --no-analytics
+dart $CLI generate --no-analytics --experimental-features=all
