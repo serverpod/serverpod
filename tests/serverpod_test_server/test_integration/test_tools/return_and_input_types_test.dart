@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 import 'serverpod_test_tools.dart';
@@ -26,6 +27,19 @@ void main() {
         final result = await endpoints.testTools
             .returnsListFromInputStream(sessionBuilder, stream);
         expect(result, [1, 2, 3, 4, 5]);
+      });
+
+      test(
+          'when calling returnsSimpleDataListFromInputStream then returns a list of the input stream',
+          () async {
+        final stream = Stream<SimpleData>.fromIterable([
+          SimpleData(num: 1),
+          SimpleData(num: 2),
+          SimpleData(num: 3),
+        ]);
+        final result = await endpoints.testTools
+            .returnsSimpleDataListFromInputStream(sessionBuilder, stream);
+        expect(result.map((s) => s.num), [1, 2, 3]);
       });
 
       test(
@@ -73,6 +87,23 @@ void main() {
             .postNumberToSharedStreamAndReturnStream(sessionBuilder, 111);
 
         await expectLater(stream.take(1), emitsInOrder([111]));
+      });
+
+      test('when calling echoSimpleData then should echo the object', () async {
+        final data = SimpleData(num: 1);
+        var result =
+            await endpoints.testTools.echoSimpleData(sessionBuilder, data);
+        expect(result.num, 1);
+      });
+
+      test('when calling echoSimpleDatas then should echo the object',
+          () async {
+        final data1 = SimpleData(num: 1);
+        final data2 = SimpleData(num: 2);
+        var result = await endpoints.testTools
+            .echoSimpleDatas(sessionBuilder, [data1, data2]);
+        expect(result[0].num, 1);
+        expect(result[1].num, 2);
       });
     },
     runMode: ServerpodRunMode.production,

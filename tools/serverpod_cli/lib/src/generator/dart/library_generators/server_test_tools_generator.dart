@@ -171,10 +171,12 @@ class ServerTestToolsGenerator {
                   ..body = refer('_localUniqueSession').code).closure,
                 'endpointPath': literalString(endpoint.name),
                 'methodName': literalString(method.name),
-                'parameters': literalMap({
-                  for (var parameter in method.allParameters)
-                    literalString(parameter.name): refer(parameter.name).code,
-                }),
+                'parameters': refer('testObjectToJson', serverpodTestUrl).call([
+                  literalMap({
+                    for (var parameter in method.allParameters)
+                      literalString(parameter.name): refer(parameter.name).code,
+                  })
+                ]),
                 'serializationManager': refer('_serializationManager'),
               }))
               .statement,

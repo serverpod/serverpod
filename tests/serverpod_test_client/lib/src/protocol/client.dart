@@ -2206,6 +2206,16 @@ class EndpointTestTools extends _i1.EndpointRef {
         {'numbers': numbers},
       );
 
+  _i2.Future<List<_i10.SimpleData>> returnsSimpleDataListFromInputStream(
+          _i2.Stream<_i10.SimpleData> simpleDatas) =>
+      caller.callStreamingServerEndpoint<_i2.Future<List<_i10.SimpleData>>,
+          List<_i10.SimpleData>>(
+        'testTools',
+        'returnsSimpleDataListFromInputStream',
+        {},
+        {'simpleDatas': simpleDatas},
+      );
+
   _i2.Stream<int> returnsStreamFromInputStream(_i2.Stream<int> numbers) =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'testTools',
@@ -2270,6 +2280,21 @@ class EndpointTestTools extends _i1.EndpointRef {
         'testTools',
         'createSimpleDatasInParallelTransactionCalls',
         {},
+      );
+
+  _i2.Future<_i10.SimpleData> echoSimpleData(_i10.SimpleData simpleData) =>
+      caller.callServerEndpoint<_i10.SimpleData>(
+        'testTools',
+        'echoSimpleData',
+        {'simpleData': simpleData},
+      );
+
+  _i2.Future<List<_i10.SimpleData>> echoSimpleDatas(
+          List<_i10.SimpleData> simpleDatas) =>
+      caller.callServerEndpoint<List<_i10.SimpleData>>(
+        'testTools',
+        'echoSimpleDatas',
+        {'simpleDatas': simpleDatas},
       );
 }
 
