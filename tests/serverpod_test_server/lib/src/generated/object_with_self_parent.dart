@@ -168,7 +168,7 @@ class ObjectWithSelfParentRepository {
   const ObjectWithSelfParentRepository._();
 
   Future<List<ObjectWithSelfParent>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? where,
     int? limit,
     int? offset,
@@ -177,19 +177,19 @@ class ObjectWithSelfParentRepository {
     _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<ObjectWithSelfParent>(
+    return session.db.find<ObjectWithSelfParent>(
       where: where?.call(ObjectWithSelfParent.t),
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
       orderByList: orderByList?.call(ObjectWithSelfParent.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ObjectWithSelfParent?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithSelfParentTable>? orderBy,
@@ -197,118 +197,118 @@ class ObjectWithSelfParentRepository {
     _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<ObjectWithSelfParent>(
+    return session.db.findFirstRow<ObjectWithSelfParent>(
       where: where?.call(ObjectWithSelfParent.t),
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
       orderByList: orderByList?.call(ObjectWithSelfParent.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ObjectWithSelfParent?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<ObjectWithSelfParent>(
+    return session.db.findById<ObjectWithSelfParent>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ObjectWithSelfParent>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<ObjectWithSelfParent> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<ObjectWithSelfParent>(
+    return session.db.insert<ObjectWithSelfParent>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ObjectWithSelfParent> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     ObjectWithSelfParent row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<ObjectWithSelfParent>(
+    return session.db.insertRow<ObjectWithSelfParent>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ObjectWithSelfParent>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<ObjectWithSelfParent> rows, {
     _i1.ColumnSelections<ObjectWithSelfParentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<ObjectWithSelfParent>(
+    return session.db.update<ObjectWithSelfParent>(
       rows,
       columns: columns?.call(ObjectWithSelfParent.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ObjectWithSelfParent> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     ObjectWithSelfParent row, {
     _i1.ColumnSelections<ObjectWithSelfParentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<ObjectWithSelfParent>(
+    return session.db.updateRow<ObjectWithSelfParent>(
       row,
       columns: columns?.call(ObjectWithSelfParent.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ObjectWithSelfParent>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<ObjectWithSelfParent> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<ObjectWithSelfParent>(
+    return session.db.delete<ObjectWithSelfParent>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ObjectWithSelfParent> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     ObjectWithSelfParent row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<ObjectWithSelfParent>(
+    return session.db.deleteRow<ObjectWithSelfParent>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ObjectWithSelfParent>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     required _i1.WhereExpressionBuilder<ObjectWithSelfParentTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<ObjectWithSelfParent>(
+    return session.db.deleteWhere<ObjectWithSelfParent>(
       where: where(ObjectWithSelfParent.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<ObjectWithSelfParent>(
+    return session.db.count<ObjectWithSelfParent>(
       where: where?.call(ObjectWithSelfParent.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

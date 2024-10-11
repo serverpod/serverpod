@@ -161,7 +161,7 @@ class ParentClassRepository {
   const ParentClassRepository._();
 
   Future<List<ParentClass>> find(
-    _i2.DatabaseAccessor databaseAccessor, {
+    _i2.DatabaseAccessor session, {
     _i2.WhereExpressionBuilder<ParentClassTable>? where,
     int? limit,
     int? offset,
@@ -170,19 +170,19 @@ class ParentClassRepository {
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     _i2.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<ParentClass>(
+    return session.db.find<ParentClass>(
       where: where?.call(ParentClass.t),
       orderBy: orderBy?.call(ParentClass.t),
       orderByList: orderByList?.call(ParentClass.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ParentClass?> findFirstRow(
-    _i2.DatabaseAccessor databaseAccessor, {
+    _i2.DatabaseAccessor session, {
     _i2.WhereExpressionBuilder<ParentClassTable>? where,
     int? offset,
     _i2.OrderByBuilder<ParentClassTable>? orderBy,
@@ -190,118 +190,118 @@ class ParentClassRepository {
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     _i2.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<ParentClass>(
+    return session.db.findFirstRow<ParentClass>(
       where: where?.call(ParentClass.t),
       orderBy: orderBy?.call(ParentClass.t),
       orderByList: orderByList?.call(ParentClass.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ParentClass?> findById(
-    _i2.DatabaseAccessor databaseAccessor,
+    _i2.DatabaseAccessor session,
     int id, {
     _i2.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<ParentClass>(
+    return session.db.findById<ParentClass>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ParentClass>> insert(
-    _i2.DatabaseAccessor databaseAccessor,
+    _i2.DatabaseAccessor session,
     List<ParentClass> rows, {
     _i2.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<ParentClass>(
+    return session.db.insert<ParentClass>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ParentClass> insertRow(
-    _i2.DatabaseAccessor databaseAccessor,
+    _i2.DatabaseAccessor session,
     ParentClass row, {
     _i2.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<ParentClass>(
+    return session.db.insertRow<ParentClass>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ParentClass>> update(
-    _i2.DatabaseAccessor databaseAccessor,
+    _i2.DatabaseAccessor session,
     List<ParentClass> rows, {
     _i2.ColumnSelections<ParentClassTable>? columns,
     _i2.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<ParentClass>(
+    return session.db.update<ParentClass>(
       rows,
       columns: columns?.call(ParentClass.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ParentClass> updateRow(
-    _i2.DatabaseAccessor databaseAccessor,
+    _i2.DatabaseAccessor session,
     ParentClass row, {
     _i2.ColumnSelections<ParentClassTable>? columns,
     _i2.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<ParentClass>(
+    return session.db.updateRow<ParentClass>(
       row,
       columns: columns?.call(ParentClass.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ParentClass>> delete(
-    _i2.DatabaseAccessor databaseAccessor,
+    _i2.DatabaseAccessor session,
     List<ParentClass> rows, {
     _i2.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<ParentClass>(
+    return session.db.delete<ParentClass>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ParentClass> deleteRow(
-    _i2.DatabaseAccessor databaseAccessor,
+    _i2.DatabaseAccessor session,
     ParentClass row, {
     _i2.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<ParentClass>(
+    return session.db.deleteRow<ParentClass>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ParentClass>> deleteWhere(
-    _i2.DatabaseAccessor databaseAccessor, {
+    _i2.DatabaseAccessor session, {
     required _i2.WhereExpressionBuilder<ParentClassTable> where,
     _i2.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<ParentClass>(
+    return session.db.deleteWhere<ParentClass>(
       where: where(ParentClass.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i2.DatabaseAccessor databaseAccessor, {
+    _i2.DatabaseAccessor session, {
     _i2.WhereExpressionBuilder<ParentClassTable>? where,
     int? limit,
     _i2.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<ParentClass>(
+    return session.db.count<ParentClass>(
       where: where?.call(ParentClass.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

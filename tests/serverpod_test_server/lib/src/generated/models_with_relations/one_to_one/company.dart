@@ -229,7 +229,7 @@ class CompanyRepository {
   final attachRow = const CompanyAttachRowRepository._();
 
   Future<List<Company>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<CompanyTable>? where,
     int? limit,
     int? offset,
@@ -239,20 +239,20 @@ class CompanyRepository {
     _i1.Transaction? transaction,
     CompanyInclude? include,
   }) async {
-    return databaseAccessor.db.find<Company>(
+    return session.db.find<Company>(
       where: where?.call(Company.t),
       orderBy: orderBy?.call(Company.t),
       orderByList: orderByList?.call(Company.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
       include: include,
     );
   }
 
   Future<Company?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<CompanyTable>? where,
     int? offset,
     _i1.OrderByBuilder<CompanyTable>? orderBy,
@@ -261,121 +261,121 @@ class CompanyRepository {
     _i1.Transaction? transaction,
     CompanyInclude? include,
   }) async {
-    return databaseAccessor.db.findFirstRow<Company>(
+    return session.db.findFirstRow<Company>(
       where: where?.call(Company.t),
       orderBy: orderBy?.call(Company.t),
       orderByList: orderByList?.call(Company.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
       include: include,
     );
   }
 
   Future<Company?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     int id, {
     _i1.Transaction? transaction,
     CompanyInclude? include,
   }) async {
-    return databaseAccessor.db.findById<Company>(
+    return session.db.findById<Company>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
       include: include,
     );
   }
 
   Future<List<Company>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<Company> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<Company>(
+    return session.db.insert<Company>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<Company> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Company row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<Company>(
+    return session.db.insertRow<Company>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<Company>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<Company> rows, {
     _i1.ColumnSelections<CompanyTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<Company>(
+    return session.db.update<Company>(
       rows,
       columns: columns?.call(Company.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<Company> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Company row, {
     _i1.ColumnSelections<CompanyTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<Company>(
+    return session.db.updateRow<Company>(
       row,
       columns: columns?.call(Company.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<Company>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<Company> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<Company>(
+    return session.db.delete<Company>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<Company> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Company row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<Company>(
+    return session.db.deleteRow<Company>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<Company>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     required _i1.WhereExpressionBuilder<CompanyTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<Company>(
+    return session.db.deleteWhere<Company>(
       where: where(Company.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<CompanyTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<Company>(
+    return session.db.count<Company>(
       where: where?.call(Company.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }
@@ -384,7 +384,7 @@ class CompanyAttachRowRepository {
   const CompanyAttachRowRepository._();
 
   Future<void> town(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Company company,
     _i2.Town town, {
     _i1.Transaction? transaction,
@@ -397,10 +397,10 @@ class CompanyAttachRowRepository {
     }
 
     var $company = company.copyWith(townId: town.id);
-    await databaseAccessor.db.updateRow<Company>(
+    await session.db.updateRow<Company>(
       $company,
       columns: [Company.t.townId],
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

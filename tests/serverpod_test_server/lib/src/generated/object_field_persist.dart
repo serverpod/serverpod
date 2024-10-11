@@ -195,7 +195,7 @@ class ObjectFieldPersistRepository {
   const ObjectFieldPersistRepository._();
 
   Future<List<ObjectFieldPersist>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     int? limit,
     int? offset,
@@ -204,19 +204,19 @@ class ObjectFieldPersistRepository {
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<ObjectFieldPersist>(
+    return session.db.find<ObjectFieldPersist>(
       where: where?.call(ObjectFieldPersist.t),
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ObjectFieldPersist?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
@@ -224,118 +224,118 @@ class ObjectFieldPersistRepository {
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<ObjectFieldPersist>(
+    return session.db.findFirstRow<ObjectFieldPersist>(
       where: where?.call(ObjectFieldPersist.t),
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ObjectFieldPersist?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<ObjectFieldPersist>(
+    return session.db.findById<ObjectFieldPersist>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ObjectFieldPersist>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<ObjectFieldPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<ObjectFieldPersist>(
+    return session.db.insert<ObjectFieldPersist>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ObjectFieldPersist> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     ObjectFieldPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<ObjectFieldPersist>(
+    return session.db.insertRow<ObjectFieldPersist>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ObjectFieldPersist>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<ObjectFieldPersist> rows, {
     _i1.ColumnSelections<ObjectFieldPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<ObjectFieldPersist>(
+    return session.db.update<ObjectFieldPersist>(
       rows,
       columns: columns?.call(ObjectFieldPersist.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ObjectFieldPersist> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     ObjectFieldPersist row, {
     _i1.ColumnSelections<ObjectFieldPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<ObjectFieldPersist>(
+    return session.db.updateRow<ObjectFieldPersist>(
       row,
       columns: columns?.call(ObjectFieldPersist.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ObjectFieldPersist>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<ObjectFieldPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<ObjectFieldPersist>(
+    return session.db.delete<ObjectFieldPersist>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ObjectFieldPersist> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     ObjectFieldPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<ObjectFieldPersist>(
+    return session.db.deleteRow<ObjectFieldPersist>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ObjectFieldPersist>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     required _i1.WhereExpressionBuilder<ObjectFieldPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<ObjectFieldPersist>(
+    return session.db.deleteWhere<ObjectFieldPersist>(
       where: where(ObjectFieldPersist.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<ObjectFieldPersist>(
+    return session.db.count<ObjectFieldPersist>(
       where: where?.call(ObjectFieldPersist.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

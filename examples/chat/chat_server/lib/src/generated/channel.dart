@@ -189,7 +189,7 @@ class ChannelRepository {
   const ChannelRepository._();
 
   Future<List<Channel>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<ChannelTable>? where,
     int? limit,
     int? offset,
@@ -198,19 +198,19 @@ class ChannelRepository {
     _i1.OrderByListBuilder<ChannelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<Channel>(
+    return session.db.find<Channel>(
       where: where?.call(Channel.t),
       orderBy: orderBy?.call(Channel.t),
       orderByList: orderByList?.call(Channel.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<Channel?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<ChannelTable>? where,
     int? offset,
     _i1.OrderByBuilder<ChannelTable>? orderBy,
@@ -218,118 +218,118 @@ class ChannelRepository {
     _i1.OrderByListBuilder<ChannelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<Channel>(
+    return session.db.findFirstRow<Channel>(
       where: where?.call(Channel.t),
       orderBy: orderBy?.call(Channel.t),
       orderByList: orderByList?.call(Channel.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<Channel?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<Channel>(
+    return session.db.findById<Channel>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<Channel>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<Channel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<Channel>(
+    return session.db.insert<Channel>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<Channel> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Channel row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<Channel>(
+    return session.db.insertRow<Channel>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<Channel>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<Channel> rows, {
     _i1.ColumnSelections<ChannelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<Channel>(
+    return session.db.update<Channel>(
       rows,
       columns: columns?.call(Channel.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<Channel> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Channel row, {
     _i1.ColumnSelections<ChannelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<Channel>(
+    return session.db.updateRow<Channel>(
       row,
       columns: columns?.call(Channel.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<Channel>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<Channel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<Channel>(
+    return session.db.delete<Channel>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<Channel> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     Channel row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<Channel>(
+    return session.db.deleteRow<Channel>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<Channel>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     required _i1.WhereExpressionBuilder<ChannelTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<Channel>(
+    return session.db.deleteWhere<Channel>(
       where: where(Channel.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<ChannelTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<Channel>(
+    return session.db.count<Channel>(
       where: where?.call(Channel.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }
