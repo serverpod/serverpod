@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -191,7 +193,7 @@ class GoogleRefreshTokenRepository {
   const GoogleRefreshTokenRepository._();
 
   Future<List<GoogleRefreshToken>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     int? limit,
     int? offset,
@@ -212,7 +214,7 @@ class GoogleRefreshTokenRepository {
   }
 
   Future<GoogleRefreshToken?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     int? offset,
     _i1.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
@@ -231,7 +233,7 @@ class GoogleRefreshTokenRepository {
   }
 
   Future<GoogleRefreshToken?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -242,7 +244,7 @@ class GoogleRefreshTokenRepository {
   }
 
   Future<List<GoogleRefreshToken>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<GoogleRefreshToken> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -253,7 +255,7 @@ class GoogleRefreshTokenRepository {
   }
 
   Future<GoogleRefreshToken> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     GoogleRefreshToken row, {
     _i1.Transaction? transaction,
   }) async {
@@ -264,7 +266,7 @@ class GoogleRefreshTokenRepository {
   }
 
   Future<List<GoogleRefreshToken>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<GoogleRefreshToken> rows, {
     _i1.ColumnSelections<GoogleRefreshTokenTable>? columns,
     _i1.Transaction? transaction,
@@ -277,7 +279,7 @@ class GoogleRefreshTokenRepository {
   }
 
   Future<GoogleRefreshToken> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     GoogleRefreshToken row, {
     _i1.ColumnSelections<GoogleRefreshTokenTable>? columns,
     _i1.Transaction? transaction,
@@ -290,7 +292,7 @@ class GoogleRefreshTokenRepository {
   }
 
   Future<List<GoogleRefreshToken>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<GoogleRefreshToken> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -301,7 +303,7 @@ class GoogleRefreshTokenRepository {
   }
 
   Future<GoogleRefreshToken> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     GoogleRefreshToken row, {
     _i1.Transaction? transaction,
   }) async {
@@ -312,7 +314,7 @@ class GoogleRefreshTokenRepository {
   }
 
   Future<List<GoogleRefreshToken>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<GoogleRefreshTokenTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -323,7 +325,7 @@ class GoogleRefreshTokenRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     int? limit,
     _i1.Transaction? transaction,

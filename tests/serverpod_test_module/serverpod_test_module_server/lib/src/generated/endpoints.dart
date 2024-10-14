@@ -77,7 +77,48 @@ class Endpoints extends _i1.EndpointDispatch {
     connectors['streaming'] = _i1.EndpointConnector(
       name: 'streaming',
       endpoint: endpoints['streaming']!,
-      methodConnectors: {},
+      methodConnectors: {
+        'wasStreamOpenCalled': _i1.MethodConnector(
+          name: 'wasStreamOpenCalled',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['streaming'] as _i3.StreamingEndpoint)
+                  .wasStreamOpenCalled(session),
+        ),
+        'wasStreamClosedCalled': _i1.MethodConnector(
+          name: 'wasStreamClosedCalled',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['streaming'] as _i3.StreamingEndpoint)
+                  .wasStreamClosedCalled(session),
+        ),
+        'intEchoStream': _i1.MethodStreamConnector(
+          name: 'intEchoStream',
+          params: {},
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<int>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['streaming'] as _i3.StreamingEndpoint).intEchoStream(
+            session,
+            streamParams['stream']!.cast<int>(),
+          ),
+        ),
+      },
     );
   }
 }

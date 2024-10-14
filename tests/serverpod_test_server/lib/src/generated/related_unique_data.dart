@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
@@ -233,7 +235,7 @@ class RelatedUniqueDataRepository {
   final attachRow = const RelatedUniqueDataAttachRowRepository._();
 
   Future<List<RelatedUniqueData>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? limit,
     int? offset,
@@ -256,7 +258,7 @@ class RelatedUniqueDataRepository {
   }
 
   Future<RelatedUniqueData?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? offset,
     _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
@@ -277,7 +279,7 @@ class RelatedUniqueDataRepository {
   }
 
   Future<RelatedUniqueData?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
@@ -290,7 +292,7 @@ class RelatedUniqueDataRepository {
   }
 
   Future<List<RelatedUniqueData>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<RelatedUniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -301,7 +303,7 @@ class RelatedUniqueDataRepository {
   }
 
   Future<RelatedUniqueData> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     RelatedUniqueData row, {
     _i1.Transaction? transaction,
   }) async {
@@ -312,7 +314,7 @@ class RelatedUniqueDataRepository {
   }
 
   Future<List<RelatedUniqueData>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<RelatedUniqueData> rows, {
     _i1.ColumnSelections<RelatedUniqueDataTable>? columns,
     _i1.Transaction? transaction,
@@ -325,7 +327,7 @@ class RelatedUniqueDataRepository {
   }
 
   Future<RelatedUniqueData> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     RelatedUniqueData row, {
     _i1.ColumnSelections<RelatedUniqueDataTable>? columns,
     _i1.Transaction? transaction,
@@ -338,7 +340,7 @@ class RelatedUniqueDataRepository {
   }
 
   Future<List<RelatedUniqueData>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<RelatedUniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -349,7 +351,7 @@ class RelatedUniqueDataRepository {
   }
 
   Future<RelatedUniqueData> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     RelatedUniqueData row, {
     _i1.Transaction? transaction,
   }) async {
@@ -360,7 +362,7 @@ class RelatedUniqueDataRepository {
   }
 
   Future<List<RelatedUniqueData>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -371,7 +373,7 @@ class RelatedUniqueDataRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -388,7 +390,7 @@ class RelatedUniqueDataAttachRowRepository {
   const RelatedUniqueDataAttachRowRepository._();
 
   Future<void> uniqueData(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     RelatedUniqueData relatedUniqueData,
     _i2.UniqueData uniqueData, {
     _i1.Transaction? transaction,

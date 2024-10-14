@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -363,7 +365,7 @@ class QueryLogEntryRepository {
   const QueryLogEntryRepository._();
 
   Future<List<QueryLogEntry>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
     int? limit,
     int? offset,
@@ -384,7 +386,7 @@ class QueryLogEntryRepository {
   }
 
   Future<QueryLogEntry?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<QueryLogEntryTable>? orderBy,
@@ -403,7 +405,7 @@ class QueryLogEntryRepository {
   }
 
   Future<QueryLogEntry?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -414,7 +416,7 @@ class QueryLogEntryRepository {
   }
 
   Future<List<QueryLogEntry>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<QueryLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -425,7 +427,7 @@ class QueryLogEntryRepository {
   }
 
   Future<QueryLogEntry> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     QueryLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
@@ -436,7 +438,7 @@ class QueryLogEntryRepository {
   }
 
   Future<List<QueryLogEntry>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<QueryLogEntry> rows, {
     _i1.ColumnSelections<QueryLogEntryTable>? columns,
     _i1.Transaction? transaction,
@@ -449,7 +451,7 @@ class QueryLogEntryRepository {
   }
 
   Future<QueryLogEntry> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     QueryLogEntry row, {
     _i1.ColumnSelections<QueryLogEntryTable>? columns,
     _i1.Transaction? transaction,
@@ -462,7 +464,7 @@ class QueryLogEntryRepository {
   }
 
   Future<List<QueryLogEntry>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<QueryLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -473,7 +475,7 @@ class QueryLogEntryRepository {
   }
 
   Future<QueryLogEntry> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     QueryLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
@@ -484,7 +486,7 @@ class QueryLogEntryRepository {
   }
 
   Future<List<QueryLogEntry>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<QueryLogEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -495,7 +497,7 @@ class QueryLogEntryRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,

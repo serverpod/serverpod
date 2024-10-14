@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -189,7 +191,7 @@ class ChannelRepository {
   const ChannelRepository._();
 
   Future<List<Channel>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ChannelTable>? where,
     int? limit,
     int? offset,
@@ -210,7 +212,7 @@ class ChannelRepository {
   }
 
   Future<Channel?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ChannelTable>? where,
     int? offset,
     _i1.OrderByBuilder<ChannelTable>? orderBy,
@@ -229,7 +231,7 @@ class ChannelRepository {
   }
 
   Future<Channel?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -240,7 +242,7 @@ class ChannelRepository {
   }
 
   Future<List<Channel>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Channel> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -251,7 +253,7 @@ class ChannelRepository {
   }
 
   Future<Channel> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Channel row, {
     _i1.Transaction? transaction,
   }) async {
@@ -262,7 +264,7 @@ class ChannelRepository {
   }
 
   Future<List<Channel>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Channel> rows, {
     _i1.ColumnSelections<ChannelTable>? columns,
     _i1.Transaction? transaction,
@@ -275,7 +277,7 @@ class ChannelRepository {
   }
 
   Future<Channel> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Channel row, {
     _i1.ColumnSelections<ChannelTable>? columns,
     _i1.Transaction? transaction,
@@ -288,7 +290,7 @@ class ChannelRepository {
   }
 
   Future<List<Channel>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Channel> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -299,7 +301,7 @@ class ChannelRepository {
   }
 
   Future<Channel> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Channel row, {
     _i1.Transaction? transaction,
   }) async {
@@ -310,7 +312,7 @@ class ChannelRepository {
   }
 
   Future<List<Channel>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<ChannelTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -321,7 +323,7 @@ class ChannelRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ChannelTable>? where,
     int? limit,
     _i1.Transaction? transaction,

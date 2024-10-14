@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
@@ -195,7 +197,7 @@ class ObjectFieldPersistRepository {
   const ObjectFieldPersistRepository._();
 
   Future<List<ObjectFieldPersist>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     int? limit,
     int? offset,
@@ -216,7 +218,7 @@ class ObjectFieldPersistRepository {
   }
 
   Future<ObjectFieldPersist?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
@@ -235,7 +237,7 @@ class ObjectFieldPersistRepository {
   }
 
   Future<ObjectFieldPersist?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -246,7 +248,7 @@ class ObjectFieldPersistRepository {
   }
 
   Future<List<ObjectFieldPersist>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ObjectFieldPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -257,7 +259,7 @@ class ObjectFieldPersistRepository {
   }
 
   Future<ObjectFieldPersist> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ObjectFieldPersist row, {
     _i1.Transaction? transaction,
   }) async {
@@ -268,7 +270,7 @@ class ObjectFieldPersistRepository {
   }
 
   Future<List<ObjectFieldPersist>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ObjectFieldPersist> rows, {
     _i1.ColumnSelections<ObjectFieldPersistTable>? columns,
     _i1.Transaction? transaction,
@@ -281,7 +283,7 @@ class ObjectFieldPersistRepository {
   }
 
   Future<ObjectFieldPersist> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ObjectFieldPersist row, {
     _i1.ColumnSelections<ObjectFieldPersistTable>? columns,
     _i1.Transaction? transaction,
@@ -294,7 +296,7 @@ class ObjectFieldPersistRepository {
   }
 
   Future<List<ObjectFieldPersist>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ObjectFieldPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -305,7 +307,7 @@ class ObjectFieldPersistRepository {
   }
 
   Future<ObjectFieldPersist> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ObjectFieldPersist row, {
     _i1.Transaction? transaction,
   }) async {
@@ -316,7 +318,7 @@ class ObjectFieldPersistRepository {
   }
 
   Future<List<ObjectFieldPersist>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<ObjectFieldPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -327,7 +329,7 @@ class ObjectFieldPersistRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     int? limit,
     _i1.Transaction? transaction,

@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:uuid/uuid.dart' as _i2;
@@ -250,7 +252,7 @@ class UuidDefaultModelRepository {
   const UuidDefaultModelRepository._();
 
   Future<List<UuidDefaultModel>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UuidDefaultModelTable>? where,
     int? limit,
     int? offset,
@@ -271,7 +273,7 @@ class UuidDefaultModelRepository {
   }
 
   Future<UuidDefaultModel?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UuidDefaultModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<UuidDefaultModelTable>? orderBy,
@@ -290,7 +292,7 @@ class UuidDefaultModelRepository {
   }
 
   Future<UuidDefaultModel?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -301,7 +303,7 @@ class UuidDefaultModelRepository {
   }
 
   Future<List<UuidDefaultModel>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<UuidDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -312,7 +314,7 @@ class UuidDefaultModelRepository {
   }
 
   Future<UuidDefaultModel> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     UuidDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
@@ -323,7 +325,7 @@ class UuidDefaultModelRepository {
   }
 
   Future<List<UuidDefaultModel>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<UuidDefaultModel> rows, {
     _i1.ColumnSelections<UuidDefaultModelTable>? columns,
     _i1.Transaction? transaction,
@@ -336,7 +338,7 @@ class UuidDefaultModelRepository {
   }
 
   Future<UuidDefaultModel> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     UuidDefaultModel row, {
     _i1.ColumnSelections<UuidDefaultModelTable>? columns,
     _i1.Transaction? transaction,
@@ -349,7 +351,7 @@ class UuidDefaultModelRepository {
   }
 
   Future<List<UuidDefaultModel>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<UuidDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -360,7 +362,7 @@ class UuidDefaultModelRepository {
   }
 
   Future<UuidDefaultModel> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     UuidDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
@@ -371,7 +373,7 @@ class UuidDefaultModelRepository {
   }
 
   Future<List<UuidDefaultModel>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<UuidDefaultModelTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -382,7 +384,7 @@ class UuidDefaultModelRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UuidDefaultModelTable>? where,
     int? limit,
     _i1.Transaction? transaction,

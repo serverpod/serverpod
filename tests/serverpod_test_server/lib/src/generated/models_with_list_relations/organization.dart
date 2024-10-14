@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
@@ -306,7 +308,7 @@ class OrganizationRepository {
   final detachRow = const OrganizationDetachRowRepository._();
 
   Future<List<Organization>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<OrganizationTable>? where,
     int? limit,
     int? offset,
@@ -329,7 +331,7 @@ class OrganizationRepository {
   }
 
   Future<Organization?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<OrganizationTable>? where,
     int? offset,
     _i1.OrderByBuilder<OrganizationTable>? orderBy,
@@ -350,7 +352,7 @@ class OrganizationRepository {
   }
 
   Future<Organization?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     OrganizationInclude? include,
@@ -363,7 +365,7 @@ class OrganizationRepository {
   }
 
   Future<List<Organization>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Organization> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -374,7 +376,7 @@ class OrganizationRepository {
   }
 
   Future<Organization> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Organization row, {
     _i1.Transaction? transaction,
   }) async {
@@ -385,7 +387,7 @@ class OrganizationRepository {
   }
 
   Future<List<Organization>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Organization> rows, {
     _i1.ColumnSelections<OrganizationTable>? columns,
     _i1.Transaction? transaction,
@@ -398,7 +400,7 @@ class OrganizationRepository {
   }
 
   Future<Organization> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Organization row, {
     _i1.ColumnSelections<OrganizationTable>? columns,
     _i1.Transaction? transaction,
@@ -411,7 +413,7 @@ class OrganizationRepository {
   }
 
   Future<List<Organization>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Organization> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -422,7 +424,7 @@ class OrganizationRepository {
   }
 
   Future<Organization> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Organization row, {
     _i1.Transaction? transaction,
   }) async {
@@ -433,7 +435,7 @@ class OrganizationRepository {
   }
 
   Future<List<Organization>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<OrganizationTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -444,7 +446,7 @@ class OrganizationRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<OrganizationTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -461,7 +463,7 @@ class OrganizationAttachRepository {
   const OrganizationAttachRepository._();
 
   Future<void> people(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Organization organization,
     List<_i2.Person> person, {
     _i1.Transaction? transaction,
@@ -487,7 +489,7 @@ class OrganizationAttachRowRepository {
   const OrganizationAttachRowRepository._();
 
   Future<void> city(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Organization organization,
     _i2.City city, {
     _i1.Transaction? transaction,
@@ -508,7 +510,7 @@ class OrganizationAttachRowRepository {
   }
 
   Future<void> people(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Organization organization,
     _i2.Person person, {
     _i1.Transaction? transaction,
@@ -533,7 +535,7 @@ class OrganizationDetachRepository {
   const OrganizationDetachRepository._();
 
   Future<void> people(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<_i2.Person> person, {
     _i1.Transaction? transaction,
   }) async {
@@ -554,7 +556,7 @@ class OrganizationDetachRowRepository {
   const OrganizationDetachRowRepository._();
 
   Future<void> city(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Organization organization, {
     _i1.Transaction? transaction,
   }) async {
@@ -571,7 +573,7 @@ class OrganizationDetachRowRepository {
   }
 
   Future<void> people(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     _i2.Person person, {
     _i1.Transaction? transaction,
   }) async {

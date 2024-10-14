@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -250,7 +252,7 @@ class UserNoteCollectionRepository {
   final detachRow = const UserNoteCollectionDetachRowRepository._();
 
   Future<List<UserNoteCollection>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UserNoteCollectionTable>? where,
     int? limit,
     int? offset,
@@ -273,7 +275,7 @@ class UserNoteCollectionRepository {
   }
 
   Future<UserNoteCollection?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UserNoteCollectionTable>? where,
     int? offset,
     _i1.OrderByBuilder<UserNoteCollectionTable>? orderBy,
@@ -294,7 +296,7 @@ class UserNoteCollectionRepository {
   }
 
   Future<UserNoteCollection?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     UserNoteCollectionInclude? include,
@@ -307,7 +309,7 @@ class UserNoteCollectionRepository {
   }
 
   Future<List<UserNoteCollection>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<UserNoteCollection> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -318,7 +320,7 @@ class UserNoteCollectionRepository {
   }
 
   Future<UserNoteCollection> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     UserNoteCollection row, {
     _i1.Transaction? transaction,
   }) async {
@@ -329,7 +331,7 @@ class UserNoteCollectionRepository {
   }
 
   Future<List<UserNoteCollection>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<UserNoteCollection> rows, {
     _i1.ColumnSelections<UserNoteCollectionTable>? columns,
     _i1.Transaction? transaction,
@@ -342,7 +344,7 @@ class UserNoteCollectionRepository {
   }
 
   Future<UserNoteCollection> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     UserNoteCollection row, {
     _i1.ColumnSelections<UserNoteCollectionTable>? columns,
     _i1.Transaction? transaction,
@@ -355,7 +357,7 @@ class UserNoteCollectionRepository {
   }
 
   Future<List<UserNoteCollection>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<UserNoteCollection> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -366,7 +368,7 @@ class UserNoteCollectionRepository {
   }
 
   Future<UserNoteCollection> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     UserNoteCollection row, {
     _i1.Transaction? transaction,
   }) async {
@@ -377,7 +379,7 @@ class UserNoteCollectionRepository {
   }
 
   Future<List<UserNoteCollection>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<UserNoteCollectionTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -388,7 +390,7 @@ class UserNoteCollectionRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UserNoteCollectionTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -405,7 +407,7 @@ class UserNoteCollectionAttachRepository {
   const UserNoteCollectionAttachRepository._();
 
   Future<void> userNotesPropertyName(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     UserNoteCollection userNoteCollection,
     List<_i2.UserNote> userNote, {
     _i1.Transaction? transaction,
@@ -439,7 +441,7 @@ class UserNoteCollectionAttachRowRepository {
   const UserNoteCollectionAttachRowRepository._();
 
   Future<void> userNotesPropertyName(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     UserNoteCollection userNoteCollection,
     _i2.UserNote userNote, {
     _i1.Transaction? transaction,
@@ -471,7 +473,7 @@ class UserNoteCollectionDetachRepository {
   const UserNoteCollectionDetachRepository._();
 
   Future<void> userNotesPropertyName(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<_i2.UserNote> userNote, {
     _i1.Transaction? transaction,
   }) async {
@@ -501,7 +503,7 @@ class UserNoteCollectionDetachRowRepository {
   const UserNoteCollectionDetachRowRepository._();
 
   Future<void> userNotesPropertyName(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     _i2.UserNote userNote, {
     _i1.Transaction? transaction,
   }) async {

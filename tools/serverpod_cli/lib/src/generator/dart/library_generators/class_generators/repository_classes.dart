@@ -225,7 +225,7 @@ class BuildRepositoryClass {
       )
       ..requiredParameters.addAll([
         Parameter((p) => p
-          ..type = refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+          ..type = refer('Session', 'package:serverpod/serverpod.dart')
           ..name = 'session'),
       ])
       ..optionalParameters.addAll([
@@ -320,7 +320,7 @@ class BuildRepositoryClass {
       )
       ..requiredParameters.addAll([
         Parameter((p) => p
-          ..type = refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+          ..type = refer('Session', 'package:serverpod/serverpod.dart')
           ..name = 'session'),
       ])
       ..optionalParameters.addAll([
@@ -408,7 +408,7 @@ class BuildRepositoryClass {
       )
       ..requiredParameters.addAll([
         Parameter((p) => p
-          ..type = refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+          ..type = refer('Session', 'package:serverpod/serverpod.dart')
           ..name = 'session'),
         Parameter((p) => p
           ..type = refer('int')
@@ -458,8 +458,7 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type =
-                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..type = refer('Session', 'package:serverpod/serverpod.dart')
             ..name = 'session'),
           Parameter((p) => p
             ..type = refer('List<$className>')
@@ -502,8 +501,7 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type =
-                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..type = refer('Session', 'package:serverpod/serverpod.dart')
             ..name = 'session'),
           Parameter((p) => p
             ..type = refer(className)
@@ -546,8 +544,7 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type =
-                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..type = refer('Session', 'package:serverpod/serverpod.dart')
             ..name = 'session'),
           Parameter((p) => p
             ..type = refer('List<$className>')
@@ -600,8 +597,7 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type =
-                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..type = refer('Session', 'package:serverpod/serverpod.dart')
             ..name = 'session'),
           Parameter((p) => p
             ..type = refer(className)
@@ -662,8 +658,7 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type =
-                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..type = refer('Session', 'package:serverpod/serverpod.dart')
             ..name = 'session'),
           Parameter((p) => p
             ..type = refer('List<$className>')
@@ -708,8 +703,7 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type =
-                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..type = refer('Session', 'package:serverpod/serverpod.dart')
             ..name = 'session'),
           Parameter((p) => p
             ..type = refer(className)
@@ -760,8 +754,7 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type =
-                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..type = refer('Session', 'package:serverpod/serverpod.dart')
             ..name = 'session'),
         ])
         ..optionalParameters.addAll([
@@ -809,8 +802,7 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type =
-                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..type = refer('Session', 'package:serverpod/serverpod.dart')
             ..name = 'session'),
         ])
         ..optionalParameters.addAll([
@@ -918,8 +910,7 @@ class BuildRepositoryClass {
           Parameter((parameterBuilder) {
             parameterBuilder
               ..name = 'session'
-              ..type =
-                  refer('DatabaseAccessor', 'package:serverpod/serverpod.dart');
+              ..type = refer('Session', 'package:serverpod/serverpod.dart');
           }),
           Parameter((parameterBuilder) {
             parameterBuilder
@@ -992,8 +983,7 @@ class BuildRepositoryClass {
           Parameter((parameterBuilder) {
             parameterBuilder
               ..name = 'session'
-              ..type =
-                  refer('DatabaseAccessor', 'package:serverpod/serverpod.dart');
+              ..type = refer('Session', 'package:serverpod/serverpod.dart');
           }),
           Parameter((parameterBuilder) {
             parameterBuilder
@@ -1060,8 +1050,7 @@ class BuildRepositoryClass {
           Parameter((parameterBuilder) {
             parameterBuilder
               ..name = 'session'
-              ..type =
-                  refer('DatabaseAccessor', 'package:serverpod/serverpod.dart');
+              ..type = refer('Session', 'package:serverpod/serverpod.dart');
           }),
           Parameter((parameterBuilder) {
             parameterBuilder
@@ -1272,8 +1261,7 @@ class BuildRepositoryClass {
           Parameter((parameterBuilder) {
             parameterBuilder
               ..name = 'session'
-              ..type =
-                  refer('DatabaseAccessor', 'package:serverpod/serverpod.dart');
+              ..type = refer('Session', 'package:serverpod/serverpod.dart');
           }),
           Parameter((parameterBuilder) {
             parameterBuilder
@@ -1340,8 +1328,7 @@ class BuildRepositoryClass {
           Parameter((parameterBuilder) {
             parameterBuilder
               ..name = 'session'
-              ..type =
-                  refer('DatabaseAccessor', 'package:serverpod/serverpod.dart');
+              ..type = refer('Session', 'package:serverpod/serverpod.dart');
           }),
           Parameter((parameterBuilder) {
             parameterBuilder
@@ -1399,8 +1386,7 @@ class BuildRepositoryClass {
           Parameter((parameterBuilder) {
             parameterBuilder
               ..name = 'session'
-              ..type =
-                  refer('DatabaseAccessor', 'package:serverpod/serverpod.dart');
+              ..type = refer('Session', 'package:serverpod/serverpod.dart');
           }),
           Parameter((parameterBuilder) {
             parameterBuilder

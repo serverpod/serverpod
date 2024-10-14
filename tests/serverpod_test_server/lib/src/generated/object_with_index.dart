@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -186,7 +188,7 @@ class ObjectWithIndexRepository {
   const ObjectWithIndexRepository._();
 
   Future<List<ObjectWithIndex>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
     int? limit,
     int? offset,
@@ -207,7 +209,7 @@ class ObjectWithIndexRepository {
   }
 
   Future<ObjectWithIndex?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithIndexTable>? orderBy,
@@ -226,7 +228,7 @@ class ObjectWithIndexRepository {
   }
 
   Future<ObjectWithIndex?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -237,7 +239,7 @@ class ObjectWithIndexRepository {
   }
 
   Future<List<ObjectWithIndex>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ObjectWithIndex> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -248,7 +250,7 @@ class ObjectWithIndexRepository {
   }
 
   Future<ObjectWithIndex> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ObjectWithIndex row, {
     _i1.Transaction? transaction,
   }) async {
@@ -259,7 +261,7 @@ class ObjectWithIndexRepository {
   }
 
   Future<List<ObjectWithIndex>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ObjectWithIndex> rows, {
     _i1.ColumnSelections<ObjectWithIndexTable>? columns,
     _i1.Transaction? transaction,
@@ -272,7 +274,7 @@ class ObjectWithIndexRepository {
   }
 
   Future<ObjectWithIndex> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ObjectWithIndex row, {
     _i1.ColumnSelections<ObjectWithIndexTable>? columns,
     _i1.Transaction? transaction,
@@ -285,7 +287,7 @@ class ObjectWithIndexRepository {
   }
 
   Future<List<ObjectWithIndex>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ObjectWithIndex> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -296,7 +298,7 @@ class ObjectWithIndexRepository {
   }
 
   Future<ObjectWithIndex> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ObjectWithIndex row, {
     _i1.Transaction? transaction,
   }) async {
@@ -307,7 +309,7 @@ class ObjectWithIndexRepository {
   }
 
   Future<List<ObjectWithIndex>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<ObjectWithIndexTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -318,7 +320,7 @@ class ObjectWithIndexRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
     int? limit,
     _i1.Transaction? transaction,

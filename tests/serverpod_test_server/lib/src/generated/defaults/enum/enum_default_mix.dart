@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -234,7 +236,7 @@ class EnumDefaultMixRepository {
   const EnumDefaultMixRepository._();
 
   Future<List<EnumDefaultMix>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<EnumDefaultMixTable>? where,
     int? limit,
     int? offset,
@@ -255,7 +257,7 @@ class EnumDefaultMixRepository {
   }
 
   Future<EnumDefaultMix?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<EnumDefaultMixTable>? where,
     int? offset,
     _i1.OrderByBuilder<EnumDefaultMixTable>? orderBy,
@@ -274,7 +276,7 @@ class EnumDefaultMixRepository {
   }
 
   Future<EnumDefaultMix?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -285,7 +287,7 @@ class EnumDefaultMixRepository {
   }
 
   Future<List<EnumDefaultMix>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<EnumDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -296,7 +298,7 @@ class EnumDefaultMixRepository {
   }
 
   Future<EnumDefaultMix> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     EnumDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
@@ -307,7 +309,7 @@ class EnumDefaultMixRepository {
   }
 
   Future<List<EnumDefaultMix>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<EnumDefaultMix> rows, {
     _i1.ColumnSelections<EnumDefaultMixTable>? columns,
     _i1.Transaction? transaction,
@@ -320,7 +322,7 @@ class EnumDefaultMixRepository {
   }
 
   Future<EnumDefaultMix> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     EnumDefaultMix row, {
     _i1.ColumnSelections<EnumDefaultMixTable>? columns,
     _i1.Transaction? transaction,
@@ -333,7 +335,7 @@ class EnumDefaultMixRepository {
   }
 
   Future<List<EnumDefaultMix>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<EnumDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -344,7 +346,7 @@ class EnumDefaultMixRepository {
   }
 
   Future<EnumDefaultMix> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     EnumDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
@@ -355,7 +357,7 @@ class EnumDefaultMixRepository {
   }
 
   Future<List<EnumDefaultMix>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<EnumDefaultMixTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -366,7 +368,7 @@ class EnumDefaultMixRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<EnumDefaultMixTable>? where,
     int? limit,
     _i1.Transaction? transaction,

@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -303,7 +305,7 @@ class OrderRepository {
   final attachRow = const OrderAttachRowRepository._();
 
   Future<List<Order>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<OrderTable>? where,
     int? limit,
     int? offset,
@@ -326,7 +328,7 @@ class OrderRepository {
   }
 
   Future<Order?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<OrderTable>? where,
     int? offset,
     _i1.OrderByBuilder<OrderTable>? orderBy,
@@ -347,7 +349,7 @@ class OrderRepository {
   }
 
   Future<Order?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     OrderInclude? include,
@@ -360,7 +362,7 @@ class OrderRepository {
   }
 
   Future<List<Order>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Order> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -371,7 +373,7 @@ class OrderRepository {
   }
 
   Future<Order> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Order row, {
     _i1.Transaction? transaction,
   }) async {
@@ -382,7 +384,7 @@ class OrderRepository {
   }
 
   Future<List<Order>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Order> rows, {
     _i1.ColumnSelections<OrderTable>? columns,
     _i1.Transaction? transaction,
@@ -395,7 +397,7 @@ class OrderRepository {
   }
 
   Future<Order> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Order row, {
     _i1.ColumnSelections<OrderTable>? columns,
     _i1.Transaction? transaction,
@@ -408,7 +410,7 @@ class OrderRepository {
   }
 
   Future<List<Order>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Order> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -419,7 +421,7 @@ class OrderRepository {
   }
 
   Future<Order> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Order row, {
     _i1.Transaction? transaction,
   }) async {
@@ -430,7 +432,7 @@ class OrderRepository {
   }
 
   Future<List<Order>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<OrderTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -441,7 +443,7 @@ class OrderRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<OrderTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -458,7 +460,7 @@ class OrderAttachRepository {
   const OrderAttachRepository._();
 
   Future<void> comments(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Order order,
     List<_i2.Comment> comment, {
     _i1.Transaction? transaction,
@@ -483,7 +485,7 @@ class OrderAttachRowRepository {
   const OrderAttachRowRepository._();
 
   Future<void> customer(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Order order,
     _i2.Customer customer, {
     _i1.Transaction? transaction,
@@ -504,7 +506,7 @@ class OrderAttachRowRepository {
   }
 
   Future<void> comments(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Order order,
     _i2.Comment comment, {
     _i1.Transaction? transaction,

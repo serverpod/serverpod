@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -231,7 +233,7 @@ class PlayerRepository {
   final detachRow = const PlayerDetachRowRepository._();
 
   Future<List<Player>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<PlayerTable>? where,
     int? limit,
     int? offset,
@@ -254,7 +256,7 @@ class PlayerRepository {
   }
 
   Future<Player?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<PlayerTable>? where,
     int? offset,
     _i1.OrderByBuilder<PlayerTable>? orderBy,
@@ -275,7 +277,7 @@ class PlayerRepository {
   }
 
   Future<Player?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     PlayerInclude? include,
@@ -288,7 +290,7 @@ class PlayerRepository {
   }
 
   Future<List<Player>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Player> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -299,7 +301,7 @@ class PlayerRepository {
   }
 
   Future<Player> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Player row, {
     _i1.Transaction? transaction,
   }) async {
@@ -310,7 +312,7 @@ class PlayerRepository {
   }
 
   Future<List<Player>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Player> rows, {
     _i1.ColumnSelections<PlayerTable>? columns,
     _i1.Transaction? transaction,
@@ -323,7 +325,7 @@ class PlayerRepository {
   }
 
   Future<Player> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Player row, {
     _i1.ColumnSelections<PlayerTable>? columns,
     _i1.Transaction? transaction,
@@ -336,7 +338,7 @@ class PlayerRepository {
   }
 
   Future<List<Player>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Player> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -347,7 +349,7 @@ class PlayerRepository {
   }
 
   Future<Player> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Player row, {
     _i1.Transaction? transaction,
   }) async {
@@ -358,7 +360,7 @@ class PlayerRepository {
   }
 
   Future<List<Player>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<PlayerTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -369,7 +371,7 @@ class PlayerRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<PlayerTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -386,7 +388,7 @@ class PlayerAttachRowRepository {
   const PlayerAttachRowRepository._();
 
   Future<void> team(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Player player,
     _i2.Team team, {
     _i1.Transaction? transaction,
@@ -411,7 +413,7 @@ class PlayerDetachRowRepository {
   const PlayerDetachRowRepository._();
 
   Future<void> team(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Player player, {
     _i1.Transaction? transaction,
   }) async {

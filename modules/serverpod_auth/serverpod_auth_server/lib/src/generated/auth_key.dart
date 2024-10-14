@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -248,7 +250,7 @@ class AuthKeyRepository {
   const AuthKeyRepository._();
 
   Future<List<AuthKey>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? limit,
     int? offset,
@@ -269,7 +271,7 @@ class AuthKeyRepository {
   }
 
   Future<AuthKey?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? offset,
     _i1.OrderByBuilder<AuthKeyTable>? orderBy,
@@ -288,7 +290,7 @@ class AuthKeyRepository {
   }
 
   Future<AuthKey?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -299,7 +301,7 @@ class AuthKeyRepository {
   }
 
   Future<List<AuthKey>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<AuthKey> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -310,7 +312,7 @@ class AuthKeyRepository {
   }
 
   Future<AuthKey> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     AuthKey row, {
     _i1.Transaction? transaction,
   }) async {
@@ -321,7 +323,7 @@ class AuthKeyRepository {
   }
 
   Future<List<AuthKey>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<AuthKey> rows, {
     _i1.ColumnSelections<AuthKeyTable>? columns,
     _i1.Transaction? transaction,
@@ -334,7 +336,7 @@ class AuthKeyRepository {
   }
 
   Future<AuthKey> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     AuthKey row, {
     _i1.ColumnSelections<AuthKeyTable>? columns,
     _i1.Transaction? transaction,
@@ -347,7 +349,7 @@ class AuthKeyRepository {
   }
 
   Future<List<AuthKey>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<AuthKey> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -358,7 +360,7 @@ class AuthKeyRepository {
   }
 
   Future<AuthKey> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     AuthKey row, {
     _i1.Transaction? transaction,
   }) async {
@@ -369,7 +371,7 @@ class AuthKeyRepository {
   }
 
   Future<List<AuthKey>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<AuthKeyTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -380,7 +382,7 @@ class AuthKeyRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? limit,
     _i1.Transaction? transaction,

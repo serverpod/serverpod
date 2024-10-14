@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -166,7 +168,7 @@ class ScopeNoneFieldsRepository {
   const ScopeNoneFieldsRepository._();
 
   Future<List<ScopeNoneFields>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     int? limit,
     int? offset,
@@ -187,7 +189,7 @@ class ScopeNoneFieldsRepository {
   }
 
   Future<ScopeNoneFields?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     int? offset,
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
@@ -206,7 +208,7 @@ class ScopeNoneFieldsRepository {
   }
 
   Future<ScopeNoneFields?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -217,7 +219,7 @@ class ScopeNoneFieldsRepository {
   }
 
   Future<List<ScopeNoneFields>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ScopeNoneFields> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -228,7 +230,7 @@ class ScopeNoneFieldsRepository {
   }
 
   Future<ScopeNoneFields> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ScopeNoneFields row, {
     _i1.Transaction? transaction,
   }) async {
@@ -239,7 +241,7 @@ class ScopeNoneFieldsRepository {
   }
 
   Future<List<ScopeNoneFields>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ScopeNoneFields> rows, {
     _i1.ColumnSelections<ScopeNoneFieldsTable>? columns,
     _i1.Transaction? transaction,
@@ -252,7 +254,7 @@ class ScopeNoneFieldsRepository {
   }
 
   Future<ScopeNoneFields> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ScopeNoneFields row, {
     _i1.ColumnSelections<ScopeNoneFieldsTable>? columns,
     _i1.Transaction? transaction,
@@ -265,7 +267,7 @@ class ScopeNoneFieldsRepository {
   }
 
   Future<List<ScopeNoneFields>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ScopeNoneFields> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -276,7 +278,7 @@ class ScopeNoneFieldsRepository {
   }
 
   Future<ScopeNoneFields> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ScopeNoneFields row, {
     _i1.Transaction? transaction,
   }) async {
@@ -287,7 +289,7 @@ class ScopeNoneFieldsRepository {
   }
 
   Future<List<ScopeNoneFields>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -298,7 +300,7 @@ class ScopeNoneFieldsRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     int? limit,
     _i1.Transaction? transaction,

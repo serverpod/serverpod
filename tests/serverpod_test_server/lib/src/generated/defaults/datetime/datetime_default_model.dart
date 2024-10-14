@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -222,7 +224,7 @@ class DateTimeDefaultModelRepository {
   const DateTimeDefaultModelRepository._();
 
   Future<List<DateTimeDefaultModel>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<DateTimeDefaultModelTable>? where,
     int? limit,
     int? offset,
@@ -243,7 +245,7 @@ class DateTimeDefaultModelRepository {
   }
 
   Future<DateTimeDefaultModel?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<DateTimeDefaultModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<DateTimeDefaultModelTable>? orderBy,
@@ -262,7 +264,7 @@ class DateTimeDefaultModelRepository {
   }
 
   Future<DateTimeDefaultModel?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -273,7 +275,7 @@ class DateTimeDefaultModelRepository {
   }
 
   Future<List<DateTimeDefaultModel>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<DateTimeDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -284,7 +286,7 @@ class DateTimeDefaultModelRepository {
   }
 
   Future<DateTimeDefaultModel> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     DateTimeDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
@@ -295,7 +297,7 @@ class DateTimeDefaultModelRepository {
   }
 
   Future<List<DateTimeDefaultModel>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<DateTimeDefaultModel> rows, {
     _i1.ColumnSelections<DateTimeDefaultModelTable>? columns,
     _i1.Transaction? transaction,
@@ -308,7 +310,7 @@ class DateTimeDefaultModelRepository {
   }
 
   Future<DateTimeDefaultModel> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     DateTimeDefaultModel row, {
     _i1.ColumnSelections<DateTimeDefaultModelTable>? columns,
     _i1.Transaction? transaction,
@@ -321,7 +323,7 @@ class DateTimeDefaultModelRepository {
   }
 
   Future<List<DateTimeDefaultModel>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<DateTimeDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -332,7 +334,7 @@ class DateTimeDefaultModelRepository {
   }
 
   Future<DateTimeDefaultModel> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     DateTimeDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
@@ -343,7 +345,7 @@ class DateTimeDefaultModelRepository {
   }
 
   Future<List<DateTimeDefaultModel>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<DateTimeDefaultModelTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -354,7 +356,7 @@ class DateTimeDefaultModelRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<DateTimeDefaultModelTable>? where,
     int? limit,
     _i1.Transaction? transaction,

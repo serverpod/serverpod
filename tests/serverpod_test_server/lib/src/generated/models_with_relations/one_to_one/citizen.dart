@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -339,7 +341,7 @@ class CitizenRepository {
   final detachRow = const CitizenDetachRowRepository._();
 
   Future<List<Citizen>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
     int? limit,
     int? offset,
@@ -362,7 +364,7 @@ class CitizenRepository {
   }
 
   Future<Citizen?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
     int? offset,
     _i1.OrderByBuilder<CitizenTable>? orderBy,
@@ -383,7 +385,7 @@ class CitizenRepository {
   }
 
   Future<Citizen?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     CitizenInclude? include,
@@ -396,7 +398,7 @@ class CitizenRepository {
   }
 
   Future<List<Citizen>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Citizen> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -407,7 +409,7 @@ class CitizenRepository {
   }
 
   Future<Citizen> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Citizen row, {
     _i1.Transaction? transaction,
   }) async {
@@ -418,7 +420,7 @@ class CitizenRepository {
   }
 
   Future<List<Citizen>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Citizen> rows, {
     _i1.ColumnSelections<CitizenTable>? columns,
     _i1.Transaction? transaction,
@@ -431,7 +433,7 @@ class CitizenRepository {
   }
 
   Future<Citizen> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Citizen row, {
     _i1.ColumnSelections<CitizenTable>? columns,
     _i1.Transaction? transaction,
@@ -444,7 +446,7 @@ class CitizenRepository {
   }
 
   Future<List<Citizen>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Citizen> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -455,7 +457,7 @@ class CitizenRepository {
   }
 
   Future<Citizen> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Citizen row, {
     _i1.Transaction? transaction,
   }) async {
@@ -466,7 +468,7 @@ class CitizenRepository {
   }
 
   Future<List<Citizen>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<CitizenTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -477,7 +479,7 @@ class CitizenRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -494,7 +496,7 @@ class CitizenAttachRowRepository {
   const CitizenAttachRowRepository._();
 
   Future<void> address(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Citizen citizen,
     _i2.Address address, {
     _i1.Transaction? transaction,
@@ -515,7 +517,7 @@ class CitizenAttachRowRepository {
   }
 
   Future<void> company(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Citizen citizen,
     _i2.Company company, {
     _i1.Transaction? transaction,
@@ -536,7 +538,7 @@ class CitizenAttachRowRepository {
   }
 
   Future<void> oldCompany(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Citizen citizen,
     _i2.Company oldCompany, {
     _i1.Transaction? transaction,
@@ -561,7 +563,7 @@ class CitizenDetachRowRepository {
   const CitizenDetachRowRepository._();
 
   Future<void> address(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Citizen citizen, {
     _i1.Transaction? transaction,
   }) async {
@@ -586,7 +588,7 @@ class CitizenDetachRowRepository {
   }
 
   Future<void> oldCompany(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Citizen citizen, {
     _i1.Transaction? transaction,
   }) async {

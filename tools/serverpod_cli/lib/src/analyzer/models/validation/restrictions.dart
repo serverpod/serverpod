@@ -260,17 +260,18 @@ class Restrictions {
 
     var currentModel = parsedModels.findByTableName(tableName);
 
-    var ancestorWithTable = _findTableClassInParentClasses(currentModel);
+    if (currentModel is ClassDefinition) {
+      var ancestorWithTable = _findTableClassInParentClasses(currentModel);
 
-    if (ancestorWithTable != null) {
-      return [
-        SourceSpanSeverityException(
-          'The "table" property is not allowed because another class, "${ancestorWithTable.className}", in the class hierarchy already has one defined. Only one table definition is allowed when using inheritance.',
-          span,
-        )
-      ];
+      if (ancestorWithTable != null) {
+        return [
+          SourceSpanSeverityException(
+            'The "table" property is not allowed because another class, "${ancestorWithTable.className}", in the class hierarchy already has one defined. Only one table definition is allowed when using inheritance.',
+            span,
+          )
+        ];
+      }
     }
-
     return [];
   }
 
@@ -311,16 +312,18 @@ class Restrictions {
     var currentModel =
         parsedModels.findByClassName(documentDefinition!.className);
 
-    var ancestorServerOnlyClass =
-        _findServerOnlyClassInParentClasses(currentModel);
+    if (currentModel is ClassDefinition) {
+      var ancestorServerOnlyClass =
+          _findServerOnlyClassInParentClasses(currentModel);
 
-    if (!documentDefinition!.serverOnly && ancestorServerOnlyClass != null) {
-      return [
-        SourceSpanSeverityException(
-          'Cannot extend a "serverOnly" class in the inheritance chain ("${ancestorServerOnlyClass.className}") unless class is marked as "serverOnly".',
-          span,
-        )
-      ];
+      if (!documentDefinition!.serverOnly && ancestorServerOnlyClass != null) {
+        return [
+          SourceSpanSeverityException(
+            'Cannot extend a "serverOnly" class in the inheritance chain ("${ancestorServerOnlyClass.className}") unless class is marked as "serverOnly".',
+            span,
+          )
+        ];
+      }
     }
 
     return [];
@@ -494,6 +497,27 @@ class Restrictions {
           span,
         )
       ];
+    }
+
+    if (def is ClassDefinition) {
+      var currentModel = parsedModels.findByClassName(def.className);
+
+      if (currentModel is ClassDefinition) {
+        var fieldWithDuplicatedName =
+            _findFieldWithDuplicatedName(currentModel, fieldName);
+        var parentClassWithDuplicatedFieldName =
+            _findAncestorWithDuplicatedFieldName(currentModel, fieldName);
+
+        if (fieldWithDuplicatedName != null &&
+            parentClassWithDuplicatedFieldName != null) {
+          return [
+            SourceSpanSeverityException(
+              'The field name "$fieldName" is already defined in an inherited class ("${parentClassWithDuplicatedFieldName.className}").',
+              span,
+            )
+          ];
+        }
+      }
     }
 
     return [];
@@ -1407,16 +1431,24 @@ class Restrictions {
         .classDefinition;
   }
 
-  ClassDefinition? _findTableClassInParentClasses(
-    SerializableModelDefinition? currentModel,
+  /// Traverses up the class hierarchy from [currentModel], applying [predicate] to each parent.
+  /// Returns the first non-null result from [predicate], or `null` if no match is found.
+  ///
+  /// ```dart
+  /// var serverOnlyAncestor = _findInHierarchy(
+  ///   currentModel,
+  ///  (ClassDefinition ancestor) => ancestor.serverOnly ? ancestor : null,
+  /// );
+  /// ```
+  T? _findInParentHierarchy<T>(
+    ClassDefinition currentModel,
+    T? Function(ClassDefinition) predicate,
   ) {
-    if (currentModel is! ClassDefinition) return null;
     var parentModel = _getParentClass(currentModel);
 
     while (parentModel != null) {
-      if (_hasTableDefined(parentModel)) {
-        return parentModel;
-      }
+      var result = predicate(parentModel);
+      if (result != null) return result;
 
       parentModel = _getParentClass(parentModel);
     }
@@ -1424,17 +1456,54 @@ class Restrictions {
     return null;
   }
 
-  ClassDefinition? _findServerOnlyClassInParentClasses(
-    SerializableModelDefinition? currentModel,
+  ClassDefinition? _findTableClassInParentClasses(
+    ClassDefinition currentModel,
   ) {
-    if (currentModel is! ClassDefinition) return null;
-    var parentModel = _getParentClass(currentModel);
+    return _findInParentHierarchy(
+      currentModel,
+      (ClassDefinition ancestor) =>
+          ancestor.tableName != null ? ancestor : null,
+    );
+  }
 
-    while (parentModel != null) {
-      if (parentModel.serverOnly) return parentModel;
+  ClassDefinition? _findServerOnlyClassInParentClasses(
+    ClassDefinition currentModel,
+  ) {
+    return _findInParentHierarchy(
+      currentModel,
+      (ClassDefinition ancestor) => ancestor.serverOnly ? ancestor : null,
+    );
+  }
 
-      parentModel = _getParentClass(parentModel);
-    }
-    return null;
+  ClassDefinition? _findAncestorWithDuplicatedFieldName(
+    ClassDefinition currentModel,
+    String fieldName,
+  ) {
+    return _findInParentHierarchy(
+      currentModel,
+      (ClassDefinition ancestor) {
+        var parentFieldNames = ancestor.fields.map((field) => field.name);
+
+        if (parentFieldNames.contains(fieldName)) {
+          return ancestor;
+        }
+
+        return null;
+      },
+    );
+  }
+
+  SerializableModelFieldDefinition? _findFieldWithDuplicatedName(
+    ClassDefinition currentModel,
+    String fieldName,
+  ) {
+    return _findInParentHierarchy(
+      currentModel,
+      (ClassDefinition ancestor) {
+        return ancestor.fields
+            .where((field) => field.name == fieldName)
+            .firstOrNull;
+      },
+    );
   }
 }

@@ -177,7 +177,7 @@ void main() {
         expect(
           peopleMethod?.parameters?.toSource(),
           matches(
-              r'\(_i\d\.DatabaseAccessor session, Example example, Person person, \{_i\d\.Transaction\? transaction\}\)'),
+              r'\(_i\d\.Session session, Example example, Person person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: peopleMethod == null);
     });
@@ -228,7 +228,7 @@ void main() {
         expect(
           peopleMethod?.parameters?.toSource(),
           matches(
-              r'\(_i\d\.DatabaseAccessor session, Example example, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
+              r'\(_i\d\.Session session, Example example, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: peopleMethod == null);
     }, skip: repositoryAttachClass == null);
@@ -267,7 +267,7 @@ void main() {
         expect(
           peopleMethod?.parameters?.toSource(),
           matches(
-              r'\(_i\d\.DatabaseAccessor session, Person person, \{_i\d\.Transaction\? transaction\}\)'),
+              r'\(_i\d\.Session session, Person person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: peopleMethod == null);
     }, skip: repositoryClass == null);
@@ -318,7 +318,7 @@ void main() {
         expect(
           peopleMethod?.parameters?.toSource(),
           matches(
-              r'\(_i\d\.DatabaseAccessor session, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
+              r'\(_i\d\.Session session, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: peopleMethod == null);
     }, skip: repositoryAttachClass == null);
@@ -376,7 +376,7 @@ void main() {
         expect(
           citizensMethod?.parameters?.toSource(),
           matches(
-              r'\(_i\d\.DatabaseAccessor session, Example example, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
+              r'\(_i\d\.Session session, Example example, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: citizensMethod == null);
     }, skip: repositoryAttachClass == null);
@@ -403,7 +403,7 @@ void main() {
         expect(
           citizenMethod?.parameters?.toSource(),
           matches(
-              r'\(_i\d\.DatabaseAccessor session, Example example, Person person, \{_i\d\.Transaction\? transaction\}\)'),
+              r'\(_i\d\.Session session, Example example, Person person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: citizenMethod == null);
     });
@@ -441,7 +441,7 @@ void main() {
         expect(
           citizensMethod?.parameters?.toSource(),
           matches(
-              r'\(_i\d\.DatabaseAccessor session, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
+              r'\(_i\d\.Session session, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: citizensMethod == null);
     }, skip: repositoryAttachClass == null);
@@ -468,7 +468,7 @@ void main() {
         expect(
           citizenMethod?.parameters?.toSource(),
           matches(
-              r'\(_i\d\.DatabaseAccessor session, Person person, \{_i\d\.Transaction\? transaction\}\)'),
+              r'\(_i\d\.Session session, Person person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: citizenMethod == null);
     });

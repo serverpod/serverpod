@@ -2,3 +2,6 @@ module:
   - hello:
   - modifyModuleObject:
 streaming:
+  - wasStreamOpenCalled:
+  - wasStreamClosedCalled:
+  - intEchoStream:

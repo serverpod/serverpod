@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
@@ -263,7 +265,7 @@ class ObjectWithEnumRepository {
   const ObjectWithEnumRepository._();
 
   Future<List<ObjectWithEnum>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithEnumTable>? where,
     int? limit,
     int? offset,
@@ -284,7 +286,7 @@ class ObjectWithEnumRepository {
   }
 
   Future<ObjectWithEnum?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithEnumTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithEnumTable>? orderBy,
@@ -303,7 +305,7 @@ class ObjectWithEnumRepository {
   }
 
   Future<ObjectWithEnum?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -314,7 +316,7 @@ class ObjectWithEnumRepository {
   }
 
   Future<List<ObjectWithEnum>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ObjectWithEnum> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -325,7 +327,7 @@ class ObjectWithEnumRepository {
   }
 
   Future<ObjectWithEnum> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ObjectWithEnum row, {
     _i1.Transaction? transaction,
   }) async {
@@ -336,7 +338,7 @@ class ObjectWithEnumRepository {
   }
 
   Future<List<ObjectWithEnum>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ObjectWithEnum> rows, {
     _i1.ColumnSelections<ObjectWithEnumTable>? columns,
     _i1.Transaction? transaction,
@@ -349,7 +351,7 @@ class ObjectWithEnumRepository {
   }
 
   Future<ObjectWithEnum> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ObjectWithEnum row, {
     _i1.ColumnSelections<ObjectWithEnumTable>? columns,
     _i1.Transaction? transaction,
@@ -362,7 +364,7 @@ class ObjectWithEnumRepository {
   }
 
   Future<List<ObjectWithEnum>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ObjectWithEnum> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -373,7 +375,7 @@ class ObjectWithEnumRepository {
   }
 
   Future<ObjectWithEnum> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ObjectWithEnum row, {
     _i1.Transaction? transaction,
   }) async {
@@ -384,7 +386,7 @@ class ObjectWithEnumRepository {
   }
 
   Future<List<ObjectWithEnum>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<ObjectWithEnumTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -395,7 +397,7 @@ class ObjectWithEnumRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithEnumTable>? where,
     int? limit,
     _i1.Transaction? transaction,

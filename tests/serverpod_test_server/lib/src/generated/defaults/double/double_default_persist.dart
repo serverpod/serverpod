@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -174,7 +176,7 @@ class DoubleDefaultPersistRepository {
   const DoubleDefaultPersistRepository._();
 
   Future<List<DoubleDefaultPersist>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<DoubleDefaultPersistTable>? where,
     int? limit,
     int? offset,
@@ -195,7 +197,7 @@ class DoubleDefaultPersistRepository {
   }
 
   Future<DoubleDefaultPersist?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<DoubleDefaultPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<DoubleDefaultPersistTable>? orderBy,
@@ -214,7 +216,7 @@ class DoubleDefaultPersistRepository {
   }
 
   Future<DoubleDefaultPersist?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -225,7 +227,7 @@ class DoubleDefaultPersistRepository {
   }
 
   Future<List<DoubleDefaultPersist>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<DoubleDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -236,7 +238,7 @@ class DoubleDefaultPersistRepository {
   }
 
   Future<DoubleDefaultPersist> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     DoubleDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
@@ -247,7 +249,7 @@ class DoubleDefaultPersistRepository {
   }
 
   Future<List<DoubleDefaultPersist>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<DoubleDefaultPersist> rows, {
     _i1.ColumnSelections<DoubleDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
@@ -260,7 +262,7 @@ class DoubleDefaultPersistRepository {
   }
 
   Future<DoubleDefaultPersist> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     DoubleDefaultPersist row, {
     _i1.ColumnSelections<DoubleDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
@@ -273,7 +275,7 @@ class DoubleDefaultPersistRepository {
   }
 
   Future<List<DoubleDefaultPersist>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<DoubleDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -284,7 +286,7 @@ class DoubleDefaultPersistRepository {
   }
 
   Future<DoubleDefaultPersist> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     DoubleDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
@@ -295,7 +297,7 @@ class DoubleDefaultPersistRepository {
   }
 
   Future<List<DoubleDefaultPersist>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<DoubleDefaultPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -306,7 +308,7 @@ class DoubleDefaultPersistRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<DoubleDefaultPersistTable>? where,
     int? limit,
     _i1.Transaction? transaction,
