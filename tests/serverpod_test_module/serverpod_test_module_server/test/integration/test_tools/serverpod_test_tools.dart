@@ -133,7 +133,91 @@ class _ModuleEndpoint {
 
 class _StreamingEndpoint {
   _StreamingEndpoint(
-    _endpointDispatch,
-    _serializationManager,
+    this._endpointDispatch,
+    this._serializationManager,
   );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<bool> wasStreamOpenCalled(
+      _i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'streaming',
+        method: 'wasStreamOpenCalled',
+      );
+      var _localCallContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => _localUniqueSession,
+        endpointPath: 'streaming',
+        methodName: 'wasStreamOpenCalled',
+        parameters: _i1.testObjectToJson({}),
+        serializationManager: _serializationManager,
+      );
+      var _localReturnValue = await (_localCallContext.method.call(
+        _localUniqueSession,
+        _localCallContext.arguments,
+      ) as _i3.Future<bool>);
+      await _localUniqueSession.close();
+      return _localReturnValue;
+    });
+  }
+
+  _i3.Future<bool> wasStreamClosedCalled(
+      _i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'streaming',
+        method: 'wasStreamClosedCalled',
+      );
+      var _localCallContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => _localUniqueSession,
+        endpointPath: 'streaming',
+        methodName: 'wasStreamClosedCalled',
+        parameters: _i1.testObjectToJson({}),
+        serializationManager: _serializationManager,
+      );
+      var _localReturnValue = await (_localCallContext.method.call(
+        _localUniqueSession,
+        _localCallContext.arguments,
+      ) as _i3.Future<bool>);
+      await _localUniqueSession.close();
+      return _localReturnValue;
+    });
+  }
+
+  _i3.Stream<int> intEchoStream(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<int> stream,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<int>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'streaming',
+          method: 'intEchoStream',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'streaming',
+          methodName: 'intEchoStream',
+          arguments: {},
+          requestedInputStreams: ['stream'],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'stream': stream},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
 }
