@@ -89,6 +89,7 @@ abstract class EndpointDispatch {
       arguments: parsedArguments,
       inputStreams: inputStreams,
       endpoint: endpoint,
+      fullEndpointPath: endpointPath,
     );
   }
 
@@ -333,6 +334,9 @@ class MethodStreamCallContext {
   /// The endpoint the method is called on.
   final Endpoint endpoint;
 
+  /// The full path to the endpoint, including module.
+  final String fullEndpointPath;
+
   /// The input streams to pass to the method.
   final List<StreamParameterDescription> inputStreams;
 
@@ -342,6 +346,7 @@ class MethodStreamCallContext {
     required this.arguments,
     required this.inputStreams,
     required this.endpoint,
+    required this.fullEndpointPath,
   });
 }
 

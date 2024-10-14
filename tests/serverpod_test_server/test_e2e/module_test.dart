@@ -9,18 +9,24 @@ import 'package:test/test.dart';
 void main() {
   var client = Client(serverUrl);
 
-  group('Modules', () {
-    test('Serialization', () async {
+  group('Given a module', () {
+    test(
+        'when calling a non-module endpoint that uses a module object '
+        'then should return true to indicate nothing went wrong', () async {
       var success = await client.moduleSerialization.serializeModuleObject();
       expect(success, equals(true));
     });
 
-    test('Module call', () async {
+    test(
+        'when calling endpoint method hello'
+        'then returns greeting', () async {
       var result = await client.modules.module.module.hello('World');
       expect(result, equals('Hello World'));
     });
 
-    test('Passing module object', () async {
+    test(
+        'when calling a non-module endpoint that modifies a module object '
+        'then should return modified object', () async {
       var moduleClass = module.ModuleClass(
         name: 'foo',
         data: 0,
@@ -30,7 +36,9 @@ void main() {
       expect(result.data, equals(42));
     });
 
-    test('Passing module object to module', () async {
+    test(
+        'when calling endpoint method that modifies object '
+        'then returns modified object', () async {
       var moduleClass = module.ModuleClass(
         name: 'foo',
         data: 0,
@@ -82,6 +90,25 @@ void main() {
             client.modules.module.streaming.wasStreamClosedCalled(),
             completion(isTrue));
       });
+    });
+
+    test(
+        'when calling stream-returning method that takes stream as a parameter '
+        'then should return a stream', () async {
+      var streamComplete = Completer();
+      var numberGenerator = List.generate(10, (index) => index++);
+      var inputStream = Stream<int>.fromIterable(numberGenerator);
+      var stream = client.modules.module.streaming.intEchoStream(inputStream);
+
+      var received = <int>[];
+      stream.listen((event) {
+        received.add(event);
+      }, onDone: () {
+        streamComplete.complete();
+      }, cancelOnError: true);
+
+      await streamComplete.future;
+      expect(received, numberGenerator);
     });
   });
 

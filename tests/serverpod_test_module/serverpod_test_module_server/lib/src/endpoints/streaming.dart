@@ -43,4 +43,10 @@ class StreamingEndpoint extends Endpoint {
       await sendStreamMessage(session, message);
     }));
   }
+
+  Stream<int> intEchoStream(Session session, Stream<int> stream) async* {
+    await for (var value in stream) {
+      yield value;
+    }
+  }
 }
