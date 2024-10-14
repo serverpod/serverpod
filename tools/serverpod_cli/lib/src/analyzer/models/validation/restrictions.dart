@@ -512,7 +512,7 @@ class Restrictions {
             parentClassWithDuplicatedFieldName != null) {
           return [
             SourceSpanSeverityException(
-              'Duplicated field definition. Field with name "$fieldName" already exists in inherited class "${parentClassWithDuplicatedFieldName.className}".',
+              'The field name "$fieldName" is already defined in an inherited class ("${parentClassWithDuplicatedFieldName.className}").',
               span,
             )
           ];
@@ -1431,8 +1431,8 @@ class Restrictions {
         .classDefinition;
   }
 
-  /// Traverses up the class hierarchy from [currentModel], applying [findFunction] to each parent.
-  /// Returns the first non-null result from [findFunction], or `null` if no match is found.
+  /// Traverses up the class hierarchy from [currentModel], applying [predicate] to each parent.
+  /// Returns the first non-null result from [predicate], or `null` if no match is found.
   ///
   /// ```dart
   /// var serverOnlyAncestor = _findInHierarchy(
@@ -1440,14 +1440,14 @@ class Restrictions {
   ///  (ClassDefinition ancestor) => ancestor.serverOnly ? ancestor : null,
   /// );
   /// ```
-  T? _findInHierarchy<T>(
+  T? _findInParentHierarchy<T>(
     ClassDefinition currentModel,
-    T? Function(ClassDefinition) findFunction,
+    T? Function(ClassDefinition) predicate,
   ) {
     var parentModel = _getParentClass(currentModel);
 
     while (parentModel != null) {
-      var result = findFunction(parentModel);
+      var result = predicate(parentModel);
       if (result != null) return result;
 
       parentModel = _getParentClass(parentModel);
@@ -1459,7 +1459,7 @@ class Restrictions {
   ClassDefinition? _findTableClassInParentClasses(
     ClassDefinition currentModel,
   ) {
-    return _findInHierarchy(
+    return _findInParentHierarchy(
       currentModel,
       (ClassDefinition ancestor) =>
           ancestor.tableName != null ? ancestor : null,
@@ -1469,7 +1469,7 @@ class Restrictions {
   ClassDefinition? _findServerOnlyClassInParentClasses(
     ClassDefinition currentModel,
   ) {
-    return _findInHierarchy(
+    return _findInParentHierarchy(
       currentModel,
       (ClassDefinition ancestor) => ancestor.serverOnly ? ancestor : null,
     );
@@ -1479,7 +1479,7 @@ class Restrictions {
     ClassDefinition currentModel,
     String fieldName,
   ) {
-    return _findInHierarchy(
+    return _findInParentHierarchy(
       currentModel,
       (ClassDefinition ancestor) {
         var parentFieldNames = ancestor.fields.map((field) => field.name);
@@ -1497,7 +1497,7 @@ class Restrictions {
     ClassDefinition currentModel,
     String fieldName,
   ) {
-    return _findInHierarchy(
+    return _findInParentHierarchy(
       currentModel,
       (ClassDefinition ancestor) {
         return ancestor.fields

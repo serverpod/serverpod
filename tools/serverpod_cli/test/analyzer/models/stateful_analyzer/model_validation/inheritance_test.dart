@@ -247,7 +247,7 @@ void main() {
       var error = collector.errors.first;
       expect(
         error.message,
-        'Duplicated field definition. Field with name "name" already exists in inherited class "Example".',
+        'The field name "name" is already defined in an inherited class ("Example").',
       );
     });
 
