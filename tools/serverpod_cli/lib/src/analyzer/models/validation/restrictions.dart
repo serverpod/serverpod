@@ -260,17 +260,18 @@ class Restrictions {
 
     var currentModel = parsedModels.findByTableName(tableName);
 
-    var ancestorWithTable = _findTableClassInParentClasses(currentModel);
+    if (currentModel is ClassDefinition) {
+      var ancestorWithTable = _findTableClassInParentClasses(currentModel);
 
-    if (ancestorWithTable != null) {
-      return [
-        SourceSpanSeverityException(
-          'The "table" property is not allowed because another class, "${ancestorWithTable.className}", in the class hierarchy already has one defined. Only one table definition is allowed when using inheritance.',
-          span,
-        )
-      ];
+      if (ancestorWithTable != null) {
+        return [
+          SourceSpanSeverityException(
+            'The "table" property is not allowed because another class, "${ancestorWithTable.className}", in the class hierarchy already has one defined. Only one table definition is allowed when using inheritance.',
+            span,
+          )
+        ];
+      }
     }
-
     return [];
   }
 
@@ -311,29 +312,18 @@ class Restrictions {
     var currentModel =
         parsedModels.findByClassName(documentDefinition!.className);
 
-    var ancestorServerOnlyClass =
-        _findServerOnlyClassInParentClasses(currentModel);
+    if (currentModel is ClassDefinition) {
+      var ancestorServerOnlyClass =
+          _findServerOnlyClassInParentClasses(currentModel);
 
-    if (!documentDefinition!.serverOnly && ancestorServerOnlyClass != null) {
-      return [
-        SourceSpanSeverityException(
-          'Cannot extend a "serverOnly" class in the inheritance chain ("${ancestorServerOnlyClass.className}") unless class is marked as "serverOnly".',
-          span,
-        )
-      ];
-    }
-
-    var duplicatedField = _findFieldWithDuplicatedName(currentModel);
-    var ancestorWithDuplicatedField =
-        _findAncestorWithDuplicatedFieldName(currentModel);
-
-    if (duplicatedField != null && ancestorWithDuplicatedField != null) {
-      return [
-        SourceSpanSeverityException(
-          'You cannot declare "${currentModel?.className}" with field: "${duplicatedField.name}" as it is already declared in "${ancestorWithDuplicatedField.className}".',
-          span,
-        )
-      ];
+      if (!documentDefinition!.serverOnly && ancestorServerOnlyClass != null) {
+        return [
+          SourceSpanSeverityException(
+            'Cannot extend a "serverOnly" class in the inheritance chain ("${ancestorServerOnlyClass.className}") unless class is marked as "serverOnly".',
+            span,
+          )
+        ];
+      }
     }
 
     return [];
@@ -507,6 +497,27 @@ class Restrictions {
           span,
         )
       ];
+    }
+
+    if (def is ClassDefinition) {
+      var currentModel = parsedModels.findByClassName(def.className);
+
+      if (currentModel is ClassDefinition) {
+        var fieldWithDuplicatedName =
+            _findFieldWithDuplicatedName(currentModel, fieldName);
+        var parentClassWithDuplicatedFieldName =
+            _findAncestorWithDuplicatedFieldName(currentModel, fieldName);
+
+        if (fieldWithDuplicatedName != null &&
+            parentClassWithDuplicatedFieldName != null) {
+          return [
+            SourceSpanSeverityException(
+              'Duplicated field definition. Field with name "$fieldName" already exists in inherited class "${parentClassWithDuplicatedFieldName.className}".',
+              span,
+            )
+          ];
+        }
+      }
     }
 
     return [];
@@ -1430,10 +1441,9 @@ class Restrictions {
   /// );
   /// ```
   T? _findInHierarchy<T>(
-    SerializableModelDefinition? currentModel,
+    ClassDefinition currentModel,
     T? Function(ClassDefinition) findFunction,
   ) {
-    if (currentModel is! ClassDefinition) return null;
     var parentModel = _getParentClass(currentModel);
 
     while (parentModel != null) {
@@ -1447,7 +1457,7 @@ class Restrictions {
   }
 
   ClassDefinition? _findTableClassInParentClasses(
-    SerializableModelDefinition? currentModel,
+    ClassDefinition currentModel,
   ) {
     return _findInHierarchy(
       currentModel,
@@ -1457,7 +1467,7 @@ class Restrictions {
   }
 
   ClassDefinition? _findServerOnlyClassInParentClasses(
-    SerializableModelDefinition? currentModel,
+    ClassDefinition currentModel,
   ) {
     return _findInHierarchy(
       currentModel,
@@ -1466,20 +1476,15 @@ class Restrictions {
   }
 
   ClassDefinition? _findAncestorWithDuplicatedFieldName(
-    SerializableModelDefinition? currentModel,
+    ClassDefinition currentModel,
+    String fieldName,
   ) {
     return _findInHierarchy(
       currentModel,
       (ClassDefinition ancestor) {
-        if (currentModel is! ClassDefinition) return null;
-
-        var fieldNames = currentModel.fields.map((field) => field.name);
         var parentFieldNames = ancestor.fields.map((field) => field.name);
 
-        var duplicates = fieldNames
-            .where((name) => parentFieldNames.contains(name) && name != 'id');
-
-        if (duplicates.isNotEmpty) {
+        if (parentFieldNames.contains(fieldName)) {
           return ancestor;
         }
 
@@ -1489,26 +1494,15 @@ class Restrictions {
   }
 
   SerializableModelFieldDefinition? _findFieldWithDuplicatedName(
-    SerializableModelDefinition? currentModel,
+    ClassDefinition currentModel,
+    String fieldName,
   ) {
     return _findInHierarchy(
       currentModel,
       (ClassDefinition ancestor) {
-        if (currentModel is! ClassDefinition) return null;
-
-        var fieldNames = currentModel.fields.map((field) => field.name);
-        var parentFieldNames = ancestor.fields.map((field) => field.name);
-
-        var duplicates = fieldNames
-            .where((name) => parentFieldNames.contains(name) && name != 'id');
-
-        if (duplicates.isNotEmpty) {
-          return ancestor.fields
-              .where((field) => duplicates.contains(field.name))
-              .first;
-        }
-
-        return null;
+        return ancestor.fields
+            .where((field) => field.name == fieldName)
+            .firstOrNull;
       },
     );
   }

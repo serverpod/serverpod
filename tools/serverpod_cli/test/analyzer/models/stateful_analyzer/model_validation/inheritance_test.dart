@@ -247,7 +247,7 @@ void main() {
       var error = collector.errors.first;
       expect(
         error.message,
-        'You cannot declare "ExampleChildClass" with field: "name" as it is already declared in "Example".',
+        'Duplicated field definition. Field with name "name" already exists in inherited class "Example".',
       );
     });
 
