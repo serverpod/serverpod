@@ -39,14 +39,22 @@ class MethodWebsocketRequestHandler {
           case OpenMethodStreamCommand():
             webSocket.tryAdd(
               await _handleOpenMethodStreamCommand(
-                  server, webSocket, message, methodStreamManager),
+                server,
+                webSocket,
+                message,
+                methodStreamManager,
+              ),
             );
             break;
           case OpenMethodStreamResponse():
             break;
           case MethodStreamMessage():
             _dispatchMethodStreamMessage(
-                message, webSocket, server, methodStreamManager);
+              message,
+              webSocket,
+              server,
+              methodStreamManager,
+            );
             break;
           case CloseMethodStreamCommand():
             await methodStreamManager.closeStream(
@@ -106,7 +114,7 @@ class MethodWebsocketRequestHandler {
       ) {
         webSocket.tryAdd(
           CloseMethodStreamCommand.buildMessage(
-            endpoint: callContext.endpoint.name,
+            endpoint: callContext.fullEndpointPath,
             method: callContext.method.name,
             parameter: parameterName,
             connectionId: methodStreamId,
@@ -121,7 +129,7 @@ class MethodWebsocketRequestHandler {
       ) {
         webSocket.tryAdd(
           CloseMethodStreamCommand.buildMessage(
-            endpoint: callContext.endpoint.name,
+            endpoint: callContext.fullEndpointPath,
             method: callContext.method.name,
             connectionId: methodStreamId,
             reason: closeReason ?? CloseReason.done,
@@ -137,7 +145,7 @@ class MethodWebsocketRequestHandler {
         if (error is SerializableException) {
           webSocket.tryAdd(
             MethodStreamSerializableException.buildMessage(
-              endpoint: callContext.endpoint.name,
+              endpoint: callContext.fullEndpointPath,
               method: callContext.method.name,
               connectionId: methodStreamId,
               object: error,
@@ -152,7 +160,7 @@ class MethodWebsocketRequestHandler {
         MethodStreamCallContext callContext,
       ) {
         webSocket.tryAdd(MethodStreamMessage.buildMessage(
-          endpoint: callContext.endpoint.name,
+          endpoint: callContext.fullEndpointPath,
           method: callContext.method.name,
           connectionId: methodStreamId,
           object: value,

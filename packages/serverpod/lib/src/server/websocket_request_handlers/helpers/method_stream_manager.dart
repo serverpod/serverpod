@@ -322,7 +322,7 @@ class MethodStreamManager {
       methodStreamCallContext.endpoint,
       session,
       onRevokedAuthentication: () => closeStream(
-        endpoint: methodStreamCallContext.endpoint.name,
+        endpoint: methodStreamCallContext.fullEndpointPath,
         method: methodStreamCallContext.method.name,
         methodStreamId: methodStreamId,
         reason: CloseReason.error,
@@ -352,7 +352,7 @@ class MethodStreamManager {
             methodStreamId, e, s, methodStreamCallContext);
 
         var streamKey = _buildStreamKey(
-          endpoint: methodStreamCallContext.endpoint.name,
+          endpoint: methodStreamCallContext.fullEndpointPath,
           method: methodStreamCallContext.method.name,
           methodStreamId: methodStreamId,
         );
@@ -371,7 +371,7 @@ class MethodStreamManager {
     var outputStreamContext =
         _OutputStreamContext(outputController, subscription);
     _outputStreamContexts[_buildStreamKey(
-      endpoint: methodStreamCallContext.endpoint.name,
+      endpoint: methodStreamCallContext.fullEndpointPath,
       method: methodStreamCallContext.method.name,
       methodStreamId: methodStreamId,
     )] = outputStreamContext;
@@ -430,7 +430,7 @@ class MethodStreamManager {
       var parameterName = streamParam.name;
       var controller = StreamController(onCancel: () async {
         var context = _inputStreamContexts.remove(_buildStreamKey(
-          endpoint: callContext.endpoint.name,
+          endpoint: callContext.fullEndpointPath,
           method: callContext.method.name,
           parameter: parameterName,
           methodStreamId: methodStreamId,
@@ -450,7 +450,7 @@ class MethodStreamManager {
 
       inputStreams[parameterName] = controller;
       _inputStreamContexts[_buildStreamKey(
-        endpoint: callContext.endpoint.name,
+        endpoint: callContext.fullEndpointPath,
         method: callContext.method.name,
         parameter: parameterName,
         methodStreamId: methodStreamId,
@@ -468,7 +468,7 @@ class MethodStreamManager {
     required UuidValue methodStreamId,
   }) async {
     var streamKey = _buildStreamKey(
-      endpoint: methodStreamCallContext.endpoint.name,
+      endpoint: methodStreamCallContext.fullEndpointPath,
       method: methodStreamCallContext.method.name,
       methodStreamId: methodStreamId,
     );
@@ -493,7 +493,7 @@ class MethodStreamManager {
       MethodStreamCallContext callContext, UuidValue methodStreamId) async {
     var context = _outputStreamContexts.remove(
       _buildStreamKey(
-        endpoint: callContext.endpoint.name,
+        endpoint: callContext.fullEndpointPath,
         method: callContext.method.name,
         methodStreamId: methodStreamId,
       ),
@@ -507,7 +507,7 @@ class MethodStreamManager {
     var inputStreamControllers = <StreamController>[];
     for (var streamParam in callContext.inputStreams) {
       var paramStreamContext = _inputStreamContexts.remove(_buildStreamKey(
-        endpoint: callContext.endpoint.name,
+        endpoint: callContext.fullEndpointPath,
         method: callContext.method.name,
         parameter: streamParam.name,
         methodStreamId: methodStreamId,
@@ -550,7 +550,7 @@ class MethodStreamManager {
         .whenComplete(
       () async {
         var streamKey = _buildStreamKey(
-          endpoint: methodStreamCallContext.endpoint.name,
+          endpoint: methodStreamCallContext.fullEndpointPath,
           method: methodStreamCallContext.method.name,
           methodStreamId: methodStreamId,
         );
