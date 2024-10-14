@@ -19,6 +19,11 @@ void main() {
           await UniqueData.db.insertRow(session, data);
         });
 
+        // Even though this exception is caught in this test, due to how transactions work
+        // the exception will be re-thrown when the top level test transaction is canceled.
+        // If the top level transaction error is not caught this test will fail.
+        // Therefore, this test validates that the exception is caught on the top level
+        // and does not fail the dart test runner.
         await expectLater(future, throwsA(isA<DatabaseException>()));
       });
 
