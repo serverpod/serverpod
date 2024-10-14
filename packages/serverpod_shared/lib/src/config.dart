@@ -130,10 +130,11 @@ class ServerpodConfig {
           )
         : null;
 
-    var sessionLogsConfig = _sessionLogsConfigMap(configMap, environment);
-    var losessionLogs = sessionLogsConfig != null
+    var sessionLogsConfigJson =
+        _buildSessionLogsConfigMap(configMap, environment);
+    var sessionLogsConfig = sessionLogsConfigJson != null
         ? SessionLogConfig._fromJson(
-            sessionLogsConfig,
+            sessionLogsConfigJson,
             ServerpodConfigMap.sessionLogs,
             databaseEnabled: database != null,
           )
@@ -149,7 +150,7 @@ class ServerpodConfig {
       database: database,
       redis: redis,
       serviceSecret: serviceSecret,
-      sessionLogs: losessionLogs,
+      sessionLogs: sessionLogsConfig,
     );
   }
 
@@ -416,34 +417,43 @@ class SessionLogConfig {
   });
 
   factory SessionLogConfig._fromJson(
-    Map logsSetup,
+    Map sessionLogConfigJson,
     String name, {
     required bool databaseEnabled,
   }) {
-    var persistent =
-        logsSetup[ServerpodEnv.sessionPersistentLogEnabled.configKey] ?? false;
+    _validateJsonConfig(
+      {
+        ServerpodEnv.sessionPersistentLogEnabled.configKey: bool,
+        ServerpodEnv.sessionConsoleLogEnabled.configKey: bool,
+      },
+      sessionLogConfigJson,
+      name,
+    );
 
-    if (persistent && !databaseEnabled) {
+    var isSessionPersistentLogEnabled = sessionLogConfigJson[
+            ServerpodEnv.sessionPersistentLogEnabled.configKey] ??
+        false;
+
+    if (isSessionPersistentLogEnabled && !databaseEnabled) {
       stdout.writeln(
-        'Warning: Persistent session logging is enabled in the configuration, but this project was created without database support. '
+        'Warning: The `persistentEnabled` setting was enabled in the configuration, but this project was created without database support. '
         'Persistent logging is only available when the database is enabled, so the value will be overridden and disabled.',
       );
-      persistent = false;
+      isSessionPersistentLogEnabled = false;
     }
 
     return SessionLogConfig(
-      persistentEnabled: persistent,
-      consoleEnabled:
-          logsSetup[ServerpodEnv.sessionConsoleLogEnabled.configKey] ?? false,
+      persistentEnabled: isSessionPersistentLogEnabled,
+      consoleEnabled: sessionLogConfigJson[
+              ServerpodEnv.sessionConsoleLogEnabled.configKey] ??
+          false,
     );
   }
 
   @override
   String toString() {
-    var str = '';
-    str += 'session persistent log enabled: $persistentEnabled\n';
-    str += 'session console log enabled: $consoleEnabled\n';
-    return str;
+    return 'session persistent log enabled: $persistentEnabled\n'
+        'session console log enabled: $consoleEnabled\n';
   }
 }
 
@@ -510,7 +520,8 @@ Map? _redisConfigMap(Map configMap, Map<String, String> environment) {
   ]);
 }
 
-Map? _sessionLogsConfigMap(Map configMap, Map<String, String> environment) {
+Map? _buildSessionLogsConfigMap(
+    Map configMap, Map<String, String> environment) {
   var logsConfig = configMap[ServerpodConfigMap.sessionLogs] ?? {};
 
   return _buildConfigMap(logsConfig, environment, [
