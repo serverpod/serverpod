@@ -12,7 +12,6 @@ class StreamingEndpoint extends Endpoint {
 
   @override
   Future<void> streamOpened(StreamingSession session) async {
-    streamClosedWasCalled = false;
     streamOpenedWasCalled = true;
   }
 
@@ -22,7 +21,6 @@ class StreamingEndpoint extends Endpoint {
 
   @override
   Future<void> streamClosed(StreamingSession session) async {
-    streamOpenedWasCalled = false;
     streamClosedWasCalled = true;
   }
 
