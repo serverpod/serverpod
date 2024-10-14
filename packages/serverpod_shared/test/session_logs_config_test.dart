@@ -33,7 +33,7 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with sessionLogs and no database when persistentEnabled is true, it is overridden to false.',
+    'Given a Serverpod config with sessionLogs and no database when persistentEnabled is true then it is overridden to false.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -60,7 +60,7 @@ sessionLogs:
   );
 
   test(
-    'Given a Serverpod config with sessionLogs and no database when persistentEnabled is false, it remains false.',
+    'Given a Serverpod config with sessionLogs and no database when persistentEnabled is false then it remains false.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -87,7 +87,7 @@ sessionLogs:
   );
 
   test(
-    'Given a Serverpod config with sessionLogs and database when persistentEnabled is true, persistentEnabled remains true.',
+    'Given a Serverpod config with sessionLogs and database when persistentEnabled is true then persistentEnabled remains true.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -118,7 +118,7 @@ sessionLogs:
   );
 
   test(
-    'Given a Serverpod config with sessionLogs and database when persistentEnabled is false, persistentEnabled remains false.',
+    'Given a Serverpod config with sessionLogs and database when persistentEnabled is false then persistentEnabled remains false.',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -149,7 +149,7 @@ sessionLogs:
   );
 
   test(
-    'Given a Serverpod config with sessionLogs and database when environment variables override them, sessionLogs config reflects the environment overrides.',
+    'Given a Serverpod config with sessionLogs and database when environment variables override them then sessionLogs config reflects the environment overrides.',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,

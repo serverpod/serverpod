@@ -15,16 +15,20 @@ void main() {
       stderr.writeln(result.stderr);
     });
 
-    test('then the loading of the config was successful', () {
-      expect(result.exitCode, 0);
+    test(
+        'when the loading of the config was successful then the exit code should be zero',
+        () {
+      expect(result.exitCode, 0, reason: 'The exit code should be zero');
     });
 
-    test('then the session persistent logging is enabled as per configuration',
+    test(
+        'when the config is loaded, then the session persistent logging is enabled as per configuration',
         () async {
       expect(result.stdout, contains('session persistent log enabled: true'));
     });
 
-    test('then the session console logging is enabled as per configuration',
+    test(
+        'when the config is loaded, then the session console logging is enabled as per configuration',
         () async {
       expect(result.stdout, contains('session console log enabled: true'));
     });
@@ -42,24 +46,27 @@ void main() {
       stderr.writeln(result.stderr);
     });
 
-    test('then the loading of the config was successful', () {
-      expect(result.exitCode, 0);
+    test(
+        'when the loading of the config was successful then the exit code should be zero',
+        () {
+      expect(result.exitCode, 0, reason: 'The exit code should be zero');
     });
 
     test(
-        'then the session persistent logging is disabled due to missing database support',
+        'when the config is loaded, then the session persistent logging is disabled due to missing database support',
         () async {
       expect(
         result.stdout,
         contains(
-          'Warning: Persistent session logging is enabled in the configuration, but this project was created without database support. '
+          'Warning: The `persistentEnabled` setting was enabled in the configuration, but this project was created without database support. '
           'Persistent logging is only available when the database is enabled, so the value will be overridden and disabled.',
         ),
       );
       expect(result.stdout, contains('session persistent log enabled: false'));
     });
 
-    test('then the session console logging is enabled as per configuration',
+    test(
+        'when the config is loaded, then the session console logging is enabled as per configuration',
         () async {
       expect(result.stdout, contains('session console log enabled: true'));
     });
@@ -81,17 +88,20 @@ void main() {
       stderr.writeln(result.stderr);
     });
 
-    test('then the loading of the config was successful', () {
-      expect(result.exitCode, 0);
+    test(
+        'when the loading of the config was successful then the exit code should be zero',
+        () {
+      expect(result.exitCode, 0, reason: 'The exit code should be zero');
     });
 
     test(
-        'then the session persistent logging is disabled by environment variable',
+        'when the config is loaded, then the session persistent logging is disabled by environment variable',
         () async {
       expect(result.stdout, contains('session persistent log enabled: false'));
     });
 
-    test('then the session console logging is disabled by environment variable',
+    test(
+        'when the config is loaded, then the session console logging is disabled by environment variable',
         () async {
       expect(result.stdout, contains('session console log enabled: false'));
     });
@@ -109,16 +119,20 @@ void main() {
       );
     });
 
-    test('then the loading of the config was successful', () {
-      expect(result.exitCode, 0);
+    test(
+        'when the loading of the config was successful then the exit code should be zero',
+        () {
+      expect(result.exitCode, 0, reason: 'The exit code should be zero');
     });
 
-    test('then the session persistent logging is not present by default',
+    test(
+        'when the config is loaded, then the session persistent logging is not present by default',
         () async {
       expect(result.stdout, isNot(contains('session persistent log enabled')));
     });
 
-    test('then the session console logging is not present by default',
+    test(
+        'when the config is loaded, then the session console logging is not present by default',
         () async {
       expect(result.stdout, isNot(contains('session console log enabled')));
     });
