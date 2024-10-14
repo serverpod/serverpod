@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -297,7 +299,7 @@ class PersonWithLongTableNameRepository {
   final detachRow = const PersonWithLongTableNameDetachRowRepository._();
 
   Future<List<PersonWithLongTableName>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
     int? limit,
     int? offset,
@@ -320,7 +322,7 @@ class PersonWithLongTableNameRepository {
   }
 
   Future<PersonWithLongTableName?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
@@ -341,7 +343,7 @@ class PersonWithLongTableNameRepository {
   }
 
   Future<PersonWithLongTableName?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     PersonWithLongTableNameInclude? include,
@@ -354,7 +356,7 @@ class PersonWithLongTableNameRepository {
   }
 
   Future<List<PersonWithLongTableName>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<PersonWithLongTableName> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -365,7 +367,7 @@ class PersonWithLongTableNameRepository {
   }
 
   Future<PersonWithLongTableName> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     PersonWithLongTableName row, {
     _i1.Transaction? transaction,
   }) async {
@@ -376,7 +378,7 @@ class PersonWithLongTableNameRepository {
   }
 
   Future<List<PersonWithLongTableName>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<PersonWithLongTableName> rows, {
     _i1.ColumnSelections<PersonWithLongTableNameTable>? columns,
     _i1.Transaction? transaction,
@@ -389,7 +391,7 @@ class PersonWithLongTableNameRepository {
   }
 
   Future<PersonWithLongTableName> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     PersonWithLongTableName row, {
     _i1.ColumnSelections<PersonWithLongTableNameTable>? columns,
     _i1.Transaction? transaction,
@@ -402,7 +404,7 @@ class PersonWithLongTableNameRepository {
   }
 
   Future<List<PersonWithLongTableName>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<PersonWithLongTableName> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -413,7 +415,7 @@ class PersonWithLongTableNameRepository {
   }
 
   Future<PersonWithLongTableName> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     PersonWithLongTableName row, {
     _i1.Transaction? transaction,
   }) async {
@@ -424,7 +426,7 @@ class PersonWithLongTableNameRepository {
   }
 
   Future<List<PersonWithLongTableName>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<PersonWithLongTableNameTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -435,7 +437,7 @@ class PersonWithLongTableNameRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -452,7 +454,7 @@ class PersonWithLongTableNameAttachRowRepository {
   const PersonWithLongTableNameAttachRowRepository._();
 
   Future<void> organization(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     PersonWithLongTableName personWithLongTableName,
     _i2.OrganizationWithLongTableName organization, {
     _i1.Transaction? transaction,
@@ -478,7 +480,7 @@ class PersonWithLongTableNameDetachRowRepository {
   const PersonWithLongTableNameDetachRowRepository._();
 
   Future<void> organization(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     PersonWithLongTableName personwithlongtablename, {
     _i1.Transaction? transaction,
   }) async {

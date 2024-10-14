@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -240,7 +242,7 @@ class CourseRepository {
   final detachRow = const CourseDetachRowRepository._();
 
   Future<List<Course>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CourseTable>? where,
     int? limit,
     int? offset,
@@ -263,7 +265,7 @@ class CourseRepository {
   }
 
   Future<Course?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CourseTable>? where,
     int? offset,
     _i1.OrderByBuilder<CourseTable>? orderBy,
@@ -284,7 +286,7 @@ class CourseRepository {
   }
 
   Future<Course?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     CourseInclude? include,
@@ -297,7 +299,7 @@ class CourseRepository {
   }
 
   Future<List<Course>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Course> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -308,7 +310,7 @@ class CourseRepository {
   }
 
   Future<Course> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Course row, {
     _i1.Transaction? transaction,
   }) async {
@@ -319,7 +321,7 @@ class CourseRepository {
   }
 
   Future<List<Course>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Course> rows, {
     _i1.ColumnSelections<CourseTable>? columns,
     _i1.Transaction? transaction,
@@ -332,7 +334,7 @@ class CourseRepository {
   }
 
   Future<Course> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Course row, {
     _i1.ColumnSelections<CourseTable>? columns,
     _i1.Transaction? transaction,
@@ -345,7 +347,7 @@ class CourseRepository {
   }
 
   Future<List<Course>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Course> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -356,7 +358,7 @@ class CourseRepository {
   }
 
   Future<Course> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Course row, {
     _i1.Transaction? transaction,
   }) async {
@@ -367,7 +369,7 @@ class CourseRepository {
   }
 
   Future<List<Course>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<CourseTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -378,7 +380,7 @@ class CourseRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CourseTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -395,7 +397,7 @@ class CourseAttachRepository {
   const CourseAttachRepository._();
 
   Future<void> enrollments(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Course course,
     List<_i2.Enrollment> enrollment, {
     _i1.Transaction? transaction,
@@ -421,7 +423,7 @@ class CourseAttachRowRepository {
   const CourseAttachRowRepository._();
 
   Future<void> enrollments(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Course course,
     _i2.Enrollment enrollment, {
     _i1.Transaction? transaction,
@@ -446,7 +448,7 @@ class CourseDetachRepository {
   const CourseDetachRepository._();
 
   Future<void> enrollments(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<_i2.Enrollment> enrollment, {
     _i1.Transaction? transaction,
   }) async {
@@ -468,7 +470,7 @@ class CourseDetachRowRepository {
   const CourseDetachRowRepository._();
 
   Future<void> enrollments(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     _i2.Enrollment enrollment, {
     _i1.Transaction? transaction,
   }) async {

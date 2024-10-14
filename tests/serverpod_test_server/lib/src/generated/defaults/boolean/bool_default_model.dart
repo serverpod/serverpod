@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -210,7 +212,7 @@ class BoolDefaultModelRepository {
   const BoolDefaultModelRepository._();
 
   Future<List<BoolDefaultModel>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,
     int? limit,
     int? offset,
@@ -231,7 +233,7 @@ class BoolDefaultModelRepository {
   }
 
   Future<BoolDefaultModel?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<BoolDefaultModelTable>? orderBy,
@@ -250,7 +252,7 @@ class BoolDefaultModelRepository {
   }
 
   Future<BoolDefaultModel?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -261,7 +263,7 @@ class BoolDefaultModelRepository {
   }
 
   Future<List<BoolDefaultModel>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<BoolDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -272,7 +274,7 @@ class BoolDefaultModelRepository {
   }
 
   Future<BoolDefaultModel> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     BoolDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
@@ -283,7 +285,7 @@ class BoolDefaultModelRepository {
   }
 
   Future<List<BoolDefaultModel>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<BoolDefaultModel> rows, {
     _i1.ColumnSelections<BoolDefaultModelTable>? columns,
     _i1.Transaction? transaction,
@@ -296,7 +298,7 @@ class BoolDefaultModelRepository {
   }
 
   Future<BoolDefaultModel> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     BoolDefaultModel row, {
     _i1.ColumnSelections<BoolDefaultModelTable>? columns,
     _i1.Transaction? transaction,
@@ -309,7 +311,7 @@ class BoolDefaultModelRepository {
   }
 
   Future<List<BoolDefaultModel>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<BoolDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -320,7 +322,7 @@ class BoolDefaultModelRepository {
   }
 
   Future<BoolDefaultModel> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     BoolDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
@@ -331,7 +333,7 @@ class BoolDefaultModelRepository {
   }
 
   Future<List<BoolDefaultModel>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<BoolDefaultModelTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -342,7 +344,7 @@ class BoolDefaultModelRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,
     int? limit,
     _i1.Transaction? transaction,

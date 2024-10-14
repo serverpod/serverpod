@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -235,7 +237,7 @@ class EmailCreateAccountRequestRepository {
   const EmailCreateAccountRequestRepository._();
 
   Future<List<EmailCreateAccountRequest>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? limit,
     int? offset,
@@ -256,7 +258,7 @@ class EmailCreateAccountRequestRepository {
   }
 
   Future<EmailCreateAccountRequest?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
@@ -275,7 +277,7 @@ class EmailCreateAccountRequestRepository {
   }
 
   Future<EmailCreateAccountRequest?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -286,7 +288,7 @@ class EmailCreateAccountRequestRepository {
   }
 
   Future<List<EmailCreateAccountRequest>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<EmailCreateAccountRequest> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -297,7 +299,7 @@ class EmailCreateAccountRequestRepository {
   }
 
   Future<EmailCreateAccountRequest> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     EmailCreateAccountRequest row, {
     _i1.Transaction? transaction,
   }) async {
@@ -308,7 +310,7 @@ class EmailCreateAccountRequestRepository {
   }
 
   Future<List<EmailCreateAccountRequest>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<EmailCreateAccountRequest> rows, {
     _i1.ColumnSelections<EmailCreateAccountRequestTable>? columns,
     _i1.Transaction? transaction,
@@ -321,7 +323,7 @@ class EmailCreateAccountRequestRepository {
   }
 
   Future<EmailCreateAccountRequest> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     EmailCreateAccountRequest row, {
     _i1.ColumnSelections<EmailCreateAccountRequestTable>? columns,
     _i1.Transaction? transaction,
@@ -334,7 +336,7 @@ class EmailCreateAccountRequestRepository {
   }
 
   Future<List<EmailCreateAccountRequest>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<EmailCreateAccountRequest> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -345,7 +347,7 @@ class EmailCreateAccountRequestRepository {
   }
 
   Future<EmailCreateAccountRequest> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     EmailCreateAccountRequest row, {
     _i1.Transaction? transaction,
   }) async {
@@ -356,7 +358,7 @@ class EmailCreateAccountRequestRepository {
   }
 
   Future<List<EmailCreateAccountRequest>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -367,7 +369,7 @@ class EmailCreateAccountRequestRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? limit,
     _i1.Transaction? transaction,

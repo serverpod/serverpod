@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -187,7 +189,7 @@ class IntDefaultModelRepository {
   const IntDefaultModelRepository._();
 
   Future<List<IntDefaultModel>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<IntDefaultModelTable>? where,
     int? limit,
     int? offset,
@@ -208,7 +210,7 @@ class IntDefaultModelRepository {
   }
 
   Future<IntDefaultModel?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<IntDefaultModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<IntDefaultModelTable>? orderBy,
@@ -227,7 +229,7 @@ class IntDefaultModelRepository {
   }
 
   Future<IntDefaultModel?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -238,7 +240,7 @@ class IntDefaultModelRepository {
   }
 
   Future<List<IntDefaultModel>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<IntDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -249,7 +251,7 @@ class IntDefaultModelRepository {
   }
 
   Future<IntDefaultModel> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     IntDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
@@ -260,7 +262,7 @@ class IntDefaultModelRepository {
   }
 
   Future<List<IntDefaultModel>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<IntDefaultModel> rows, {
     _i1.ColumnSelections<IntDefaultModelTable>? columns,
     _i1.Transaction? transaction,
@@ -273,7 +275,7 @@ class IntDefaultModelRepository {
   }
 
   Future<IntDefaultModel> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     IntDefaultModel row, {
     _i1.ColumnSelections<IntDefaultModelTable>? columns,
     _i1.Transaction? transaction,
@@ -286,7 +288,7 @@ class IntDefaultModelRepository {
   }
 
   Future<List<IntDefaultModel>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<IntDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -297,7 +299,7 @@ class IntDefaultModelRepository {
   }
 
   Future<IntDefaultModel> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     IntDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
@@ -308,7 +310,7 @@ class IntDefaultModelRepository {
   }
 
   Future<List<IntDefaultModel>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<IntDefaultModelTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -319,7 +321,7 @@ class IntDefaultModelRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<IntDefaultModelTable>? where,
     int? limit,
     _i1.Transaction? transaction,

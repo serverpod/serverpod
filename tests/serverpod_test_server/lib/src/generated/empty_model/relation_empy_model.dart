@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
@@ -222,7 +224,7 @@ class RelationEmptyModelRepository {
   final detachRow = const RelationEmptyModelDetachRowRepository._();
 
   Future<List<RelationEmptyModel>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<RelationEmptyModelTable>? where,
     int? limit,
     int? offset,
@@ -245,7 +247,7 @@ class RelationEmptyModelRepository {
   }
 
   Future<RelationEmptyModel?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<RelationEmptyModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<RelationEmptyModelTable>? orderBy,
@@ -266,7 +268,7 @@ class RelationEmptyModelRepository {
   }
 
   Future<RelationEmptyModel?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     RelationEmptyModelInclude? include,
@@ -279,7 +281,7 @@ class RelationEmptyModelRepository {
   }
 
   Future<List<RelationEmptyModel>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<RelationEmptyModel> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -290,7 +292,7 @@ class RelationEmptyModelRepository {
   }
 
   Future<RelationEmptyModel> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     RelationEmptyModel row, {
     _i1.Transaction? transaction,
   }) async {
@@ -301,7 +303,7 @@ class RelationEmptyModelRepository {
   }
 
   Future<List<RelationEmptyModel>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<RelationEmptyModel> rows, {
     _i1.ColumnSelections<RelationEmptyModelTable>? columns,
     _i1.Transaction? transaction,
@@ -314,7 +316,7 @@ class RelationEmptyModelRepository {
   }
 
   Future<RelationEmptyModel> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     RelationEmptyModel row, {
     _i1.ColumnSelections<RelationEmptyModelTable>? columns,
     _i1.Transaction? transaction,
@@ -327,7 +329,7 @@ class RelationEmptyModelRepository {
   }
 
   Future<List<RelationEmptyModel>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<RelationEmptyModel> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -338,7 +340,7 @@ class RelationEmptyModelRepository {
   }
 
   Future<RelationEmptyModel> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     RelationEmptyModel row, {
     _i1.Transaction? transaction,
   }) async {
@@ -349,7 +351,7 @@ class RelationEmptyModelRepository {
   }
 
   Future<List<RelationEmptyModel>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<RelationEmptyModelTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -360,7 +362,7 @@ class RelationEmptyModelRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<RelationEmptyModelTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -377,7 +379,7 @@ class RelationEmptyModelAttachRepository {
   const RelationEmptyModelAttachRepository._();
 
   Future<void> items(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     RelationEmptyModel relationEmptyModel,
     List<_i2.EmptyModelRelationItem> emptyModelRelationItem, {
     _i1.Transaction? transaction,
@@ -411,7 +413,7 @@ class RelationEmptyModelAttachRowRepository {
   const RelationEmptyModelAttachRowRepository._();
 
   Future<void> items(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     RelationEmptyModel relationEmptyModel,
     _i2.EmptyModelRelationItem emptyModelRelationItem, {
     _i1.Transaction? transaction,
@@ -442,7 +444,7 @@ class RelationEmptyModelDetachRepository {
   const RelationEmptyModelDetachRepository._();
 
   Future<void> items(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<_i2.EmptyModelRelationItem> emptyModelRelationItem, {
     _i1.Transaction? transaction,
   }) async {
@@ -471,7 +473,7 @@ class RelationEmptyModelDetachRowRepository {
   const RelationEmptyModelDetachRowRepository._();
 
   Future<void> items(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     _i2.EmptyModelRelationItem emptyModelRelationItem, {
     _i1.Transaction? transaction,
   }) async {

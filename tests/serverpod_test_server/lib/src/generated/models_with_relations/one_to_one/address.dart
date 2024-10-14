@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -232,7 +234,7 @@ class AddressRepository {
   final detachRow = const AddressDetachRowRepository._();
 
   Future<List<Address>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<AddressTable>? where,
     int? limit,
     int? offset,
@@ -255,7 +257,7 @@ class AddressRepository {
   }
 
   Future<Address?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<AddressTable>? where,
     int? offset,
     _i1.OrderByBuilder<AddressTable>? orderBy,
@@ -276,7 +278,7 @@ class AddressRepository {
   }
 
   Future<Address?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     AddressInclude? include,
@@ -289,7 +291,7 @@ class AddressRepository {
   }
 
   Future<List<Address>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Address> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -300,7 +302,7 @@ class AddressRepository {
   }
 
   Future<Address> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Address row, {
     _i1.Transaction? transaction,
   }) async {
@@ -311,7 +313,7 @@ class AddressRepository {
   }
 
   Future<List<Address>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Address> rows, {
     _i1.ColumnSelections<AddressTable>? columns,
     _i1.Transaction? transaction,
@@ -324,7 +326,7 @@ class AddressRepository {
   }
 
   Future<Address> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Address row, {
     _i1.ColumnSelections<AddressTable>? columns,
     _i1.Transaction? transaction,
@@ -337,7 +339,7 @@ class AddressRepository {
   }
 
   Future<List<Address>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Address> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -348,7 +350,7 @@ class AddressRepository {
   }
 
   Future<Address> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Address row, {
     _i1.Transaction? transaction,
   }) async {
@@ -359,7 +361,7 @@ class AddressRepository {
   }
 
   Future<List<Address>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<AddressTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -370,7 +372,7 @@ class AddressRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<AddressTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -387,7 +389,7 @@ class AddressAttachRowRepository {
   const AddressAttachRowRepository._();
 
   Future<void> inhabitant(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Address address,
     _i2.Citizen inhabitant, {
     _i1.Transaction? transaction,
@@ -412,7 +414,7 @@ class AddressDetachRowRepository {
   const AddressDetachRowRepository._();
 
   Future<void> inhabitant(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Address address, {
     _i1.Transaction? transaction,
   }) async {

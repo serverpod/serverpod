@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -280,7 +282,7 @@ class ServerHealthMetricRepository {
   const ServerHealthMetricRepository._();
 
   Future<List<ServerHealthMetric>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? limit,
     int? offset,
@@ -301,7 +303,7 @@ class ServerHealthMetricRepository {
   }
 
   Future<ServerHealthMetric?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? offset,
     _i1.OrderByBuilder<ServerHealthMetricTable>? orderBy,
@@ -320,7 +322,7 @@ class ServerHealthMetricRepository {
   }
 
   Future<ServerHealthMetric?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -331,7 +333,7 @@ class ServerHealthMetricRepository {
   }
 
   Future<List<ServerHealthMetric>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ServerHealthMetric> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -342,7 +344,7 @@ class ServerHealthMetricRepository {
   }
 
   Future<ServerHealthMetric> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ServerHealthMetric row, {
     _i1.Transaction? transaction,
   }) async {
@@ -353,7 +355,7 @@ class ServerHealthMetricRepository {
   }
 
   Future<List<ServerHealthMetric>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ServerHealthMetric> rows, {
     _i1.ColumnSelections<ServerHealthMetricTable>? columns,
     _i1.Transaction? transaction,
@@ -366,7 +368,7 @@ class ServerHealthMetricRepository {
   }
 
   Future<ServerHealthMetric> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ServerHealthMetric row, {
     _i1.ColumnSelections<ServerHealthMetricTable>? columns,
     _i1.Transaction? transaction,
@@ -379,7 +381,7 @@ class ServerHealthMetricRepository {
   }
 
   Future<List<ServerHealthMetric>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ServerHealthMetric> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -390,7 +392,7 @@ class ServerHealthMetricRepository {
   }
 
   Future<ServerHealthMetric> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ServerHealthMetric row, {
     _i1.Transaction? transaction,
   }) async {
@@ -401,7 +403,7 @@ class ServerHealthMetricRepository {
   }
 
   Future<List<ServerHealthMetric>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<ServerHealthMetricTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -412,7 +414,7 @@ class ServerHealthMetricRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? limit,
     _i1.Transaction? transaction,

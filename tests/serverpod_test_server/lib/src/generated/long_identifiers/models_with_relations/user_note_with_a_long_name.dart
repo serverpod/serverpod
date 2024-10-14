@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -218,7 +220,7 @@ class UserNoteWithALongNameRepository {
   const UserNoteWithALongNameRepository._();
 
   Future<List<UserNoteWithALongName>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
     int? limit,
     int? offset,
@@ -239,7 +241,7 @@ class UserNoteWithALongNameRepository {
   }
 
   Future<UserNoteWithALongName?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
@@ -258,7 +260,7 @@ class UserNoteWithALongNameRepository {
   }
 
   Future<UserNoteWithALongName?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -269,7 +271,7 @@ class UserNoteWithALongNameRepository {
   }
 
   Future<List<UserNoteWithALongName>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<UserNoteWithALongName> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -280,7 +282,7 @@ class UserNoteWithALongNameRepository {
   }
 
   Future<UserNoteWithALongName> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     UserNoteWithALongName row, {
     _i1.Transaction? transaction,
   }) async {
@@ -291,7 +293,7 @@ class UserNoteWithALongNameRepository {
   }
 
   Future<List<UserNoteWithALongName>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<UserNoteWithALongName> rows, {
     _i1.ColumnSelections<UserNoteWithALongNameTable>? columns,
     _i1.Transaction? transaction,
@@ -304,7 +306,7 @@ class UserNoteWithALongNameRepository {
   }
 
   Future<UserNoteWithALongName> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     UserNoteWithALongName row, {
     _i1.ColumnSelections<UserNoteWithALongNameTable>? columns,
     _i1.Transaction? transaction,
@@ -317,7 +319,7 @@ class UserNoteWithALongNameRepository {
   }
 
   Future<List<UserNoteWithALongName>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<UserNoteWithALongName> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -328,7 +330,7 @@ class UserNoteWithALongNameRepository {
   }
 
   Future<UserNoteWithALongName> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     UserNoteWithALongName row, {
     _i1.Transaction? transaction,
   }) async {
@@ -339,7 +341,7 @@ class UserNoteWithALongNameRepository {
   }
 
   Future<List<UserNoteWithALongName>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<UserNoteWithALongNameTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -350,7 +352,7 @@ class UserNoteWithALongNameRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
     int? limit,
     _i1.Transaction? transaction,

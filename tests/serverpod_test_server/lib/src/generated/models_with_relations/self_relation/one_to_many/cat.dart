@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../protocol.dart' as _i2;
@@ -306,7 +308,7 @@ class CatRepository {
   final detachRow = const CatDetachRowRepository._();
 
   Future<List<Cat>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CatTable>? where,
     int? limit,
     int? offset,
@@ -329,7 +331,7 @@ class CatRepository {
   }
 
   Future<Cat?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CatTable>? where,
     int? offset,
     _i1.OrderByBuilder<CatTable>? orderBy,
@@ -350,7 +352,7 @@ class CatRepository {
   }
 
   Future<Cat?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     CatInclude? include,
@@ -363,7 +365,7 @@ class CatRepository {
   }
 
   Future<List<Cat>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Cat> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -374,7 +376,7 @@ class CatRepository {
   }
 
   Future<Cat> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Cat row, {
     _i1.Transaction? transaction,
   }) async {
@@ -385,7 +387,7 @@ class CatRepository {
   }
 
   Future<List<Cat>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Cat> rows, {
     _i1.ColumnSelections<CatTable>? columns,
     _i1.Transaction? transaction,
@@ -398,7 +400,7 @@ class CatRepository {
   }
 
   Future<Cat> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Cat row, {
     _i1.ColumnSelections<CatTable>? columns,
     _i1.Transaction? transaction,
@@ -411,7 +413,7 @@ class CatRepository {
   }
 
   Future<List<Cat>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Cat> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -422,7 +424,7 @@ class CatRepository {
   }
 
   Future<Cat> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Cat row, {
     _i1.Transaction? transaction,
   }) async {
@@ -433,7 +435,7 @@ class CatRepository {
   }
 
   Future<List<Cat>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<CatTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -444,7 +446,7 @@ class CatRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CatTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -461,7 +463,7 @@ class CatAttachRepository {
   const CatAttachRepository._();
 
   Future<void> kittens(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Cat cat,
     List<_i2.Cat> nestedCat, {
     _i1.Transaction? transaction,
@@ -487,7 +489,7 @@ class CatAttachRowRepository {
   const CatAttachRowRepository._();
 
   Future<void> mother(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Cat cat,
     _i2.Cat mother, {
     _i1.Transaction? transaction,
@@ -508,7 +510,7 @@ class CatAttachRowRepository {
   }
 
   Future<void> kittens(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Cat cat,
     _i2.Cat nestedCat, {
     _i1.Transaction? transaction,
@@ -533,7 +535,7 @@ class CatDetachRepository {
   const CatDetachRepository._();
 
   Future<void> kittens(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<_i2.Cat> cat, {
     _i1.Transaction? transaction,
   }) async {
@@ -554,7 +556,7 @@ class CatDetachRowRepository {
   const CatDetachRowRepository._();
 
   Future<void> mother(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Cat cat, {
     _i1.Transaction? transaction,
   }) async {
@@ -571,7 +573,7 @@ class CatDetachRowRepository {
   }
 
   Future<void> kittens(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     _i2.Cat cat, {
     _i1.Transaction? transaction,
   }) async {

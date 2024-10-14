@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -231,7 +233,7 @@ class TownRepository {
   final detachRow = const TownDetachRowRepository._();
 
   Future<List<Town>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<TownTable>? where,
     int? limit,
     int? offset,
@@ -254,7 +256,7 @@ class TownRepository {
   }
 
   Future<Town?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<TownTable>? where,
     int? offset,
     _i1.OrderByBuilder<TownTable>? orderBy,
@@ -275,7 +277,7 @@ class TownRepository {
   }
 
   Future<Town?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     TownInclude? include,
@@ -288,7 +290,7 @@ class TownRepository {
   }
 
   Future<List<Town>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Town> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -299,7 +301,7 @@ class TownRepository {
   }
 
   Future<Town> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Town row, {
     _i1.Transaction? transaction,
   }) async {
@@ -310,7 +312,7 @@ class TownRepository {
   }
 
   Future<List<Town>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Town> rows, {
     _i1.ColumnSelections<TownTable>? columns,
     _i1.Transaction? transaction,
@@ -323,7 +325,7 @@ class TownRepository {
   }
 
   Future<Town> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Town row, {
     _i1.ColumnSelections<TownTable>? columns,
     _i1.Transaction? transaction,
@@ -336,7 +338,7 @@ class TownRepository {
   }
 
   Future<List<Town>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Town> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -347,7 +349,7 @@ class TownRepository {
   }
 
   Future<Town> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Town row, {
     _i1.Transaction? transaction,
   }) async {
@@ -358,7 +360,7 @@ class TownRepository {
   }
 
   Future<List<Town>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<TownTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -369,7 +371,7 @@ class TownRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<TownTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -386,7 +388,7 @@ class TownAttachRowRepository {
   const TownAttachRowRepository._();
 
   Future<void> mayor(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Town town,
     _i2.Citizen mayor, {
     _i1.Transaction? transaction,
@@ -411,7 +413,7 @@ class TownDetachRowRepository {
   const TownDetachRowRepository._();
 
   Future<void> mayor(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Town town, {
     _i1.Transaction? transaction,
   }) async {

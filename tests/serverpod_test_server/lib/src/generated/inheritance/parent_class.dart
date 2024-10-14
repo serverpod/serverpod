@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import '../protocol.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
@@ -161,7 +163,7 @@ class ParentClassRepository {
   const ParentClassRepository._();
 
   Future<List<ParentClass>> find(
-    _i2.DatabaseAccessor session, {
+    _i2.Session session, {
     _i2.WhereExpressionBuilder<ParentClassTable>? where,
     int? limit,
     int? offset,
@@ -182,7 +184,7 @@ class ParentClassRepository {
   }
 
   Future<ParentClass?> findFirstRow(
-    _i2.DatabaseAccessor session, {
+    _i2.Session session, {
     _i2.WhereExpressionBuilder<ParentClassTable>? where,
     int? offset,
     _i2.OrderByBuilder<ParentClassTable>? orderBy,
@@ -201,7 +203,7 @@ class ParentClassRepository {
   }
 
   Future<ParentClass?> findById(
-    _i2.DatabaseAccessor session,
+    _i2.Session session,
     int id, {
     _i2.Transaction? transaction,
   }) async {
@@ -212,7 +214,7 @@ class ParentClassRepository {
   }
 
   Future<List<ParentClass>> insert(
-    _i2.DatabaseAccessor session,
+    _i2.Session session,
     List<ParentClass> rows, {
     _i2.Transaction? transaction,
   }) async {
@@ -223,7 +225,7 @@ class ParentClassRepository {
   }
 
   Future<ParentClass> insertRow(
-    _i2.DatabaseAccessor session,
+    _i2.Session session,
     ParentClass row, {
     _i2.Transaction? transaction,
   }) async {
@@ -234,7 +236,7 @@ class ParentClassRepository {
   }
 
   Future<List<ParentClass>> update(
-    _i2.DatabaseAccessor session,
+    _i2.Session session,
     List<ParentClass> rows, {
     _i2.ColumnSelections<ParentClassTable>? columns,
     _i2.Transaction? transaction,
@@ -247,7 +249,7 @@ class ParentClassRepository {
   }
 
   Future<ParentClass> updateRow(
-    _i2.DatabaseAccessor session,
+    _i2.Session session,
     ParentClass row, {
     _i2.ColumnSelections<ParentClassTable>? columns,
     _i2.Transaction? transaction,
@@ -260,7 +262,7 @@ class ParentClassRepository {
   }
 
   Future<List<ParentClass>> delete(
-    _i2.DatabaseAccessor session,
+    _i2.Session session,
     List<ParentClass> rows, {
     _i2.Transaction? transaction,
   }) async {
@@ -271,7 +273,7 @@ class ParentClassRepository {
   }
 
   Future<ParentClass> deleteRow(
-    _i2.DatabaseAccessor session,
+    _i2.Session session,
     ParentClass row, {
     _i2.Transaction? transaction,
   }) async {
@@ -282,7 +284,7 @@ class ParentClassRepository {
   }
 
   Future<List<ParentClass>> deleteWhere(
-    _i2.DatabaseAccessor session, {
+    _i2.Session session, {
     required _i2.WhereExpressionBuilder<ParentClassTable> where,
     _i2.Transaction? transaction,
   }) async {
@@ -293,7 +295,7 @@ class ParentClassRepository {
   }
 
   Future<int> count(
-    _i2.DatabaseAccessor session, {
+    _i2.Session session, {
     _i2.WhereExpressionBuilder<ParentClassTable>? where,
     int? limit,
     _i2.Transaction? transaction,

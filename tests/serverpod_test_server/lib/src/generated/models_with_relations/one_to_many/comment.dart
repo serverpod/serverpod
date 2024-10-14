@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -229,7 +231,7 @@ class CommentRepository {
   final attachRow = const CommentAttachRowRepository._();
 
   Future<List<Comment>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CommentTable>? where,
     int? limit,
     int? offset,
@@ -252,7 +254,7 @@ class CommentRepository {
   }
 
   Future<Comment?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CommentTable>? where,
     int? offset,
     _i1.OrderByBuilder<CommentTable>? orderBy,
@@ -273,7 +275,7 @@ class CommentRepository {
   }
 
   Future<Comment?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     CommentInclude? include,
@@ -286,7 +288,7 @@ class CommentRepository {
   }
 
   Future<List<Comment>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Comment> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -297,7 +299,7 @@ class CommentRepository {
   }
 
   Future<Comment> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Comment row, {
     _i1.Transaction? transaction,
   }) async {
@@ -308,7 +310,7 @@ class CommentRepository {
   }
 
   Future<List<Comment>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Comment> rows, {
     _i1.ColumnSelections<CommentTable>? columns,
     _i1.Transaction? transaction,
@@ -321,7 +323,7 @@ class CommentRepository {
   }
 
   Future<Comment> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Comment row, {
     _i1.ColumnSelections<CommentTable>? columns,
     _i1.Transaction? transaction,
@@ -334,7 +336,7 @@ class CommentRepository {
   }
 
   Future<List<Comment>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Comment> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -345,7 +347,7 @@ class CommentRepository {
   }
 
   Future<Comment> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Comment row, {
     _i1.Transaction? transaction,
   }) async {
@@ -356,7 +358,7 @@ class CommentRepository {
   }
 
   Future<List<Comment>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<CommentTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -367,7 +369,7 @@ class CommentRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CommentTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -384,7 +386,7 @@ class CommentAttachRowRepository {
   const CommentAttachRowRepository._();
 
   Future<void> order(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Comment comment,
     _i2.Order order, {
     _i1.Transaction? transaction,

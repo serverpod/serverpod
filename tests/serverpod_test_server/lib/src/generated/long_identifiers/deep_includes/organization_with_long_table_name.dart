@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -312,7 +314,7 @@ class OrganizationWithLongTableNameRepository {
   final detachRow = const OrganizationWithLongTableNameDetachRowRepository._();
 
   Future<List<OrganizationWithLongTableName>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<OrganizationWithLongTableNameTable>? where,
     int? limit,
     int? offset,
@@ -335,7 +337,7 @@ class OrganizationWithLongTableNameRepository {
   }
 
   Future<OrganizationWithLongTableName?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<OrganizationWithLongTableNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<OrganizationWithLongTableNameTable>? orderBy,
@@ -356,7 +358,7 @@ class OrganizationWithLongTableNameRepository {
   }
 
   Future<OrganizationWithLongTableName?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     OrganizationWithLongTableNameInclude? include,
@@ -369,7 +371,7 @@ class OrganizationWithLongTableNameRepository {
   }
 
   Future<List<OrganizationWithLongTableName>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<OrganizationWithLongTableName> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -380,7 +382,7 @@ class OrganizationWithLongTableNameRepository {
   }
 
   Future<OrganizationWithLongTableName> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     OrganizationWithLongTableName row, {
     _i1.Transaction? transaction,
   }) async {
@@ -391,7 +393,7 @@ class OrganizationWithLongTableNameRepository {
   }
 
   Future<List<OrganizationWithLongTableName>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<OrganizationWithLongTableName> rows, {
     _i1.ColumnSelections<OrganizationWithLongTableNameTable>? columns,
     _i1.Transaction? transaction,
@@ -404,7 +406,7 @@ class OrganizationWithLongTableNameRepository {
   }
 
   Future<OrganizationWithLongTableName> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     OrganizationWithLongTableName row, {
     _i1.ColumnSelections<OrganizationWithLongTableNameTable>? columns,
     _i1.Transaction? transaction,
@@ -417,7 +419,7 @@ class OrganizationWithLongTableNameRepository {
   }
 
   Future<List<OrganizationWithLongTableName>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<OrganizationWithLongTableName> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -428,7 +430,7 @@ class OrganizationWithLongTableNameRepository {
   }
 
   Future<OrganizationWithLongTableName> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     OrganizationWithLongTableName row, {
     _i1.Transaction? transaction,
   }) async {
@@ -439,7 +441,7 @@ class OrganizationWithLongTableNameRepository {
   }
 
   Future<List<OrganizationWithLongTableName>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<OrganizationWithLongTableNameTable>
         where,
     _i1.Transaction? transaction,
@@ -451,7 +453,7 @@ class OrganizationWithLongTableNameRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<OrganizationWithLongTableNameTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -468,7 +470,7 @@ class OrganizationWithLongTableNameAttachRepository {
   const OrganizationWithLongTableNameAttachRepository._();
 
   Future<void> people(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     OrganizationWithLongTableName organizationWithLongTableName,
     List<_i2.PersonWithLongTableName> personWithLongTableName, {
     _i1.Transaction? transaction,
@@ -496,7 +498,7 @@ class OrganizationWithLongTableNameAttachRowRepository {
   const OrganizationWithLongTableNameAttachRowRepository._();
 
   Future<void> city(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     OrganizationWithLongTableName organizationWithLongTableName,
     _i2.CityWithLongTableName city, {
     _i1.Transaction? transaction,
@@ -518,7 +520,7 @@ class OrganizationWithLongTableNameAttachRowRepository {
   }
 
   Future<void> people(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     OrganizationWithLongTableName organizationWithLongTableName,
     _i2.PersonWithLongTableName personWithLongTableName, {
     _i1.Transaction? transaction,
@@ -544,7 +546,7 @@ class OrganizationWithLongTableNameDetachRepository {
   const OrganizationWithLongTableNameDetachRepository._();
 
   Future<void> people(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<_i2.PersonWithLongTableName> personWithLongTableName, {
     _i1.Transaction? transaction,
   }) async {
@@ -567,7 +569,7 @@ class OrganizationWithLongTableNameDetachRowRepository {
   const OrganizationWithLongTableNameDetachRowRepository._();
 
   Future<void> city(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     OrganizationWithLongTableName organizationwithlongtablename, {
     _i1.Transaction? transaction,
   }) async {
@@ -585,7 +587,7 @@ class OrganizationWithLongTableNameDetachRowRepository {
   }
 
   Future<void> people(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     _i2.PersonWithLongTableName personWithLongTableName, {
     _i1.Transaction? transaction,
   }) async {
