@@ -169,7 +169,7 @@ void main() {
         expect(
           companyMethod?.parameters?.toSource(),
           matches(
-              r'\(_i\d\.DatabaseAccessor session, Example example, Company company, \{_i\d\.Transaction\? transaction\}\)'),
+              r'\(_i\d\.Session session, Example example, Company company, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: companyMethod == null);
 
@@ -188,7 +188,7 @@ void main() {
         expect(
           addressMethod?.parameters?.toSource(),
           matches(
-              r'\(_i\d\.DatabaseAccessor session, Example example, Address address, \{_i\d\.Transaction\? transaction\}\)'),
+              r'\(_i\d\.Session session, Example example, Address address, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: addressMethod == null);
 
@@ -268,7 +268,7 @@ void main() {
         expect(
           companyMethod?.parameters?.toSource(),
           matches(
-              r'\(_i\d\.DatabaseAccessor session, Example example, \{_i\d\.Transaction\? transaction\}\)'),
+              r'\(_i\d\.Session session, Example example, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: companyMethod == null);
 
@@ -439,7 +439,7 @@ void main() {
         expect(
           method?.parameters?.toSource(),
           matches(
-            r'(_i\d.DatabaseAccessor session, Example example, Example nestedExample)',
+            r'(_i\d.Session session, Example example, Example nestedExample)',
           ),
         );
       });
