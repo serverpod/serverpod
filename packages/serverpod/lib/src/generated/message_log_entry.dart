@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -363,7 +365,7 @@ class MessageLogEntryRepository {
   const MessageLogEntryRepository._();
 
   Future<List<MessageLogEntry>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? limit,
     int? offset,
@@ -384,7 +386,7 @@ class MessageLogEntryRepository {
   }
 
   Future<MessageLogEntry?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
@@ -403,7 +405,7 @@ class MessageLogEntryRepository {
   }
 
   Future<MessageLogEntry?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -414,7 +416,7 @@ class MessageLogEntryRepository {
   }
 
   Future<List<MessageLogEntry>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<MessageLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -425,7 +427,7 @@ class MessageLogEntryRepository {
   }
 
   Future<MessageLogEntry> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     MessageLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
@@ -436,7 +438,7 @@ class MessageLogEntryRepository {
   }
 
   Future<List<MessageLogEntry>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<MessageLogEntry> rows, {
     _i1.ColumnSelections<MessageLogEntryTable>? columns,
     _i1.Transaction? transaction,
@@ -449,7 +451,7 @@ class MessageLogEntryRepository {
   }
 
   Future<MessageLogEntry> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     MessageLogEntry row, {
     _i1.ColumnSelections<MessageLogEntryTable>? columns,
     _i1.Transaction? transaction,
@@ -462,7 +464,7 @@ class MessageLogEntryRepository {
   }
 
   Future<List<MessageLogEntry>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<MessageLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -473,7 +475,7 @@ class MessageLogEntryRepository {
   }
 
   Future<MessageLogEntry> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     MessageLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
@@ -484,7 +486,7 @@ class MessageLogEntryRepository {
   }
 
   Future<List<MessageLogEntry>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -495,7 +497,7 @@ class MessageLogEntryRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,

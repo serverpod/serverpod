@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -215,7 +217,7 @@ class EmptyModelRelationItemRepository {
   const EmptyModelRelationItemRepository._();
 
   Future<List<EmptyModelRelationItem>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
     int? limit,
     int? offset,
@@ -236,7 +238,7 @@ class EmptyModelRelationItemRepository {
   }
 
   Future<EmptyModelRelationItem?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
@@ -255,7 +257,7 @@ class EmptyModelRelationItemRepository {
   }
 
   Future<EmptyModelRelationItem?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -266,7 +268,7 @@ class EmptyModelRelationItemRepository {
   }
 
   Future<List<EmptyModelRelationItem>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<EmptyModelRelationItem> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -277,7 +279,7 @@ class EmptyModelRelationItemRepository {
   }
 
   Future<EmptyModelRelationItem> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     EmptyModelRelationItem row, {
     _i1.Transaction? transaction,
   }) async {
@@ -288,7 +290,7 @@ class EmptyModelRelationItemRepository {
   }
 
   Future<List<EmptyModelRelationItem>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<EmptyModelRelationItem> rows, {
     _i1.ColumnSelections<EmptyModelRelationItemTable>? columns,
     _i1.Transaction? transaction,
@@ -301,7 +303,7 @@ class EmptyModelRelationItemRepository {
   }
 
   Future<EmptyModelRelationItem> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     EmptyModelRelationItem row, {
     _i1.ColumnSelections<EmptyModelRelationItemTable>? columns,
     _i1.Transaction? transaction,
@@ -314,7 +316,7 @@ class EmptyModelRelationItemRepository {
   }
 
   Future<List<EmptyModelRelationItem>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<EmptyModelRelationItem> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -325,7 +327,7 @@ class EmptyModelRelationItemRepository {
   }
 
   Future<EmptyModelRelationItem> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     EmptyModelRelationItem row, {
     _i1.Transaction? transaction,
   }) async {
@@ -336,7 +338,7 @@ class EmptyModelRelationItemRepository {
   }
 
   Future<List<EmptyModelRelationItem>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<EmptyModelRelationItemTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -347,7 +349,7 @@ class EmptyModelRelationItemRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
     int? limit,
     _i1.Transaction? transaction,

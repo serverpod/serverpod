@@ -72,6 +72,8 @@ class SerializableModelLibraryGenerator {
         ]);
 
         if (serverCode && tableName != null) {
+          libraryBuilder.ignoreForFile
+              .add('invalid_use_of_visible_for_testing_member');
           libraryBuilder.body.addAll([
             _buildModelTableClass(
               className,

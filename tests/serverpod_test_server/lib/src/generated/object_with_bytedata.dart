@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
@@ -169,7 +171,7 @@ class ObjectWithByteDataRepository {
   const ObjectWithByteDataRepository._();
 
   Future<List<ObjectWithByteData>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     int? limit,
     int? offset,
@@ -190,7 +192,7 @@ class ObjectWithByteDataRepository {
   }
 
   Future<ObjectWithByteData?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithByteDataTable>? orderBy,
@@ -209,7 +211,7 @@ class ObjectWithByteDataRepository {
   }
 
   Future<ObjectWithByteData?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -220,7 +222,7 @@ class ObjectWithByteDataRepository {
   }
 
   Future<List<ObjectWithByteData>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ObjectWithByteData> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -231,7 +233,7 @@ class ObjectWithByteDataRepository {
   }
 
   Future<ObjectWithByteData> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ObjectWithByteData row, {
     _i1.Transaction? transaction,
   }) async {
@@ -242,7 +244,7 @@ class ObjectWithByteDataRepository {
   }
 
   Future<List<ObjectWithByteData>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ObjectWithByteData> rows, {
     _i1.ColumnSelections<ObjectWithByteDataTable>? columns,
     _i1.Transaction? transaction,
@@ -255,7 +257,7 @@ class ObjectWithByteDataRepository {
   }
 
   Future<ObjectWithByteData> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ObjectWithByteData row, {
     _i1.ColumnSelections<ObjectWithByteDataTable>? columns,
     _i1.Transaction? transaction,
@@ -268,7 +270,7 @@ class ObjectWithByteDataRepository {
   }
 
   Future<List<ObjectWithByteData>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ObjectWithByteData> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -279,7 +281,7 @@ class ObjectWithByteDataRepository {
   }
 
   Future<ObjectWithByteData> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ObjectWithByteData row, {
     _i1.Transaction? transaction,
   }) async {
@@ -290,7 +292,7 @@ class ObjectWithByteDataRepository {
   }
 
   Future<List<ObjectWithByteData>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<ObjectWithByteDataTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -301,7 +303,7 @@ class ObjectWithByteDataRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     int? limit,
     _i1.Transaction? transaction,

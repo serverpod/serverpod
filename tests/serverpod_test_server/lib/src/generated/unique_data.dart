@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -184,7 +186,7 @@ class UniqueDataRepository {
   const UniqueDataRepository._();
 
   Future<List<UniqueData>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UniqueDataTable>? where,
     int? limit,
     int? offset,
@@ -205,7 +207,7 @@ class UniqueDataRepository {
   }
 
   Future<UniqueData?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UniqueDataTable>? where,
     int? offset,
     _i1.OrderByBuilder<UniqueDataTable>? orderBy,
@@ -224,7 +226,7 @@ class UniqueDataRepository {
   }
 
   Future<UniqueData?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -235,7 +237,7 @@ class UniqueDataRepository {
   }
 
   Future<List<UniqueData>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<UniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -246,7 +248,7 @@ class UniqueDataRepository {
   }
 
   Future<UniqueData> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
@@ -257,7 +259,7 @@ class UniqueDataRepository {
   }
 
   Future<List<UniqueData>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<UniqueData> rows, {
     _i1.ColumnSelections<UniqueDataTable>? columns,
     _i1.Transaction? transaction,
@@ -270,7 +272,7 @@ class UniqueDataRepository {
   }
 
   Future<UniqueData> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     UniqueData row, {
     _i1.ColumnSelections<UniqueDataTable>? columns,
     _i1.Transaction? transaction,
@@ -283,7 +285,7 @@ class UniqueDataRepository {
   }
 
   Future<List<UniqueData>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<UniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -294,7 +296,7 @@ class UniqueDataRepository {
   }
 
   Future<UniqueData> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
@@ -305,7 +307,7 @@ class UniqueDataRepository {
   }
 
   Future<List<UniqueData>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<UniqueDataTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -316,7 +318,7 @@ class UniqueDataRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UniqueDataTable>? where,
     int? limit,
     _i1.Transaction? transaction,

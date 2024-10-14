@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -172,7 +174,7 @@ class SimpleDataRepository {
   const SimpleDataRepository._();
 
   Future<List<SimpleData>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<SimpleDataTable>? where,
     int? limit,
     int? offset,
@@ -193,7 +195,7 @@ class SimpleDataRepository {
   }
 
   Future<SimpleData?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<SimpleDataTable>? where,
     int? offset,
     _i1.OrderByBuilder<SimpleDataTable>? orderBy,
@@ -212,7 +214,7 @@ class SimpleDataRepository {
   }
 
   Future<SimpleData?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -223,7 +225,7 @@ class SimpleDataRepository {
   }
 
   Future<List<SimpleData>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<SimpleData> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -234,7 +236,7 @@ class SimpleDataRepository {
   }
 
   Future<SimpleData> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     SimpleData row, {
     _i1.Transaction? transaction,
   }) async {
@@ -245,7 +247,7 @@ class SimpleDataRepository {
   }
 
   Future<List<SimpleData>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<SimpleData> rows, {
     _i1.ColumnSelections<SimpleDataTable>? columns,
     _i1.Transaction? transaction,
@@ -258,7 +260,7 @@ class SimpleDataRepository {
   }
 
   Future<SimpleData> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     SimpleData row, {
     _i1.ColumnSelections<SimpleDataTable>? columns,
     _i1.Transaction? transaction,
@@ -271,7 +273,7 @@ class SimpleDataRepository {
   }
 
   Future<List<SimpleData>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<SimpleData> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -282,7 +284,7 @@ class SimpleDataRepository {
   }
 
   Future<SimpleData> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     SimpleData row, {
     _i1.Transaction? transaction,
   }) async {
@@ -293,7 +295,7 @@ class SimpleDataRepository {
   }
 
   Future<List<SimpleData>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<SimpleDataTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -304,7 +306,7 @@ class SimpleDataRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<SimpleDataTable>? where,
     int? limit,
     _i1.Transaction? transaction,

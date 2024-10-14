@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -434,7 +436,7 @@ class SessionLogEntryRepository {
   const SessionLogEntryRepository._();
 
   Future<List<SessionLogEntry>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
     int? limit,
     int? offset,
@@ -455,7 +457,7 @@ class SessionLogEntryRepository {
   }
 
   Future<SessionLogEntry?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<SessionLogEntryTable>? orderBy,
@@ -474,7 +476,7 @@ class SessionLogEntryRepository {
   }
 
   Future<SessionLogEntry?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -485,7 +487,7 @@ class SessionLogEntryRepository {
   }
 
   Future<List<SessionLogEntry>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<SessionLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -496,7 +498,7 @@ class SessionLogEntryRepository {
   }
 
   Future<SessionLogEntry> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     SessionLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
@@ -507,7 +509,7 @@ class SessionLogEntryRepository {
   }
 
   Future<List<SessionLogEntry>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<SessionLogEntry> rows, {
     _i1.ColumnSelections<SessionLogEntryTable>? columns,
     _i1.Transaction? transaction,
@@ -520,7 +522,7 @@ class SessionLogEntryRepository {
   }
 
   Future<SessionLogEntry> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     SessionLogEntry row, {
     _i1.ColumnSelections<SessionLogEntryTable>? columns,
     _i1.Transaction? transaction,
@@ -533,7 +535,7 @@ class SessionLogEntryRepository {
   }
 
   Future<List<SessionLogEntry>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<SessionLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -544,7 +546,7 @@ class SessionLogEntryRepository {
   }
 
   Future<SessionLogEntry> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     SessionLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
@@ -555,7 +557,7 @@ class SessionLogEntryRepository {
   }
 
   Future<List<SessionLogEntry>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<SessionLogEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -566,7 +568,7 @@ class SessionLogEntryRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,

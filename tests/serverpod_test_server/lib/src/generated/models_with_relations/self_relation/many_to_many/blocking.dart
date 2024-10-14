@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../protocol.dart' as _i2;
@@ -278,7 +280,7 @@ class BlockingRepository {
   final attachRow = const BlockingAttachRowRepository._();
 
   Future<List<Blocking>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<BlockingTable>? where,
     int? limit,
     int? offset,
@@ -301,7 +303,7 @@ class BlockingRepository {
   }
 
   Future<Blocking?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<BlockingTable>? where,
     int? offset,
     _i1.OrderByBuilder<BlockingTable>? orderBy,
@@ -322,7 +324,7 @@ class BlockingRepository {
   }
 
   Future<Blocking?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     BlockingInclude? include,
@@ -335,7 +337,7 @@ class BlockingRepository {
   }
 
   Future<List<Blocking>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Blocking> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -346,7 +348,7 @@ class BlockingRepository {
   }
 
   Future<Blocking> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Blocking row, {
     _i1.Transaction? transaction,
   }) async {
@@ -357,7 +359,7 @@ class BlockingRepository {
   }
 
   Future<List<Blocking>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Blocking> rows, {
     _i1.ColumnSelections<BlockingTable>? columns,
     _i1.Transaction? transaction,
@@ -370,7 +372,7 @@ class BlockingRepository {
   }
 
   Future<Blocking> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Blocking row, {
     _i1.ColumnSelections<BlockingTable>? columns,
     _i1.Transaction? transaction,
@@ -383,7 +385,7 @@ class BlockingRepository {
   }
 
   Future<List<Blocking>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Blocking> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -394,7 +396,7 @@ class BlockingRepository {
   }
 
   Future<Blocking> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Blocking row, {
     _i1.Transaction? transaction,
   }) async {
@@ -405,7 +407,7 @@ class BlockingRepository {
   }
 
   Future<List<Blocking>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<BlockingTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -416,7 +418,7 @@ class BlockingRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<BlockingTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -433,7 +435,7 @@ class BlockingAttachRowRepository {
   const BlockingAttachRowRepository._();
 
   Future<void> blocked(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Blocking blocking,
     _i2.Member blocked, {
     _i1.Transaction? transaction,
@@ -454,7 +456,7 @@ class BlockingAttachRowRepository {
   }
 
   Future<void> blockedBy(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Blocking blocking,
     _i2.Member blockedBy, {
     _i1.Transaction? transaction,

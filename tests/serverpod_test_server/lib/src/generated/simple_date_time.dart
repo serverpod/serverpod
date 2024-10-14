@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -171,7 +173,7 @@ class SimpleDateTimeRepository {
   const SimpleDateTimeRepository._();
 
   Future<List<SimpleDateTime>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
     int? limit,
     int? offset,
@@ -192,7 +194,7 @@ class SimpleDateTimeRepository {
   }
 
   Future<SimpleDateTime?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
     int? offset,
     _i1.OrderByBuilder<SimpleDateTimeTable>? orderBy,
@@ -211,7 +213,7 @@ class SimpleDateTimeRepository {
   }
 
   Future<SimpleDateTime?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -222,7 +224,7 @@ class SimpleDateTimeRepository {
   }
 
   Future<List<SimpleDateTime>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<SimpleDateTime> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -233,7 +235,7 @@ class SimpleDateTimeRepository {
   }
 
   Future<SimpleDateTime> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     SimpleDateTime row, {
     _i1.Transaction? transaction,
   }) async {
@@ -244,7 +246,7 @@ class SimpleDateTimeRepository {
   }
 
   Future<List<SimpleDateTime>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<SimpleDateTime> rows, {
     _i1.ColumnSelections<SimpleDateTimeTable>? columns,
     _i1.Transaction? transaction,
@@ -257,7 +259,7 @@ class SimpleDateTimeRepository {
   }
 
   Future<SimpleDateTime> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     SimpleDateTime row, {
     _i1.ColumnSelections<SimpleDateTimeTable>? columns,
     _i1.Transaction? transaction,
@@ -270,7 +272,7 @@ class SimpleDateTimeRepository {
   }
 
   Future<List<SimpleDateTime>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<SimpleDateTime> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -281,7 +283,7 @@ class SimpleDateTimeRepository {
   }
 
   Future<SimpleDateTime> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     SimpleDateTime row, {
     _i1.Transaction? transaction,
   }) async {
@@ -292,7 +294,7 @@ class SimpleDateTimeRepository {
   }
 
   Future<List<SimpleDateTime>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<SimpleDateTimeTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -303,7 +305,7 @@ class SimpleDateTimeRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
     int? limit,
     _i1.Transaction? transaction,

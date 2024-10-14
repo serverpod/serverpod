@@ -94,7 +94,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             findMethod?.parameters?.toSource(),
-            contains('DatabaseAccessor session'),
+            contains('Session session'),
           );
         });
 
@@ -179,7 +179,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             findRowMethod?.parameters?.toSource(),
-            contains('DatabaseAccessor session'),
+            contains('Session session'),
           );
         });
 
@@ -263,7 +263,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             findByIdMethod?.parameters?.toSource(),
-            contains('DatabaseAccessor session'),
+            contains('Session session'),
           );
         });
 
@@ -307,7 +307,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             insertMethod?.parameters?.toSource(),
-            contains('DatabaseAccessor session'),
+            contains('Session session'),
           );
         });
 
@@ -356,7 +356,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             insertRowMethod?.parameters?.toSource(),
-            contains('DatabaseAccessor session'),
+            contains('Session session'),
           );
         });
 
@@ -400,7 +400,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             updateMethod?.parameters?.toSource(),
-            contains('DatabaseAccessor session'),
+            contains('Session session'),
           );
         });
 
@@ -449,7 +449,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             updateRowMethod?.parameters?.toSource(),
-            contains('DatabaseAccessor session'),
+            contains('Session session'),
           );
         });
 
@@ -493,7 +493,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             deleteMethod?.parameters?.toSource(),
-            contains('DatabaseAccessor session'),
+            contains('Session session'),
           );
         });
 
@@ -542,7 +542,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             deleteRowMethod?.parameters?.toSource(),
-            contains('DatabaseAccessor session'),
+            contains('Session session'),
           );
         });
 
@@ -591,7 +591,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             deleteWhereMethod?.parameters?.toSource(),
-            contains('DatabaseAccessor session'),
+            contains('Session session'),
           );
         });
 
@@ -641,7 +641,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             countMethod?.parameters?.toSource(),
-            contains('DatabaseAccessor session'),
+            contains('Session session'),
           );
         });
 

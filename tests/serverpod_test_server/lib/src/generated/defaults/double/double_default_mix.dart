@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -223,7 +225,7 @@ class DoubleDefaultMixRepository {
   const DoubleDefaultMixRepository._();
 
   Future<List<DoubleDefaultMix>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<DoubleDefaultMixTable>? where,
     int? limit,
     int? offset,
@@ -244,7 +246,7 @@ class DoubleDefaultMixRepository {
   }
 
   Future<DoubleDefaultMix?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<DoubleDefaultMixTable>? where,
     int? offset,
     _i1.OrderByBuilder<DoubleDefaultMixTable>? orderBy,
@@ -263,7 +265,7 @@ class DoubleDefaultMixRepository {
   }
 
   Future<DoubleDefaultMix?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -274,7 +276,7 @@ class DoubleDefaultMixRepository {
   }
 
   Future<List<DoubleDefaultMix>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<DoubleDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -285,7 +287,7 @@ class DoubleDefaultMixRepository {
   }
 
   Future<DoubleDefaultMix> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     DoubleDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
@@ -296,7 +298,7 @@ class DoubleDefaultMixRepository {
   }
 
   Future<List<DoubleDefaultMix>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<DoubleDefaultMix> rows, {
     _i1.ColumnSelections<DoubleDefaultMixTable>? columns,
     _i1.Transaction? transaction,
@@ -309,7 +311,7 @@ class DoubleDefaultMixRepository {
   }
 
   Future<DoubleDefaultMix> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     DoubleDefaultMix row, {
     _i1.ColumnSelections<DoubleDefaultMixTable>? columns,
     _i1.Transaction? transaction,
@@ -322,7 +324,7 @@ class DoubleDefaultMixRepository {
   }
 
   Future<List<DoubleDefaultMix>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<DoubleDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -333,7 +335,7 @@ class DoubleDefaultMixRepository {
   }
 
   Future<DoubleDefaultMix> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     DoubleDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
@@ -344,7 +346,7 @@ class DoubleDefaultMixRepository {
   }
 
   Future<List<DoubleDefaultMix>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<DoubleDefaultMixTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -355,7 +357,7 @@ class DoubleDefaultMixRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<DoubleDefaultMixTable>? where,
     int? limit,
     _i1.Transaction? transaction,

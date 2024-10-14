@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -211,7 +213,7 @@ class EmailAuthRepository {
   const EmailAuthRepository._();
 
   Future<List<EmailAuth>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     int? limit,
     int? offset,
@@ -232,7 +234,7 @@ class EmailAuthRepository {
   }
 
   Future<EmailAuth?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmailAuthTable>? orderBy,
@@ -251,7 +253,7 @@ class EmailAuthRepository {
   }
 
   Future<EmailAuth?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -262,7 +264,7 @@ class EmailAuthRepository {
   }
 
   Future<List<EmailAuth>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<EmailAuth> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -273,7 +275,7 @@ class EmailAuthRepository {
   }
 
   Future<EmailAuth> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     EmailAuth row, {
     _i1.Transaction? transaction,
   }) async {
@@ -284,7 +286,7 @@ class EmailAuthRepository {
   }
 
   Future<List<EmailAuth>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<EmailAuth> rows, {
     _i1.ColumnSelections<EmailAuthTable>? columns,
     _i1.Transaction? transaction,
@@ -297,7 +299,7 @@ class EmailAuthRepository {
   }
 
   Future<EmailAuth> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     EmailAuth row, {
     _i1.ColumnSelections<EmailAuthTable>? columns,
     _i1.Transaction? transaction,
@@ -310,7 +312,7 @@ class EmailAuthRepository {
   }
 
   Future<List<EmailAuth>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<EmailAuth> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -321,7 +323,7 @@ class EmailAuthRepository {
   }
 
   Future<EmailAuth> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     EmailAuth row, {
     _i1.Transaction? transaction,
   }) async {
@@ -332,7 +334,7 @@ class EmailAuthRepository {
   }
 
   Future<List<EmailAuth>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<EmailAuthTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -343,7 +345,7 @@ class EmailAuthRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     int? limit,
     _i1.Transaction? transaction,

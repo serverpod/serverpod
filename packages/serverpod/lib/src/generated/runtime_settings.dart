@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
@@ -241,7 +243,7 @@ class RuntimeSettingsRepository {
   const RuntimeSettingsRepository._();
 
   Future<List<RuntimeSettings>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? limit,
     int? offset,
@@ -262,7 +264,7 @@ class RuntimeSettingsRepository {
   }
 
   Future<RuntimeSettings?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? offset,
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
@@ -281,7 +283,7 @@ class RuntimeSettingsRepository {
   }
 
   Future<RuntimeSettings?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -292,7 +294,7 @@ class RuntimeSettingsRepository {
   }
 
   Future<List<RuntimeSettings>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<RuntimeSettings> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -303,7 +305,7 @@ class RuntimeSettingsRepository {
   }
 
   Future<RuntimeSettings> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     RuntimeSettings row, {
     _i1.Transaction? transaction,
   }) async {
@@ -314,7 +316,7 @@ class RuntimeSettingsRepository {
   }
 
   Future<List<RuntimeSettings>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<RuntimeSettings> rows, {
     _i1.ColumnSelections<RuntimeSettingsTable>? columns,
     _i1.Transaction? transaction,
@@ -327,7 +329,7 @@ class RuntimeSettingsRepository {
   }
 
   Future<RuntimeSettings> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     RuntimeSettings row, {
     _i1.ColumnSelections<RuntimeSettingsTable>? columns,
     _i1.Transaction? transaction,
@@ -340,7 +342,7 @@ class RuntimeSettingsRepository {
   }
 
   Future<List<RuntimeSettings>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<RuntimeSettings> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -351,7 +353,7 @@ class RuntimeSettingsRepository {
   }
 
   Future<RuntimeSettings> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     RuntimeSettings row, {
     _i1.Transaction? transaction,
   }) async {
@@ -362,7 +364,7 @@ class RuntimeSettingsRepository {
   }
 
   Future<List<RuntimeSettings>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -373,7 +375,7 @@ class RuntimeSettingsRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? limit,
     _i1.Transaction? transaction,

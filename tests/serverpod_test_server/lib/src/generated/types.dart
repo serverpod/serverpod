@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
@@ -358,7 +360,7 @@ class TypesRepository {
   const TypesRepository._();
 
   Future<List<Types>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<TypesTable>? where,
     int? limit,
     int? offset,
@@ -379,7 +381,7 @@ class TypesRepository {
   }
 
   Future<Types?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<TypesTable>? where,
     int? offset,
     _i1.OrderByBuilder<TypesTable>? orderBy,
@@ -398,7 +400,7 @@ class TypesRepository {
   }
 
   Future<Types?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -409,7 +411,7 @@ class TypesRepository {
   }
 
   Future<List<Types>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Types> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -420,7 +422,7 @@ class TypesRepository {
   }
 
   Future<Types> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Types row, {
     _i1.Transaction? transaction,
   }) async {
@@ -431,7 +433,7 @@ class TypesRepository {
   }
 
   Future<List<Types>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Types> rows, {
     _i1.ColumnSelections<TypesTable>? columns,
     _i1.Transaction? transaction,
@@ -444,7 +446,7 @@ class TypesRepository {
   }
 
   Future<Types> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Types row, {
     _i1.ColumnSelections<TypesTable>? columns,
     _i1.Transaction? transaction,
@@ -457,7 +459,7 @@ class TypesRepository {
   }
 
   Future<List<Types>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Types> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -468,7 +470,7 @@ class TypesRepository {
   }
 
   Future<Types> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Types row, {
     _i1.Transaction? transaction,
   }) async {
@@ -479,7 +481,7 @@ class TypesRepository {
   }
 
   Future<List<Types>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<TypesTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -490,7 +492,7 @@ class TypesRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<TypesTable>? where,
     int? limit,
     _i1.Transaction? transaction,

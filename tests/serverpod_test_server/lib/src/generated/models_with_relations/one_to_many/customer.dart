@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -239,7 +241,7 @@ class CustomerRepository {
   final detachRow = const CustomerDetachRowRepository._();
 
   Future<List<Customer>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CustomerTable>? where,
     int? limit,
     int? offset,
@@ -262,7 +264,7 @@ class CustomerRepository {
   }
 
   Future<Customer?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CustomerTable>? where,
     int? offset,
     _i1.OrderByBuilder<CustomerTable>? orderBy,
@@ -283,7 +285,7 @@ class CustomerRepository {
   }
 
   Future<Customer?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     CustomerInclude? include,
@@ -296,7 +298,7 @@ class CustomerRepository {
   }
 
   Future<List<Customer>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Customer> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -307,7 +309,7 @@ class CustomerRepository {
   }
 
   Future<Customer> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Customer row, {
     _i1.Transaction? transaction,
   }) async {
@@ -318,7 +320,7 @@ class CustomerRepository {
   }
 
   Future<List<Customer>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Customer> rows, {
     _i1.ColumnSelections<CustomerTable>? columns,
     _i1.Transaction? transaction,
@@ -331,7 +333,7 @@ class CustomerRepository {
   }
 
   Future<Customer> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Customer row, {
     _i1.ColumnSelections<CustomerTable>? columns,
     _i1.Transaction? transaction,
@@ -344,7 +346,7 @@ class CustomerRepository {
   }
 
   Future<List<Customer>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Customer> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -355,7 +357,7 @@ class CustomerRepository {
   }
 
   Future<Customer> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Customer row, {
     _i1.Transaction? transaction,
   }) async {
@@ -366,7 +368,7 @@ class CustomerRepository {
   }
 
   Future<List<Customer>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<CustomerTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -377,7 +379,7 @@ class CustomerRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CustomerTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -394,7 +396,7 @@ class CustomerAttachRepository {
   const CustomerAttachRepository._();
 
   Future<void> orders(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Customer customer,
     List<_i2.Order> order, {
     _i1.Transaction? transaction,
@@ -419,7 +421,7 @@ class CustomerAttachRowRepository {
   const CustomerAttachRowRepository._();
 
   Future<void> orders(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Customer customer,
     _i2.Order order, {
     _i1.Transaction? transaction,
@@ -444,7 +446,7 @@ class CustomerDetachRepository {
   const CustomerDetachRepository._();
 
   Future<void> orders(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<_i2.Order> order, {
     _i1.Transaction? transaction,
   }) async {
@@ -465,7 +467,7 @@ class CustomerDetachRowRepository {
   const CustomerDetachRowRepository._();
 
   Future<void> orders(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     _i2.Order order, {
     _i1.Transaction? transaction,
   }) async {

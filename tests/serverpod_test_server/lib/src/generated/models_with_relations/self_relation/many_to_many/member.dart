@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../protocol.dart' as _i2;
@@ -307,7 +309,7 @@ class MemberRepository {
   final attachRow = const MemberAttachRowRepository._();
 
   Future<List<Member>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<MemberTable>? where,
     int? limit,
     int? offset,
@@ -330,7 +332,7 @@ class MemberRepository {
   }
 
   Future<Member?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<MemberTable>? where,
     int? offset,
     _i1.OrderByBuilder<MemberTable>? orderBy,
@@ -351,7 +353,7 @@ class MemberRepository {
   }
 
   Future<Member?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     MemberInclude? include,
@@ -364,7 +366,7 @@ class MemberRepository {
   }
 
   Future<List<Member>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Member> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -375,7 +377,7 @@ class MemberRepository {
   }
 
   Future<Member> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Member row, {
     _i1.Transaction? transaction,
   }) async {
@@ -386,7 +388,7 @@ class MemberRepository {
   }
 
   Future<List<Member>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Member> rows, {
     _i1.ColumnSelections<MemberTable>? columns,
     _i1.Transaction? transaction,
@@ -399,7 +401,7 @@ class MemberRepository {
   }
 
   Future<Member> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Member row, {
     _i1.ColumnSelections<MemberTable>? columns,
     _i1.Transaction? transaction,
@@ -412,7 +414,7 @@ class MemberRepository {
   }
 
   Future<List<Member>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Member> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -423,7 +425,7 @@ class MemberRepository {
   }
 
   Future<Member> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Member row, {
     _i1.Transaction? transaction,
   }) async {
@@ -434,7 +436,7 @@ class MemberRepository {
   }
 
   Future<List<Member>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<MemberTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -445,7 +447,7 @@ class MemberRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<MemberTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -462,7 +464,7 @@ class MemberAttachRepository {
   const MemberAttachRepository._();
 
   Future<void> blocking(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Member member,
     List<_i2.Blocking> blocking, {
     _i1.Transaction? transaction,
@@ -484,7 +486,7 @@ class MemberAttachRepository {
   }
 
   Future<void> blockedBy(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Member member,
     List<_i2.Blocking> blocking, {
     _i1.Transaction? transaction,
@@ -510,7 +512,7 @@ class MemberAttachRowRepository {
   const MemberAttachRowRepository._();
 
   Future<void> blocking(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Member member,
     _i2.Blocking blocking, {
     _i1.Transaction? transaction,
@@ -531,7 +533,7 @@ class MemberAttachRowRepository {
   }
 
   Future<void> blockedBy(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Member member,
     _i2.Blocking blocking, {
     _i1.Transaction? transaction,

@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -286,7 +288,7 @@ class LongImplicitIdFieldCollectionRepository {
   final detachRow = const LongImplicitIdFieldCollectionDetachRowRepository._();
 
   Future<List<LongImplicitIdFieldCollection>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>? where,
     int? limit,
     int? offset,
@@ -309,7 +311,7 @@ class LongImplicitIdFieldCollectionRepository {
   }
 
   Future<LongImplicitIdFieldCollection?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>? where,
     int? offset,
     _i1.OrderByBuilder<LongImplicitIdFieldCollectionTable>? orderBy,
@@ -330,7 +332,7 @@ class LongImplicitIdFieldCollectionRepository {
   }
 
   Future<LongImplicitIdFieldCollection?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     LongImplicitIdFieldCollectionInclude? include,
@@ -343,7 +345,7 @@ class LongImplicitIdFieldCollectionRepository {
   }
 
   Future<List<LongImplicitIdFieldCollection>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<LongImplicitIdFieldCollection> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -354,7 +356,7 @@ class LongImplicitIdFieldCollectionRepository {
   }
 
   Future<LongImplicitIdFieldCollection> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     LongImplicitIdFieldCollection row, {
     _i1.Transaction? transaction,
   }) async {
@@ -365,7 +367,7 @@ class LongImplicitIdFieldCollectionRepository {
   }
 
   Future<List<LongImplicitIdFieldCollection>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<LongImplicitIdFieldCollection> rows, {
     _i1.ColumnSelections<LongImplicitIdFieldCollectionTable>? columns,
     _i1.Transaction? transaction,
@@ -378,7 +380,7 @@ class LongImplicitIdFieldCollectionRepository {
   }
 
   Future<LongImplicitIdFieldCollection> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     LongImplicitIdFieldCollection row, {
     _i1.ColumnSelections<LongImplicitIdFieldCollectionTable>? columns,
     _i1.Transaction? transaction,
@@ -391,7 +393,7 @@ class LongImplicitIdFieldCollectionRepository {
   }
 
   Future<List<LongImplicitIdFieldCollection>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<LongImplicitIdFieldCollection> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -402,7 +404,7 @@ class LongImplicitIdFieldCollectionRepository {
   }
 
   Future<LongImplicitIdFieldCollection> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     LongImplicitIdFieldCollection row, {
     _i1.Transaction? transaction,
   }) async {
@@ -413,7 +415,7 @@ class LongImplicitIdFieldCollectionRepository {
   }
 
   Future<List<LongImplicitIdFieldCollection>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>
         where,
     _i1.Transaction? transaction,
@@ -425,7 +427,7 @@ class LongImplicitIdFieldCollectionRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -442,7 +444,7 @@ class LongImplicitIdFieldCollectionAttachRepository {
   const LongImplicitIdFieldCollectionAttachRepository._();
 
   Future<void> thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     LongImplicitIdFieldCollection longImplicitIdFieldCollection,
     List<_i2.LongImplicitIdField> longImplicitIdField, {
     _i1.Transaction? transaction,
@@ -476,7 +478,7 @@ class LongImplicitIdFieldCollectionAttachRowRepository {
   const LongImplicitIdFieldCollectionAttachRowRepository._();
 
   Future<void> thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     LongImplicitIdFieldCollection longImplicitIdFieldCollection,
     _i2.LongImplicitIdField longImplicitIdField, {
     _i1.Transaction? transaction,
@@ -508,7 +510,7 @@ class LongImplicitIdFieldCollectionDetachRepository {
   const LongImplicitIdFieldCollectionDetachRepository._();
 
   Future<void> thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<_i2.LongImplicitIdField> longImplicitIdField, {
     _i1.Transaction? transaction,
   }) async {
@@ -538,7 +540,7 @@ class LongImplicitIdFieldCollectionDetachRowRepository {
   const LongImplicitIdFieldCollectionDetachRowRepository._();
 
   Future<void> thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     _i2.LongImplicitIdField longImplicitIdField, {
     _i1.Transaction? transaction,
   }) async {

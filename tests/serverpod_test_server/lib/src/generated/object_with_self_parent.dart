@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -168,7 +170,7 @@ class ObjectWithSelfParentRepository {
   const ObjectWithSelfParentRepository._();
 
   Future<List<ObjectWithSelfParent>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? where,
     int? limit,
     int? offset,
@@ -189,7 +191,7 @@ class ObjectWithSelfParentRepository {
   }
 
   Future<ObjectWithSelfParent?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithSelfParentTable>? orderBy,
@@ -208,7 +210,7 @@ class ObjectWithSelfParentRepository {
   }
 
   Future<ObjectWithSelfParent?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
@@ -219,7 +221,7 @@ class ObjectWithSelfParentRepository {
   }
 
   Future<List<ObjectWithSelfParent>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ObjectWithSelfParent> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -230,7 +232,7 @@ class ObjectWithSelfParentRepository {
   }
 
   Future<ObjectWithSelfParent> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ObjectWithSelfParent row, {
     _i1.Transaction? transaction,
   }) async {
@@ -241,7 +243,7 @@ class ObjectWithSelfParentRepository {
   }
 
   Future<List<ObjectWithSelfParent>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ObjectWithSelfParent> rows, {
     _i1.ColumnSelections<ObjectWithSelfParentTable>? columns,
     _i1.Transaction? transaction,
@@ -254,7 +256,7 @@ class ObjectWithSelfParentRepository {
   }
 
   Future<ObjectWithSelfParent> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ObjectWithSelfParent row, {
     _i1.ColumnSelections<ObjectWithSelfParentTable>? columns,
     _i1.Transaction? transaction,
@@ -267,7 +269,7 @@ class ObjectWithSelfParentRepository {
   }
 
   Future<List<ObjectWithSelfParent>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<ObjectWithSelfParent> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -278,7 +280,7 @@ class ObjectWithSelfParentRepository {
   }
 
   Future<ObjectWithSelfParent> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     ObjectWithSelfParent row, {
     _i1.Transaction? transaction,
   }) async {
@@ -289,7 +291,7 @@ class ObjectWithSelfParentRepository {
   }
 
   Future<List<ObjectWithSelfParent>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<ObjectWithSelfParentTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -300,7 +302,7 @@ class ObjectWithSelfParentRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? where,
     int? limit,
     _i1.Transaction? transaction,

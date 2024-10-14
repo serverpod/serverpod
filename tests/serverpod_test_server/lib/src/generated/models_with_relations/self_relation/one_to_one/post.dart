@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../protocol.dart' as _i2;
@@ -279,7 +281,7 @@ class PostRepository {
   final detachRow = const PostDetachRowRepository._();
 
   Future<List<Post>> find(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<PostTable>? where,
     int? limit,
     int? offset,
@@ -302,7 +304,7 @@ class PostRepository {
   }
 
   Future<Post?> findFirstRow(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<PostTable>? where,
     int? offset,
     _i1.OrderByBuilder<PostTable>? orderBy,
@@ -323,7 +325,7 @@ class PostRepository {
   }
 
   Future<Post?> findById(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     PostInclude? include,
@@ -336,7 +338,7 @@ class PostRepository {
   }
 
   Future<List<Post>> insert(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Post> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -347,7 +349,7 @@ class PostRepository {
   }
 
   Future<Post> insertRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Post row, {
     _i1.Transaction? transaction,
   }) async {
@@ -358,7 +360,7 @@ class PostRepository {
   }
 
   Future<List<Post>> update(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Post> rows, {
     _i1.ColumnSelections<PostTable>? columns,
     _i1.Transaction? transaction,
@@ -371,7 +373,7 @@ class PostRepository {
   }
 
   Future<Post> updateRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Post row, {
     _i1.ColumnSelections<PostTable>? columns,
     _i1.Transaction? transaction,
@@ -384,7 +386,7 @@ class PostRepository {
   }
 
   Future<List<Post>> delete(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     List<Post> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -395,7 +397,7 @@ class PostRepository {
   }
 
   Future<Post> deleteRow(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Post row, {
     _i1.Transaction? transaction,
   }) async {
@@ -406,7 +408,7 @@ class PostRepository {
   }
 
   Future<List<Post>> deleteWhere(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<PostTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -417,7 +419,7 @@ class PostRepository {
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<PostTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -434,7 +436,7 @@ class PostAttachRowRepository {
   const PostAttachRowRepository._();
 
   Future<void> previous(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Post post,
     _i2.Post previous, {
     _i1.Transaction? transaction,
@@ -455,7 +457,7 @@ class PostAttachRowRepository {
   }
 
   Future<void> next(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Post post,
     _i2.Post next, {
     _i1.Transaction? transaction,
@@ -480,7 +482,7 @@ class PostDetachRowRepository {
   const PostDetachRowRepository._();
 
   Future<void> previous(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Post post, {
     _i1.Transaction? transaction,
   }) async {
@@ -505,7 +507,7 @@ class PostDetachRowRepository {
   }
 
   Future<void> next(
-    _i1.DatabaseAccessor session,
+    _i1.Session session,
     Post post, {
     _i1.Transaction? transaction,
   }) async {
