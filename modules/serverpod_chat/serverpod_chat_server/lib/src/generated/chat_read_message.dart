@@ -212,7 +212,7 @@ class ChatReadMessageRepository {
   const ChatReadMessageRepository._();
 
   Future<List<ChatReadMessage>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<ChatReadMessageTable>? where,
     int? limit,
     int? offset,
@@ -221,19 +221,19 @@ class ChatReadMessageRepository {
     _i1.OrderByListBuilder<ChatReadMessageTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<ChatReadMessage>(
+    return session.db.find<ChatReadMessage>(
       where: where?.call(ChatReadMessage.t),
       orderBy: orderBy?.call(ChatReadMessage.t),
       orderByList: orderByList?.call(ChatReadMessage.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ChatReadMessage?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<ChatReadMessageTable>? where,
     int? offset,
     _i1.OrderByBuilder<ChatReadMessageTable>? orderBy,
@@ -241,118 +241,118 @@ class ChatReadMessageRepository {
     _i1.OrderByListBuilder<ChatReadMessageTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<ChatReadMessage>(
+    return session.db.findFirstRow<ChatReadMessage>(
       where: where?.call(ChatReadMessage.t),
       orderBy: orderBy?.call(ChatReadMessage.t),
       orderByList: orderByList?.call(ChatReadMessage.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ChatReadMessage?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<ChatReadMessage>(
+    return session.db.findById<ChatReadMessage>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ChatReadMessage>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<ChatReadMessage> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<ChatReadMessage>(
+    return session.db.insert<ChatReadMessage>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ChatReadMessage> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     ChatReadMessage row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<ChatReadMessage>(
+    return session.db.insertRow<ChatReadMessage>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ChatReadMessage>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<ChatReadMessage> rows, {
     _i1.ColumnSelections<ChatReadMessageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<ChatReadMessage>(
+    return session.db.update<ChatReadMessage>(
       rows,
       columns: columns?.call(ChatReadMessage.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ChatReadMessage> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     ChatReadMessage row, {
     _i1.ColumnSelections<ChatReadMessageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<ChatReadMessage>(
+    return session.db.updateRow<ChatReadMessage>(
       row,
       columns: columns?.call(ChatReadMessage.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ChatReadMessage>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<ChatReadMessage> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<ChatReadMessage>(
+    return session.db.delete<ChatReadMessage>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ChatReadMessage> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     ChatReadMessage row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<ChatReadMessage>(
+    return session.db.deleteRow<ChatReadMessage>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ChatReadMessage>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     required _i1.WhereExpressionBuilder<ChatReadMessageTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<ChatReadMessage>(
+    return session.db.deleteWhere<ChatReadMessage>(
       where: where(ChatReadMessage.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<ChatReadMessageTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<ChatReadMessage>(
+    return session.db.count<ChatReadMessage>(
       where: where?.call(ChatReadMessage.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

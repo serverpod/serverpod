@@ -348,4 +348,75 @@ void main() {
       });
     }, skip: maybeClassNamedExampleTable == null);
   });
+
+  group(
+      'Given a child-class with a nullable field inheriting a nullable field when generating code',
+      () {
+    var models = [
+      ClassDefinitionBuilder()
+          .withClassName(parentClassName)
+          .withFileName(parentClassFileName)
+          .withSimpleField('name', 'String', nullable: true)
+          .withChildClasses(
+        [
+          ClassDefinitionBuilder()
+              .withClassName(childClassName)
+              .withFileName(childClassFileName)
+              .withSimpleField('age', 'int', nullable: true)
+              .build(),
+        ],
+      ).build(),
+      ClassDefinitionBuilder()
+          .withClassName(childClassName)
+          .withFileName(childClassFileName)
+          .withTableName(childTableName)
+          .withSimpleField('age', 'int', nullable: true)
+          .withExtendsClass(
+            ClassDefinitionBuilder()
+                .withClassName(parentClassName)
+                .withFileName(parentClassFileName)
+                .withSimpleField('name', 'String', nullable: true)
+                .build(),
+          )
+          .build(),
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var compilationUnit =
+        parseString(content: codeMap[childExpectedFilePath]!).unit;
+
+    group('then the $childClassName', () {
+      var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        compilationUnit,
+        name: childClassName,
+      );
+
+      group('has a copyWith method with named params', () {
+        var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          childClass!,
+          name: 'copyWith',
+        );
+
+        test('where nullable-inherited fields are "Object?"', () {
+          var nameParam = copyWithMethod?.parameters?.parameters.firstWhere(
+            (param) => param.name.toString() == 'name',
+          );
+
+          expect(nameParam?.toSource(), 'Object? name');
+        }, skip: copyWithMethod == null);
+
+        test('where nullable-local fields are typed', () {
+          var ageParam = copyWithMethod?.parameters?.parameters.firstWhere(
+            (param) => param.name.toString() == 'age',
+          );
+
+          expect(ageParam?.toSource(), 'int? age');
+        }, skip: copyWithMethod == null);
+      });
+    });
+  });
 }

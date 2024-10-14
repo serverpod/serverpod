@@ -243,6 +243,8 @@ redis:
   - countSubscribedChannels:
 serverOnlyScopedFieldModel:
   - getScopeServerOnlyField:
+serverOnlyScopedFieldChildModel:
+  - getProtocolField:
 signInRequired:
   - testMethod:
 adminScopeRequired:
@@ -266,6 +268,7 @@ testTools:
   - returnsString:
   - returnsStream:
   - returnsListFromInputStream:
+  - returnsSimpleDataListFromInputStream:
   - returnsStreamFromInputStream:
   - postNumberToSharedStream:
   - postNumberToSharedStreamAndReturnStream:
@@ -275,6 +278,8 @@ testTools:
   - createSimpleDatasInsideTransactions:
   - createSimpleDataAndThrowInsideTransaction:
   - createSimpleDatasInParallelTransactionCalls:
+  - echoSimpleData:
+  - echoSimpleDatas:
 authenticatedTestTools:
   - returnsString:
   - returnsStream:

@@ -38,6 +38,8 @@ import 'package:serverpod_test_server/src/generated/module_datatype.dart'
     as _i19;
 import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_field.dart'
     as _i20;
+import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_field_child.dart'
+    as _i21;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -126,6 +128,9 @@ class TestEndpoints {
   late final _RedisEndpoint redis;
 
   late final _ServerOnlyScopedFieldModelEndpoint serverOnlyScopedFieldModel;
+
+  late final _ServerOnlyScopedFieldChildModelEndpoint
+      serverOnlyScopedFieldChildModel;
 
   late final _SignInRequiredEndpoint signInRequired;
 
@@ -273,6 +278,10 @@ class _InternalTestEndpoints extends TestEndpoints
       endpoints,
       serializationManager,
     );
+    serverOnlyScopedFieldChildModel = _ServerOnlyScopedFieldChildModelEndpoint(
+      endpoints,
+      serializationManager,
+    );
     signInRequired = _SignInRequiredEndpoint(
       endpoints,
       serializationManager,
@@ -337,10 +346,10 @@ class _AsyncTasksEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'asyncTasks',
         methodName: 'insertRowToSimpleDataAfterDelay',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'num': num,
           'seconds': seconds,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -366,7 +375,7 @@ class _AsyncTasksEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'asyncTasks',
         methodName: 'throwExceptionAfterDelay',
-        parameters: {'seconds': seconds},
+        parameters: _i1.testObjectToJson({'seconds': seconds}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -400,7 +409,7 @@ class _AuthenticationEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'authentication',
         methodName: 'removeAllUsers',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -423,7 +432,7 @@ class _AuthenticationEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'authentication',
         methodName: 'countUsers',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -450,10 +459,10 @@ class _AuthenticationEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'authentication',
         methodName: 'createUser',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'email': email,
           'password': password,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -481,11 +490,11 @@ class _AuthenticationEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'authentication',
         methodName: 'authenticate',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'email': email,
           'password': password,
           'scopes': scopes,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -508,7 +517,7 @@ class _AuthenticationEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'authentication',
         methodName: 'signOut',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -535,10 +544,10 @@ class _AuthenticationEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'authentication',
         methodName: 'updateScopes',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'userId': userId,
           'scopes': scopes,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -575,7 +584,7 @@ class _BasicTypesEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicTypes',
         methodName: 'testInt',
-        parameters: {'value': value},
+        parameters: _i1.testObjectToJson({'value': value}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -601,7 +610,7 @@ class _BasicTypesEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicTypes',
         methodName: 'testDouble',
-        parameters: {'value': value},
+        parameters: _i1.testObjectToJson({'value': value}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -627,7 +636,7 @@ class _BasicTypesEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicTypes',
         methodName: 'testBool',
-        parameters: {'value': value},
+        parameters: _i1.testObjectToJson({'value': value}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -653,7 +662,7 @@ class _BasicTypesEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicTypes',
         methodName: 'testDateTime',
-        parameters: {'dateTime': dateTime},
+        parameters: _i1.testObjectToJson({'dateTime': dateTime}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -679,7 +688,7 @@ class _BasicTypesEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicTypes',
         methodName: 'testString',
-        parameters: {'value': value},
+        parameters: _i1.testObjectToJson({'value': value}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -705,7 +714,7 @@ class _BasicTypesEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicTypes',
         methodName: 'testByteData',
-        parameters: {'value': value},
+        parameters: _i1.testObjectToJson({'value': value}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -731,7 +740,7 @@ class _BasicTypesEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicTypes',
         methodName: 'testDuration',
-        parameters: {'value': value},
+        parameters: _i1.testObjectToJson({'value': value}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -757,7 +766,7 @@ class _BasicTypesEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicTypes',
         methodName: 'testUuid',
-        parameters: {'value': value},
+        parameters: _i1.testObjectToJson({'value': value}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -791,7 +800,7 @@ class _CloudStorageEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'cloudStorage',
         methodName: 'reset',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -818,10 +827,10 @@ class _CloudStorageEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'cloudStorage',
         methodName: 'storePublicFile',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'path': path,
           'byteData': byteData,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -847,7 +856,7 @@ class _CloudStorageEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'cloudStorage',
         methodName: 'retrievePublicFile',
-        parameters: {'path': path},
+        parameters: _i1.testObjectToJson({'path': path}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -873,7 +882,7 @@ class _CloudStorageEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'cloudStorage',
         methodName: 'existsPublicFile',
-        parameters: {'path': path},
+        parameters: _i1.testObjectToJson({'path': path}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -899,7 +908,7 @@ class _CloudStorageEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'cloudStorage',
         methodName: 'deletePublicFile',
-        parameters: {'path': path},
+        parameters: _i1.testObjectToJson({'path': path}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -925,7 +934,7 @@ class _CloudStorageEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'cloudStorage',
         methodName: 'getPublicUrlForFile',
-        parameters: {'path': path},
+        parameters: _i1.testObjectToJson({'path': path}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -951,7 +960,7 @@ class _CloudStorageEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'cloudStorage',
         methodName: 'getDirectFilePostUrl',
-        parameters: {'path': path},
+        parameters: _i1.testObjectToJson({'path': path}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -977,7 +986,7 @@ class _CloudStorageEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'cloudStorage',
         methodName: 'verifyDirectFileUpload',
-        parameters: {'path': path},
+        parameters: _i1.testObjectToJson({'path': path}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1015,10 +1024,10 @@ class _S3CloudStorageEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 's3CloudStorage',
         methodName: 'storePublicFile',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'path': path,
           'byteData': byteData,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1044,7 +1053,7 @@ class _S3CloudStorageEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 's3CloudStorage',
         methodName: 'retrievePublicFile',
-        parameters: {'path': path},
+        parameters: _i1.testObjectToJson({'path': path}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1070,7 +1079,7 @@ class _S3CloudStorageEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 's3CloudStorage',
         methodName: 'existsPublicFile',
-        parameters: {'path': path},
+        parameters: _i1.testObjectToJson({'path': path}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1096,7 +1105,7 @@ class _S3CloudStorageEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 's3CloudStorage',
         methodName: 'deletePublicFile',
-        parameters: {'path': path},
+        parameters: _i1.testObjectToJson({'path': path}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1122,7 +1131,7 @@ class _S3CloudStorageEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 's3CloudStorage',
         methodName: 'getPublicUrlForFile',
-        parameters: {'path': path},
+        parameters: _i1.testObjectToJson({'path': path}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1148,7 +1157,7 @@ class _S3CloudStorageEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 's3CloudStorage',
         methodName: 'getDirectFilePostUrl',
-        parameters: {'path': path},
+        parameters: _i1.testObjectToJson({'path': path}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1174,7 +1183,7 @@ class _S3CloudStorageEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 's3CloudStorage',
         methodName: 'verifyDirectFileUpload',
-        parameters: {'path': path},
+        parameters: _i1.testObjectToJson({'path': path}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1209,7 +1218,7 @@ class _CustomClassProtocolEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'customClassProtocol',
         methodName: 'getProtocolField',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1246,7 +1255,7 @@ class _CustomTypesEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'customTypes',
         methodName: 'returnCustomClass',
-        parameters: {'data': data},
+        parameters: _i1.testObjectToJson({'data': data}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1272,7 +1281,7 @@ class _CustomTypesEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'customTypes',
         methodName: 'returnCustomClassNullable',
-        parameters: {'data': data},
+        parameters: _i1.testObjectToJson({'data': data}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1298,7 +1307,7 @@ class _CustomTypesEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'customTypes',
         methodName: 'returnCustomClass2',
-        parameters: {'data': data},
+        parameters: _i1.testObjectToJson({'data': data}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1324,7 +1333,7 @@ class _CustomTypesEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'customTypes',
         methodName: 'returnCustomClass2Nullable',
-        parameters: {'data': data},
+        parameters: _i1.testObjectToJson({'data': data}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1350,7 +1359,7 @@ class _CustomTypesEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'customTypes',
         methodName: 'returnExternalCustomClass',
-        parameters: {'data': data},
+        parameters: _i1.testObjectToJson({'data': data}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1376,7 +1385,7 @@ class _CustomTypesEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'customTypes',
         methodName: 'returnExternalCustomClassNullable',
-        parameters: {'data': data},
+        parameters: _i1.testObjectToJson({'data': data}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1402,7 +1411,7 @@ class _CustomTypesEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'customTypes',
         methodName: 'returnFreezedCustomClass',
-        parameters: {'data': data},
+        parameters: _i1.testObjectToJson({'data': data}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1428,7 +1437,7 @@ class _CustomTypesEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'customTypes',
         methodName: 'returnFreezedCustomClassNullable',
-        parameters: {'data': data},
+        parameters: _i1.testObjectToJson({'data': data}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1463,7 +1472,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'deleteAllSimpleTestData',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1489,7 +1498,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'deleteSimpleTestDataLessThan',
-        parameters: {'num': num},
+        parameters: _i1.testObjectToJson({'num': num}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1515,7 +1524,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'findAndDeleteSimpleTestData',
-        parameters: {'num': num},
+        parameters: _i1.testObjectToJson({'num': num}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1541,7 +1550,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'createSimpleTestData',
-        parameters: {'numRows': numRows},
+        parameters: _i1.testObjectToJson({'numRows': numRows}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1568,10 +1577,10 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'findSimpleData',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'limit': limit,
           'offset': offset,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1597,7 +1606,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'findFirstRowSimpleData',
-        parameters: {'num': num},
+        parameters: _i1.testObjectToJson({'num': num}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1623,7 +1632,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'findByIdSimpleData',
-        parameters: {'id': id},
+        parameters: _i1.testObjectToJson({'id': id}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1652,12 +1661,12 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'findSimpleDataRowsLessThan',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'num': num,
           'offset': offset,
           'limit': limit,
           'descending': descending,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1683,7 +1692,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'insertRowSimpleData',
-        parameters: {'simpleData': simpleData},
+        parameters: _i1.testObjectToJson({'simpleData': simpleData}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1709,7 +1718,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'updateRowSimpleData',
-        parameters: {'simpleData': simpleData},
+        parameters: _i1.testObjectToJson({'simpleData': simpleData}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1735,7 +1744,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'deleteRowSimpleData',
-        parameters: {'simpleData': simpleData},
+        parameters: _i1.testObjectToJson({'simpleData': simpleData}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1759,7 +1768,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'deleteWhereSimpleData',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1782,7 +1791,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'countSimpleData',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1808,7 +1817,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'insertTypes',
-        parameters: {'value': value},
+        parameters: _i1.testObjectToJson({'value': value}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1834,7 +1843,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'updateTypes',
-        parameters: {'value': value},
+        parameters: _i1.testObjectToJson({'value': value}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1857,7 +1866,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'countTypesRows',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1881,7 +1890,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'deleteAllInTypes',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1907,7 +1916,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'getTypes',
-        parameters: {'id': id},
+        parameters: _i1.testObjectToJson({'id': id}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1933,7 +1942,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'getTypesRawQuery',
-        parameters: {'id': id},
+        parameters: _i1.testObjectToJson({'id': id}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1959,7 +1968,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'storeObjectWithEnum',
-        parameters: {'object': object},
+        parameters: _i1.testObjectToJson({'object': object}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -1985,7 +1994,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'getObjectWithEnum',
-        parameters: {'id': id},
+        parameters: _i1.testObjectToJson({'id': id}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2011,7 +2020,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'storeObjectWithObject',
-        parameters: {'object': object},
+        parameters: _i1.testObjectToJson({'object': object}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2037,7 +2046,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'getObjectWithObject',
-        parameters: {'id': id},
+        parameters: _i1.testObjectToJson({'id': id}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2060,7 +2069,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'deleteAll',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2084,7 +2093,7 @@ class _BasicDatabase {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'basicDatabase',
         methodName: 'testByteDataStore',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2121,7 +2130,7 @@ class _TransactionsDatabaseEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'transactionsDatabase',
         methodName: 'removeRow',
-        parameters: {'num': num},
+        parameters: _i1.testObjectToJson({'num': num}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2149,11 +2158,11 @@ class _TransactionsDatabaseEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'transactionsDatabase',
         methodName: 'updateInsertDelete',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'numUpdate': numUpdate,
           'numInsert': numInsert,
           'numDelete': numDelete,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2190,7 +2199,7 @@ class _DeprecationEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'deprecation',
         methodName: 'setGlobalDouble',
-        parameters: {'value': value},
+        parameters: _i1.testObjectToJson({'value': value}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2214,7 +2223,7 @@ class _DeprecationEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'deprecation',
         methodName: 'getGlobalDouble',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2249,7 +2258,7 @@ class _EchoRequestEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'echoRequest',
         methodName: 'echoAuthenticationKey',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2275,7 +2284,7 @@ class _EchoRequestEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'echoRequest',
         methodName: 'echoHttpHeader',
-        parameters: {'headerName': headerName},
+        parameters: _i1.testObjectToJson({'headerName': headerName}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2313,10 +2322,10 @@ class _EmailAuthTestMethods {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'emailAuthTestMethods',
         methodName: 'findVerificationCode',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'userName': userName,
           'email': email,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2342,7 +2351,7 @@ class _EmailAuthTestMethods {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'emailAuthTestMethods',
         methodName: 'findResetCode',
-        parameters: {'email': email},
+        parameters: _i1.testObjectToJson({'email': email}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2365,7 +2374,7 @@ class _EmailAuthTestMethods {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'emailAuthTestMethods',
         methodName: 'tearDown',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2393,11 +2402,11 @@ class _EmailAuthTestMethods {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'emailAuthTestMethods',
         methodName: 'createUser',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'userName': userName,
           'email': email,
           'password': password,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2432,7 +2441,7 @@ class _ExceptionTestEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'exceptionTest',
         methodName: 'throwNormalException',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2456,7 +2465,7 @@ class _ExceptionTestEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'exceptionTest',
         methodName: 'throwExceptionWithData',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2480,7 +2489,7 @@ class _ExceptionTestEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'exceptionTest',
         methodName: 'workingWithoutException',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2514,7 +2523,7 @@ class _FailedCallsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'failedCalls',
         methodName: 'failedCall',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2538,7 +2547,7 @@ class _FailedCallsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'failedCalls',
         methodName: 'failedDatabaseQuery',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2562,7 +2571,7 @@ class _FailedCallsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'failedCalls',
         methodName: 'failedDatabaseQueryCaughtException',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2585,7 +2594,7 @@ class _FailedCallsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'failedCalls',
         methodName: 'slowCall',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2609,7 +2618,7 @@ class _FailedCallsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'failedCalls',
         methodName: 'caughtException',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2646,7 +2655,7 @@ class _FieldScopesEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'fieldScopes',
         methodName: 'storeObject',
-        parameters: {'object': object},
+        parameters: _i1.testObjectToJson({'object': object}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2670,7 +2679,7 @@ class _FieldScopesEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'fieldScopes',
         methodName: 'retrieveObject',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2707,7 +2716,7 @@ class _FutureCallsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'futureCalls',
         methodName: 'makeFutureCall',
-        parameters: {'data': data},
+        parameters: _i1.testObjectToJson({'data': data}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2744,7 +2753,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnIntList',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2770,7 +2779,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnIntListList',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2796,7 +2805,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnIntListNullable',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2822,7 +2831,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnIntListNullableList',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2848,7 +2857,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnIntListListNullable',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2874,7 +2883,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnIntListNullableInts',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2900,7 +2909,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnNullableIntListNullableInts',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2926,7 +2935,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnDoubleList',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2952,7 +2961,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnDoubleListNullableDoubles',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -2978,7 +2987,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnBoolList',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3004,7 +3013,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnBoolListNullableBools',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3030,7 +3039,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnStringList',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3056,7 +3065,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnStringListNullableStrings',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3082,7 +3091,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnDateTimeList',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3108,7 +3117,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnDateTimeListNullableDateTimes',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3134,7 +3143,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnByteDataList',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3160,7 +3169,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnByteDataListNullableByteDatas',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3186,7 +3195,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnSimpleDataList',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3212,7 +3221,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnSimpleDataListNullableSimpleData',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3238,7 +3247,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnSimpleDataListNullable',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3265,7 +3274,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnNullableSimpleDataListNullableSimpleData',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3291,7 +3300,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnDurationList',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3317,7 +3326,7 @@ class _ListParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'listParameters',
         methodName: 'returnDurationListNullableDurations',
-        parameters: {'list': list},
+        parameters: _i1.testObjectToJson({'list': list}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3354,7 +3363,7 @@ class _LoggingEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'logging',
         methodName: 'slowQueryMethod',
-        parameters: {'seconds': seconds},
+        parameters: _i1.testObjectToJson({'seconds': seconds}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3380,7 +3389,7 @@ class _LoggingEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'logging',
         methodName: 'queryMethod',
-        parameters: {'queries': queries},
+        parameters: _i1.testObjectToJson({'queries': queries}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3404,7 +3413,7 @@ class _LoggingEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'logging',
         methodName: 'failedQueryMethod',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3430,7 +3439,7 @@ class _LoggingEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'logging',
         methodName: 'slowMethod',
-        parameters: {'delayMillis': delayMillis},
+        parameters: _i1.testObjectToJson({'delayMillis': delayMillis}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3453,7 +3462,7 @@ class _LoggingEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'logging',
         methodName: 'failingMethod',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3476,7 +3485,7 @@ class _LoggingEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'logging',
         methodName: 'emptyMethod',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3503,10 +3512,10 @@ class _LoggingEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'logging',
         methodName: 'log',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'message': message,
           'logLevels': logLevels,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3532,7 +3541,7 @@ class _LoggingEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'logging',
         methodName: 'logInfo',
-        parameters: {'message': message},
+        parameters: _i1.testObjectToJson({'message': message}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3560,11 +3569,11 @@ class _LoggingEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'logging',
         methodName: 'logDebugAndInfoAndError',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'debug': debug,
           'info': info,
           'error': error,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3587,7 +3596,7 @@ class _LoggingEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'logging',
         methodName: 'twoQueries',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3734,7 +3743,7 @@ class _LoggingDisabledEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'loggingDisabled',
         methodName: 'logInfo',
-        parameters: {'message': message},
+        parameters: _i1.testObjectToJson({'message': message}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3771,7 +3780,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnIntMap',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3797,7 +3806,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnIntMapNullable',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3823,7 +3832,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnNestedIntMap',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3849,7 +3858,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnIntMapNullableInts',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3875,7 +3884,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnNullableIntMapNullableInts',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3901,7 +3910,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnIntIntMap',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3927,7 +3936,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnEnumIntMap',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3953,7 +3962,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnEnumMap',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -3979,7 +3988,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnDoubleMap',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4005,7 +4014,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnDoubleMapNullableDoubles',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4031,7 +4040,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnBoolMap',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4057,7 +4066,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnBoolMapNullableBools',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4083,7 +4092,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnStringMap',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4109,7 +4118,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnStringMapNullableStrings',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4135,7 +4144,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnDateTimeMap',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4161,7 +4170,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnDateTimeMapNullableDateTimes',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4187,7 +4196,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnByteDataMap',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4213,7 +4222,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnByteDataMapNullableByteDatas',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4239,7 +4248,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnSimpleDataMap',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4266,7 +4275,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnSimpleDataMapNullableSimpleData',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4292,7 +4301,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnSimpleDataMapNullable',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4319,7 +4328,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnNullableSimpleDataMapNullableSimpleData',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4345,7 +4354,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnDurationMap',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4371,7 +4380,7 @@ class _MapParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'mapParameters',
         methodName: 'returnDurationMapNullableDurations',
-        parameters: {'map': map},
+        parameters: _i1.testObjectToJson({'map': map}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4408,7 +4417,7 @@ class _MethodSignaturePermutationsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'methodSignaturePermutations',
         methodName: 'echoPositionalArg',
-        parameters: {'string': string},
+        parameters: _i1.testObjectToJson({'string': string}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4434,7 +4443,7 @@ class _MethodSignaturePermutationsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'methodSignaturePermutations',
         methodName: 'echoNamedArg',
-        parameters: {'string': string},
+        parameters: _i1.testObjectToJson({'string': string}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4460,7 +4469,7 @@ class _MethodSignaturePermutationsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'methodSignaturePermutations',
         methodName: 'echoNullableNamedArg',
-        parameters: {'string': string},
+        parameters: _i1.testObjectToJson({'string': string}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4486,7 +4495,7 @@ class _MethodSignaturePermutationsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'methodSignaturePermutations',
         methodName: 'echoOptionalArg',
-        parameters: {'string': string},
+        parameters: _i1.testObjectToJson({'string': string}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4513,10 +4522,10 @@ class _MethodSignaturePermutationsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'methodSignaturePermutations',
         methodName: 'echoPositionalAndNamedArgs',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'string1': string1,
           'string2': string2,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4543,10 +4552,10 @@ class _MethodSignaturePermutationsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'methodSignaturePermutations',
         methodName: 'echoPositionalAndNullableNamedArgs',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'string1': string1,
           'string2': string2,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4573,10 +4582,10 @@ class _MethodSignaturePermutationsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'methodSignaturePermutations',
         methodName: 'echoPositionalAndOptionalArgs',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'string1': string1,
           'string2': string2,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4796,7 +4805,7 @@ class _MethodStreaming {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'methodStreaming',
         methodName: 'methodCallEndpoint',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4909,7 +4918,7 @@ class _MethodStreaming {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'methodStreaming',
         methodName: 'wasBroadcastStreamCanceled',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -4933,7 +4942,7 @@ class _MethodStreaming {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'methodStreaming',
         methodName: 'wasSessionWillCloseListenerCalled',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -5339,7 +5348,7 @@ class _MethodStreaming {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'methodStreaming',
         methodName: 'simpleEndpoint',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -5365,7 +5374,7 @@ class _MethodStreaming {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'methodStreaming',
         methodName: 'intParameter',
-        parameters: {'value': value},
+        parameters: _i1.testObjectToJson({'value': value}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -5391,7 +5400,7 @@ class _MethodStreaming {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'methodStreaming',
         methodName: 'doubleInputValue',
-        parameters: {'value': value},
+        parameters: _i1.testObjectToJson({'value': value}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -5417,7 +5426,7 @@ class _MethodStreaming {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'methodStreaming',
         methodName: 'delayedResponse',
-        parameters: {'delay': delay},
+        parameters: _i1.testObjectToJson({'delay': delay}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -5535,7 +5544,7 @@ class _MethodStreaming {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'methodStreaming',
         methodName: 'completeAllDelayedResponses',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6001,7 +6010,7 @@ class _ModuleSerializationEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'moduleSerialization',
         methodName: 'serializeModuleObject',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6027,7 +6036,7 @@ class _ModuleSerializationEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'moduleSerialization',
         methodName: 'modifyModuleObject',
-        parameters: {'object': object},
+        parameters: _i1.testObjectToJson({'object': object}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6051,7 +6060,7 @@ class _ModuleSerializationEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'moduleSerialization',
         methodName: 'serializeNestedModuleObject',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6091,12 +6100,12 @@ class _NamedParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'namedParameters',
         methodName: 'namedParametersMethod',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'namedInt': namedInt,
           'intWithDefaultValue': intWithDefaultValue,
           'nullableInt': nullableInt,
           'nullableIntWithDefaultValue': nullableIntWithDefaultValue,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6123,10 +6132,10 @@ class _NamedParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'namedParameters',
         methodName: 'namedParametersMethodEqualInts',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'namedInt': namedInt,
           'nullableInt': nullableInt,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6163,7 +6172,7 @@ class _OptionalParametersEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'optionalParameters',
         methodName: 'returnOptionalInt',
-        parameters: {'optionalInt': optionalInt},
+        parameters: _i1.testObjectToJson({'optionalInt': optionalInt}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6201,10 +6210,10 @@ class _RedisEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'redis',
         methodName: 'setSimpleData',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'key': key,
           'data': data,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6231,10 +6240,10 @@ class _RedisEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'redis',
         methodName: 'setSimpleDataWithLifetime',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'key': key,
           'data': data,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6260,7 +6269,7 @@ class _RedisEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'redis',
         methodName: 'getSimpleData',
-        parameters: {'key': key},
+        parameters: _i1.testObjectToJson({'key': key}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6286,7 +6295,7 @@ class _RedisEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'redis',
         methodName: 'deleteSimpleData',
-        parameters: {'key': key},
+        parameters: _i1.testObjectToJson({'key': key}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6310,7 +6319,7 @@ class _RedisEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'redis',
         methodName: 'resetMessageCentralTest',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6336,7 +6345,7 @@ class _RedisEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'redis',
         methodName: 'listenToChannel',
-        parameters: {'channel': channel},
+        parameters: _i1.testObjectToJson({'channel': channel}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6363,10 +6372,10 @@ class _RedisEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'redis',
         methodName: 'postToChannel',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'channel': channel,
           'data': data,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6390,7 +6399,7 @@ class _RedisEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'redis',
         methodName: 'countSubscribedChannels',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6425,13 +6434,48 @@ class _ServerOnlyScopedFieldModelEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'serverOnlyScopedFieldModel',
         methodName: 'getScopeServerOnlyField',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession,
         _localCallContext.arguments,
       ) as _i3.Future<_i20.ScopeServerOnlyField>);
+      await _localUniqueSession.close();
+      return _localReturnValue;
+    });
+  }
+}
+
+class _ServerOnlyScopedFieldChildModelEndpoint {
+  _ServerOnlyScopedFieldChildModelEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<_i21.ScopeServerOnlyFieldChild> getProtocolField(
+      _i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'serverOnlyScopedFieldChildModel',
+        method: 'getProtocolField',
+      );
+      var _localCallContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => _localUniqueSession,
+        endpointPath: 'serverOnlyScopedFieldChildModel',
+        methodName: 'getProtocolField',
+        parameters: _i1.testObjectToJson({}),
+        serializationManager: _serializationManager,
+      );
+      var _localReturnValue = await (_localCallContext.method.call(
+        _localUniqueSession,
+        _localCallContext.arguments,
+      ) as _i3.Future<_i21.ScopeServerOnlyFieldChild>);
       await _localUniqueSession.close();
       return _localReturnValue;
     });
@@ -6459,7 +6503,7 @@ class _SignInRequiredEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'signInRequired',
         methodName: 'testMethod',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6493,7 +6537,7 @@ class _AdminScopeRequiredEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'adminScopeRequired',
         methodName: 'testMethod',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6531,10 +6575,10 @@ class _SimpleEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'simple',
         methodName: 'setGlobalInt',
-        parameters: {
+        parameters: _i1.testObjectToJson({
           'value': value,
           'secondValue': secondValue,
-        },
+        }),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6557,7 +6601,7 @@ class _SimpleEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'simple',
         methodName: 'addToGlobalInt',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6580,7 +6624,7 @@ class _SimpleEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'simple',
         methodName: 'getGlobalInt',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6606,7 +6650,7 @@ class _SimpleEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'simple',
         methodName: 'hello',
-        parameters: {'name': name},
+        parameters: _i1.testObjectToJson({'name': name}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6654,7 +6698,7 @@ class _SubSubDirTestEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'subSubDirTest',
         methodName: 'testMethod',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6688,7 +6732,7 @@ class _SubDirTestEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'subDirTest',
         methodName: 'testMethod',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6723,7 +6767,7 @@ class _TestToolsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'testTools',
         methodName: 'returnsSessionId',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6747,7 +6791,7 @@ class _TestToolsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'testTools',
         methodName: 'returnsSessionEndpointAndMethod',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6833,7 +6877,7 @@ class _TestToolsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'testTools',
         methodName: 'returnsString',
-        parameters: {'string': string},
+        parameters: _i1.testObjectToJson({'string': string}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -6907,6 +6951,37 @@ class _TestToolsEndpoint {
     });
   }
 
+  _i3.Future<List<_i11.SimpleData>> returnsSimpleDataListFromInputStream(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<_i11.SimpleData> simpleDatas,
+  ) async {
+    var _localTestStreamManager =
+        _i1.TestStreamManager<List<_i11.SimpleData>>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'testTools',
+        method: 'returnsSimpleDataListFromInputStream',
+      );
+      var _localCallContext =
+          await _endpointDispatch.getMethodStreamCallContext(
+        createSessionCallback: (_) => _localUniqueSession,
+        endpointPath: 'testTools',
+        methodName: 'returnsSimpleDataListFromInputStream',
+        arguments: {},
+        requestedInputStreams: ['simpleDatas'],
+        serializationManager: _serializationManager,
+      );
+      await _localTestStreamManager.callStreamMethod(
+        _localCallContext,
+        _localUniqueSession,
+        {'simpleDatas': simpleDatas},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
+    });
+  }
+
   _i3.Stream<int> returnsStreamFromInputStream(
     _i1.TestSessionBuilder sessionBuilder,
     _i3.Stream<int> numbers,
@@ -6953,7 +7028,7 @@ class _TestToolsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'testTools',
         methodName: 'postNumberToSharedStream',
-        parameters: {'number': number},
+        parameters: _i1.testObjectToJson({'number': number}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -7041,7 +7116,7 @@ class _TestToolsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'testTools',
         methodName: 'createSimpleData',
-        parameters: {'data': data},
+        parameters: _i1.testObjectToJson({'data': data}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -7065,7 +7140,7 @@ class _TestToolsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'testTools',
         methodName: 'getAllSimpleData',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -7091,7 +7166,7 @@ class _TestToolsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'testTools',
         methodName: 'createSimpleDatasInsideTransactions',
-        parameters: {'data': data},
+        parameters: _i1.testObjectToJson({'data': data}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -7117,7 +7192,7 @@ class _TestToolsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'testTools',
         methodName: 'createSimpleDataAndThrowInsideTransaction',
-        parameters: {'data': data},
+        parameters: _i1.testObjectToJson({'data': data}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
@@ -7141,13 +7216,65 @@ class _TestToolsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'testTools',
         methodName: 'createSimpleDatasInParallelTransactionCalls',
-        parameters: {},
+        parameters: _i1.testObjectToJson({}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(
         _localUniqueSession,
         _localCallContext.arguments,
       ) as _i3.Future<void>);
+      await _localUniqueSession.close();
+      return _localReturnValue;
+    });
+  }
+
+  _i3.Future<_i11.SimpleData> echoSimpleData(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i11.SimpleData simpleData,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'testTools',
+        method: 'echoSimpleData',
+      );
+      var _localCallContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => _localUniqueSession,
+        endpointPath: 'testTools',
+        methodName: 'echoSimpleData',
+        parameters: _i1.testObjectToJson({'simpleData': simpleData}),
+        serializationManager: _serializationManager,
+      );
+      var _localReturnValue = await (_localCallContext.method.call(
+        _localUniqueSession,
+        _localCallContext.arguments,
+      ) as _i3.Future<_i11.SimpleData>);
+      await _localUniqueSession.close();
+      return _localReturnValue;
+    });
+  }
+
+  _i3.Future<List<_i11.SimpleData>> echoSimpleDatas(
+    _i1.TestSessionBuilder sessionBuilder,
+    List<_i11.SimpleData> simpleDatas,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'testTools',
+        method: 'echoSimpleDatas',
+      );
+      var _localCallContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => _localUniqueSession,
+        endpointPath: 'testTools',
+        methodName: 'echoSimpleDatas',
+        parameters: _i1.testObjectToJson({'simpleDatas': simpleDatas}),
+        serializationManager: _serializationManager,
+      );
+      var _localReturnValue = await (_localCallContext.method.call(
+        _localUniqueSession,
+        _localCallContext.arguments,
+      ) as _i3.Future<List<_i11.SimpleData>>);
       await _localUniqueSession.close();
       return _localReturnValue;
     });
@@ -7178,7 +7305,7 @@ class _AuthenticatedTestToolsEndpoint {
         createSessionCallback: (_) => _localUniqueSession,
         endpointPath: 'authenticatedTestTools',
         methodName: 'returnsString',
-        parameters: {'string': string},
+        parameters: _i1.testObjectToJson({'string': string}),
         serializationManager: _serializationManager,
       );
       var _localReturnValue = await (_localCallContext.method.call(

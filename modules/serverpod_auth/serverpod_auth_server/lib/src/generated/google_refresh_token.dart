@@ -191,7 +191,7 @@ class GoogleRefreshTokenRepository {
   const GoogleRefreshTokenRepository._();
 
   Future<List<GoogleRefreshToken>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     int? limit,
     int? offset,
@@ -200,19 +200,19 @@ class GoogleRefreshTokenRepository {
     _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<GoogleRefreshToken>(
+    return session.db.find<GoogleRefreshToken>(
       where: where?.call(GoogleRefreshToken.t),
       orderBy: orderBy?.call(GoogleRefreshToken.t),
       orderByList: orderByList?.call(GoogleRefreshToken.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<GoogleRefreshToken?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     int? offset,
     _i1.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
@@ -220,118 +220,118 @@ class GoogleRefreshTokenRepository {
     _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<GoogleRefreshToken>(
+    return session.db.findFirstRow<GoogleRefreshToken>(
       where: where?.call(GoogleRefreshToken.t),
       orderBy: orderBy?.call(GoogleRefreshToken.t),
       orderByList: orderByList?.call(GoogleRefreshToken.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<GoogleRefreshToken?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<GoogleRefreshToken>(
+    return session.db.findById<GoogleRefreshToken>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<GoogleRefreshToken>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<GoogleRefreshToken> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<GoogleRefreshToken>(
+    return session.db.insert<GoogleRefreshToken>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<GoogleRefreshToken> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     GoogleRefreshToken row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<GoogleRefreshToken>(
+    return session.db.insertRow<GoogleRefreshToken>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<GoogleRefreshToken>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<GoogleRefreshToken> rows, {
     _i1.ColumnSelections<GoogleRefreshTokenTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<GoogleRefreshToken>(
+    return session.db.update<GoogleRefreshToken>(
       rows,
       columns: columns?.call(GoogleRefreshToken.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<GoogleRefreshToken> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     GoogleRefreshToken row, {
     _i1.ColumnSelections<GoogleRefreshTokenTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<GoogleRefreshToken>(
+    return session.db.updateRow<GoogleRefreshToken>(
       row,
       columns: columns?.call(GoogleRefreshToken.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<GoogleRefreshToken>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     List<GoogleRefreshToken> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<GoogleRefreshToken>(
+    return session.db.delete<GoogleRefreshToken>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<GoogleRefreshToken> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.DatabaseAccessor session,
     GoogleRefreshToken row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<GoogleRefreshToken>(
+    return session.db.deleteRow<GoogleRefreshToken>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<GoogleRefreshToken>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     required _i1.WhereExpressionBuilder<GoogleRefreshTokenTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<GoogleRefreshToken>(
+    return session.db.deleteWhere<GoogleRefreshToken>(
       where: where(GoogleRefreshToken.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.DatabaseAccessor session, {
     _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<GoogleRefreshToken>(
+    return session.db.count<GoogleRefreshToken>(
       where: where?.call(GoogleRefreshToken.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

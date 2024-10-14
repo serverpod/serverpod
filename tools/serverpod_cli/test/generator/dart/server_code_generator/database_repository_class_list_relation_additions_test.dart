@@ -172,12 +172,12 @@ void main() {
       });
 
       test(
-          'people method has the input params of databaseAccessor, example, person and named param transaction',
+          'people method has the input params of session, example, person and named param transaction',
           () {
         expect(
           peopleMethod?.parameters?.toSource(),
           matches(
-              r'\(_i\d\.DatabaseAccessor databaseAccessor, Example example, Person person, \{_i\d\.Transaction\? transaction\}\)'),
+              r'\(_i\d\.DatabaseAccessor session, Example example, Person person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: peopleMethod == null);
     });
@@ -223,12 +223,12 @@ void main() {
       });
 
       test(
-          'people method has the input params of databaseAccessor, example, person and named param transaction',
+          'people method has the input params of session, example, person and named param transaction',
           () {
         expect(
           peopleMethod?.parameters?.toSource(),
           matches(
-              r'\(_i\d\.DatabaseAccessor databaseAccessor, Example example, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
+              r'\(_i\d\.DatabaseAccessor session, Example example, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: peopleMethod == null);
     }, skip: repositoryAttachClass == null);
@@ -262,12 +262,12 @@ void main() {
       });
 
       test(
-          'people method has the input params of databaseAccessor, person and named param transaction',
+          'people method has the input params of session, person and named param transaction',
           () {
         expect(
           peopleMethod?.parameters?.toSource(),
           matches(
-              r'\(_i\d\.DatabaseAccessor databaseAccessor, Person person, \{_i\d\.Transaction\? transaction\}\)'),
+              r'\(_i\d\.DatabaseAccessor session, Person person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: peopleMethod == null);
     }, skip: repositoryClass == null);
@@ -313,12 +313,12 @@ void main() {
       });
 
       test(
-          'people method has the input params of databaseAccessor, example, person and named param transaction',
+          'people method has the input params of session, example, person and named param transaction',
           () {
         expect(
           peopleMethod?.parameters?.toSource(),
           matches(
-              r'\(_i\d\.DatabaseAccessor databaseAccessor, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
+              r'\(_i\d\.DatabaseAccessor session, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: peopleMethod == null);
     }, skip: repositoryAttachClass == null);
@@ -371,12 +371,12 @@ void main() {
       });
 
       test(
-          'citizens method has the input params of databaseAccessor, example, person and named param transaction',
+          'citizens method has the input params of session, example, person and named param transaction',
           () {
         expect(
           citizensMethod?.parameters?.toSource(),
           matches(
-              r'\(_i\d\.DatabaseAccessor databaseAccessor, Example example, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
+              r'\(_i\d\.DatabaseAccessor session, Example example, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: citizensMethod == null);
     }, skip: repositoryAttachClass == null);
@@ -398,12 +398,12 @@ void main() {
       });
 
       test(
-          'citizens method has the input params of databaseAccessor, example, person and named param transaction',
+          'citizens method has the input params of session, example, person and named param transaction',
           () {
         expect(
           citizenMethod?.parameters?.toSource(),
           matches(
-              r'\(_i\d\.DatabaseAccessor databaseAccessor, Example example, Person person, \{_i\d\.Transaction\? transaction\}\)'),
+              r'\(_i\d\.DatabaseAccessor session, Example example, Person person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: citizenMethod == null);
     });
@@ -436,12 +436,12 @@ void main() {
       });
 
       test(
-          'citizens method has the input params of databaseAccessor, example, person and named param transaction',
+          'citizens method has the input params of session, example, person and named param transaction',
           () {
         expect(
           citizensMethod?.parameters?.toSource(),
           matches(
-              r'\(_i\d\.DatabaseAccessor databaseAccessor, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
+              r'\(_i\d\.DatabaseAccessor session, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: citizensMethod == null);
     }, skip: repositoryAttachClass == null);
@@ -463,12 +463,12 @@ void main() {
       });
 
       test(
-          'citizens method has the input params of databaseAccessor, person and named param transaction',
+          'citizens method has the input params of session, person and named param transaction',
           () {
         expect(
           citizenMethod?.parameters?.toSource(),
           matches(
-              r'\(_i\d\.DatabaseAccessor databaseAccessor, Person person, \{_i\d\.Transaction\? transaction\}\)'),
+              r'\(_i\d\.DatabaseAccessor session, Person person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: citizenMethod == null);
     });
