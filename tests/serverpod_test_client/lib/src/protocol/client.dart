@@ -1784,6 +1784,22 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {},
       );
 
+  _i2.Stream<int> exceptionThrownBeforeStreamReturn() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'exceptionThrownBeforeStreamReturn',
+        {},
+        {},
+      );
+
+  _i2.Stream<int> exceptionThrownInStreamReturn() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'exceptionThrownInStreamReturn',
+        {},
+        {},
+      );
+
   _i2.Stream<int> throwsSerializableExceptionStream() =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'methodStreaming',
