@@ -26,6 +26,7 @@ withServerpod(
   _i1.TestClosure<TestEndpoints> testClosure, {
   String? runMode,
   bool? enableSessionLogging,
+  List<String>? testGroupTagsOverride,
   _i1.RollbackDatabase? rollbackDatabase,
   bool? applyMigrations,
 }) {
@@ -41,6 +42,7 @@ withServerpod(
     ),
     maybeRollbackDatabase: rollbackDatabase,
     maybeEnableSessionLogging: enableSessionLogging,
+    maybeTestGroupTagsOverride: testGroupTagsOverride,
   )(testClosure);
 }
 

@@ -53,6 +53,8 @@ typedef TestClosure<T> = void Function(
   T endpoints,
 );
 
+const String _defaultIntegrationTestTag = 'integration';
+
 /// Builds the `withServerpod` test helper.
 /// Used by the generated code.
 /// Note: The [testGroupName] parameter is needed to enable IDE support.
@@ -60,8 +62,9 @@ void Function(TestClosure<T>)
     buildWithServerpod<T extends InternalTestEndpoints>(
   String testGroupName,
   TestServerpod<T> testServerpod, {
-  RollbackDatabase? maybeRollbackDatabase,
-  bool? maybeEnableSessionLogging,
+  required RollbackDatabase? maybeRollbackDatabase,
+  required bool? maybeEnableSessionLogging,
+  required List<String>? maybeTestGroupTagsOverride,
 }) {
   var rollbackDatabase = maybeRollbackDatabase ?? RollbackDatabase.afterEach;
 
@@ -110,47 +113,51 @@ void Function(TestClosure<T>)
   return (
     TestClosure<T> testClosure,
   ) {
-    group(testGroupName, () {
-      setUpAll(() async {
-        await testServerpod.start();
+    group(
+      testGroupName,
+      () {
+        setUpAll(() async {
+          await testServerpod.start();
 
-        if (rollbackDatabase == RollbackDatabase.afterAll ||
-            rollbackDatabase == RollbackDatabase.afterEach) {
-          var localTransactionManager = getTransactionManager();
+          if (rollbackDatabase == RollbackDatabase.afterAll ||
+              rollbackDatabase == RollbackDatabase.afterEach) {
+            var localTransactionManager = getTransactionManager();
 
-          await localTransactionManager.createTransaction();
-          await localTransactionManager.addSavePoint();
-        }
-      });
+            await localTransactionManager.createTransaction();
+            await localTransactionManager.addSavePoint();
+          }
+        });
 
-      tearDown(() async {
-        if (rollbackDatabase == RollbackDatabase.afterEach) {
-          var localTransactionManager = getTransactionManager();
+        tearDown(() async {
+          if (rollbackDatabase == RollbackDatabase.afterEach) {
+            var localTransactionManager = getTransactionManager();
 
-          await localTransactionManager.rollbackToPreviousSavePoint();
-          await localTransactionManager.addSavePoint();
-        }
+            await localTransactionManager.rollbackToPreviousSavePoint();
+            await localTransactionManager.addSavePoint();
+          }
 
-        await GlobalStreamManager.closeAllStreams();
-      });
+          await GlobalStreamManager.closeAllStreams();
+        });
 
-      tearDownAll(() async {
-        if (rollbackDatabase == RollbackDatabase.afterAll ||
-            rollbackDatabase == RollbackDatabase.afterEach) {
-          var localTransactionManager = getTransactionManager();
+        tearDownAll(() async {
+          if (rollbackDatabase == RollbackDatabase.afterAll ||
+              rollbackDatabase == RollbackDatabase.afterEach) {
+            var localTransactionManager = getTransactionManager();
 
-          await localTransactionManager.cancelTransaction();
-        }
+            await localTransactionManager.cancelTransaction();
+          }
 
-        for (var testSession in allTestSessions) {
-          await testSession.close();
-        }
-        allTestSessions.clear();
+          for (var testSession in allTestSessions) {
+            await testSession.close();
+          }
+          allTestSessions.clear();
 
-        await testServerpod.shutdown();
-      });
+          await testServerpod.shutdown();
+        });
 
-      testClosure(mainTestSessionBuilder, testServerpod.testEndpoints);
-    });
+        testClosure(mainTestSessionBuilder, testServerpod.testEndpoints);
+      },
+      tags: maybeTestGroupTagsOverride ?? [_defaultIntegrationTestTag],
+    );
   };
 }
