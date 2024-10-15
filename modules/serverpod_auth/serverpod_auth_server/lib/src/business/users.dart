@@ -184,7 +184,10 @@ class Users {
     await session.db.updateRow(userInfo);
     await invalidateCacheForUser(session, userId);
     // Sign out user
-    await UserAuthentication.signOutUser(session, userId: userId);
+    await UserAuthentication.signOutAllDevices(
+      session,
+      userId: userId,
+    );
   }
 
   /// Unblocks a user so that they can log in again.

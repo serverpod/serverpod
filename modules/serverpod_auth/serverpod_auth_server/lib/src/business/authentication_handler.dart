@@ -41,7 +41,11 @@ Future<AuthenticationInfo?> authenticationHandler(
     for (var scopeName in authKey.scopeNames) {
       scopes.add(Scope(scopeName));
     }
-    return AuthenticationInfo(authKey.userId, scopes);
+    return AuthenticationInfo(
+      authKey.userId,
+      scopes,
+      authId: '${authKey.id}',
+    );
   } catch (exception, stackTrace) {
     stderr.writeln('Failed authentication: $exception');
     stderr.writeln('$stackTrace');
