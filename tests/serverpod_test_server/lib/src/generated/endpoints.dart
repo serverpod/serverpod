@@ -2580,6 +2580,19 @@ class Endpoints extends _i1.EndpointDispatch {
             streamParams['input']!.cast<int>(),
           ),
         ),
+        'streamException': _i1.MethodStreamConnector(
+          name: 'streamException',
+          params: {},
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['logging'] as _i19.LoggingEndpoint)
+                  .streamException(session),
+        ),
       },
     );
     connectors['streamLogging'] = _i1.EndpointConnector(

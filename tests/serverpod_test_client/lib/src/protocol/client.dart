@@ -1132,6 +1132,14 @@ class EndpointLogging extends _i1.EndpointRef {
         {},
         {'input': input},
       );
+
+  _i2.Stream<int> streamException() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'logging',
+        'streamException',
+        {},
+        {},
+      );
 }
 
 /// {@category Endpoint}

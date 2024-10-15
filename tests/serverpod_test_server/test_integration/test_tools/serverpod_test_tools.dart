@@ -3694,6 +3694,35 @@ class _LoggingEndpoint {
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
+
+  _i3.Stream<int> streamException(_i1.TestSessionBuilder sessionBuilder) {
+    var _localTestStreamManager = _i1.TestStreamManager<int>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'logging',
+          method: 'streamException',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'logging',
+          methodName: 'streamException',
+          arguments: {},
+          requestedInputStreams: [],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
 }
 
 class _StreamLogging {

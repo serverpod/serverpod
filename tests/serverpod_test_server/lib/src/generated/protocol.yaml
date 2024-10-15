@@ -138,6 +138,7 @@ logging:
   - streamEmpty:
   - streamLogging:
   - streamQueryLogging:
+  - streamException:
 streamLogging:
 streamQueryLogging:
 loggingDisabled:
