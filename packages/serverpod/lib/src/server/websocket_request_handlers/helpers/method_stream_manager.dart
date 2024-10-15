@@ -358,6 +358,8 @@ class MethodStreamManager {
         );
         _updateCloseReason(streamKey, CloseReason.error);
 
+        await session.close(error: e, stackTrace: s);
+
         /// Required to close stream when error occurs.
         /// This will also close the input streams.
         /// We can't use the "cancelOnError" option
