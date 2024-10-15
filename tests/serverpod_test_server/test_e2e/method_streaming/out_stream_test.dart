@@ -76,4 +76,38 @@ void main() {
       isA<ExceptionWithData>(),
     );
   });
+
+  test(
+      'Given a streaming method that is not a generator that throws an exception before the stream is returned, then stream is closed with ServerpodClientException.',
+      () async {
+    var streamComplete = Completer<dynamic>();
+    var stream = client.methodStreaming.exceptionThrownBeforeStreamReturn();
+    stream.listen((event) {
+      // Do nothing
+    }, onError: (error) {
+      streamComplete.complete(error);
+    });
+
+    await expectLater(
+      await streamComplete.future,
+      isA<ConnectionClosedException>(),
+    );
+  });
+
+  test(
+      'Given a streaming method that is not a generator that throws an exception as its first message when calling method, then stream is closed with ServerpodClientException.',
+      () async {
+    var streamComplete = Completer<dynamic>();
+    var stream = client.methodStreaming.exceptionThrownInStreamReturn();
+    stream.listen((event) {
+      // Do nothing
+    }, onError: (error) {
+      streamComplete.complete(error);
+    });
+
+    await expectLater(
+      await streamComplete.future,
+      isA<ConnectionClosedException>(),
+    );
+  });
 }

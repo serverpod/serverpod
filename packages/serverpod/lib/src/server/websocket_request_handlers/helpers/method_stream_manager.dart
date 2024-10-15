@@ -542,12 +542,19 @@ class MethodStreamManager {
     required StreamController outputController,
     required StreamSubscription subscription,
   }) {
-    outputController
-        .addStream(
-      methodStreamCallContext.method
-          .call(session, methodStreamCallContext.arguments, streamParams),
-    )
-        .whenComplete(
+    Stream<dynamic> methodStream;
+    try {
+      methodStream = methodStreamCallContext.method.call(
+        session,
+        methodStreamCallContext.arguments,
+        streamParams,
+      );
+    } catch (e, stackTrace) {
+      outputController.addError(e, stackTrace);
+      return;
+    }
+
+    outputController.addStream(methodStream).whenComplete(
       () async {
         var streamKey = _buildStreamKey(
           endpoint: methodStreamCallContext.endpoint.name,
