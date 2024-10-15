@@ -136,7 +136,8 @@ class GeneratorConfig {
 
   final List<String>? _relativeServerTestToolsPathParts;
   static const _defaultRelativeServerTestToolsPathParts = [
-    'integration_test',
+    'test',
+    'integration',
     'test_tools'
   ];
 
