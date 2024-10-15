@@ -83,12 +83,20 @@ class SessionManager with ChangeNotifier {
     return refreshSession();
   }
 
-  /// Signs the user out from all connected devices. Returns true if successful.
-  Future<bool> signOut() async {
+  /// Signs the user out from their devices.
+  /// If [allDevices] is true, signs out from all devices; otherwise, signs out from the current device only.
+  /// Returns true if the sign-out is successful.
+  Future<bool> _signOut({
+    required bool allDevices,
+  }) async {
     if (!isSignedIn) return true;
 
     try {
-      await caller.status.signOut();
+      if (allDevices) {
+        await caller.status.signOutAllDevices();
+      } else {
+        await caller.status.signOutCurrentDevice();
+      }
       await caller.client.updateStreamingConnectionAuthenticationKey(null);
 
       _signedInUser = null;
@@ -100,6 +108,27 @@ class SessionManager with ChangeNotifier {
     } catch (e) {
       return false;
     }
+  }
+
+  /// **[Deprecated]** Signs the user out from the current device.
+  /// Use `signOutCurrentDevice` for the current device or `signOutAllDevices` for all devices.
+  /// Returns true if successful.
+  @Deprecated(
+      'Use signOutCurrentDevice for the current device or signOutAllDevices for all devices. This method will be removed in future releases.')
+  Future<bool> signOut() async {
+    return _signOut(allDevices: true);
+  }
+
+  /// Signs the user out from all connected devices.
+  /// Returns true if successful.
+  Future<bool> signOutAllDevices() async {
+    return _signOut(allDevices: true);
+  }
+
+  /// Signs the user out from the current device.
+  /// Returns true if successful.
+  Future<bool> signOutCurrentDevice() async {
+    return _signOut(allDevices: false);
   }
 
   /// Verify the current sign in status with the server and update the UserInfo.
