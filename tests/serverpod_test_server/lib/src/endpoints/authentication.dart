@@ -69,6 +69,14 @@ class AuthenticationEndpoint extends Endpoint {
     await UserAuthentication.signOutUser(session);
   }
 
+  Future<void> signOutCurrentDevice(Session session) async {
+    await UserAuthentication.signOutCurrentDevice(session);
+  }
+
+  Future<void> signOutAllDevices(Session session) async {
+    await UserAuthentication.signOutAllDevices(session);
+  }
+
   Future<void> updateScopes(
     Session session,
     int userId,
