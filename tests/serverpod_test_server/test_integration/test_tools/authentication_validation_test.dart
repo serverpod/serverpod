@@ -305,6 +305,5 @@ void main() {
         });
       });
     },
-    runMode: ServerpodRunMode.production,
   );
 }

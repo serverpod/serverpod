@@ -35,7 +35,6 @@ void main() {
         expect(result.length, 0);
       });
     },
-    runMode: ServerpodRunMode.production,
   );
 
   group('Given rollbackDatabase set to afterEach', () {
@@ -70,7 +69,6 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.afterEach,
-        runMode: ServerpodRunMode.production,
       );
 
       withServerpod(
@@ -85,7 +83,6 @@ void main() {
             expect(result.length, 0);
           });
         },
-        runMode: ServerpodRunMode.production,
       );
     });
 
@@ -122,19 +119,21 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.afterEach,
-        runMode: ServerpodRunMode.production,
       );
 
-      withServerpod('', (sessionBuilder, endpoints) {
-        var session = sessionBuilder.build();
+      withServerpod(
+        '',
+        (sessionBuilder, endpoints) {
+          var session = sessionBuilder.build();
 
-        test('then the database is rolled back after the first withServerpod',
-            () async {
-          final result = await SimpleData.db.find(session);
+          test('then the database is rolled back after the first withServerpod',
+              () async {
+            final result = await SimpleData.db.find(session);
 
-          expect(result.length, 0);
-        });
-      }, runMode: ServerpodRunMode.production);
+            expect(result.length, 0);
+          });
+        },
+      );
     });
 
     withServerpod(
@@ -176,7 +175,6 @@ void main() {
         });
       },
       rollbackDatabase: RollbackDatabase.afterEach,
-      runMode: ServerpodRunMode.production,
     );
   });
 
@@ -213,7 +211,6 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.afterAll,
-        runMode: ServerpodRunMode.production,
       );
 
       withServerpod(
@@ -227,7 +224,6 @@ void main() {
             expect(result.length, 0);
           });
         },
-        runMode: ServerpodRunMode.production,
       );
     });
 
@@ -265,19 +261,21 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.afterAll,
-        runMode: ServerpodRunMode.production,
       );
 
-      withServerpod('', (sessionBuilder, endpoints) {
-        var session = sessionBuilder.build();
+      withServerpod(
+        '',
+        (sessionBuilder, endpoints) {
+          var session = sessionBuilder.build();
 
-        test('then the database is rolled back after the first withServerpod',
-            () async {
-          final result = await SimpleData.db.find(session);
+          test('then the database is rolled back after the first withServerpod',
+              () async {
+            final result = await SimpleData.db.find(session);
 
-          expect(result.length, 0);
-        });
-      }, runMode: ServerpodRunMode.production);
+            expect(result.length, 0);
+          });
+        },
+      );
     });
 
     group(
@@ -303,7 +301,6 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.afterAll,
-        runMode: ServerpodRunMode.production,
       );
 
       withServerpod(
@@ -318,7 +315,6 @@ void main() {
             expect(result.length, 0);
           });
         },
-        runMode: ServerpodRunMode.production,
       );
     });
   });
@@ -344,7 +340,6 @@ void main() {
         });
       },
       rollbackDatabase: RollbackDatabase.disabled,
-      runMode: ServerpodRunMode.production,
     );
 
     withServerpod(
@@ -368,7 +363,6 @@ void main() {
         });
       },
       rollbackDatabase: RollbackDatabase.disabled,
-      runMode: ServerpodRunMode.production,
     );
   });
 }

@@ -88,7 +88,6 @@ void main() {
         });
       });
     },
-    runMode: ServerpodRunMode.production,
   );
 
   withServerpod(
@@ -168,7 +167,6 @@ void main() {
         });
       });
     },
-    runMode: ServerpodRunMode.production,
     rollbackDatabase: RollbackDatabase.afterEach,
   );
 
@@ -200,7 +198,6 @@ void main() {
             expect(simpleDatas[1].num, 123);
           });
         },
-        runMode: ServerpodRunMode.production,
         rollbackDatabase: RollbackDatabase.afterAll,
       );
 
@@ -214,7 +211,6 @@ void main() {
             expect(simpleDatas, hasLength(0));
           });
         },
-        runMode: ServerpodRunMode.production,
       );
     });
 
@@ -240,7 +236,6 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.afterAll,
-        runMode: ServerpodRunMode.production,
       );
 
       withServerpod(
@@ -253,7 +248,6 @@ void main() {
             expect(simpleDatas, hasLength(0));
           });
         },
-        runMode: ServerpodRunMode.production,
       );
     });
 
@@ -280,7 +274,6 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.afterAll,
-        runMode: ServerpodRunMode.production,
       );
 
       withServerpod(
@@ -294,7 +287,6 @@ void main() {
             expect(simpleDatas, hasLength(0));
           });
         },
-        runMode: ServerpodRunMode.production,
       );
     });
   });
@@ -326,7 +318,6 @@ void main() {
             expect(simpleDatas[1].num, 123);
           });
         },
-        runMode: ServerpodRunMode.production,
         rollbackDatabase: RollbackDatabase.disabled,
       );
 
@@ -351,7 +342,6 @@ void main() {
             expect(simpleDatas[1].num, 123);
           });
         },
-        runMode: ServerpodRunMode.production,
         rollbackDatabase: RollbackDatabase.disabled,
       );
     });
@@ -377,7 +367,6 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.disabled,
-        runMode: ServerpodRunMode.production,
       );
 
       withServerpod(
@@ -399,7 +388,6 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.disabled,
-        runMode: ServerpodRunMode.production,
       );
     });
 
@@ -426,7 +414,6 @@ void main() {
         });
       },
       rollbackDatabase: RollbackDatabase.disabled,
-      runMode: ServerpodRunMode.production,
     );
   });
 }
