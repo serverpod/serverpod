@@ -53,7 +53,8 @@ typedef TestClosure<T> = void Function(
   T endpoints,
 );
 
-const String _defaultIntegrationTestTag = 'integration';
+/// The default integration test tag used by `withServerpod`.
+const String defaultIntegrationTestTag = 'integration';
 
 /// Builds the `withServerpod` test helper.
 /// Used by the generated code.
@@ -157,7 +158,7 @@ void Function(TestClosure<T>)
 
         testClosure(mainTestSessionBuilder, testServerpod.testEndpoints);
       },
-      tags: maybeTestGroupTagsOverride ?? [_defaultIntegrationTestTag],
+      tags: maybeTestGroupTagsOverride ?? [defaultIntegrationTestTag],
     );
   };
 }
