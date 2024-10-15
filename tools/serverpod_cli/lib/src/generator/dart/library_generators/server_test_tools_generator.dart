@@ -402,6 +402,10 @@ class ServerTestToolsGenerator {
             ..name = 'enableSessionLogging'
             ..named = true
             ..type = refer('bool?')),
+          Parameter((p) => p
+            ..name = 'testGroupTagsOverride'
+            ..named = true
+            ..type = refer('List<String>?')),
           if (config.isFeatureEnabled(ServerpodFeature.database)) ...[
             Parameter((p) => p
               ..name = 'rollbackDatabase'
@@ -442,6 +446,7 @@ class ServerTestToolsGenerator {
                     ? refer('rollbackDatabase')
                     : literalNull,
             'maybeEnableSessionLogging': refer('enableSessionLogging'),
+            'maybeTestGroupTagsOverride': refer('testGroupTagsOverride'),
           },
         ).call([
           refer('testClosure'),
