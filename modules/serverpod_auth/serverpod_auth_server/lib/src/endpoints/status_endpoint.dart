@@ -16,9 +16,22 @@ class StatusEndpoint extends Endpoint {
     return userId != null;
   }
 
-  /// Signs out a user.
-  Future<void> signOut(Session session) async {
+  /// **[Deprecated]** Signs out a user from all sessions.
+  /// Use `signOutCurrentDevice` for the current session or `signOutAllDevices` for all sessions.
+  @Deprecated(
+      'Use signOutCurrentDevice for the current session or signOutAllDevices for all sessions. This method will be removed in future releases.')
+  Future<void> signOutUser(Session session) async {
     await UserAuthentication.signOutUser(session);
+  }
+
+  /// Signs out a user from the current session only.
+  Future<void> signOutCurrentDevice(Session session) async {
+    await UserAuthentication.signOutCurrentDevice(session);
+  }
+
+  /// Signs out a user from all active sessions (all devices).
+  Future<void> signOutAllDevices(Session session) async {
+    await UserAuthentication.signOutAllDevices(session);
   }
 
   /// Gets the [UserInfo] for a signed in user, or null if the user is currently
