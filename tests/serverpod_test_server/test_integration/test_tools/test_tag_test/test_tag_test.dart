@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 enum TestTag { include, exclude }
@@ -57,7 +58,12 @@ Future<ProcessResult> runTest(TestTag includeTag, String tag, String testFile) {
       'test',
       '--concurrency=1',
       includeTag == TestTag.include ? '--tags=$tag' : '--exclude-tags=$tag',
-      'test_integration/test_tools/test_tag_test/$testFile',
+      path.joinAll([
+        'test_integration',
+        'test_tools',
+        'test_tag_test',
+        testFile,
+      ]),
     ],
     runInShell: true,
   );
