@@ -222,4 +222,34 @@ class _StreamingEndpoint {
     );
     return _localTestStreamManager.outputStreamController.stream;
   }
+
+  _i3.Future<int> simpleInputReturnStream(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<int> stream,
+  ) async {
+    var _localTestStreamManager = _i1.TestStreamManager<int>();
+    return _i1
+        .callAwaitableFunctionWithStreamInputAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'streaming',
+        method: 'simpleInputReturnStream',
+      );
+      var _localCallContext =
+          await _endpointDispatch.getMethodStreamCallContext(
+        createSessionCallback: (_) => _localUniqueSession,
+        endpointPath: 'streaming',
+        methodName: 'simpleInputReturnStream',
+        arguments: {},
+        requestedInputStreams: ['stream'],
+        serializationManager: _serializationManager,
+      );
+      await _localTestStreamManager.callStreamMethod(
+        _localCallContext,
+        _localUniqueSession,
+        {'stream': stream},
+      );
+      return _localTestStreamManager.outputStreamController.stream;
+    });
+  }
 }

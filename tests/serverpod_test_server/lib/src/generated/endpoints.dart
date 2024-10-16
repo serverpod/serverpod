@@ -4939,6 +4939,27 @@ class Endpoints extends _i1.EndpointDispatch {
             streamParams['numbers']!.cast<int>(),
           ),
         ),
+        'returnsSimpleDataStreamFromInputStream': _i1.MethodStreamConnector(
+          name: 'returnsSimpleDataStreamFromInputStream',
+          params: {},
+          streamParams: {
+            'simpleDatas': _i1.StreamParameterDescription<_i42.SimpleData>(
+              name: 'simpleDatas',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['testTools'] as _i36.TestToolsEndpoint)
+                  .returnsSimpleDataStreamFromInputStream(
+            session,
+            streamParams['simpleDatas']!.cast<_i42.SimpleData>(),
+          ),
+        ),
         'postNumberToSharedStreamAndReturnStream': _i1.MethodStreamConnector(
           name: 'postNumberToSharedStreamAndReturnStream',
           params: {

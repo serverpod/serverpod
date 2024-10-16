@@ -118,6 +118,27 @@ class Endpoints extends _i1.EndpointDispatch {
             streamParams['stream']!.cast<int>(),
           ),
         ),
+        'simpleInputReturnStream': _i1.MethodStreamConnector(
+          name: 'simpleInputReturnStream',
+          params: {},
+          streamParams: {
+            'stream': _i1.StreamParameterDescription<int>(
+              name: 'stream',
+              nullable: false,
+            )
+          },
+          returnType: _i1.MethodStreamReturnType.futureType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['streaming'] as _i3.StreamingEndpoint)
+                  .simpleInputReturnStream(
+            session,
+            streamParams['stream']!.cast<int>(),
+          ),
+        ),
       },
     );
   }
