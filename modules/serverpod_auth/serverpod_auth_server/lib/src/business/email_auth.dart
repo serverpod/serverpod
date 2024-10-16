@@ -554,6 +554,31 @@ class Emails {
     return true;
   }
 
+  /// Try to create an account using a verification code.
+  /// Returns the [UserInfo] object if successful, null otherwise.
+  static Future<UserInfo?> tryCreateAccount(
+    Session session, {
+    required String email,
+    required String verificationCode,
+  }) async {
+    var request = await Emails.findAccountRequest(session, email);
+    if (request == null) {
+      return null;
+    }
+    if (request.verificationCode != verificationCode) {
+      return null;
+    }
+
+    // Email is verified, create a new user
+    return await Emails.createUser(
+      session,
+      request.userName,
+      email,
+      null,
+      request.hash,
+    );
+  }
+
   /// Migrates an EmailAuth entry if required.
   ///
   /// Returns the new [EmailAuth] object if a migration was required,
