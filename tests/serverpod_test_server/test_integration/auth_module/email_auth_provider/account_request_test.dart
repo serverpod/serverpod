@@ -173,13 +173,13 @@ void main() async {
         expect(response?.email, email);
       });
 
-      test('then account request is not removed', () async {
+      test('then account request is removed', () async {
         var accountRequests = await EmailCreateAccountRequest.db.count(
           session,
           where: (t) => Constant.bool(true),
         );
 
-        expect(accountRequests, 1);
+        expect(accountRequests, 0);
       });
     });
   });

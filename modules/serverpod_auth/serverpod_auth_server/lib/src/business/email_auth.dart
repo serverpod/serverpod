@@ -570,13 +570,19 @@ class Emails {
     }
 
     // Email is verified, create a new user
-    return await Emails.createUser(
+    var userInfo = await Emails.createUser(
       session,
       request.userName,
       email,
       null,
       request.hash,
     );
+
+    if (userInfo != null) {
+      await EmailCreateAccountRequest.db.deleteRow(session, request);
+    }
+
+    return userInfo;
   }
 
   /// Migrates an EmailAuth entry if required.
