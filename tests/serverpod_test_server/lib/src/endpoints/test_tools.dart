@@ -47,6 +47,13 @@ class TestToolsEndpoint extends Endpoint {
     }
   }
 
+  Stream<SimpleData> returnsSimpleDataStreamFromInputStream(
+      Session session, Stream<SimpleData> simpleDatas) async* {
+    await for (var simpleData in simpleDatas) {
+      yield simpleData;
+    }
+  }
+
   static const sharedStreamName = 'shared-stream';
   Future<void> postNumberToSharedStream(Session session, int number) async {
     await session.messages

@@ -110,6 +110,16 @@ void main() {
       await streamComplete.future;
       expect(received, numberGenerator);
     });
+
+    test(
+        'when calling future-returning method that takes stream as a parameter '
+        'then should return a future value', () async {
+      var inputStream = Stream<int>.fromIterable([1]);
+      var value = await client.modules.module.streaming
+          .simpleInputReturnStream(inputStream);
+
+      expect(value, 1);
+    });
   });
 
   group('Nested modules classes.', () {

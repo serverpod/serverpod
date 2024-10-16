@@ -47,4 +47,11 @@ class StreamingEndpoint extends Endpoint {
       yield value;
     }
   }
+
+  Future<int> simpleInputReturnStream(
+    Session session,
+    Stream<int> stream,
+  ) async {
+    return stream.first;
+  }
 }
