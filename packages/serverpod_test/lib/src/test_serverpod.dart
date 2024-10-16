@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_test/src/io_overrides.dart';
 import 'package:serverpod_test/src/test_database_proxy.dart';
 import 'package:serverpod_test/src/transaction_manager.dart';
 import 'package:serverpod_test/src/with_serverpod.dart';
@@ -85,7 +88,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
   /// The test endpoints that are exposed to the user.
   T testEndpoints;
 
-  final Serverpod _serverpod;
+  late final Serverpod _serverpod;
 
   /// Whether the database is enabled and supported by the project configuration.
   final bool isDatabaseEnabled;
@@ -98,14 +101,24 @@ class TestServerpod<T extends InternalTestEndpoints> {
     required this.isDatabaseEnabled,
     required this.testEndpoints,
     String? runMode,
-  }) : _serverpod = Serverpod(
+  }) {
+    // Ignore output from the Serverpod constructor to avoid spamming the console.
+    // Should be changed when a proper logger is implemented.
+    // Tracked in issue: https://github.com/serverpod/serverpod/issues/2847
+    IOOverrides.runZoned(
+      () {
+        _serverpod = Serverpod(
           _getServerpodStartUpArgs(
             runMode,
             applyMigrations,
           ),
           serializationManager,
           endpoints,
-        ) {
+        );
+      },
+      stdout: () => NullStdOut(),
+      stderr: () => NullStdOut(),
+    );
     endpoints.initializeEndpoints(_serverpod.server);
     testEndpoints.initialize(serializationManager, endpoints);
   }
