@@ -2248,6 +2248,16 @@ class EndpointTestTools extends _i1.EndpointRef {
         {'numbers': numbers},
       );
 
+  _i2.Stream<_i10.SimpleData> returnsSimpleDataStreamFromInputStream(
+          _i2.Stream<_i10.SimpleData> simpleDatas) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<_i10.SimpleData>,
+          _i10.SimpleData>(
+        'testTools',
+        'returnsSimpleDataStreamFromInputStream',
+        {},
+        {'simpleDatas': simpleDatas},
+      );
+
   _i2.Future<void> postNumberToSharedStream(int number) =>
       caller.callServerEndpoint<void>(
         'testTools',

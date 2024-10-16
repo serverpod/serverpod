@@ -273,6 +273,7 @@ testTools:
   - returnsListFromInputStream:
   - returnsSimpleDataListFromInputStream:
   - returnsStreamFromInputStream:
+  - returnsSimpleDataStreamFromInputStream:
   - postNumberToSharedStream:
   - postNumberToSharedStreamAndReturnStream:
   - listenForNumbersOnSharedStream:

@@ -61,6 +61,14 @@ class EndpointStreaming extends _i1.EndpointRef {
         {},
         {'stream': stream},
       );
+
+  _i2.Future<int> simpleInputReturnStream(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<int>, int>(
+        'serverpod_test_module.streaming',
+        'simpleInputReturnStream',
+        {},
+        {'stream': stream},
+      );
 }
 
 class Caller extends _i1.ModuleEndpointCaller {

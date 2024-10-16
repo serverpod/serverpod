@@ -51,6 +51,21 @@ void main() {
       });
 
       test(
+          'when calling returnsSimpleDataStreamFromInputStream then echoes the input stream back',
+          () async {
+        final stream = Stream<SimpleData>.fromIterable([
+          SimpleData(num: 1),
+          SimpleData(num: 2),
+          SimpleData(num: 3),
+        ]);
+
+        final result = await endpoints.testTools
+            .returnsSimpleDataStreamFromInputStream(sessionBuilder, stream)
+            .toList();
+        expect(result.map((s) => s.num), [1, 2, 3]);
+      });
+
+      test(
           'when calling postNumberToSharedStream and listenForNumbersOnSharedStream with different sessions then number should be echoed',
           () async {
         var userSession1 = sessionBuilder.copyWith(

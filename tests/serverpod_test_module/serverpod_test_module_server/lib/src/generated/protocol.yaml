@@ -5,3 +5,4 @@ streaming:
   - wasStreamOpenCalled:
   - wasStreamClosedCalled:
   - intEchoStream:
+  - simpleInputReturnStream:
