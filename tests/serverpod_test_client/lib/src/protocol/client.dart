@@ -1134,6 +1134,14 @@ class EndpointLogging extends _i1.EndpointRef {
         {},
         {'input': input},
       );
+
+  _i2.Stream<int> streamException() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'logging',
+        'streamException',
+        {},
+        {},
+      );
 }
 
 /// {@category Endpoint}
@@ -1782,6 +1790,22 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'methodStreaming',
         'throwsExceptionStream',
+        {},
+        {},
+      );
+
+  _i2.Stream<int> exceptionThrownBeforeStreamReturn() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'exceptionThrownBeforeStreamReturn',
+        {},
+        {},
+      );
+
+  _i2.Stream<int> exceptionThrownInStreamReturn() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'exceptionThrownInStreamReturn',
         {},
         {},
       );

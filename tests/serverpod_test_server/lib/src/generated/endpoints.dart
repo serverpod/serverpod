@@ -2588,6 +2588,19 @@ class Endpoints extends _i1.EndpointDispatch {
             streamParams['input']!.cast<int>(),
           ),
         ),
+        'streamException': _i1.MethodStreamConnector(
+          name: 'streamException',
+          params: {},
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['logging'] as _i19.LoggingEndpoint)
+                  .streamException(session),
+        ),
       },
     );
     connectors['streamLogging'] = _i1.EndpointConnector(
@@ -4042,6 +4055,32 @@ class Endpoints extends _i1.EndpointDispatch {
           ) =>
               (endpoints['methodStreaming'] as _i23.MethodStreaming)
                   .throwsExceptionStream(session),
+        ),
+        'exceptionThrownBeforeStreamReturn': _i1.MethodStreamConnector(
+          name: 'exceptionThrownBeforeStreamReturn',
+          params: {},
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i23.MethodStreaming)
+                  .exceptionThrownBeforeStreamReturn(session),
+        ),
+        'exceptionThrownInStreamReturn': _i1.MethodStreamConnector(
+          name: 'exceptionThrownInStreamReturn',
+          params: {},
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['methodStreaming'] as _i23.MethodStreaming)
+                  .exceptionThrownInStreamReturn(session),
         ),
         'throwsSerializableExceptionStream': _i1.MethodStreamConnector(
           name: 'throwsSerializableExceptionStream',

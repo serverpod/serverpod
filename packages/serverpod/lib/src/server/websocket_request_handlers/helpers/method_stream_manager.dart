@@ -358,6 +358,8 @@ class MethodStreamManager {
         );
         _updateCloseReason(streamKey, CloseReason.error);
 
+        await session.close(error: e, stackTrace: s);
+
         /// Required to close stream when error occurs.
         /// This will also close the input streams.
         /// We can't use the "cancelOnError" option
@@ -542,12 +544,19 @@ class MethodStreamManager {
     required StreamController outputController,
     required StreamSubscription subscription,
   }) {
-    outputController
-        .addStream(
-      methodStreamCallContext.method
-          .call(session, methodStreamCallContext.arguments, streamParams),
-    )
-        .whenComplete(
+    Stream<dynamic> methodStream;
+    try {
+      methodStream = methodStreamCallContext.method.call(
+        session,
+        methodStreamCallContext.arguments,
+        streamParams,
+      );
+    } catch (e, stackTrace) {
+      outputController.addError(e, stackTrace);
+      return;
+    }
+
+    outputController.addStream(methodStream).whenComplete(
       () async {
         var streamKey = _buildStreamKey(
           endpoint: methodStreamCallContext.fullEndpointPath,

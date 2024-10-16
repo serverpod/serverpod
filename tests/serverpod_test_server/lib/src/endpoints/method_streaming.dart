@@ -331,6 +331,16 @@ class MethodStreaming extends Endpoint {
     throw Exception('This is an exception');
   }
 
+  Stream<int> exceptionThrownBeforeStreamReturn(Session session) {
+    throw Exception('This is an exception');
+  }
+
+  Stream<int> exceptionThrownInStreamReturn(Session session) {
+    var controller = StreamController<int>();
+    controller.addError(Exception('This is an exception'));
+    return controller.stream;
+  }
+
   Stream<int> throwsSerializableExceptionStream(Session session) async* {
     throw ExceptionWithData(
       message: 'Throwing an exception',

@@ -142,6 +142,25 @@ void main() async {
 
       expect(logs, isEmpty);
     });
+
+    test(
+        'when connecting to a stream method that throws an exception then session logs error.',
+        () async {
+      var stream = client.logging.streamException();
+
+      await expectLater(
+        stream,
+        emitsError(isA<ConnectionClosedException>()),
+      );
+
+      // Wait for the log to be written
+      await Future.delayed(Duration(milliseconds: 100));
+      var logs = await LoggingUtil.findAllLogs(session);
+
+      expect(logs, hasLength(1));
+      var log = logs.firstOrNull;
+      expect(log?.sessionLogEntry.error, isNotNull);
+    });
   });
 
   group('Given that continuous logging is turned off', () {
