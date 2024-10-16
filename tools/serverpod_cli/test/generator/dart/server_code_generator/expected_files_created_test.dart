@@ -280,10 +280,8 @@ void main() {
   group(
       'Given the experimental flag testTools is not set when generating protocol code',
       () {
-    var configWithTestToolsPath = GeneratorConfigBuilder()
-        .withName(projectName)
-        .withRelativeServerTestToolsPathParts(null)
-        .build();
+    var configWithTestToolsPath =
+        GeneratorConfigBuilder().withName(projectName).build();
 
     var codeMap = generator.generateProtocolCode(
       protocolDefinition: const ProtocolDefinition(
