@@ -146,17 +146,11 @@ void main() async {
     test(
         'when connecting to a stream method that throws an exception then session logs error.',
         () async {
-      var streamComplete = Completer<dynamic>();
       var stream = client.logging.streamException();
-      stream.listen((event) {
-        // Do nothing
-      }, onError: (error) {
-        streamComplete.complete(error);
-      });
 
       await expectLater(
-        await streamComplete.future,
-        isA<ConnectionClosedException>(),
+        stream,
+        emitsError(isA<ConnectionClosedException>()),
       );
 
       // Wait for the log to be written
