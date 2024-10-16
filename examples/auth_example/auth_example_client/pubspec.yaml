@@ -8,8 +8,8 @@ environment:
   sdk: '>=3.3.0 <4.0.0'
 
 dependencies:
-  serverpod_client: 2.1.4 
-  serverpod_auth_client: 2.1.4 
+  serverpod_client: 2.1.5 
+  serverpod_auth_client: 2.1.5 
 
 dependency_overrides:
   serverpod_client:

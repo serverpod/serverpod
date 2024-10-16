@@ -1,5 +1,5 @@
 // This file is generated. Do not modify, instead edit the files in the
 // templates/pubspecs directory.
 
-const templateVersion = '2.1.4';
+const templateVersion = '2.1.5';
 const productionMode = false;
