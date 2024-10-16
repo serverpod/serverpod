@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
@@ -236,11 +237,33 @@ class MultipleLogWriter extends LogWriter {
 
   MultipleLogWriter(this._logWriters);
 
+  //// Closes logs for all writers and returns the log ID.
+  ///
+  /// The log ID for persistent logging is prioritized if present.
+  /// This is because persistent logs are more critical for long-term record-keeping
+  /// compared to non-persistent logs, such as console logs.
+  /// If no persistent log is available, the first log ID from any writer is returned.
   @override
   Future<int> closeLog(SessionLogEntry entry) async {
-    var response =
-        await Future.wait(_logWriters.map((writer) => writer.closeLog(entry)));
-    return response.firstOrNull ?? 0;
+    int? databaseLogId;
+
+    // Close logs for all writers and collect their log IDs
+    var responses = await Future.wait(_logWriters.map((writer) async {
+      // Each writer closes the log and returns a logId
+      var logId = await writer.closeLog(entry);
+
+      // If this writer is a DatabaseLogWriter, prioritize its logId
+      if (writer is DatabaseLogWriter) {
+        databaseLogId = logId;
+      }
+
+      // Return the logId for this writer to include in the results
+      return logId;
+    }));
+
+    // Return the DatabaseLogWriter's logId if available,
+    // otherwise use the first logId from any writer
+    return databaseLogId ?? responses.firstOrNull ?? 0;
   }
 
   @override
