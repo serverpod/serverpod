@@ -1,3 +1,8 @@
+## 2.1.5
+ - feat: EXPERIMENTAL. Adds testing framework. [docs](https://docs.serverpod.dev/next/concepts/testing/get-started)
+ - fix: Correctly handles method and endpoint streams for modules.
+ - fix: Correctly handles errors in method streams.
+
 ## 2.1.4
  - feat: Adds detailed reporting for schema mismatches when checking database consistency.
  - fix: Takes current transaction into account for include queries.
