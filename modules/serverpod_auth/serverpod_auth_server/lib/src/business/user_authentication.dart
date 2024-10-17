@@ -106,7 +106,7 @@ class UserAuthentication {
     return _signOut(
       session,
       userId: userId,
-      signoutOption: AuthConfig.current.signOutOption,
+      signoutOption: AuthConfig.current.legacyUserSignOutBehavior,
     );
   }
 
