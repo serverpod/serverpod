@@ -212,11 +212,9 @@ void main() async {
     });
   });
 
-  group(
-      'Given persistent logging is enabled but the database support is not available',
-      () {
-    test('a StateError should be thrown due to lack of database support',
-        () async {
+  test(
+    'Given persistent logging is enabled and database support is not available when the server is created then a StateError should be thrown due to lack of database support',
+    () async {
       expect(
         () => IntegrationTestServer.create(
           config: ServerpodConfig(
@@ -242,8 +240,8 @@ void main() async {
           ),
         ),
       );
-    });
-  });
+    },
+  );
 
   group('Given no explicit sessionLogs configuration with a database', () {
     late Serverpod server;
