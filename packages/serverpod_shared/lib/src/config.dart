@@ -38,6 +38,9 @@ class ServerpodConfig {
   /// Authentication key for service protocol.
   late final String? serviceSecret;
 
+  /// Configuration for Session logs.
+  final SessionLogConfig? sessionLogs;
+
   /// Creates a new [ServerpodConfig].
   ServerpodConfig({
     required this.apiServer,
@@ -49,10 +52,18 @@ class ServerpodConfig {
     this.database,
     this.redis,
     this.serviceSecret,
-  }) {
+    SessionLogConfig? sessionLogs,
+  }) : sessionLogs = sessionLogs ??
+            SessionLogConfig(
+              persistentEnabled: database != null,
+              consoleEnabled: database == null,
+            ) {
     apiServer._name = 'api';
     insightsServer?._name = 'insights';
     webServer?._name = 'web';
+    sessionLogs?._validate(
+      databaseEnabled: database != null,
+    );
   }
 
   /// Creates a default bare bone configuration.
@@ -126,6 +137,16 @@ class ServerpodConfig {
           )
         : null;
 
+    var sessionLogsConfigJson =
+        _buildSessionLogsConfigMap(configMap, environment);
+    var sessionLogsConfig = sessionLogsConfigJson != null
+        ? SessionLogConfig._fromJson(
+            sessionLogsConfigJson,
+            ServerpodConfigMap.sessionLogs,
+            databaseEnabled: database != null,
+          )
+        : null;
+
     return ServerpodConfig(
       runMode: runMode,
       serverId: serverId,
@@ -136,6 +157,7 @@ class ServerpodConfig {
       database: database,
       redis: redis,
       serviceSecret: serviceSecret,
+      sessionLogs: sessionLogsConfig,
     );
   }
 
@@ -188,6 +210,7 @@ class ServerpodConfig {
 
     if (database != null) str += database.toString();
     if (redis != null) str += redis.toString();
+    if (sessionLogs != null) str += sessionLogs.toString();
 
     return str;
   }
@@ -386,6 +409,62 @@ class RedisConfig {
   }
 }
 
+/// Configuration for session logging.
+class SessionLogConfig {
+  /// True if persistent logging (e.g., to Redis) should be enabled.
+  final bool persistentEnabled;
+
+  /// True if console logging should be enabled.
+  final bool consoleEnabled;
+
+  /// Creates a new [SessionLogConfig].
+  SessionLogConfig({
+    required this.persistentEnabled,
+    required this.consoleEnabled,
+  });
+
+  factory SessionLogConfig._fromJson(
+    Map sessionLogConfigJson,
+    String name, {
+    required bool databaseEnabled,
+  }) {
+    _validateJsonConfig(
+      {
+        ServerpodEnv.sessionPersistentLogEnabled.configKey: bool,
+        ServerpodEnv.sessionConsoleLogEnabled.configKey: bool,
+      },
+      sessionLogConfigJson,
+      name,
+    );
+
+    return SessionLogConfig(
+      persistentEnabled: sessionLogConfigJson[
+              ServerpodEnv.sessionPersistentLogEnabled.configKey] ??
+          false,
+      consoleEnabled: sessionLogConfigJson[
+              ServerpodEnv.sessionConsoleLogEnabled.configKey] ??
+          false,
+    );
+  }
+
+  void _validate({
+    required bool databaseEnabled,
+  }) {
+    if (persistentEnabled && !databaseEnabled) {
+      throw StateError(
+        'The `persistentEnabled` setting was enabled in the configuration, but this project was created without database support. '
+        'Persistent logging is only available when the database is enabled.',
+      );
+    }
+  }
+
+  @override
+  String toString() {
+    return 'session persistent log enabled: $persistentEnabled\n'
+        'session console log enabled: $consoleEnabled\n';
+  }
+}
+
 Map? _insightsConfigMap(
   Map<dynamic, dynamic> configMap,
   Map<String, String> environment,
@@ -446,6 +525,16 @@ Map? _redisConfigMap(Map configMap, Map<String, String> environment) {
     (ServerpodEnv.redisPort, int.parse),
     (ServerpodEnv.redisUser, null),
     (ServerpodEnv.redisEnabled, bool.parse),
+  ]);
+}
+
+Map? _buildSessionLogsConfigMap(
+    Map configMap, Map<String, String> environment) {
+  var logsConfig = configMap[ServerpodConfigMap.sessionLogs] ?? {};
+
+  return _buildConfigMap(logsConfig, environment, [
+    (ServerpodEnv.sessionPersistentLogEnabled, bool.parse),
+    (ServerpodEnv.sessionConsoleLogEnabled, bool.parse),
   ]);
 }
 

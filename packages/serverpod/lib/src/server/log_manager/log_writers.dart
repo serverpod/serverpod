@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
@@ -227,5 +228,63 @@ class StdOutLogWriter extends LogWriter {
     }
 
     return _logId;
+  }
+}
+
+@internal
+class MultipleLogWriter extends LogWriter {
+  final List<LogWriter> _logWriters;
+
+  MultipleLogWriter(this._logWriters);
+
+  //// Closes logs for all writers and returns the log ID.
+  ///
+  /// The log ID for persistent logging is prioritized if present.
+  /// This is because persistent logs are more critical for long-term record-keeping
+  /// compared to non-persistent logs, such as console logs.
+  /// If no persistent log is available, the first log ID from any writer is returned.
+  @override
+  Future<int> closeLog(SessionLogEntry entry) async {
+    int? databaseLogId;
+
+    var responses = await Future.wait(_logWriters.map((writer) async {
+      var logId = await writer.closeLog(entry);
+
+      if (writer is DatabaseLogWriter) {
+        databaseLogId = logId;
+      }
+
+      return logId;
+    }));
+
+    return databaseLogId ?? responses.firstOrNull ?? 0;
+  }
+
+  @override
+  Future<void> logEntry(LogEntry entry) async {
+    await Future.wait(
+      _logWriters.map((writer) => writer.logEntry(entry)),
+    );
+  }
+
+  @override
+  Future<void> logMessage(MessageLogEntry entry) async {
+    await Future.wait(
+      _logWriters.map((writer) => writer.logMessage(entry)),
+    );
+  }
+
+  @override
+  Future<void> logQuery(QueryLogEntry entry) async {
+    await Future.wait(
+      _logWriters.map((writer) => writer.logQuery(entry)),
+    );
+  }
+
+  @override
+  Future<void> openLog(SessionLogEntry entry) async {
+    await Future.wait(
+      _logWriters.map((writer) => writer.openLog(entry)),
+    );
   }
 }
