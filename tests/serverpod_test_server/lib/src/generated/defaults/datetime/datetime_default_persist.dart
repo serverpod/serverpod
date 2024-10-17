@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -223,7 +221,7 @@ class DateTimeDefaultPersistRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -242,7 +240,7 @@ class DateTimeDefaultPersistRepository {
       orderByList: orderByList?.call(DateTimeDefaultPersist.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -253,7 +251,7 @@ class DateTimeDefaultPersistRepository {
   }) async {
     return session.db.findById<DateTimeDefaultPersist>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -264,7 +262,7 @@ class DateTimeDefaultPersistRepository {
   }) async {
     return session.db.insert<DateTimeDefaultPersist>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -275,7 +273,7 @@ class DateTimeDefaultPersistRepository {
   }) async {
     return session.db.insertRow<DateTimeDefaultPersist>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -288,7 +286,7 @@ class DateTimeDefaultPersistRepository {
     return session.db.update<DateTimeDefaultPersist>(
       rows,
       columns: columns?.call(DateTimeDefaultPersist.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -301,7 +299,7 @@ class DateTimeDefaultPersistRepository {
     return session.db.updateRow<DateTimeDefaultPersist>(
       row,
       columns: columns?.call(DateTimeDefaultPersist.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -312,7 +310,7 @@ class DateTimeDefaultPersistRepository {
   }) async {
     return session.db.delete<DateTimeDefaultPersist>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -323,7 +321,7 @@ class DateTimeDefaultPersistRepository {
   }) async {
     return session.db.deleteRow<DateTimeDefaultPersist>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -334,7 +332,7 @@ class DateTimeDefaultPersistRepository {
   }) async {
     return session.db.deleteWhere<DateTimeDefaultPersist>(
       where: where(DateTimeDefaultPersist.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -347,7 +345,7 @@ class DateTimeDefaultPersistRepository {
     return session.db.count<DateTimeDefaultPersist>(
       where: where?.call(DateTimeDefaultPersist.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

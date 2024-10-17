@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -255,7 +253,7 @@ class StudentRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -276,7 +274,7 @@ class StudentRepository {
       orderByList: orderByList?.call(Student.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -289,7 +287,7 @@ class StudentRepository {
   }) async {
     return session.db.findById<Student>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -301,7 +299,7 @@ class StudentRepository {
   }) async {
     return session.db.insert<Student>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -312,7 +310,7 @@ class StudentRepository {
   }) async {
     return session.db.insertRow<Student>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -325,7 +323,7 @@ class StudentRepository {
     return session.db.update<Student>(
       rows,
       columns: columns?.call(Student.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -338,7 +336,7 @@ class StudentRepository {
     return session.db.updateRow<Student>(
       row,
       columns: columns?.call(Student.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -349,7 +347,7 @@ class StudentRepository {
   }) async {
     return session.db.delete<Student>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -360,7 +358,7 @@ class StudentRepository {
   }) async {
     return session.db.deleteRow<Student>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -371,7 +369,7 @@ class StudentRepository {
   }) async {
     return session.db.deleteWhere<Student>(
       where: where(Student.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -384,7 +382,7 @@ class StudentRepository {
     return session.db.count<Student>(
       where: where?.call(Student.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -410,7 +408,7 @@ class StudentAttachRepository {
     await session.db.update<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.studentId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -435,7 +433,7 @@ class StudentAttachRowRepository {
     await session.db.updateRow<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.studentId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

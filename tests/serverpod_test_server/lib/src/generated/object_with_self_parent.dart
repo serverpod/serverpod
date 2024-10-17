@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -186,7 +184,7 @@ class ObjectWithSelfParentRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -205,7 +203,7 @@ class ObjectWithSelfParentRepository {
       orderByList: orderByList?.call(ObjectWithSelfParent.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -216,7 +214,7 @@ class ObjectWithSelfParentRepository {
   }) async {
     return session.db.findById<ObjectWithSelfParent>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -227,7 +225,7 @@ class ObjectWithSelfParentRepository {
   }) async {
     return session.db.insert<ObjectWithSelfParent>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -238,7 +236,7 @@ class ObjectWithSelfParentRepository {
   }) async {
     return session.db.insertRow<ObjectWithSelfParent>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -251,7 +249,7 @@ class ObjectWithSelfParentRepository {
     return session.db.update<ObjectWithSelfParent>(
       rows,
       columns: columns?.call(ObjectWithSelfParent.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -264,7 +262,7 @@ class ObjectWithSelfParentRepository {
     return session.db.updateRow<ObjectWithSelfParent>(
       row,
       columns: columns?.call(ObjectWithSelfParent.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -275,7 +273,7 @@ class ObjectWithSelfParentRepository {
   }) async {
     return session.db.delete<ObjectWithSelfParent>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -286,7 +284,7 @@ class ObjectWithSelfParentRepository {
   }) async {
     return session.db.deleteRow<ObjectWithSelfParent>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -297,7 +295,7 @@ class ObjectWithSelfParentRepository {
   }) async {
     return session.db.deleteWhere<ObjectWithSelfParent>(
       where: where(ObjectWithSelfParent.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -310,7 +308,7 @@ class ObjectWithSelfParentRepository {
     return session.db.count<ObjectWithSelfParent>(
       where: where?.call(ObjectWithSelfParent.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

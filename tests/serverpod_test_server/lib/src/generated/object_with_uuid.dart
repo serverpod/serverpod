@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -208,7 +206,7 @@ class ObjectWithUuidRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -227,7 +225,7 @@ class ObjectWithUuidRepository {
       orderByList: orderByList?.call(ObjectWithUuid.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -238,7 +236,7 @@ class ObjectWithUuidRepository {
   }) async {
     return session.db.findById<ObjectWithUuid>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -249,7 +247,7 @@ class ObjectWithUuidRepository {
   }) async {
     return session.db.insert<ObjectWithUuid>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -260,7 +258,7 @@ class ObjectWithUuidRepository {
   }) async {
     return session.db.insertRow<ObjectWithUuid>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -273,7 +271,7 @@ class ObjectWithUuidRepository {
     return session.db.update<ObjectWithUuid>(
       rows,
       columns: columns?.call(ObjectWithUuid.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -286,7 +284,7 @@ class ObjectWithUuidRepository {
     return session.db.updateRow<ObjectWithUuid>(
       row,
       columns: columns?.call(ObjectWithUuid.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -297,7 +295,7 @@ class ObjectWithUuidRepository {
   }) async {
     return session.db.delete<ObjectWithUuid>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -308,7 +306,7 @@ class ObjectWithUuidRepository {
   }) async {
     return session.db.deleteRow<ObjectWithUuid>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -319,7 +317,7 @@ class ObjectWithUuidRepository {
   }) async {
     return session.db.deleteWhere<ObjectWithUuid>(
       where: where(ObjectWithUuid.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -332,7 +330,7 @@ class ObjectWithUuidRepository {
     return session.db.count<ObjectWithUuid>(
       where: where?.call(ObjectWithUuid.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

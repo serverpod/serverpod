@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -241,7 +239,7 @@ class DoubleDefaultMixRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -260,7 +258,7 @@ class DoubleDefaultMixRepository {
       orderByList: orderByList?.call(DoubleDefaultMix.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -271,7 +269,7 @@ class DoubleDefaultMixRepository {
   }) async {
     return session.db.findById<DoubleDefaultMix>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -282,7 +280,7 @@ class DoubleDefaultMixRepository {
   }) async {
     return session.db.insert<DoubleDefaultMix>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -293,7 +291,7 @@ class DoubleDefaultMixRepository {
   }) async {
     return session.db.insertRow<DoubleDefaultMix>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -306,7 +304,7 @@ class DoubleDefaultMixRepository {
     return session.db.update<DoubleDefaultMix>(
       rows,
       columns: columns?.call(DoubleDefaultMix.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -319,7 +317,7 @@ class DoubleDefaultMixRepository {
     return session.db.updateRow<DoubleDefaultMix>(
       row,
       columns: columns?.call(DoubleDefaultMix.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -330,7 +328,7 @@ class DoubleDefaultMixRepository {
   }) async {
     return session.db.delete<DoubleDefaultMix>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -341,7 +339,7 @@ class DoubleDefaultMixRepository {
   }) async {
     return session.db.deleteRow<DoubleDefaultMix>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -352,7 +350,7 @@ class DoubleDefaultMixRepository {
   }) async {
     return session.db.deleteWhere<DoubleDefaultMix>(
       where: where(DoubleDefaultMix.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -365,7 +363,7 @@ class DoubleDefaultMixRepository {
     return session.db.count<DoubleDefaultMix>(
       where: where?.call(DoubleDefaultMix.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

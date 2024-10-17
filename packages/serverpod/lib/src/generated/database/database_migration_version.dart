@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -233,7 +231,7 @@ class DatabaseMigrationVersionRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -252,7 +250,7 @@ class DatabaseMigrationVersionRepository {
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -263,7 +261,7 @@ class DatabaseMigrationVersionRepository {
   }) async {
     return session.db.findById<DatabaseMigrationVersion>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -274,7 +272,7 @@ class DatabaseMigrationVersionRepository {
   }) async {
     return session.db.insert<DatabaseMigrationVersion>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -285,7 +283,7 @@ class DatabaseMigrationVersionRepository {
   }) async {
     return session.db.insertRow<DatabaseMigrationVersion>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -298,7 +296,7 @@ class DatabaseMigrationVersionRepository {
     return session.db.update<DatabaseMigrationVersion>(
       rows,
       columns: columns?.call(DatabaseMigrationVersion.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -311,7 +309,7 @@ class DatabaseMigrationVersionRepository {
     return session.db.updateRow<DatabaseMigrationVersion>(
       row,
       columns: columns?.call(DatabaseMigrationVersion.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -322,7 +320,7 @@ class DatabaseMigrationVersionRepository {
   }) async {
     return session.db.delete<DatabaseMigrationVersion>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -333,7 +331,7 @@ class DatabaseMigrationVersionRepository {
   }) async {
     return session.db.deleteRow<DatabaseMigrationVersion>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -344,7 +342,7 @@ class DatabaseMigrationVersionRepository {
   }) async {
     return session.db.deleteWhere<DatabaseMigrationVersion>(
       where: where(DatabaseMigrationVersion.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -357,7 +355,7 @@ class DatabaseMigrationVersionRepository {
     return session.db.count<DatabaseMigrationVersion>(
       where: where?.call(DatabaseMigrationVersion.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

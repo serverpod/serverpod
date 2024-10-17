@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -358,7 +356,7 @@ class CitizenRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -379,7 +377,7 @@ class CitizenRepository {
       orderByList: orderByList?.call(Citizen.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -392,7 +390,7 @@ class CitizenRepository {
   }) async {
     return session.db.findById<Citizen>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -404,7 +402,7 @@ class CitizenRepository {
   }) async {
     return session.db.insert<Citizen>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -415,7 +413,7 @@ class CitizenRepository {
   }) async {
     return session.db.insertRow<Citizen>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -428,7 +426,7 @@ class CitizenRepository {
     return session.db.update<Citizen>(
       rows,
       columns: columns?.call(Citizen.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -441,7 +439,7 @@ class CitizenRepository {
     return session.db.updateRow<Citizen>(
       row,
       columns: columns?.call(Citizen.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -452,7 +450,7 @@ class CitizenRepository {
   }) async {
     return session.db.delete<Citizen>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -463,7 +461,7 @@ class CitizenRepository {
   }) async {
     return session.db.deleteRow<Citizen>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -474,7 +472,7 @@ class CitizenRepository {
   }) async {
     return session.db.deleteWhere<Citizen>(
       where: where(Citizen.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -487,7 +485,7 @@ class CitizenRepository {
     return session.db.count<Citizen>(
       where: where?.call(Citizen.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -512,7 +510,7 @@ class CitizenAttachRowRepository {
     await session.db.updateRow<_i2.Address>(
       $address,
       columns: [_i2.Address.t.inhabitantId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -533,7 +531,7 @@ class CitizenAttachRowRepository {
     await session.db.updateRow<Citizen>(
       $citizen,
       columns: [Citizen.t.companyId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -554,7 +552,7 @@ class CitizenAttachRowRepository {
     await session.db.updateRow<Citizen>(
       $citizen,
       columns: [Citizen.t.oldCompanyId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -583,7 +581,7 @@ class CitizenDetachRowRepository {
     await session.db.updateRow<_i2.Address>(
       $$address,
       columns: [_i2.Address.t.inhabitantId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -600,7 +598,7 @@ class CitizenDetachRowRepository {
     await session.db.updateRow<Citizen>(
       $citizen,
       columns: [Citizen.t.oldCompanyId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

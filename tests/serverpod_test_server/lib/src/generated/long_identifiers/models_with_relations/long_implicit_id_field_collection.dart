@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -305,7 +303,7 @@ class LongImplicitIdFieldCollectionRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -326,7 +324,7 @@ class LongImplicitIdFieldCollectionRepository {
       orderByList: orderByList?.call(LongImplicitIdFieldCollection.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -339,7 +337,7 @@ class LongImplicitIdFieldCollectionRepository {
   }) async {
     return session.db.findById<LongImplicitIdFieldCollection>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -351,7 +349,7 @@ class LongImplicitIdFieldCollectionRepository {
   }) async {
     return session.db.insert<LongImplicitIdFieldCollection>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -362,7 +360,7 @@ class LongImplicitIdFieldCollectionRepository {
   }) async {
     return session.db.insertRow<LongImplicitIdFieldCollection>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -375,7 +373,7 @@ class LongImplicitIdFieldCollectionRepository {
     return session.db.update<LongImplicitIdFieldCollection>(
       rows,
       columns: columns?.call(LongImplicitIdFieldCollection.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -388,7 +386,7 @@ class LongImplicitIdFieldCollectionRepository {
     return session.db.updateRow<LongImplicitIdFieldCollection>(
       row,
       columns: columns?.call(LongImplicitIdFieldCollection.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -399,7 +397,7 @@ class LongImplicitIdFieldCollectionRepository {
   }) async {
     return session.db.delete<LongImplicitIdFieldCollection>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -410,7 +408,7 @@ class LongImplicitIdFieldCollectionRepository {
   }) async {
     return session.db.deleteRow<LongImplicitIdFieldCollection>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -422,7 +420,7 @@ class LongImplicitIdFieldCollectionRepository {
   }) async {
     return session.db.deleteWhere<LongImplicitIdFieldCollection>(
       where: where(LongImplicitIdFieldCollection.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -435,7 +433,7 @@ class LongImplicitIdFieldCollectionRepository {
     return session.db.count<LongImplicitIdFieldCollection>(
       where: where?.call(LongImplicitIdFieldCollection.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -469,7 +467,7 @@ class LongImplicitIdFieldCollectionAttachRepository {
         _i2.LongImplicitIdField.t
             .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -501,7 +499,7 @@ class LongImplicitIdFieldCollectionAttachRowRepository {
         _i2.LongImplicitIdField.t
             .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -531,7 +529,7 @@ class LongImplicitIdFieldCollectionDetachRepository {
         _i2.LongImplicitIdField.t
             .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -558,7 +556,7 @@ class LongImplicitIdFieldCollectionDetachRowRepository {
         _i2.LongImplicitIdField.t
             .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

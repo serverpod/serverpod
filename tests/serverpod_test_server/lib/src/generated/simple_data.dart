@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -190,7 +188,7 @@ class SimpleDataRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -209,7 +207,7 @@ class SimpleDataRepository {
       orderByList: orderByList?.call(SimpleData.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -220,7 +218,7 @@ class SimpleDataRepository {
   }) async {
     return session.db.findById<SimpleData>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -231,7 +229,7 @@ class SimpleDataRepository {
   }) async {
     return session.db.insert<SimpleData>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -242,7 +240,7 @@ class SimpleDataRepository {
   }) async {
     return session.db.insertRow<SimpleData>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -255,7 +253,7 @@ class SimpleDataRepository {
     return session.db.update<SimpleData>(
       rows,
       columns: columns?.call(SimpleData.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -268,7 +266,7 @@ class SimpleDataRepository {
     return session.db.updateRow<SimpleData>(
       row,
       columns: columns?.call(SimpleData.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -279,7 +277,7 @@ class SimpleDataRepository {
   }) async {
     return session.db.delete<SimpleData>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -290,7 +288,7 @@ class SimpleDataRepository {
   }) async {
     return session.db.deleteRow<SimpleData>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -301,7 +299,7 @@ class SimpleDataRepository {
   }) async {
     return session.db.deleteWhere<SimpleData>(
       where: where(SimpleData.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -314,7 +312,7 @@ class SimpleDataRepository {
     return session.db.count<SimpleData>(
       where: where?.call(SimpleData.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

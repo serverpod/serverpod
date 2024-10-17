@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -204,7 +202,7 @@ class ObjectWithIndexRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -223,7 +221,7 @@ class ObjectWithIndexRepository {
       orderByList: orderByList?.call(ObjectWithIndex.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -234,7 +232,7 @@ class ObjectWithIndexRepository {
   }) async {
     return session.db.findById<ObjectWithIndex>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -245,7 +243,7 @@ class ObjectWithIndexRepository {
   }) async {
     return session.db.insert<ObjectWithIndex>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -256,7 +254,7 @@ class ObjectWithIndexRepository {
   }) async {
     return session.db.insertRow<ObjectWithIndex>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -269,7 +267,7 @@ class ObjectWithIndexRepository {
     return session.db.update<ObjectWithIndex>(
       rows,
       columns: columns?.call(ObjectWithIndex.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -282,7 +280,7 @@ class ObjectWithIndexRepository {
     return session.db.updateRow<ObjectWithIndex>(
       row,
       columns: columns?.call(ObjectWithIndex.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -293,7 +291,7 @@ class ObjectWithIndexRepository {
   }) async {
     return session.db.delete<ObjectWithIndex>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -304,7 +302,7 @@ class ObjectWithIndexRepository {
   }) async {
     return session.db.deleteRow<ObjectWithIndex>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -315,7 +313,7 @@ class ObjectWithIndexRepository {
   }) async {
     return session.db.deleteWhere<ObjectWithIndex>(
       where: where(ObjectWithIndex.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -328,7 +326,7 @@ class ObjectWithIndexRepository {
     return session.db.count<ObjectWithIndex>(
       where: where?.call(ObjectWithIndex.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

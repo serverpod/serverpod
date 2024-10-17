@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -221,7 +219,7 @@ class UuidDefaultPersistRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -240,7 +238,7 @@ class UuidDefaultPersistRepository {
       orderByList: orderByList?.call(UuidDefaultPersist.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -251,7 +249,7 @@ class UuidDefaultPersistRepository {
   }) async {
     return session.db.findById<UuidDefaultPersist>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -262,7 +260,7 @@ class UuidDefaultPersistRepository {
   }) async {
     return session.db.insert<UuidDefaultPersist>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -273,7 +271,7 @@ class UuidDefaultPersistRepository {
   }) async {
     return session.db.insertRow<UuidDefaultPersist>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -286,7 +284,7 @@ class UuidDefaultPersistRepository {
     return session.db.update<UuidDefaultPersist>(
       rows,
       columns: columns?.call(UuidDefaultPersist.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -299,7 +297,7 @@ class UuidDefaultPersistRepository {
     return session.db.updateRow<UuidDefaultPersist>(
       row,
       columns: columns?.call(UuidDefaultPersist.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -310,7 +308,7 @@ class UuidDefaultPersistRepository {
   }) async {
     return session.db.delete<UuidDefaultPersist>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -321,7 +319,7 @@ class UuidDefaultPersistRepository {
   }) async {
     return session.db.deleteRow<UuidDefaultPersist>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -332,7 +330,7 @@ class UuidDefaultPersistRepository {
   }) async {
     return session.db.deleteWhere<UuidDefaultPersist>(
       where: where(UuidDefaultPersist.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -345,7 +343,7 @@ class UuidDefaultPersistRepository {
     return session.db.count<UuidDefaultPersist>(
       where: where?.call(UuidDefaultPersist.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

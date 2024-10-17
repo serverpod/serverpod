@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
@@ -377,7 +375,7 @@ class LogEntryRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -396,7 +394,7 @@ class LogEntryRepository {
       orderByList: orderByList?.call(LogEntry.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -407,7 +405,7 @@ class LogEntryRepository {
   }) async {
     return session.db.findById<LogEntry>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -418,7 +416,7 @@ class LogEntryRepository {
   }) async {
     return session.db.insert<LogEntry>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -429,7 +427,7 @@ class LogEntryRepository {
   }) async {
     return session.db.insertRow<LogEntry>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -442,7 +440,7 @@ class LogEntryRepository {
     return session.db.update<LogEntry>(
       rows,
       columns: columns?.call(LogEntry.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -455,7 +453,7 @@ class LogEntryRepository {
     return session.db.updateRow<LogEntry>(
       row,
       columns: columns?.call(LogEntry.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -466,7 +464,7 @@ class LogEntryRepository {
   }) async {
     return session.db.delete<LogEntry>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -477,7 +475,7 @@ class LogEntryRepository {
   }) async {
     return session.db.deleteRow<LogEntry>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -488,7 +486,7 @@ class LogEntryRepository {
   }) async {
     return session.db.deleteWhere<LogEntry>(
       where: where(LogEntry.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -501,7 +499,7 @@ class LogEntryRepository {
     return session.db.count<LogEntry>(
       where: where?.call(LogEntry.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

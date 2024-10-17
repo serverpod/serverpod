@@ -293,8 +293,7 @@ class BuildRepositoryClass {
             'orderDescending': refer('orderDescending'),
             'limit': refer('limit'),
             'offset': refer('offset'),
-            'transaction': refer('transaction')
-                .ifNullThen(refer('session').property('transaction')),
+            'transaction': refer('transaction'),
             if (objectRelationFields.isNotEmpty) 'include': refer('include'),
           }, [
             refer(className)
@@ -383,8 +382,7 @@ class BuildRepositoryClass {
               ),
               'orderDescending': refer('orderDescending'),
               'offset': refer('offset'),
-              'transaction': refer('transaction')
-                  .ifNullThen(refer('session').property('transaction')),
+              'transaction': refer('transaction'),
               if (objectRelationFields.isNotEmpty) 'include': refer('include'),
             },
             [refer(className)],
@@ -437,8 +435,7 @@ class BuildRepositoryClass {
           .call(
             [refer('id')],
             {
-              'transaction': refer('transaction')
-                  .ifNullThen(refer('session').property('transaction')),
+              'transaction': refer('transaction'),
               if (objectRelationFields.isNotEmpty) 'include': refer('include'),
             },
             [refer(className)],
@@ -480,8 +477,7 @@ class BuildRepositoryClass {
             .call([
               refer('rows')
             ], {
-              'transaction': refer('transaction')
-                  .ifNullThen(refer('session').property('transaction')),
+              'transaction': refer('transaction'),
             }, [
               refer(className)
             ])
@@ -523,8 +519,7 @@ class BuildRepositoryClass {
             .call([
               refer('row')
             ], {
-              'transaction': refer('transaction')
-                  .ifNullThen(refer('session').property('transaction')),
+              'transaction': refer('transaction'),
             }, [
               refer(className)
             ])
@@ -576,8 +571,7 @@ class BuildRepositoryClass {
               'columns': refer('columns').nullSafeProperty('call').call([
                 refer(className).property('t'),
               ]),
-              'transaction': refer('transaction')
-                  .ifNullThen(refer('session').property('transaction')),
+              'transaction': refer('transaction'),
             }, [
               refer(className)
             ])
@@ -629,8 +623,7 @@ class BuildRepositoryClass {
               'columns': refer('columns').nullSafeProperty('call').call([
                 refer(className).property('t'),
               ]),
-              'transaction': refer('transaction')
-                  .ifNullThen(refer('session').property('transaction')),
+              'transaction': refer('transaction'),
             }, [
               refer(className)
             ])
@@ -680,8 +673,7 @@ class BuildRepositoryClass {
             .call([
               refer('rows')
             ], {
-              'transaction': refer('transaction')
-                  .ifNullThen(refer('session').property('transaction')),
+              'transaction': refer('transaction'),
             }, [
               refer(className)
             ])
@@ -725,8 +717,7 @@ class BuildRepositoryClass {
             .call([
               refer('row')
             ], {
-              'transaction': refer('transaction')
-                  .ifNullThen(refer('session').property('transaction')),
+              'transaction': refer('transaction'),
             }, [
               refer(className)
             ])
@@ -781,8 +772,7 @@ class BuildRepositoryClass {
             .property('deleteWhere')
             .call([], {
               'where': refer('where').call([refer(className).property('t')]),
-              'transaction': refer('transaction')
-                  .ifNullThen(refer('session').property('transaction')),
+              'transaction': refer('transaction'),
             }, [
               refer(className)
             ])
@@ -836,8 +826,7 @@ class BuildRepositoryClass {
                 [refer(className).property('t')],
               ),
               'limit': refer('limit'),
-              'transaction': refer('transaction')
-                  .ifNullThen(refer('session').property('transaction')),
+              'transaction': refer('transaction'),
             }, [
               refer(className)
             ])
@@ -1796,8 +1785,7 @@ class BuildRepositoryClass {
                   'columns': literalList(
                     [classReference.property('t').property(fieldName)],
                   ),
-                  'transaction': refer('transaction')
-                      .ifNullThen(refer('session').property('transaction')),
+                  'transaction': refer('transaction'),
                 }, [
                   classReference,
                 ])

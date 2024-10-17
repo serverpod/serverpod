@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -225,7 +223,7 @@ class EnumDefaultPersistRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -244,7 +242,7 @@ class EnumDefaultPersistRepository {
       orderByList: orderByList?.call(EnumDefaultPersist.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -255,7 +253,7 @@ class EnumDefaultPersistRepository {
   }) async {
     return session.db.findById<EnumDefaultPersist>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -266,7 +264,7 @@ class EnumDefaultPersistRepository {
   }) async {
     return session.db.insert<EnumDefaultPersist>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -277,7 +275,7 @@ class EnumDefaultPersistRepository {
   }) async {
     return session.db.insertRow<EnumDefaultPersist>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -290,7 +288,7 @@ class EnumDefaultPersistRepository {
     return session.db.update<EnumDefaultPersist>(
       rows,
       columns: columns?.call(EnumDefaultPersist.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -303,7 +301,7 @@ class EnumDefaultPersistRepository {
     return session.db.updateRow<EnumDefaultPersist>(
       row,
       columns: columns?.call(EnumDefaultPersist.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -314,7 +312,7 @@ class EnumDefaultPersistRepository {
   }) async {
     return session.db.delete<EnumDefaultPersist>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -325,7 +323,7 @@ class EnumDefaultPersistRepository {
   }) async {
     return session.db.deleteRow<EnumDefaultPersist>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -336,7 +334,7 @@ class EnumDefaultPersistRepository {
   }) async {
     return session.db.deleteWhere<EnumDefaultPersist>(
       where: where(EnumDefaultPersist.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -349,7 +347,7 @@ class EnumDefaultPersistRepository {
     return session.db.count<EnumDefaultPersist>(
       where: where?.call(EnumDefaultPersist.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

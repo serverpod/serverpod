@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -208,7 +206,7 @@ class MethodInfoRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -227,7 +225,7 @@ class MethodInfoRepository {
       orderByList: orderByList?.call(MethodInfo.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -238,7 +236,7 @@ class MethodInfoRepository {
   }) async {
     return session.db.findById<MethodInfo>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -249,7 +247,7 @@ class MethodInfoRepository {
   }) async {
     return session.db.insert<MethodInfo>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -260,7 +258,7 @@ class MethodInfoRepository {
   }) async {
     return session.db.insertRow<MethodInfo>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -273,7 +271,7 @@ class MethodInfoRepository {
     return session.db.update<MethodInfo>(
       rows,
       columns: columns?.call(MethodInfo.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -286,7 +284,7 @@ class MethodInfoRepository {
     return session.db.updateRow<MethodInfo>(
       row,
       columns: columns?.call(MethodInfo.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -297,7 +295,7 @@ class MethodInfoRepository {
   }) async {
     return session.db.delete<MethodInfo>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -308,7 +306,7 @@ class MethodInfoRepository {
   }) async {
     return session.db.deleteRow<MethodInfo>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -319,7 +317,7 @@ class MethodInfoRepository {
   }) async {
     return session.db.deleteWhere<MethodInfo>(
       where: where(MethodInfo.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -332,7 +330,7 @@ class MethodInfoRepository {
     return session.db.count<MethodInfo>(
       where: where?.call(MethodInfo.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

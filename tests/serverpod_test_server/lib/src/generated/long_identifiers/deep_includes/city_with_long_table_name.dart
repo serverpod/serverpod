@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -339,7 +337,7 @@ class CityWithLongTableNameRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -360,7 +358,7 @@ class CityWithLongTableNameRepository {
       orderByList: orderByList?.call(CityWithLongTableName.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -373,7 +371,7 @@ class CityWithLongTableNameRepository {
   }) async {
     return session.db.findById<CityWithLongTableName>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -385,7 +383,7 @@ class CityWithLongTableNameRepository {
   }) async {
     return session.db.insert<CityWithLongTableName>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -396,7 +394,7 @@ class CityWithLongTableNameRepository {
   }) async {
     return session.db.insertRow<CityWithLongTableName>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -409,7 +407,7 @@ class CityWithLongTableNameRepository {
     return session.db.update<CityWithLongTableName>(
       rows,
       columns: columns?.call(CityWithLongTableName.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -422,7 +420,7 @@ class CityWithLongTableNameRepository {
     return session.db.updateRow<CityWithLongTableName>(
       row,
       columns: columns?.call(CityWithLongTableName.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -433,7 +431,7 @@ class CityWithLongTableNameRepository {
   }) async {
     return session.db.delete<CityWithLongTableName>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -444,7 +442,7 @@ class CityWithLongTableNameRepository {
   }) async {
     return session.db.deleteRow<CityWithLongTableName>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -455,7 +453,7 @@ class CityWithLongTableNameRepository {
   }) async {
     return session.db.deleteWhere<CityWithLongTableName>(
       where: where(CityWithLongTableName.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -468,7 +466,7 @@ class CityWithLongTableNameRepository {
     return session.db.count<CityWithLongTableName>(
       where: where?.call(CityWithLongTableName.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -502,7 +500,7 @@ class CityWithLongTableNameAttachRepository {
         _i2.PersonWithLongTableName.t
             .$_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -525,7 +523,7 @@ class CityWithLongTableNameAttachRepository {
     await session.db.update<_i2.OrganizationWithLongTableName>(
       $organizationWithLongTableName,
       columns: [_i2.OrganizationWithLongTableName.t.cityId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -557,7 +555,7 @@ class CityWithLongTableNameAttachRowRepository {
         _i2.PersonWithLongTableName.t
             .$_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -579,7 +577,7 @@ class CityWithLongTableNameAttachRowRepository {
     await session.db.updateRow<_i2.OrganizationWithLongTableName>(
       $organizationWithLongTableName,
       columns: [_i2.OrganizationWithLongTableName.t.cityId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -609,7 +607,7 @@ class CityWithLongTableNameDetachRepository {
         _i2.PersonWithLongTableName.t
             .$_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -628,7 +626,7 @@ class CityWithLongTableNameDetachRepository {
     await session.db.update<_i2.OrganizationWithLongTableName>(
       $organizationWithLongTableName,
       columns: [_i2.OrganizationWithLongTableName.t.cityId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -655,7 +653,7 @@ class CityWithLongTableNameDetachRowRepository {
         _i2.PersonWithLongTableName.t
             .$_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -673,7 +671,7 @@ class CityWithLongTableNameDetachRowRepository {
     await session.db.updateRow<_i2.OrganizationWithLongTableName>(
       $organizationWithLongTableName,
       columns: [_i2.OrganizationWithLongTableName.t.cityId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

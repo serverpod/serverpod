@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
@@ -298,7 +296,7 @@ class CloudStorageEntryRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -317,7 +315,7 @@ class CloudStorageEntryRepository {
       orderByList: orderByList?.call(CloudStorageEntry.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -328,7 +326,7 @@ class CloudStorageEntryRepository {
   }) async {
     return session.db.findById<CloudStorageEntry>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -339,7 +337,7 @@ class CloudStorageEntryRepository {
   }) async {
     return session.db.insert<CloudStorageEntry>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -350,7 +348,7 @@ class CloudStorageEntryRepository {
   }) async {
     return session.db.insertRow<CloudStorageEntry>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -363,7 +361,7 @@ class CloudStorageEntryRepository {
     return session.db.update<CloudStorageEntry>(
       rows,
       columns: columns?.call(CloudStorageEntry.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -376,7 +374,7 @@ class CloudStorageEntryRepository {
     return session.db.updateRow<CloudStorageEntry>(
       row,
       columns: columns?.call(CloudStorageEntry.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -387,7 +385,7 @@ class CloudStorageEntryRepository {
   }) async {
     return session.db.delete<CloudStorageEntry>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -398,7 +396,7 @@ class CloudStorageEntryRepository {
   }) async {
     return session.db.deleteRow<CloudStorageEntry>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -409,7 +407,7 @@ class CloudStorageEntryRepository {
   }) async {
     return session.db.deleteWhere<CloudStorageEntry>(
       where: where(CloudStorageEntry.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -422,7 +420,7 @@ class CloudStorageEntryRepository {
     return session.db.count<CloudStorageEntry>(
       where: where?.call(CloudStorageEntry.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

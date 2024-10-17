@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -251,7 +249,7 @@ class AddressRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -272,7 +270,7 @@ class AddressRepository {
       orderByList: orderByList?.call(Address.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -285,7 +283,7 @@ class AddressRepository {
   }) async {
     return session.db.findById<Address>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -297,7 +295,7 @@ class AddressRepository {
   }) async {
     return session.db.insert<Address>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -308,7 +306,7 @@ class AddressRepository {
   }) async {
     return session.db.insertRow<Address>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -321,7 +319,7 @@ class AddressRepository {
     return session.db.update<Address>(
       rows,
       columns: columns?.call(Address.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -334,7 +332,7 @@ class AddressRepository {
     return session.db.updateRow<Address>(
       row,
       columns: columns?.call(Address.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -345,7 +343,7 @@ class AddressRepository {
   }) async {
     return session.db.delete<Address>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -356,7 +354,7 @@ class AddressRepository {
   }) async {
     return session.db.deleteRow<Address>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -367,7 +365,7 @@ class AddressRepository {
   }) async {
     return session.db.deleteWhere<Address>(
       where: where(Address.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -380,7 +378,7 @@ class AddressRepository {
     return session.db.count<Address>(
       where: where?.call(Address.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -405,7 +403,7 @@ class AddressAttachRowRepository {
     await session.db.updateRow<Address>(
       $address,
       columns: [Address.t.inhabitantId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -426,7 +424,7 @@ class AddressDetachRowRepository {
     await session.db.updateRow<Address>(
       $address,
       columns: [Address.t.inhabitantId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -452,7 +450,7 @@ class SessionLogEntryRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -471,7 +469,7 @@ class SessionLogEntryRepository {
       orderByList: orderByList?.call(SessionLogEntry.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -482,7 +480,7 @@ class SessionLogEntryRepository {
   }) async {
     return session.db.findById<SessionLogEntry>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -493,7 +491,7 @@ class SessionLogEntryRepository {
   }) async {
     return session.db.insert<SessionLogEntry>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -504,7 +502,7 @@ class SessionLogEntryRepository {
   }) async {
     return session.db.insertRow<SessionLogEntry>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -517,7 +515,7 @@ class SessionLogEntryRepository {
     return session.db.update<SessionLogEntry>(
       rows,
       columns: columns?.call(SessionLogEntry.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -530,7 +528,7 @@ class SessionLogEntryRepository {
     return session.db.updateRow<SessionLogEntry>(
       row,
       columns: columns?.call(SessionLogEntry.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -541,7 +539,7 @@ class SessionLogEntryRepository {
   }) async {
     return session.db.delete<SessionLogEntry>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -552,7 +550,7 @@ class SessionLogEntryRepository {
   }) async {
     return session.db.deleteRow<SessionLogEntry>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -563,7 +561,7 @@ class SessionLogEntryRepository {
   }) async {
     return session.db.deleteWhere<SessionLogEntry>(
       where: where(SessionLogEntry.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -576,7 +574,7 @@ class SessionLogEntryRepository {
     return session.db.count<SessionLogEntry>(
       where: where?.call(SessionLogEntry.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

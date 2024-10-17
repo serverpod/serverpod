@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -322,7 +320,7 @@ class OrderRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -343,7 +341,7 @@ class OrderRepository {
       orderByList: orderByList?.call(Order.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -356,7 +354,7 @@ class OrderRepository {
   }) async {
     return session.db.findById<Order>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -368,7 +366,7 @@ class OrderRepository {
   }) async {
     return session.db.insert<Order>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -379,7 +377,7 @@ class OrderRepository {
   }) async {
     return session.db.insertRow<Order>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -392,7 +390,7 @@ class OrderRepository {
     return session.db.update<Order>(
       rows,
       columns: columns?.call(Order.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -405,7 +403,7 @@ class OrderRepository {
     return session.db.updateRow<Order>(
       row,
       columns: columns?.call(Order.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -416,7 +414,7 @@ class OrderRepository {
   }) async {
     return session.db.delete<Order>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -427,7 +425,7 @@ class OrderRepository {
   }) async {
     return session.db.deleteRow<Order>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -438,7 +436,7 @@ class OrderRepository {
   }) async {
     return session.db.deleteWhere<Order>(
       where: where(Order.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -451,7 +449,7 @@ class OrderRepository {
     return session.db.count<Order>(
       where: where?.call(Order.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -476,7 +474,7 @@ class OrderAttachRepository {
     await session.db.update<_i2.Comment>(
       $comment,
       columns: [_i2.Comment.t.orderId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -501,7 +499,7 @@ class OrderAttachRowRepository {
     await session.db.updateRow<Order>(
       $order,
       columns: [Order.t.customerId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -522,7 +520,7 @@ class OrderAttachRowRepository {
     await session.db.updateRow<_i2.Comment>(
       $comment,
       columns: [_i2.Comment.t.orderId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -342,7 +340,7 @@ class UserInfoRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -361,7 +359,7 @@ class UserInfoRepository {
       orderByList: orderByList?.call(UserInfo.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -372,7 +370,7 @@ class UserInfoRepository {
   }) async {
     return session.db.findById<UserInfo>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -383,7 +381,7 @@ class UserInfoRepository {
   }) async {
     return session.db.insert<UserInfo>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -394,7 +392,7 @@ class UserInfoRepository {
   }) async {
     return session.db.insertRow<UserInfo>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -407,7 +405,7 @@ class UserInfoRepository {
     return session.db.update<UserInfo>(
       rows,
       columns: columns?.call(UserInfo.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -420,7 +418,7 @@ class UserInfoRepository {
     return session.db.updateRow<UserInfo>(
       row,
       columns: columns?.call(UserInfo.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -431,7 +429,7 @@ class UserInfoRepository {
   }) async {
     return session.db.delete<UserInfo>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -442,7 +440,7 @@ class UserInfoRepository {
   }) async {
     return session.db.deleteRow<UserInfo>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -453,7 +451,7 @@ class UserInfoRepository {
   }) async {
     return session.db.deleteWhere<UserInfo>(
       where: where(UserInfo.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -466,7 +464,7 @@ class UserInfoRepository {
     return session.db.count<UserInfo>(
       where: where?.call(UserInfo.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

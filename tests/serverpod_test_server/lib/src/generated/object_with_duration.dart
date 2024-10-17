@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -186,7 +184,7 @@ class ObjectWithDurationRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -205,7 +203,7 @@ class ObjectWithDurationRepository {
       orderByList: orderByList?.call(ObjectWithDuration.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -216,7 +214,7 @@ class ObjectWithDurationRepository {
   }) async {
     return session.db.findById<ObjectWithDuration>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -227,7 +225,7 @@ class ObjectWithDurationRepository {
   }) async {
     return session.db.insert<ObjectWithDuration>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -238,7 +236,7 @@ class ObjectWithDurationRepository {
   }) async {
     return session.db.insertRow<ObjectWithDuration>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -251,7 +249,7 @@ class ObjectWithDurationRepository {
     return session.db.update<ObjectWithDuration>(
       rows,
       columns: columns?.call(ObjectWithDuration.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -264,7 +262,7 @@ class ObjectWithDurationRepository {
     return session.db.updateRow<ObjectWithDuration>(
       row,
       columns: columns?.call(ObjectWithDuration.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -275,7 +273,7 @@ class ObjectWithDurationRepository {
   }) async {
     return session.db.delete<ObjectWithDuration>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -286,7 +284,7 @@ class ObjectWithDurationRepository {
   }) async {
     return session.db.deleteRow<ObjectWithDuration>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -297,7 +295,7 @@ class ObjectWithDurationRepository {
   }) async {
     return session.db.deleteWhere<ObjectWithDuration>(
       where: where(ObjectWithDuration.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -310,7 +308,7 @@ class ObjectWithDurationRepository {
     return session.db.count<ObjectWithDuration>(
       where: where?.call(ObjectWithDuration.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

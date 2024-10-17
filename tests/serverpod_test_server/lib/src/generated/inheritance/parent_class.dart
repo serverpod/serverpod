@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import '../protocol.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
@@ -179,7 +177,7 @@ class ParentClassRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -198,7 +196,7 @@ class ParentClassRepository {
       orderByList: orderByList?.call(ParentClass.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -209,7 +207,7 @@ class ParentClassRepository {
   }) async {
     return session.db.findById<ParentClass>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -220,7 +218,7 @@ class ParentClassRepository {
   }) async {
     return session.db.insert<ParentClass>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -231,7 +229,7 @@ class ParentClassRepository {
   }) async {
     return session.db.insertRow<ParentClass>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -244,7 +242,7 @@ class ParentClassRepository {
     return session.db.update<ParentClass>(
       rows,
       columns: columns?.call(ParentClass.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -257,7 +255,7 @@ class ParentClassRepository {
     return session.db.updateRow<ParentClass>(
       row,
       columns: columns?.call(ParentClass.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -268,7 +266,7 @@ class ParentClassRepository {
   }) async {
     return session.db.delete<ParentClass>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -279,7 +277,7 @@ class ParentClassRepository {
   }) async {
     return session.db.deleteRow<ParentClass>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -290,7 +288,7 @@ class ParentClassRepository {
   }) async {
     return session.db.deleteWhere<ParentClass>(
       where: where(ParentClass.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -303,7 +301,7 @@ class ParentClassRepository {
     return session.db.count<ParentClass>(
       where: where?.call(ParentClass.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

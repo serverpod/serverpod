@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -205,7 +203,7 @@ class IntDefaultModelRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -224,7 +222,7 @@ class IntDefaultModelRepository {
       orderByList: orderByList?.call(IntDefaultModel.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -235,7 +233,7 @@ class IntDefaultModelRepository {
   }) async {
     return session.db.findById<IntDefaultModel>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -246,7 +244,7 @@ class IntDefaultModelRepository {
   }) async {
     return session.db.insert<IntDefaultModel>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -257,7 +255,7 @@ class IntDefaultModelRepository {
   }) async {
     return session.db.insertRow<IntDefaultModel>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -270,7 +268,7 @@ class IntDefaultModelRepository {
     return session.db.update<IntDefaultModel>(
       rows,
       columns: columns?.call(IntDefaultModel.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -283,7 +281,7 @@ class IntDefaultModelRepository {
     return session.db.updateRow<IntDefaultModel>(
       row,
       columns: columns?.call(IntDefaultModel.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -294,7 +292,7 @@ class IntDefaultModelRepository {
   }) async {
     return session.db.delete<IntDefaultModel>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -305,7 +303,7 @@ class IntDefaultModelRepository {
   }) async {
     return session.db.deleteRow<IntDefaultModel>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -316,7 +314,7 @@ class IntDefaultModelRepository {
   }) async {
     return session.db.deleteWhere<IntDefaultModel>(
       where: where(IntDefaultModel.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -329,7 +327,7 @@ class IntDefaultModelRepository {
     return session.db.count<IntDefaultModel>(
       where: where?.call(IntDefaultModel.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

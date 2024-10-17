@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -244,7 +242,7 @@ class DateTimeDefaultMixRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -263,7 +261,7 @@ class DateTimeDefaultMixRepository {
       orderByList: orderByList?.call(DateTimeDefaultMix.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -274,7 +272,7 @@ class DateTimeDefaultMixRepository {
   }) async {
     return session.db.findById<DateTimeDefaultMix>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -285,7 +283,7 @@ class DateTimeDefaultMixRepository {
   }) async {
     return session.db.insert<DateTimeDefaultMix>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -296,7 +294,7 @@ class DateTimeDefaultMixRepository {
   }) async {
     return session.db.insertRow<DateTimeDefaultMix>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -309,7 +307,7 @@ class DateTimeDefaultMixRepository {
     return session.db.update<DateTimeDefaultMix>(
       rows,
       columns: columns?.call(DateTimeDefaultMix.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -322,7 +320,7 @@ class DateTimeDefaultMixRepository {
     return session.db.updateRow<DateTimeDefaultMix>(
       row,
       columns: columns?.call(DateTimeDefaultMix.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -333,7 +331,7 @@ class DateTimeDefaultMixRepository {
   }) async {
     return session.db.delete<DateTimeDefaultMix>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -344,7 +342,7 @@ class DateTimeDefaultMixRepository {
   }) async {
     return session.db.deleteRow<DateTimeDefaultMix>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -355,7 +353,7 @@ class DateTimeDefaultMixRepository {
   }) async {
     return session.db.deleteWhere<DateTimeDefaultMix>(
       where: where(DateTimeDefaultMix.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -368,7 +366,7 @@ class DateTimeDefaultMixRepository {
     return session.db.count<DateTimeDefaultMix>(
       where: where?.call(DateTimeDefaultMix.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

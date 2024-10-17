@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -196,7 +194,7 @@ class MaxFieldNameRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -215,7 +213,7 @@ class MaxFieldNameRepository {
       orderByList: orderByList?.call(MaxFieldName.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -226,7 +224,7 @@ class MaxFieldNameRepository {
   }) async {
     return session.db.findById<MaxFieldName>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -237,7 +235,7 @@ class MaxFieldNameRepository {
   }) async {
     return session.db.insert<MaxFieldName>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -248,7 +246,7 @@ class MaxFieldNameRepository {
   }) async {
     return session.db.insertRow<MaxFieldName>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -261,7 +259,7 @@ class MaxFieldNameRepository {
     return session.db.update<MaxFieldName>(
       rows,
       columns: columns?.call(MaxFieldName.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -274,7 +272,7 @@ class MaxFieldNameRepository {
     return session.db.updateRow<MaxFieldName>(
       row,
       columns: columns?.call(MaxFieldName.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -285,7 +283,7 @@ class MaxFieldNameRepository {
   }) async {
     return session.db.delete<MaxFieldName>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -296,7 +294,7 @@ class MaxFieldNameRepository {
   }) async {
     return session.db.deleteRow<MaxFieldName>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -307,7 +305,7 @@ class MaxFieldNameRepository {
   }) async {
     return session.db.deleteWhere<MaxFieldName>(
       where: where(MaxFieldName.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -320,7 +318,7 @@ class MaxFieldNameRepository {
     return session.db.count<MaxFieldName>(
       where: where?.call(MaxFieldName.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

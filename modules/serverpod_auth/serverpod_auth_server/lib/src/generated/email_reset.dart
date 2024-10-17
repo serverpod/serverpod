@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -230,7 +228,7 @@ class EmailResetRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -249,7 +247,7 @@ class EmailResetRepository {
       orderByList: orderByList?.call(EmailReset.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -260,7 +258,7 @@ class EmailResetRepository {
   }) async {
     return session.db.findById<EmailReset>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -271,7 +269,7 @@ class EmailResetRepository {
   }) async {
     return session.db.insert<EmailReset>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -282,7 +280,7 @@ class EmailResetRepository {
   }) async {
     return session.db.insertRow<EmailReset>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -295,7 +293,7 @@ class EmailResetRepository {
     return session.db.update<EmailReset>(
       rows,
       columns: columns?.call(EmailReset.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -308,7 +306,7 @@ class EmailResetRepository {
     return session.db.updateRow<EmailReset>(
       row,
       columns: columns?.call(EmailReset.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -319,7 +317,7 @@ class EmailResetRepository {
   }) async {
     return session.db.delete<EmailReset>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -330,7 +328,7 @@ class EmailResetRepository {
   }) async {
     return session.db.deleteRow<EmailReset>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -341,7 +339,7 @@ class EmailResetRepository {
   }) async {
     return session.db.deleteWhere<EmailReset>(
       where: where(EmailReset.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -354,7 +352,7 @@ class EmailResetRepository {
     return session.db.count<EmailReset>(
       where: where?.call(EmailReset.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

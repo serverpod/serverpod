@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -250,7 +248,7 @@ class PlayerRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -271,7 +269,7 @@ class PlayerRepository {
       orderByList: orderByList?.call(Player.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -284,7 +282,7 @@ class PlayerRepository {
   }) async {
     return session.db.findById<Player>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -296,7 +294,7 @@ class PlayerRepository {
   }) async {
     return session.db.insert<Player>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -307,7 +305,7 @@ class PlayerRepository {
   }) async {
     return session.db.insertRow<Player>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -320,7 +318,7 @@ class PlayerRepository {
     return session.db.update<Player>(
       rows,
       columns: columns?.call(Player.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -333,7 +331,7 @@ class PlayerRepository {
     return session.db.updateRow<Player>(
       row,
       columns: columns?.call(Player.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -344,7 +342,7 @@ class PlayerRepository {
   }) async {
     return session.db.delete<Player>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -355,7 +353,7 @@ class PlayerRepository {
   }) async {
     return session.db.deleteRow<Player>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -366,7 +364,7 @@ class PlayerRepository {
   }) async {
     return session.db.deleteWhere<Player>(
       where: where(Player.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -379,7 +377,7 @@ class PlayerRepository {
     return session.db.count<Player>(
       where: where?.call(Player.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -404,7 +402,7 @@ class PlayerAttachRowRepository {
     await session.db.updateRow<Player>(
       $player,
       columns: [Player.t.teamId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -425,7 +423,7 @@ class PlayerDetachRowRepository {
     await session.db.updateRow<Player>(
       $player,
       columns: [Player.t.teamId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

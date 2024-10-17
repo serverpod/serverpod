@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -266,7 +264,7 @@ class AuthKeyRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -285,7 +283,7 @@ class AuthKeyRepository {
       orderByList: orderByList?.call(AuthKey.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -296,7 +294,7 @@ class AuthKeyRepository {
   }) async {
     return session.db.findById<AuthKey>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -307,7 +305,7 @@ class AuthKeyRepository {
   }) async {
     return session.db.insert<AuthKey>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -318,7 +316,7 @@ class AuthKeyRepository {
   }) async {
     return session.db.insertRow<AuthKey>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -331,7 +329,7 @@ class AuthKeyRepository {
     return session.db.update<AuthKey>(
       rows,
       columns: columns?.call(AuthKey.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -344,7 +342,7 @@ class AuthKeyRepository {
     return session.db.updateRow<AuthKey>(
       row,
       columns: columns?.call(AuthKey.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -355,7 +353,7 @@ class AuthKeyRepository {
   }) async {
     return session.db.delete<AuthKey>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -366,7 +364,7 @@ class AuthKeyRepository {
   }) async {
     return session.db.deleteRow<AuthKey>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -377,7 +375,7 @@ class AuthKeyRepository {
   }) async {
     return session.db.deleteWhere<AuthKey>(
       where: where(AuthKey.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -390,7 +388,7 @@ class AuthKeyRepository {
     return session.db.count<AuthKey>(
       where: where?.call(AuthKey.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

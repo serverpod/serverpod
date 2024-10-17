@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -325,7 +323,7 @@ class TeamRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -346,7 +344,7 @@ class TeamRepository {
       orderByList: orderByList?.call(Team.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -359,7 +357,7 @@ class TeamRepository {
   }) async {
     return session.db.findById<Team>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -371,7 +369,7 @@ class TeamRepository {
   }) async {
     return session.db.insert<Team>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -382,7 +380,7 @@ class TeamRepository {
   }) async {
     return session.db.insertRow<Team>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -395,7 +393,7 @@ class TeamRepository {
     return session.db.update<Team>(
       rows,
       columns: columns?.call(Team.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -408,7 +406,7 @@ class TeamRepository {
     return session.db.updateRow<Team>(
       row,
       columns: columns?.call(Team.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -419,7 +417,7 @@ class TeamRepository {
   }) async {
     return session.db.delete<Team>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -430,7 +428,7 @@ class TeamRepository {
   }) async {
     return session.db.deleteRow<Team>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -441,7 +439,7 @@ class TeamRepository {
   }) async {
     return session.db.deleteWhere<Team>(
       where: where(Team.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -454,7 +452,7 @@ class TeamRepository {
     return session.db.count<Team>(
       where: where?.call(Team.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -479,7 +477,7 @@ class TeamAttachRepository {
     await session.db.update<_i2.Player>(
       $player,
       columns: [_i2.Player.t.teamId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -504,7 +502,7 @@ class TeamAttachRowRepository {
     await session.db.updateRow<Team>(
       $team,
       columns: [Team.t.arenaId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -525,7 +523,7 @@ class TeamAttachRowRepository {
     await session.db.updateRow<_i2.Player>(
       $player,
       columns: [_i2.Player.t.teamId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -546,7 +544,7 @@ class TeamDetachRepository {
     await session.db.update<_i2.Player>(
       $player,
       columns: [_i2.Player.t.teamId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -567,7 +565,7 @@ class TeamDetachRowRepository {
     await session.db.updateRow<Team>(
       $team,
       columns: [Team.t.arenaId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -584,7 +582,7 @@ class TeamDetachRowRepository {
     await session.db.updateRow<_i2.Player>(
       $player,
       columns: [_i2.Player.t.teamId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

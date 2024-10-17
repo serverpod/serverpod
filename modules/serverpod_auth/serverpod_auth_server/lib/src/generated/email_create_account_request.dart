@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -253,7 +251,7 @@ class EmailCreateAccountRequestRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -272,7 +270,7 @@ class EmailCreateAccountRequestRepository {
       orderByList: orderByList?.call(EmailCreateAccountRequest.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -283,7 +281,7 @@ class EmailCreateAccountRequestRepository {
   }) async {
     return session.db.findById<EmailCreateAccountRequest>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -294,7 +292,7 @@ class EmailCreateAccountRequestRepository {
   }) async {
     return session.db.insert<EmailCreateAccountRequest>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -305,7 +303,7 @@ class EmailCreateAccountRequestRepository {
   }) async {
     return session.db.insertRow<EmailCreateAccountRequest>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -318,7 +316,7 @@ class EmailCreateAccountRequestRepository {
     return session.db.update<EmailCreateAccountRequest>(
       rows,
       columns: columns?.call(EmailCreateAccountRequest.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -331,7 +329,7 @@ class EmailCreateAccountRequestRepository {
     return session.db.updateRow<EmailCreateAccountRequest>(
       row,
       columns: columns?.call(EmailCreateAccountRequest.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -342,7 +340,7 @@ class EmailCreateAccountRequestRepository {
   }) async {
     return session.db.delete<EmailCreateAccountRequest>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -353,7 +351,7 @@ class EmailCreateAccountRequestRepository {
   }) async {
     return session.db.deleteRow<EmailCreateAccountRequest>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -364,7 +362,7 @@ class EmailCreateAccountRequestRepository {
   }) async {
     return session.db.deleteWhere<EmailCreateAccountRequest>(
       where: where(EmailCreateAccountRequest.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -377,7 +375,7 @@ class EmailCreateAccountRequestRepository {
     return session.db.count<EmailCreateAccountRequest>(
       where: where?.call(EmailCreateAccountRequest.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

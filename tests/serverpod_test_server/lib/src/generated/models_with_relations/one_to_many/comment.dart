@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -248,7 +246,7 @@ class CommentRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -269,7 +267,7 @@ class CommentRepository {
       orderByList: orderByList?.call(Comment.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -282,7 +280,7 @@ class CommentRepository {
   }) async {
     return session.db.findById<Comment>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -294,7 +292,7 @@ class CommentRepository {
   }) async {
     return session.db.insert<Comment>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -305,7 +303,7 @@ class CommentRepository {
   }) async {
     return session.db.insertRow<Comment>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -318,7 +316,7 @@ class CommentRepository {
     return session.db.update<Comment>(
       rows,
       columns: columns?.call(Comment.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -331,7 +329,7 @@ class CommentRepository {
     return session.db.updateRow<Comment>(
       row,
       columns: columns?.call(Comment.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -342,7 +340,7 @@ class CommentRepository {
   }) async {
     return session.db.delete<Comment>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -353,7 +351,7 @@ class CommentRepository {
   }) async {
     return session.db.deleteRow<Comment>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -364,7 +362,7 @@ class CommentRepository {
   }) async {
     return session.db.deleteWhere<Comment>(
       where: where(Comment.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -377,7 +375,7 @@ class CommentRepository {
     return session.db.count<Comment>(
       where: where?.call(Comment.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -402,7 +400,7 @@ class CommentAttachRowRepository {
     await session.db.updateRow<Comment>(
       $comment,
       columns: [Comment.t.orderId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

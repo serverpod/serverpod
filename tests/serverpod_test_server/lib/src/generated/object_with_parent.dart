@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -185,7 +183,7 @@ class ObjectWithParentRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -204,7 +202,7 @@ class ObjectWithParentRepository {
       orderByList: orderByList?.call(ObjectWithParent.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -215,7 +213,7 @@ class ObjectWithParentRepository {
   }) async {
     return session.db.findById<ObjectWithParent>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -226,7 +224,7 @@ class ObjectWithParentRepository {
   }) async {
     return session.db.insert<ObjectWithParent>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -237,7 +235,7 @@ class ObjectWithParentRepository {
   }) async {
     return session.db.insertRow<ObjectWithParent>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -250,7 +248,7 @@ class ObjectWithParentRepository {
     return session.db.update<ObjectWithParent>(
       rows,
       columns: columns?.call(ObjectWithParent.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -263,7 +261,7 @@ class ObjectWithParentRepository {
     return session.db.updateRow<ObjectWithParent>(
       row,
       columns: columns?.call(ObjectWithParent.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -274,7 +272,7 @@ class ObjectWithParentRepository {
   }) async {
     return session.db.delete<ObjectWithParent>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -285,7 +283,7 @@ class ObjectWithParentRepository {
   }) async {
     return session.db.deleteRow<ObjectWithParent>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -296,7 +294,7 @@ class ObjectWithParentRepository {
   }) async {
     return session.db.deleteWhere<ObjectWithParent>(
       where: where(ObjectWithParent.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -309,7 +307,7 @@ class ObjectWithParentRepository {
     return session.db.count<ObjectWithParent>(
       where: where?.call(ObjectWithParent.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
