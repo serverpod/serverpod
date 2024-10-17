@@ -60,7 +60,7 @@ void main() {
 
       // Sign out from all sessions using the deprecated signOutUser method
       // ignore: deprecated_member_use
-      await client.modules.auth.status.signOutUser();
+      await client.modules.auth.status.signOut();
 
       // Verify both sessions are signed out
       firstSessionSignedIn = await client.modules.auth.status.isSignedIn();
