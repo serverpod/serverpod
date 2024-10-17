@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -178,7 +180,7 @@ class MaxFieldNameRepository {
   const MaxFieldNameRepository._();
 
   Future<List<MaxFieldName>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<MaxFieldNameTable>? where,
     int? limit,
     int? offset,
@@ -187,19 +189,19 @@ class MaxFieldNameRepository {
     _i1.OrderByListBuilder<MaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<MaxFieldName>(
+    return session.db.find<MaxFieldName>(
       where: where?.call(MaxFieldName.t),
       orderBy: orderBy?.call(MaxFieldName.t),
       orderByList: orderByList?.call(MaxFieldName.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<MaxFieldName?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<MaxFieldNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<MaxFieldNameTable>? orderBy,
@@ -207,118 +209,118 @@ class MaxFieldNameRepository {
     _i1.OrderByListBuilder<MaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<MaxFieldName>(
+    return session.db.findFirstRow<MaxFieldName>(
       where: where?.call(MaxFieldName.t),
       orderBy: orderBy?.call(MaxFieldName.t),
       orderByList: orderByList?.call(MaxFieldName.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<MaxFieldName?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<MaxFieldName>(
+    return session.db.findById<MaxFieldName>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<MaxFieldName>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<MaxFieldName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<MaxFieldName>(
+    return session.db.insert<MaxFieldName>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<MaxFieldName> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     MaxFieldName row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<MaxFieldName>(
+    return session.db.insertRow<MaxFieldName>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<MaxFieldName>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<MaxFieldName> rows, {
     _i1.ColumnSelections<MaxFieldNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<MaxFieldName>(
+    return session.db.update<MaxFieldName>(
       rows,
       columns: columns?.call(MaxFieldName.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<MaxFieldName> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     MaxFieldName row, {
     _i1.ColumnSelections<MaxFieldNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<MaxFieldName>(
+    return session.db.updateRow<MaxFieldName>(
       row,
       columns: columns?.call(MaxFieldName.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<MaxFieldName>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<MaxFieldName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<MaxFieldName>(
+    return session.db.delete<MaxFieldName>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<MaxFieldName> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     MaxFieldName row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<MaxFieldName>(
+    return session.db.deleteRow<MaxFieldName>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<MaxFieldName>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<MaxFieldNameTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<MaxFieldName>(
+    return session.db.deleteWhere<MaxFieldName>(
       where: where(MaxFieldName.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<MaxFieldNameTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<MaxFieldName>(
+    return session.db.count<MaxFieldName>(
       where: where?.call(MaxFieldName.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

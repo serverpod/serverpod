@@ -322,7 +322,7 @@ class MethodStreamManager {
       methodStreamCallContext.endpoint,
       session,
       onRevokedAuthentication: () => closeStream(
-        endpoint: methodStreamCallContext.endpoint.name,
+        endpoint: methodStreamCallContext.fullEndpointPath,
         method: methodStreamCallContext.method.name,
         methodStreamId: methodStreamId,
         reason: CloseReason.error,
@@ -352,11 +352,13 @@ class MethodStreamManager {
             methodStreamId, e, s, methodStreamCallContext);
 
         var streamKey = _buildStreamKey(
-          endpoint: methodStreamCallContext.endpoint.name,
+          endpoint: methodStreamCallContext.fullEndpointPath,
           method: methodStreamCallContext.method.name,
           methodStreamId: methodStreamId,
         );
         _updateCloseReason(streamKey, CloseReason.error);
+
+        await session.close(error: e, stackTrace: s);
 
         /// Required to close stream when error occurs.
         /// This will also close the input streams.
@@ -371,7 +373,7 @@ class MethodStreamManager {
     var outputStreamContext =
         _OutputStreamContext(outputController, subscription);
     _outputStreamContexts[_buildStreamKey(
-      endpoint: methodStreamCallContext.endpoint.name,
+      endpoint: methodStreamCallContext.fullEndpointPath,
       method: methodStreamCallContext.method.name,
       methodStreamId: methodStreamId,
     )] = outputStreamContext;
@@ -430,7 +432,7 @@ class MethodStreamManager {
       var parameterName = streamParam.name;
       var controller = StreamController(onCancel: () async {
         var context = _inputStreamContexts.remove(_buildStreamKey(
-          endpoint: callContext.endpoint.name,
+          endpoint: callContext.fullEndpointPath,
           method: callContext.method.name,
           parameter: parameterName,
           methodStreamId: methodStreamId,
@@ -450,7 +452,7 @@ class MethodStreamManager {
 
       inputStreams[parameterName] = controller;
       _inputStreamContexts[_buildStreamKey(
-        endpoint: callContext.endpoint.name,
+        endpoint: callContext.fullEndpointPath,
         method: callContext.method.name,
         parameter: parameterName,
         methodStreamId: methodStreamId,
@@ -468,7 +470,7 @@ class MethodStreamManager {
     required UuidValue methodStreamId,
   }) async {
     var streamKey = _buildStreamKey(
-      endpoint: methodStreamCallContext.endpoint.name,
+      endpoint: methodStreamCallContext.fullEndpointPath,
       method: methodStreamCallContext.method.name,
       methodStreamId: methodStreamId,
     );
@@ -493,7 +495,7 @@ class MethodStreamManager {
       MethodStreamCallContext callContext, UuidValue methodStreamId) async {
     var context = _outputStreamContexts.remove(
       _buildStreamKey(
-        endpoint: callContext.endpoint.name,
+        endpoint: callContext.fullEndpointPath,
         method: callContext.method.name,
         methodStreamId: methodStreamId,
       ),
@@ -507,7 +509,7 @@ class MethodStreamManager {
     var inputStreamControllers = <StreamController>[];
     for (var streamParam in callContext.inputStreams) {
       var paramStreamContext = _inputStreamContexts.remove(_buildStreamKey(
-        endpoint: callContext.endpoint.name,
+        endpoint: callContext.fullEndpointPath,
         method: callContext.method.name,
         parameter: streamParam.name,
         methodStreamId: methodStreamId,
@@ -542,15 +544,22 @@ class MethodStreamManager {
     required StreamController outputController,
     required StreamSubscription subscription,
   }) {
-    outputController
-        .addStream(
-      methodStreamCallContext.method
-          .call(session, methodStreamCallContext.arguments, streamParams),
-    )
-        .whenComplete(
+    Stream<dynamic> methodStream;
+    try {
+      methodStream = methodStreamCallContext.method.call(
+        session,
+        methodStreamCallContext.arguments,
+        streamParams,
+      );
+    } catch (e, stackTrace) {
+      outputController.addError(e, stackTrace);
+      return;
+    }
+
+    outputController.addStream(methodStream).whenComplete(
       () async {
         var streamKey = _buildStreamKey(
-          endpoint: methodStreamCallContext.endpoint.name,
+          endpoint: methodStreamCallContext.fullEndpointPath,
           method: methodStreamCallContext.method.name,
           methodStreamId: methodStreamId,
         );

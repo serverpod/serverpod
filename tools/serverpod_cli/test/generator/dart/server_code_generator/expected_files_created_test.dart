@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
+import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:serverpod_cli/src/test_util/builders/enum_definition_builder.dart';
 import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
@@ -156,7 +157,7 @@ void main() {
   });
 
   group(
-      'Given relativeServerTestToolsPathParts is set when generating protocol code',
+      'Given relativeServerTestToolsPathParts is set and database enabled when generating protocol code',
       () {
     var configWithTestToolsPath = GeneratorConfigBuilder()
         .withName(projectName)
@@ -164,10 +165,14 @@ void main() {
       [
         ExperimentalFeature.testTools,
       ],
+    ).withEnabledFeatures(
+      [
+        ServerpodFeature.database,
+      ],
     ).withRelativeServerTestToolsPathParts(
       [
-        'integration_test',
-        'serverpod_test_tools',
+        'test_integration',
+        'my_custom_folder',
       ],
     ).build();
 
@@ -183,8 +188,8 @@ void main() {
       expect(
         codeMap.keys,
         contains(path.join(
-          'integration_test',
-          'serverpod_test_tools',
+          'test_integration',
+          'my_custom_folder',
           'serverpod_test_tools.dart',
         )),
         reason:
@@ -194,12 +199,89 @@ void main() {
   });
 
   group(
-      'Given relativeServerTestToolsPathParts is not set when generating protocol code',
+      'Given relativeServerTestToolsPathParts is not set and database enabled when generating protocol code',
       () {
     var configWithTestToolsPath = GeneratorConfigBuilder()
         .withName(projectName)
+        .withEnabledFeatures(
+          [
+            ServerpodFeature.database,
+          ],
+        )
+        .withEnabledExperimentalFeatures(
+          [
+            ExperimentalFeature.testTools,
+          ],
+        )
         .withRelativeServerTestToolsPathParts(null)
         .build();
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: const ProtocolDefinition(
+        endpoints: [],
+        models: [],
+      ),
+      config: configWithTestToolsPath,
+    );
+    var serverpodTestToolsFileName = 'serverpod_test_tools.dart';
+
+    test('then the serverpod test tools file is not created', () {
+      var listContainsTestToolsFilename = codeMap.keys.any(
+        (filePath) => filePath.endsWith(serverpodTestToolsFileName),
+      );
+
+      expect(
+        listContainsTestToolsFilename,
+        false,
+        reason:
+            'Expected serverpod_test_tools.dart file to not be present, but it was found.',
+      );
+    });
+  });
+
+  group(
+      'Given relativeServerTestToolsPathParts is not set and database is disabled when generating protocol code',
+      () {
+    var configWithTestToolsPath = GeneratorConfigBuilder()
+        .withName(projectName)
+        .withEnabledExperimentalFeatures(
+          [
+            ExperimentalFeature.testTools,
+          ],
+        )
+        // Disable database feature
+        .withEnabledFeatures([])
+        .withRelativeServerTestToolsPathParts(null)
+        .build();
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: const ProtocolDefinition(
+        endpoints: [],
+        models: [],
+      ),
+      config: configWithTestToolsPath,
+    );
+
+    test('then the serverpod test tools file is created at default location',
+        () {
+      expect(
+        codeMap.keys,
+        contains(path.join(
+          'test',
+          'integration',
+          'test_tools',
+          'serverpod_test_tools.dart',
+        )),
+        reason:
+            'Expected serverpod_test_tools.dart file to be present, found none.',
+      );
+    });
+  });
+  group(
+      'Given the experimental flag testTools is not set when generating protocol code',
+      () {
+    var configWithTestToolsPath =
+        GeneratorConfigBuilder().withName(projectName).build();
 
     var codeMap = generator.generateProtocolCode(
       protocolDefinition: const ProtocolDefinition(

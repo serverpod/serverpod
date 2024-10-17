@@ -138,6 +138,7 @@ logging:
   - streamEmpty:
   - streamLogging:
   - streamQueryLogging:
+  - streamException:
 streamLogging:
 streamQueryLogging:
 loggingDisabled:
@@ -217,6 +218,8 @@ methodStreaming:
   - throwsException:
   - throwsSerializableException:
   - throwsExceptionStream:
+  - exceptionThrownBeforeStreamReturn:
+  - exceptionThrownInStreamReturn:
   - throwsSerializableExceptionStream:
   - didInputStreamHaveError:
   - didInputStreamHaveSerializableExceptionError:
@@ -243,6 +246,8 @@ redis:
   - countSubscribedChannels:
 serverOnlyScopedFieldModel:
   - getScopeServerOnlyField:
+serverOnlyScopedFieldChildModel:
+  - getProtocolField:
 signInRequired:
   - testMethod:
 adminScopeRequired:
@@ -266,7 +271,9 @@ testTools:
   - returnsString:
   - returnsStream:
   - returnsListFromInputStream:
+  - returnsSimpleDataListFromInputStream:
   - returnsStreamFromInputStream:
+  - returnsSimpleDataStreamFromInputStream:
   - postNumberToSharedStream:
   - postNumberToSharedStreamAndReturnStream:
   - listenForNumbersOnSharedStream:
@@ -275,6 +282,8 @@ testTools:
   - createSimpleDatasInsideTransactions:
   - createSimpleDataAndThrowInsideTransaction:
   - createSimpleDatasInParallelTransactionCalls:
+  - echoSimpleData:
+  - echoSimpleDatas:
 authenticatedTestTools:
   - returnsString:
   - returnsStream:

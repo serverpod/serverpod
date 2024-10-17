@@ -1,0 +1,3 @@
+tags:
+  integration: {}
+  customTag: {} # Used to test that tag overrides work

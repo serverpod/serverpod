@@ -171,10 +171,12 @@ class ServerTestToolsGenerator {
                   ..body = refer('_localUniqueSession').code).closure,
                 'endpointPath': literalString(endpoint.name),
                 'methodName': literalString(method.name),
-                'parameters': literalMap({
-                  for (var parameter in method.allParameters)
-                    literalString(parameter.name): refer(parameter.name).code,
-                }),
+                'parameters': refer('testObjectToJson', serverpodTestUrl).call([
+                  literalMap({
+                    for (var parameter in method.allParameters)
+                      literalString(parameter.name): refer(parameter.name).code,
+                  })
+                ]),
                 'serializationManager': refer('_serializationManager'),
               }))
               .statement,
@@ -400,6 +402,10 @@ class ServerTestToolsGenerator {
             ..name = 'enableSessionLogging'
             ..named = true
             ..type = refer('bool?')),
+          Parameter((p) => p
+            ..name = 'testGroupTagsOverride'
+            ..named = true
+            ..type = refer('List<String>?')),
           if (config.isFeatureEnabled(ServerpodFeature.database)) ...[
             Parameter((p) => p
               ..name = 'rollbackDatabase'
@@ -440,6 +446,7 @@ class ServerTestToolsGenerator {
                     ? refer('rollbackDatabase')
                     : literalNull,
             'maybeEnableSessionLogging': refer('enableSessionLogging'),
+            'maybeTestGroupTagsOverride': refer('testGroupTagsOverride'),
           },
         ).call([
           refer('testClosure'),

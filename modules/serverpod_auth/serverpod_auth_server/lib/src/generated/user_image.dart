@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -211,7 +213,7 @@ class UserImageRepository {
   const UserImageRepository._();
 
   Future<List<UserImage>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UserImageTable>? where,
     int? limit,
     int? offset,
@@ -220,19 +222,19 @@ class UserImageRepository {
     _i1.OrderByListBuilder<UserImageTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<UserImage>(
+    return session.db.find<UserImage>(
       where: where?.call(UserImage.t),
       orderBy: orderBy?.call(UserImage.t),
       orderByList: orderByList?.call(UserImage.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<UserImage?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UserImageTable>? where,
     int? offset,
     _i1.OrderByBuilder<UserImageTable>? orderBy,
@@ -240,118 +242,118 @@ class UserImageRepository {
     _i1.OrderByListBuilder<UserImageTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<UserImage>(
+    return session.db.findFirstRow<UserImage>(
       where: where?.call(UserImage.t),
       orderBy: orderBy?.call(UserImage.t),
       orderByList: orderByList?.call(UserImage.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<UserImage?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<UserImage>(
+    return session.db.findById<UserImage>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<UserImage>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<UserImage> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<UserImage>(
+    return session.db.insert<UserImage>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<UserImage> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     UserImage row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<UserImage>(
+    return session.db.insertRow<UserImage>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<UserImage>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<UserImage> rows, {
     _i1.ColumnSelections<UserImageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<UserImage>(
+    return session.db.update<UserImage>(
       rows,
       columns: columns?.call(UserImage.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<UserImage> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     UserImage row, {
     _i1.ColumnSelections<UserImageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<UserImage>(
+    return session.db.updateRow<UserImage>(
       row,
       columns: columns?.call(UserImage.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<UserImage>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<UserImage> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<UserImage>(
+    return session.db.delete<UserImage>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<UserImage> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     UserImage row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<UserImage>(
+    return session.db.deleteRow<UserImage>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<UserImage>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<UserImageTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<UserImage>(
+    return session.db.deleteWhere<UserImage>(
       where: where(UserImage.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UserImageTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<UserImage>(
+    return session.db.count<UserImage>(
       where: where?.call(UserImage.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

@@ -72,6 +72,8 @@ class SerializableModelLibraryGenerator {
         ]);
 
         if (serverCode && tableName != null) {
+          libraryBuilder.ignoreForFile
+              .add('invalid_use_of_visible_for_testing_member');
           libraryBuilder.body.addAll([
             _buildModelTableClass(
               className,
@@ -252,7 +254,8 @@ class SerializableModelLibraryGenerator {
   }
 
   bool _shouldCreateUndefinedClass(
-      List<SerializableModelFieldDefinition> fields) {
+    List<SerializableModelFieldDefinition> fields,
+  ) {
     return fields
         .where((field) => field.shouldIncludeField(serverCode))
         .any((field) => field.type.nullable);
@@ -1138,19 +1141,23 @@ class SerializableModelLibraryGenerator {
     return fields
         .where((field) => field.shouldIncludeField(serverCode))
         .map((field) {
-      var type = field.type.reference(
+      var fieldType = field.type.reference(
         serverCode,
         nullable: true,
         subDirParts: classDefinition.subDirParts,
         config: config,
       );
 
+      var isInheritedField = classDefinition.inheritedFields.contains(field);
+
+      var type = field.type.nullable && isInheritedField
+          ? refer('Object?')
+          : fieldType;
+
       return Parameter(
         (p) => p
           ..named = true
-          ..type = field.name == 'id' && classDefinition.parentClass != null
-              ? refer('Object?')
-              : type
+          ..type = type
           ..name = field.name,
       );
     }).toList();

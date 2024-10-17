@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
@@ -280,7 +282,7 @@ class CloudStorageEntryRepository {
   const CloudStorageEntryRepository._();
 
   Future<List<CloudStorageEntry>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? limit,
     int? offset,
@@ -289,19 +291,19 @@ class CloudStorageEntryRepository {
     _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<CloudStorageEntry>(
+    return session.db.find<CloudStorageEntry>(
       where: where?.call(CloudStorageEntry.t),
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<CloudStorageEntry?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
@@ -309,118 +311,118 @@ class CloudStorageEntryRepository {
     _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<CloudStorageEntry>(
+    return session.db.findFirstRow<CloudStorageEntry>(
       where: where?.call(CloudStorageEntry.t),
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<CloudStorageEntry?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<CloudStorageEntry>(
+    return session.db.findById<CloudStorageEntry>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<CloudStorageEntry>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<CloudStorageEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<CloudStorageEntry>(
+    return session.db.insert<CloudStorageEntry>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<CloudStorageEntry> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     CloudStorageEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<CloudStorageEntry>(
+    return session.db.insertRow<CloudStorageEntry>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<CloudStorageEntry>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<CloudStorageEntry> rows, {
     _i1.ColumnSelections<CloudStorageEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<CloudStorageEntry>(
+    return session.db.update<CloudStorageEntry>(
       rows,
       columns: columns?.call(CloudStorageEntry.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<CloudStorageEntry> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     CloudStorageEntry row, {
     _i1.ColumnSelections<CloudStorageEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<CloudStorageEntry>(
+    return session.db.updateRow<CloudStorageEntry>(
       row,
       columns: columns?.call(CloudStorageEntry.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<CloudStorageEntry>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<CloudStorageEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<CloudStorageEntry>(
+    return session.db.delete<CloudStorageEntry>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<CloudStorageEntry> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     CloudStorageEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<CloudStorageEntry>(
+    return session.db.deleteRow<CloudStorageEntry>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<CloudStorageEntry>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<CloudStorageEntry>(
+    return session.db.deleteWhere<CloudStorageEntry>(
       where: where(CloudStorageEntry.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<CloudStorageEntry>(
+    return session.db.count<CloudStorageEntry>(
       where: where?.call(CloudStorageEntry.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

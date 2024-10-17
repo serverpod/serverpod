@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -215,7 +217,7 @@ class EmptyModelRelationItemRepository {
   const EmptyModelRelationItemRepository._();
 
   Future<List<EmptyModelRelationItem>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
     int? limit,
     int? offset,
@@ -224,19 +226,19 @@ class EmptyModelRelationItemRepository {
     _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<EmptyModelRelationItem>(
+    return session.db.find<EmptyModelRelationItem>(
       where: where?.call(EmptyModelRelationItem.t),
       orderBy: orderBy?.call(EmptyModelRelationItem.t),
       orderByList: orderByList?.call(EmptyModelRelationItem.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<EmptyModelRelationItem?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
@@ -244,118 +246,118 @@ class EmptyModelRelationItemRepository {
     _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<EmptyModelRelationItem>(
+    return session.db.findFirstRow<EmptyModelRelationItem>(
       where: where?.call(EmptyModelRelationItem.t),
       orderBy: orderBy?.call(EmptyModelRelationItem.t),
       orderByList: orderByList?.call(EmptyModelRelationItem.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<EmptyModelRelationItem?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<EmptyModelRelationItem>(
+    return session.db.findById<EmptyModelRelationItem>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<EmptyModelRelationItem>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<EmptyModelRelationItem> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<EmptyModelRelationItem>(
+    return session.db.insert<EmptyModelRelationItem>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<EmptyModelRelationItem> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     EmptyModelRelationItem row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<EmptyModelRelationItem>(
+    return session.db.insertRow<EmptyModelRelationItem>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<EmptyModelRelationItem>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<EmptyModelRelationItem> rows, {
     _i1.ColumnSelections<EmptyModelRelationItemTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<EmptyModelRelationItem>(
+    return session.db.update<EmptyModelRelationItem>(
       rows,
       columns: columns?.call(EmptyModelRelationItem.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<EmptyModelRelationItem> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     EmptyModelRelationItem row, {
     _i1.ColumnSelections<EmptyModelRelationItemTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<EmptyModelRelationItem>(
+    return session.db.updateRow<EmptyModelRelationItem>(
       row,
       columns: columns?.call(EmptyModelRelationItem.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<EmptyModelRelationItem>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<EmptyModelRelationItem> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<EmptyModelRelationItem>(
+    return session.db.delete<EmptyModelRelationItem>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<EmptyModelRelationItem> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     EmptyModelRelationItem row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<EmptyModelRelationItem>(
+    return session.db.deleteRow<EmptyModelRelationItem>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<EmptyModelRelationItem>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<EmptyModelRelationItemTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<EmptyModelRelationItem>(
+    return session.db.deleteWhere<EmptyModelRelationItem>(
       where: where(EmptyModelRelationItem.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<EmptyModelRelationItem>(
+    return session.db.count<EmptyModelRelationItem>(
       where: where?.call(EmptyModelRelationItem.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

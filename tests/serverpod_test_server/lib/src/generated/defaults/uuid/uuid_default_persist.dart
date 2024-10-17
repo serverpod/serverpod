@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -203,7 +205,7 @@ class UuidDefaultPersistRepository {
   const UuidDefaultPersistRepository._();
 
   Future<List<UuidDefaultPersist>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
     int? limit,
     int? offset,
@@ -212,19 +214,19 @@ class UuidDefaultPersistRepository {
     _i1.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<UuidDefaultPersist>(
+    return session.db.find<UuidDefaultPersist>(
       where: where?.call(UuidDefaultPersist.t),
       orderBy: orderBy?.call(UuidDefaultPersist.t),
       orderByList: orderByList?.call(UuidDefaultPersist.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<UuidDefaultPersist?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
@@ -232,118 +234,118 @@ class UuidDefaultPersistRepository {
     _i1.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<UuidDefaultPersist>(
+    return session.db.findFirstRow<UuidDefaultPersist>(
       where: where?.call(UuidDefaultPersist.t),
       orderBy: orderBy?.call(UuidDefaultPersist.t),
       orderByList: orderByList?.call(UuidDefaultPersist.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<UuidDefaultPersist?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<UuidDefaultPersist>(
+    return session.db.findById<UuidDefaultPersist>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<UuidDefaultPersist>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<UuidDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<UuidDefaultPersist>(
+    return session.db.insert<UuidDefaultPersist>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<UuidDefaultPersist> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     UuidDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<UuidDefaultPersist>(
+    return session.db.insertRow<UuidDefaultPersist>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<UuidDefaultPersist>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<UuidDefaultPersist> rows, {
     _i1.ColumnSelections<UuidDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<UuidDefaultPersist>(
+    return session.db.update<UuidDefaultPersist>(
       rows,
       columns: columns?.call(UuidDefaultPersist.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<UuidDefaultPersist> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     UuidDefaultPersist row, {
     _i1.ColumnSelections<UuidDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<UuidDefaultPersist>(
+    return session.db.updateRow<UuidDefaultPersist>(
       row,
       columns: columns?.call(UuidDefaultPersist.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<UuidDefaultPersist>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<UuidDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<UuidDefaultPersist>(
+    return session.db.delete<UuidDefaultPersist>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<UuidDefaultPersist> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     UuidDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<UuidDefaultPersist>(
+    return session.db.deleteRow<UuidDefaultPersist>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<UuidDefaultPersist>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<UuidDefaultPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<UuidDefaultPersist>(
+    return session.db.deleteWhere<UuidDefaultPersist>(
       where: where(UuidDefaultPersist.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<UuidDefaultPersist>(
+    return session.db.count<UuidDefaultPersist>(
       where: where?.call(UuidDefaultPersist.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

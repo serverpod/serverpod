@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -184,7 +186,7 @@ class ParentUserRepository {
   const ParentUserRepository._();
 
   Future<List<ParentUser>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ParentUserTable>? where,
     int? limit,
     int? offset,
@@ -193,19 +195,19 @@ class ParentUserRepository {
     _i1.OrderByListBuilder<ParentUserTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<ParentUser>(
+    return session.db.find<ParentUser>(
       where: where?.call(ParentUser.t),
       orderBy: orderBy?.call(ParentUser.t),
       orderByList: orderByList?.call(ParentUser.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ParentUser?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ParentUserTable>? where,
     int? offset,
     _i1.OrderByBuilder<ParentUserTable>? orderBy,
@@ -213,118 +215,118 @@ class ParentUserRepository {
     _i1.OrderByListBuilder<ParentUserTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<ParentUser>(
+    return session.db.findFirstRow<ParentUser>(
       where: where?.call(ParentUser.t),
       orderBy: orderBy?.call(ParentUser.t),
       orderByList: orderByList?.call(ParentUser.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ParentUser?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<ParentUser>(
+    return session.db.findById<ParentUser>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ParentUser>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<ParentUser> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<ParentUser>(
+    return session.db.insert<ParentUser>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ParentUser> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     ParentUser row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<ParentUser>(
+    return session.db.insertRow<ParentUser>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ParentUser>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<ParentUser> rows, {
     _i1.ColumnSelections<ParentUserTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<ParentUser>(
+    return session.db.update<ParentUser>(
       rows,
       columns: columns?.call(ParentUser.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ParentUser> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     ParentUser row, {
     _i1.ColumnSelections<ParentUserTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<ParentUser>(
+    return session.db.updateRow<ParentUser>(
       row,
       columns: columns?.call(ParentUser.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ParentUser>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<ParentUser> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<ParentUser>(
+    return session.db.delete<ParentUser>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<ParentUser> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     ParentUser row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<ParentUser>(
+    return session.db.deleteRow<ParentUser>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<ParentUser>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<ParentUserTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<ParentUser>(
+    return session.db.deleteWhere<ParentUser>(
       where: where(ParentUser.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ParentUserTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<ParentUser>(
+    return session.db.count<ParentUser>(
       where: where?.call(ParentUser.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

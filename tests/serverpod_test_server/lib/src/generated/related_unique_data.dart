@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
@@ -233,7 +235,7 @@ class RelatedUniqueDataRepository {
   final attachRow = const RelatedUniqueDataAttachRowRepository._();
 
   Future<List<RelatedUniqueData>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? limit,
     int? offset,
@@ -243,20 +245,20 @@ class RelatedUniqueDataRepository {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
-    return databaseAccessor.db.find<RelatedUniqueData>(
+    return session.db.find<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
       include: include,
     );
   }
 
   Future<RelatedUniqueData?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? offset,
     _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
@@ -265,121 +267,121 @@ class RelatedUniqueDataRepository {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
-    return databaseAccessor.db.findFirstRow<RelatedUniqueData>(
+    return session.db.findFirstRow<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
       include: include,
     );
   }
 
   Future<RelatedUniqueData?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
-    return databaseAccessor.db.findById<RelatedUniqueData>(
+    return session.db.findById<RelatedUniqueData>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
       include: include,
     );
   }
 
   Future<List<RelatedUniqueData>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<RelatedUniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<RelatedUniqueData>(
+    return session.db.insert<RelatedUniqueData>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<RelatedUniqueData> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     RelatedUniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<RelatedUniqueData>(
+    return session.db.insertRow<RelatedUniqueData>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<RelatedUniqueData>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<RelatedUniqueData> rows, {
     _i1.ColumnSelections<RelatedUniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<RelatedUniqueData>(
+    return session.db.update<RelatedUniqueData>(
       rows,
       columns: columns?.call(RelatedUniqueData.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<RelatedUniqueData> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     RelatedUniqueData row, {
     _i1.ColumnSelections<RelatedUniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<RelatedUniqueData>(
+    return session.db.updateRow<RelatedUniqueData>(
       row,
       columns: columns?.call(RelatedUniqueData.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<RelatedUniqueData>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<RelatedUniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<RelatedUniqueData>(
+    return session.db.delete<RelatedUniqueData>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<RelatedUniqueData> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     RelatedUniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<RelatedUniqueData>(
+    return session.db.deleteRow<RelatedUniqueData>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<RelatedUniqueData>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<RelatedUniqueData>(
+    return session.db.deleteWhere<RelatedUniqueData>(
       where: where(RelatedUniqueData.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<RelatedUniqueData>(
+    return session.db.count<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }
@@ -388,7 +390,7 @@ class RelatedUniqueDataAttachRowRepository {
   const RelatedUniqueDataAttachRowRepository._();
 
   Future<void> uniqueData(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     RelatedUniqueData relatedUniqueData,
     _i2.UniqueData uniqueData, {
     _i1.Transaction? transaction,
@@ -402,10 +404,10 @@ class RelatedUniqueDataAttachRowRepository {
 
     var $relatedUniqueData =
         relatedUniqueData.copyWith(uniqueDataId: uniqueData.id);
-    await databaseAccessor.db.updateRow<RelatedUniqueData>(
+    await session.db.updateRow<RelatedUniqueData>(
       $relatedUniqueData,
       columns: [RelatedUniqueData.t.uniqueDataId],
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

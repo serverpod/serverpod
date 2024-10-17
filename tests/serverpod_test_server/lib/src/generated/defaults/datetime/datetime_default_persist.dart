@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -205,7 +207,7 @@ class DateTimeDefaultPersistRepository {
   const DateTimeDefaultPersistRepository._();
 
   Future<List<DateTimeDefaultPersist>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? where,
     int? limit,
     int? offset,
@@ -214,19 +216,19 @@ class DateTimeDefaultPersistRepository {
     _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<DateTimeDefaultPersist>(
+    return session.db.find<DateTimeDefaultPersist>(
       where: where?.call(DateTimeDefaultPersist.t),
       orderBy: orderBy?.call(DateTimeDefaultPersist.t),
       orderByList: orderByList?.call(DateTimeDefaultPersist.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<DateTimeDefaultPersist?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
@@ -234,118 +236,118 @@ class DateTimeDefaultPersistRepository {
     _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<DateTimeDefaultPersist>(
+    return session.db.findFirstRow<DateTimeDefaultPersist>(
       where: where?.call(DateTimeDefaultPersist.t),
       orderBy: orderBy?.call(DateTimeDefaultPersist.t),
       orderByList: orderByList?.call(DateTimeDefaultPersist.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<DateTimeDefaultPersist?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<DateTimeDefaultPersist>(
+    return session.db.findById<DateTimeDefaultPersist>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<DateTimeDefaultPersist>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<DateTimeDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<DateTimeDefaultPersist>(
+    return session.db.insert<DateTimeDefaultPersist>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<DateTimeDefaultPersist> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     DateTimeDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<DateTimeDefaultPersist>(
+    return session.db.insertRow<DateTimeDefaultPersist>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<DateTimeDefaultPersist>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<DateTimeDefaultPersist> rows, {
     _i1.ColumnSelections<DateTimeDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<DateTimeDefaultPersist>(
+    return session.db.update<DateTimeDefaultPersist>(
       rows,
       columns: columns?.call(DateTimeDefaultPersist.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<DateTimeDefaultPersist> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     DateTimeDefaultPersist row, {
     _i1.ColumnSelections<DateTimeDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<DateTimeDefaultPersist>(
+    return session.db.updateRow<DateTimeDefaultPersist>(
       row,
       columns: columns?.call(DateTimeDefaultPersist.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<DateTimeDefaultPersist>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<DateTimeDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<DateTimeDefaultPersist>(
+    return session.db.delete<DateTimeDefaultPersist>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<DateTimeDefaultPersist> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     DateTimeDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<DateTimeDefaultPersist>(
+    return session.db.deleteRow<DateTimeDefaultPersist>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<DateTimeDefaultPersist>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<DateTimeDefaultPersist>(
+    return session.db.deleteWhere<DateTimeDefaultPersist>(
       where: where(DateTimeDefaultPersist.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<DateTimeDefaultPersist>(
+    return session.db.count<DateTimeDefaultPersist>(
       where: where?.call(DateTimeDefaultPersist.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

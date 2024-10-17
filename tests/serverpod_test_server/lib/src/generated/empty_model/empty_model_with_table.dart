@@ -8,6 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -125,7 +127,7 @@ class EmptyModelWithTableRepository {
   const EmptyModelWithTableRepository._();
 
   Future<List<EmptyModelWithTable>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
     int? limit,
     int? offset,
@@ -134,19 +136,19 @@ class EmptyModelWithTableRepository {
     _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<EmptyModelWithTable>(
+    return session.db.find<EmptyModelWithTable>(
       where: where?.call(EmptyModelWithTable.t),
       orderBy: orderBy?.call(EmptyModelWithTable.t),
       orderByList: orderByList?.call(EmptyModelWithTable.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<EmptyModelWithTable?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
@@ -154,118 +156,118 @@ class EmptyModelWithTableRepository {
     _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<EmptyModelWithTable>(
+    return session.db.findFirstRow<EmptyModelWithTable>(
       where: where?.call(EmptyModelWithTable.t),
       orderBy: orderBy?.call(EmptyModelWithTable.t),
       orderByList: orderByList?.call(EmptyModelWithTable.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<EmptyModelWithTable?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<EmptyModelWithTable>(
+    return session.db.findById<EmptyModelWithTable>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<EmptyModelWithTable>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<EmptyModelWithTable> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<EmptyModelWithTable>(
+    return session.db.insert<EmptyModelWithTable>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<EmptyModelWithTable> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     EmptyModelWithTable row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<EmptyModelWithTable>(
+    return session.db.insertRow<EmptyModelWithTable>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<EmptyModelWithTable>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<EmptyModelWithTable> rows, {
     _i1.ColumnSelections<EmptyModelWithTableTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<EmptyModelWithTable>(
+    return session.db.update<EmptyModelWithTable>(
       rows,
       columns: columns?.call(EmptyModelWithTable.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<EmptyModelWithTable> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     EmptyModelWithTable row, {
     _i1.ColumnSelections<EmptyModelWithTableTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<EmptyModelWithTable>(
+    return session.db.updateRow<EmptyModelWithTable>(
       row,
       columns: columns?.call(EmptyModelWithTable.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<EmptyModelWithTable>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<EmptyModelWithTable> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<EmptyModelWithTable>(
+    return session.db.delete<EmptyModelWithTable>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<EmptyModelWithTable> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     EmptyModelWithTable row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<EmptyModelWithTable>(
+    return session.db.deleteRow<EmptyModelWithTable>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<List<EmptyModelWithTable>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<EmptyModelWithTableTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<EmptyModelWithTable>(
+    return session.db.deleteWhere<EmptyModelWithTable>(
       where: where(EmptyModelWithTable.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<EmptyModelWithTable>(
+    return session.db.count<EmptyModelWithTable>(
       where: where?.call(EmptyModelWithTable.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction ?? session.transaction,
     );
   }
 }

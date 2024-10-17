@@ -15,11 +15,17 @@ dependencies:
 
 dev_dependencies:
   lints: '>=3.0.0 <6.0.0'
+  test: ^1.24.2
+  serverpod_test: SERVERPOD_VERSION
 
 dependency_overrides:
   serverpod:
     path: ../../../packages/serverpod
+  serverpod_lints:
+    path: ../../../packages/serverpod_lints
   serverpod_serialization:
     path: ../../../packages/serverpod_serialization
   serverpod_shared:
     path: ../../../packages/serverpod_shared
+  serverpod_test:
+    path: ../../../packages/serverpod_test
