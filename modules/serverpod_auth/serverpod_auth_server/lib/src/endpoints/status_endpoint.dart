@@ -20,7 +20,7 @@ class StatusEndpoint extends Endpoint {
   /// Use `signOutCurrentDevice` for the current session or `signOutAllDevices` for all sessions.
   @Deprecated(
       'Use signOutCurrentDevice for the current session or signOutAllDevices for all sessions. This method will be removed in future releases.')
-  Future<void> signOutUser(Session session) async {
+  Future<void> signOut(Session session) async {
     await UserAuthentication.signOutUser(session);
   }
 

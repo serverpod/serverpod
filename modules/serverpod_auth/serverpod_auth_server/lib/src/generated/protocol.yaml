@@ -18,7 +18,7 @@ google:
   - authenticateWithIdToken:
 status:
   - isSignedIn:
-  - signOutUser:
+  - signOut:
   - signOutCurrentDevice:
   - signOutAllDevices:
   - getUserInfo:
