@@ -247,22 +247,16 @@ class MultipleLogWriter extends LogWriter {
   Future<int> closeLog(SessionLogEntry entry) async {
     int? databaseLogId;
 
-    // Close logs for all writers and collect their log IDs
     var responses = await Future.wait(_logWriters.map((writer) async {
-      // Each writer closes the log and returns a logId
       var logId = await writer.closeLog(entry);
 
-      // If this writer is a DatabaseLogWriter, prioritize its logId
       if (writer is DatabaseLogWriter) {
         databaseLogId = logId;
       }
 
-      // Return the logId for this writer to include in the results
       return logId;
     }));
 
-    // Return the DatabaseLogWriter's logId if available,
-    // otherwise use the first logId from any writer
     return databaseLogId ?? responses.firstOrNull ?? 0;
   }
 
