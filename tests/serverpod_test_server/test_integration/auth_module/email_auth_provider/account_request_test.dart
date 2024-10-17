@@ -1,32 +1,16 @@
 import 'package:serverpod/database.dart';
 import 'package:serverpod_auth_server/module.dart';
-import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
+import '../../test_tools/serverpod_test_tools.dart';
+
 void main() async {
-  var session = await IntegrationTestServer().session();
+  withServerpod('Given no account request when trying to create account ', (
+    sessionBuilder,
+    _,
+  ) {
+    var session = sessionBuilder.build();
 
-  tearDown(() async {
-    // Shared cleanup if an account was to be created
-    await EmailCreateAccountRequest.db.deleteWhere(
-      session,
-      where: (t) => Constant.bool(true),
-    );
-    await EmailAuth.db.deleteWhere(
-      session,
-      where: (t) => Constant.bool(true),
-    );
-    await UserImage.db.deleteWhere(
-      session,
-      where: (t) => Constant.bool(true),
-    );
-    await UserInfo.db.deleteWhere(
-      session,
-      where: (t) => Constant.bool(true),
-    );
-  });
-
-  group('Given no account request when trying to create account ', () {
     late UserInfo? response;
     setUp(
       () async => {
@@ -52,9 +36,13 @@ void main() async {
     });
   });
 
-  group(
-      'Given existing account request when creating account with incorrect validation code then null is returned and no account is created',
-      () {
+  withServerpod(
+      'Given existing account request'
+      'when creating account with incorrect validation code', (
+    sessionBuilder,
+    _,
+  ) {
+    var session = sessionBuilder.build();
     var username = 'test';
     var password = 'password';
     var email = 'test@serverpod.dev';
