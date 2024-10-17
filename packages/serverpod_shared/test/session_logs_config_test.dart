@@ -11,7 +11,7 @@ void main() {
   };
 
   test(
-    'Given a Serverpod config missing sessionLogs configuration when loading from Map then sessionLogs is null',
+    'Given a Serverpod config missing sessionLogs configuration and no database when loading from Map then sessionLogs defaults to console logging enabled and persistent logging disabled',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -28,7 +28,36 @@ apiServer:
         loadYaml(serverpodConfig),
       );
 
-      expect(config.sessionLogs, isNull);
+      expect(config.sessionLogs?.persistentEnabled, isFalse);
+      expect(config.sessionLogs?.consoleEnabled, isTrue);
+    },
+  );
+
+  test(
+    'Given a Serverpod config missing sessionLogs configuration and a database when loading from Map then sessionLogs defaults to persistent logging enabled and console logging disabled',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: testUser
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(serverpodConfig),
+      );
+
+      expect(config.sessionLogs?.persistentEnabled, isTrue);
+      expect(config.sessionLogs?.consoleEnabled, isFalse);
     },
   );
 

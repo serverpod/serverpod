@@ -52,8 +52,12 @@ class ServerpodConfig {
     this.database,
     this.redis,
     this.serviceSecret,
-    this.sessionLogs,
-  }) {
+    SessionLogConfig? sessionLogs,
+  }) : sessionLogs = sessionLogs ??
+            SessionLogConfig(
+              persistentEnabled: database != null,
+              consoleEnabled: database == null,
+            ) {
     apiServer._name = 'api';
     insightsServer?._name = 'insights';
     webServer?._name = 'web';

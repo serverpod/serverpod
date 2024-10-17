@@ -51,8 +51,7 @@ void main() async {
       await server.shutdown(exitProcess: false);
     });
 
-    test(
-        'when a log is written then it should be stored in the database and not in stdout.',
+    test('logs should be stored in the database and not appear in stdout',
         () async {
       var settings = RuntimeSettingsBuilder().build();
       await server.updateRuntimeSettings(settings);
@@ -69,11 +68,10 @@ void main() async {
       var logs = await LoggingUtil.findAllLogs(session);
       expect(logs, hasLength(1));
       expect(logs.first.logs.first.message, 'Test message');
-
       expect(record.output.contains('Test message'), isFalse);
     });
 
-    test('when logging is disabled at runtime, then no log should be written.',
+    test('when logging is disabled at runtime, no logs should be written',
         () async {
       var settings = RuntimeSettingsBuilder().build();
       await server.updateRuntimeSettings(settings);
@@ -89,7 +87,6 @@ void main() async {
 
       var logs = await LoggingUtil.findAllLogs(session);
       expect(logs, isEmpty);
-
       expect(record.output.contains('Test message'), isFalse);
     });
   });
@@ -99,6 +96,7 @@ void main() async {
     late Serverpod server;
     late Session session;
     late MockStdout record;
+
     setUp(() async {
       record = MockStdout();
 
@@ -135,7 +133,7 @@ void main() async {
     });
 
     test(
-        'when a log is written then it should not be stored in the database but should appear in stdout.',
+        'logs should not be stored in the database but should appear in stdout',
         () async {
       var settings = RuntimeSettingsBuilder().build();
       await server.updateRuntimeSettings(settings);
@@ -151,7 +149,6 @@ void main() async {
 
       var logs = await LoggingUtil.findAllLogs(session);
       expect(logs, isEmpty);
-
       expect(record.output.contains('Test message for console'), isTrue);
     });
   });
@@ -160,6 +157,7 @@ void main() async {
     late Serverpod server;
     late Session session;
     late MockStdout record;
+
     setUp(() async {
       record = MockStdout();
 
@@ -195,9 +193,7 @@ void main() async {
       await server.shutdown(exitProcess: false);
     });
 
-    test(
-        'when a log is written then no log should be written to the database or stdout.',
-        () async {
+    test('no logs should be written to the database or stdout', () async {
       var settings = RuntimeSettingsBuilder().build();
       await server.updateRuntimeSettings(settings);
 
@@ -212,7 +208,6 @@ void main() async {
 
       var logs = await LoggingUtil.findAllLogs(session);
       expect(logs, isEmpty);
-
       expect(record.output.contains('Test message'), isFalse);
     });
   });
@@ -220,8 +215,7 @@ void main() async {
   group(
       'Given persistent logging is enabled but the database support is not available',
       () {
-    test(
-        'when the server is started, then a StateError should be thrown due to lack of database support',
+    test('a StateError should be thrown due to lack of database support',
         () async {
       expect(
         () => IntegrationTestServer.create(
@@ -248,6 +242,77 @@ void main() async {
           ),
         ),
       );
+    });
+  });
+
+  group('Given no explicit sessionLogs configuration with a database', () {
+    late Serverpod server;
+    late Session session;
+
+    setUp(() async {
+      server = IntegrationTestServer.create(
+        config: ServerpodConfig(
+          runMode: runMode,
+          apiServer: ServerConfig(
+            port: 8080,
+            publicHost: 'localhost',
+            publicPort: 8080,
+            publicScheme: 'http',
+          ),
+          database: DatabaseConfig(
+            host: 'postgres',
+            port: 5432,
+            user: 'postgres',
+            password: 'password',
+            name: 'serverpod_test',
+          ),
+        ),
+      );
+      await server.start();
+      session = await server.createSession(enableLogging: false);
+      await LoggingUtil.clearAllLogs(session);
+    });
+
+    tearDown(() async {
+      await session.close();
+      await server.shutdown(exitProcess: false);
+    });
+
+    test(
+        'persistent logging should be enabled by default and console logging disabled',
+        () async {
+      expect(server.config.sessionLogs?.persistentEnabled, isTrue);
+      expect(server.config.sessionLogs?.consoleEnabled, isFalse);
+    });
+  });
+
+  group('Given no explicit sessionLogs configuration and no database', () {
+    late Serverpod server;
+
+    setUp(() async {
+      server = IntegrationTestServer.create(
+        config: ServerpodConfig(
+          runMode: runMode,
+          apiServer: ServerConfig(
+            port: 8080,
+            publicHost: 'localhost',
+            publicPort: 8080,
+            publicScheme: 'http',
+          ),
+        ),
+      );
+      await server.start();
+    });
+
+    tearDown(() async {
+      await server.shutdown(exitProcess: false);
+    });
+
+    test(
+        'console logging should be enabled by default and persistent logging disabled',
+        () async {
+      expect(server.config.sessionLogs?.persistentEnabled, isFalse);
+      expect(server.config.sessionLogs?.consoleEnabled, isTrue);
     });
   });
 }

@@ -47,7 +47,7 @@ void main() {
     });
 
     test(
-        'when persistent logging is enabled but no database is supported, a Bad state error should be thrown and the process should terminate',
+        'when persistent logging is enabled but no database is supported, a StateError should be thrown and the process should terminate',
         () async {
       expect(result.exitCode, isNot(0),
           reason: 'The process should fail with a non-zero exit code');
@@ -55,7 +55,7 @@ void main() {
           result.stderr,
           contains(
               'Bad state: The `persistentEnabled` setting was enabled in the configuration'),
-          reason: 'The stderr should contain the Bad state exception message');
+          reason: 'The stderr should contain the StateError exception message');
     });
   });
 
@@ -113,15 +113,15 @@ void main() {
     });
 
     test(
-        'when the config is loaded, then the session persistent logging is not present by default',
+        'when the config is loaded, then the session persistent logging defaults to disabled',
         () async {
-      expect(result.stdout, isNot(contains('session persistent log enabled')));
+      expect(result.stdout, contains('session persistent log enabled: false'));
     });
 
     test(
-        'when the config is loaded, then the session console logging is not present by default',
+        'when the config is loaded, then the session console logging defaults to enabled',
         () async {
-      expect(result.stdout, isNot(contains('session console log enabled')));
+      expect(result.stdout, contains('session console log enabled: true'));
     });
   });
 }
