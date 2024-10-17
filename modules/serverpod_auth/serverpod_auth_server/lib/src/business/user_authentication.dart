@@ -9,7 +9,16 @@ class UserAuthentication {
   /// Signs in a user and generates an authentication key.
   /// Sends the `AuthKey.id` and `key` to the client for future authentication.
   ///
+  /// Before calling this method, ensure the user has been authenticated
+  /// through appropriate methods (e.g., email, social sign-ins).
+  /// This method only generates the authentication key after successful
+  /// authentication.
+  ///
+  /// The authenticated user will be signed into the provided session,
+  /// and their session will be updated with the user's authentication info.
+  ///
   /// In most cases, use an auth provider instead of calling this method directly.
+
   static Future<AuthKey> signInUser(
     Session session,
     int userId,
@@ -110,7 +119,7 @@ class UserAuthentication {
     );
   }
 
-  /// Signs out the user from the current session.
+  /// Signs out the user from the current device.
   static Future<void> signOutCurrentDevice(
     Session session, {
     int? userId,
@@ -122,7 +131,7 @@ class UserAuthentication {
     );
   }
 
-  /// Signs out the user from all active sessions.
+  /// Signs out the user from all devices.
   static Future<void> signOutAllDevices(
     Session session, {
     int? userId,
