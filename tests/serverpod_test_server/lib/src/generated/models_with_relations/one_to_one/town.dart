@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -250,7 +248,7 @@ class TownRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -271,7 +269,7 @@ class TownRepository {
       orderByList: orderByList?.call(Town.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -284,7 +282,7 @@ class TownRepository {
   }) async {
     return session.db.findById<Town>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -296,7 +294,7 @@ class TownRepository {
   }) async {
     return session.db.insert<Town>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -307,7 +305,7 @@ class TownRepository {
   }) async {
     return session.db.insertRow<Town>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -320,7 +318,7 @@ class TownRepository {
     return session.db.update<Town>(
       rows,
       columns: columns?.call(Town.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -333,7 +331,7 @@ class TownRepository {
     return session.db.updateRow<Town>(
       row,
       columns: columns?.call(Town.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -344,7 +342,7 @@ class TownRepository {
   }) async {
     return session.db.delete<Town>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -355,7 +353,7 @@ class TownRepository {
   }) async {
     return session.db.deleteRow<Town>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -366,7 +364,7 @@ class TownRepository {
   }) async {
     return session.db.deleteWhere<Town>(
       where: where(Town.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -379,7 +377,7 @@ class TownRepository {
     return session.db.count<Town>(
       where: where?.call(Town.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -404,7 +402,7 @@ class TownAttachRowRepository {
     await session.db.updateRow<Town>(
       $town,
       columns: [Town.t.mayorId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -425,7 +423,7 @@ class TownDetachRowRepository {
     await session.db.updateRow<Town>(
       $town,
       columns: [Town.t.mayorId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

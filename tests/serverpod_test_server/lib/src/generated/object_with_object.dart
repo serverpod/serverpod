@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
@@ -467,7 +465,7 @@ class ObjectWithObjectRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -486,7 +484,7 @@ class ObjectWithObjectRepository {
       orderByList: orderByList?.call(ObjectWithObject.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -497,7 +495,7 @@ class ObjectWithObjectRepository {
   }) async {
     return session.db.findById<ObjectWithObject>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -508,7 +506,7 @@ class ObjectWithObjectRepository {
   }) async {
     return session.db.insert<ObjectWithObject>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -519,7 +517,7 @@ class ObjectWithObjectRepository {
   }) async {
     return session.db.insertRow<ObjectWithObject>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -532,7 +530,7 @@ class ObjectWithObjectRepository {
     return session.db.update<ObjectWithObject>(
       rows,
       columns: columns?.call(ObjectWithObject.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -545,7 +543,7 @@ class ObjectWithObjectRepository {
     return session.db.updateRow<ObjectWithObject>(
       row,
       columns: columns?.call(ObjectWithObject.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -556,7 +554,7 @@ class ObjectWithObjectRepository {
   }) async {
     return session.db.delete<ObjectWithObject>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -567,7 +565,7 @@ class ObjectWithObjectRepository {
   }) async {
     return session.db.deleteRow<ObjectWithObject>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -578,7 +576,7 @@ class ObjectWithObjectRepository {
   }) async {
     return session.db.deleteWhere<ObjectWithObject>(
       where: where(ObjectWithObject.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -591,7 +589,7 @@ class ObjectWithObjectRepository {
     return session.db.count<ObjectWithObject>(
       where: where?.call(ObjectWithObject.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

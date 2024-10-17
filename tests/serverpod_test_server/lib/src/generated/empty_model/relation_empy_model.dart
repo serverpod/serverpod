@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
@@ -241,7 +239,7 @@ class RelationEmptyModelRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -262,7 +260,7 @@ class RelationEmptyModelRepository {
       orderByList: orderByList?.call(RelationEmptyModel.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -275,7 +273,7 @@ class RelationEmptyModelRepository {
   }) async {
     return session.db.findById<RelationEmptyModel>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -287,7 +285,7 @@ class RelationEmptyModelRepository {
   }) async {
     return session.db.insert<RelationEmptyModel>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -298,7 +296,7 @@ class RelationEmptyModelRepository {
   }) async {
     return session.db.insertRow<RelationEmptyModel>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -311,7 +309,7 @@ class RelationEmptyModelRepository {
     return session.db.update<RelationEmptyModel>(
       rows,
       columns: columns?.call(RelationEmptyModel.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -324,7 +322,7 @@ class RelationEmptyModelRepository {
     return session.db.updateRow<RelationEmptyModel>(
       row,
       columns: columns?.call(RelationEmptyModel.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -335,7 +333,7 @@ class RelationEmptyModelRepository {
   }) async {
     return session.db.delete<RelationEmptyModel>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -346,7 +344,7 @@ class RelationEmptyModelRepository {
   }) async {
     return session.db.deleteRow<RelationEmptyModel>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -357,7 +355,7 @@ class RelationEmptyModelRepository {
   }) async {
     return session.db.deleteWhere<RelationEmptyModel>(
       where: where(RelationEmptyModel.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -370,7 +368,7 @@ class RelationEmptyModelRepository {
     return session.db.count<RelationEmptyModel>(
       where: where?.call(RelationEmptyModel.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -404,7 +402,7 @@ class RelationEmptyModelAttachRepository {
         _i2.EmptyModelRelationItem.t
             .$_relationEmptyModelItemsRelationEmptyModelId
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -435,7 +433,7 @@ class RelationEmptyModelAttachRowRepository {
         _i2.EmptyModelRelationItem.t
             .$_relationEmptyModelItemsRelationEmptyModelId
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -464,7 +462,7 @@ class RelationEmptyModelDetachRepository {
         _i2.EmptyModelRelationItem.t
             .$_relationEmptyModelItemsRelationEmptyModelId
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -491,7 +489,7 @@ class RelationEmptyModelDetachRowRepository {
         _i2.EmptyModelRelationItem.t
             .$_relationEmptyModelItemsRelationEmptyModelId
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

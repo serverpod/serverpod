@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -202,7 +200,7 @@ class ParentUserRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -221,7 +219,7 @@ class ParentUserRepository {
       orderByList: orderByList?.call(ParentUser.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -232,7 +230,7 @@ class ParentUserRepository {
   }) async {
     return session.db.findById<ParentUser>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -243,7 +241,7 @@ class ParentUserRepository {
   }) async {
     return session.db.insert<ParentUser>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -254,7 +252,7 @@ class ParentUserRepository {
   }) async {
     return session.db.insertRow<ParentUser>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -267,7 +265,7 @@ class ParentUserRepository {
     return session.db.update<ParentUser>(
       rows,
       columns: columns?.call(ParentUser.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -280,7 +278,7 @@ class ParentUserRepository {
     return session.db.updateRow<ParentUser>(
       row,
       columns: columns?.call(ParentUser.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -291,7 +289,7 @@ class ParentUserRepository {
   }) async {
     return session.db.delete<ParentUser>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -302,7 +300,7 @@ class ParentUserRepository {
   }) async {
     return session.db.deleteRow<ParentUser>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -313,7 +311,7 @@ class ParentUserRepository {
   }) async {
     return session.db.deleteWhere<ParentUser>(
       where: where(ParentUser.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -326,7 +324,7 @@ class ParentUserRepository {
     return session.db.count<ParentUser>(
       where: where?.call(ParentUser.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

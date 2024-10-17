@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -299,7 +297,7 @@ class ServerHealthConnectionInfoRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -318,7 +316,7 @@ class ServerHealthConnectionInfoRepository {
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -329,7 +327,7 @@ class ServerHealthConnectionInfoRepository {
   }) async {
     return session.db.findById<ServerHealthConnectionInfo>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -340,7 +338,7 @@ class ServerHealthConnectionInfoRepository {
   }) async {
     return session.db.insert<ServerHealthConnectionInfo>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -351,7 +349,7 @@ class ServerHealthConnectionInfoRepository {
   }) async {
     return session.db.insertRow<ServerHealthConnectionInfo>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -364,7 +362,7 @@ class ServerHealthConnectionInfoRepository {
     return session.db.update<ServerHealthConnectionInfo>(
       rows,
       columns: columns?.call(ServerHealthConnectionInfo.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -377,7 +375,7 @@ class ServerHealthConnectionInfoRepository {
     return session.db.updateRow<ServerHealthConnectionInfo>(
       row,
       columns: columns?.call(ServerHealthConnectionInfo.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -388,7 +386,7 @@ class ServerHealthConnectionInfoRepository {
   }) async {
     return session.db.delete<ServerHealthConnectionInfo>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -399,7 +397,7 @@ class ServerHealthConnectionInfoRepository {
   }) async {
     return session.db.deleteRow<ServerHealthConnectionInfo>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -410,7 +408,7 @@ class ServerHealthConnectionInfoRepository {
   }) async {
     return session.db.deleteWhere<ServerHealthConnectionInfo>(
       where: where(ServerHealthConnectionInfo.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -423,7 +421,7 @@ class ServerHealthConnectionInfoRepository {
     return session.db.count<ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -228,7 +226,7 @@ class BoolDefaultModelRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -247,7 +245,7 @@ class BoolDefaultModelRepository {
       orderByList: orderByList?.call(BoolDefaultModel.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -258,7 +256,7 @@ class BoolDefaultModelRepository {
   }) async {
     return session.db.findById<BoolDefaultModel>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -269,7 +267,7 @@ class BoolDefaultModelRepository {
   }) async {
     return session.db.insert<BoolDefaultModel>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -280,7 +278,7 @@ class BoolDefaultModelRepository {
   }) async {
     return session.db.insertRow<BoolDefaultModel>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -293,7 +291,7 @@ class BoolDefaultModelRepository {
     return session.db.update<BoolDefaultModel>(
       rows,
       columns: columns?.call(BoolDefaultModel.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -306,7 +304,7 @@ class BoolDefaultModelRepository {
     return session.db.updateRow<BoolDefaultModel>(
       row,
       columns: columns?.call(BoolDefaultModel.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -317,7 +315,7 @@ class BoolDefaultModelRepository {
   }) async {
     return session.db.delete<BoolDefaultModel>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -328,7 +326,7 @@ class BoolDefaultModelRepository {
   }) async {
     return session.db.deleteRow<BoolDefaultModel>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -339,7 +337,7 @@ class BoolDefaultModelRepository {
   }) async {
     return session.db.deleteWhere<BoolDefaultModel>(
       where: where(BoolDefaultModel.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -352,7 +350,7 @@ class BoolDefaultModelRepository {
     return session.db.count<BoolDefaultModel>(
       where: where?.call(BoolDefaultModel.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -184,7 +182,7 @@ class ScopeNoneFieldsRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -203,7 +201,7 @@ class ScopeNoneFieldsRepository {
       orderByList: orderByList?.call(ScopeNoneFields.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -214,7 +212,7 @@ class ScopeNoneFieldsRepository {
   }) async {
     return session.db.findById<ScopeNoneFields>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -225,7 +223,7 @@ class ScopeNoneFieldsRepository {
   }) async {
     return session.db.insert<ScopeNoneFields>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -236,7 +234,7 @@ class ScopeNoneFieldsRepository {
   }) async {
     return session.db.insertRow<ScopeNoneFields>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -249,7 +247,7 @@ class ScopeNoneFieldsRepository {
     return session.db.update<ScopeNoneFields>(
       rows,
       columns: columns?.call(ScopeNoneFields.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -262,7 +260,7 @@ class ScopeNoneFieldsRepository {
     return session.db.updateRow<ScopeNoneFields>(
       row,
       columns: columns?.call(ScopeNoneFields.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -273,7 +271,7 @@ class ScopeNoneFieldsRepository {
   }) async {
     return session.db.delete<ScopeNoneFields>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -284,7 +282,7 @@ class ScopeNoneFieldsRepository {
   }) async {
     return session.db.deleteRow<ScopeNoneFields>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -295,7 +293,7 @@ class ScopeNoneFieldsRepository {
   }) async {
     return session.db.deleteWhere<ScopeNoneFields>(
       where: where(ScopeNoneFields.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -308,7 +306,7 @@ class ScopeNoneFieldsRepository {
     return session.db.count<ScopeNoneFields>(
       where: where?.call(ScopeNoneFields.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
