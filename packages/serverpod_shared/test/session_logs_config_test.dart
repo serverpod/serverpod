@@ -11,7 +11,7 @@ void main() {
   };
 
   test(
-    'Given a Serverpod config missing sessionLogs configuration when loading from Map then sessionLogs is null.',
+    'Given a Serverpod config missing sessionLogs configuration when loading from Map then sessionLogs is null',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -33,7 +33,7 @@ apiServer:
   );
 
   test(
-    'Given a Serverpod config with sessionLogs and no database when persistentEnabled is true then it is overridden to false.',
+    'Given a Serverpod config with sessionLogs and no database when persistentEnabled is true then a StateError is thrown',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -46,21 +46,28 @@ sessionLogs:
   consoleEnabled: false
 ''';
 
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        loadYaml(serverpodConfig),
-        environment: {},
+      expect(
+        () => ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          loadYaml(serverpodConfig),
+          environment: {},
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (e) => e.message,
+            'message',
+            contains(
+                'The `persistentEnabled` setting was enabled in the configuration, but this project was created without database support.'),
+          ),
+        ),
       );
-
-      expect(config.sessionLogs?.persistentEnabled, isFalse);
-      expect(config.sessionLogs?.consoleEnabled, isFalse);
     },
   );
 
   test(
-    'Given a Serverpod config with sessionLogs and no database when persistentEnabled is false then it remains false.',
+    'Given a Serverpod config with sessionLogs and no database when persistentEnabled is false then it remains false',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -87,7 +94,7 @@ sessionLogs:
   );
 
   test(
-    'Given a Serverpod config with sessionLogs and database when persistentEnabled is true then persistentEnabled remains true.',
+    'Given a Serverpod config with sessionLogs and database when persistentEnabled is true then persistentEnabled remains true',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -118,7 +125,7 @@ sessionLogs:
   );
 
   test(
-    'Given a Serverpod config with sessionLogs and database when persistentEnabled is false then persistentEnabled remains false.',
+    'Given a Serverpod config with sessionLogs and database when persistentEnabled is false then persistentEnabled remains false',
     () {
       var serverpodConfig = '''
 apiServer:
@@ -149,7 +156,7 @@ sessionLogs:
   );
 
   test(
-    'Given a Serverpod config with sessionLogs and database when environment variables override them then sessionLogs config reflects the environment overrides.',
+    'Given a Serverpod config with sessionLogs and database when environment variables override them then sessionLogs config reflects the environment overrides',
     () {
       var config = ServerpodConfig.loadFromMap(
         runMode,

@@ -57,6 +57,9 @@ class ServerpodConfig {
     apiServer._name = 'api';
     insightsServer?._name = 'insights';
     webServer?._name = 'web';
+    sessionLogs?._validate(
+      databaseEnabled: database != null,
+    );
   }
 
   /// Creates a default bare bone configuration.
@@ -430,24 +433,25 @@ class SessionLogConfig {
       name,
     );
 
-    var isSessionPersistentLogEnabled = sessionLogConfigJson[
-            ServerpodEnv.sessionPersistentLogEnabled.configKey] ??
-        false;
-
-    if (isSessionPersistentLogEnabled && !databaseEnabled) {
-      stdout.writeln(
-        'Warning: The `persistentEnabled` setting was enabled in the configuration, but this project was created without database support. '
-        'Persistent logging is only available when the database is enabled, so the value will be overridden and disabled.',
-      );
-      isSessionPersistentLogEnabled = false;
-    }
-
     return SessionLogConfig(
-      persistentEnabled: isSessionPersistentLogEnabled,
+      persistentEnabled: sessionLogConfigJson[
+              ServerpodEnv.sessionPersistentLogEnabled.configKey] ??
+          false,
       consoleEnabled: sessionLogConfigJson[
               ServerpodEnv.sessionConsoleLogEnabled.configKey] ??
           false,
     );
+  }
+
+  void _validate({
+    required bool databaseEnabled,
+  }) {
+    if (persistentEnabled && !databaseEnabled) {
+      throw StateError(
+        'The `persistentEnabled` setting was enabled in the configuration, but this project was created without database support. '
+        'Persistent logging is only available when the database is enabled.',
+      );
+    }
   }
 
   @override

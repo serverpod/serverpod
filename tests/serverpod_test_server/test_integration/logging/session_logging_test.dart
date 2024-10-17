@@ -15,6 +15,7 @@ void main() async {
     late Serverpod server;
     late Session session;
     late MockStdout record;
+
     setUp(() async {
       record = MockStdout();
 
@@ -91,7 +92,7 @@ void main() async {
 
       expect(record.output.contains('Test message'), isFalse);
     });
-  }, timeout: Timeout(const Duration(seconds: 5)), retry: 1);
+  });
 
   group('Given persistent logging is disabled and console logging is enabled',
       () {
@@ -153,7 +154,7 @@ void main() async {
 
       expect(record.output.contains('Test message for console'), isTrue);
     });
-  }, timeout: Timeout(const Duration(seconds: 5)), retry: 1);
+  });
 
   group('Given both persistent and console logging are disabled', () {
     late Serverpod server;
@@ -214,67 +215,39 @@ void main() async {
 
       expect(record.output.contains('Test message'), isFalse);
     });
-  }, timeout: Timeout(const Duration(seconds: 5)), retry: 1);
+  });
 
-  group('Given persistent logging is enabled and console logging is disabled',
+  group(
+      'Given persistent logging is enabled but the database support is not available',
       () {
-    late Serverpod server;
-    late Session session;
-    late MockStdout record;
-    setUp(() async {
-      record = MockStdout();
-
-      server = IntegrationTestServer.create(
-        config: ServerpodConfig(
-          runMode: runMode,
-          apiServer: ServerConfig(
-            port: 8080,
-            publicHost: 'localhost',
-            publicPort: 8080,
-            publicScheme: 'http',
+    test(
+        'when the server is started, then a StateError should be thrown due to lack of database support',
+        () async {
+      expect(
+        () => IntegrationTestServer.create(
+          config: ServerpodConfig(
+            runMode: runMode,
+            apiServer: ServerConfig(
+              port: 8080,
+              publicHost: 'localhost',
+              publicPort: 8080,
+              publicScheme: 'http',
+            ),
+            sessionLogs: SessionLogConfig(
+              persistentEnabled: true,
+              consoleEnabled: false,
+            ),
           ),
-          database: DatabaseConfig(
-            host: 'postgres',
-            port: 5432,
-            user: 'postgres',
-            password: 'password',
-            name: 'serverpod_test',
-          ),
-          sessionLogs: SessionLogConfig(
-            persistentEnabled: true,
-            consoleEnabled: false,
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (e) => e.message,
+            'message',
+            contains(
+                'The `persistentEnabled` setting was enabled in the configuration, but this project was created without database support.'),
           ),
         ),
       );
-      await server.start();
-      session = await server.createSession(enableLogging: false);
-      await LoggingUtil.clearAllLogs(session);
     });
-
-    tearDown(() async {
-      await session.close();
-      await server.shutdown(exitProcess: false);
-    });
-
-    test(
-        'when a log is written then it should be stored in the database and not in stdout.',
-        () async {
-      var settings = RuntimeSettingsBuilder().build();
-      await server.updateRuntimeSettings(settings);
-
-      await IOOverrides.runZoned(
-        () async {
-          var testSession = await server.createSession(enableLogging: true);
-          testSession.log('Persistent log message');
-          await testSession.close();
-        },
-        stdout: () => record,
-      );
-
-      var logs = await LoggingUtil.findAllLogs(session);
-      expect(logs, hasLength(1));
-
-      expect(record.output.contains('Persistent log message'), isFalse);
-    });
-  }, timeout: Timeout(const Duration(seconds: 5)), retry: 1);
+  });
 }
