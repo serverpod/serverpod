@@ -1,277 +1,323 @@
-import 'package:serverpod/database.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
-import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
+import '../test_tools/serverpod_test_tools.dart';
 
-void main() async {
-  var session = await IntegrationTestServer().session();
+void main() {
+  withServerpod(
+    'Given an authenticated user',
+    (sessionBuilder, endpoints) {
+      late String userName;
+      late String email;
+      late String password;
+      late Session session;
 
-  group('Given an authenticated user', () {
-    var userName = 'test';
-    var email = 'test@serverpod.dev';
-    var password = 'password';
+      setUp(() async {
+        session = sessionBuilder.build();
+        userName = 'test';
+        email = 'test@serverpod.dev';
+        password = 'password';
+        await Emails.createUser(session, userName, email, password);
+      });
 
-    setUp(() async {
-      await Emails.createUser(session, userName, email, password);
-    });
+      test(
+        'when signing out all devices then all auth keys are deleted',
+        () async {
+          var authResponse =
+              await Emails.authenticate(session, email, password);
+          expect(
+            authResponse.success,
+            isTrue,
+            reason: 'Failed to authenticate user.',
+          );
 
-    tearDown(() async {
-      await Future.wait([
-        UserInfo.db.deleteWhere(session, where: (t) => Constant.bool(true)),
-        EmailAuth.db.deleteWhere(session, where: (t) => Constant.bool(true)),
-        AuthKey.db.deleteWhere(session, where: (t) => Constant.bool(true)),
-      ]);
-    });
+          var userId = authResponse.userInfo?.id;
+          expect(
+            userId,
+            isNotNull,
+            reason: 'Failed to retrieve user ID.',
+          );
 
-    test(
-      'when signing out all devices then all auth keys are deleted',
-      () async {
-        var authResponse = await Emails.authenticate(session, email, password);
-        expect(
-          authResponse.success,
-          isTrue,
-          reason: 'Failed to authenticate user.',
-        );
+          session.updateAuthenticated(
+            await authenticationHandler(
+              session,
+              "${authResponse.keyId!}:${authResponse.key!}",
+            ),
+          );
 
-        var userId = authResponse.userInfo?.id;
-        expect(userId, isNotNull, reason: 'Failed to retrieve user ID.');
-
-        session.updateAuthenticated(
-          await authenticationHandler(
+          var authKeys = await AuthKey.db.find(
             session,
-            "${authResponse.keyId!}:${authResponse.key!}",
-          ),
-        );
+            where: (row) => row.userId.equals(userId),
+          );
 
-        var authKeys = await session.db.find<AuthKey>(
-          where: AuthKey.t.userId.equals(userId),
-        );
+          expect(
+            authKeys,
+            hasLength(1),
+            reason: 'Expected one auth key initially.',
+          );
 
-        expect(
-          authKeys,
-          hasLength(1),
-          reason: 'Expected one auth key initially.',
-        );
-
-        // Sign in user on another device then add a second auth key.
-        final secondAuthKey = await UserAuthentication.signInUser(
-          session,
-          userId!,
-          'email',
-        );
-
-        session.updateAuthenticated(
-          await authenticationHandler(
+          final secondAuthKey = await UserAuthentication.signInUser(
             session,
-            "${secondAuthKey.id!}:${secondAuthKey.key!}",
-          ),
-        );
+            userId!,
+            'email',
+          );
 
-        authKeys = await session.db.find<AuthKey>(
-          where: AuthKey.t.userId.equals(userId),
-        );
+          session.updateAuthenticated(
+            await authenticationHandler(
+              session,
+              "${secondAuthKey.id!}:${secondAuthKey.key!}",
+            ),
+          );
 
-        expect(
-          authKeys,
-          hasLength(2),
-          reason: 'Expected two auth keys after signing in on another device.',
-        );
-
-        await UserAuthentication.signOutAllDevices(session);
-
-        authKeys = await session.db.find<AuthKey>(
-          where: AuthKey.t.userId.equals(userId),
-        );
-
-        expect(
-          authKeys,
-          isEmpty,
-          reason:
-              'Expected all auth keys to be deleted after signing out all devices.',
-        );
-      },
-    );
-
-    test(
-      'when signing out the current device then only the current session is deleted',
-      () async {
-        var authResponse = await Emails.authenticate(session, email, password);
-        expect(
-          authResponse.success,
-          isTrue,
-          reason: 'Failed to authenticate user.',
-        );
-
-        var userId = authResponse.userInfo?.id;
-        expect(userId, isNotNull, reason: 'Failed to retrieve user ID.');
-
-        session.updateAuthenticated(
-          await authenticationHandler(
+          authKeys = await AuthKey.db.find(
             session,
-            "${authResponse.keyId!}:${authResponse.key!}",
-          ),
-        );
+            where: (row) => row.userId.equals(userId),
+          );
 
-        var authKeys = await session.db.find<AuthKey>(
-          where: AuthKey.t.userId.equals(userId),
-        );
-        expect(authKeys, hasLength(1),
-            reason: 'Expected one auth key initially.');
+          expect(
+            authKeys,
+            hasLength(2),
+            reason:
+                'Expected two auth keys after signing in on another device.',
+          );
 
-        // Sign in user on another device then add a second auth key.
-        final secondAuthKey = await UserAuthentication.signInUser(
-          session,
-          userId!,
-          'email',
-        );
+          await UserAuthentication.signOutAllDevices(session);
 
-        session.updateAuthenticated(
-          await authenticationHandler(
+          authKeys = await AuthKey.db.find(
             session,
-            "${secondAuthKey.id!}:${secondAuthKey.key!}",
-          ),
-        );
+            where: (row) => row.userId.equals(userId),
+          );
 
-        authKeys = await session.db.find<AuthKey>(
-          where: AuthKey.t.userId.equals(userId),
-        );
-        expect(authKeys, hasLength(2), reason: 'Expected two auth keys.');
+          expect(
+            authKeys,
+            isEmpty,
+            reason:
+                'Expected all auth keys to be deleted after signing out all devices.',
+          );
+        },
+      );
 
-        await UserAuthentication.signOutCurrentDevice(session);
+      test(
+        'when signing out the current device then only the current session is deleted',
+        () async {
+          var authResponse =
+              await Emails.authenticate(session, email, password);
+          expect(
+            authResponse.success,
+            isTrue,
+            reason: 'Failed to authenticate user.',
+          );
 
-        authKeys = await session.db.find<AuthKey>(
-          where: AuthKey.t.userId.equals(userId),
-        );
-        expect(
-          authKeys,
-          hasLength(1),
-          reason:
-              'Expected one auth key to remain after signing out the current device.',
-        );
-      },
-    );
+          var userId = authResponse.userInfo?.id;
+          expect(
+            userId,
+            isNotNull,
+            reason: 'Failed to retrieve user ID.',
+          );
 
-    test(
-      'when userId is provided then the user is signed out all devices',
-      () async {
-        var authResponse = await Emails.authenticate(session, email, password);
-        expect(
-          authResponse.success,
-          isTrue,
-          reason: 'Failed to authenticate user.',
-        );
+          session.updateAuthenticated(
+            await authenticationHandler(
+              session,
+              "${authResponse.keyId!}:${authResponse.key!}",
+            ),
+          );
 
-        var userId = authResponse.userInfo?.id;
-        expect(userId, isNotNull, reason: 'Failed to retrieve user ID.');
-
-        session.updateAuthenticated(
-          await authenticationHandler(
+          var authKeys = await AuthKey.db.find(
             session,
-            "${authResponse.keyId!}:${authResponse.key!}",
-          ),
-        );
+            where: (row) => row.userId.equals(userId),
+          );
+          expect(
+            authKeys,
+            hasLength(1),
+            reason: 'Expected one auth key initially.',
+          );
 
-        var authKeys = await session.db.find<AuthKey>(
-          where: AuthKey.t.userId.equals(userId),
-        );
-        expect(authKeys, hasLength(1),
-            reason: 'Expected one auth key initially.');
-
-        // Sign in user on another device then add a second auth key.
-        final secondAuthKey = await UserAuthentication.signInUser(
-          session,
-          userId!,
-          'email',
-        );
-
-        session.updateAuthenticated(
-          await authenticationHandler(
+          final secondAuthKey = await UserAuthentication.signInUser(
             session,
-            "${secondAuthKey.id!}:${secondAuthKey.key!}",
-          ),
-        );
+            userId!,
+            'email',
+          );
 
-        authKeys = await session.db.find<AuthKey>(
-          where: AuthKey.t.userId.equals(userId),
-        );
-        expect(authKeys, hasLength(2), reason: 'Expected two auth keys.');
+          session.updateAuthenticated(
+            await authenticationHandler(
+              session,
+              "${secondAuthKey.id!}:${secondAuthKey.key!}",
+            ),
+          );
 
-        await UserAuthentication.signOutAllDevices(session, userId: userId);
-
-        authKeys = await session.db.find<AuthKey>(
-          where: AuthKey.t.userId.equals(userId),
-        );
-        expect(
-          authKeys,
-          isEmpty,
-          reason:
-              'Expected all auth keys to be deleted after signing out all devices.',
-        );
-      },
-    );
-
-    test(
-      'when using deprecated signOutUser method then all auth keys are deleted',
-      () async {
-        var authResponse = await Emails.authenticate(session, email, password);
-        expect(
-          authResponse.success,
-          isTrue,
-          reason: 'Failed to authenticate user.',
-        );
-
-        var userId = authResponse.userInfo?.id;
-        expect(userId, isNotNull, reason: 'Failed to retrieve user ID.');
-
-        session.updateAuthenticated(
-          await authenticationHandler(
+          authKeys = await AuthKey.db.find(
             session,
-            "${authResponse.keyId!}:${authResponse.key!}",
-          ),
-        );
+            where: (row) => row.userId.equals(userId),
+          );
+          expect(
+            authKeys,
+            hasLength(2),
+            reason: 'Expected two auth keys.',
+          );
 
-        var authKeys = await session.db.find<AuthKey>(
-          where: AuthKey.t.userId.equals(userId),
-        );
-        expect(
-          authKeys,
-          hasLength(1),
-          reason: 'Expected one auth key initially.',
-        );
+          await UserAuthentication.signOutCurrentDevice(session);
 
-        // Sign in user on another device then add a second auth key.
-        final secondAuthKey = await UserAuthentication.signInUser(
-          session,
-          userId!,
-          'email',
-        );
-
-        session.updateAuthenticated(
-          await authenticationHandler(
+          authKeys = await AuthKey.db.find(
             session,
-            "${secondAuthKey.id!}:${secondAuthKey.key!}",
-          ),
-        );
+            where: (row) => row.userId.equals(userId),
+          );
+          expect(
+            authKeys,
+            hasLength(1),
+            reason:
+                'Expected one auth key to remain after signing out the current device.',
+          );
+        },
+      );
 
-        authKeys = await session.db.find<AuthKey>(
-          where: AuthKey.t.userId.equals(userId),
-        );
-        expect(authKeys, hasLength(2), reason: 'Expected two auth keys.');
+      test(
+        'when userId is provided then the user is signed out all devices',
+        () async {
+          var authResponse =
+              await Emails.authenticate(session, email, password);
+          expect(
+            authResponse.success,
+            isTrue,
+            reason: 'Failed to authenticate user.',
+          );
 
-        // Use the deprecated method to sign out.
-        // ignore: deprecated_member_use
-        await UserAuthentication.signOutUser(session);
+          var userId = authResponse.userInfo?.id;
+          expect(
+            userId,
+            isNotNull,
+            reason: 'Failed to retrieve user ID.',
+          );
 
-        authKeys = await session.db.find<AuthKey>(
-          where: AuthKey.t.userId.equals(userId),
-        );
-        expect(
-          authKeys,
-          isEmpty,
-          reason:
-              'Expected all auth keys to be deleted after using deprecated signOutUser method.',
-        );
-      },
-    );
-  });
+          session.updateAuthenticated(
+            await authenticationHandler(
+              session,
+              "${authResponse.keyId!}:${authResponse.key!}",
+            ),
+          );
+
+          var authKeys = await AuthKey.db.find(
+            session,
+            where: (row) => row.userId.equals(userId),
+          );
+          expect(
+            authKeys,
+            hasLength(1),
+            reason: 'Expected one auth key initially.',
+          );
+
+          final secondAuthKey = await UserAuthentication.signInUser(
+            session,
+            userId!,
+            'email',
+          );
+
+          session.updateAuthenticated(
+            await authenticationHandler(
+              session,
+              "${secondAuthKey.id!}:${secondAuthKey.key!}",
+            ),
+          );
+
+          authKeys = await AuthKey.db.find(
+            session,
+            where: (row) => row.userId.equals(userId),
+          );
+          expect(
+            authKeys,
+            hasLength(2),
+            reason: 'Expected two auth keys.',
+          );
+
+          await UserAuthentication.signOutAllDevices(session, userId: userId);
+
+          authKeys = await AuthKey.db.find(
+            session,
+            where: (row) => row.userId.equals(userId),
+          );
+          expect(
+            authKeys,
+            isEmpty,
+            reason:
+                'Expected all auth keys to be deleted after signing out all devices.',
+          );
+        },
+      );
+
+      test(
+        'when using deprecated signOutUser method then all auth keys are deleted',
+        () async {
+          var authResponse =
+              await Emails.authenticate(session, email, password);
+          expect(
+            authResponse.success,
+            isTrue,
+            reason: 'Failed to authenticate user.',
+          );
+
+          var userId = authResponse.userInfo?.id;
+          expect(
+            userId,
+            isNotNull,
+            reason: 'Failed to retrieve user ID.',
+          );
+
+          session.updateAuthenticated(
+            await authenticationHandler(
+              session,
+              "${authResponse.keyId!}:${authResponse.key!}",
+            ),
+          );
+
+          var authKeys = await AuthKey.db.find(
+            session,
+            where: (row) => row.userId.equals(userId),
+          );
+          expect(
+            authKeys,
+            hasLength(1),
+            reason: 'Expected one auth key initially.',
+          );
+
+          final secondAuthKey = await UserAuthentication.signInUser(
+            session,
+            userId!,
+            'email',
+          );
+
+          session.updateAuthenticated(
+            await authenticationHandler(
+              session,
+              "${secondAuthKey.id!}:${secondAuthKey.key!}",
+            ),
+          );
+
+          authKeys = await AuthKey.db.find(
+            session,
+            where: (row) => row.userId.equals(userId),
+          );
+          expect(
+            authKeys,
+            hasLength(2),
+            reason: 'Expected two auth keys.',
+          );
+
+          // Use the deprecated method to sign out.
+          // ignore: deprecated_member_use
+          await UserAuthentication.signOutUser(session);
+
+          authKeys = await AuthKey.db.find(
+            session,
+            where: (row) => row.userId.equals(userId),
+          );
+          expect(
+            authKeys,
+            isEmpty,
+            reason:
+                'Expected all auth keys to be deleted after using deprecated signOutUser method.',
+          );
+        },
+      );
+    },
+    rollbackDatabase: RollbackDatabase.afterEach,
+  );
 }
