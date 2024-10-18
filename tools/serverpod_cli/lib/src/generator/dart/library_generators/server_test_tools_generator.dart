@@ -444,7 +444,8 @@ class ServerTestToolsGenerator {
             'maybeRollbackDatabase':
                 config.isFeatureEnabled(ServerpodFeature.database)
                     ? refer('rollbackDatabase')
-                    : literalNull,
+                    : refer('RollbackDatabase', serverpodTestUrl)
+                        .property('disabled'),
             'maybeEnableSessionLogging': refer('enableSessionLogging'),
             'maybeTestGroupTagsOverride': refer('testGroupTagsOverride'),
           },

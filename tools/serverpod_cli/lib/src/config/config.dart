@@ -142,10 +142,6 @@ class GeneratorConfig {
   ];
 
   List<String>? get generatedServerTestToolsPathParts {
-    if (!isExperimentalFeatureEnabled(ExperimentalFeature.testTools)) {
-      return null;
-    }
-
     var localRelativeServerTestToolsPathParts =
         _relativeServerTestToolsPathParts;
     if (localRelativeServerTestToolsPathParts != null) {
