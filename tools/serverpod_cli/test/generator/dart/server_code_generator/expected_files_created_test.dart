@@ -1,13 +1,11 @@
-import 'package:serverpod_cli/src/config/experimental_feature.dart';
+import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
-import 'package:serverpod_cli/src/test_util/builders/enum_definition_builder.dart';
-import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
-import 'package:test/test.dart';
-import 'package:path/path.dart' as path;
-
 import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/enum_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
+import 'package:test/test.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -159,13 +157,8 @@ void main() {
   group(
       'Given relativeServerTestToolsPathParts is set and database enabled when generating protocol code',
       () {
-    var configWithTestToolsPath = GeneratorConfigBuilder()
-        .withName(projectName)
-        .withEnabledExperimentalFeatures(
-      [
-        ExperimentalFeature.testTools,
-      ],
-    ).withEnabledFeatures(
+    var configWithTestToolsPath =
+        GeneratorConfigBuilder().withName(projectName).withEnabledFeatures(
       [
         ServerpodFeature.database,
       ],
@@ -208,11 +201,6 @@ void main() {
             ServerpodFeature.database,
           ],
         )
-        .withEnabledExperimentalFeatures(
-          [
-            ExperimentalFeature.testTools,
-          ],
-        )
         .withRelativeServerTestToolsPathParts(null)
         .build();
 
@@ -244,11 +232,6 @@ void main() {
       () {
     var configWithTestToolsPath = GeneratorConfigBuilder()
         .withName(projectName)
-        .withEnabledExperimentalFeatures(
-          [
-            ExperimentalFeature.testTools,
-          ],
-        )
         // Disable database feature
         .withEnabledFeatures([])
         .withRelativeServerTestToolsPathParts(null)
@@ -274,34 +257,6 @@ void main() {
         )),
         reason:
             'Expected serverpod_test_tools.dart file to be present, found none.',
-      );
-    });
-  });
-  group(
-      'Given the experimental flag testTools is not set when generating protocol code',
-      () {
-    var configWithTestToolsPath =
-        GeneratorConfigBuilder().withName(projectName).build();
-
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: const ProtocolDefinition(
-        endpoints: [],
-        models: [],
-      ),
-      config: configWithTestToolsPath,
-    );
-    var serverpodTestToolsFileName = 'serverpod_test_tools.dart';
-
-    test('then the serverpod test tools file is not created', () {
-      var listContainsTestToolsFilename = codeMap.keys.any(
-        (filePath) => filePath.endsWith(serverpodTestToolsFileName),
-      );
-
-      expect(
-        listContainsTestToolsFilename,
-        false,
-        reason:
-            'Expected serverpod_test_tools.dart file to not be present, but it was found.',
       );
     });
   });

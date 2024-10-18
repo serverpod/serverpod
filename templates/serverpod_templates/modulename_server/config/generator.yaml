@@ -2,3 +2,4 @@ type: module
 nickname: modulename
 
 client_package_path: ../modulename_client
+server_test_tools_path: test/integration/test_tools
