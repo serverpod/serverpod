@@ -66,7 +66,16 @@ class AuthenticationEndpoint extends Endpoint {
   }
 
   Future<void> signOut(Session session) async {
+    // ignore: deprecated_member_use
     await UserAuthentication.signOutUser(session);
+  }
+
+  Future<void> signOutCurrentDevice(Session session) async {
+    await UserAuthentication.signOutCurrentDevice(session);
+  }
+
+  Future<void> signOutAllDevices(Session session) async {
+    await UserAuthentication.signOutAllDevices(session);
   }
 
   Future<void> updateScopes(

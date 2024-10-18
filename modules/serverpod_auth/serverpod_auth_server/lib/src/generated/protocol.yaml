@@ -19,6 +19,8 @@ google:
 status:
   - isSignedIn:
   - signOut:
+  - signOutCurrentDevice:
+  - signOutAllDevices:
   - getUserInfo:
   - getUserSettingsConfig:
 user:
