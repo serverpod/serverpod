@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
@@ -376,7 +374,7 @@ class TypesRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -395,7 +393,7 @@ class TypesRepository {
       orderByList: orderByList?.call(Types.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -406,7 +404,7 @@ class TypesRepository {
   }) async {
     return session.db.findById<Types>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -417,7 +415,7 @@ class TypesRepository {
   }) async {
     return session.db.insert<Types>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -428,7 +426,7 @@ class TypesRepository {
   }) async {
     return session.db.insertRow<Types>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -441,7 +439,7 @@ class TypesRepository {
     return session.db.update<Types>(
       rows,
       columns: columns?.call(Types.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -454,7 +452,7 @@ class TypesRepository {
     return session.db.updateRow<Types>(
       row,
       columns: columns?.call(Types.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -465,7 +463,7 @@ class TypesRepository {
   }) async {
     return session.db.delete<Types>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -476,7 +474,7 @@ class TypesRepository {
   }) async {
     return session.db.deleteRow<Types>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -487,7 +485,7 @@ class TypesRepository {
   }) async {
     return session.db.deleteWhere<Types>(
       where: where(Types.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -500,7 +498,7 @@ class TypesRepository {
     return session.db.count<Types>(
       where: where?.call(Types.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

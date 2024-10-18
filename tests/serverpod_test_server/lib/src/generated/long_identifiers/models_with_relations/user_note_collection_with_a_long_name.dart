@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -268,7 +266,7 @@ class UserNoteCollectionWithALongNameRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -289,7 +287,7 @@ class UserNoteCollectionWithALongNameRepository {
       orderByList: orderByList?.call(UserNoteCollectionWithALongName.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -302,7 +300,7 @@ class UserNoteCollectionWithALongNameRepository {
   }) async {
     return session.db.findById<UserNoteCollectionWithALongName>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -314,7 +312,7 @@ class UserNoteCollectionWithALongNameRepository {
   }) async {
     return session.db.insert<UserNoteCollectionWithALongName>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -325,7 +323,7 @@ class UserNoteCollectionWithALongNameRepository {
   }) async {
     return session.db.insertRow<UserNoteCollectionWithALongName>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -338,7 +336,7 @@ class UserNoteCollectionWithALongNameRepository {
     return session.db.update<UserNoteCollectionWithALongName>(
       rows,
       columns: columns?.call(UserNoteCollectionWithALongName.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -351,7 +349,7 @@ class UserNoteCollectionWithALongNameRepository {
     return session.db.updateRow<UserNoteCollectionWithALongName>(
       row,
       columns: columns?.call(UserNoteCollectionWithALongName.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -362,7 +360,7 @@ class UserNoteCollectionWithALongNameRepository {
   }) async {
     return session.db.delete<UserNoteCollectionWithALongName>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -373,7 +371,7 @@ class UserNoteCollectionWithALongNameRepository {
   }) async {
     return session.db.deleteRow<UserNoteCollectionWithALongName>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -385,7 +383,7 @@ class UserNoteCollectionWithALongNameRepository {
   }) async {
     return session.db.deleteWhere<UserNoteCollectionWithALongName>(
       where: where(UserNoteCollectionWithALongName.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -398,7 +396,7 @@ class UserNoteCollectionWithALongNameRepository {
     return session.db.count<UserNoteCollectionWithALongName>(
       where: where?.call(UserNoteCollectionWithALongName.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -432,7 +430,7 @@ class UserNoteCollectionWithALongNameAttachRepository {
         _i2.UserNoteWithALongName.t
             .$_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -464,7 +462,7 @@ class UserNoteCollectionWithALongNameAttachRowRepository {
         _i2.UserNoteWithALongName.t
             .$_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -494,7 +492,7 @@ class UserNoteCollectionWithALongNameDetachRepository {
         _i2.UserNoteWithALongName.t
             .$_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -521,7 +519,7 @@ class UserNoteCollectionWithALongNameDetachRowRepository {
         _i2.UserNoteWithALongName.t
             .$_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

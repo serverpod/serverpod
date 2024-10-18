@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -252,7 +250,7 @@ class EnumDefaultMixRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -271,7 +269,7 @@ class EnumDefaultMixRepository {
       orderByList: orderByList?.call(EnumDefaultMix.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -282,7 +280,7 @@ class EnumDefaultMixRepository {
   }) async {
     return session.db.findById<EnumDefaultMix>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -293,7 +291,7 @@ class EnumDefaultMixRepository {
   }) async {
     return session.db.insert<EnumDefaultMix>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -304,7 +302,7 @@ class EnumDefaultMixRepository {
   }) async {
     return session.db.insertRow<EnumDefaultMix>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -317,7 +315,7 @@ class EnumDefaultMixRepository {
     return session.db.update<EnumDefaultMix>(
       rows,
       columns: columns?.call(EnumDefaultMix.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -330,7 +328,7 @@ class EnumDefaultMixRepository {
     return session.db.updateRow<EnumDefaultMix>(
       row,
       columns: columns?.call(EnumDefaultMix.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -341,7 +339,7 @@ class EnumDefaultMixRepository {
   }) async {
     return session.db.delete<EnumDefaultMix>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -352,7 +350,7 @@ class EnumDefaultMixRepository {
   }) async {
     return session.db.deleteRow<EnumDefaultMix>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -363,7 +361,7 @@ class EnumDefaultMixRepository {
   }) async {
     return session.db.deleteWhere<EnumDefaultMix>(
       where: where(EnumDefaultMix.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -376,7 +374,7 @@ class EnumDefaultMixRepository {
     return session.db.count<EnumDefaultMix>(
       where: where?.call(EnumDefaultMix.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

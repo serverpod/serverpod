@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
@@ -252,7 +250,7 @@ class RelatedUniqueDataRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -273,7 +271,7 @@ class RelatedUniqueDataRepository {
       orderByList: orderByList?.call(RelatedUniqueData.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -286,7 +284,7 @@ class RelatedUniqueDataRepository {
   }) async {
     return session.db.findById<RelatedUniqueData>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -298,7 +296,7 @@ class RelatedUniqueDataRepository {
   }) async {
     return session.db.insert<RelatedUniqueData>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -309,7 +307,7 @@ class RelatedUniqueDataRepository {
   }) async {
     return session.db.insertRow<RelatedUniqueData>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -322,7 +320,7 @@ class RelatedUniqueDataRepository {
     return session.db.update<RelatedUniqueData>(
       rows,
       columns: columns?.call(RelatedUniqueData.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -335,7 +333,7 @@ class RelatedUniqueDataRepository {
     return session.db.updateRow<RelatedUniqueData>(
       row,
       columns: columns?.call(RelatedUniqueData.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -346,7 +344,7 @@ class RelatedUniqueDataRepository {
   }) async {
     return session.db.delete<RelatedUniqueData>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -357,7 +355,7 @@ class RelatedUniqueDataRepository {
   }) async {
     return session.db.deleteRow<RelatedUniqueData>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -368,7 +366,7 @@ class RelatedUniqueDataRepository {
   }) async {
     return session.db.deleteWhere<RelatedUniqueData>(
       where: where(RelatedUniqueData.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -381,7 +379,7 @@ class RelatedUniqueDataRepository {
     return session.db.count<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -407,7 +405,7 @@ class RelatedUniqueDataAttachRowRepository {
     await session.db.updateRow<RelatedUniqueData>(
       $relatedUniqueData,
       columns: [RelatedUniqueData.t.uniqueDataId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

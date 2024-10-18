@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -273,7 +271,7 @@ class RelationToMultipleMaxFieldNameRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -294,7 +292,7 @@ class RelationToMultipleMaxFieldNameRepository {
       orderByList: orderByList?.call(RelationToMultipleMaxFieldName.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -307,7 +305,7 @@ class RelationToMultipleMaxFieldNameRepository {
   }) async {
     return session.db.findById<RelationToMultipleMaxFieldName>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -319,7 +317,7 @@ class RelationToMultipleMaxFieldNameRepository {
   }) async {
     return session.db.insert<RelationToMultipleMaxFieldName>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -330,7 +328,7 @@ class RelationToMultipleMaxFieldNameRepository {
   }) async {
     return session.db.insertRow<RelationToMultipleMaxFieldName>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -343,7 +341,7 @@ class RelationToMultipleMaxFieldNameRepository {
     return session.db.update<RelationToMultipleMaxFieldName>(
       rows,
       columns: columns?.call(RelationToMultipleMaxFieldName.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -356,7 +354,7 @@ class RelationToMultipleMaxFieldNameRepository {
     return session.db.updateRow<RelationToMultipleMaxFieldName>(
       row,
       columns: columns?.call(RelationToMultipleMaxFieldName.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -367,7 +365,7 @@ class RelationToMultipleMaxFieldNameRepository {
   }) async {
     return session.db.delete<RelationToMultipleMaxFieldName>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -378,7 +376,7 @@ class RelationToMultipleMaxFieldNameRepository {
   }) async {
     return session.db.deleteRow<RelationToMultipleMaxFieldName>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -390,7 +388,7 @@ class RelationToMultipleMaxFieldNameRepository {
   }) async {
     return session.db.deleteWhere<RelationToMultipleMaxFieldName>(
       where: where(RelationToMultipleMaxFieldName.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -403,7 +401,7 @@ class RelationToMultipleMaxFieldNameRepository {
     return session.db.count<RelationToMultipleMaxFieldName>(
       where: where?.call(RelationToMultipleMaxFieldName.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -437,7 +435,7 @@ class RelationToMultipleMaxFieldNameAttachRepository {
         _i2.MultipleMaxFieldName.t
             .$_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -469,7 +467,7 @@ class RelationToMultipleMaxFieldNameAttachRowRepository {
         _i2.MultipleMaxFieldName.t
             .$_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -499,7 +497,7 @@ class RelationToMultipleMaxFieldNameDetachRepository {
         _i2.MultipleMaxFieldName.t
             .$_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -526,7 +524,7 @@ class RelationToMultipleMaxFieldNameDetachRowRepository {
         _i2.MultipleMaxFieldName.t
             .$_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

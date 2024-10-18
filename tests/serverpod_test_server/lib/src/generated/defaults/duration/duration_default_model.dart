@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -229,7 +227,7 @@ class DurationDefaultModelRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -248,7 +246,7 @@ class DurationDefaultModelRepository {
       orderByList: orderByList?.call(DurationDefaultModel.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -259,7 +257,7 @@ class DurationDefaultModelRepository {
   }) async {
     return session.db.findById<DurationDefaultModel>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -270,7 +268,7 @@ class DurationDefaultModelRepository {
   }) async {
     return session.db.insert<DurationDefaultModel>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -281,7 +279,7 @@ class DurationDefaultModelRepository {
   }) async {
     return session.db.insertRow<DurationDefaultModel>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -294,7 +292,7 @@ class DurationDefaultModelRepository {
     return session.db.update<DurationDefaultModel>(
       rows,
       columns: columns?.call(DurationDefaultModel.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -307,7 +305,7 @@ class DurationDefaultModelRepository {
     return session.db.updateRow<DurationDefaultModel>(
       row,
       columns: columns?.call(DurationDefaultModel.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -318,7 +316,7 @@ class DurationDefaultModelRepository {
   }) async {
     return session.db.delete<DurationDefaultModel>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -329,7 +327,7 @@ class DurationDefaultModelRepository {
   }) async {
     return session.db.deleteRow<DurationDefaultModel>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -340,7 +338,7 @@ class DurationDefaultModelRepository {
   }) async {
     return session.db.deleteWhere<DurationDefaultModel>(
       where: where(DurationDefaultModel.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -353,7 +351,7 @@ class DurationDefaultModelRepository {
     return session.db.count<DurationDefaultModel>(
       where: where?.call(DurationDefaultModel.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

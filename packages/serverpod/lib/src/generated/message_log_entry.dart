@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -381,7 +379,7 @@ class MessageLogEntryRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -400,7 +398,7 @@ class MessageLogEntryRepository {
       orderByList: orderByList?.call(MessageLogEntry.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -411,7 +409,7 @@ class MessageLogEntryRepository {
   }) async {
     return session.db.findById<MessageLogEntry>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -422,7 +420,7 @@ class MessageLogEntryRepository {
   }) async {
     return session.db.insert<MessageLogEntry>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -433,7 +431,7 @@ class MessageLogEntryRepository {
   }) async {
     return session.db.insertRow<MessageLogEntry>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -446,7 +444,7 @@ class MessageLogEntryRepository {
     return session.db.update<MessageLogEntry>(
       rows,
       columns: columns?.call(MessageLogEntry.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -459,7 +457,7 @@ class MessageLogEntryRepository {
     return session.db.updateRow<MessageLogEntry>(
       row,
       columns: columns?.call(MessageLogEntry.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -470,7 +468,7 @@ class MessageLogEntryRepository {
   }) async {
     return session.db.delete<MessageLogEntry>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -481,7 +479,7 @@ class MessageLogEntryRepository {
   }) async {
     return session.db.deleteRow<MessageLogEntry>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -492,7 +490,7 @@ class MessageLogEntryRepository {
   }) async {
     return session.db.deleteWhere<MessageLogEntry>(
       where: where(MessageLogEntry.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -505,7 +503,7 @@ class MessageLogEntryRepository {
     return session.db.count<MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -258,7 +256,7 @@ class CustomerRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -279,7 +277,7 @@ class CustomerRepository {
       orderByList: orderByList?.call(Customer.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -292,7 +290,7 @@ class CustomerRepository {
   }) async {
     return session.db.findById<Customer>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -304,7 +302,7 @@ class CustomerRepository {
   }) async {
     return session.db.insert<Customer>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -315,7 +313,7 @@ class CustomerRepository {
   }) async {
     return session.db.insertRow<Customer>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -328,7 +326,7 @@ class CustomerRepository {
     return session.db.update<Customer>(
       rows,
       columns: columns?.call(Customer.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -341,7 +339,7 @@ class CustomerRepository {
     return session.db.updateRow<Customer>(
       row,
       columns: columns?.call(Customer.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -352,7 +350,7 @@ class CustomerRepository {
   }) async {
     return session.db.delete<Customer>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -363,7 +361,7 @@ class CustomerRepository {
   }) async {
     return session.db.deleteRow<Customer>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -374,7 +372,7 @@ class CustomerRepository {
   }) async {
     return session.db.deleteWhere<Customer>(
       where: where(Customer.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -387,7 +385,7 @@ class CustomerRepository {
     return session.db.count<Customer>(
       where: where?.call(Customer.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -412,7 +410,7 @@ class CustomerAttachRepository {
     await session.db.update<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -437,7 +435,7 @@ class CustomerAttachRowRepository {
     await session.db.updateRow<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -458,7 +456,7 @@ class CustomerDetachRepository {
     await session.db.update<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -479,7 +477,7 @@ class CustomerDetachRowRepository {
     await session.db.updateRow<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

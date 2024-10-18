@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -192,7 +190,7 @@ class DoubleDefaultPersistRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -211,7 +209,7 @@ class DoubleDefaultPersistRepository {
       orderByList: orderByList?.call(DoubleDefaultPersist.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -222,7 +220,7 @@ class DoubleDefaultPersistRepository {
   }) async {
     return session.db.findById<DoubleDefaultPersist>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -233,7 +231,7 @@ class DoubleDefaultPersistRepository {
   }) async {
     return session.db.insert<DoubleDefaultPersist>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -244,7 +242,7 @@ class DoubleDefaultPersistRepository {
   }) async {
     return session.db.insertRow<DoubleDefaultPersist>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -257,7 +255,7 @@ class DoubleDefaultPersistRepository {
     return session.db.update<DoubleDefaultPersist>(
       rows,
       columns: columns?.call(DoubleDefaultPersist.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -270,7 +268,7 @@ class DoubleDefaultPersistRepository {
     return session.db.updateRow<DoubleDefaultPersist>(
       row,
       columns: columns?.call(DoubleDefaultPersist.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -281,7 +279,7 @@ class DoubleDefaultPersistRepository {
   }) async {
     return session.db.delete<DoubleDefaultPersist>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -292,7 +290,7 @@ class DoubleDefaultPersistRepository {
   }) async {
     return session.db.deleteRow<DoubleDefaultPersist>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -303,7 +301,7 @@ class DoubleDefaultPersistRepository {
   }) async {
     return session.db.deleteWhere<DoubleDefaultPersist>(
       where: where(DoubleDefaultPersist.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -316,7 +314,7 @@ class DoubleDefaultPersistRepository {
     return session.db.count<DoubleDefaultPersist>(
       where: where?.call(DoubleDefaultPersist.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

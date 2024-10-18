@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../protocol.dart' as _i2;
@@ -297,7 +295,7 @@ class BlockingRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -318,7 +316,7 @@ class BlockingRepository {
       orderByList: orderByList?.call(Blocking.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -331,7 +329,7 @@ class BlockingRepository {
   }) async {
     return session.db.findById<Blocking>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -343,7 +341,7 @@ class BlockingRepository {
   }) async {
     return session.db.insert<Blocking>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -354,7 +352,7 @@ class BlockingRepository {
   }) async {
     return session.db.insertRow<Blocking>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -367,7 +365,7 @@ class BlockingRepository {
     return session.db.update<Blocking>(
       rows,
       columns: columns?.call(Blocking.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -380,7 +378,7 @@ class BlockingRepository {
     return session.db.updateRow<Blocking>(
       row,
       columns: columns?.call(Blocking.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -391,7 +389,7 @@ class BlockingRepository {
   }) async {
     return session.db.delete<Blocking>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -402,7 +400,7 @@ class BlockingRepository {
   }) async {
     return session.db.deleteRow<Blocking>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -413,7 +411,7 @@ class BlockingRepository {
   }) async {
     return session.db.deleteWhere<Blocking>(
       where: where(Blocking.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -426,7 +424,7 @@ class BlockingRepository {
     return session.db.count<Blocking>(
       where: where?.call(Blocking.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -451,7 +449,7 @@ class BlockingAttachRowRepository {
     await session.db.updateRow<Blocking>(
       $blocking,
       columns: [Blocking.t.blockedId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -472,7 +470,7 @@ class BlockingAttachRowRepository {
     await session.db.updateRow<Blocking>(
       $blocking,
       columns: [Blocking.t.blockedById],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

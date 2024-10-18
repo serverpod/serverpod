@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
@@ -325,7 +323,7 @@ class OrganizationRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -346,7 +344,7 @@ class OrganizationRepository {
       orderByList: orderByList?.call(Organization.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -359,7 +357,7 @@ class OrganizationRepository {
   }) async {
     return session.db.findById<Organization>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -371,7 +369,7 @@ class OrganizationRepository {
   }) async {
     return session.db.insert<Organization>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -382,7 +380,7 @@ class OrganizationRepository {
   }) async {
     return session.db.insertRow<Organization>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -395,7 +393,7 @@ class OrganizationRepository {
     return session.db.update<Organization>(
       rows,
       columns: columns?.call(Organization.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -408,7 +406,7 @@ class OrganizationRepository {
     return session.db.updateRow<Organization>(
       row,
       columns: columns?.call(Organization.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -419,7 +417,7 @@ class OrganizationRepository {
   }) async {
     return session.db.delete<Organization>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -430,7 +428,7 @@ class OrganizationRepository {
   }) async {
     return session.db.deleteRow<Organization>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -441,7 +439,7 @@ class OrganizationRepository {
   }) async {
     return session.db.deleteWhere<Organization>(
       where: where(Organization.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -454,7 +452,7 @@ class OrganizationRepository {
     return session.db.count<Organization>(
       where: where?.call(Organization.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -480,7 +478,7 @@ class OrganizationAttachRepository {
     await session.db.update<_i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -505,7 +503,7 @@ class OrganizationAttachRowRepository {
     await session.db.updateRow<Organization>(
       $organization,
       columns: [Organization.t.cityId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -526,7 +524,7 @@ class OrganizationAttachRowRepository {
     await session.db.updateRow<_i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -547,7 +545,7 @@ class OrganizationDetachRepository {
     await session.db.update<_i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -568,7 +566,7 @@ class OrganizationDetachRowRepository {
     await session.db.updateRow<Organization>(
       $organization,
       columns: [Organization.t.cityId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -585,7 +583,7 @@ class OrganizationDetachRowRepository {
     await session.db.updateRow<_i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
