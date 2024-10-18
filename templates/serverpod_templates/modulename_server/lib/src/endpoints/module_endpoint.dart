@@ -7,6 +7,12 @@ import 'package:serverpod/serverpod.dart';
 
 class ModuleEndpoint extends Endpoint {
   Future<String> hello(Session session, String name) async {
+    return ModuleUtil.buildGreeting(name);
+  }
+}
+
+abstract final class ModuleUtil {
+  static String buildGreeting(String name) {
     return 'Hello $name';
   }
 }
