@@ -28,7 +28,7 @@ void main() async {
     });
 
     tearDown(() async {
-      await await session.close();
+      await session.close();
       await server.shutdown(exitProcess: false);
     });
 
@@ -407,13 +407,19 @@ void main() async {
       record = MockStdout();
 
       server = IntegrationTestServer.create(
-          config: ServerpodConfig(
-              apiServer: ServerConfig(
-        port: 8080,
-        publicHost: 'localhost',
-        publicPort: 8080,
-        publicScheme: 'http',
-      )));
+        config: ServerpodConfig(
+          apiServer: ServerConfig(
+            port: 8080,
+            publicHost: 'localhost',
+            publicPort: 8080,
+            publicScheme: 'http',
+          ),
+          sessionLogs: SessionLogConfig(
+            persistentEnabled: false,
+            consoleEnabled: true,
+          ),
+        ),
+      );
 
       await IOOverrides.runZoned(() async {
         await server.start();

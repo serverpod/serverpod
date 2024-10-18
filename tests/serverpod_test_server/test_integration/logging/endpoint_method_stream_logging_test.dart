@@ -32,7 +32,7 @@ void main() async {
   tearDown(() async {
     await client.closeStreamingMethodConnections(exception: null);
     client.close();
-    await await session.close();
+    await session.close();
     await server.shutdown(exitProcess: false);
   });
 
