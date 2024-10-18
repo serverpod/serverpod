@@ -76,14 +76,16 @@ class UserAuthentication {
           throw StateError(
               'Authentication Key ID is missing or invalid. Unable to sign out from the current device.');
         }
-        await session.db.deleteWhere<AuthKey>(
-          where: AuthKey.t.userId.equals(tempUserId) &
-              AuthKey.t.id.equals(authKeyId),
+        await AuthKey.db.deleteWhere(
+          session,
+          where: (row) =>
+              row.id.equals(authKeyId) & row.userId.equals(tempUserId),
         );
         break;
       case SignOutOption.allDevices:
-        await session.db.deleteWhere<AuthKey>(
-          where: AuthKey.t.userId.equals(tempUserId),
+        await AuthKey.db.deleteWhere(
+          session,
+          where: (row) => row.userId.equals(tempUserId),
         );
         break;
     }
