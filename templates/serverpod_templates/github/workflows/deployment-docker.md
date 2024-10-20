@@ -29,6 +29,7 @@ the docker-compose-production file AND the serverpod configuration file.
 - [Running the action](#running-the-action)
 - [Using the Serverpod Insights app](#using-the-serverpod-insights-app)
 - [Connecting your Flutter client](#connecting-your-flutter-client)
+- [Connecting to the Database using DBeaver](#connecting-to-the-database-using-dbeaver)
 
 ## Preparing the server
 
@@ -289,5 +290,12 @@ service secret you specify in the repository secrets must match the one you set
 in the local passwords.yaml file for production.
 
 ## Connecting your Flutter client
+
+To connect with your generated client, use the domain you set up in the DNS.
+Make sure to use https without any ports, i.e. `https://api.my-domain.com`.
+
+## Connecting to the Database using DBeaver
+
+Setup connection via ssh then use postgres for host and password for password.
 
 TODO TODO TODO
