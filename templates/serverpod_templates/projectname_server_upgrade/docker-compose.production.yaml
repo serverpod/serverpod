@@ -8,6 +8,7 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      # TODO Change this to your email address, Let's Encrypt will use this to notify you about certificate expiration
       - "--certificatesresolvers.myresolver.acme.email=damian_and_paul@examplepod.com"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:

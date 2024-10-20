@@ -24,8 +24,11 @@ the docker-compose-production file AND the serverpod configuration file.
 - [Preparing the repository](#preparing-the-repository)
   - [Getting a GitHub Personal Access Token](#getting-a-github-personal-access-token)
   - [Adding the secrets to the repository](#adding-the-secrets-to-the-repository)
+- [Configuring SSL-certificates](#configuring-ssl-certificates)
 - [Configuring the action](#configuring-the-action)
 - [Running the action](#running-the-action)
+- [Using the Serverpod Insights app](#using-the-serverpod-insights-app)
+- [Connecting your Flutter client](#connecting-your-flutter-client)
 
 ## Preparing the server
 
@@ -238,21 +241,26 @@ Go to your serverpod project repository, "Settings" -> "Secrets and variables"
 
 The following will configure serverpod and the database:
 
-| Secret Name                           | Value                                                                                                                                      |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| SERVERPOD_DATABASE_NAME               | The name of the database, e.g., "serverpod"                                                                                                |
-| SERVERPOD_DATABASE_USER               | The database user, e.g., "serverpod"                                                                                                       |
-| SERVERPOD_DATABASE_PASSWORD           | The database password                                                                                                                      |
-| SERVERPOD_API_SERVER_PUBLIC_HOST      | The domain for the API server, this must be the same value as configured in the section [Preparing the domain](#preparing-the-domain)      |
-| SERVERPOD_WEB_SERVER_PUBLIC_HOST      | The domain for the Web server, this must be the same value as configured in the section [Preparing the domain](#preparing-the-domain)      |
-| SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST | The domain for the Insights server, this must be the same value as configured in the section [Preparing the domain](#preparing-the-domain) |
-| SERVERPOD_SERVICE_SECRET              | The same value as in your local passwords.yaml file, required to connect using the Serverpod app                                           |
+| Secret Name                           | Value                                                                                                                                        |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| SERVERPOD_DATABASE_NAME               | The name of the database, e.g., "serverpod"                                                                                                  |
+| SERVERPOD_DATABASE_USER               | The database user, e.g., "serverpod"                                                                                                         |
+| SERVERPOD_DATABASE_PASSWORD           | The database password                                                                                                                        |
+| SERVERPOD_API_SERVER_PUBLIC_HOST      | The domain for the API server as configured in the section, (i.e. api.my-domain.com) [Preparing the domain](#preparing-the-domain)           |
+| SERVERPOD_WEB_SERVER_PUBLIC_HOST      | The domain for the Web server as configured in the section, (i.e. web.my-domain.com) [Preparing the domain](#preparing-the-domain)           |
+| SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST | The domain for the Insights server as configured in the section, (i.e. insights.my-domain.com) [Preparing the domain](#preparing-the-domain) |
+| SERVERPOD_SERVICE_SECRET              | The same value as in your local passwords.yaml file, required to connect using the Serverpod Insights app                                    |
 
-TODO add service secrets otherwise insights server will not work
+## Configuring SSL-certificates
 
-TODO explain to configure traefik certificate mail for SSL
+All outside connections are secured by Traefik through https. Traefik uses
+[letsencrypt](https://letsencrypt.org/) to automatically generate
+SSL-certificates for your domains. You need to configure the email address that
+letsencrypt will use to send notifications about your certificates.
 
-TODO add code in deployment to create letsencrypt directory with correct permissions
+Open `docker-compose.production.yaml` and edit the email address in the
+parameter holding `certificatesresolvers.myresolver.acme.email`. There is also a
+`TODO` above this line for your convenience.
 
 ## Configuring the action
 
@@ -271,3 +279,15 @@ Push your changes to the repository.
 To trigger the action, go to the "Actions" tab in your repository and click on
 the "Deploy to Docker" workflow. Click on "Run workflow" and select the branch
 you want to deploy.
+
+## Using the Serverpod Insights app
+
+To enable the [Serverpod Insights
+app](https://docs.serverpod.dev/tools/insights), you need to adjust the insights
+server host in production.yaml to the domain you set up in the DNS records. The
+service secret you specify in the repository secrets must match the one you set
+in the local passwords.yaml file for production.
+
+## Connecting your Flutter client
+
+TODO TODO TODO
