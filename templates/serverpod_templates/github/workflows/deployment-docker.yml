@@ -116,40 +116,25 @@ jobs:
           SERVERPOD_DATABASE_PASSWORD: ${{ secrets.SERVERPOD_DATABASE_PASSWORD }}
           # The public host address of the API server
           SERVERPOD_API_SERVER_PUBLIC_HOST: ${{ secrets.SERVERPOD_API_SERVER_PUBLIC_HOST }}
-          # The public port number for the API server
-          # This is hardcoded, since it is used only to map from docker image to
-          # traefik loadbalancer and this port is NOT used to access from the
-          # web. External access is done solely through the host. If you want to
-          # have access through a different port or have multiple services on
-          # the same host, you need to adjust the traefik configuration in the
-          # docker-compose.production.yaml file.
+          # The public port number for the API server, 443 for https
           SERVERPOD_API_SERVER_PUBLIC_PORT: 443
+          # This is the internal port number for the API server
           SERVERPOD_API_SERVER_PORT: 8080
           # The public scheme (http/https) for the API server
           SERVERPOD_API_SERVER_PUBLIC_SCHEME: "https"
           # The public host address of the Insights server
           SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST: ${{ secrets.SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST }}
           # The public port number for the Insights server
-          # This is hardcoded, since it is used only to map from docker image to
-          # traefik loadbalancer and this port is NOT used to access from the
-          # web. External access is done solely through the host. If you want to
-          # have access through a different port or have multiple services on
-          # the same host, you need to adjust the traefik configuration in the
-          # docker-compose.production.yaml file.
           SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT: 443
+          # This is the internal port number for the Insights server
           SERVERPOD_INSIGHTS_SERVER_PORT: 8081
           # The public scheme (http/https) for the Insights server
           SERVERPOD_INSIGHTS_SERVER_PUBLIC_SCHEME: "https"
           # The public host address of the Web server
           SERVERPOD_WEB_SERVER_PUBLIC_HOST: ${{ secrets.SERVERPOD_WEB_SERVER_PUBLIC_HOST }}
           # The public port number for the Web server
-          # This is hardcoded, since it is used only to map from docker image to
-          # traefik loadbalancer and this port is NOT used to access from the
-          # web. External access is done solely through the host. If you want to
-          # have access through a different port or have multiple services on
-          # the same host, you need to adjust the traefik configuration in the
-          # docker-compose.production.yaml file.
           SERVERPOD_WEB_SERVER_PUBLIC_PORT: 443
+          # This is the internal port number for the Web server
           SERVERPOD_WEB_SERVER_PORT: 8082
           # The public scheme (http/https) for the Web server
           SERVERPOD_WEB_SERVER_PUBLIC_SCHEME: "https"
