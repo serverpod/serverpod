@@ -324,6 +324,19 @@ class Restrictions {
           )
         ];
       }
+
+      // This is temporary until [PartAllocator] and [PartOfAllocator] can automatically allocate the imports from the sub-classes relative to the parent imports.
+      if (currentModel.sealedTopNode != null) {
+        if (currentModel.subDirParts.join() !=
+            currentModel.sealedTopNode!.subDirParts.join()) {
+          return [
+            SourceSpanSeverityException(
+              'All models in a sealed library must be in the same subdirectory. The class "${currentModel.className}" is in a different subdirectory.',
+              span,
+            )
+          ];
+        }
+      }
     }
 
     return [];
@@ -1435,7 +1448,7 @@ class Restrictions {
   /// Returns the first non-null result from [predicate], or `null` if no match is found.
   ///
   /// ```dart
-  /// var serverOnlyAncestor = _findInHierarchy(
+  /// var serverOnlyAncestor = _findInParentHierarchy(
   ///   currentModel,
   ///  (ClassDefinition ancestor) => ancestor.serverOnly ? ancestor : null,
   /// );
