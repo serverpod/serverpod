@@ -1,0 +1,4 @@
+class: SealedGrandchild
+extends: SealedChild
+fields:
+    sealedGrandchildField: String
