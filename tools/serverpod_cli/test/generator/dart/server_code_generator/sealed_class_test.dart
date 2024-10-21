@@ -347,13 +347,13 @@ void main() {
         expect(copyWithMethod, isNotNull);
       });
 
-      test('without the override annotation', () {
+      test('with the override annotation', () {
         var overrideAnnotation = CompilationUnitHelpers.tryFindAnnotation(
           copyWithMethod!,
           name: 'override',
         );
 
-        expect(overrideAnnotation, isNull);
+        expect(overrideAnnotation, isNotNull);
       });
     });
   });
