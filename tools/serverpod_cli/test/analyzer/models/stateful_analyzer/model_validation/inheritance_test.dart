@@ -337,4 +337,36 @@ void main() {
       );
     });
   });
+
+  test(
+      'Given a sealed class with a table defined, then an error is collected that "sealed" and "table" properties are mutually exclusive',
+      () {
+    var modelSources = [
+      ModelSourceBuilder().withFileName('example1').withYaml(
+        '''
+          class: Example
+          sealed: true
+          table: example_table
+          fields:
+            name: String
+          ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error but none was generated.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'The "sealed" property is mutually exclusive with the "table" property.',
+    );
+  });
 }

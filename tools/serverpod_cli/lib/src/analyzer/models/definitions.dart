@@ -58,6 +58,9 @@ class ClassDefinition extends SerializableModelDefinition {
   /// `true` if this is an exception and not a class.
   final bool isException;
 
+  /// If set to true the class is sealed.
+  final bool isSealed;
+
   /// If set to a List of [InheritanceDefinitions] the class is a parent class and stores the child classes.
   List<InheritanceDefinition> childClasses;
 
@@ -75,6 +78,7 @@ class ClassDefinition extends SerializableModelDefinition {
     required this.manageMigration,
     required this.isException,
     required super.type,
+    required this.isSealed,
     List<InheritanceDefinition>? childClasses,
     this.extendsClass,
     this.tableName,
@@ -115,7 +119,37 @@ class ClassDefinition extends SerializableModelDefinition {
     ];
   }
 
-  bool get isParentClass => childClasses.isNotEmpty;
+  bool get isParentClass => childClasses.isNotEmpty || isSealed;
+
+  // / Returns the top node of the sealed hierarchy.
+  // / If the class is not part of a sealed hierarchy, `null` is returned.
+  // / If the class is a top node `null` is returned.
+  ClassDefinition? get sealedTopNode {
+    var parent = parentClass;
+    if (parent != null) {
+      var parentsSealedTopNode = parent.sealedTopNode;
+      if (parentsSealedTopNode != null) return parentsSealedTopNode;
+    }
+
+    if (isSealed) return this;
+
+    return null;
+  }
+
+  /// Returns a list of all descendant classes.
+  /// This includes all child classes and their descendants.
+  /// If the class has no child classes, an empty list is returned.
+  List<ClassDefinition> get descendantClasses {
+    List<ClassDefinition> descendants = [];
+    for (var child in childClasses) {
+      if (child is ResolvedInheritanceDefinition) {
+        descendants.add(child.classDefinition);
+        descendants.addAll(child.classDefinition.descendantClasses);
+      }
+    }
+
+    return descendants;
+  }
 }
 
 /// Describes a single field of a [ClassDefinition].
