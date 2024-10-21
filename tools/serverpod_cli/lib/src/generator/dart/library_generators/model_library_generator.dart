@@ -441,8 +441,9 @@ class SerializableModelLibraryGenerator {
     List<SerializableModelFieldDefinition> fields,
   ) {
     return Method((methodBuilder) {
-      var isTopNodesChild = classDefinition.sealedTopNode == null &&
-          classDefinition.sealedTopNode == classDefinition.parentClass;
+      var isTopNodesChild =
+          classDefinition.sealedTopNode == classDefinition.parentClass &&
+              classDefinition.sealedTopNode?.parentClass == null;
 
       var isChildWithoutSealedParent = classDefinition.parentClass != null &&
           classDefinition.sealedTopNode == null;
