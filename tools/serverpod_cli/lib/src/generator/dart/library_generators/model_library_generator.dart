@@ -49,6 +49,20 @@ class SerializableModelLibraryGenerator {
 
     return Library(
       (libraryBuilder) {
+        if (classDefinition.sealedTopNode == classDefinition) {
+          for (var child in classDefinition.descendantClasses) {
+            libraryBuilder.directives
+                .add(Directive.part('${child.fileName}.dart'));
+          }
+        }
+
+        if (classDefinition.sealedTopNode != null &&
+            classDefinition.sealedTopNode != classDefinition) {
+          libraryBuilder.directives.add(
+            Directive.partOf('${classDefinition.sealedTopNode!.fileName}.dart'),
+          );
+        }
+
         libraryBuilder.body.addAll([
           _buildModelClass(
             className,
@@ -59,7 +73,8 @@ class SerializableModelLibraryGenerator {
           // We need to generate the implementation class for the copyWith method
           // to support differentiating between null and undefined values.
           // https://stackoverflow.com/questions/68009392/dart-custom-copywith-method-with-nullable-properties
-          if (_shouldCreateUndefinedClass(fields)) _buildUndefinedClass(),
+          if (_shouldCreateUndefinedClass(classDefinition, fields))
+            _buildUndefinedClass(),
           if (!classDefinition.isParentClass)
             _buildModelImplClass(
               className,
@@ -145,6 +160,10 @@ class SerializableModelLibraryGenerator {
         classBuilder.abstract = true;
       }
 
+      if (classDefinition.isSealed) {
+        classBuilder.sealed = true;
+      }
+
       if (parentClass != null) {
         classBuilder.extend = parentClass.type.reference(
           serverCode,
@@ -208,11 +227,12 @@ class SerializableModelLibraryGenerator {
             fields,
             tableName,
           ),
-        _buildModelClassFromJsonConstructor(
-          className,
-          fields,
-          classDefinition,
-        )
+        if (!classDefinition.isSealed)
+          _buildModelClassFromJsonConstructor(
+            className,
+            fields,
+            classDefinition,
+          )
       ]);
 
       if (!classDefinition.isParentClass) {
@@ -221,7 +241,7 @@ class SerializableModelLibraryGenerator {
           classDefinition,
           fields,
         ));
-      } else {
+      } else if (!classDefinition.isSealed) {
         classBuilder.methods.add(_buildCopyWithMethod(classDefinition, fields));
       }
       // Serialization
@@ -252,8 +272,27 @@ class SerializableModelLibraryGenerator {
   }
 
   bool _shouldCreateUndefinedClass(
+    ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
+    if (classDefinition.sealedTopNode == classDefinition) {
+      var descendantFields = [];
+      var descendants = classDefinition.descendantClasses;
+
+      for (var descendant in descendants) {
+        descendantFields.addAll(descendant.fields);
+      }
+
+      return descendantFields
+          .where((field) => field.shouldIncludeField(serverCode))
+          .any((field) => field.type.nullable);
+    }
+
+    if (classDefinition.sealedTopNode != null &&
+        classDefinition.sealedTopNode != classDefinition) {
+      return false;
+    }
+
     return fields
         .where((field) => field.shouldIncludeField(serverCode))
         .any((field) => field.type.nullable);
@@ -402,7 +441,15 @@ class SerializableModelLibraryGenerator {
     List<SerializableModelFieldDefinition> fields,
   ) {
     return Method((methodBuilder) {
-      if (classDefinition.parentClass != null) {
+      var isTopNodesChild = classDefinition.sealedTopNode == null &&
+          classDefinition.sealedTopNode == classDefinition.parentClass;
+
+      var isChildWithoutSealedParent = classDefinition.parentClass != null &&
+          classDefinition.sealedTopNode == null;
+
+      var shouldOverride = !isTopNodesChild || isChildWithoutSealedParent;
+
+      if (shouldOverride) {
         methodBuilder.annotations.add(refer('override'));
       }
 

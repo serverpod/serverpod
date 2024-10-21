@@ -31,9 +31,25 @@ class LibraryGenerator {
         .where((model) => serverCode || !model.serverOnly)
         .toList();
 
+    String getRef(SerializableModelDefinition classInfo) =>
+        classInfo is ClassDefinition && classInfo.sealedTopNode != null
+            ? classInfo.sealedTopNode!.fileRef()
+            : classInfo.fileRef();
+
+    bool shouldCreateExport(SerializableModelDefinition classInfo) {
+      if (classInfo is! ClassDefinition) return true;
+      bool isSealedTopNode = classInfo.sealedTopNode == classInfo;
+
+      bool isNotPartOfSealedHierarchy = classInfo.sealedTopNode == null;
+
+      return isSealedTopNode || isNotPartOfSealedHierarchy;
+    }
+
     // exports
     library.directives.addAll([
-      for (var classInfo in models) Directive.export(classInfo.fileRef()),
+      for (var classInfo
+          in models.where((element) => shouldCreateExport(element)))
+        Directive.export(classInfo.fileRef()),
       if (!serverCode) Directive.export('client.dart'),
     ]);
 
@@ -107,20 +123,25 @@ class LibraryGenerator {
           const Code('t ??= T;'),
           ...(<Expression, Code>{
             for (var classInfo in models)
-              refer(classInfo.className, classInfo.fileRef()): Code.scope(
-                  (a) => '${a(refer(classInfo.className, classInfo.fileRef()))}'
-                      '.fromJson(data) as T'),
+              if (!(classInfo is ClassDefinition && classInfo.isSealed))
+                refer(classInfo.className, getRef(classInfo)): Code.scope(
+                    (a) => '${a(refer(classInfo.className, getRef(classInfo)))}'
+                        '.fromJson(data) as T'),
             for (var classInfo in models)
-              refer('getType', serverpodUrl(serverCode)).call([], {}, [
-                TypeReference(
-                  (b) => b
-                    ..symbol = classInfo.className
-                    ..url = classInfo.fileRef()
-                    ..isNullable = true,
-                )
-              ]): Code.scope((a) => '(data!=null?'
-                  '${a(refer(classInfo.className, classInfo.fileRef()))}'
-                  '.fromJson(data) :null) as T'),
+              if (!(classInfo is ClassDefinition && classInfo.isSealed))
+                refer('getType', serverpodUrl(serverCode)).call([], {}, [
+                  TypeReference(
+                    (b) => b
+                      ..symbol = classInfo.className
+                      ..url = classInfo is ClassDefinition &&
+                              classInfo.sealedTopNode != null
+                          ? classInfo.sealedTopNode!.fileRef()
+                          : classInfo.fileRef()
+                      ..isNullable = true,
+                  )
+                ]): Code.scope((a) => '(data!=null?'
+                    '${a(refer(classInfo.className, getRef(classInfo)))}'
+                    '.fromJson(data) :null) as T'),
           }..addEntries([
                   for (var classInfo in models)
                     if (classInfo is ClassDefinition)
@@ -186,7 +207,7 @@ class LibraryGenerator {
                 'if(data is ${a(extraClass.reference(serverCode, config: config))}) {return \'${extraClass.className}\';}'),
           for (var classInfo in models)
             Code.scope((a) =>
-                'if(data is ${a(refer(classInfo.className, classInfo.fileRef()))}) {return \'${classInfo.className}\';}'),
+                'if(data is ${a(refer(classInfo.className, getRef(classInfo)))}) {return \'${classInfo.className}\';}'),
           if (config.name != 'serverpod' && serverCode)
             _buildGetClassNameForObjectDelegation(
                 serverpodProtocolUrl(serverCode), 'serverpod'),
@@ -210,7 +231,7 @@ class LibraryGenerator {
           for (var classInfo in models)
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${classInfo.className}\'){'
-                'return deserialize<${a(refer(classInfo.className, classInfo.fileRef()))}>(data[\'data\']);}'),
+                'return deserialize<${a(refer(classInfo.className, getRef(classInfo)))}>(data[\'data\']);}'),
           if (config.name != 'serverpod' && serverCode)
             _buildDeserializeByClassNameDelegation(
               serverpodProtocolUrl(serverCode),
@@ -253,8 +274,8 @@ class LibraryGenerator {
                     if (classInfo is ClassDefinition &&
                         classInfo.tableName != null)
                       Code.scope((a) =>
-                          'case ${a(refer(classInfo.className, classInfo.fileRef()))}:'
-                          'return ${a(refer(classInfo.className, classInfo.fileRef()))}.t;'),
+                          'case ${a(refer(classInfo.className, getRef(classInfo)))}:'
+                          'return ${a(refer(classInfo.className, getRef(classInfo)))}.t;'),
                   const Code('}'),
                 ]),
               const Code('return null;'),

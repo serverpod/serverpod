@@ -5,6 +5,8 @@ import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/model_library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/server_test_tools_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/custom_allocators.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_filter_util.dart';
 
 /// A [CodeGenerator] that generates the server side dart code of a
 /// serverpod project.
@@ -20,16 +22,33 @@ class DartServerCodeGenerator extends CodeGenerator {
       serverCode: true,
       config: config,
     );
-    return {
-      for (var protocolFile in models)
-        p.joinAll([
-          ...config.generatedServeModelPathParts,
-          ...protocolFile.subDirParts,
-          '${protocolFile.fileName}.dart'
-        ]): serverSideGenerator
-            .generateModelLibrary(protocolFile)
-            .generateCode(),
-    };
+
+    Map<String, String> generatedCode = {};
+
+    var sealedHierarchies = getSealedHierarchies(models);
+
+    var modelsWithoutSealedHierarchies =
+        getClassesWithoutSealedHierarchies(models);
+
+    for (var sealedHierarchy in sealedHierarchies) {
+      var partOfAllocator = PartOfAllocator([]);
+      var partAllocator = PartAllocator(partOfAllocator);
+
+      for (var protocolFile in sealedHierarchy) {
+        generatedCode[createFilePath(config, protocolFile, true)] =
+            serverSideGenerator.generateModelLibrary(protocolFile).generateCode(
+                  partOfAllocator: partOfAllocator,
+                  partAllocator: partAllocator,
+                );
+      }
+    }
+
+    for (var protocolFile in modelsWithoutSealedHierarchies) {
+      generatedCode[createFilePath(config, protocolFile, true)] =
+          serverSideGenerator.generateModelLibrary(protocolFile).generateCode();
+    }
+
+    return generatedCode;
   }
 
   @override

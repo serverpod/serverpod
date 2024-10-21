@@ -22,6 +22,7 @@ class ClassDefinitionBuilder {
   List<_FieldBuilder> _fields;
   List<SerializableModelIndexDefinition> _indexes;
   List<String>? _documentation;
+  bool _isSealed;
   List<InheritanceDefinition> _childClasses;
   InheritanceDefinition? _extendsClass;
 
@@ -36,7 +37,8 @@ class ClassDefinitionBuilder {
         _serverOnly = false,
         _isException = false,
         _indexes = [],
-        _childClasses = [];
+        _childClasses = [],
+        _isSealed = false;
 
   ClassDefinition build() {
     if (_tableName != null) {
@@ -66,6 +68,7 @@ class ClassDefinitionBuilder {
       documentation: _documentation,
       childClasses: _childClasses,
       extendsClass: _extendsClass,
+      isSealed: _isSealed,
       type: TypeDefinitionBuilder().withClassName(_className).build(),
     );
   }
@@ -336,6 +339,11 @@ class ClassDefinitionBuilder {
 
   ClassDefinitionBuilder withExtendsClass(ClassDefinition parentClass) {
     _extendsClass = ResolvedInheritanceDefinition(parentClass);
+    return this;
+  }
+
+  ClassDefinitionBuilder withIsSealed(bool isSealed) {
+    _isSealed = isSealed;
     return this;
   }
 }
