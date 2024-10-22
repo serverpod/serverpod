@@ -1,155 +1,121 @@
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
-import 'package:test/expect.dart';
-import 'package:test/scaffolding.dart';
+import 'package:test/test.dart';
 
 void main() {
-  group('Given an authenticated user', () {
-    late Client client;
-    late Client secondClient;
+  group('Given two authenticated clients', () {
+    late Client primaryClient;
+    late Client secondaryClient;
 
-    setUpAll(() async {
-      // Create two clients to simulate two different devices
-      client = Client(
+    setUp(() async {
+      primaryClient = Client(
         serverUrl,
         authenticationKeyManager: TestAuthKeyManager(),
       );
-      secondClient = Client(
+      secondaryClient = Client(
         serverUrl,
         authenticationKeyManager: TestAuthKeyManager(),
       );
+
+      await _authenticateClient(primaryClient);
+      await _authenticateClient(secondaryClient);
+
+      assert(
+        await primaryClient.modules.auth.status.isSignedIn(),
+        'Primary client failed to authenticate',
+      );
+      assert(
+        await secondaryClient.modules.auth.status.isSignedIn(),
+        'Secondary client failed to authenticate',
+      );
     });
 
-    tearDownAll(() async {
-      // Clean up after tests
-      await client.modules.auth.status.signOutAllDevices();
-      secondClient.close();
-      client.close();
+    tearDown(() async {
+      await primaryClient.modules.auth.status.signOutAllDevices();
+      primaryClient.close();
+      secondaryClient.close();
     });
 
-    test(
-        'when calling the deprecated signOutUser method from the status endpoint then the user is signed out from all sessions on all devices',
-        () async {
-      // Authenticate the first client and store the auth key
-      var response = await client.authentication.authenticate(
-        'test@foo.bar',
-        'password',
-      );
-      expect(response.success, isTrue,
-          reason: 'Re-authentication failed for the first client');
-      await client.authenticationKeyManager
-          ?.put('${response.keyId}:${response.key}');
+    group('when calling the deprecated signOut method with first client', () {
+      setUp(() async {
+        // ignore: deprecated_member_use
+        await primaryClient.modules.auth.status.signOut();
+      });
 
-      // Authenticate the second client and store the auth key
-      var secondResponse = await secondClient.authentication.authenticate(
-        'test@foo.bar',
-        'password',
-      );
-      expect(secondResponse.success, isTrue,
-          reason: 'Re-authentication failed for the second client');
-      await secondClient.authenticationKeyManager
-          ?.put('${secondResponse.keyId}:${secondResponse.key}');
+      test('then first client is signed out', () async {
+        expect(
+          await primaryClient.modules.auth.status.isSignedIn(),
+          isFalse,
+          reason: 'Primary client was not signed out after signOut()',
+        );
+      });
 
-      // Check both sessions are signed in
-      var firstSessionSignedIn = await client.modules.auth.status.isSignedIn();
-      var secondSessionSignedIn =
-          await secondClient.modules.auth.status.isSignedIn();
-      expect(firstSessionSignedIn, isTrue);
-      expect(secondSessionSignedIn, isTrue);
-
-      // Sign out from all sessions using the deprecated signOutUser method
-      // ignore: deprecated_member_use
-      await client.modules.auth.status.signOut();
-
-      // Verify both sessions are signed out
-      firstSessionSignedIn = await client.modules.auth.status.isSignedIn();
-      secondSessionSignedIn =
-          await secondClient.modules.auth.status.isSignedIn();
-      expect(firstSessionSignedIn, isFalse);
-      expect(secondSessionSignedIn, isFalse);
+      test('then second client is signed out', () async {
+        expect(
+          await secondaryClient.modules.auth.status.isSignedIn(),
+          isFalse,
+          reason:
+              'Secondary client was not signed out after primary client signOut()',
+        );
+      });
     });
 
-    test(
-        'when calling signOutCurrentDevice from the status endpoint then only the current device session is signed out and other devices remain signed in',
-        () async {
-      // Authenticate the first client and store the auth key
-      var response = await client.authentication.authenticate(
-        'test@foo.bar',
-        'password',
-      );
-      expect(response.success, isTrue,
-          reason: 'Re-authentication failed for the first client');
-      await client.authenticationKeyManager
-          ?.put('${response.keyId}:${response.key}');
+    group('when calling signOutCurrentDevice with first client', () {
+      setUp(() async {
+        await primaryClient.modules.auth.status.signOutDevice();
+      });
 
-      // Authenticate the second client and store the auth key
-      var secondResponse = await secondClient.authentication.authenticate(
-        'test@foo.bar',
-        'password',
-      );
-      expect(secondResponse.success, isTrue,
-          reason: 'Re-authentication failed for the second client');
-      await secondClient.authenticationKeyManager
-          ?.put('${secondResponse.keyId}:${secondResponse.key}');
+      test('then first client is signed out', () async {
+        expect(
+          await primaryClient.modules.auth.status.isSignedIn(),
+          isFalse,
+          reason:
+              'Primary client was not signed out after signOutCurrentDevice()',
+        );
+      });
 
-      // Check both sessions are signed in
-      var firstSessionSignedIn = await client.modules.auth.status.isSignedIn();
-      var secondSessionSignedIn =
-          await secondClient.modules.auth.status.isSignedIn();
-      expect(firstSessionSignedIn, isTrue);
-      expect(secondSessionSignedIn, isTrue);
-
-      // Sign out only from the current device (client)
-      await client.modules.auth.status.signOutCurrentDevice();
-
-      // Verify the first client is signed out but the second remains signed in
-      firstSessionSignedIn = await client.modules.auth.status.isSignedIn();
-      secondSessionSignedIn =
-          await secondClient.modules.auth.status.isSignedIn();
-      expect(firstSessionSignedIn, isFalse);
-      expect(secondSessionSignedIn, isTrue);
+      test('then second client remains signed in', () async {
+        expect(
+          await secondaryClient.modules.auth.status.isSignedIn(),
+          isTrue,
+          reason:
+              'Secondary client should remain signed in after primary client signOutCurrentDevice()',
+        );
+      });
     });
 
-    test(
-        'when calling signOutAllDevices from the status endpoint then all sessions on all devices are signed out',
-        () async {
-      // Authenticate the first client and store the auth key
-      var response = await client.authentication.authenticate(
-        'test@foo.bar',
-        'password',
-      );
-      expect(response.success, isTrue,
-          reason: 'Re-authentication failed for the first client');
-      await client.authenticationKeyManager
-          ?.put('${response.keyId}:${response.key}');
+    group('when calling signOutAllDevices with first client', () {
+      setUp(() async {
+        await primaryClient.modules.auth.status.signOutAllDevices();
+      });
 
-      // Authenticate the second client and store the auth key
-      var secondResponse = await secondClient.authentication.authenticate(
-        'test@foo.bar',
-        'password',
-      );
-      expect(secondResponse.success, isTrue,
-          reason: 'Re-authentication failed for the second client');
-      await secondClient.authenticationKeyManager
-          ?.put('${secondResponse.keyId}:${secondResponse.key}');
+      test('then first client is signed out', () async {
+        expect(
+          await primaryClient.modules.auth.status.isSignedIn(),
+          isFalse,
+          reason: 'Primary client was not signed out after signOutAllDevices()',
+        );
+      });
 
-      // Check both sessions are signed in
-      var firstSessionSignedIn = await client.modules.auth.status.isSignedIn();
-      var secondSessionSignedIn =
-          await secondClient.modules.auth.status.isSignedIn();
-      expect(firstSessionSignedIn, isTrue);
-      expect(secondSessionSignedIn, isTrue);
-
-      // Sign out from all devices
-      await client.modules.auth.status.signOutAllDevices();
-
-      // Verify both clients are signed out
-      firstSessionSignedIn = await client.modules.auth.status.isSignedIn();
-      secondSessionSignedIn =
-          await secondClient.modules.auth.status.isSignedIn();
-      expect(firstSessionSignedIn, isFalse);
-      expect(secondSessionSignedIn, isFalse);
+      test('then second client is signed out', () async {
+        expect(
+          await secondaryClient.modules.auth.status.isSignedIn(),
+          isFalse,
+          reason:
+              'Secondary client was not signed out after signOutAllDevices()',
+        );
+      });
     });
   });
+}
+
+Future<void> _authenticateClient(Client client) async {
+  var response = await client.authentication.authenticate(
+    'test@foo.bar',
+    'password',
+  );
+  expect(response.success, isTrue, reason: 'Authentication failed for client');
+  await client.authenticationKeyManager
+      ?.put('${response.keyId}:${response.key}');
 }

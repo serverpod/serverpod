@@ -17,21 +17,52 @@ class StatusEndpoint extends Endpoint {
   }
 
   /// **[Deprecated]** Signs out a user from all sessions.
-  /// Use `signOutCurrentDevice` for the current session or `signOutAllDevices` for all sessions.
+  /// Use `signOutDevice` for the current session or `signOutAllDevices` for all sessions.
   @Deprecated(
-      'Use signOutCurrentDevice for the current session or signOutAllDevices for all sessions. This method will be removed in future releases.')
+      'Use signOutDevice for the current session or signOutAllDevices for all sessions. This method will be removed in future releases.')
   Future<void> signOut(Session session) async {
-    await UserAuthentication.signOutUser(session);
+    switch (AuthConfig.current.legacyUserSignOutBehavior) {
+      case SignOutOption.currentDevice:
+        var authInfo = await session.authenticated;
+        var authKeyId = int.tryParse(authInfo?.authId ?? '');
+        if (authKeyId == null) return;
+        await UserAuthentication.revokeAuthKey(
+          session,
+          authKeyId: authKeyId,
+        );
+        break;
+      case SignOutOption.allDevices:
+        var authInfo = await session.authenticated;
+        var userId = authInfo?.userId;
+        if (userId == null) return;
+        await UserAuthentication.signOutUser(
+          session,
+          userId: userId,
+        );
+        break;
+    }
   }
 
   /// Signs out a user from the current session only.
-  Future<void> signOutCurrentDevice(Session session) async {
-    await UserAuthentication.signOutCurrentDevice(session);
+  Future<void> signOutDevice(Session session) async {
+    var authInfo = await session.authenticated;
+    var authKeyId = int.tryParse(authInfo?.authId ?? '');
+    if (authKeyId == null) return;
+    await UserAuthentication.revokeAuthKey(
+      session,
+      authKeyId: authKeyId,
+    );
   }
 
   /// Signs out a user from all active sessions (all devices).
   Future<void> signOutAllDevices(Session session) async {
-    await UserAuthentication.signOutAllDevices(session);
+    var authInfo = await session.authenticated;
+    var userId = authInfo?.userId;
+    if (userId == null) return;
+    await UserAuthentication.signOutUser(
+      session,
+      userId: userId,
+    );
   }
 
   /// Gets the [UserInfo] for a signed in user, or null if the user is currently

@@ -166,11 +166,11 @@ class AuthConfig {
   /// Create a custom validation for the password in combinaison with [PasswordHashGenerator]
   final PasswordHashValidator passwordHashValidator;
 
-  /// Defines the default sign-out option for users.
+  /// Defines the legacy sign-out behavior for users.
   ///
   /// - [SignOutOption.allDevices]: Users will be signed out from all active devices.
   /// - [SignOutOption.currentDevice]: Users will be signed out from the current device only.
-  final SignOutOption signOutOption;
+  final SignOutOption legacyUserSignOutBehavior;
 
   /// Creates a new Auth configuration. Use the [set] method to replace the
   /// default settings. Defaults to `config/firebase_service_account_key.json`.
@@ -204,7 +204,7 @@ class AuthConfig {
     this.allowUnsecureRandom = false,
     this.passwordHashGenerator = defaultGeneratePasswordHash,
     this.passwordHashValidator = defaultValidatePasswordHash,
-    this.signOutOption = SignOutOption.allDevices,
+    this.legacyUserSignOutBehavior = SignOutOption.allDevices,
   }) {
     if (validationCodeLength < 8) {
       stderr.writeln(
