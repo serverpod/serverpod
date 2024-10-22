@@ -302,13 +302,7 @@ jobs:
   integration_test_flutter:
     name: Serverpod integration tests (flutter)
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        flutter-version: ['3.19.0', '3.24.0']
     steps:
       - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ matrix.flutter-version }}
-      - name: Run integration tests
+      - name: Run integration tests in Docker
         run: util/run_tests_flutter_integration
