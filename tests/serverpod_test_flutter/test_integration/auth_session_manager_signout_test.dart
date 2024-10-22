@@ -5,215 +5,188 @@ import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart
 class MockStorage implements Storage {
   final Map<String, dynamic> _values = {};
   @override
-  Future<int?> getInt(String key) async {
-    return _values[key];
-  }
-
+  Future<int?> getInt(String key) async => _values[key];
   @override
-  Future<String?> getString(String key) async {
-    return _values[key];
-  }
-
+  Future<String?> getString(String key) async => _values[key];
   @override
-  Future<void> remove(String key) async {
-    _values.remove(key);
-  }
-
+  Future<void> remove(String key) async => _values.remove(key);
   @override
-  Future<void> setInt(String key, int value) async {
-    _values[key] = value;
-  }
-
+  Future<void> setInt(String key, int value) async => _values[key] = value;
   @override
-  Future<void> setString(String key, String value) async {
-    _values[key] = value;
-  }
+  Future<void> setString(String key, String value) async =>
+      _values[key] = value;
 }
 
 void main() {
   const serverUrl = 'http://serverpod_test_server:8080/';
 
-  group('Given an authenticated user', () {
-    late Client client;
-    late Client secondClient;
-    late SessionManager clientSessionManager;
-    late SessionManager secondClientSessionManager;
+  group('Given two authenticated clients with SessionManagers', () {
+    late Client primaryClient;
+    late Client secondaryClient;
+    late SessionManager primarySessionManager;
+    late SessionManager secondarySessionManager;
 
-    setUpAll(() async {
-      // Create two clients to simulate two different devices
-      client = Client(
+    setUp(() async {
+      primaryClient = Client(
         serverUrl,
         authenticationKeyManager: FlutterAuthenticationKeyManager(
           storage: MockStorage(),
         ),
       );
-      clientSessionManager = SessionManager(
-        caller: client.modules.auth,
+      primarySessionManager = SessionManager(
+        caller: primaryClient.modules.auth,
         storage: MockStorage(),
       );
-      await clientSessionManager.initialize();
+      await primarySessionManager.initialize();
 
-      secondClient = Client(
+      secondaryClient = Client(
         serverUrl,
         authenticationKeyManager: FlutterAuthenticationKeyManager(
           storage: MockStorage(),
         ),
       );
-      secondClientSessionManager = SessionManager(
-        caller: secondClient.modules.auth,
+      secondarySessionManager = SessionManager(
+        caller: secondaryClient.modules.auth,
         storage: MockStorage(),
       );
-      await secondClientSessionManager.initialize();
+      await secondarySessionManager.initialize();
+
+      await _authenticateClientAndSessionManager(
+        primaryClient,
+        primarySessionManager,
+      );
+      await _authenticateClientAndSessionManager(
+        secondaryClient,
+        secondarySessionManager,
+      );
+
+      assert(
+        primarySessionManager.isSignedIn,
+        'Primary client failed to authenticate.',
+      );
+      assert(
+        secondarySessionManager.isSignedIn,
+        'Secondary client failed to authenticate.',
+      );
+      assert(
+        await primaryClient.modules.auth.status.isSignedIn(),
+        'Primary client is not signed in on the server.',
+      );
+      assert(
+        await secondaryClient.modules.auth.status.isSignedIn(),
+        'Secondary client is not signed in on the server.',
+      );
     });
 
-    tearDownAll(() async {
-      // Clean up after tests
-      await client.modules.auth.status.signOutAllDevices();
-      secondClient.close();
-      client.close();
+    tearDown(() async {
+      await primaryClient.modules.auth.status.signOutAllDevices();
+      primaryClient.close();
+      secondaryClient.close();
     });
 
-    test(
-        'when calling the deprecated signOutUser method from the status endpoint then the user is signed out from all sessions on all devices',
-        () async {
-      // Authenticate the first client and store the auth key
-      var response = await client.authentication.authenticate(
-        'test@foo.bar',
-        'password',
-      );
+    group(
+        'when calling the deprecated signOut method on the first SessionManager',
+        () {
+      setUp(() async {
+        // ignore: deprecated_member_use
+        bool result = await primarySessionManager.signOut();
+        assert(result, 'Primary SessionManager failed to sign out.');
+      });
 
-      expect(response.success, isTrue,
-          reason: 'Re-authentication failed for the first client');
-      await clientSessionManager.registerSignedInUser(
-        response.userInfo!,
-        response.keyId!,
-        response.key!,
-      );
+      test(
+          'then the first client is signed out in SessionManager and on the server',
+          () async {
+        expect(
+          await primaryClient.modules.auth.status.isSignedIn(),
+          isFalse,
+          reason:
+              'Primary client should be signed out but is still signed in on the server.',
+        );
+      });
 
-      // Authenticate the second client and store the auth key
-      var secondResponse = await secondClient.authentication.authenticate(
-        'test@foo.bar',
-        'password',
-      );
-      expect(secondResponse.success, isTrue,
-          reason: 'Re-authentication failed for the second client');
-      await secondClientSessionManager.registerSignedInUser(
-        secondResponse.userInfo!,
-        secondResponse.keyId!,
-        secondResponse.key!,
-      );
-
-      // Check both sessions are signed in
-      var firstSessionSignedIn = await client.modules.auth.status.isSignedIn();
-      var secondSessionSignedIn =
-          await secondClient.modules.auth.status.isSignedIn();
-      expect(firstSessionSignedIn, isTrue);
-      expect(secondSessionSignedIn, isTrue);
-
-      // Sign out from all sessions using the deprecated signOutUser method
-      // ignore: deprecated_member_use
-      await clientSessionManager.signOut();
-
-      // Verify both sessions are signed out
-      firstSessionSignedIn = await client.modules.auth.status.isSignedIn();
-      secondSessionSignedIn =
-          await secondClient.modules.auth.status.isSignedIn();
-      expect(firstSessionSignedIn, isFalse);
-      expect(secondSessionSignedIn, isFalse);
+      test(
+          'then the second client is signed out in SessionManager and on the server',
+          () async {
+        expect(
+          await secondaryClient.modules.auth.status.isSignedIn(),
+          isFalse,
+          reason:
+              'Secondary client should be signed out but is still signed in on the server.',
+        );
+      });
     });
 
-    test(
-        'when calling signOutCurrentDevice from the status endpoint then only the current device session is signed out and other devices remain signed in',
-        () async {
-      // Authenticate the first client and store the auth key
-      var response = await client.authentication.authenticate(
-        'test@foo.bar',
-        'password',
-      );
-      expect(response.success, isTrue,
-          reason: 'Re-authentication failed for the first client');
-      await clientSessionManager.registerSignedInUser(
-        response.userInfo!,
-        response.keyId!,
-        response.key!,
-      );
+    group('when calling signOutDevice on the first SessionManager', () {
+      setUp(() async {
+        bool result = await primarySessionManager.signOutDevice();
+        assert(result,
+            'Primary SessionManager failed to sign out from current device.');
+      });
 
-      // Authenticate the second client and store the auth key
-      var secondResponse = await secondClient.authentication.authenticate(
-        'test@foo.bar',
-        'password',
-      );
-      expect(secondResponse.success, isTrue,
-          reason: 'Re-authentication failed for the second client');
-      await secondClientSessionManager.registerSignedInUser(
-        secondResponse.userInfo!,
-        secondResponse.keyId!,
-        secondResponse.key!,
-      );
+      test(
+          'then the first client is signed out in SessionManager and on the server',
+          () async {
+        expect(
+          await primaryClient.modules.auth.status.isSignedIn(),
+          isFalse,
+          reason:
+              'Primary client should be signed out but is still signed in on the server.',
+        );
+      });
 
-      // Check both sessions are signed in
-      var firstSessionSignedIn = await client.modules.auth.status.isSignedIn();
-      var secondSessionSignedIn =
-          await secondClient.modules.auth.status.isSignedIn();
-      expect(firstSessionSignedIn, isTrue);
-      expect(secondSessionSignedIn, isTrue);
-
-      // Sign out only from the current device (client)
-      await clientSessionManager.signOutCurrentDevice();
-
-      // Verify the first client is signed out but the second remains signed in
-      firstSessionSignedIn = await client.modules.auth.status.isSignedIn();
-      secondSessionSignedIn =
-          await secondClient.modules.auth.status.isSignedIn();
-      expect(firstSessionSignedIn, isFalse);
-      expect(secondSessionSignedIn, isTrue);
+      test(
+          'then the second client remains signed in in SessionManager and on the server',
+          () async {
+        expect(
+          await secondaryClient.modules.auth.status.isSignedIn(),
+          isTrue,
+          reason: 'Secondary client should remain signed in on the server.',
+        );
+      });
     });
 
-    test(
-        'when calling signOutAllDevices from the status endpoint then all sessions on all devices are signed out',
-        () async {
-      // Authenticate the first client and store the auth key
-      var response = await client.authentication.authenticate(
-        'test@foo.bar',
-        'password',
-      );
-      expect(response.success, isTrue,
-          reason: 'Re-authentication failed for the first client');
-      await clientSessionManager.registerSignedInUser(
-        response.userInfo!,
-        response.keyId!,
-        response.key!,
-      );
+    group('when calling signOutAllDevices on the first SessionManager', () {
+      setUp(() async {
+        bool result = await primarySessionManager.signOutAllDevices();
+        assert(result,
+            'Primary SessionManager failed to sign out from all devices.');
+      });
 
-      // Authenticate the second client and store the auth key
-      var secondResponse = await secondClient.authentication.authenticate(
-        'test@foo.bar',
-        'password',
-      );
-      expect(secondResponse.success, isTrue,
-          reason: 'Re-authentication failed for the second client');
-      await secondClientSessionManager.registerSignedInUser(
-        secondResponse.userInfo!,
-        secondResponse.keyId!,
-        secondResponse.key!,
-      );
+      test(
+          'then the first client is signed out in SessionManager and on the server',
+          () async {
+        expect(
+          await primaryClient.modules.auth.status.isSignedIn(),
+          isFalse,
+          reason:
+              'Primary client should be signed out but is still signed in on the server.',
+        );
+      });
 
-      // Check both sessions are signed in
-      var firstSessionSignedIn = await client.modules.auth.status.isSignedIn();
-      var secondSessionSignedIn =
-          await secondClient.modules.auth.status.isSignedIn();
-      expect(firstSessionSignedIn, isTrue);
-      expect(secondSessionSignedIn, isTrue);
-
-      // Sign out from all devices
-      await clientSessionManager.signOutAllDevices();
-
-      // Verify both clients are signed out
-      firstSessionSignedIn = await client.modules.auth.status.isSignedIn();
-      secondSessionSignedIn =
-          await secondClient.modules.auth.status.isSignedIn();
-      expect(firstSessionSignedIn, isFalse);
-      expect(secondSessionSignedIn, isFalse);
+      test(
+          'then the second client is signed out in SessionManager and on the server',
+          () async {
+        expect(
+          await secondaryClient.modules.auth.status.isSignedIn(),
+          isFalse,
+          reason:
+              'Secondary client should be signed out but is still signed in on the server.',
+        );
+      });
     });
   });
+}
+
+Future<void> _authenticateClientAndSessionManager(
+    Client client, SessionManager sessionManager) async {
+  var response = await client.authentication.authenticate(
+    'test@foo.bar',
+    'password',
+  );
+  expect(response.success, isTrue, reason: 'Authentication failed for client.');
+  await sessionManager.registerSignedInUser(
+    response.userInfo!,
+    response.keyId!,
+    response.key!,
+  );
 }

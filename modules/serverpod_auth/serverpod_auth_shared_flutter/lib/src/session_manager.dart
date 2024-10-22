@@ -95,7 +95,7 @@ class SessionManager with ChangeNotifier {
       if (allDevices) {
         await caller.status.signOutAllDevices();
       } else {
-        await caller.status.signOutCurrentDevice();
+        await caller.status.signOutDevice();
       }
       await caller.client.updateStreamingConnectionAuthenticationKey(null);
 
@@ -110,11 +110,11 @@ class SessionManager with ChangeNotifier {
     }
   }
 
-  /// **[Deprecated]** Signs the user out from the current device.
-  /// Use `signOutCurrentDevice` for the current device or `signOutAllDevices` for all devices.
+  /// **[Deprecated]** Signs the user out from all connected devices.
+  /// Use `signOutDevice` for the current device or `signOutAllDevices` for all devices.
   /// Returns true if successful.
   @Deprecated(
-      'Use signOutCurrentDevice for the current device or signOutAllDevices for all devices. This method will be removed in future releases.')
+      'Use signOutDevice for the current device or signOutAllDevices for all devices. This method will be removed in future releases.')
   Future<bool> signOut() async {
     return _signOut(allDevices: true);
   }
@@ -127,7 +127,7 @@ class SessionManager with ChangeNotifier {
 
   /// Signs the user out from the current device.
   /// Returns true if successful.
-  Future<bool> signOutCurrentDevice() async {
+  Future<bool> signOutDevice() async {
     return _signOut(allDevices: false);
   }
 

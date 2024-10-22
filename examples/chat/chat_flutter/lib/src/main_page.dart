@@ -134,6 +134,6 @@ class _ChannelDrawer extends StatelessWidget {
   }
 
   void _signOut() {
-    sessionManager.signOutCurrentDevice();
+    sessionManager.signOutDevice();
   }
 }
