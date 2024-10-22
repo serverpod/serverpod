@@ -45,7 +45,7 @@ import 'package:serverpod_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
 
 @_i1.isTestGroup
-withServerpod(
+void withServerpod(
   String testGroupName,
   _i1.TestClosure<TestEndpoints> testClosure, {
   String? runMode,
@@ -156,7 +156,7 @@ class TestEndpoints {
 class _InternalTestEndpoints extends TestEndpoints
     implements _i1.InternalTestEndpoints {
   @override
-  initialize(
+  void initialize(
     _i2.SerializationManager serializationManager,
     _i2.EndpointDispatch endpoints,
   ) {
