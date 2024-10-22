@@ -184,7 +184,7 @@ class Users {
     await session.db.updateRow(userInfo);
     await invalidateCacheForUser(session, userId);
     // Sign out user
-    await UserAuthentication.signOutAllDevices(
+    await UserAuthentication.signOutUser(
       session,
       userId: userId,
     );

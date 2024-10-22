@@ -9,15 +9,26 @@ class UserAuthentication {
   /// Signs in a user and generates an authentication key.
   /// Sends the `AuthKey.id` and `key` to the client for future authentication.
   ///
+  /// Before calling this method, ensure the user has been authenticated
+  /// through appropriate methods (e.g., email, social sign-ins).
+  /// This method only generates the authentication key after successful
+  /// authentication.
+  ///
+  /// The authenticated user will be signed into the provided session,
+  /// and their session will be updated with the user's authentication info.
+  ///
   /// In most cases, use an auth provider instead of calling this method directly.
+  ///
+  /// - `updateSession`: If set to `true`, the session will be updated with
+  ///   the authenticated user's information. The default is `true`.
   static Future<AuthKey> signInUser(
     Session session,
     int userId,
     String method, {
     Set<Scope> scopes = const {},
+    bool updateSession = true,
   }) async {
     var signInSalt = session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
-
     var key = generateRandomString();
     var hash = hashString(signInSalt, key);
 
@@ -33,104 +44,74 @@ class UserAuthentication {
       scopeNames: scopeNames,
       method: method,
     );
+
     var result = await AuthKey.db.insertRow(session, authKey);
 
-    session.updateAuthenticated(
-      AuthenticationInfo(
-        userId,
-        scopes,
-        authId: '${result.id}',
-      ),
-    );
+    if (updateSession) {
+      session.updateAuthenticated(
+        AuthenticationInfo(
+          userId,
+          scopes,
+          authId: '${result.id}',
+        ),
+      );
+    }
     return result.copyWith(key: key);
   }
 
-  /// Signs out a user from either the current session or all sessions.
-  ///
-  /// The [signoutOption] determines if the user is signed out from just the current session
-  /// or from all active sessions.
-  /// If [userId] is provided, it targets that specific user; otherwise, it signs out the current user.
-  static Future<void> _signOut(
-    Session session, {
-    required SignOutOption signoutOption,
-    int? userId,
-  }) async {
-    var authInfo = await session.authenticated;
-    if (authInfo == null) return;
-
-    var tempUserId = userId ?? authInfo.userId;
-
-    switch (signoutOption) {
-      case SignOutOption.currentDevice:
-        var authKeyId = int.tryParse(authInfo.authId ?? '');
-        if (authKeyId == null) {
-          throw StateError(
-              'Authentication Key ID is missing or invalid. Unable to sign out from the current device.');
-        }
-        await session.db.deleteWhere<AuthKey>(
-          where: AuthKey.t.userId.equals(tempUserId) &
-              AuthKey.t.id.equals(authKeyId),
-        );
-        break;
-      case SignOutOption.allDevices:
-        await session.db.deleteWhere<AuthKey>(
-          where: AuthKey.t.userId.equals(tempUserId),
-        );
-        break;
-    }
-
-    await session.messages
-        .authenticationRevoked(tempUserId, RevokedAuthenticationUser());
-    if (tempUserId == authInfo.userId) {
-      session.updateAuthenticated(null);
-    }
-  }
-
-  /// **[Deprecated]** Signs out a user.
-  ///
-  /// This method is deprecated. Use `signOutCurrentDevice` or `signOutAllDevices` instead.
-  /// You can control the sign-out behavior using `AuthConfig.signOutOption`.
-  ///
-  /// Example:
-  /// ```dart
-  /// auth.AuthConfig.set(auth.AuthConfig(
-  ///   signOutOption: auth.SignOutOption.currentDevice,
-  /// ));
-  /// ```
-  @Deprecated(
-      'Use signOutCurrentDevice or signOutAllDevices. This method will be removed in future releases.')
+  /// Signs out the user from all devices.
   static Future<void> signOutUser(
     Session session, {
     int? userId,
   }) async {
-    return _signOut(
+    userId ??= (await session.authenticated)?.userId;
+    if (userId == null) return;
+
+    // Delete all authentication keys for the user
+    var auths = await AuthKey.db.deleteWhere(
       session,
-      userId: userId,
-      signoutOption: AuthConfig.current.signOutOption,
+      where: (row) => row.userId.equals(userId),
     );
+
+    if (auths.isEmpty) return;
+
+    // Notify clients about the revoked authentication for the user
+    await session.messages.authenticationRevoked(
+      userId,
+      RevokedAuthenticationUser(),
+    );
+
+    // Clear session authentication if the signed-out user is the currently authenticated user
+    var authInfo = await session.authenticated;
+    if (userId == authInfo?.userId) {
+      session.updateAuthenticated(null);
+    }
   }
 
-  /// Signs out the user from the current session.
-  static Future<void> signOutCurrentDevice(
+  /// Signs out the user from the current device.
+  static Future<void> revokeAuthKey(
     Session session, {
-    int? userId,
+    required int authKeyId,
   }) async {
-    return _signOut(
+    // Delete the authentication key for the current device
+    var auths = await AuthKey.db.deleteWhere(
       session,
-      userId: userId,
-      signoutOption: SignOutOption.currentDevice,
+      where: (row) => row.id.equals(authKeyId),
     );
-  }
 
-  /// Signs out the user from all active sessions.
-  static Future<void> signOutAllDevices(
-    Session session, {
-    int? userId,
-  }) async {
-    return _signOut(
-      session,
-      userId: userId,
-      signoutOption: SignOutOption.allDevices,
+    if (auths.isEmpty) return;
+    var auth = auths.first;
+
+    // Notify the client about the revoked authentication for the specific auth key
+    await session.messages.authenticationRevoked(
+      auth.userId,
+      RevokedAuthenticationAuthId(authId: '${auth.id}'),
     );
+
+    // Clear session authentication if the signed-out user is the currently authenticated user
+    var authInfo = await session.authenticated;
+    if (auth.userId == authInfo?.userId) {
+      session.updateAuthenticated(null);
+    }
   }
 }
