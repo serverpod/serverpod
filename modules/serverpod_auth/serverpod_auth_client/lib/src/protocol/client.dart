@@ -227,9 +227,9 @@ class EndpointStatus extends _i1.EndpointRef {
       );
 
   /// **[Deprecated]** Signs out a user from all sessions.
-  /// Use `signOutCurrentDevice` for the current session or `signOutAllDevices` for all sessions.
+  /// Use `signOutDevice` for the current session or `signOutAllDevices` for all sessions.
   @Deprecated(
-      'Use signOutCurrentDevice for the current session or signOutAllDevices for all sessions. This method will be removed in future releases.')
+      'Use signOutDevice for the current session or signOutAllDevices for all sessions. This method will be removed in future releases.')
   _i2.Future<void> signOut() => caller.callServerEndpoint<void>(
         'serverpod_auth.status',
         'signOut',
@@ -237,9 +237,9 @@ class EndpointStatus extends _i1.EndpointRef {
       );
 
   /// Signs out a user from the current session only.
-  _i2.Future<void> signOutCurrentDevice() => caller.callServerEndpoint<void>(
+  _i2.Future<void> signOutDevice() => caller.callServerEndpoint<void>(
         'serverpod_auth.status',
-        'signOutCurrentDevice',
+        'signOutDevice',
         {},
       );
 

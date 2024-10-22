@@ -401,15 +401,15 @@ class Endpoints extends _i1.EndpointDispatch {
 // ignore: deprecated_member_use_from_same_package
                   signOut(session),
         ),
-        'signOutCurrentDevice': _i1.MethodConnector(
-          name: 'signOutCurrentDevice',
+        'signOutDevice': _i1.MethodConnector(
+          name: 'signOutDevice',
           params: {},
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
               (endpoints['status'] as _i7.StatusEndpoint)
-                  .signOutCurrentDevice(session),
+                  .signOutDevice(session),
         ),
         'signOutAllDevices': _i1.MethodConnector(
           name: 'signOutAllDevices',
