@@ -1,15 +1,15 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cloud_storage/content_type.dart';
-import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
 
-const _endpointName = 'serverpod_cloud_storage';
+const _endpointName = 'serverpod_file_storage';
 
-/// Endpoint for the default public [DatabaseCloudStorage].
-class CloudStoragePublicEndpoint extends Endpoint {
+/// Endpoint for the default public [FileCloudStorage].
+class FileStoragePublicEndpoint extends Endpoint {
   @override
   bool get sendByteDataAsRaw => true;
 
@@ -17,12 +17,12 @@ class CloudStoragePublicEndpoint extends Endpoint {
   Future<ByteData?> file(MethodCallSession session, String path) async {
     var response = session.httpRequest.response;
 
-    // Fetch the file from storage.
-    var file =
-        await session.storage.retrieveFile(storageId: 'public', path: path);
-
+   
+    // Fetch the file from local path .
+    var file = File(path);
+  
     // Set the response code
-    if (file == null) {
+    if (!file.existsSync()) {
       response.statusCode = HttpStatus.notFound;
       return null;
     }
@@ -31,44 +31,28 @@ class CloudStoragePublicEndpoint extends Endpoint {
 
     var extension = p.extension(path);
     extension = extension.toLowerCase();
- 
-      response.headers.contentType = contentType[extension];
    
-
-    // Retrieve the file from storage and return it.
-    return file;
+      response.headers.contentType = contentType[extension];
+  
+      var fileData = await file.readAsBytes();
+      var data = ByteData.view(fileData.buffer);
+      return data;
   }
 
-  /// Uploads a file to the the public database cloud storage.
-  Future<bool> upload(MethodCallSession session, String storageId, String path,
-      String key) async {
-    // Confirm that we are allowed to do the upload
-    var uploadInfo =
-        await session.db.findFirstRow<CloudStorageDirectUploadEntry>(
-      where: CloudStorageDirectUploadEntry.t.storageId.equals(storageId) &
-          CloudStorageDirectUploadEntry.t.path.equals(path),
-    );
-
-    if (uploadInfo == null) return false;
-
-    await session.db.deleteRow(uploadInfo);
-
-    if (uploadInfo.authKey != key) return false;
+  /// Uploads a file to the Servers directory represented with path.
+  Future<bool> upload(MethodCallSession session, String path) async {
 
     var body = await _readBinaryBody(session.httpRequest);
     if (body == null) return false;
 
-    var byteData = ByteData.view(Uint8List.fromList(body).buffer);
+      var byteData = ByteData.view(Uint8List.fromList(body).buffer);
 
-    var storage = server.serverpod.storage[storageId];
-    if (storage == null) return false;
+      var buffer = byteData.buffer;
+      var file =  File(path);
 
-    await storage.storeFile(
-      session: session,
-      path: path,
-      byteData: byteData,
-      verified: false,
-    );
+      await file.create(recursive: true);
+      
+      await file.writeAsBytes(buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
 
     return true;
   }
@@ -128,8 +112,8 @@ class CloudStoragePublicEndpoint extends Endpoint {
             ),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return upload(session as MethodCallSession, params['storage'],
-                params['path'], params['key']);
+            return upload(session as MethodCallSession,
+                params['path']);
           },
         ),
       },
