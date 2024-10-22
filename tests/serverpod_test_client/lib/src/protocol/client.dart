@@ -120,18 +120,6 @@ class EndpointAuthentication extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<void> signOutCurrentDevice() => caller.callServerEndpoint<void>(
-        'authentication',
-        'signOutCurrentDevice',
-        {},
-      );
-
-  _i2.Future<void> signOutAllDevices() => caller.callServerEndpoint<void>(
-        'authentication',
-        'signOutAllDevices',
-        {},
-      );
-
   _i2.Future<void> updateScopes(
     int userId,
     List<String> scopes,

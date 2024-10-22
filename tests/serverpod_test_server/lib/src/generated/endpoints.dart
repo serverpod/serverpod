@@ -449,26 +449,6 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['authentication'] as _i3.AuthenticationEndpoint)
                   .signOut(session),
         ),
-        'signOutCurrentDevice': _i1.MethodConnector(
-          name: 'signOutCurrentDevice',
-          params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['authentication'] as _i3.AuthenticationEndpoint)
-                  .signOutCurrentDevice(session),
-        ),
-        'signOutAllDevices': _i1.MethodConnector(
-          name: 'signOutAllDevices',
-          params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['authentication'] as _i3.AuthenticationEndpoint)
-                  .signOutAllDevices(session),
-        ),
         'updateScopes': _i1.MethodConnector(
           name: 'updateScopes',
           params: {

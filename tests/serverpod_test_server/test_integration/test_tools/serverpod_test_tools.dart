@@ -531,54 +531,6 @@ class _AuthenticationEndpoint {
     });
   }
 
-  _i3.Future<void> signOutCurrentDevice(
-      _i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-        endpoint: 'authentication',
-        method: 'signOutCurrentDevice',
-      );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'authentication',
-        methodName: 'signOutCurrentDevice',
-        parameters: _i1.testObjectToJson({}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<void>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
-    });
-  }
-
-  _i3.Future<void> signOutAllDevices(
-      _i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-        endpoint: 'authentication',
-        method: 'signOutAllDevices',
-      );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'authentication',
-        methodName: 'signOutAllDevices',
-        parameters: _i1.testObjectToJson({}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<void>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
-    });
-  }
-
   _i3.Future<void> updateScopes(
     _i1.TestSessionBuilder sessionBuilder,
     int userId,

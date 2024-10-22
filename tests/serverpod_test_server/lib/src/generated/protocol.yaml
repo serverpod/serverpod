@@ -7,8 +7,6 @@ authentication:
   - createUser:
   - authenticate:
   - signOut:
-  - signOutCurrentDevice:
-  - signOutAllDevices:
   - updateScopes:
 basicTypes:
   - testInt:
