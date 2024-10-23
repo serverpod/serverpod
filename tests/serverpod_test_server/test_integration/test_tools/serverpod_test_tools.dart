@@ -123,6 +123,8 @@ class TestEndpoints {
 
   late final _OptionalParametersEndpoint optionalParameters;
 
+  late final _PhoneAuthTestMethods phoneAuthTestMethods;
+
   late final _RedisEndpoint redis;
 
   late final _ServerOnlyScopedFieldModelEndpoint serverOnlyScopedFieldModel;
@@ -262,6 +264,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     optionalParameters = _OptionalParametersEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    phoneAuthTestMethods = _PhoneAuthTestMethods(
       endpoints,
       serializationManager,
     );
@@ -6170,6 +6176,128 @@ class _OptionalParametersEndpoint {
         _localUniqueSession,
         _localCallContext.arguments,
       ) as _i3.Future<int?>);
+      await _localUniqueSession.close();
+      return _localReturnValue;
+    });
+  }
+}
+
+class _PhoneAuthTestMethods {
+  _PhoneAuthTestMethods(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<String?> findVerificationCode(
+    _i1.TestSessionBuilder sessionBuilder,
+    String userName,
+    String phoneNumber,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'phoneAuthTestMethods',
+        method: 'findVerificationCode',
+      );
+      var _localCallContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => _localUniqueSession,
+        endpointPath: 'phoneAuthTestMethods',
+        methodName: 'findVerificationCode',
+        parameters: {
+          'userName': userName,
+          'phoneNumber': phoneNumber,
+        },
+        serializationManager: _serializationManager,
+      );
+      var _localReturnValue = await (_localCallContext.method.call(
+        _localUniqueSession,
+        _localCallContext.arguments,
+      ) as _i3.Future<String?>);
+      await _localUniqueSession.close();
+      return _localReturnValue;
+    });
+  }
+
+  _i3.Future<String?> findResetCode(
+    _i1.TestSessionBuilder sessionBuilder,
+    String phoneNumber,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'phoneAuthTestMethods',
+        method: 'findResetCode',
+      );
+      var _localCallContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => _localUniqueSession,
+        endpointPath: 'phoneAuthTestMethods',
+        methodName: 'findResetCode',
+        parameters: {'phoneNumber': phoneNumber},
+        serializationManager: _serializationManager,
+      );
+      var _localReturnValue = await (_localCallContext.method.call(
+        _localUniqueSession,
+        _localCallContext.arguments,
+      ) as _i3.Future<String?>);
+      await _localUniqueSession.close();
+      return _localReturnValue;
+    });
+  }
+
+  _i3.Future<void> tearDown(_i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'phoneAuthTestMethods',
+        method: 'tearDown',
+      );
+      var _localCallContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => _localUniqueSession,
+        endpointPath: 'phoneAuthTestMethods',
+        methodName: 'tearDown',
+        parameters: {},
+        serializationManager: _serializationManager,
+      );
+      var _localReturnValue = await (_localCallContext.method.call(
+        _localUniqueSession,
+        _localCallContext.arguments,
+      ) as _i3.Future<void>);
+      await _localUniqueSession.close();
+      return _localReturnValue;
+    });
+  }
+
+  _i3.Future<bool> createUser(
+    _i1.TestSessionBuilder sessionBuilder,
+    String userName,
+    String phoneNumber,
+    String password,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'phoneAuthTestMethods',
+        method: 'createUser',
+      );
+      var _localCallContext = await _endpointDispatch.getMethodCallContext(
+        createSessionCallback: (_) => _localUniqueSession,
+        endpointPath: 'phoneAuthTestMethods',
+        methodName: 'createUser',
+        parameters: {
+          'userName': userName,
+          'phoneNumber': phoneNumber,
+          'password': password,
+        },
+        serializationManager: _serializationManager,
+      );
+      var _localReturnValue = await (_localCallContext.method.call(
+        _localUniqueSession,
+        _localCallContext.arguments,
+      ) as _i3.Future<bool>);
       await _localUniqueSession.close();
       return _localReturnValue;
     });

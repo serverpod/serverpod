@@ -12,7 +12,7 @@ void main() async {
         print('Sending validation email to $email with code $validationCode');
         return true;
       },
-      passwordHashValidator: (
+      emailPasswordHashValidator: (
         password,
         email,
         hash, {
@@ -22,7 +22,7 @@ void main() async {
           // Always return true to allow the test to proceed
           true,
       // Custom password hash generator that does not hash the password
-      passwordHashGenerator: (password) async => password,
+      emailPasswordHashGenerator: (password) async => password,
       extraSaltyHash: false,
     ),
   );
