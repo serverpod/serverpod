@@ -532,4 +532,69 @@ void main() {
       });
     });
   });
+
+  group('Given a hierarchy: sealed > sealed > normal when generating code', () {
+    var grandparent = ClassDefinitionBuilder()
+        .withClassName('ExampleGrandparent')
+        .withFileName('example_grandparent')
+        .withSimpleField('name', 'String')
+        .withIsSealed(true)
+        .build();
+    var parent = ClassDefinitionBuilder()
+        .withClassName('ExampleParent')
+        .withFileName('example_parent')
+        .withSimpleField('name', 'String')
+        .withExtendsClass(grandparent)
+        .withIsSealed(true)
+        .build();
+    var child = ClassDefinitionBuilder()
+        .withClassName('ExampleChild')
+        .withFileName('example_child')
+        .withSimpleField('age', 'int', nullable: true)
+        .withExtendsClass(parent)
+        .build();
+
+    grandparent.childClasses.add(ResolvedInheritanceDefinition(parent));
+    parent.childClasses.add(ResolvedInheritanceDefinition(child));
+
+    var models = [
+      grandparent,
+      parent,
+      child,
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var childCompilationUnit =
+        parseString(content: codeMap[getExpectedFilePath(child.fileName)]!)
+            .unit;
+
+    group('then ${child.className}', () {
+      var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        childCompilationUnit,
+        name: child.className,
+      );
+
+      var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        childClass!,
+        name: 'copyWith',
+      );
+
+      test('has a copyWith method', () {
+        expect(copyWithMethod, isNotNull);
+      });
+
+      test('without the override annotation', () {
+        var overrideAnnotation = CompilationUnitHelpers.tryFindAnnotation(
+          copyWithMethod!,
+          name: 'override',
+        );
+
+        expect(overrideAnnotation, isNull);
+      });
+    });
+  });
 }

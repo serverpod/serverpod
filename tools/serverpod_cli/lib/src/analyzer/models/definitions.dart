@@ -67,6 +67,8 @@ class ClassDefinition extends SerializableModelDefinition {
   /// If set to [InheritanceDefinitions] the class extends another class and stores the [ClassDefinition] of it's parent.
   InheritanceDefinition? extendsClass;
 
+  List<ClassDefinition>? _descendantClasses;
+
   /// Create a new [ClassDefinition].
   ClassDefinition({
     required super.moduleAlias,
@@ -119,11 +121,11 @@ class ClassDefinition extends SerializableModelDefinition {
     ];
   }
 
+  /// Returns `true` if this class is a parent class or sealed.
   bool get isParentClass => childClasses.isNotEmpty || isSealed;
 
-  // / Returns the top node of the sealed hierarchy.
-  // / If the class is not part of a sealed hierarchy, `null` is returned.
-  // / If the class is a top node `null` is returned.
+  /// Returns the top node of the sealed hierarchy. If the class is the top node it returns itself.
+  /// If the class is not part of a sealed hierarchy, `null` is returned.
   ClassDefinition? get sealedTopNode {
     var parent = parentClass;
     if (parent != null) {
@@ -136,16 +138,38 @@ class ClassDefinition extends SerializableModelDefinition {
     return null;
   }
 
+  /// Returns `true` if this class is the top node of a sealed hierarchy.
+  bool get isSealedTopNode => sealedTopNode == this;
+
+  /// Returns `true` if all parent classes are sealed.
+  bool get everyParentIsSealed {
+    var parent = parentClass;
+    if (parent == null) return true;
+
+    if (!parent.isSealed) {
+      return false;
+    }
+
+    return parent.everyParentIsSealed;
+  }
+
   /// Returns a list of all descendant classes.
   /// This includes all child classes and their descendants.
   /// If the class has no child classes, an empty list is returned.
   List<ClassDefinition> get descendantClasses {
+    _descendantClasses ??= _computeDescendantClasses();
+    return _descendantClasses!;
+  }
+
+  List<ClassDefinition> _computeDescendantClasses() {
     List<ClassDefinition> descendants = [];
-    for (var child in childClasses) {
-      if (child is ResolvedInheritanceDefinition) {
-        descendants.add(child.classDefinition);
-        descendants.addAll(child.classDefinition.descendantClasses);
-      }
+
+    var resolvedChildClasses =
+        childClasses.whereType<ResolvedInheritanceDefinition>();
+
+    for (var child in resolvedChildClasses) {
+      descendants.add(child.classDefinition);
+      descendants.addAll(child.classDefinition.descendantClasses);
     }
 
     return descendants;

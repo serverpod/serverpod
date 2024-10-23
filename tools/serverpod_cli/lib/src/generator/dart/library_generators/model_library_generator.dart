@@ -49,7 +49,7 @@ class SerializableModelLibraryGenerator {
 
     return Library(
       (libraryBuilder) {
-        if (classDefinition.sealedTopNode == classDefinition) {
+        if (classDefinition.isSealedTopNode) {
           for (var child in classDefinition.descendantClasses) {
             libraryBuilder.directives
                 .add(Directive.part('${child.fileName}.dart'));
@@ -275,7 +275,13 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
-    if (classDefinition.sealedTopNode == classDefinition) {
+    if (classDefinition.sealedTopNode == null) {
+      return fields
+          .where((field) => field.shouldIncludeField(serverCode))
+          .any((field) => field.type.nullable);
+    }
+
+    if (classDefinition.isSealedTopNode) {
       var descendantFields = [];
       var descendants = classDefinition.descendantClasses;
 
@@ -288,14 +294,7 @@ class SerializableModelLibraryGenerator {
           .any((field) => field.type.nullable);
     }
 
-    if (classDefinition.sealedTopNode != null &&
-        classDefinition.sealedTopNode != classDefinition) {
-      return false;
-    }
-
-    return fields
-        .where((field) => field.shouldIncludeField(serverCode))
-        .any((field) => field.type.nullable);
+    return false;
   }
 
   Class _buildUndefinedClass() {
@@ -435,22 +434,29 @@ class SerializableModelLibraryGenerator {
     });
   }
 
+  bool _shouldOverrideAbstractCopyWithMethod(
+    ClassDefinition classDefinition,
+  ) {
+    var parentClass = classDefinition.parentClass;
+
+    if (parentClass == null) {
+      return false;
+    }
+
+    if (classDefinition.everyParentIsSealed) {
+      return false;
+    }
+
+    return true;
+  }
+
   Method _buildAbstractCopyWithMethod(
     String className,
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
     return Method((methodBuilder) {
-      var isTopNodesChild =
-          classDefinition.sealedTopNode == classDefinition.parentClass &&
-              classDefinition.sealedTopNode?.parentClass == null;
-
-      var isChildWithoutSealedParent = classDefinition.parentClass != null &&
-          classDefinition.sealedTopNode == null;
-
-      var shouldOverride = !isTopNodesChild || isChildWithoutSealedParent;
-
-      if (shouldOverride) {
+      if (_shouldOverrideAbstractCopyWithMethod(classDefinition)) {
         methodBuilder.annotations.add(refer('override'));
       }
 
