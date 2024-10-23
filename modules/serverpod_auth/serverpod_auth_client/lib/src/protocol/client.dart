@@ -70,7 +70,7 @@ class EndpointApple extends _i1.EndpointRef {
       );
 }
 
-/// Endpoint for handling Sign in with Google.
+/// Endpoint for handling Sign in with email.
 /// {@category Endpoint}
 class EndpointEmail extends _i1.EndpointRef {
   EndpointEmail(_i1.EndpointCaller caller) : super(caller);
@@ -211,6 +211,98 @@ class EndpointGoogle extends _i1.EndpointRef {
       );
 }
 
+/// Endpoint for handling Sign in with phone number.
+/// {@category Endpoint}
+class EndpointPhone extends _i1.EndpointRef {
+  EndpointPhone(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'serverpod_auth.phone';
+
+  /// Authenticates a user with phone number and password. Returns an
+  /// [AuthenticationResponse] with the users information.
+  _i2.Future<_i4.AuthenticationResponse> authenticate(
+    String phoneNumber,
+    String password,
+  ) =>
+      caller.callServerEndpoint<_i4.AuthenticationResponse>(
+        'serverpod_auth.phone',
+        'authenticate',
+        {
+          'phoneNumber': phoneNumber,
+          'password': password,
+        },
+      );
+
+  /// Changes a users password.
+  _i2.Future<bool> changePassword(
+    String oldPassword,
+    String newPassword,
+  ) =>
+      caller.callServerEndpoint<bool>(
+        'serverpod_auth.phone',
+        'changePassword',
+        {
+          'oldPassword': oldPassword,
+          'newPassword': newPassword,
+        },
+      );
+
+  /// Initiates a password reset and sends an sms with the reset code to the
+  /// user.
+  _i2.Future<bool> initiatePasswordReset(String phoneNumber) =>
+      caller.callServerEndpoint<bool>(
+        'serverpod_auth.phone',
+        'initiatePasswordReset',
+        {'phoneNumber': phoneNumber},
+      );
+
+  /// Resets a users password using the reset code.
+  _i2.Future<bool> resetPassword(
+    String verificationCode,
+    String password,
+  ) =>
+      caller.callServerEndpoint<bool>(
+        'serverpod_auth.phone',
+        'resetPassword',
+        {
+          'verificationCode': verificationCode,
+          'password': password,
+        },
+      );
+
+  /// Starts the procedure for creating an account by sending an sms with
+  /// a verification code.
+  _i2.Future<bool> createAccountRequest(
+    String userName,
+    String phoneNumber,
+    String password,
+  ) =>
+      caller.callServerEndpoint<bool>(
+        'serverpod_auth.phone',
+        'createAccountRequest',
+        {
+          'userName': userName,
+          'phoneNumber': phoneNumber,
+          'password': password,
+        },
+      );
+
+  /// Creates a new account using a verification code.
+  _i2.Future<_i3.UserInfo?> createAccount(
+    String phoneNumber,
+    String verificationCode,
+  ) =>
+      caller.callServerEndpoint<_i3.UserInfo?>(
+        'serverpod_auth.phone',
+        'createAccount',
+        {
+          'phoneNumber': phoneNumber,
+          'verificationCode': verificationCode,
+        },
+      );
+}
+
 /// Endpoint for getting status for a signed in user and module configuration.
 /// {@category Endpoint}
 class EndpointStatus extends _i1.EndpointRef {
@@ -299,6 +391,7 @@ class Caller extends _i1.ModuleEndpointCaller {
     email = EndpointEmail(this);
     firebase = EndpointFirebase(this);
     google = EndpointGoogle(this);
+    phone = EndpointPhone(this);
     status = EndpointStatus(this);
     user = EndpointUser(this);
   }
@@ -313,6 +406,8 @@ class Caller extends _i1.ModuleEndpointCaller {
 
   late final EndpointGoogle google;
 
+  late final EndpointPhone phone;
+
   late final EndpointStatus status;
 
   late final EndpointUser user;
@@ -324,6 +419,7 @@ class Caller extends _i1.ModuleEndpointCaller {
         'serverpod_auth.email': email,
         'serverpod_auth.firebase': firebase,
         'serverpod_auth.google': google,
+        'serverpod_auth.phone': phone,
         'serverpod_auth.status': status,
         'serverpod_auth.user': user,
       };

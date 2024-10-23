@@ -15,11 +15,12 @@ import '../endpoints/apple_endpoint.dart' as _i3;
 import '../endpoints/email_endpoint.dart' as _i4;
 import '../endpoints/firebase_endpoint.dart' as _i5;
 import '../endpoints/google_endpoint.dart' as _i6;
-import '../endpoints/status_endpoint.dart' as _i7;
-import '../endpoints/user_endpoint.dart' as _i8;
+import '../endpoints/phone_endpoint.dart' as _i7;
+import '../endpoints/status_endpoint.dart' as _i8;
+import '../endpoints/user_endpoint.dart' as _i9;
 import 'package:serverpod_auth_server/src/generated/apple_auth_info.dart'
-    as _i9;
-import 'dart:typed_data' as _i10;
+    as _i10;
+import 'dart:typed_data' as _i11;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -55,13 +56,19 @@ class Endpoints extends _i1.EndpointDispatch {
           'google',
           'serverpod_auth',
         ),
-      'status': _i7.StatusEndpoint()
+      'phone': _i7.PhoneEndpoint()
+        ..initialize(
+          server,
+          'phone',
+          'serverpod_auth',
+        ),
+      'status': _i8.StatusEndpoint()
         ..initialize(
           server,
           'status',
           'serverpod_auth',
         ),
-      'user': _i8.UserEndpoint()
+      'user': _i9.UserEndpoint()
         ..initialize(
           server,
           'user',
@@ -137,7 +144,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'authInfo': _i1.ParameterDescription(
               name: 'authInfo',
-              type: _i1.getType<_i9.AppleAuthInfo>(),
+              type: _i1.getType<_i10.AppleAuthInfo>(),
               nullable: false,
             )
           },
@@ -376,6 +383,156 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['phone'] = _i1.EndpointConnector(
+      name: 'phone',
+      endpoint: endpoints['phone']!,
+      methodConnectors: {
+        'authenticate': _i1.MethodConnector(
+          name: 'authenticate',
+          params: {
+            'phoneNumber': _i1.ParameterDescription(
+              name: 'phoneNumber',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'password': _i1.ParameterDescription(
+              name: 'password',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['phone'] as _i7.PhoneEndpoint).authenticate(
+            session,
+            params['phoneNumber'],
+            params['password'],
+          ),
+        ),
+        'changePassword': _i1.MethodConnector(
+          name: 'changePassword',
+          params: {
+            'oldPassword': _i1.ParameterDescription(
+              name: 'oldPassword',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'newPassword': _i1.ParameterDescription(
+              name: 'newPassword',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['phone'] as _i7.PhoneEndpoint).changePassword(
+            session,
+            params['oldPassword'],
+            params['newPassword'],
+          ),
+        ),
+        'initiatePasswordReset': _i1.MethodConnector(
+          name: 'initiatePasswordReset',
+          params: {
+            'phoneNumber': _i1.ParameterDescription(
+              name: 'phoneNumber',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['phone'] as _i7.PhoneEndpoint).initiatePasswordReset(
+            session,
+            params['phoneNumber'],
+          ),
+        ),
+        'resetPassword': _i1.MethodConnector(
+          name: 'resetPassword',
+          params: {
+            'verificationCode': _i1.ParameterDescription(
+              name: 'verificationCode',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'password': _i1.ParameterDescription(
+              name: 'password',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['phone'] as _i7.PhoneEndpoint).resetPassword(
+            session,
+            params['verificationCode'],
+            params['password'],
+          ),
+        ),
+        'createAccountRequest': _i1.MethodConnector(
+          name: 'createAccountRequest',
+          params: {
+            'userName': _i1.ParameterDescription(
+              name: 'userName',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'phoneNumber': _i1.ParameterDescription(
+              name: 'phoneNumber',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'password': _i1.ParameterDescription(
+              name: 'password',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['phone'] as _i7.PhoneEndpoint).createAccountRequest(
+            session,
+            params['userName'],
+            params['phoneNumber'],
+            params['password'],
+          ),
+        ),
+        'createAccount': _i1.MethodConnector(
+          name: 'createAccount',
+          params: {
+            'phoneNumber': _i1.ParameterDescription(
+              name: 'phoneNumber',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'verificationCode': _i1.ParameterDescription(
+              name: 'verificationCode',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['phone'] as _i7.PhoneEndpoint).createAccount(
+            session,
+            params['phoneNumber'],
+            params['verificationCode'],
+          ),
+        ),
+      },
+    );
     connectors['status'] = _i1.EndpointConnector(
       name: 'status',
       endpoint: endpoints['status']!,
@@ -387,7 +544,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['status'] as _i7.StatusEndpoint).isSignedIn(session),
+              (endpoints['status'] as _i8.StatusEndpoint).isSignedIn(session),
         ),
         'signOut': _i1.MethodConnector(
           name: 'signOut',
@@ -396,7 +553,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['status'] as _i7.StatusEndpoint).signOut(session),
+              (endpoints['status'] as _i8.StatusEndpoint).signOut(session),
         ),
         'getUserInfo': _i1.MethodConnector(
           name: 'getUserInfo',
@@ -405,7 +562,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['status'] as _i7.StatusEndpoint).getUserInfo(session),
+              (endpoints['status'] as _i8.StatusEndpoint).getUserInfo(session),
         ),
         'getUserSettingsConfig': _i1.MethodConnector(
           name: 'getUserSettingsConfig',
@@ -414,7 +571,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['status'] as _i7.StatusEndpoint)
+              (endpoints['status'] as _i8.StatusEndpoint)
                   .getUserSettingsConfig(session),
         ),
       },
@@ -430,14 +587,14 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['user'] as _i8.UserEndpoint).removeUserImage(session),
+              (endpoints['user'] as _i9.UserEndpoint).removeUserImage(session),
         ),
         'setUserImage': _i1.MethodConnector(
           name: 'setUserImage',
           params: {
             'image': _i1.ParameterDescription(
               name: 'image',
-              type: _i1.getType<_i10.ByteData>(),
+              type: _i1.getType<_i11.ByteData>(),
               nullable: false,
             )
           },
@@ -445,7 +602,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['user'] as _i8.UserEndpoint).setUserImage(
+              (endpoints['user'] as _i9.UserEndpoint).setUserImage(
             session,
             params['image'],
           ),
@@ -463,7 +620,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['user'] as _i8.UserEndpoint).changeUserName(
+              (endpoints['user'] as _i9.UserEndpoint).changeUserName(
             session,
             params['userName'],
           ),
@@ -481,7 +638,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['user'] as _i8.UserEndpoint).changeFullName(
+              (endpoints['user'] as _i9.UserEndpoint).changeFullName(
             session,
             params['fullName'],
           ),

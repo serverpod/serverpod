@@ -22,10 +22,15 @@ import 'email_failed_sign_in.dart' as _i9;
 import 'email_password_reset.dart' as _i10;
 import 'email_reset.dart' as _i11;
 import 'google_refresh_token.dart' as _i12;
-import 'user_image.dart' as _i13;
-import 'user_info.dart' as _i14;
-import 'user_info_public.dart' as _i15;
-import 'user_settings_config.dart' as _i16;
+import 'phone_auth.dart' as _i13;
+import 'phone_create_account_request.dart' as _i14;
+import 'phone_failed_sign_in.dart' as _i15;
+import 'phone_password_reset.dart' as _i16;
+import 'phone_reset.dart' as _i17;
+import 'user_image.dart' as _i18;
+import 'user_info.dart' as _i19;
+import 'user_info_public.dart' as _i20;
+import 'user_settings_config.dart' as _i21;
 export 'apple_auth_info.dart';
 export 'auth_key.dart';
 export 'authentication_fail_reason.dart';
@@ -36,6 +41,11 @@ export 'email_failed_sign_in.dart';
 export 'email_password_reset.dart';
 export 'email_reset.dart';
 export 'google_refresh_token.dart';
+export 'phone_auth.dart';
+export 'phone_create_account_request.dart';
+export 'phone_failed_sign_in.dart';
+export 'phone_password_reset.dart';
+export 'phone_reset.dart';
 export 'user_image.dart';
 export 'user_info.dart';
 export 'user_info_public.dart';
@@ -450,6 +460,279 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'serverpod_phone_auth',
+      dartName: 'PhoneAuth',
+      schema: 'public',
+      module: 'serverpod_auth',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'serverpod_phone_auth_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'phoneNumber',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'hash',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_phone_auth_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_phone_auth_phoneNumber',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'phoneNumber',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_phone_create_request',
+      dartName: 'PhoneCreateAccountRequest',
+      schema: 'public',
+      module: 'serverpod_auth',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_phone_create_request_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userName',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'phoneNumber',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'hash',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'verificationCode',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_phone_create_request_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_phone_auth_create_account_request_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'phoneNumber',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_phone_failed_sign_in',
+      dartName: 'PhoneFailedSignIn',
+      schema: 'public',
+      module: 'serverpod_auth',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_phone_failed_sign_in_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'phoneNumber',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'time',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'ipAddress',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_phone_failed_sign_in_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_phone_failed_sign_in_phoneNumber_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'phoneNumber',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_phone_failed_sign_in_time_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'time',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_phone_reset',
+      dartName: 'PhoneReset',
+      schema: 'public',
+      module: 'serverpod_auth',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'serverpod_phone_reset_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'verificationCode',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'expiration',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_phone_reset_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_phone_reset_verification_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'verificationCode',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'serverpod_user_image',
       dartName: 'UserImage',
       schema: 'public',
@@ -554,6 +837,12 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'String?',
         ),
         _i2.ColumnDefinition(
+          name: 'phoneNumber',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
           name: 'created',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
@@ -619,6 +908,19 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: false,
           isPrimary: false,
         ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_user_info_phoneNumber',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'phoneNumber',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
       ],
       managed: true,
     ),
@@ -660,17 +962,32 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i12.GoogleRefreshToken) {
       return _i12.GoogleRefreshToken.fromJson(data) as T;
     }
-    if (t == _i13.UserImage) {
-      return _i13.UserImage.fromJson(data) as T;
+    if (t == _i13.PhoneAuth) {
+      return _i13.PhoneAuth.fromJson(data) as T;
     }
-    if (t == _i14.UserInfo) {
-      return _i14.UserInfo.fromJson(data) as T;
+    if (t == _i14.PhoneCreateAccountRequest) {
+      return _i14.PhoneCreateAccountRequest.fromJson(data) as T;
     }
-    if (t == _i15.UserInfoPublic) {
-      return _i15.UserInfoPublic.fromJson(data) as T;
+    if (t == _i15.PhoneFailedSignIn) {
+      return _i15.PhoneFailedSignIn.fromJson(data) as T;
     }
-    if (t == _i16.UserSettingsConfig) {
-      return _i16.UserSettingsConfig.fromJson(data) as T;
+    if (t == _i16.PhonePasswordReset) {
+      return _i16.PhonePasswordReset.fromJson(data) as T;
+    }
+    if (t == _i17.PhoneReset) {
+      return _i17.PhoneReset.fromJson(data) as T;
+    }
+    if (t == _i18.UserImage) {
+      return _i18.UserImage.fromJson(data) as T;
+    }
+    if (t == _i19.UserInfo) {
+      return _i19.UserInfo.fromJson(data) as T;
+    }
+    if (t == _i20.UserInfoPublic) {
+      return _i20.UserInfoPublic.fromJson(data) as T;
+    }
+    if (t == _i21.UserSettingsConfig) {
+      return _i21.UserSettingsConfig.fromJson(data) as T;
     }
     if (t == _i1.getType<_i3.AppleAuthInfo?>()) {
       return (data != null ? _i3.AppleAuthInfo.fromJson(data) : null) as T;
@@ -708,17 +1025,35 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data != null ? _i12.GoogleRefreshToken.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i13.UserImage?>()) {
-      return (data != null ? _i13.UserImage.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i13.PhoneAuth?>()) {
+      return (data != null ? _i13.PhoneAuth.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i14.UserInfo?>()) {
-      return (data != null ? _i14.UserInfo.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i14.PhoneCreateAccountRequest?>()) {
+      return (data != null
+          ? _i14.PhoneCreateAccountRequest.fromJson(data)
+          : null) as T;
     }
-    if (t == _i1.getType<_i15.UserInfoPublic?>()) {
-      return (data != null ? _i15.UserInfoPublic.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i15.PhoneFailedSignIn?>()) {
+      return (data != null ? _i15.PhoneFailedSignIn.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i16.UserSettingsConfig?>()) {
-      return (data != null ? _i16.UserSettingsConfig.fromJson(data) : null)
+    if (t == _i1.getType<_i16.PhonePasswordReset?>()) {
+      return (data != null ? _i16.PhonePasswordReset.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i17.PhoneReset?>()) {
+      return (data != null ? _i17.PhoneReset.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i18.UserImage?>()) {
+      return (data != null ? _i18.UserImage.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i19.UserInfo?>()) {
+      return (data != null ? _i19.UserInfo.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i20.UserInfoPublic?>()) {
+      return (data != null ? _i20.UserInfoPublic.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i21.UserSettingsConfig?>()) {
+      return (data != null ? _i21.UserSettingsConfig.fromJson(data) : null)
           as T;
     }
     if (t == List<String>) {
@@ -765,16 +1100,31 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i12.GoogleRefreshToken) {
       return 'GoogleRefreshToken';
     }
-    if (data is _i13.UserImage) {
+    if (data is _i13.PhoneAuth) {
+      return 'PhoneAuth';
+    }
+    if (data is _i14.PhoneCreateAccountRequest) {
+      return 'PhoneCreateAccountRequest';
+    }
+    if (data is _i15.PhoneFailedSignIn) {
+      return 'PhoneFailedSignIn';
+    }
+    if (data is _i16.PhonePasswordReset) {
+      return 'PhonePasswordReset';
+    }
+    if (data is _i17.PhoneReset) {
+      return 'PhoneReset';
+    }
+    if (data is _i18.UserImage) {
       return 'UserImage';
     }
-    if (data is _i14.UserInfo) {
+    if (data is _i19.UserInfo) {
       return 'UserInfo';
     }
-    if (data is _i15.UserInfoPublic) {
+    if (data is _i20.UserInfoPublic) {
       return 'UserInfoPublic';
     }
-    if (data is _i16.UserSettingsConfig) {
+    if (data is _i21.UserSettingsConfig) {
       return 'UserSettingsConfig';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -816,17 +1166,32 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data['className'] == 'GoogleRefreshToken') {
       return deserialize<_i12.GoogleRefreshToken>(data['data']);
     }
+    if (data['className'] == 'PhoneAuth') {
+      return deserialize<_i13.PhoneAuth>(data['data']);
+    }
+    if (data['className'] == 'PhoneCreateAccountRequest') {
+      return deserialize<_i14.PhoneCreateAccountRequest>(data['data']);
+    }
+    if (data['className'] == 'PhoneFailedSignIn') {
+      return deserialize<_i15.PhoneFailedSignIn>(data['data']);
+    }
+    if (data['className'] == 'PhonePasswordReset') {
+      return deserialize<_i16.PhonePasswordReset>(data['data']);
+    }
+    if (data['className'] == 'PhoneReset') {
+      return deserialize<_i17.PhoneReset>(data['data']);
+    }
     if (data['className'] == 'UserImage') {
-      return deserialize<_i13.UserImage>(data['data']);
+      return deserialize<_i18.UserImage>(data['data']);
     }
     if (data['className'] == 'UserInfo') {
-      return deserialize<_i14.UserInfo>(data['data']);
+      return deserialize<_i19.UserInfo>(data['data']);
     }
     if (data['className'] == 'UserInfoPublic') {
-      return deserialize<_i15.UserInfoPublic>(data['data']);
+      return deserialize<_i20.UserInfoPublic>(data['data']);
     }
     if (data['className'] == 'UserSettingsConfig') {
-      return deserialize<_i16.UserSettingsConfig>(data['data']);
+      return deserialize<_i21.UserSettingsConfig>(data['data']);
     }
     if (data['className'].startsWith('serverpod.')) {
       data['className'] = data['className'].substring(10);
@@ -856,10 +1221,18 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i11.EmailReset.t;
       case _i12.GoogleRefreshToken:
         return _i12.GoogleRefreshToken.t;
-      case _i13.UserImage:
-        return _i13.UserImage.t;
-      case _i14.UserInfo:
-        return _i14.UserInfo.t;
+      case _i13.PhoneAuth:
+        return _i13.PhoneAuth.t;
+      case _i14.PhoneCreateAccountRequest:
+        return _i14.PhoneCreateAccountRequest.t;
+      case _i15.PhoneFailedSignIn:
+        return _i15.PhoneFailedSignIn.t;
+      case _i17.PhoneReset:
+        return _i17.PhoneReset.t;
+      case _i18.UserImage:
+        return _i18.UserImage.t;
+      case _i19.UserInfo:
+        return _i19.UserInfo.t;
     }
     return null;
   }

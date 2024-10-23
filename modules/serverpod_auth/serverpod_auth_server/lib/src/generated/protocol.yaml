@@ -16,6 +16,13 @@ firebase:
 google:
   - authenticateWithServerAuthCode:
   - authenticateWithIdToken:
+phone:
+  - authenticate:
+  - changePassword:
+  - initiatePasswordReset:
+  - resetPassword:
+  - createAccountRequest:
+  - createAccount:
 status:
   - isSignedIn:
   - signOut:

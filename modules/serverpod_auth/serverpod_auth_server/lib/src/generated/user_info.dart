@@ -23,6 +23,7 @@ abstract class UserInfo implements _i1.TableRow, _i1.ProtocolSerialization {
     this.userName,
     this.fullName,
     this.email,
+    this.phoneNumber,
     required this.created,
     this.imageUrl,
     required this.scopeNames,
@@ -35,6 +36,7 @@ abstract class UserInfo implements _i1.TableRow, _i1.ProtocolSerialization {
     String? userName,
     String? fullName,
     String? email,
+    String? phoneNumber,
     required DateTime created,
     String? imageUrl,
     required List<String> scopeNames,
@@ -48,6 +50,7 @@ abstract class UserInfo implements _i1.TableRow, _i1.ProtocolSerialization {
       userName: jsonSerialization['userName'] as String?,
       fullName: jsonSerialization['fullName'] as String?,
       email: jsonSerialization['email'] as String?,
+      phoneNumber: jsonSerialization['phoneNumber'] as String?,
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       imageUrl: jsonSerialization['imageUrl'] as String?,
       scopeNames: (jsonSerialization['scopeNames'] as List)
@@ -77,6 +80,9 @@ abstract class UserInfo implements _i1.TableRow, _i1.ProtocolSerialization {
   /// The email of the user.
   String? email;
 
+  /// The phone number of the user.
+  String? phoneNumber;
+
   /// The time when this user was created.
   DateTime created;
 
@@ -98,6 +104,7 @@ abstract class UserInfo implements _i1.TableRow, _i1.ProtocolSerialization {
     String? userName,
     String? fullName,
     String? email,
+    String? phoneNumber,
     DateTime? created,
     String? imageUrl,
     List<String>? scopeNames,
@@ -111,6 +118,7 @@ abstract class UserInfo implements _i1.TableRow, _i1.ProtocolSerialization {
       if (userName != null) 'userName': userName,
       if (fullName != null) 'fullName': fullName,
       if (email != null) 'email': email,
+      if (phoneNumber != null) 'phoneNumber': phoneNumber,
       'created': created.toJson(),
       if (imageUrl != null) 'imageUrl': imageUrl,
       'scopeNames': scopeNames.toJson(),
@@ -126,6 +134,7 @@ abstract class UserInfo implements _i1.TableRow, _i1.ProtocolSerialization {
       if (userName != null) 'userName': userName,
       if (fullName != null) 'fullName': fullName,
       if (email != null) 'email': email,
+      if (phoneNumber != null) 'phoneNumber': phoneNumber,
       'created': created.toJson(),
       if (imageUrl != null) 'imageUrl': imageUrl,
       'scopeNames': scopeNames.toJson(),
@@ -172,6 +181,7 @@ class _UserInfoImpl extends UserInfo {
     String? userName,
     String? fullName,
     String? email,
+    String? phoneNumber,
     required DateTime created,
     String? imageUrl,
     required List<String> scopeNames,
@@ -182,6 +192,7 @@ class _UserInfoImpl extends UserInfo {
           userName: userName,
           fullName: fullName,
           email: email,
+          phoneNumber: phoneNumber,
           created: created,
           imageUrl: imageUrl,
           scopeNames: scopeNames,
@@ -195,6 +206,7 @@ class _UserInfoImpl extends UserInfo {
     Object? userName = _Undefined,
     Object? fullName = _Undefined,
     Object? email = _Undefined,
+    Object? phoneNumber = _Undefined,
     DateTime? created,
     Object? imageUrl = _Undefined,
     List<String>? scopeNames,
@@ -206,6 +218,7 @@ class _UserInfoImpl extends UserInfo {
       userName: userName is String? ? userName : this.userName,
       fullName: fullName is String? ? fullName : this.fullName,
       email: email is String? ? email : this.email,
+      phoneNumber: phoneNumber is String? ? phoneNumber : this.phoneNumber,
       created: created ?? this.created,
       imageUrl: imageUrl is String? ? imageUrl : this.imageUrl,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toList(),
@@ -231,6 +244,10 @@ class UserInfoTable extends _i1.Table {
     );
     email = _i1.ColumnString(
       'email',
+      this,
+    );
+    phoneNumber = _i1.ColumnString(
+      'phoneNumber',
       this,
     );
     created = _i1.ColumnDateTime(
@@ -264,6 +281,9 @@ class UserInfoTable extends _i1.Table {
   /// The email of the user.
   late final _i1.ColumnString email;
 
+  /// The phone number of the user.
+  late final _i1.ColumnString phoneNumber;
+
   /// The time when this user was created.
   late final _i1.ColumnDateTime created;
 
@@ -283,6 +303,7 @@ class UserInfoTable extends _i1.Table {
         userName,
         fullName,
         email,
+        phoneNumber,
         created,
         imageUrl,
         scopeNames,
