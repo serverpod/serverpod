@@ -238,7 +238,7 @@ void main() {
     });
   });
 
-  group('Given a created module project', () {
+  group('Given a created module project and a running docker environment', () {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;

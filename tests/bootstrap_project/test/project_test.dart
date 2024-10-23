@@ -589,7 +589,7 @@ void main() async {
     });
   });
 
-  group('Given a created project', () {
+  group('Given a created project and a running docker environment', () {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
