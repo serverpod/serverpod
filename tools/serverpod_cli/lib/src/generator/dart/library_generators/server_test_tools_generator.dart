@@ -345,6 +345,7 @@ class ServerTestToolsGenerator {
           (methodBuilder) {
             methodBuilder
               ..name = 'initialize'
+              ..returns = refer('void')
               ..annotations.add(refer('override'))
               ..requiredParameters.add(
                 Parameter(
@@ -384,6 +385,7 @@ class ServerTestToolsGenerator {
     return Method((methodBuilder) {
       methodBuilder
         ..name = 'withServerpod'
+        ..returns = refer('void')
         ..annotations.add(refer('isTestGroup', serverpodTestUrl))
         ..requiredParameters.addAll([
           Parameter((p) => p
