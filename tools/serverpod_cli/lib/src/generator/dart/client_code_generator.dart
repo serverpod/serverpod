@@ -21,36 +21,44 @@ class DartClientCodeGenerator extends CodeGenerator {
       serverCode: false,
       config: config,
     );
-    Map<String, String> generatedCode = {};
 
-    var sealedHierarchies = getSealedHierarchies(models);
+    var modelAllocatorContext = [];
+
+    var sealedHierarchies = ModelFilterUtil.getSealedHierarchies(models);
 
     var modelsWithoutSealedHierarchies =
-        getClassesWithoutSealedHierarchies(models);
+        ModelFilterUtil.getClassesWithoutSealedHierarchies(models);
 
     for (var sealedHierarchy in sealedHierarchies) {
       var partOfAllocator = PartOfAllocator([]);
       var partAllocator = PartAllocator(partOfAllocator);
 
       for (var model in sealedHierarchy) {
-        if (!model.serverOnly) {
-          generatedCode[createFilePath(config, model, false)] =
-              clientSideGenerator.generateModelLibrary(model).generateCode(
-                    partOfAllocator: partOfAllocator,
-                    partAllocator: partAllocator,
-                  );
-        }
+        modelAllocatorContext.add((
+          model: model,
+          allocator: model.isSealedTopNode ? partAllocator : partOfAllocator
+        ));
       }
     }
 
     for (var model in modelsWithoutSealedHierarchies) {
-      if (!model.serverOnly) {
-        generatedCode[createFilePath(config, model, false)] =
-            clientSideGenerator.generateModelLibrary(model).generateCode();
-      }
+      modelAllocatorContext.add((
+        model: model,
+        allocator: null,
+      ));
     }
 
-    return generatedCode;
+    return {
+      for (var data in modelAllocatorContext)
+        if (!data.model.serverOnly)
+          p.joinAll([
+            ...config.generatedDartClientModelPathParts,
+            ...data.model.subDirParts,
+            '${data.model.fileName}.dart'
+          ]): clientSideGenerator
+              .generateModelLibrary(data.model)
+              .generateCode(allocator: data.allocator),
+    };
   }
 
   @override

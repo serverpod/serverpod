@@ -1,56 +1,40 @@
-import 'package:path/path.dart' as p;
-
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
-import 'package:serverpod_cli/src/config/config.dart';
 
-List<ClassDefinition> getSealedClasses(
-  List<SerializableModelDefinition> models,
-) {
-  return models
-      .whereType<ClassDefinition>()
-      .where((element) => element.sealedTopNode == element)
-      .toList();
-}
+/// Utility class for filtering models.
+abstract final class ModelFilterUtil {
+  /// Returns all sealed top node classes.
+  static Iterable<ClassDefinition> _getSealedTopNodeClasses(
+    List<SerializableModelDefinition> models,
+  ) {
+    return models
+        .whereType<ClassDefinition>()
+        .where((element) => element.isSealedTopNode);
+  }
 
-List<List<ClassDefinition>> getSealedHierarchies(
-  List<SerializableModelDefinition> models,
-) {
-  var sealedClasses = getSealedClasses(models);
+  /// Returns a list of sealed hierarchies.
+  /// Each hierarchy is represented by a list of classes.
+  static Iterable<Iterable<ClassDefinition>> getSealedHierarchies(
+    List<SerializableModelDefinition> models,
+  ) {
+    var sealedClasses = _getSealedTopNodeClasses(models);
 
-  return sealedClasses.map(
-    (element) {
-      return [...element.descendantClasses, element];
-    },
-  ).toList();
-}
+    return sealedClasses.map(
+      (element) {
+        return [...element.descendantClasses, element];
+      },
+    );
+  }
 
-List<ClassDefinition> getSealedHierarchyClasses(
-  List<SerializableModelDefinition> models,
-) {
-  return getSealedHierarchies(models).expand((e) => e).toList();
-}
+  /// Returns all classes that are not part of a sealed hierarchy.
+  static Iterable<SerializableModelDefinition>
+      getClassesWithoutSealedHierarchies(
+    List<SerializableModelDefinition> models,
+  ) {
+    var sealedHierarchyClasses =
+        getSealedHierarchies(models).expand((e) => e).toSet();
 
-List<SerializableModelDefinition> getClassesWithoutSealedHierarchies(
-  List<SerializableModelDefinition> models,
-) {
-  return models
-      .where((e) => !getSealedHierarchyClasses(models).contains(e))
-      .toList();
-}
-
-String createFilePath(
-  GeneratorConfig config,
-  SerializableModelDefinition model,
-  bool serverCode,
-) {
-  return p.joinAll(
-    [
-      if (serverCode)
-        ...config.generatedServeModelPathParts
-      else
-        ...config.generatedDartClientModelPathParts,
-      ...model.subDirParts,
-      '${model.fileName}.dart'
-    ],
-  );
+    return models.where(
+      (e) => e is! ClassDefinition || !sealedHierarchyClasses.contains(e),
+    );
+  }
 }

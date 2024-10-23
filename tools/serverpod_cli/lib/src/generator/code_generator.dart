@@ -1,7 +1,6 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/generator/dart/library_generators/util/custom_allocators.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 /// A code generator is responsible for generating the code for the target
@@ -40,29 +39,10 @@ abstract class CodeGenerator {
 }
 
 extension GenerateCode on Library {
-  String generateCode({
-    PartOfAllocator? partOfAllocator,
-    PartAllocator? partAllocator,
-  }) {
-    Allocator allocator;
-
-    var partDirectives = directives.where((d) => d.type == DirectiveType.part);
-    var partOfDirective =
-        directives.where((d) => d.type == DirectiveType.partOf).firstOrNull;
-
-    var hasAllocators = partOfAllocator != null || partAllocator != null;
-
-    if (partOfDirective != null && hasAllocators) {
-      allocator = partOfAllocator!;
-    } else if (partDirectives.isNotEmpty && hasAllocators) {
-      allocator = partAllocator!;
-    } else {
-      allocator = Allocator.simplePrefixing();
-    }
-
+  String generateCode({Allocator? allocator}) {
     var code = accept(DartEmitter(
       useNullSafetySyntax: true,
-      allocator: allocator,
+      allocator: allocator ?? Allocator.simplePrefixing(),
     )).toString();
 
     try {
