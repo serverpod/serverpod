@@ -36,7 +36,7 @@ void main() async {
   });
 
   group('Given a clean state', () {
-    final (projectName, commandRoot) = createRandomProjectName(tempPath);
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
 
@@ -77,7 +77,7 @@ void main() async {
   });
 
   group('Given a clean state', () {
-    final (projectName, _) = createRandomProjectName(tempPath);
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
 
@@ -103,7 +103,7 @@ void main() async {
         reason: 'Failed to create the serverpod project.',
       );
 
-      final (serverDir, _, _) = createProjectFolderPaths(projectName);
+      final serverDir = createServerFolderPath(projectName);
 
       var configDir =
           Directory(path.join(tempPath, serverDir, 'config')).existsSync();
@@ -149,8 +149,8 @@ void main() async {
   });
 
   group('Given a clean state', () {
-    final (projectName, commandRoot) = createRandomProjectName(tempPath);
-    final (serverDir, _, _) = createProjectFolderPaths(projectName);
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+    final serverDir = createServerFolderPath(projectName);
     late Process createProcess;
 
     tearDown(() async {
@@ -234,8 +234,8 @@ void main() async {
   });
 
   group('Given a clean state', () {
-    final (projectName, _) = createRandomProjectName(tempPath);
-    final (serverDir, _, _) = createProjectFolderPaths(projectName);
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+    final serverDir = createServerFolderPath(projectName);
     late Process createProcess;
 
     test(
@@ -331,7 +331,7 @@ void main() async {
   });
 
   group('Given a created mini project', () {
-    final (projectName, commandRoot) = createRandomProjectName(tempPath);
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
 

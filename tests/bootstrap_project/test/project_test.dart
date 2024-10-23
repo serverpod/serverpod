@@ -37,7 +37,7 @@ void main() async {
   });
 
   group('Given a clean state', () {
-    final (projectName, commandRoot) = createRandomProjectName(tempPath);
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
 
@@ -107,7 +107,7 @@ void main() async {
   });
 
   group('Given a clean state', () {
-    final (projectName, commandRoot) = createRandomProjectName(tempPath);
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
     Process? startProcess;
@@ -193,15 +193,15 @@ void main() async {
   });
 
   group('Given a clean state', () {
-    var (projectName, commandRootPath) = createRandomProjectName(tempPath);
-    final (serverDir, flutterDir, clientDir) =
+    var (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+    final (:serverDir, :flutterDir, :clientDir) =
         createProjectFolderPaths(projectName);
 
     tearDownAll(() async {
       await Process.run(
         'docker',
         ['compose', 'down', '-v'],
-        workingDirectory: commandRootPath,
+        workingDirectory: commandRoot,
       );
       while (!await isNetworkPortAvailable(8090));
     });
@@ -481,8 +481,9 @@ void main() async {
   });
 
   group('Given a clean state', () {
-    final (projectName, commandRoot) = createRandomProjectName(tempPath);
-    final (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+    final (:serverDir, :flutterDir, :clientDir) =
+        createProjectFolderPaths(projectName);
 
     late Process createProcess;
 
@@ -589,7 +590,7 @@ void main() async {
   });
 
   group('Given a created project', () {
-    final (projectName, commandRoot) = createRandomProjectName(tempPath);
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
 

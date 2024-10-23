@@ -36,15 +36,15 @@ void main() {
   });
 
   group('Given a clean state', () {
-    var (projectName, commandRootPath) = createRandomProjectName(tempPath);
-    final (serverDir, flutterDir, clientDir) =
+    var (:commandRoot, :projectName) = createRandomProjectName(tempPath);
+    final (:serverDir, :flutterDir, :clientDir) =
         createProjectFolderPaths(projectName);
 
     tearDownAll(() async {
       await Process.run(
         'docker',
         ['compose', 'down', '-v'],
-        workingDirectory: commandRootPath,
+        workingDirectory: commandRoot,
       );
       while (!await isNetworkPortAvailable(8090));
     });
@@ -239,7 +239,7 @@ void main() {
   });
 
   group('Given a created module project', () {
-    final (projectName, commandRoot) = createRandomProjectName(tempPath);
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
 

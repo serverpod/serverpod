@@ -3,19 +3,26 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 
-(String, String) createRandomProjectName(String root) {
+({String projectName, String commandRoot}) createRandomProjectName(
+  String root,
+) {
   final projectName = 'test_${Uuid().v4().replaceAll('-', '_').toLowerCase()}';
   final commandRoot = path.join(root, projectName, '${projectName}_server');
 
-  return (projectName, commandRoot);
+  return (projectName: projectName, commandRoot: commandRoot);
 }
 
-(String, String, String) createProjectFolderPaths(String projectName) {
+({String serverDir, String flutterDir, String clientDir})
+    createProjectFolderPaths(String projectName) {
   final serverDir = path.join(projectName, '${projectName}_server');
   final flutterDir = path.join(projectName, '${projectName}_flutter');
   final clientDir = path.join(projectName, '${projectName}_client');
 
-  return (serverDir, flutterDir, clientDir);
+  return (serverDir: serverDir, flutterDir: flutterDir, clientDir: clientDir);
+}
+
+String createServerFolderPath(String projectName) {
+  return path.join(projectName, '${projectName}_server');
 }
 
 Future<bool> isNetworkPortAvailable(int port) async {
