@@ -34,13 +34,35 @@ typedef SendPasswordResetEmailCallback = Future<bool> Function(
 typedef SendValidationEmailCallback = Future<bool> Function(
     Session session, String email, String validationCode);
 
-/// Callback for generation of the hash password
-typedef PasswordHashGenerator = Future<String> Function(String password);
+/// Callback for sms password resets.
+typedef SendPasswordResetSmsCallback = Future<bool> Function(
+    Session session, UserInfo userInfo, String validationCode);
 
-/// Callback to validate the hash used by [PasswordHashGenerator]
-typedef PasswordHashValidator = Future<bool> Function(
+/// Callback for sms validation codes at account setup.
+typedef SendValidationSmsCallback = Future<bool> Function(
+    Session session, String phoneNumber, String validationCode);
+
+/// Callback for generation of the hash password for email
+typedef EmailPasswordHashGenerator = Future<String> Function(String password);
+
+/// Callback to validate the hash used by [EmailPasswordHashGenerator]
+/// for email
+typedef EmailPasswordHashValidator = Future<bool> Function(
   String password,
   String email,
+  String hash, {
+  void Function({required String passwordHash, required String storedHash})?
+      onValidationFailure,
+  void Function(Object e)? onError,
+});
+
+/// Callback for generation of the hash password for phone number
+typedef PhonePasswordHashGenerator = Future<String> Function(String password);
+
+/// Callback to validate the hash used by [PhonePasswordHashGenerator]
+/// for phone number
+typedef PhonePasswordHashValidator = Future<bool> Function(
+  String password,
   String hash, {
   void Function({required String passwordHash, required String storedHash})?
       onValidationFailure,
@@ -66,6 +88,14 @@ class AuthConfig {
 
   /// The reset period for email sign in attempts. Defaults to 5 minutes.
   final Duration emailSignInFailureResetTime;
+
+  /// Max allowed failed phone number sign in attempts within the reset period.
+  /// Defaults to 5. (By default, a user can make 5 sign in attempts within a
+  /// 5 minute window.)
+  final int maxAllowedPhoneSignInAttempts;
+
+  /// The reset period for phone number sign in attempts. Defaults to 5 minutes.
+  final Duration phoneSignInFailureResetTime;
 
   /// True if users can update their profile images.
   final bool userCanEditUserImage;
@@ -120,8 +150,14 @@ class AuthConfig {
   /// Called when a user should be sent a reset code by email.
   final SendPasswordResetEmailCallback? sendPasswordResetEmail;
 
-  /// Called when a user should be sent a validation code on account setup.
+  /// Called when a user should be sent a validation code on account setup by email.
   final SendValidationEmailCallback? sendValidationEmail;
+
+  /// Called when a user should be sent a reset code by sms.
+  final SendPasswordResetSmsCallback? sendPasswordResetSms;
+
+  /// Called when a user should be sent a validation code on account setup by sms.
+  final SendValidationSmsCallback? sendValidationSms;
 
   /// The length of the validation code used in the authentication process.
   /// This value determines the number of digits in the validation code. Default is 8.
@@ -138,11 +174,13 @@ class AuthConfig {
   /// Firebase console.
   final String firebaseServiceAccountKeyJson;
 
-  /// The maximum length of passwords when signing up with email.
+  /// The maximum length of passwords when signing up with email
+  /// or phone number.
   /// Default is 128 characters.
   final int maxPasswordLength;
 
-  /// The minimum length of passwords when signing up with email.
+  /// The minimum length of passwords when signing up with email
+  /// or phone number.
   /// Default is 8 characters.
   final int minPasswordLength;
 
@@ -151,17 +189,27 @@ class AuthConfig {
   /// generation.
   final bool allowUnsecureRandom;
 
-  /// Create a custom hash for the password
-  final PasswordHashGenerator passwordHashGenerator;
+  /// Create a custom hash for the password for email
+  final EmailPasswordHashGenerator emailPasswordHashGenerator;
 
-  /// Create a custom validation for the password in combinaison with [PasswordHashGenerator]
-  final PasswordHashValidator passwordHashValidator;
+  /// Create a custom validation for the password for email in combinaison
+  /// with [EmailPasswordHashGenerator]
+  final EmailPasswordHashValidator emailPasswordHashValidator;
+
+  /// Create a custom hash for the password for phone number
+  final PhonePasswordHashGenerator phonePasswordHashGenerator;
+
+  /// Create a custom validation for the password for phone number
+  /// in combinaison with [PhonePasswordHashGenerator]
+  final PhonePasswordHashValidator phonePasswordHashValidator;
 
   /// Creates a new Auth configuration. Use the [set] method to replace the
   /// default settings. Defaults to `config/firebase_service_account_key.json`.
   AuthConfig({
     this.maxAllowedEmailSignInAttempts = 5,
     this.emailSignInFailureResetTime = const Duration(minutes: 5),
+    this.maxAllowedPhoneSignInAttempts = 5,
+    this.phoneSignInFailureResetTime = const Duration(minutes: 5),
     this.enableUserImages = true,
     this.importUserImagesFromGoogleSignIn = true,
     this.userImageSize = 256,
@@ -179,6 +227,8 @@ class AuthConfig {
     this.onUserUpdated,
     this.sendPasswordResetEmail,
     this.sendValidationEmail,
+    this.sendPasswordResetSms,
+    this.sendValidationSms,
     this.validationCodeLength = 8,
     this.passwordResetExpirationTime = const Duration(minutes: 15),
     this.extraSaltyHash = true,
@@ -187,8 +237,10 @@ class AuthConfig {
     this.maxPasswordLength = 128,
     this.minPasswordLength = 8,
     this.allowUnsecureRandom = false,
-    this.passwordHashGenerator = defaultGeneratePasswordHash,
-    this.passwordHashValidator = defaultValidatePasswordHash,
+    this.emailPasswordHashGenerator = defaultEmailGeneratePasswordHash,
+    this.emailPasswordHashValidator = defaultEmailValidatePasswordHash,
+    this.phonePasswordHashGenerator = defaultPhoneGeneratePasswordHash,
+    this.phonePasswordHashValidator = defaultPhoneValidatePasswordHash,
   }) {
     if (validationCodeLength < 8) {
       stderr.writeln(
