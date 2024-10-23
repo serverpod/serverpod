@@ -27,29 +27,37 @@ class LibraryGenerator {
 
     library.name = 'protocol';
 
-    var models = protocolDefinition.models
+    var allModels = protocolDefinition.models
         .where((model) => serverCode || !model.serverOnly)
         .toList();
 
-    String getRef(SerializableModelDefinition classInfo) =>
-        classInfo is ClassDefinition && classInfo.sealedTopNode != null
-            ? classInfo.sealedTopNode!.fileRef()
-            : classInfo.fileRef();
+    var topLevelModels = allModels.where((model) {
+      if (model is! ClassDefinition) return true;
+      var sealedTopNode = model.sealedTopNode;
+      bool isSealedTopNode = sealedTopNode == model;
 
-    bool shouldCreateExport(SerializableModelDefinition classInfo) {
-      if (classInfo is! ClassDefinition) return true;
-      bool isSealedTopNode = classInfo.sealedTopNode == classInfo;
-
-      bool isNotPartOfSealedHierarchy = classInfo.sealedTopNode == null;
+      bool isNotPartOfSealedHierarchy = sealedTopNode == null;
 
       return isSealedTopNode || isNotPartOfSealedHierarchy;
+    }).toList();
+
+    var unsealedModels = allModels
+        .where((model) => !(model is ClassDefinition && model.isSealed))
+        .toList();
+
+    String getRef(SerializableModelDefinition classInfo) {
+      if (classInfo is ClassDefinition) {
+        var sealedTopNode = classInfo.sealedTopNode;
+        if (sealedTopNode != null) {
+          return sealedTopNode.fileRef();
+        }
+      }
+      return classInfo.fileRef();
     }
 
     // exports
     library.directives.addAll([
-      for (var classInfo
-          in models.where((element) => shouldCreateExport(element)))
-        Directive.export(classInfo.fileRef()),
+      for (var classInfo in topLevelModels) Directive.export(getRef(classInfo)),
       if (!serverCode) Directive.export('client.dart'),
     ]);
 
@@ -87,7 +95,7 @@ class LibraryGenerator {
                 refer('TableDefinition', serverpodProtocolUrl(serverCode)),
               ))
             ..assignment = createDatabaseDefinitionFromModels(
-              models,
+              allModels,
               config.name,
               config.modulesAll,
             ).toCode(
@@ -122,28 +130,23 @@ class LibraryGenerator {
         ..body = Block.of([
           const Code('t ??= T;'),
           ...(<Expression, Code>{
-            for (var classInfo in models)
-              if (!(classInfo is ClassDefinition && classInfo.isSealed))
-                refer(classInfo.className, getRef(classInfo)): Code.scope(
-                    (a) => '${a(refer(classInfo.className, getRef(classInfo)))}'
-                        '.fromJson(data) as T'),
-            for (var classInfo in models)
-              if (!(classInfo is ClassDefinition && classInfo.isSealed))
-                refer('getType', serverpodUrl(serverCode)).call([], {}, [
-                  TypeReference(
-                    (b) => b
-                      ..symbol = classInfo.className
-                      ..url = classInfo is ClassDefinition &&
-                              classInfo.sealedTopNode != null
-                          ? classInfo.sealedTopNode!.fileRef()
-                          : classInfo.fileRef()
-                      ..isNullable = true,
-                  )
-                ]): Code.scope((a) => '(data!=null?'
-                    '${a(refer(classInfo.className, getRef(classInfo)))}'
-                    '.fromJson(data) :null) as T'),
+            for (var classInfo in unsealedModels)
+              refer(classInfo.className, getRef(classInfo)): Code.scope(
+                  (a) => '${a(refer(classInfo.className, getRef(classInfo)))}'
+                      '.fromJson(data) as T'),
+            for (var classInfo in unsealedModels)
+              refer('getType', serverpodUrl(serverCode)).call([], {}, [
+                TypeReference(
+                  (b) => b
+                    ..symbol = classInfo.className
+                    ..url = getRef(classInfo)
+                    ..isNullable = true,
+                )
+              ]): Code.scope((a) => '(data!=null?'
+                  '${a(refer(classInfo.className, getRef(classInfo)))}'
+                  '.fromJson(data) :null) as T'),
           }..addEntries([
-                  for (var classInfo in models)
+                  for (var classInfo in unsealedModels)
                     if (classInfo is ClassDefinition)
                       for (var field in classInfo.fields.where(
                           (field) => field.shouldIncludeField(serverCode)))
@@ -205,7 +208,7 @@ class LibraryGenerator {
           for (var extraClass in config.extraClasses)
             Code.scope((a) =>
                 'if(data is ${a(extraClass.reference(serverCode, config: config))}) {return \'${extraClass.className}\';}'),
-          for (var classInfo in models)
+          for (var classInfo in unsealedModels)
             Code.scope((a) =>
                 'if(data is ${a(refer(classInfo.className, getRef(classInfo)))}) {return \'${classInfo.className}\';}'),
           if (config.name != 'serverpod' && serverCode)
@@ -228,7 +231,7 @@ class LibraryGenerator {
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${extraClass.className}\'){'
                 'return deserialize<${a(extraClass.reference(serverCode, config: config))}>(data[\'data\']);}'),
-          for (var classInfo in models)
+          for (var classInfo in unsealedModels)
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${classInfo.className}\'){'
                 'return deserialize<${a(refer(classInfo.className, getRef(classInfo)))}>(data[\'data\']);}'),
@@ -266,11 +269,11 @@ class LibraryGenerator {
                 Code.scope((a) =>
                     '{var table = ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().getTableForType(t);'
                     'if(table!=null) {return table;}}'),
-              if (models.any((classInfo) =>
+              if (allModels.any((classInfo) =>
                   classInfo is ClassDefinition && classInfo.tableName != null))
                 Block.of([
                   const Code('switch(t){'),
-                  for (var classInfo in models)
+                  for (var classInfo in allModels)
                     if (classInfo is ClassDefinition &&
                         classInfo.tableName != null)
                       Code.scope((a) =>

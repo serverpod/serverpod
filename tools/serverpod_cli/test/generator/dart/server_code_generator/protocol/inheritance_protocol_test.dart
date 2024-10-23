@@ -22,7 +22,9 @@ void main() {
     'protocol.dart',
   );
 
-  group('Given a sealed hierarchy when generating protocol files', () {
+  group(
+      'Given a hierarchy with a sealed parent, a normal child and a normal grandchild when generating protocol files',
+      () {
     var parentClassName = 'Example';
     var parentClassFileName = 'example';
 
@@ -217,12 +219,12 @@ void main() {
           expect(getClassNameForObjectMethod, isNotNull);
         });
 
-        test('that returns the $parentClassName with the top node alias', () {
+        test('that does NOT return the $parentClassName', () {
           expect(
             getClassNameForObjectMethod!
                 .toSource()
                 .contains('if (data is _i3.$parentClassName)'),
-            isTrue,
+            isFalse,
           );
         });
 
@@ -257,12 +259,14 @@ void main() {
           expect(deserializeByClassNameMethod, isNotNull);
         });
 
-        test('that returns the $parentClassName with the top node alias', () {
+        test(
+            'that does NOT return the $parentClassName with the top node alias',
+            () {
           expect(
             deserializeByClassNameMethod!
                 .toSource()
                 .contains('return deserialize<_i3.Example>'),
-            isTrue,
+            isFalse,
           );
         });
 
