@@ -232,6 +232,11 @@ namedParameters:
   - namedParametersMethodEqualInts:
 optionalParameters:
   - returnOptionalInt:
+phoneAuthTestMethods:
+  - findVerificationCode:
+  - findResetCode:
+  - tearDown:
+  - createUser:
 redis:
   - setSimpleData:
   - setSimpleDataWithLifetime:

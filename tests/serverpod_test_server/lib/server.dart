@@ -31,7 +31,7 @@ void run(List<String> args) async {
   // Callbacks for auth
   auth.AuthConfig.set(auth.AuthConfig(
     onUserWillBeCreated: (session, userInfo, authMethod) async {
-      return (userInfo.email!.endsWith('.bar'));
+      return (userInfo.email == null) ? true : userInfo.email!.endsWith('.bar');
     },
     sendValidationEmail: (session, email, validationCode) async {
       print('Sending validation email to $email with code $validationCode');
@@ -39,6 +39,15 @@ void run(List<String> args) async {
     },
     sendPasswordResetEmail: (session, userInfo, resetCode) async {
       print('Sending reset email to ${userInfo.email} with code $resetCode');
+      return true;
+    },
+    sendValidationSms: (session, phoneNumber, validationCode) async {
+      print('Sending validation sms to $phoneNumber with code $validationCode');
+      return true;
+    },
+    sendPasswordResetSms: (session, userInfo, resetCode) async {
+      print(
+          'Sending reset sms to ${userInfo.phoneNumber} with code $resetCode');
       return true;
     },
     userCanEditFullName: true,

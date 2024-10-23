@@ -1917,6 +1917,55 @@ class EndpointOptionalParameters extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointPhoneAuthTestMethods extends _i1.EndpointRef {
+  EndpointPhoneAuthTestMethods(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'phoneAuthTestMethods';
+
+  _i2.Future<String?> findVerificationCode(
+    String userName,
+    String phoneNumber,
+  ) =>
+      caller.callServerEndpoint<String?>(
+        'phoneAuthTestMethods',
+        'findVerificationCode',
+        {
+          'userName': userName,
+          'phoneNumber': phoneNumber,
+        },
+      );
+
+  _i2.Future<String?> findResetCode(String phoneNumber) =>
+      caller.callServerEndpoint<String?>(
+        'phoneAuthTestMethods',
+        'findResetCode',
+        {'phoneNumber': phoneNumber},
+      );
+
+  _i2.Future<void> tearDown() => caller.callServerEndpoint<void>(
+        'phoneAuthTestMethods',
+        'tearDown',
+        {},
+      );
+
+  _i2.Future<bool> createUser(
+    String userName,
+    String phoneNumber,
+    String password,
+  ) =>
+      caller.callServerEndpoint<bool>(
+        'phoneAuthTestMethods',
+        'createUser',
+        {
+          'userName': userName,
+          'phoneNumber': phoneNumber,
+          'password': password,
+        },
+      );
+}
+
+/// {@category Endpoint}
 class EndpointRedis extends _i1.EndpointRef {
   EndpointRedis(_i1.EndpointCaller caller) : super(caller);
 
@@ -2359,6 +2408,7 @@ class Client extends _i1.ServerpodClientShared {
     moduleSerialization = EndpointModuleSerialization(this);
     namedParameters = EndpointNamedParameters(this);
     optionalParameters = EndpointOptionalParameters(this);
+    phoneAuthTestMethods = EndpointPhoneAuthTestMethods(this);
     redis = EndpointRedis(this);
     serverOnlyScopedFieldModel = EndpointServerOnlyScopedFieldModel(this);
     signInRequired = EndpointSignInRequired(this);
@@ -2429,6 +2479,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointOptionalParameters optionalParameters;
 
+  late final EndpointPhoneAuthTestMethods phoneAuthTestMethods;
+
   late final EndpointRedis redis;
 
   late final EndpointServerOnlyScopedFieldModel serverOnlyScopedFieldModel;
@@ -2483,6 +2535,7 @@ class Client extends _i1.ServerpodClientShared {
         'moduleSerialization': moduleSerialization,
         'namedParameters': namedParameters,
         'optionalParameters': optionalParameters,
+        'phoneAuthTestMethods': phoneAuthTestMethods,
         'redis': redis,
         'serverOnlyScopedFieldModel': serverOnlyScopedFieldModel,
         'signInRequired': signInRequired,
