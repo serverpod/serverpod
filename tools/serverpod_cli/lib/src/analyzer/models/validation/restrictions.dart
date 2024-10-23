@@ -331,7 +331,7 @@ class Restrictions {
             currentModel.sealedTopNode!.subDirParts.join()) {
           return [
             SourceSpanSeverityException(
-              'All models in a sealed library must be in the same subdirectory. The class "${currentModel.className}" is in a different subdirectory.',
+              'All models in a sealed library must be in the same subdirectory. The class "${currentModel.className}" needs to be located in the same subdirectory as "${currentModel.sealedTopNode!.className}".',
               span,
             )
           ];

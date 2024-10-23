@@ -405,7 +405,7 @@ void main() {
     var error = collector.errors.first;
     expect(
       error.message,
-      'All models in a sealed library must be in the same subdirectory. The class "ExampleChildClass" is in a different subdirectory.',
+      'All models in a sealed library must be in the same subdirectory. The class "ExampleChildClass" needs to be located in the same subdirectory as "Example".',
     );
   });
 }
