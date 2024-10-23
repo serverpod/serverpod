@@ -14,6 +14,7 @@ dependencies:
   serverpod_shared: SERVERPOD_VERSION
   crypto: ^3.0.2
   email_validator: '>=2.1.17 <4.0.0'
+  phone_numbers_parser: ^9.0.1
   openid_client: ^0.4.8
   meta: ^1.8.0
   googleapis: '>=11.0.0 <14.0.0'
