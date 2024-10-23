@@ -1,5 +1,1 @@
 include: package:serverpod_lints/public.yaml
-
-analyzer:
-  exclude:
-    - test/integration/test_tools/**
