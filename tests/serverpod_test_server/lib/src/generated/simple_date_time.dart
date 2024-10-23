@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -189,7 +187,7 @@ class SimpleDateTimeRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -208,7 +206,7 @@ class SimpleDateTimeRepository {
       orderByList: orderByList?.call(SimpleDateTime.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -219,7 +217,7 @@ class SimpleDateTimeRepository {
   }) async {
     return session.db.findById<SimpleDateTime>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -230,7 +228,7 @@ class SimpleDateTimeRepository {
   }) async {
     return session.db.insert<SimpleDateTime>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -241,7 +239,7 @@ class SimpleDateTimeRepository {
   }) async {
     return session.db.insertRow<SimpleDateTime>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -254,7 +252,7 @@ class SimpleDateTimeRepository {
     return session.db.update<SimpleDateTime>(
       rows,
       columns: columns?.call(SimpleDateTime.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -267,7 +265,7 @@ class SimpleDateTimeRepository {
     return session.db.updateRow<SimpleDateTime>(
       row,
       columns: columns?.call(SimpleDateTime.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -278,7 +276,7 @@ class SimpleDateTimeRepository {
   }) async {
     return session.db.delete<SimpleDateTime>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -289,7 +287,7 @@ class SimpleDateTimeRepository {
   }) async {
     return session.db.deleteRow<SimpleDateTime>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -300,7 +298,7 @@ class SimpleDateTimeRepository {
   }) async {
     return session.db.deleteWhere<SimpleDateTime>(
       where: where(SimpleDateTime.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -313,7 +311,7 @@ class SimpleDateTimeRepository {
     return session.db.count<SimpleDateTime>(
       where: where?.call(SimpleDateTime.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

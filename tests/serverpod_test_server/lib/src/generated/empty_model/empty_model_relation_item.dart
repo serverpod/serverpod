@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -233,7 +231,7 @@ class EmptyModelRelationItemRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -252,7 +250,7 @@ class EmptyModelRelationItemRepository {
       orderByList: orderByList?.call(EmptyModelRelationItem.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -263,7 +261,7 @@ class EmptyModelRelationItemRepository {
   }) async {
     return session.db.findById<EmptyModelRelationItem>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -274,7 +272,7 @@ class EmptyModelRelationItemRepository {
   }) async {
     return session.db.insert<EmptyModelRelationItem>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -285,7 +283,7 @@ class EmptyModelRelationItemRepository {
   }) async {
     return session.db.insertRow<EmptyModelRelationItem>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -298,7 +296,7 @@ class EmptyModelRelationItemRepository {
     return session.db.update<EmptyModelRelationItem>(
       rows,
       columns: columns?.call(EmptyModelRelationItem.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -311,7 +309,7 @@ class EmptyModelRelationItemRepository {
     return session.db.updateRow<EmptyModelRelationItem>(
       row,
       columns: columns?.call(EmptyModelRelationItem.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -322,7 +320,7 @@ class EmptyModelRelationItemRepository {
   }) async {
     return session.db.delete<EmptyModelRelationItem>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -333,7 +331,7 @@ class EmptyModelRelationItemRepository {
   }) async {
     return session.db.deleteRow<EmptyModelRelationItem>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -344,7 +342,7 @@ class EmptyModelRelationItemRepository {
   }) async {
     return session.db.deleteWhere<EmptyModelRelationItem>(
       where: where(EmptyModelRelationItem.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -357,7 +355,7 @@ class EmptyModelRelationItemRepository {
     return session.db.count<EmptyModelRelationItem>(
       where: where?.call(EmptyModelRelationItem.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

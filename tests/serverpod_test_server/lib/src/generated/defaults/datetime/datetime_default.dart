@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -240,7 +238,7 @@ class DateTimeDefaultRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -259,7 +257,7 @@ class DateTimeDefaultRepository {
       orderByList: orderByList?.call(DateTimeDefault.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -270,7 +268,7 @@ class DateTimeDefaultRepository {
   }) async {
     return session.db.findById<DateTimeDefault>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -281,7 +279,7 @@ class DateTimeDefaultRepository {
   }) async {
     return session.db.insert<DateTimeDefault>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -292,7 +290,7 @@ class DateTimeDefaultRepository {
   }) async {
     return session.db.insertRow<DateTimeDefault>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -305,7 +303,7 @@ class DateTimeDefaultRepository {
     return session.db.update<DateTimeDefault>(
       rows,
       columns: columns?.call(DateTimeDefault.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -318,7 +316,7 @@ class DateTimeDefaultRepository {
     return session.db.updateRow<DateTimeDefault>(
       row,
       columns: columns?.call(DateTimeDefault.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -329,7 +327,7 @@ class DateTimeDefaultRepository {
   }) async {
     return session.db.delete<DateTimeDefault>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -340,7 +338,7 @@ class DateTimeDefaultRepository {
   }) async {
     return session.db.deleteRow<DateTimeDefault>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -351,7 +349,7 @@ class DateTimeDefaultRepository {
   }) async {
     return session.db.deleteWhere<DateTimeDefault>(
       where: where(DateTimeDefault.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -364,7 +362,7 @@ class DateTimeDefaultRepository {
     return session.db.count<DateTimeDefault>(
       where: where?.call(DateTimeDefault.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

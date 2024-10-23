@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i2;
@@ -347,7 +345,7 @@ class ChatMessageRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -366,7 +364,7 @@ class ChatMessageRepository {
       orderByList: orderByList?.call(ChatMessage.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -377,7 +375,7 @@ class ChatMessageRepository {
   }) async {
     return session.db.findById<ChatMessage>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -388,7 +386,7 @@ class ChatMessageRepository {
   }) async {
     return session.db.insert<ChatMessage>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -399,7 +397,7 @@ class ChatMessageRepository {
   }) async {
     return session.db.insertRow<ChatMessage>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -412,7 +410,7 @@ class ChatMessageRepository {
     return session.db.update<ChatMessage>(
       rows,
       columns: columns?.call(ChatMessage.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -425,7 +423,7 @@ class ChatMessageRepository {
     return session.db.updateRow<ChatMessage>(
       row,
       columns: columns?.call(ChatMessage.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -436,7 +434,7 @@ class ChatMessageRepository {
   }) async {
     return session.db.delete<ChatMessage>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -447,7 +445,7 @@ class ChatMessageRepository {
   }) async {
     return session.db.deleteRow<ChatMessage>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -458,7 +456,7 @@ class ChatMessageRepository {
   }) async {
     return session.db.deleteWhere<ChatMessage>(
       where: where(ChatMessage.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -471,7 +469,7 @@ class ChatMessageRepository {
     return session.db.count<ChatMessage>(
       where: where?.call(ChatMessage.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

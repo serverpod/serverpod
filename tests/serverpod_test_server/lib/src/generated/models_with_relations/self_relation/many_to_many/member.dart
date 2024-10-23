@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../protocol.dart' as _i2;
@@ -326,7 +324,7 @@ class MemberRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -347,7 +345,7 @@ class MemberRepository {
       orderByList: orderByList?.call(Member.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -360,7 +358,7 @@ class MemberRepository {
   }) async {
     return session.db.findById<Member>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -372,7 +370,7 @@ class MemberRepository {
   }) async {
     return session.db.insert<Member>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -383,7 +381,7 @@ class MemberRepository {
   }) async {
     return session.db.insertRow<Member>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -396,7 +394,7 @@ class MemberRepository {
     return session.db.update<Member>(
       rows,
       columns: columns?.call(Member.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -409,7 +407,7 @@ class MemberRepository {
     return session.db.updateRow<Member>(
       row,
       columns: columns?.call(Member.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -420,7 +418,7 @@ class MemberRepository {
   }) async {
     return session.db.delete<Member>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -431,7 +429,7 @@ class MemberRepository {
   }) async {
     return session.db.deleteRow<Member>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -442,7 +440,7 @@ class MemberRepository {
   }) async {
     return session.db.deleteWhere<Member>(
       where: where(Member.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -455,7 +453,7 @@ class MemberRepository {
     return session.db.count<Member>(
       where: where?.call(Member.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -481,7 +479,7 @@ class MemberAttachRepository {
     await session.db.update<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedById],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -503,7 +501,7 @@ class MemberAttachRepository {
     await session.db.update<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -528,7 +526,7 @@ class MemberAttachRowRepository {
     await session.db.updateRow<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedById],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -549,7 +547,7 @@ class MemberAttachRowRepository {
     await session.db.updateRow<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

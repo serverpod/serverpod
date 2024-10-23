@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -231,7 +229,7 @@ class ArenaRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -252,7 +250,7 @@ class ArenaRepository {
       orderByList: orderByList?.call(Arena.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -265,7 +263,7 @@ class ArenaRepository {
   }) async {
     return session.db.findById<Arena>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -277,7 +275,7 @@ class ArenaRepository {
   }) async {
     return session.db.insert<Arena>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -288,7 +286,7 @@ class ArenaRepository {
   }) async {
     return session.db.insertRow<Arena>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -301,7 +299,7 @@ class ArenaRepository {
     return session.db.update<Arena>(
       rows,
       columns: columns?.call(Arena.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -314,7 +312,7 @@ class ArenaRepository {
     return session.db.updateRow<Arena>(
       row,
       columns: columns?.call(Arena.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -325,7 +323,7 @@ class ArenaRepository {
   }) async {
     return session.db.delete<Arena>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -336,7 +334,7 @@ class ArenaRepository {
   }) async {
     return session.db.deleteRow<Arena>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -347,7 +345,7 @@ class ArenaRepository {
   }) async {
     return session.db.deleteWhere<Arena>(
       where: where(Arena.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -360,7 +358,7 @@ class ArenaRepository {
     return session.db.count<Arena>(
       where: where?.call(Arena.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -385,7 +383,7 @@ class ArenaAttachRowRepository {
     await session.db.updateRow<_i2.Team>(
       $team,
       columns: [_i2.Team.t.arenaId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -414,7 +412,7 @@ class ArenaDetachRowRepository {
     await session.db.updateRow<_i2.Team>(
       $$team,
       columns: [_i2.Team.t.arenaId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

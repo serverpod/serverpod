@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -269,7 +267,7 @@ class UserNoteCollectionRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -290,7 +288,7 @@ class UserNoteCollectionRepository {
       orderByList: orderByList?.call(UserNoteCollection.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -303,7 +301,7 @@ class UserNoteCollectionRepository {
   }) async {
     return session.db.findById<UserNoteCollection>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -315,7 +313,7 @@ class UserNoteCollectionRepository {
   }) async {
     return session.db.insert<UserNoteCollection>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -326,7 +324,7 @@ class UserNoteCollectionRepository {
   }) async {
     return session.db.insertRow<UserNoteCollection>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -339,7 +337,7 @@ class UserNoteCollectionRepository {
     return session.db.update<UserNoteCollection>(
       rows,
       columns: columns?.call(UserNoteCollection.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -352,7 +350,7 @@ class UserNoteCollectionRepository {
     return session.db.updateRow<UserNoteCollection>(
       row,
       columns: columns?.call(UserNoteCollection.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -363,7 +361,7 @@ class UserNoteCollectionRepository {
   }) async {
     return session.db.delete<UserNoteCollection>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -374,7 +372,7 @@ class UserNoteCollectionRepository {
   }) async {
     return session.db.deleteRow<UserNoteCollection>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -385,7 +383,7 @@ class UserNoteCollectionRepository {
   }) async {
     return session.db.deleteWhere<UserNoteCollection>(
       where: where(UserNoteCollection.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -398,7 +396,7 @@ class UserNoteCollectionRepository {
     return session.db.count<UserNoteCollection>(
       where: where?.call(UserNoteCollection.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -432,7 +430,7 @@ class UserNoteCollectionAttachRepository {
         _i2.UserNote.t
             .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -464,7 +462,7 @@ class UserNoteCollectionAttachRowRepository {
         _i2.UserNote.t
             .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -494,7 +492,7 @@ class UserNoteCollectionDetachRepository {
         _i2.UserNote.t
             .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -521,7 +519,7 @@ class UserNoteCollectionDetachRowRepository {
         _i2.UserNote.t
             .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
       ],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

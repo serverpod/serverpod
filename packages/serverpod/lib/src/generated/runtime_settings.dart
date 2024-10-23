@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
@@ -259,7 +257,7 @@ class RuntimeSettingsRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -278,7 +276,7 @@ class RuntimeSettingsRepository {
       orderByList: orderByList?.call(RuntimeSettings.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -289,7 +287,7 @@ class RuntimeSettingsRepository {
   }) async {
     return session.db.findById<RuntimeSettings>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -300,7 +298,7 @@ class RuntimeSettingsRepository {
   }) async {
     return session.db.insert<RuntimeSettings>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -311,7 +309,7 @@ class RuntimeSettingsRepository {
   }) async {
     return session.db.insertRow<RuntimeSettings>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -324,7 +322,7 @@ class RuntimeSettingsRepository {
     return session.db.update<RuntimeSettings>(
       rows,
       columns: columns?.call(RuntimeSettings.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -337,7 +335,7 @@ class RuntimeSettingsRepository {
     return session.db.updateRow<RuntimeSettings>(
       row,
       columns: columns?.call(RuntimeSettings.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -348,7 +346,7 @@ class RuntimeSettingsRepository {
   }) async {
     return session.db.delete<RuntimeSettings>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -359,7 +357,7 @@ class RuntimeSettingsRepository {
   }) async {
     return session.db.deleteRow<RuntimeSettings>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -370,7 +368,7 @@ class RuntimeSettingsRepository {
   }) async {
     return session.db.deleteWhere<RuntimeSettings>(
       where: where(RuntimeSettings.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -383,7 +381,7 @@ class RuntimeSettingsRepository {
     return session.db.count<RuntimeSettings>(
       where: where?.call(RuntimeSettings.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

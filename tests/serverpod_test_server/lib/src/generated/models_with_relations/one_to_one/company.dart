@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
@@ -248,7 +246,7 @@ class CompanyRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -269,7 +267,7 @@ class CompanyRepository {
       orderByList: orderByList?.call(Company.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -282,7 +280,7 @@ class CompanyRepository {
   }) async {
     return session.db.findById<Company>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
       include: include,
     );
   }
@@ -294,7 +292,7 @@ class CompanyRepository {
   }) async {
     return session.db.insert<Company>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -305,7 +303,7 @@ class CompanyRepository {
   }) async {
     return session.db.insertRow<Company>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -318,7 +316,7 @@ class CompanyRepository {
     return session.db.update<Company>(
       rows,
       columns: columns?.call(Company.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -331,7 +329,7 @@ class CompanyRepository {
     return session.db.updateRow<Company>(
       row,
       columns: columns?.call(Company.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -342,7 +340,7 @@ class CompanyRepository {
   }) async {
     return session.db.delete<Company>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -353,7 +351,7 @@ class CompanyRepository {
   }) async {
     return session.db.deleteRow<Company>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -364,7 +362,7 @@ class CompanyRepository {
   }) async {
     return session.db.deleteWhere<Company>(
       where: where(Company.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -377,7 +375,7 @@ class CompanyRepository {
     return session.db.count<Company>(
       where: where?.call(Company.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -402,7 +400,7 @@ class CompanyAttachRowRepository {
     await session.db.updateRow<Company>(
       $company,
       columns: [Company.t.townId],
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

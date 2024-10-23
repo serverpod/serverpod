@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -215,7 +213,7 @@ class ObjectFieldScopesRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -234,7 +232,7 @@ class ObjectFieldScopesRepository {
       orderByList: orderByList?.call(ObjectFieldScopes.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -245,7 +243,7 @@ class ObjectFieldScopesRepository {
   }) async {
     return session.db.findById<ObjectFieldScopes>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -256,7 +254,7 @@ class ObjectFieldScopesRepository {
   }) async {
     return session.db.insert<ObjectFieldScopes>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -267,7 +265,7 @@ class ObjectFieldScopesRepository {
   }) async {
     return session.db.insertRow<ObjectFieldScopes>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -280,7 +278,7 @@ class ObjectFieldScopesRepository {
     return session.db.update<ObjectFieldScopes>(
       rows,
       columns: columns?.call(ObjectFieldScopes.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -293,7 +291,7 @@ class ObjectFieldScopesRepository {
     return session.db.updateRow<ObjectFieldScopes>(
       row,
       columns: columns?.call(ObjectFieldScopes.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -304,7 +302,7 @@ class ObjectFieldScopesRepository {
   }) async {
     return session.db.delete<ObjectFieldScopes>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -315,7 +313,7 @@ class ObjectFieldScopesRepository {
   }) async {
     return session.db.deleteRow<ObjectFieldScopes>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -326,7 +324,7 @@ class ObjectFieldScopesRepository {
   }) async {
     return session.db.deleteWhere<ObjectFieldScopes>(
       where: where(ObjectFieldScopes.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -339,7 +337,7 @@ class ObjectFieldScopesRepository {
     return session.db.count<ObjectFieldScopes>(
       where: where?.call(ObjectFieldScopes.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

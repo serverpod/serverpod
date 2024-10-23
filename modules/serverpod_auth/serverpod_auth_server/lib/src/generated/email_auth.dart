@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -229,7 +227,7 @@ class EmailAuthRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -248,7 +246,7 @@ class EmailAuthRepository {
       orderByList: orderByList?.call(EmailAuth.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -259,7 +257,7 @@ class EmailAuthRepository {
   }) async {
     return session.db.findById<EmailAuth>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -270,7 +268,7 @@ class EmailAuthRepository {
   }) async {
     return session.db.insert<EmailAuth>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -281,7 +279,7 @@ class EmailAuthRepository {
   }) async {
     return session.db.insertRow<EmailAuth>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -294,7 +292,7 @@ class EmailAuthRepository {
     return session.db.update<EmailAuth>(
       rows,
       columns: columns?.call(EmailAuth.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -307,7 +305,7 @@ class EmailAuthRepository {
     return session.db.updateRow<EmailAuth>(
       row,
       columns: columns?.call(EmailAuth.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -318,7 +316,7 @@ class EmailAuthRepository {
   }) async {
     return session.db.delete<EmailAuth>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -329,7 +327,7 @@ class EmailAuthRepository {
   }) async {
     return session.db.deleteRow<EmailAuth>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -340,7 +338,7 @@ class EmailAuthRepository {
   }) async {
     return session.db.deleteWhere<EmailAuth>(
       where: where(EmailAuth.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -353,7 +351,7 @@ class EmailAuthRepository {
     return session.db.count<EmailAuth>(
       where: where?.call(EmailAuth.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

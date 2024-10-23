@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -298,7 +296,7 @@ class ServerHealthMetricRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -317,7 +315,7 @@ class ServerHealthMetricRepository {
       orderByList: orderByList?.call(ServerHealthMetric.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -328,7 +326,7 @@ class ServerHealthMetricRepository {
   }) async {
     return session.db.findById<ServerHealthMetric>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -339,7 +337,7 @@ class ServerHealthMetricRepository {
   }) async {
     return session.db.insert<ServerHealthMetric>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -350,7 +348,7 @@ class ServerHealthMetricRepository {
   }) async {
     return session.db.insertRow<ServerHealthMetric>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -363,7 +361,7 @@ class ServerHealthMetricRepository {
     return session.db.update<ServerHealthMetric>(
       rows,
       columns: columns?.call(ServerHealthMetric.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -376,7 +374,7 @@ class ServerHealthMetricRepository {
     return session.db.updateRow<ServerHealthMetric>(
       row,
       columns: columns?.call(ServerHealthMetric.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -387,7 +385,7 @@ class ServerHealthMetricRepository {
   }) async {
     return session.db.delete<ServerHealthMetric>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -398,7 +396,7 @@ class ServerHealthMetricRepository {
   }) async {
     return session.db.deleteRow<ServerHealthMetric>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -409,7 +407,7 @@ class ServerHealthMetricRepository {
   }) async {
     return session.db.deleteWhere<ServerHealthMetric>(
       where: where(ServerHealthMetric.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -422,7 +420,7 @@ class ServerHealthMetricRepository {
     return session.db.count<ServerHealthMetric>(
       where: where?.call(ServerHealthMetric.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }

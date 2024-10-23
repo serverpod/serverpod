@@ -8,8 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
@@ -236,7 +234,7 @@ class UserNoteWithALongNameRepository {
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -255,7 +253,7 @@ class UserNoteWithALongNameRepository {
       orderByList: orderByList?.call(UserNoteWithALongName.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -266,7 +264,7 @@ class UserNoteWithALongNameRepository {
   }) async {
     return session.db.findById<UserNoteWithALongName>(
       id,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -277,7 +275,7 @@ class UserNoteWithALongNameRepository {
   }) async {
     return session.db.insert<UserNoteWithALongName>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -288,7 +286,7 @@ class UserNoteWithALongNameRepository {
   }) async {
     return session.db.insertRow<UserNoteWithALongName>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -301,7 +299,7 @@ class UserNoteWithALongNameRepository {
     return session.db.update<UserNoteWithALongName>(
       rows,
       columns: columns?.call(UserNoteWithALongName.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -314,7 +312,7 @@ class UserNoteWithALongNameRepository {
     return session.db.updateRow<UserNoteWithALongName>(
       row,
       columns: columns?.call(UserNoteWithALongName.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -325,7 +323,7 @@ class UserNoteWithALongNameRepository {
   }) async {
     return session.db.delete<UserNoteWithALongName>(
       rows,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -336,7 +334,7 @@ class UserNoteWithALongNameRepository {
   }) async {
     return session.db.deleteRow<UserNoteWithALongName>(
       row,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -347,7 +345,7 @@ class UserNoteWithALongNameRepository {
   }) async {
     return session.db.deleteWhere<UserNoteWithALongName>(
       where: where(UserNoteWithALongName.t),
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 
@@ -360,7 +358,7 @@ class UserNoteWithALongNameRepository {
     return session.db.count<UserNoteWithALongName>(
       where: where?.call(UserNoteWithALongName.t),
       limit: limit,
-      transaction: transaction ?? session.transaction,
+      transaction: transaction,
     );
   }
 }
