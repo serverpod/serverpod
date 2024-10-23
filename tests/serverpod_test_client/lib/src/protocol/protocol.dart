@@ -404,6 +404,9 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i45.SealedGrandchild) {
       return _i45.SealedGrandchild.fromJson(data) as T;
     }
+    if (t == _i45.SealedOtherChild) {
+      return _i45.SealedOtherChild.fromJson(data) as T;
+    }
     if (t == _i46.CityWithLongTableName) {
       return _i46.CityWithLongTableName.fromJson(data) as T;
     }
@@ -756,6 +759,9 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == _i1.getType<_i45.SealedGrandchild?>()) {
       return (data != null ? _i45.SealedGrandchild.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i45.SealedOtherChild?>()) {
+      return (data != null ? _i45.SealedOtherChild.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i46.CityWithLongTableName?>()) {
       return (data != null ? _i46.CityWithLongTableName.fromJson(data) : null)
@@ -2111,8 +2117,8 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i45.SealedGrandchild) {
       return 'SealedGrandchild';
     }
-    if (data is _i45.SealedParent) {
-      return 'SealedParent';
+    if (data is _i45.SealedOtherChild) {
+      return 'SealedOtherChild';
     }
     if (data is _i46.CityWithLongTableName) {
       return 'CityWithLongTableName';
@@ -2484,8 +2490,8 @@ class Protocol extends _i1.SerializationManager {
     if (data['className'] == 'SealedGrandchild') {
       return deserialize<_i45.SealedGrandchild>(data['data']);
     }
-    if (data['className'] == 'SealedParent') {
-      return deserialize<_i45.SealedParent>(data['data']);
+    if (data['className'] == 'SealedOtherChild') {
+      return deserialize<_i45.SealedOtherChild>(data['data']);
     }
     if (data['className'] == 'CityWithLongTableName') {
       return deserialize<_i46.CityWithLongTableName>(data['data']);

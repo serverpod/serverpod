@@ -13,6 +13,7 @@ import '../protocol.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 part 'sealed_child.dart';
 part 'sealed_grandchild.dart';
+part 'sealed_other_child.dart';
 
 sealed class SealedParent
     implements _i2.SerializableModel, _i2.ProtocolSerialization {

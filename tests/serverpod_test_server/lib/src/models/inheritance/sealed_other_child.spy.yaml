@@ -1,0 +1,4 @@
+class: SealedOtherChild
+extends: SealedParent
+fields:
+    sealedOtherChildField: int

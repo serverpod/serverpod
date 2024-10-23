@@ -8,6 +8,17 @@ Future<void> _deleteAll(Session session) async {
       .deleteWhere(session, where: (element) => Constant.bool(true));
 }
 
+String switchOnSealedClass(SealedParent sealedClass) {
+  switch (sealedClass) {
+    case SealedChild():
+      return 'Handled SealedChild';
+    case SealedOtherChild():
+      return 'Handled SealedOtherChild';
+    default:
+      return 'Unknown SealedClass';
+  }
+}
+
 void main() async {
   var session = await IntegrationTestServer().session();
 
@@ -40,5 +51,28 @@ void main() async {
     expect(childInParentDb.id, parentDbFirstRow!.id);
     expect(childClass.grandParentField, parentDbFirstRow.grandParentField);
     expect(childClass.parentField, parentDbFirstRow.parentField);
+  });
+
+  test(
+      'Given a sealed top node, when calling a switch statement on its sub-classes, then the subtypes are handled correctly',
+      () async {
+    var sealedChild = SealedChild(
+      sealedInt: 1,
+      sealedString: 'Child',
+    );
+    var sealedOtherChild = SealedOtherChild(
+      sealedInt: 3,
+      sealedString: 'GrandParent',
+      sealedOtherChildField: 4,
+    );
+
+    expect(
+      await switchOnSealedClass(sealedChild),
+      equals('Handled SealedChild'),
+    );
+    expect(
+      await switchOnSealedClass(sealedOtherChild),
+      equals('Handled SealedOtherChild'),
+    );
   });
 }
