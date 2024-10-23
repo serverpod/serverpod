@@ -4,216 +4,182 @@ import 'package:test/test.dart';
 import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
+  var userId1 = 1;
+  var userId2 = 2;
+  var invalidUserId = -1;
+  var invalidAuthKeyId = -1;
+
   withServerpod(
-    'Given an authenticated user',
-    (sessionBuilder, _) {
-      late String userName;
-      late String email;
-      late String password;
+    'Given a user signed in to multiple devices',
+    (sessionBuilder, endpoints) {
       late Session session;
 
       setUp(() async {
         session = sessionBuilder.build();
-        userName = 'test';
-        email = 'test@serverpod.dev';
-        password = 'password';
-        await Emails.createUser(session, userName, email, password);
+
+        await Future.wait([
+          UserAuthentication.signInUser(session, userId1, 'email'),
+          UserAuthentication.signInUser(session, userId1, 'email'),
+        ]);
+
+        var authKeys = await AuthKey.db.find(
+          session,
+          where: (row) => row.userId.equals(userId1),
+        );
+        assert(authKeys.length == 2, 'Expected 2 auth keys after signing in.');
+      });
+
+      tearDown(() async {
+        await AuthKey.db.deleteWhere(
+          session,
+          where: (_) => Constant.bool(true),
+        );
       });
 
       test(
-        'when signing out all auth keys are deleted',
+        'when signing out then user is signed out of all devices',
         () async {
-          var authResponse = await Emails.authenticate(
-            session,
-            email,
-            password,
-          );
-          expect(
-            authResponse.success,
-            isTrue,
-            reason: 'Failed to authenticate user.',
-          );
-
-          var userId = authResponse.userInfo?.id;
-          expect(
-            userId,
-            isNotNull,
-            reason: 'Failed to retrieve user ID.',
-          );
+          await UserAuthentication.signOutUser(session, userId: userId1);
 
           var authKeys = await AuthKey.db.find(
             session,
-            where: (row) => row.userId.equals(userId),
+            where: (row) => row.userId.equals(userId1),
           );
-
-          expect(
-            authKeys,
-            hasLength(1),
-            reason: 'Expected one auth key initially.',
-          );
-
-          await UserAuthentication.signInUser(
-            session,
-            userId!,
-            'email',
-          );
-
-          authKeys = await AuthKey.db.find(
-            session,
-            where: (row) => row.userId.equals(userId),
-          );
-
-          expect(
-            authKeys,
-            hasLength(2),
-            reason:
-                'Expected two auth keys after signing in on another session.',
-          );
-
-          await UserAuthentication.signOutUser(session);
-
-          authKeys = await AuthKey.db.find(
-            session,
-            where: (row) => row.userId.equals(userId),
-          );
-
-          expect(
-            authKeys,
-            isEmpty,
-            reason: 'Expected all auth keys to be deleted after signing out.',
-          );
+          expect(authKeys, isEmpty);
         },
       );
 
       test(
-        'when revoking auth key only one auth key is deleted',
+        'when revoking auth key then only one auth key is deleted',
         () async {
-          var authResponse = await Emails.authenticate(
-            session,
-            email,
-            password,
-          );
-          expect(
-            authResponse.success,
-            isTrue,
-            reason: 'Failed to authenticate user.',
-          );
-
-          var userId = authResponse.userInfo?.id;
-          expect(
-            userId,
-            isNotNull,
-            reason: 'Failed to retrieve user ID.',
-          );
-
           var authKeys = await AuthKey.db.find(
             session,
-            where: (row) => row.userId.equals(userId),
+            where: (row) => row.userId.equals(userId1),
           );
-          expect(
-            authKeys,
-            hasLength(1),
-            reason: 'Expected one auth key initially.',
-          );
-
-          final secondAuthKey = await UserAuthentication.signInUser(
-            session,
-            userId!,
-            'email',
-          );
-
-          authKeys = await AuthKey.db.find(
-            session,
-            where: (row) => row.userId.equals(userId),
-          );
-          expect(
-            authKeys,
-            hasLength(2),
-            reason: 'Expected two auth keys.',
-          );
+          var secondAuthKey = authKeys.last;
 
           await UserAuthentication.revokeAuthKey(
             session,
-            authKeyId: secondAuthKey.id!,
+            authKeyId: "${secondAuthKey.id!}",
           );
 
           authKeys = await AuthKey.db.find(
             session,
-            where: (row) => row.userId.equals(userId),
+            where: (row) => row.userId.equals(userId1),
           );
-          expect(
-            authKeys,
-            hasLength(1),
-            reason:
-                'Expected one auth key to remain after revoking one session.',
-          );
+          expect(authKeys, hasLength(1));
         },
       );
 
       test(
-        'when userId is provided all auth keys are deleted',
+        'when signing out with invalid userId then no keys are deleted',
         () async {
-          var authResponse = await Emails.authenticate(
-            session,
-            email,
-            password,
-          );
-          expect(
-            authResponse.success,
-            isTrue,
-            reason: 'Failed to authenticate user.',
-          );
+          await UserAuthentication.signOutUser(session, userId: invalidUserId);
 
-          var userId = authResponse.userInfo?.id;
-          expect(
-            userId,
-            isNotNull,
-            reason: 'Failed to retrieve user ID.',
+          var authKeys = await AuthKey.db.find(
+            session,
+            where: (row) => row.userId.equals(userId1),
+          );
+          expect(authKeys, hasLength(2));
+        },
+      );
+
+      test(
+        'when revoking with invalid authKeyId then no keys are deleted',
+        () async {
+          await UserAuthentication.revokeAuthKey(
+            session,
+            authKeyId: "$invalidAuthKeyId",
           );
 
           var authKeys = await AuthKey.db.find(
             session,
-            where: (row) => row.userId.equals(userId),
+            where: (row) => row.userId.equals(userId1),
           );
-          expect(
-            authKeys,
-            hasLength(1),
-            reason: 'Expected one auth key initially.',
-          );
-
-          await UserAuthentication.signInUser(
-            session,
-            userId!,
-            'email',
-          );
-
-          authKeys = await AuthKey.db.find(
-            session,
-            where: (row) => row.userId.equals(userId),
-          );
-          expect(
-            authKeys,
-            hasLength(2),
-            reason: 'Expected two auth keys.',
-          );
-
-          await UserAuthentication.signOutUser(
-            session,
-            userId: userId,
-          );
-
-          authKeys = await AuthKey.db.find(
-            session,
-            where: (row) => row.userId.equals(userId),
-          );
-          expect(
-            authKeys,
-            isEmpty,
-            reason: 'Expected all auth keys to be deleted.',
-          );
+          expect(authKeys, hasLength(2));
         },
       );
     },
-    rollbackDatabase: RollbackDatabase.afterEach,
+  );
+
+  withServerpod(
+    'Given two users signed in to multiple devices',
+    (sessionBuilder, endpoints) {
+      late Session session;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        await Future.wait([
+          UserAuthentication.signInUser(session, userId1, 'email'),
+          UserAuthentication.signInUser(session, userId1, 'email'),
+          UserAuthentication.signInUser(session, userId2, 'email'),
+          UserAuthentication.signInUser(session, userId2, 'email'),
+        ]);
+
+        var authKeysUser1 = await AuthKey.db.find(
+          session,
+          where: (row) => row.userId.equals(userId1),
+        );
+        var authKeysUser2 = await AuthKey.db.find(
+          session,
+          where: (row) => row.userId.equals(userId2),
+        );
+        assert(authKeysUser1.length == 2, 'Expected 2 auth keys for user 1.');
+        assert(authKeysUser2.length == 2, 'Expected 2 auth keys for user 2.');
+      });
+
+      tearDown(() async {
+        await AuthKey.db.deleteWhere(
+          session,
+          where: (_) => Constant.bool(true),
+        );
+      });
+
+      test(
+        'when signing out user1 then user1 is signed out but user2 remains signed in',
+        () async {
+          await UserAuthentication.signOutUser(session, userId: userId1);
+
+          var authKeysUser1 = await AuthKey.db.find(
+            session,
+            where: (row) => row.userId.equals(userId1),
+          );
+          var authKeysUser2 = await AuthKey.db.find(
+            session,
+            where: (row) => row.userId.equals(userId2),
+          );
+          expect(authKeysUser1, isEmpty);
+          expect(authKeysUser2, hasLength(2));
+        },
+      );
+
+      test(
+        'when revoking auth key for user1 then user1 loses one session but user2 remains unaffected',
+        () async {
+          var authKeysUser1 = await AuthKey.db.find(
+            session,
+            where: (row) => row.userId.equals(userId1),
+          );
+          var secondAuthKeyUser1 = authKeysUser1.last;
+
+          await UserAuthentication.revokeAuthKey(
+            session,
+            authKeyId: "${secondAuthKeyUser1.id!}",
+          );
+
+          var authKeysUser1After = await AuthKey.db.find(
+            session,
+            where: (row) => row.userId.equals(userId1),
+          );
+          var authKeysUser2 = await AuthKey.db.find(
+            session,
+            where: (row) => row.userId.equals(userId2),
+          );
+          expect(authKeysUser1After, hasLength(1));
+          expect(authKeysUser2, hasLength(2));
+        },
+      );
+    },
   );
 }

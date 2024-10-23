@@ -6,18 +6,10 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Provides methods for authenticating users.
 class UserAuthentication {
-  /// Signs in a user and generates an authentication key.
-  /// Sends the `AuthKey.id` and `key` to the client for future authentication.
-  ///
-  /// Before calling this method, ensure the user has been authenticated
-  /// through appropriate methods (e.g., email, social sign-ins).
-  /// This method only generates the authentication key after successful
-  /// authentication.
-  ///
-  /// The authenticated user will be signed into the provided session,
-  /// and their session will be updated with the user's authentication info.
-  ///
-  /// In most cases, use an auth provider instead of calling this method directly.
+  /// Signs in a user to the server. The user should have been authenticated
+  /// before signing them in. Sends the `AuthKey.id` and `key` to the client and
+  /// uses that for future authentication. In most situations, you should use
+  /// one of the auth providers instead of this method.
   ///
   /// - `updateSession`: If set to `true`, the session will be updated with
   ///   the authenticated user's information. The default is `true`.
@@ -56,10 +48,16 @@ class UserAuthentication {
         ),
       );
     }
-    return result.copyWith(key: key);
+    return result;
   }
 
-  /// Signs out the user from all devices.
+  /// Signs out a user from the server and deletes all authentication keys.
+  /// This means that the user will be signed out from all connected devices.
+  /// If the user being signed out is the currently authenticated user, the
+  /// session's authentication information will be cleared.
+  ///
+  /// Note: The method will fail silently if no authentication information is
+  /// found for the user.
   static Future<void> signOutUser(
     Session session, {
     int? userId,
@@ -81,34 +79,46 @@ class UserAuthentication {
       RevokedAuthenticationUser(),
     );
 
-    // Clear session authentication if the signed-out user is the currently authenticated user
+    // Clear session authentication if the signed-out user is the currently
+    // authenticated user
     var authInfo = await session.authenticated;
     if (userId == authInfo?.userId) {
       session.updateAuthenticated(null);
     }
   }
 
-  /// Signs out the user from the current device.
+  /// Signs out the user from the current device by deleting the specific
+  /// authentication key. This does not affect the user's sessions on other
+  /// devices. If the user being signed out is the currently authenticated user,
+  /// the session's authentication information will be cleared.
+  ///
+  /// Note: The method will fail silently if no authentication information is
+  /// found for the key.
   static Future<void> revokeAuthKey(
     Session session, {
-    required int authKeyId,
+    required String authKeyId,
   }) async {
+    int? id = int.tryParse(authKeyId);
+    if (id == null) return;
+
     // Delete the authentication key for the current device
     var auths = await AuthKey.db.deleteWhere(
       session,
-      where: (row) => row.id.equals(authKeyId),
+      where: (row) => row.id.equals(id),
     );
 
     if (auths.isEmpty) return;
     var auth = auths.first;
 
-    // Notify the client about the revoked authentication for the specific auth key
+    // Notify the client about the revoked authentication for the specific
+    // auth key
     await session.messages.authenticationRevoked(
       auth.userId,
-      RevokedAuthenticationAuthId(authId: '${auth.id}'),
+      RevokedAuthenticationAuthId(authId: authKeyId),
     );
 
-    // Clear session authentication if the signed-out user is the currently authenticated user
+    // Clear session authentication if the signed-out user is the currently
+    // authenticated user
     var authInfo = await session.authenticated;
     if (auth.userId == authInfo?.userId) {
       session.updateAuthenticated(null);
