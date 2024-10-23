@@ -48,6 +48,17 @@ class Users {
     );
   }
 
+  /// Finds a user by its phone number. Returns null if no user is found.
+  static Future<UserInfo?> findUserByPhoneNumber(
+    Session session,
+    String phoneNumber,
+  ) async {
+    return await UserInfo.db.findFirstRow(
+      session,
+      where: (t) => t.phoneNumber.equals(phoneNumber),
+    );
+  }
+
   /// Finds a user by its sign in identifier. For Google sign ins, this is the
   /// email address. For Apple sign ins, this is a unique identifying string.
   /// Returns null if no user is found.

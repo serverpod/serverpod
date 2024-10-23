@@ -1,9 +1,9 @@
 import 'dart:math';
 
-import 'package:email_validator/email_validator.dart';
+import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
-import 'package:serverpod_auth_server/src/business/email_secrets.dart';
+import 'package:serverpod_auth_server/src/business/phone_secrets.dart';
 import 'package:serverpod_auth_server/src/business/password_hash.dart';
 import 'package:serverpod_auth_server/src/business/user_authentication.dart';
 import 'package:serverpod_auth_server/src/business/user_images.dart';
@@ -13,10 +13,10 @@ import 'package:serverpod_auth_server/src/business/user_images.dart';
 /// Warning: Using a custom hashing algorithm for passwords
 /// will permanently disrupt compatibility with Serverpod's
 /// password hash validation and migration.
-Future<String> defaultEmailGeneratePasswordHash(String password) =>
+Future<String> defaultPhoneGeneratePasswordHash(String password) =>
     PasswordHash.argon2id(
       password,
-      pepper: EmailSecrets.pepper,
+      pepper: PhoneSecrets.pepper,
       allowUnsecureRandom: AuthConfig.current.allowUnsecureRandom,
     );
 
@@ -25,9 +25,8 @@ Future<String> defaultEmailGeneratePasswordHash(String password) =>
 /// Warning: Using a custom hashing algorithm for passwords
 /// will permanently disrupt compatibility with Serverpod's
 /// password hash validation and migration.
-Future<bool> defaultEmailValidatePasswordHash(
+Future<bool> defaultPhoneValidatePasswordHash(
   String password,
-  String email,
   String hash, {
   void Function({
     required String passwordHash,
@@ -38,9 +37,8 @@ Future<bool> defaultEmailValidatePasswordHash(
   try {
     return await PasswordHash(
       hash,
-      legacySalt: EmailSecrets.legacySalt,
-      legacyEmail: AuthConfig.current.extraSaltyHash ? email : null,
-      pepper: EmailSecrets.pepper,
+      legacySalt: PhoneSecrets.legacySalt,
+      pepper: PhoneSecrets.pepper,
     ).validate(password, onValidationFailure: onValidationFailure);
   } catch (e) {
     onError?.call(e);
@@ -48,13 +46,13 @@ Future<bool> defaultEmailValidatePasswordHash(
   }
 }
 
-/// Collection of utility methods when working with email authentication.
-class Emails {
-  /// Generates a password hash from a users password and email. This value
+/// Collection of utility methods when working with phone authentication.
+class Phones {
+  /// Generates a password hash from a users password and phone number. This value
   /// can safely be stored in the database without the risk of exposing
   /// passwords.
   static Future<String> generatePasswordHash(String password) async =>
-      AuthConfig.current.emailPasswordHashGenerator(
+      AuthConfig.current.phonePasswordHashGenerator(
         password,
       );
 
@@ -69,7 +67,6 @@ class Emails {
   /// argument.
   static Future<bool> validatePasswordHash(
     String password,
-    String email,
     String hash, {
     void Function({
       required String passwordHash,
@@ -77,142 +74,37 @@ class Emails {
     })? onValidationFailure,
     void Function(Object e)? onError,
   }) =>
-      AuthConfig.current.emailPasswordHashValidator(
+      AuthConfig.current.phonePasswordHashValidator(
         password,
-        email,
         hash,
         onError: onError,
         onValidationFailure: onValidationFailure,
       );
 
-  /// Migrates an EmailAuth entry if required.
-  ///
-  /// Returns the new [EmailAuth] object if a migration was required,
-  /// null otherwise.
-  static Future<EmailAuth?> tryMigrateAuthEntry({
-    required String password,
-    required EmailAuth entry,
-  }) async {
-    if (!PasswordHash(entry.hash, legacySalt: EmailSecrets.legacySalt)
-        .shouldUpdateHash()) {
-      return null;
-    }
-
-    var newHash = await PasswordHash.argon2id(
-      password,
-      pepper: EmailSecrets.pepper,
-      allowUnsecureRandom: AuthConfig.current.allowUnsecureRandom,
-    );
-
-    return entry.copyWith(hash: newHash);
-  }
-
-  /// Migrates legacy password hashes to the latest hash algorithm.
-  ///
-  ///[batchSize] is the number of entries to migrate in each batch.
-  ///
-  /// [maxMigratedEntries] is the maximum number of entries that will be
-  /// migrated. If null, all entries in the database will be migrated.
-  ///
-  /// Returns the number of migrated entries.
-  ///
-  /// Warning: This migration method is designed for password hashes generated
-  /// by the framework's default algorithm. Hashes stored with a custom
-  /// generator or different algorithm may produce unexpected results.
-  static Future<int> migrateLegacyPasswordHashes(
-    Session session, {
-    int batchSize = 100,
-    int? maxMigratedEntries,
-  }) async {
-    if (AuthConfig.current.emailPasswordHashGenerator.hashCode !=
-            defaultEmailGeneratePasswordHash.hashCode ||
-        AuthConfig.current.emailPasswordHashValidator.hashCode !=
-            defaultEmailValidatePasswordHash.hashCode) {
-      throw Exception(
-          'Legacy password hash migration not supported when using custom password hash algorithm.');
-    }
-    var updatedEntries = 0;
-    int lastEntryId = 0;
-
-    while (true) {
-      var entries = await EmailAuth.db.find(
-        session,
-        where: (t) => t.hash.notLike(r'%$%') & (t.id > lastEntryId),
-        orderBy: (t) => t.id,
-        limit: batchSize,
-      );
-
-      if (entries.isEmpty) {
-        return updatedEntries;
-      }
-
-      if (maxMigratedEntries != null) {
-        if (maxMigratedEntries == updatedEntries) {
-          return updatedEntries;
-        }
-
-        var entrySurplus =
-            (updatedEntries + entries.length) - maxMigratedEntries;
-        if (entrySurplus > 0) {
-          entries = entries.sublist(0, entries.length - entrySurplus);
-        }
-      }
-
-      lastEntryId = entries.last.id!;
-
-      var migratedEntries = await Future.wait(entries.where((entry) {
-        try {
-          return PasswordHash(
-            entry.hash,
-            legacySalt: EmailSecrets.legacySalt,
-          ).isLegacyHash();
-        } catch (e) {
-          session.log(
-            'Error when checking if hash is legacy: $e',
-            level: LogLevel.error,
-          );
-          return false;
-        }
-      }).map((entry) async {
-        return entry.copyWith(
-          hash: await PasswordHash.migratedLegacyToArgon2idHash(
-            entry.hash,
-            legacySalt: EmailSecrets.legacySalt,
-            pepper: EmailSecrets.pepper,
-            allowUnsecureRandom: AuthConfig.current.allowUnsecureRandom,
-          ),
-        );
-      }).toList());
-
-      try {
-        await EmailAuth.db.update(session, migratedEntries);
-        updatedEntries += migratedEntries.length;
-      } catch (e) {
-        session.log(
-          'Failed to update migrated entries: $e',
-          level: LogLevel.error,
-        );
-      }
-    }
-  }
-
   /// Creates a new user. Either password or hash needs to be provided.
   static Future<UserInfo?> createUser(
     Session session,
     String userName,
-    String email,
+    String phoneNumber,
     String? password, [
     String? hash,
   ]) async {
     if (password == null && hash == null) {
       throw Exception('Either password or hash needs to be provided');
     }
-    var userInfo = await Users.findUserByEmail(session, email);
+
+    String? validatedPhoneNumber = _validatePhoneNumber(session, phoneNumber);
+    if (validatedPhoneNumber == null) {
+      throw Exception('Phone number is invalid');
+    }
+
+    var userInfo =
+        await Users.findUserByPhoneNumber(session, validatedPhoneNumber);
 
     if (userInfo == null) {
       userInfo = UserInfo(
-        userIdentifier: email,
-        email: email,
+        userIdentifier: validatedPhoneNumber,
+        phoneNumber: validatedPhoneNumber,
         userName: userName,
         created: DateTime.now(),
         scopeNames: [],
@@ -220,12 +112,12 @@ class Emails {
       );
 
       session.log('creating user', level: LogLevel.debug);
-      userInfo = await Users.createUser(session, userInfo, 'email');
+      userInfo = await Users.createUser(session, userInfo, 'phone');
       if (userInfo == null) return null;
     }
 
-    // Check if there is email authentication in place already
-    var oldAuth = await EmailAuth.db.findFirstRow(
+    // Check if there is phone number authentication in place already
+    var oldAuth = await PhoneAuth.db.findFirstRow(
       session,
       where: (t) => t.userId.equals(userInfo?.id!),
     );
@@ -233,15 +125,15 @@ class Emails {
       return userInfo;
     }
 
-    session.log('creating email auth', level: LogLevel.debug);
+    session.log('creating phone number auth', level: LogLevel.debug);
     hash = hash ?? await generatePasswordHash(password!);
-    var auth = EmailAuth(
+    var auth = PhoneAuth(
       userId: userInfo.id!,
-      email: email,
+      phoneNumber: validatedPhoneNumber,
       hash: hash,
     );
 
-    await EmailAuth.db.insertRow(session, auth);
+    await PhoneAuth.db.insertRow(session, auth);
 
     await UserImages.setDefaultUserImage(session, userInfo.id!);
     await Users.invalidateCacheForUser(session, userInfo.id!);
@@ -258,7 +150,7 @@ class Emails {
     String oldPassword,
     String newPassword,
   ) async {
-    var auth = await EmailAuth.db.findFirstRow(
+    var auth = await PhoneAuth.db.findFirstRow(
       session,
       where: (t) => t.userId.equals(userId),
     );
@@ -273,7 +165,6 @@ class Emails {
     // Check old password
     if (!await validatePasswordHash(
       oldPassword,
-      auth.email,
       auth.hash,
       onError: (e) {
         session.log(
@@ -291,38 +182,42 @@ class Emails {
 
     // Update password
     auth.hash = await generatePasswordHash(newPassword);
-    await EmailAuth.db.updateRow(session, auth);
+    await PhoneAuth.db.updateRow(session, auth);
 
     return true;
   }
 
-  /// Initiates the password reset procedure. Will send an email to the provided
-  /// address with a reset code.
+  /// Initiates the password reset procedure. Will send an sms to the provided
+  /// phone number with a reset code.
   static Future<bool> initiatePasswordReset(
     Session session,
-    String email,
+    String phoneNumber,
   ) async {
-    if (AuthConfig.current.sendPasswordResetEmail == null) {
+    if (AuthConfig.current.sendPasswordResetSms == null) {
       session.log(
-        'ResetPasswordEmail is not configured, cannot send email.',
+        'ResetPasswordSms is not configured, cannot send sms.',
         level: LogLevel.debug,
       );
       return false;
     }
 
-    email = email.trim().toLowerCase();
+    String? validatedPhoneNumber = _validatePhoneNumber(session, phoneNumber);
+    if (validatedPhoneNumber == null) {
+      return false;
+    }
 
-    var userInfo = await Users.findUserByEmail(session, email);
+    var userInfo =
+        await Users.findUserByPhoneNumber(session, validatedPhoneNumber);
     if (userInfo == null) {
       session.log(
-        "User with email: '$email' is not found!",
+        "User with phoneNumber: '$validatedPhoneNumber' is not found!",
         level: LogLevel.debug,
       );
       return false;
     }
 
     var verificationCode = _generateVerificationCode();
-    var emailReset = EmailReset(
+    var phoneReset = PhoneReset(
       userId: userInfo.id!,
       verificationCode: verificationCode,
       expiration: DateTime.now()
@@ -331,9 +226,9 @@ class Emails {
           )
           .toUtc(),
     );
-    await EmailReset.db.insertRow(session, emailReset);
+    await PhoneReset.db.insertRow(session, phoneReset);
 
-    return AuthConfig.current.sendPasswordResetEmail!(
+    return AuthConfig.current.sendPasswordResetSms!(
       session,
       userInfo,
       verificationCode,
@@ -346,7 +241,7 @@ class Emails {
     String verificationCode,
     String password,
   ) async {
-    var passwordResets = await EmailReset.db.deleteWhere(
+    var passwordResets = await PhoneReset.db.deleteWhere(
       session,
       where: (t) => t.verificationCode.equals(verificationCode),
     );
@@ -369,55 +264,51 @@ class Emails {
       return false;
     }
 
-    var emailAuth = await EmailAuth.db.findFirstRow(session, where: (t) {
+    var phoneAuth = await PhoneAuth.db.findFirstRow(session, where: (t) {
       return t.userId.equals(passwordReset.userId);
     });
 
-    if (emailAuth == null) {
+    if (phoneAuth == null) {
       session.log(
-        "User with id: '${passwordReset.userId}' has no email authentication!",
+        "User with id: '${passwordReset.userId}' has no phone authentication!",
         level: LogLevel.debug,
       );
       return false;
     }
 
-    emailAuth.hash = await generatePasswordHash(password);
-    await EmailAuth.db.updateRow(session, emailAuth);
+    phoneAuth.hash = await generatePasswordHash(password);
+    await PhoneAuth.db.updateRow(session, phoneAuth);
 
     return true;
   }
 
   /// Creates a request for creating an account associated with the specified
-  /// email address. An email with a validation code will be sent.
+  /// phone number. An sms with a validation code will be sent.
   static Future<bool> createAccountRequest(
     Session session,
     String userName,
-    String email,
+    String phoneNumber,
     String password,
   ) async {
-    if (AuthConfig.current.sendValidationEmail == null) {
+    if (AuthConfig.current.sendValidationSms == null) {
       session.log(
-        'SendValidationEmail is not configured, cannot send email.',
+        'SendValidationSms is not configured, cannot send sms.',
         level: LogLevel.debug,
       );
+      return false;
+    }
+    String? validatedPhoneNumber = _validatePhoneNumber(session, phoneNumber);
+    if (validatedPhoneNumber == null) {
       return false;
     }
 
     try {
       // Check if user already has an account
-      var userInfo = await Users.findUserByEmail(session, email);
+      var userInfo =
+          await Users.findUserByPhoneNumber(session, validatedPhoneNumber);
       if (userInfo != null) {
         session.log(
-          "Email: '$email' already taken!",
-          level: LogLevel.debug,
-        );
-        return false;
-      }
-
-      email = email.trim().toLowerCase();
-      if (!EmailValidator.validate(email)) {
-        session.log(
-          "Email: '$email' is not valid!",
+          "Phone number: '$validatedPhoneNumber' already taken!",
           level: LogLevel.debug,
         );
         return false;
@@ -445,24 +336,25 @@ class Emails {
         return false;
       }
 
-      var accountRequest = await findAccountRequest(session, email);
+      var accountRequest =
+          await findAccountRequest(session, validatedPhoneNumber);
       if (accountRequest == null) {
-        accountRequest = EmailCreateAccountRequest(
+        accountRequest = PhoneCreateAccountRequest(
           userName: userName,
-          email: email,
+          phoneNumber: validatedPhoneNumber,
           hash: await generatePasswordHash(password),
           verificationCode: _generateVerificationCode(),
         );
-        await EmailCreateAccountRequest.db.insertRow(session, accountRequest);
+        await PhoneCreateAccountRequest.db.insertRow(session, accountRequest);
       } else {
         accountRequest.userName = userName;
         accountRequest.verificationCode = _generateVerificationCode();
-        await EmailCreateAccountRequest.db.updateRow(session, accountRequest);
+        await PhoneCreateAccountRequest.db.updateRow(session, accountRequest);
       }
 
-      return await AuthConfig.current.sendValidationEmail!(
+      return await AuthConfig.current.sendValidationSms!(
         session,
-        email,
+        validatedPhoneNumber,
         accountRequest.verificationCode,
       );
     } catch (e) {
@@ -474,33 +366,44 @@ class Emails {
     }
   }
 
-  /// Returns an [EmailCreateAccountRequest] if one exists for the provided
-  /// email, null otherwise.
-  static Future<EmailCreateAccountRequest?> findAccountRequest(
+  /// Returns an [PhoneCreateAccountRequest] if one exists for the provided
+  /// phone number, null otherwise.
+  static Future<PhoneCreateAccountRequest?> findAccountRequest(
     Session session,
-    String email,
+    String phoneNumber,
   ) async {
-    return await EmailCreateAccountRequest.db.findFirstRow(
+    String? validatedPhoneNumber = _validatePhoneNumber(session, phoneNumber);
+    if (validatedPhoneNumber == null) {
+      return null;
+    }
+    return await PhoneCreateAccountRequest.db.findFirstRow(
       session,
-      where: (t) => t.email.equals(email),
+      where: (t) => t.phoneNumber.equals(validatedPhoneNumber),
     );
   }
 
-  /// Authenticates a user with email and password. Returns an
+  /// Authenticates a user with phone number and password. Returns an
   /// [AuthenticationResponse] with the users information.
   static Future<AuthenticationResponse> authenticate(
     Session session,
-    String email,
+    String phoneNumber,
     String password,
   ) async {
-    email = email.toLowerCase();
     password = password.trim();
 
-    session.log('authenticate $email / XXXXXXXX', level: LogLevel.debug);
+    session.log('authenticate $phoneNumber / XXXXXXXX', level: LogLevel.debug);
+
+    String? validatedPhoneNumber = _validatePhoneNumber(session, phoneNumber);
+    if (validatedPhoneNumber == null) {
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.invalidCredentials,
+      );
+    }
 
     // Fetch password entry
-    var entry = await EmailAuth.db.findFirstRow(session, where: (t) {
-      return t.email.equals(email);
+    var entry = await PhoneAuth.db.findFirstRow(session, where: (t) {
+      return t.phoneNumber.equals(validatedPhoneNumber);
     });
 
     if (entry == null) {
@@ -510,7 +413,7 @@ class Emails {
       );
     }
 
-    if (await _hasTooManyFailedSignIns(session, email)) {
+    if (await _hasTooManyFailedSignIns(session, validatedPhoneNumber)) {
       return AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.tooManyFailedAttempts,
@@ -520,9 +423,8 @@ class Emails {
     session.log(' - found entry ', level: LogLevel.debug);
 
     // Check that password is correct
-    if (!await Emails.validatePasswordHash(
+    if (!await Phones.validatePasswordHash(
       password,
-      email,
       entry.hash,
       onValidationFailure: ({
         required String passwordHash,
@@ -539,7 +441,7 @@ class Emails {
         );
       },
     )) {
-      await _logFailedSignIn(session, email);
+      await _logFailedSignIn(session, validatedPhoneNumber);
       return AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.invalidCredentials,
@@ -548,27 +450,6 @@ class Emails {
 
     session.log(' - password is correct, userId: ${entry.userId})',
         level: LogLevel.debug);
-
-    if (AuthConfig.current.emailPasswordHashGenerator.hashCode ==
-            defaultEmailGeneratePasswordHash.hashCode &&
-        AuthConfig.current.emailPasswordHashValidator.hashCode ==
-            defaultEmailValidatePasswordHash.hashCode) {
-      var migratedAuth = await Emails.tryMigrateAuthEntry(
-        password: password,
-        entry: entry,
-      );
-      if (migratedAuth != null) {
-        session.log(' - migrating authentication entry', level: LogLevel.debug);
-        try {
-          await EmailAuth.db.updateRow(session, migratedAuth);
-        } catch (e) {
-          session.log(
-            ' - failed to update migrated auth: $e',
-            level: LogLevel.error,
-          );
-        }
-      }
-    }
 
     var userInfo = await Users.findUserByUserId(session, entry.userId);
     if (userInfo == null) {
@@ -589,7 +470,7 @@ class Emails {
     var auth = await UserAuthentication.signInUser(
       session,
       entry.userId,
-      'email',
+      'phone',
       scopes: userInfo.scopes,
     );
 
@@ -610,26 +491,39 @@ class Emails {
   }
 
   static Future<bool> _hasTooManyFailedSignIns(
-      Session session, String email) async {
-    var numFailedSignIns = await EmailFailedSignIn.db.count(
+      Session session, String phoneNumber) async {
+    var numFailedSignIns = await PhoneFailedSignIn.db.count(
       session,
       where: (t) =>
-          t.email.equals(email) &
+          t.phoneNumber.equals(phoneNumber) &
           (t.time >
               DateTime.now()
                   .toUtc()
-                  .subtract(AuthConfig.current.emailSignInFailureResetTime)),
+                  .subtract(AuthConfig.current.phoneSignInFailureResetTime)),
     );
-    return numFailedSignIns >= AuthConfig.current.maxAllowedEmailSignInAttempts;
+    return numFailedSignIns >= AuthConfig.current.maxAllowedPhoneSignInAttempts;
   }
 
-  static Future<void> _logFailedSignIn(Session session, String email) async {
+  static Future<void> _logFailedSignIn(
+      Session session, String phoneNumber) async {
     session as MethodCallSession;
-    var failedSignIn = EmailFailedSignIn(
-      email: email,
+    var failedSignIn = PhoneFailedSignIn(
+      phoneNumber: phoneNumber,
       time: DateTime.now(),
       ipAddress: session.httpRequest.remoteIpAddress,
     );
-    await EmailFailedSignIn.db.insertRow(session, failedSignIn);
+    await PhoneFailedSignIn.db.insertRow(session, failedSignIn);
+  }
+
+  static String? _validatePhoneNumber(Session session, String phoneNumber) {
+    var parsedPhoneNumber = PhoneNumber.parse(phoneNumber);
+    if (!parsedPhoneNumber.isValid()) {
+      session.log(
+        "Phone number: '$phoneNumber' is not valid!",
+        level: LogLevel.debug,
+      );
+      return null;
+    }
+    return parsedPhoneNumber.international;
   }
 }

@@ -5,16 +5,16 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
-/// Endpoint for handling Sign in with email.
-class EmailEndpoint extends Endpoint {
-  /// Authenticates a user with email and password. Returns an
+/// Endpoint for handling Sign in with phone number.
+class PhoneEndpoint extends Endpoint {
+  /// Authenticates a user with phone number and password. Returns an
   /// [AuthenticationResponse] with the users information.
   Future<AuthenticationResponse> authenticate(
     Session session,
-    String email,
+    String phoneNumber,
     String password,
   ) async {
-    return Emails.authenticate(session, email, password);
+    return Phones.authenticate(session, phoneNumber, password);
   }
 
   /// Changes a users password.
@@ -23,33 +23,33 @@ class EmailEndpoint extends Endpoint {
     var userId = (await session.authenticated)?.userId;
     if (userId == null) return false;
 
-    return Emails.changePassword(session, userId, oldPassword, newPassword);
+    return Phones.changePassword(session, userId, oldPassword, newPassword);
   }
 
-  /// Initiates a password reset and sends an email with the reset code to the
+  /// Initiates a password reset and sends an sms with the reset code to the
   /// user.
-  Future<bool> initiatePasswordReset(Session session, String email) {
-    return Emails.initiatePasswordReset(session, email);
+  Future<bool> initiatePasswordReset(Session session, String phoneNumber) {
+    return Phones.initiatePasswordReset(session, phoneNumber);
   }
 
   /// Resets a users password using the reset code.
   Future<bool> resetPassword(
       Session session, String verificationCode, String password) {
-    return Emails.resetPassword(session, verificationCode, password);
+    return Phones.resetPassword(session, verificationCode, password);
   }
 
-  /// Starts the procedure for creating an account by sending an email with
+  /// Starts the procedure for creating an account by sending an sms with
   /// a verification code.
   Future<bool> createAccountRequest(
     Session session,
     String userName,
-    String email,
+    String phoneNumber,
     String password,
   ) async {
-    return await Emails.createAccountRequest(
+    return await Phones.createAccountRequest(
       session,
       userName,
-      email,
+      phoneNumber,
       password,
     );
   }
@@ -57,10 +57,10 @@ class EmailEndpoint extends Endpoint {
   /// Creates a new account using a verification code.
   Future<UserInfo?> createAccount(
     Session session,
-    String email,
+    String phoneNumber,
     String verificationCode,
   ) async {
-    var request = await Emails.findAccountRequest(session, email);
+    var request = await Phones.findAccountRequest(session, phoneNumber);
     if (request == null) {
       return null;
     }
@@ -68,11 +68,11 @@ class EmailEndpoint extends Endpoint {
       return null;
     }
 
-    // Email is verified, create a new user
-    return await Emails.createUser(
+    // Phone number is verified, create a new user
+    return await Phones.createUser(
       session,
       request.userName,
-      email,
+      phoneNumber,
       null,
       request.hash,
     );
