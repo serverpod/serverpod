@@ -16,50 +16,55 @@ class StatusEndpoint extends Endpoint {
     return userId != null;
   }
 
-  /// **[Deprecated]** Signs out a user from all sessions.
-  /// Use `signOutDevice` for the current session or `signOutAllDevices` for all sessions.
+  /// **[Deprecated]** Signs out a user from all devices.
+  /// Use `signOutDevice` to sign out a single device
+  /// or `signOutAllDevices` to sign out all devices.
   @Deprecated(
-      'Use signOutDevice for the current session or signOutAllDevices for all sessions. This method will be removed in future releases.')
+    'Use signOutDevice to sign out a single device or signOutAllDevices to sign out all devices. '
+    'This method will be removed in future releases.',
+  )
   Future<void> signOut(Session session) async {
     switch (AuthConfig.current.legacyUserSignOutBehavior) {
-      case SignOutOption.currentDevice:
+      case SignOutBehavior.currentDevice:
         var authInfo = await session.authenticated;
-        var authKeyId = int.tryParse(authInfo?.authId ?? '');
+        var authKeyId = authInfo?.authId;
         if (authKeyId == null) return;
-        await UserAuthentication.revokeAuthKey(
+
+        return UserAuthentication.revokeAuthKey(
           session,
           authKeyId: authKeyId,
         );
-        break;
-      case SignOutOption.allDevices:
+      case SignOutBehavior.allDevices:
         var authInfo = await session.authenticated;
         var userId = authInfo?.userId;
         if (userId == null) return;
-        await UserAuthentication.signOutUser(
+
+        return UserAuthentication.signOutUser(
           session,
           userId: userId,
         );
-        break;
     }
   }
 
-  /// Signs out a user from the current session only.
+  /// Signs out a user from the current device.
   Future<void> signOutDevice(Session session) async {
     var authInfo = await session.authenticated;
-    var authKeyId = int.tryParse(authInfo?.authId ?? '');
+    var authKeyId = authInfo?.authId;
     if (authKeyId == null) return;
-    await UserAuthentication.revokeAuthKey(
+
+    return UserAuthentication.revokeAuthKey(
       session,
       authKeyId: authKeyId,
     );
   }
 
-  /// Signs out a user from all active sessions (all devices).
+  /// Signs out a user from all active devices.
   Future<void> signOutAllDevices(Session session) async {
     var authInfo = await session.authenticated;
     var userId = authInfo?.userId;
     if (userId == null) return;
-    await UserAuthentication.signOutUser(
+
+    return UserAuthentication.signOutUser(
       session,
       userId: userId,
     );
@@ -70,6 +75,7 @@ class StatusEndpoint extends Endpoint {
   Future<UserInfo?> getUserInfo(Session session) async {
     var userId = (await session.authenticated)?.userId;
     if (userId == null) return null;
+
     return await UserInfo.db.findById(session, userId);
   }
 
