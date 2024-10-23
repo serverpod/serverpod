@@ -1,0 +1,20 @@
+### A request for creating an phone number signin. Created during the sign up process
+### to keep track of the user's details and verification code.
+class: PhoneCreateAccountRequest
+table: serverpod_phone_create_request
+fields:
+  ### The name of the user.
+  userName: String
+
+  ### The phone number of the user.
+  phoneNumber: String
+
+  ### Hash of the user's requested password.
+  hash: String
+
+  ### The verification code sent to the user.
+  verificationCode: String
+indexes:
+  serverpod_phone_auth_create_account_request_idx:
+    fields: phoneNumber
+    unique: true

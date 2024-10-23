@@ -1,0 +1,16 @@
+### Database bindings for an phone number reset.
+class: PhoneReset
+table: serverpod_phone_reset
+fields:
+  ### The id of the user that is resetting his/her password.
+  userId: int
+
+  ### The verification code for the password reset.
+  verificationCode: String
+
+  ### The expiration time for the password reset.
+  expiration: DateTime
+indexes:
+  serverpod_phone_reset_verification_idx:
+    fields: verificationCode
+    unique: true
