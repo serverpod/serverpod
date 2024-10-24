@@ -1,5 +1,3 @@
-library serverpod_serialization;
-
 export 'package:uuid/uuid.dart';
 
 export 'src/auth_encoding.dart';

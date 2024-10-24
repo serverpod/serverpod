@@ -1,5 +1,3 @@
-library list_bucket_result;
-
 import 'dart:convert';
 
 import 'package:built_collection/built_collection.dart';
