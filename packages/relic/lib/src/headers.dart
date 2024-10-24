@@ -21,7 +21,6 @@ part 'headers/accept_header.dart';
 part 'headers/connection_header.dart';
 part 'headers/etag_header.dart';
 part 'headers/vary_header.dart';
-part 'headers/server_header.dart';
 part 'headers/proxy_authenticate_header.dart';
 part 'headers/transfer_encoding_header.dart';
 part 'headers/host_header.dart';
@@ -143,7 +142,7 @@ abstract class Headers {
   final ETagHeader? etag;
   final ProxyAuthenticateHeader? proxyAuthenticate;
   final RetryAfterHeader? retryAfter;
-  final ServerHeader? server;
+  final String? server;
   final List<String>? trailer;
   final VaryHeader? vary;
   final List<String>? via;
@@ -447,12 +446,10 @@ abstract class Headers {
           strict: strict,
         ),
       ),
-      server: ServerHeader.tryParse(
-        headers.parseSingleValue(
+      server: headers.parseSingleValue(
           _serverHeader,
           strict: strict,
         ),
-      ),
       te: headers.parseMultipleValue(
         _teHeader,
         strict: strict,
@@ -593,7 +590,7 @@ abstract class Headers {
     DateTime? lastModified,
     ProxyAuthenticateHeader? proxyAuthenticate,
     RetryAfterHeader? retryAfter,
-    ServerHeader? server,
+    String? server,
     List<String>? trailer,
     TransferEncodingHeader? transferEncoding,
     VaryHeader? vary,
@@ -804,7 +801,7 @@ abstract class Headers {
     RangeHeader? range,
     String? referer,
     RetryAfterHeader? retryAfter,
-    ServerHeader? server,
+    String? server,
     List<String>? te,
     List<String>? trailer,
     TransferEncodingHeader? transferEncoding,
@@ -1211,7 +1208,7 @@ class _HeadersImpl extends Headers {
       range: range is RangeHeader ? range : this.range,
       referer: referer is Uri ? referer : this.referer,
       retryAfter: retryAfter is RetryAfterHeader ? retryAfter : this.retryAfter,
-      server: server is ServerHeader ? server : this.server,
+      server: server is String ? server : this.server,
       te: te is List<String> ? te : this.te,
       trailer: trailer is List<String> ? trailer : this.trailer,
       transferEncoding: transferEncoding is TransferEncodingHeader
