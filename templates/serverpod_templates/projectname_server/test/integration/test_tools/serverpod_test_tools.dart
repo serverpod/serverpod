@@ -24,6 +24,7 @@ void withServerpod(
   _i1.TestClosure<TestEndpoints> testClosure, {
   String? runMode,
   bool? enableSessionLogging,
+  _i2.ServerpodLoggingMode? serverpodLoggingMode,
   List<String>? testGroupTagsOverride,
 }) {
   _i1.buildWithServerpod<_InternalTestEndpoints>(
@@ -35,6 +36,7 @@ void withServerpod(
       runMode: runMode,
       applyMigrations: false,
       isDatabaseEnabled: false,
+      serverpodLoggingMode: serverpodLoggingMode,
     ),
     maybeRollbackDatabase: _i1.RollbackDatabase.disabled,
     maybeEnableSessionLogging: enableSessionLogging,
