@@ -405,6 +405,10 @@ class ServerTestToolsGenerator {
             ..named = true
             ..type = refer('bool?')),
           Parameter((p) => p
+            ..name = 'serverpodLoggingMode'
+            ..named = true
+            ..type = refer('String?')),
+          Parameter((p) => p
             ..name = 'testGroupTagsOverride'
             ..named = true
             ..type = refer('List<String>?')),
@@ -439,6 +443,7 @@ class ServerTestToolsGenerator {
                 'isDatabaseEnabled': literalBool(
                   config.isFeatureEnabled(ServerpodFeature.database),
                 ),
+                'serverpodLoggingMode': refer('serverpodLoggingMode'),
               },
             ),
           ],

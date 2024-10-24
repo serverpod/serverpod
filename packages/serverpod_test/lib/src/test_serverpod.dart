@@ -76,11 +76,17 @@ class InternalServerpodSession extends Session {
   }
 }
 
-List<String> _getServerpodStartUpArgs(String? runMode, bool? applyMigrations) =>
+List<String> _getServerpodStartUpArgs({
+  String? runMode,
+  bool? applyMigrations,
+  String? logging,
+}) =>
     [
       '-m',
       runMode ?? ServerpodRunMode.test,
       if (applyMigrations ?? true) '--apply-migrations',
+      '--logging',
+      logging ?? 'normal',
     ];
 
 /// A facade for the real Serverpod instance.
@@ -95,12 +101,13 @@ class TestServerpod<T extends InternalTestEndpoints> {
 
   /// Creates a new test serverpod instance.
   TestServerpod({
-    bool? applyMigrations,
+    required bool? applyMigrations,
     required EndpointDispatch endpoints,
     required SerializationManagerServer serializationManager,
     required this.isDatabaseEnabled,
     required this.testEndpoints,
-    String? runMode,
+    required String? serverpodLoggingMode,
+    required String? runMode,
   }) {
     // Ignore output from the Serverpod constructor to avoid spamming the console.
     // Should be changed when a proper logger is implemented.
@@ -109,8 +116,9 @@ class TestServerpod<T extends InternalTestEndpoints> {
       () {
         _serverpod = Serverpod(
           _getServerpodStartUpArgs(
-            runMode,
-            applyMigrations,
+            runMode: runMode,
+            applyMigrations: applyMigrations,
+            logging: serverpodLoggingMode,
           ),
           serializationManager,
           endpoints,
