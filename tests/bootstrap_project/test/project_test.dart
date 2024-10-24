@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
-import 'util.dart';
+import '../lib/src/util.dart';
 
 const tempDirName = 'temp';
 

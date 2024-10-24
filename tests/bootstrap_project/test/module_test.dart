@@ -6,7 +6,7 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
-import 'util.dart';
+import '../lib/src/util.dart';
 
 const tempDirName = 'temp';
 
