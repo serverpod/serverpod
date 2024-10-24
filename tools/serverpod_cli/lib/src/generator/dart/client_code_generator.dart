@@ -24,10 +24,12 @@ class DartClientCodeGenerator extends CodeGenerator {
 
     var modelAllocatorContext = [];
 
-    var sealedHierarchies = ModelFilterUtil.getSealedHierarchies(models);
+    var clientClasses = models.where((element) => !element.serverOnly).toList();
+
+    var sealedHierarchies = ModelFilterUtil.getSealedHierarchies(clientClasses);
 
     var modelsWithoutSealedHierarchies =
-        ModelFilterUtil.getClassesWithoutSealedHierarchies(models);
+        ModelFilterUtil.getClassesWithoutSealedHierarchies(clientClasses);
 
     for (var sealedHierarchy in sealedHierarchies) {
       var partOfAllocator = PartOfAllocator([]);
@@ -49,15 +51,14 @@ class DartClientCodeGenerator extends CodeGenerator {
     }
 
     return {
-      for (var data in modelAllocatorContext)
-        if (!data.model.serverOnly)
-          p.joinAll([
-            ...config.generatedDartClientModelPathParts,
-            ...data.model.subDirParts,
-            '${data.model.fileName}.dart'
-          ]): clientSideGenerator
-              .generateModelLibrary(data.model)
-              .generateCode(allocator: data.allocator),
+      for (var entry in modelAllocatorContext)
+        p.joinAll([
+          ...config.generatedDartClientModelPathParts,
+          ...entry.model.subDirParts,
+          '${entry.model.fileName}.dart'
+        ]): clientSideGenerator
+            .generateModelLibrary(entry.model)
+            .generateCode(allocator: entry.allocator),
     };
   }
 

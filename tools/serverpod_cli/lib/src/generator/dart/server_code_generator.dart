@@ -51,14 +51,14 @@ class DartServerCodeGenerator extends CodeGenerator {
     }
 
     return {
-      for (var data in modelAllocatorContext)
+      for (var entry in modelAllocatorContext)
         p.joinAll([
           ...config.generatedServeModelPathParts,
-          ...data.model.subDirParts,
-          '${data.model.fileName}.dart'
+          ...entry.model.subDirParts,
+          '${entry.model.fileName}.dart'
         ]): serverSideGenerator
-            .generateModelLibrary(data.model)
-            .generateCode(allocator: data.allocator),
+            .generateModelLibrary(entry.model)
+            .generateCode(allocator: entry.allocator),
     };
   }
 
