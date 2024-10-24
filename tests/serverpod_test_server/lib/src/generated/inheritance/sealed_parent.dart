@@ -25,27 +25,6 @@ sealed class SealedParent
   int sealedInt;
 
   String sealedString;
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'sealedInt': sealedInt,
-      'sealedString': sealedString,
-    };
-  }
-
-  @override
-  Map<String, dynamic> toJsonForProtocol() {
-    return {
-      'sealedInt': sealedInt,
-      'sealedString': sealedString,
-    };
-  }
-
-  @override
-  String toString() {
-    return _i2.SerializationManager.encode(this);
-  }
 }
 
 class _Undefined {}

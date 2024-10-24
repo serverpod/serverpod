@@ -24,19 +24,6 @@ sealed class SealedParent implements _i2.SerializableModel {
   int sealedInt;
 
   String sealedString;
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'sealedInt': sealedInt,
-      'sealedString': sealedString,
-    };
-  }
-
-  @override
-  String toString() {
-    return _i2.SerializationManager.encode(this);
-  }
 }
 
 class _Undefined {}
