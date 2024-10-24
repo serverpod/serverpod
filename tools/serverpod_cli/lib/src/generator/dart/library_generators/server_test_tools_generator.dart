@@ -407,7 +407,7 @@ class ServerTestToolsGenerator {
           Parameter((p) => p
             ..name = 'serverpodLoggingMode'
             ..named = true
-            ..type = refer('String?')),
+            ..type = refer('ServerpodLoggingMode?', serverpodUrl(true))),
           Parameter((p) => p
             ..name = 'testGroupTagsOverride'
             ..named = true

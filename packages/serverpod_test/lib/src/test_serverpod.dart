@@ -79,14 +79,14 @@ class InternalServerpodSession extends Session {
 List<String> _getServerpodStartUpArgs({
   String? runMode,
   bool? applyMigrations,
-  String? logging,
+  ServerpodLoggingMode? loggingMode,
 }) =>
     [
       '-m',
       runMode ?? ServerpodRunMode.test,
       if (applyMigrations ?? true) '--apply-migrations',
       '--logging',
-      logging ?? 'normal',
+      loggingMode?.name ?? ServerpodLoggingMode.normal.name,
     ];
 
 /// A facade for the real Serverpod instance.
@@ -106,7 +106,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
     required SerializationManagerServer serializationManager,
     required this.isDatabaseEnabled,
     required this.testEndpoints,
-    required String? serverpodLoggingMode,
+    required ServerpodLoggingMode? serverpodLoggingMode,
     required String? runMode,
   }) {
     // Ignore output from the Serverpod constructor to avoid spamming the console.
@@ -118,7 +118,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
           _getServerpodStartUpArgs(
             runMode: runMode,
             applyMigrations: applyMigrations,
-            logging: serverpodLoggingMode,
+            loggingMode: serverpodLoggingMode,
           ),
           serializationManager,
           endpoints,

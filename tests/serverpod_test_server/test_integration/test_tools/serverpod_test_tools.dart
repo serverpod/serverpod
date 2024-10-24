@@ -50,7 +50,7 @@ void withServerpod(
   _i1.TestClosure<TestEndpoints> testClosure, {
   String? runMode,
   bool? enableSessionLogging,
-  String? serverpodLoggingMode,
+  _i2.ServerpodLoggingMode? serverpodLoggingMode,
   List<String>? testGroupTagsOverride,
   _i1.RollbackDatabase? rollbackDatabase,
   bool? applyMigrations,

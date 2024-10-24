@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/test_util/mock_stdout.dart';
 import 'package:test/test.dart';
 
@@ -16,7 +17,7 @@ void main() {
   withServerpod(
     'Given an existing session with session logging disabled',
     enableSessionLogging: false,
-    serverpodLoggingMode: 'verbose',
+    serverpodLoggingMode: ServerpodLoggingMode.verbose,
     (sessionBuilder, endpoints) {
       late MockStdout record;
 
