@@ -10,24 +10,24 @@
 
 part of 'sealed_parent.dart';
 
-abstract class SealedGrandchild extends _i1.SealedChild
+abstract class SealedGrandChild extends _i1.SealedChild
     implements _i2.SerializableModel {
-  SealedGrandchild._({
+  SealedGrandChild._({
     required super.sealedInt,
     required super.sealedString,
     super.nullableInt,
     required this.sealedGrandchildField,
   });
 
-  factory SealedGrandchild({
+  factory SealedGrandChild({
     required int sealedInt,
     required String sealedString,
     int? nullableInt,
     required String sealedGrandchildField,
-  }) = _SealedGrandchildImpl;
+  }) = _SealedGrandChildImpl;
 
-  factory SealedGrandchild.fromJson(Map<String, dynamic> jsonSerialization) {
-    return SealedGrandchild(
+  factory SealedGrandChild.fromJson(Map<String, dynamic> jsonSerialization) {
+    return SealedGrandChild(
       sealedInt: jsonSerialization['sealedInt'] as int,
       sealedString: jsonSerialization['sealedString'] as String,
       nullableInt: jsonSerialization['nullableInt'] as int?,
@@ -39,7 +39,7 @@ abstract class SealedGrandchild extends _i1.SealedChild
   String sealedGrandchildField;
 
   @override
-  SealedGrandchild copyWith({
+  SealedGrandChild copyWith({
     int? sealedInt,
     String? sealedString,
     Object? nullableInt,
@@ -61,8 +61,8 @@ abstract class SealedGrandchild extends _i1.SealedChild
   }
 }
 
-class _SealedGrandchildImpl extends SealedGrandchild {
-  _SealedGrandchildImpl({
+class _SealedGrandChildImpl extends SealedGrandChild {
+  _SealedGrandChildImpl({
     required int sealedInt,
     required String sealedString,
     int? nullableInt,
@@ -75,13 +75,13 @@ class _SealedGrandchildImpl extends SealedGrandchild {
         );
 
   @override
-  SealedGrandchild copyWith({
+  SealedGrandChild copyWith({
     int? sealedInt,
     String? sealedString,
     Object? nullableInt = _Undefined,
     String? sealedGrandchildField,
   }) {
-    return SealedGrandchild(
+    return SealedGrandChild(
       sealedInt: sealedInt ?? this.sealedInt,
       sealedString: sealedString ?? this.sealedString,
       nullableInt: nullableInt is int? ? nullableInt : this.nullableInt,

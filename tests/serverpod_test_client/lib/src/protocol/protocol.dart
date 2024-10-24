@@ -401,8 +401,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i45.SealedChild) {
       return _i45.SealedChild.fromJson(data) as T;
     }
-    if (t == _i45.SealedGrandchild) {
-      return _i45.SealedGrandchild.fromJson(data) as T;
+    if (t == _i45.SealedGrandChild) {
+      return _i45.SealedGrandChild.fromJson(data) as T;
     }
     if (t == _i45.SealedOtherChild) {
       return _i45.SealedOtherChild.fromJson(data) as T;
@@ -757,8 +757,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i45.SealedChild?>()) {
       return (data != null ? _i45.SealedChild.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i45.SealedGrandchild?>()) {
-      return (data != null ? _i45.SealedGrandchild.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i45.SealedGrandChild?>()) {
+      return (data != null ? _i45.SealedGrandChild.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i45.SealedOtherChild?>()) {
       return (data != null ? _i45.SealedOtherChild.fromJson(data) : null) as T;
@@ -2114,8 +2114,8 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i45.SealedChild) {
       return 'SealedChild';
     }
-    if (data is _i45.SealedGrandchild) {
-      return 'SealedGrandchild';
+    if (data is _i45.SealedGrandChild) {
+      return 'SealedGrandChild';
     }
     if (data is _i45.SealedOtherChild) {
       return 'SealedOtherChild';
@@ -2487,8 +2487,8 @@ class Protocol extends _i1.SerializationManager {
     if (data['className'] == 'SealedChild') {
       return deserialize<_i45.SealedChild>(data['data']);
     }
-    if (data['className'] == 'SealedGrandchild') {
-      return deserialize<_i45.SealedGrandchild>(data['data']);
+    if (data['className'] == 'SealedGrandChild') {
+      return deserialize<_i45.SealedGrandChild>(data['data']);
     }
     if (data['className'] == 'SealedOtherChild') {
       return deserialize<_i45.SealedOtherChild>(data['data']);
