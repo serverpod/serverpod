@@ -142,6 +142,7 @@ class ClassDefinition extends SerializableModelDefinition {
   bool get isSealedTopNode => sealedTopNode == this;
 
   /// Returns `true` if all parent classes are sealed.
+  /// Returns `true` if the class does not have a parent class.
   bool get everyParentIsSealed {
     var parent = parentClass;
     if (parent == null) return true;
@@ -157,8 +158,7 @@ class ClassDefinition extends SerializableModelDefinition {
   /// This includes all child classes and their descendants.
   /// If the class has no child classes, an empty list is returned.
   List<ClassDefinition> get descendantClasses {
-    _descendantClasses ??= _computeDescendantClasses();
-    return _descendantClasses!;
+    return _descendantClasses ??= _computeDescendantClasses();
   }
 
   List<ClassDefinition> _computeDescendantClasses() {
