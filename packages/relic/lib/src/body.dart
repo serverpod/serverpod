@@ -15,7 +15,7 @@ class Body {
   /// The contents of the message body.
   ///
   /// This will be `null` after [read] is called.
-  Stream<List<int>>? _stream;
+  Stream<Uint8List>? _stream;
 
   /// The length of the stream returned by [read], or `null` if that can't be
   /// determined efficiently.
@@ -67,7 +67,7 @@ class Body {
   }
 
   factory Body.fromDataStream(
-    Stream<List<int>> body, {
+    Stream<Uint8List> body, {
     Encoding? encoding = utf8,
     MimeType? mimeType = MimeType.plainText,
     int? contentLength,
@@ -96,7 +96,7 @@ class Body {
   /// Returns a [Stream] representing the body.
   ///
   /// Can only be called once.
-  Stream<List<int>> read() {
+  Stream<Uint8List> read() {
     var stream = _stream;
     if (stream == null) {
       throw StateError(

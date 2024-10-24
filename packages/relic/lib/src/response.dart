@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart';
 
@@ -332,7 +333,9 @@ Body _handleTransferEncoding(
 ) {
   if (transferEncoding?.isChunked == true) {
     // If the response is already chunked, decode it to avoid double chunking.
-    body = Body.fromDataStream(chunkedCoding.decoder.bind(body.read()));
+    body = Body.fromDataStream(
+      chunkedCoding.decoder.bind(body.read()).cast<Uint8List>(),
+    );
     httpResponse.headers.set(HttpHeaders.transferEncodingHeader, 'chunked');
     return body;
   } else if (_shouldEnableChunkedEncoding(statusCode, body)) {

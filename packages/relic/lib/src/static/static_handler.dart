@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
+import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
 import 'package:mime/mime.dart';
@@ -216,7 +217,7 @@ Future<Response> _handleFile(
     body: request.method == Method.head
         ? null
         : Body.fromDataStream(
-            file.openRead(),
+            file.openRead().cast<Uint8List>(),
             mimeType: MimeType.tryParse(contentType),
             contentLength: file.lengthSync(),
           ),
@@ -282,7 +283,7 @@ Response? _fileRangeResponse(
     body: request.method == Method.head
         ? null
         : Body.fromDataStream(
-            file.openRead(start, end + 1),
+            file.openRead(start, end + 1).cast<Uint8List>(),
             encoding: null,
             mimeType: MimeType.binary,
           ),
