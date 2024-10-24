@@ -19,11 +19,12 @@ import 'package:projectname_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
 
 @_i1.isTestGroup
-withServerpod(
+void withServerpod(
   String testGroupName,
   _i1.TestClosure<TestEndpoints> testClosure, {
   String? runMode,
   bool? enableSessionLogging,
+  _i2.ServerpodLoggingMode? serverpodLoggingMode,
   List<String>? testGroupTagsOverride,
   _i1.RollbackDatabase? rollbackDatabase,
   bool? applyMigrations,
@@ -37,6 +38,7 @@ withServerpod(
       runMode: runMode,
       applyMigrations: applyMigrations,
       isDatabaseEnabled: true,
+      serverpodLoggingMode: serverpodLoggingMode,
     ),
     maybeRollbackDatabase: rollbackDatabase,
     maybeEnableSessionLogging: enableSessionLogging,
@@ -51,7 +53,7 @@ class TestEndpoints {
 class _InternalTestEndpoints extends TestEndpoints
     implements _i1.InternalTestEndpoints {
   @override
-  initialize(
+  void initialize(
     _i2.SerializationManager serializationManager,
     _i2.EndpointDispatch endpoints,
   ) {
