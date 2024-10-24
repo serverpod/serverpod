@@ -24,10 +24,12 @@ class StatusEndpoint extends Endpoint {
     'This method will be removed in future releases.',
   )
   Future<void> signOut(Session session) async {
+    var authInfo = await session.authenticated;
+    if (authInfo == null) return;
+
     switch (AuthConfig.current.legacyUserSignOutBehavior) {
       case SignOutBehavior.currentDevice:
-        var authInfo = await session.authenticated;
-        var authKeyId = authInfo?.authId;
+        var authKeyId = authInfo.authId;
         if (authKeyId == null) return;
 
         return UserAuthentication.revokeAuthKey(
@@ -35,13 +37,9 @@ class StatusEndpoint extends Endpoint {
           authKeyId: authKeyId,
         );
       case SignOutBehavior.allDevices:
-        var authInfo = await session.authenticated;
-        var userId = authInfo?.userId;
-        if (userId == null) return;
-
         return UserAuthentication.signOutUser(
           session,
-          userId: userId,
+          userId: authInfo.userId,
         );
     }
   }
