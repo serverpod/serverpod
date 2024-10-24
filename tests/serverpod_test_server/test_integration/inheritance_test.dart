@@ -14,8 +14,6 @@ String switchOnSealedClass(SealedParent sealedClass) {
       return 'Handled SealedChild';
     case SealedOtherChild():
       return 'Handled SealedOtherChild';
-    default:
-      return 'Unknown SealedClass';
   }
 }
 
