@@ -94,7 +94,19 @@ class TestServerpod<T extends InternalTestEndpoints> {
   /// The test endpoints that are exposed to the user.
   T testEndpoints;
 
-  late final Serverpod _serverpod;
+  late final Serverpod Function() _buildServerpodAndInitializeEndpoints;
+
+  Serverpod? _serverpodInstance;
+  Serverpod get _serverpod {
+    var serverpodInstance = _serverpodInstance;
+    if (serverpodInstance != null) {
+      return serverpodInstance;
+    }
+
+    serverpodInstance = _buildServerpodAndInitializeEndpoints();
+    _serverpodInstance = serverpodInstance;
+    return serverpodInstance;
+  }
 
   /// Whether the database is enabled and supported by the project configuration.
   final bool isDatabaseEnabled;
@@ -112,22 +124,23 @@ class TestServerpod<T extends InternalTestEndpoints> {
     // Ignore output from the Serverpod constructor to avoid spamming the console.
     // Should be changed when a proper logger is implemented.
     // Tracked in issue: https://github.com/serverpod/serverpod/issues/2847
-    IOOverrides.runZoned(
-      () {
-        _serverpod = Serverpod(
-          _getServerpodStartUpArgs(
-            runMode: runMode,
-            applyMigrations: applyMigrations,
-            loggingMode: serverpodLoggingMode,
-          ),
-          serializationManager,
-          endpoints,
+    _buildServerpodAndInitializeEndpoints = () => IOOverrides.runZoned(
+          () {
+            var serverpod = Serverpod(
+              _getServerpodStartUpArgs(
+                runMode: runMode,
+                applyMigrations: applyMigrations,
+                loggingMode: serverpodLoggingMode,
+              ),
+              serializationManager,
+              endpoints,
+            );
+            endpoints.initializeEndpoints(serverpod.server);
+            return serverpod;
+          },
+          stdout: () => NullStdOut(),
+          stderr: () => NullStdOut(),
         );
-      },
-      stdout: () => NullStdOut(),
-      stderr: () => NullStdOut(),
-    );
-    endpoints.initializeEndpoints(_serverpod.server);
     testEndpoints.initialize(serializationManager, endpoints);
   }
 
