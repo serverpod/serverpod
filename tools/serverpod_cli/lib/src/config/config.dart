@@ -260,10 +260,10 @@ class GeneratorConfig {
         'pubspec.yaml'
       ]));
       var yamlStr = file.readAsStringSync();
-      var yaml = loadYaml(yamlStr);
+      Map yaml = loadYaml(yamlStr);
       dartClientPackage = yaml['name'];
       dartClientDependsOnServiceClient =
-          yaml['dependencies'].containsKey('serverpod_service_client');
+          (yaml['dependencies'] as Map).containsKey('serverpod_service_client');
     } catch (_) {
       throw const ServerpodProjectNotFoundException(
         'Failed to load client pubspec.yaml. If you are using a none default '
@@ -301,7 +301,7 @@ class GeneratorConfig {
     if (generatorConfig['modules'] != null) {
       Map modulesData = generatorConfig['modules'];
       for (var package in modulesData.keys) {
-        var nickname = modulesData[package]?['nickname'];
+        var nickname = (modulesData[package] as Map?)?['nickname'];
         manualModules[package] = nickname is String ? nickname : null;
       }
     }
@@ -334,7 +334,7 @@ class GeneratorConfig {
       } catch (e) {
         throw SourceSpanFormatException(
             'Failed to load \'extraClasses\' config',
-            generatorConfig['extraClasses'].span);
+            (generatorConfig['extraClasses'] as YamlNode).span);
       }
     }
 

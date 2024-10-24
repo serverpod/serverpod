@@ -80,9 +80,9 @@ class Constant extends Expression {
 }
 
 /// A database expression to invert the result of another expression.
-class NotExpression extends Expression {
+class NotExpression extends Expression<Expression> {
   /// Creates a new [NotExpression].
-  NotExpression(Expression super.expression);
+  NotExpression(super.expression);
 
   @override
   Iterable<Expression> get depthFirst sync* {
@@ -108,7 +108,7 @@ class NotExpression extends Expression {
 }
 
 /// A database expression with two parts.
-abstract class TwoPartExpression extends Expression {
+abstract class TwoPartExpression extends Expression<Expression> {
   final Expression _other;
 
   /// Creates a new [TwoPartExpression].
@@ -137,14 +137,14 @@ abstract class TwoPartExpression extends Expression {
 }
 
 class _AndExpression extends TwoPartExpression {
-  _AndExpression(Expression super.value, super.other);
+  _AndExpression(super.value, super.other);
 
   @override
   String get operator => 'AND';
 }
 
 class _OrExpression extends TwoPartExpression {
-  _OrExpression(Expression super.value, super.other);
+  _OrExpression(super.value, super.other);
 
   @override
   String get operator => 'OR';

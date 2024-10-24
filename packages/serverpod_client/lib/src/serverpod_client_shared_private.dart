@@ -27,14 +27,14 @@ T parseData<T>(
 void returnVoid() {}
 
 /// Trying to parse an exception from a failure response
-dynamic getExceptionFrom({
+Exception getExceptionFrom({
   required String data,
   required SerializationManager serializationManager,
   required int statusCode,
 }) {
   if (data.isNotEmpty) {
     try {
-      dynamic dataObject = serializationManager.decodeWithType(data);
+      var dataObject = serializationManager.decodeWithType(data);
       if (dataObject is SerializableException) {
         return dataObject;
       }

@@ -63,8 +63,8 @@ class AppleEndpoint extends Endpoint {
         failReason: AuthenticationFailReason.invalidCredentials,
       );
     }
-
-    if (userIdentifier != payload.jsonContent['sub']) {
+    var jsonContent = payload.jsonContent as Map<String, dynamic>;
+    if (userIdentifier != jsonContent['sub']) {
       return AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.invalidCredentials,
@@ -72,7 +72,7 @@ class AppleEndpoint extends Endpoint {
     }
 
     session.log('checking email', level: LogLevel.debug);
-    if (email != null && email != payload.jsonContent['email']) {
+    if (email != null && email != jsonContent['email']) {
       return AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.invalidCredentials,

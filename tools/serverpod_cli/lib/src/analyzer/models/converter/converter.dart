@@ -26,6 +26,10 @@ T unsafeConvertToEnum<T extends Enum>({
   required dynamic value,
   required List<T> enumValues,
 }) {
+  if (value is! String) {
+    throw ArgumentError('Not a string: $value', 'value');
+  }
+
   return enumValues.firstWhere(
     (v) => v.name.toLowerCase() == value.toLowerCase(),
   );

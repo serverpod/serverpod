@@ -11,3 +11,4 @@ linter:
     - prefer_single_quotes
     - unawaited_futures
     - unnecessary_final
+    - avoid_dynamic_calls
