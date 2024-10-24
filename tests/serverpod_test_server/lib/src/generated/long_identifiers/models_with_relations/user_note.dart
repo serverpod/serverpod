@@ -11,12 +11,11 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class UserNote extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class UserNote implements _i1.TableRow, _i1.ProtocolSerialization {
   UserNote._({
-    int? id,
+    this.id,
     required this.name,
-  }) : super(id);
+  });
 
   factory UserNote({
     int? id,
@@ -33,6 +32,9 @@ abstract class UserNote extends _i1.TableRow
   static final t = UserNoteTable();
 
   static const db = UserNoteRepository._();
+
+  @override
+  int? id;
 
   String name;
 
@@ -213,7 +215,7 @@ class UserNoteRepository {
   const UserNoteRepository._();
 
   Future<List<UserNote>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UserNoteTable>? where,
     int? limit,
     int? offset,
@@ -222,19 +224,19 @@ class UserNoteRepository {
     _i1.OrderByListBuilder<UserNoteTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<UserNote>(
+    return session.db.find<UserNote>(
       where: where?.call(UserNote.t),
       orderBy: orderBy?.call(UserNote.t),
       orderByList: orderByList?.call(UserNote.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<UserNote?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UserNoteTable>? where,
     int? offset,
     _i1.OrderByBuilder<UserNoteTable>? orderBy,
@@ -242,118 +244,118 @@ class UserNoteRepository {
     _i1.OrderByListBuilder<UserNoteTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<UserNote>(
+    return session.db.findFirstRow<UserNote>(
       where: where?.call(UserNote.t),
       orderBy: orderBy?.call(UserNote.t),
       orderByList: orderByList?.call(UserNote.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<UserNote?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<UserNote>(
+    return session.db.findById<UserNote>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<UserNote>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<UserNote> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<UserNote>(
+    return session.db.insert<UserNote>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<UserNote> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     UserNote row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<UserNote>(
+    return session.db.insertRow<UserNote>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<UserNote>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<UserNote> rows, {
     _i1.ColumnSelections<UserNoteTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<UserNote>(
+    return session.db.update<UserNote>(
       rows,
       columns: columns?.call(UserNote.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<UserNote> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     UserNote row, {
     _i1.ColumnSelections<UserNoteTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<UserNote>(
+    return session.db.updateRow<UserNote>(
       row,
       columns: columns?.call(UserNote.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<UserNote>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<UserNote> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<UserNote>(
+    return session.db.delete<UserNote>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<UserNote> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     UserNote row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<UserNote>(
+    return session.db.deleteRow<UserNote>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<UserNote>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<UserNoteTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<UserNote>(
+    return session.db.deleteWhere<UserNote>(
       where: where(UserNote.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UserNoteTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<UserNote>(
+    return session.db.count<UserNote>(
       where: where?.call(UserNote.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 }

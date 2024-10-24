@@ -67,4 +67,70 @@ void main() {
       );
     });
   });
+
+  group(
+      'Given no serverpod passwords file exists but the env variable SERVERPOD_DATABASE_PASSWORD is set when loading the passwords',
+      () {
+    var dbPassword = const Uuid().v4();
+
+    setUpAll(() async {
+      result = await Process.run(
+        'dart',
+        ['run', 'runner_missing_passwords.dart'],
+        environment: {
+          'SERVERPOD_DATABASE_PASSWORD': dbPassword,
+        },
+        workingDirectory: 'test_integration/assets/load_passwords',
+      );
+      stderr.writeln(result.stderr);
+    });
+
+    test('then the loading of the config was successful', () {
+      expect(result.exitCode, 0);
+    });
+
+    test('then the database password is set', () {
+      expect(result.stdout, contains('database: $dbPassword'));
+    });
+
+    test('then the service secret is not set', () {
+      expect(
+        result.stdout,
+        isNot(contains('serviceSecret')),
+      );
+    });
+  });
+
+  group(
+      'Given an empty serverpod passwords file and the env variable SERVERPOD_DATABASE_PASSWORD is set when loading the passwords',
+      () {
+    var dbPassword = const Uuid().v4();
+
+    setUpAll(() async {
+      result = await Process.run(
+        'dart',
+        ['run', 'runner_empty_passwords.dart'],
+        environment: {
+          'SERVERPOD_DATABASE_PASSWORD': dbPassword,
+        },
+        workingDirectory: 'test_integration/assets/load_passwords',
+      );
+      stderr.writeln(result.stderr);
+    });
+
+    test('then the loading of the config was successful', () {
+      expect(result.exitCode, 0);
+    });
+
+    test('then the database password is set', () {
+      expect(result.stdout, contains('database: $dbPassword'));
+    });
+
+    test('then the service secret is not set', () {
+      expect(
+        result.stdout,
+        isNot(contains('serviceSecret')),
+      );
+    });
+  });
 }

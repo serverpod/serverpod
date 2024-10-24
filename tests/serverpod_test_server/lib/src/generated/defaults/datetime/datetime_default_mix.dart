@@ -11,10 +11,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class DateTimeDefaultMix extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class DateTimeDefaultMix
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   DateTimeDefaultMix._({
-    int? id,
+    this.id,
     DateTime? dateTimeDefaultAndDefaultModel,
     DateTime? dateTimeDefaultAndDefaultPersist,
     DateTime? dateTimeDefaultModelAndDefaultPersist,
@@ -24,8 +24,7 @@ abstract class DateTimeDefaultMix extends _i1.TableRow
             DateTime.parse('2024-05-01T22:00:00.000Z'),
         dateTimeDefaultModelAndDefaultPersist =
             dateTimeDefaultModelAndDefaultPersist ??
-                DateTime.parse('2024-05-01T22:00:00.000Z'),
-        super(id);
+                DateTime.parse('2024-05-01T22:00:00.000Z');
 
   factory DateTimeDefaultMix({
     int? id,
@@ -49,6 +48,9 @@ abstract class DateTimeDefaultMix extends _i1.TableRow
   static final t = DateTimeDefaultMixTable();
 
   static const db = DateTimeDefaultMixRepository._();
+
+  @override
+  int? id;
 
   DateTime dateTimeDefaultAndDefaultModel;
 
@@ -224,7 +226,7 @@ class DateTimeDefaultMixRepository {
   const DateTimeDefaultMixRepository._();
 
   Future<List<DateTimeDefaultMix>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
     int? limit,
     int? offset,
@@ -233,19 +235,19 @@ class DateTimeDefaultMixRepository {
     _i1.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<DateTimeDefaultMix>(
+    return session.db.find<DateTimeDefaultMix>(
       where: where?.call(DateTimeDefaultMix.t),
       orderBy: orderBy?.call(DateTimeDefaultMix.t),
       orderByList: orderByList?.call(DateTimeDefaultMix.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<DateTimeDefaultMix?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
     int? offset,
     _i1.OrderByBuilder<DateTimeDefaultMixTable>? orderBy,
@@ -253,118 +255,118 @@ class DateTimeDefaultMixRepository {
     _i1.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<DateTimeDefaultMix>(
+    return session.db.findFirstRow<DateTimeDefaultMix>(
       where: where?.call(DateTimeDefaultMix.t),
       orderBy: orderBy?.call(DateTimeDefaultMix.t),
       orderByList: orderByList?.call(DateTimeDefaultMix.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<DateTimeDefaultMix?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<DateTimeDefaultMix>(
+    return session.db.findById<DateTimeDefaultMix>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<DateTimeDefaultMix>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<DateTimeDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<DateTimeDefaultMix>(
+    return session.db.insert<DateTimeDefaultMix>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<DateTimeDefaultMix> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     DateTimeDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<DateTimeDefaultMix>(
+    return session.db.insertRow<DateTimeDefaultMix>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<DateTimeDefaultMix>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<DateTimeDefaultMix> rows, {
     _i1.ColumnSelections<DateTimeDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<DateTimeDefaultMix>(
+    return session.db.update<DateTimeDefaultMix>(
       rows,
       columns: columns?.call(DateTimeDefaultMix.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<DateTimeDefaultMix> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     DateTimeDefaultMix row, {
     _i1.ColumnSelections<DateTimeDefaultMixTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<DateTimeDefaultMix>(
+    return session.db.updateRow<DateTimeDefaultMix>(
       row,
       columns: columns?.call(DateTimeDefaultMix.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<DateTimeDefaultMix>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<DateTimeDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<DateTimeDefaultMix>(
+    return session.db.delete<DateTimeDefaultMix>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<DateTimeDefaultMix> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     DateTimeDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<DateTimeDefaultMix>(
+    return session.db.deleteRow<DateTimeDefaultMix>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<DateTimeDefaultMix>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<DateTimeDefaultMixTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<DateTimeDefaultMix>(
+    return session.db.deleteWhere<DateTimeDefaultMix>(
       where: where(DateTimeDefaultMix.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<DateTimeDefaultMix>(
+    return session.db.count<DateTimeDefaultMix>(
       where: where?.call(DateTimeDefaultMix.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 }

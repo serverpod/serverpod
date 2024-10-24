@@ -9,28 +9,57 @@
 // ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import '../protocol.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
 
-class ParentClass implements _i1.SerializableModel {
-  ParentClass({required this.name});
+class ParentClass extends _i1.GrandparentClass
+    implements _i2.SerializableModel {
+  ParentClass({
+    this.id,
+    required super.grandParentField,
+    required this.parentField,
+  });
 
   factory ParentClass.fromJson(Map<String, dynamic> jsonSerialization) {
-    return ParentClass(name: jsonSerialization['name'] as String);
+    return ParentClass(
+      id: jsonSerialization['id'] as int?,
+      grandParentField: jsonSerialization['grandParentField'] as String,
+      parentField: jsonSerialization['parentField'] as String,
+    );
   }
 
-  String name;
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? id;
 
-  ParentClass copyWith({String? name}) {
-    return ParentClass(name: name ?? this.name);
+  String parentField;
+
+  ParentClass copyWith({
+    Object? id = _Undefined,
+    String? grandParentField,
+    String? parentField,
+  }) {
+    return ParentClass(
+      id: id is int? ? id : this.id,
+      grandParentField: grandParentField ?? this.grandParentField,
+      parentField: parentField ?? this.parentField,
+    );
   }
 
   @override
   Map<String, dynamic> toJson() {
-    return {'name': name};
+    return {
+      if (id != null) 'id': id,
+      'grandParentField': grandParentField,
+      'parentField': parentField,
+    };
   }
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
+
+class _Undefined {}

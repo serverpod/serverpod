@@ -2,6 +2,7 @@ import 'package:path/path.dart' as path;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:serverpod_cli/src/test_util/builders/endpoint_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
@@ -12,7 +13,11 @@ import 'package:test/test.dart';
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder()
     .withName(projectName)
-    .withRelativeServerTestToolsPathParts(
+    .withEnabledExperimentalFeatures(
+  [
+    ExperimentalFeature.testTools,
+  ],
+).withRelativeServerTestToolsPathParts(
   [
     'integration_test',
     'test_tools',
@@ -49,15 +54,8 @@ void main() {
     test('then components needed by the end user are exported', () {
       expect(
         testToolsFile,
-        matches(
-            r"export\s+'package:serverpod_test/serverpod_test\.dart'\s+show\s+"
-            r'TestSession,\s+'
-            r'ServerpodUnauthenticatedException,\s+'
-            r'ServerpodInsufficientAccessException,\s+'
-            r'RollbackDatabase,\s+'
-            r'ResetTestSessions,\s+'
-            r'flushMicrotasks,\s+'
-            r'AuthenticationOverride;'),
+        contains(
+            "export 'package:serverpod_test/serverpod_test_public_exports.dart'"),
       );
     }, skip: testToolsFile == null);
 
@@ -68,13 +66,13 @@ void main() {
             testToolsFile,
             matches(
               r'@_i\d\.isTestGroup\n'
-              r'withServerpod\(\n'
+              r'void withServerpod\(\n'
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
-              r'  _i\d\.ResetTestSessions\? resetTestSessions,\n'
-              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  List<String>\? testGroupTagsOverride,\n'
+              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  bool\? applyMigrations,\n'
               r'\}\)',
             ));
@@ -107,7 +105,11 @@ void main() {
       () {
     var serverpodMiniConfig = GeneratorConfigBuilder()
         .withName(projectName)
-        .withRelativeServerTestToolsPathParts(
+        .withEnabledExperimentalFeatures(
+      [
+        ExperimentalFeature.testTools,
+      ],
+    ).withRelativeServerTestToolsPathParts(
       [
         'integration_test',
         'test_tools',
@@ -130,19 +132,18 @@ void main() {
     var testToolsFile = codeMap[expectedFileName];
 
     test(
-      'then test tools file has `withServerpod` function without `applyMigrations` parameter',
+      'then test tools file has `withServerpod` function without `rollbackDatabase` and `applyMigrations` parameters',
       () {
         expect(
             testToolsFile,
             matches(
               r'@_i\d\.isTestGroup\n'
-              r'withServerpod\(\n'
+              r'void withServerpod\(\n'
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
-              r'  _i\d\.ResetTestSessions\? resetTestSessions,\n'
-              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  List<String>\? testGroupTagsOverride,\n'
               r'\}\)',
             ));
       },
@@ -182,13 +183,13 @@ void main() {
             testToolsFile,
             matches(
               r'@_i\d\.isTestGroup\n'
-              r'withServerpod\(\n'
+              r'void withServerpod\(\n'
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
-              r'  _i\d\.ResetTestSessions\? resetTestSessions,\n'
-              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  List<String>\? testGroupTagsOverride,\n'
+              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  bool\? applyMigrations,\n'
               r'\}\)',
             ));
@@ -262,13 +263,13 @@ void main() {
             testToolsFile,
             matches(
               r'@_i\d\.isTestGroup\n'
-              r'withServerpod\(\n'
+              r'void withServerpod\(\n'
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
-              r'  _i\d\.ResetTestSessions\? resetTestSessions,\n'
-              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  List<String>\? testGroupTagsOverride,\n'
+              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  bool\? applyMigrations,\n'
               r'\}\)',
             ));
@@ -348,7 +349,7 @@ void main() {
         expect(
             testToolsFile,
             matches(
-                r'Future<String> futureMethod\(_i\d\.TestSession session\) async \{'));
+                r'Future<String> futureMethod\(_i\d\.TestSessionBuilder sessionBuilder\) async \{'));
       },
       skip: testToolsFile == null,
     );
@@ -407,7 +408,7 @@ void main() {
         expect(
             testToolsFile,
             matches(
-                r'Stream<String> streamMethod\(_i\d\.TestSession session\) \{'));
+                r'Stream<String> streamMethod\(_i\d\.TestSessionBuilder sessionBuilder\) \{'));
       },
       skip: testToolsFile == null,
     );
@@ -431,7 +432,203 @@ void main() {
   });
 
   group(
-      'Given a protocol definition with a method with only a Stream parameter when generating test tools file',
+      'Given a protocol definition with a method with a named non-stream parameter when generating test tools file',
+      () {
+    var endpointName = 'testing';
+    var methodName = 'nonStreamMethod';
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [
+        EndpointDefinitionBuilder()
+            .withClassName('${endpointName.pascalCase}Endpoint')
+            .withName(endpointName)
+            .withMethods([
+          MethodDefinitionBuilder().withName(methodName).withParametersNamed([
+            ParameterDefinition(
+              name: 'stringParam',
+              type: TypeDefinitionBuilder().withClassName('String').build(),
+              required: true,
+            ),
+          ]).buildMethodStreamDefinition(),
+        ]).build(),
+      ],
+      models: [],
+    );
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test('then test tools file is created.', () {
+      expect(codeMap, contains(expectedFileName));
+    });
+
+    var testToolsFile = codeMap[expectedFileName];
+
+    test(
+      'then test tools file contains the method definition.',
+      () {
+        expect(
+            testToolsFile,
+            contains('  Future<String> nonStreamMethod(\n'
+                '    _i1.TestSessionBuilder sessionBuilder, {\n'
+                '    required String stringParam,\n'
+                '  }) async {\n'));
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then the the method body contains a call to the correct exception handler function.',
+      () {
+        expect(testToolsFile,
+            contains('callAwaitableFunctionAndHandleExceptions('));
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then the method body contains a call to the correct endpoint method.',
+      () {
+        expect(testToolsFile, contains('getMethodCallContext('));
+      },
+      skip: testToolsFile == null,
+    );
+  });
+  group(
+      'Given a protocol definition with a method with optional non-stream parameter when generating test tools file',
+      () {
+    var endpointName = 'testing';
+    var methodName = 'nonStreamMethod';
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [
+        EndpointDefinitionBuilder()
+            .withClassName('${endpointName.pascalCase}Endpoint')
+            .withName(endpointName)
+            .withMethods([
+          MethodDefinitionBuilder()
+              .withName(methodName)
+              .withParametersPositional([
+            ParameterDefinition(
+              name: 'stringParam',
+              type: TypeDefinitionBuilder().withClassName('String?').build(),
+              required: false,
+            ),
+          ]).buildMethodStreamDefinition(),
+        ]).build(),
+      ],
+      models: [],
+    );
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test('then test tools file is created.', () {
+      expect(codeMap, contains(expectedFileName));
+    });
+
+    var testToolsFile = codeMap[expectedFileName];
+
+    test(
+      'then test tools file contains the method definition.',
+      () {
+        expect(
+            testToolsFile,
+            contains('  Future<String> nonStreamMethod(\n'
+                '    _i1.TestSessionBuilder sessionBuilder, [\n'
+                '    String? stringParam,\n'
+                '  ]) async {'));
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then the the method body contains a call to the correct exception handler function.',
+      () {
+        expect(testToolsFile,
+            contains('callAwaitableFunctionAndHandleExceptions('));
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then the method body contains a call to the correct endpoint method.',
+      () {
+        expect(testToolsFile, contains('getMethodCallContext('));
+      },
+      skip: testToolsFile == null,
+    );
+  });
+
+  group(
+      'Given a protocol definition with a method with a nullable named non-stream parameter when generating test tools file',
+      () {
+    var endpointName = 'testing';
+    var methodName = 'nonStreamMethod';
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [
+        EndpointDefinitionBuilder()
+            .withClassName('${endpointName.pascalCase}Endpoint')
+            .withName(endpointName)
+            .withMethods([
+          MethodDefinitionBuilder().withName(methodName).withParametersNamed([
+            ParameterDefinition(
+              name: 'stringParam',
+              type: TypeDefinitionBuilder().withClassName('String?').build(),
+              required: false,
+            ),
+          ]).buildMethodStreamDefinition(),
+        ]).build(),
+      ],
+      models: [],
+    );
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test('then test tools file is created.', () {
+      expect(codeMap, contains(expectedFileName));
+    });
+
+    var testToolsFile = codeMap[expectedFileName];
+
+    test(
+      'then test tools file contains the method definition.',
+      () {
+        expect(
+            testToolsFile,
+            contains('  Future<String> nonStreamMethod(\n'
+                '    _i1.TestSessionBuilder sessionBuilder, {\n'
+                '    String? stringParam,\n'
+                '  }) async {\n'));
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then the the method body contains a call to the correct exception handler function.',
+      () {
+        expect(testToolsFile,
+            contains('callAwaitableFunctionAndHandleExceptions('));
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then the method body contains a call to the correct endpoint method.',
+      () {
+        expect(testToolsFile, contains('getMethodCallContext('));
+      },
+      skip: testToolsFile == null,
+    );
+  });
+
+  group(
+      'Given a protocol definition with a method with a Stream parameter when generating test tools file',
       () {
     var endpointName = 'testing';
     var methodName = 'streamMethod';
@@ -470,7 +667,7 @@ void main() {
         expect(
             testToolsFile,
             contains('  Future<String> streamMethod(\n'
-                '    _i1.TestSession session,\n'
+                '    _i1.TestSessionBuilder sessionBuilder,\n'
                 '    Stream<String> streamParam,\n'
                 '  ) async {'));
       },
@@ -480,8 +677,10 @@ void main() {
     test(
       'then the the method body contains a call to the correct exception handler function.',
       () {
-        expect(testToolsFile,
-            contains('callAwaitableFunctionAndHandleExceptions('));
+        expect(
+            testToolsFile,
+            contains(
+                'callAwaitableFunctionWithStreamInputAndHandleExceptions('));
       },
       skip: testToolsFile == null,
     );
@@ -495,6 +694,72 @@ void main() {
     );
   });
 
+  group(
+      'Given a protocol definition with a method with a named Stream parameter when generating test tools file',
+      () {
+    var endpointName = 'testing';
+    var methodName = 'streamMethod';
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [
+        EndpointDefinitionBuilder()
+            .withClassName('${endpointName.pascalCase}Endpoint')
+            .withName(endpointName)
+            .withMethods([
+          MethodDefinitionBuilder().withName(methodName).withParametersNamed([
+            ParameterDefinition(
+              name: 'streamParam',
+              type: TypeDefinitionBuilder().withStreamOf('String').build(),
+              required: true,
+            ),
+          ]).buildMethodStreamDefinition(),
+        ]).build(),
+      ],
+      models: [],
+    );
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test('then test tools file is created.', () {
+      expect(codeMap, contains(expectedFileName));
+    });
+
+    var testToolsFile = codeMap[expectedFileName];
+
+    test(
+      'then test tools file contains the method definition.',
+      () {
+        expect(
+            testToolsFile,
+            contains('  Future<String> streamMethod(\n'
+                '    _i1.TestSessionBuilder sessionBuilder, {\n'
+                '    required Stream<String> streamParam,\n'
+                '  }) async {'));
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then the the method body contains a call to the correct exception handler function.',
+      () {
+        expect(
+            testToolsFile,
+            contains(
+                'callAwaitableFunctionWithStreamInputAndHandleExceptions('));
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then the method body contains a call to the correct endpoint method.',
+      () {
+        expect(testToolsFile, contains('getMethodStreamCallContext('));
+      },
+      skip: testToolsFile == null,
+    );
+  });
   group(
       'Given a protocol definition with a method with Stream return value and Stream parameter when generating test tools file',
       () {
@@ -540,7 +805,7 @@ void main() {
         expect(
             testToolsFile,
             contains('  Stream<String> streamMethod(\n'
-                '    _i1.TestSession session,\n'
+                '    _i1.TestSessionBuilder sessionBuilder,\n'
                 '    Stream<String> streamParam,\n'
                 '  ) {'));
       },

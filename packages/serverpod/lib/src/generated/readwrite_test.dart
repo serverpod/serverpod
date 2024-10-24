@@ -13,12 +13,12 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database mapping for a read/write test that is performed by the default
 /// health checks.
-abstract class ReadWriteTestEntry extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class ReadWriteTestEntry
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   ReadWriteTestEntry._({
-    int? id,
+    this.id,
     required this.number,
-  }) : super(id);
+  });
 
   factory ReadWriteTestEntry({
     int? id,
@@ -35,6 +35,9 @@ abstract class ReadWriteTestEntry extends _i1.TableRow
   static final t = ReadWriteTestEntryTable();
 
   static const db = ReadWriteTestEntryRepository._();
+
+  @override
+  int? id;
 
   /// A random number, to verify that the write/read was performed correctly.
   int number;
@@ -168,7 +171,7 @@ class ReadWriteTestEntryRepository {
   const ReadWriteTestEntryRepository._();
 
   Future<List<ReadWriteTestEntry>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     int? limit,
     int? offset,
@@ -177,19 +180,19 @@ class ReadWriteTestEntryRepository {
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<ReadWriteTestEntry>(
+    return session.db.find<ReadWriteTestEntry>(
       where: where?.call(ReadWriteTestEntry.t),
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<ReadWriteTestEntry?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
@@ -197,118 +200,118 @@ class ReadWriteTestEntryRepository {
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<ReadWriteTestEntry>(
+    return session.db.findFirstRow<ReadWriteTestEntry>(
       where: where?.call(ReadWriteTestEntry.t),
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<ReadWriteTestEntry?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<ReadWriteTestEntry>(
+    return session.db.findById<ReadWriteTestEntry>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<ReadWriteTestEntry>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<ReadWriteTestEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<ReadWriteTestEntry>(
+    return session.db.insert<ReadWriteTestEntry>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<ReadWriteTestEntry> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     ReadWriteTestEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<ReadWriteTestEntry>(
+    return session.db.insertRow<ReadWriteTestEntry>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<ReadWriteTestEntry>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<ReadWriteTestEntry> rows, {
     _i1.ColumnSelections<ReadWriteTestEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<ReadWriteTestEntry>(
+    return session.db.update<ReadWriteTestEntry>(
       rows,
       columns: columns?.call(ReadWriteTestEntry.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<ReadWriteTestEntry> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     ReadWriteTestEntry row, {
     _i1.ColumnSelections<ReadWriteTestEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<ReadWriteTestEntry>(
+    return session.db.updateRow<ReadWriteTestEntry>(
       row,
       columns: columns?.call(ReadWriteTestEntry.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<ReadWriteTestEntry>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<ReadWriteTestEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<ReadWriteTestEntry>(
+    return session.db.delete<ReadWriteTestEntry>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<ReadWriteTestEntry> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     ReadWriteTestEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<ReadWriteTestEntry>(
+    return session.db.deleteRow<ReadWriteTestEntry>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<ReadWriteTestEntry>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<ReadWriteTestEntry>(
+    return session.db.deleteWhere<ReadWriteTestEntry>(
       where: where(ReadWriteTestEntry.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<ReadWriteTestEntry>(
+    return session.db.count<ReadWriteTestEntry>(
       where: where?.call(ReadWriteTestEntry.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 }

@@ -11,14 +11,14 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class ObjectFieldScopes extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class ObjectFieldScopes
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectFieldScopes._({
-    int? id,
+    this.id,
     required this.normal,
     this.api,
     this.database,
-  }) : super(id);
+  });
 
   factory ObjectFieldScopes({
     int? id,
@@ -39,6 +39,9 @@ abstract class ObjectFieldScopes extends _i1.TableRow
   static final t = ObjectFieldScopesTable();
 
   static const db = ObjectFieldScopesRepository._();
+
+  @override
+  int? id;
 
   String normal;
 
@@ -194,7 +197,7 @@ class ObjectFieldScopesRepository {
   const ObjectFieldScopesRepository._();
 
   Future<List<ObjectFieldScopes>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     int? limit,
     int? offset,
@@ -203,19 +206,19 @@ class ObjectFieldScopesRepository {
     _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<ObjectFieldScopes>(
+    return session.db.find<ObjectFieldScopes>(
       where: where?.call(ObjectFieldScopes.t),
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderByList: orderByList?.call(ObjectFieldScopes.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<ObjectFieldScopes?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
@@ -223,118 +226,118 @@ class ObjectFieldScopesRepository {
     _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<ObjectFieldScopes>(
+    return session.db.findFirstRow<ObjectFieldScopes>(
       where: where?.call(ObjectFieldScopes.t),
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderByList: orderByList?.call(ObjectFieldScopes.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<ObjectFieldScopes?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<ObjectFieldScopes>(
+    return session.db.findById<ObjectFieldScopes>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<ObjectFieldScopes>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<ObjectFieldScopes> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<ObjectFieldScopes>(
+    return session.db.insert<ObjectFieldScopes>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<ObjectFieldScopes> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     ObjectFieldScopes row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<ObjectFieldScopes>(
+    return session.db.insertRow<ObjectFieldScopes>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<ObjectFieldScopes>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<ObjectFieldScopes> rows, {
     _i1.ColumnSelections<ObjectFieldScopesTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<ObjectFieldScopes>(
+    return session.db.update<ObjectFieldScopes>(
       rows,
       columns: columns?.call(ObjectFieldScopes.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<ObjectFieldScopes> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     ObjectFieldScopes row, {
     _i1.ColumnSelections<ObjectFieldScopesTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<ObjectFieldScopes>(
+    return session.db.updateRow<ObjectFieldScopes>(
       row,
       columns: columns?.call(ObjectFieldScopes.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<ObjectFieldScopes>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<ObjectFieldScopes> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<ObjectFieldScopes>(
+    return session.db.delete<ObjectFieldScopes>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<ObjectFieldScopes> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     ObjectFieldScopes row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<ObjectFieldScopes>(
+    return session.db.deleteRow<ObjectFieldScopes>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<ObjectFieldScopes>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<ObjectFieldScopesTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<ObjectFieldScopes>(
+    return session.db.deleteWhere<ObjectFieldScopes>(
       where: where(ObjectFieldScopes.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<ObjectFieldScopes>(
+    return session.db.count<ObjectFieldScopes>(
       where: where?.call(ObjectFieldScopes.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 }

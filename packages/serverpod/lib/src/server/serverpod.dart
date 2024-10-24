@@ -301,7 +301,7 @@ class Serverpod {
 
     // Load passwords
     _passwordManager = PasswordManager(runMode: runMode);
-    _passwords = _passwordManager.loadPasswords() ?? {};
+    _passwords = _passwordManager.loadPasswords();
 
     // Load config
     this.config = config ??

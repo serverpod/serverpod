@@ -21,6 +21,7 @@ void main() {
   var childClassFileName = 'child_example';
   var childExpectedFilePath =
       path.join('lib', 'src', 'generated', '$childClassFileName.dart');
+  var childTableName = 'child_example_table';
 
   group(
       'Given a child-class named $childClassName with one primitive var extending a parent-class named $parentClassName with one primitive var when generating code',
@@ -217,6 +218,204 @@ void main() {
             'super._(name: name, age: age)',
           );
         });
+      });
+    });
+  });
+
+  group('Given a child-class with table name when generating code', () {
+    var models = [
+      ClassDefinitionBuilder()
+          .withClassName(parentClassName)
+          .withFileName(parentClassFileName)
+          .withSimpleField('name', 'String')
+          .withChildClasses(
+        [
+          ClassDefinitionBuilder()
+              .withClassName(childClassName)
+              .withFileName(childClassFileName)
+              .withSimpleField('age', 'int', nullable: true)
+              .build(),
+        ],
+      ).build(),
+      ClassDefinitionBuilder()
+          .withClassName(childClassName)
+          .withFileName(childClassFileName)
+          .withTableName(childTableName)
+          .withSimpleField('age', 'int', nullable: true)
+          .withExtendsClass(
+            ClassDefinitionBuilder()
+                .withClassName(parentClassName)
+                .withFileName(parentClassFileName)
+                .withSimpleField('name', 'String')
+                .build(),
+          )
+          .build(),
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var compilationUnit =
+        parseString(content: codeMap[childExpectedFilePath]!).unit;
+
+    var maybeClassNamedExampleTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${childClassName}Table',
+    );
+
+    test('then a class named ${childClassName}Table is generated.', () {
+      expect(
+        maybeClassNamedExampleTable,
+        isNotNull,
+        reason: 'Missing definition for class named ${childClassName}Table',
+      );
+    });
+    group('then the class named ${childClassName}Table', () {
+      test('inherits from Table.', () {
+        expect(
+            CompilationUnitHelpers.hasExtendsClause(
+              maybeClassNamedExampleTable!,
+              name: 'Table',
+            ),
+            isTrue,
+            reason: 'Missing extends clause for Table.');
+      });
+
+      test(
+          'has constructor taking table relation and passes table name to super.',
+          () {
+        expect(
+            CompilationUnitHelpers.hasConstructorDeclaration(
+              maybeClassNamedExampleTable!,
+              name: null,
+              parameters: ['super.tableRelation'],
+              superArguments: ['tableName: \'$childTableName\''],
+            ),
+            isTrue,
+            reason:
+                'Missing declaration for $childClassName constructor with nullable id field passed to super.');
+      });
+
+      test('has a columns method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExampleTable!,
+              name: 'columns',
+            ),
+            isTrue,
+            reason: 'Missing declaration for columns getter.');
+      });
+
+      test('does NOT have getRelationTable method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExampleTable!,
+              name: 'getRelationTable',
+            ),
+            isFalse,
+            reason:
+                'Declaration for getRelationTable method should not be generated.');
+      });
+
+      test('does NOT have id field.', () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+              maybeClassNamedExampleTable!,
+              name: 'id',
+            ),
+            isFalse,
+            reason: 'Declaration for id field should not be generated.');
+      });
+
+      test('has both parents and own fields.', () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+              maybeClassNamedExampleTable!,
+              name: 'name',
+            ),
+            isTrue,
+            reason: 'Missing parent fields in ${childClassName}Table.');
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+              maybeClassNamedExampleTable,
+              name: 'age',
+            ),
+            isTrue,
+            reason: 'Missing own field in ${childClassName}Table.');
+      });
+    }, skip: maybeClassNamedExampleTable == null);
+  });
+
+  group(
+      'Given a child-class with a nullable field inheriting a nullable field when generating code',
+      () {
+    var models = [
+      ClassDefinitionBuilder()
+          .withClassName(parentClassName)
+          .withFileName(parentClassFileName)
+          .withSimpleField('name', 'String', nullable: true)
+          .withChildClasses(
+        [
+          ClassDefinitionBuilder()
+              .withClassName(childClassName)
+              .withFileName(childClassFileName)
+              .withSimpleField('age', 'int', nullable: true)
+              .build(),
+        ],
+      ).build(),
+      ClassDefinitionBuilder()
+          .withClassName(childClassName)
+          .withFileName(childClassFileName)
+          .withTableName(childTableName)
+          .withSimpleField('age', 'int', nullable: true)
+          .withExtendsClass(
+            ClassDefinitionBuilder()
+                .withClassName(parentClassName)
+                .withFileName(parentClassFileName)
+                .withSimpleField('name', 'String', nullable: true)
+                .build(),
+          )
+          .build(),
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var compilationUnit =
+        parseString(content: codeMap[childExpectedFilePath]!).unit;
+
+    group('then the $childClassName', () {
+      var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        compilationUnit,
+        name: childClassName,
+      );
+
+      group('has a copyWith method with named params', () {
+        var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          childClass!,
+          name: 'copyWith',
+        );
+
+        test('where nullable-inherited fields are "Object?"', () {
+          var nameParam = copyWithMethod?.parameters?.parameters.firstWhere(
+            (param) => param.name.toString() == 'name',
+          );
+
+          expect(nameParam?.toSource(), 'Object? name');
+        }, skip: copyWithMethod == null);
+
+        test('where nullable-local fields are typed', () {
+          var ageParam = copyWithMethod?.parameters?.parameters.firstWhere(
+            (param) => param.name.toString() == 'age',
+          );
+
+          expect(ageParam?.toSource(), 'int? age');
+        }, skip: copyWithMethod == null);
       });
     });
   });

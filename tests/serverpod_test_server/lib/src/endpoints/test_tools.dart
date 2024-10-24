@@ -35,10 +35,22 @@ class TestToolsEndpoint extends Endpoint {
     return numbers.toList();
   }
 
+  Future<List<SimpleData>> returnsSimpleDataListFromInputStream(
+      Session session, Stream<SimpleData> simpleDatas) async {
+    return simpleDatas.toList();
+  }
+
   Stream<int> returnsStreamFromInputStream(
       Session session, Stream<int> numbers) async* {
     await for (var number in numbers) {
       yield number;
+    }
+  }
+
+  Stream<SimpleData> returnsSimpleDataStreamFromInputStream(
+      Session session, Stream<SimpleData> simpleDatas) async* {
+    await for (var simpleData in simpleDatas) {
+      yield simpleData;
     }
   }
 
@@ -78,6 +90,96 @@ class TestToolsEndpoint extends Endpoint {
   Future<List<SimpleData>> getAllSimpleData(Session session) async {
     return SimpleData.db.find(session);
   }
+
+  Future<void> createSimpleDatasInsideTransactions(
+    Session session,
+    int data,
+  ) async {
+    await session.db.transaction((transaction) async {
+      await SimpleData.db.insertRow(
+        session,
+        SimpleData(
+          num: data,
+        ),
+        transaction: transaction,
+      );
+    });
+
+    await session.db.transaction((transaction) async {
+      await SimpleData.db.insertRow(
+        session,
+        SimpleData(
+          num: data,
+        ),
+        transaction: transaction,
+      );
+    });
+  }
+
+  Future<void> createSimpleDataAndThrowInsideTransaction(
+    Session session,
+    int data,
+  ) async {
+    await session.db.transaction((transaction) async {
+      await SimpleData.db.insertRow(
+        session,
+        SimpleData(
+          num: data,
+        ),
+        transaction: transaction,
+      );
+    });
+
+    await session.db.transaction((transaction) async {
+      await SimpleData.db.insertRow(
+        session,
+        SimpleData(
+          num: data,
+        ),
+        transaction: transaction,
+      );
+
+      throw Exception(
+          'Some error occurred and transaction should not be committed.');
+    });
+  }
+
+  Future<void> createSimpleDatasInParallelTransactionCalls(
+    Session session,
+  ) async {
+    Future<void> createSimpleDataInTransaction(int num) async {
+      await session.db.transaction((transaction) async {
+        await SimpleData.db.insertRow(
+          session,
+          SimpleData(
+            num: num,
+          ),
+          transaction: transaction,
+        );
+      });
+    }
+
+    await Future.wait([
+      createSimpleDataInTransaction(1),
+      createSimpleDataInTransaction(2),
+      createSimpleDataInTransaction(3),
+      createSimpleDataInTransaction(4),
+    ]);
+  }
+
+  Future<SimpleData> echoSimpleData(
+    Session session,
+    SimpleData simpleData,
+  ) async {
+    return simpleData;
+  }
+
+  Future<List<SimpleData>> echoSimpleDatas(
+    Session session,
+    List<SimpleData> simpleDatas,
+  ) async {
+    return simpleDatas;
+  }
 }
 
 class AuthenticatedTestToolsEndpoint extends Endpoint {
@@ -95,5 +197,16 @@ class AuthenticatedTestToolsEndpoint extends Endpoint {
     return Stream<int>.fromIterable(
       List<int>.generate(n, (index) => index),
     );
+  }
+
+  Future<List<int>> returnsListFromInputStream(
+      Session session, Stream<int> numbers) async {
+    return numbers.toList();
+  }
+
+  Stream<int> intEchoStream(Session session, Stream<int> stream) async* {
+    await for (var value in stream) {
+      yield value;
+    }
   }
 }

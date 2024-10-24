@@ -27,11 +27,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  serverpod_flutter: 2.1.2
-  serverpod_auth_email_flutter: 2.1.2
-  serverpod_auth_shared_flutter: 2.1.2
-  serverpod_auth_google_flutter: 2.1.2
-  serverpod_auth_apple_flutter: 2.1.2
+  serverpod_flutter: 2.1.5
+  serverpod_auth_email_flutter: 2.1.5
+  serverpod_auth_shared_flutter: 2.1.5
+  serverpod_auth_google_flutter: 2.1.5
+  serverpod_auth_apple_flutter: 2.1.5
   auth_example_client:
     path: ../auth_example_client
 
@@ -41,7 +41,7 @@ dependencies:
   cupertino_icons: ^1.0.5
 
 dev_dependencies:
-  flutter_lints: '>=3.0.0 <5.0.0'
+  flutter_lints: '>=3.0.0 <6.0.0'
   flutter_test:
     sdk: flutter
 

@@ -1,3 +1,18 @@
+## 2.1.5
+ - feat: EXPERIMENTAL. Adds testing framework. [docs](https://docs.serverpod.dev/next/concepts/testing/get-started)
+ - fix: Correctly handles method and endpoint streams for modules.
+ - fix: Correctly handles errors in method streams.
+
+## 2.1.4
+ - feat: Adds detailed reporting for schema mismatches when checking database consistency.
+ - fix: Takes current transaction into account for include queries.
+ - fix: Loads passwords from env variables even if the `passwords.yaml` file doesn't exist.
+ - fix: Corrects type mismatch in `onTimeout` callback for cancelled subscriptions in `MethodStreamManager.closeAllStreams` method.
+ - fix: Correctly returns HTTP 400 error code if parameters passed to Serverpod are incorrect.
+
+## 2.1.3
+ - fix: Includes Dockerfile for Serverpod Mini projects.
+
 ## 2.1.2
  - fix: Supports updating full user name in auth module.
  - fix: Adds missing transaction parameter in `deleteWhere` query.

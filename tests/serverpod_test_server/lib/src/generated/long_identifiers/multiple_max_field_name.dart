@@ -11,13 +11,13 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class MultipleMaxFieldName extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class MultipleMaxFieldName
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   MultipleMaxFieldName._({
-    int? id,
+    this.id,
     required this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
     required this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
-  }) : super(id);
+  });
 
   factory MultipleMaxFieldName({
     int? id,
@@ -45,6 +45,9 @@ abstract class MultipleMaxFieldName extends _i1.TableRow
   static final t = MultipleMaxFieldNameTable();
 
   static const db = MultipleMaxFieldNameRepository._();
+
+  @override
+  int? id;
 
   String thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1;
 
@@ -269,7 +272,7 @@ class MultipleMaxFieldNameRepository {
   const MultipleMaxFieldNameRepository._();
 
   Future<List<MultipleMaxFieldName>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<MultipleMaxFieldNameTable>? where,
     int? limit,
     int? offset,
@@ -278,19 +281,19 @@ class MultipleMaxFieldNameRepository {
     _i1.OrderByListBuilder<MultipleMaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<MultipleMaxFieldName>(
+    return session.db.find<MultipleMaxFieldName>(
       where: where?.call(MultipleMaxFieldName.t),
       orderBy: orderBy?.call(MultipleMaxFieldName.t),
       orderByList: orderByList?.call(MultipleMaxFieldName.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<MultipleMaxFieldName?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<MultipleMaxFieldNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<MultipleMaxFieldNameTable>? orderBy,
@@ -298,118 +301,118 @@ class MultipleMaxFieldNameRepository {
     _i1.OrderByListBuilder<MultipleMaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<MultipleMaxFieldName>(
+    return session.db.findFirstRow<MultipleMaxFieldName>(
       where: where?.call(MultipleMaxFieldName.t),
       orderBy: orderBy?.call(MultipleMaxFieldName.t),
       orderByList: orderByList?.call(MultipleMaxFieldName.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<MultipleMaxFieldName?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<MultipleMaxFieldName>(
+    return session.db.findById<MultipleMaxFieldName>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<MultipleMaxFieldName>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<MultipleMaxFieldName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<MultipleMaxFieldName>(
+    return session.db.insert<MultipleMaxFieldName>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<MultipleMaxFieldName> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     MultipleMaxFieldName row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<MultipleMaxFieldName>(
+    return session.db.insertRow<MultipleMaxFieldName>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<MultipleMaxFieldName>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<MultipleMaxFieldName> rows, {
     _i1.ColumnSelections<MultipleMaxFieldNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<MultipleMaxFieldName>(
+    return session.db.update<MultipleMaxFieldName>(
       rows,
       columns: columns?.call(MultipleMaxFieldName.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<MultipleMaxFieldName> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     MultipleMaxFieldName row, {
     _i1.ColumnSelections<MultipleMaxFieldNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<MultipleMaxFieldName>(
+    return session.db.updateRow<MultipleMaxFieldName>(
       row,
       columns: columns?.call(MultipleMaxFieldName.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<MultipleMaxFieldName>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<MultipleMaxFieldName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<MultipleMaxFieldName>(
+    return session.db.delete<MultipleMaxFieldName>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<MultipleMaxFieldName> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     MultipleMaxFieldName row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<MultipleMaxFieldName>(
+    return session.db.deleteRow<MultipleMaxFieldName>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<MultipleMaxFieldName>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<MultipleMaxFieldNameTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<MultipleMaxFieldName>(
+    return session.db.deleteWhere<MultipleMaxFieldName>(
       where: where(MultipleMaxFieldName.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<MultipleMaxFieldNameTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<MultipleMaxFieldName>(
+    return session.db.count<MultipleMaxFieldName>(
       where: where?.call(MultipleMaxFieldName.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 }

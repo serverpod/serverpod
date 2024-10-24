@@ -15,34 +15,44 @@ import 'package:serverpod_client/serverpod_client.dart' as _i2;
 abstract class ChildClass extends _i1.ParentClass
     implements _i2.SerializableModel {
   ChildClass._({
-    required super.name,
-    required this.age,
+    super.id,
+    required super.grandParentField,
+    required super.parentField,
+    required this.childField,
   });
 
   factory ChildClass({
-    required String name,
-    required int age,
+    int? id,
+    required String grandParentField,
+    required String parentField,
+    required int childField,
   }) = _ChildClassImpl;
 
   factory ChildClass.fromJson(Map<String, dynamic> jsonSerialization) {
     return ChildClass(
-      name: jsonSerialization['name'] as String,
-      age: jsonSerialization['age'] as int,
+      id: jsonSerialization['id'] as int?,
+      grandParentField: jsonSerialization['grandParentField'] as String,
+      parentField: jsonSerialization['parentField'] as String,
+      childField: jsonSerialization['childField'] as int,
     );
   }
 
-  int age;
+  int childField;
 
   @override
   ChildClass copyWith({
-    String? name,
-    int? age,
+    Object? id,
+    String? grandParentField,
+    String? parentField,
+    int? childField,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
-      'age': age,
+      if (id != null) 'id': id,
+      'grandParentField': grandParentField,
+      'parentField': parentField,
+      'childField': childField,
     };
   }
 
@@ -52,23 +62,33 @@ abstract class ChildClass extends _i1.ParentClass
   }
 }
 
+class _Undefined {}
+
 class _ChildClassImpl extends ChildClass {
   _ChildClassImpl({
-    required String name,
-    required int age,
+    int? id,
+    required String grandParentField,
+    required String parentField,
+    required int childField,
   }) : super._(
-          name: name,
-          age: age,
+          id: id,
+          grandParentField: grandParentField,
+          parentField: parentField,
+          childField: childField,
         );
 
   @override
   ChildClass copyWith({
-    String? name,
-    int? age,
+    Object? id = _Undefined,
+    String? grandParentField,
+    String? parentField,
+    int? childField,
   }) {
     return ChildClass(
-      name: name ?? this.name,
-      age: age ?? this.age,
+      id: id is int? ? id : this.id,
+      grandParentField: grandParentField ?? this.grandParentField,
+      parentField: parentField ?? this.parentField,
+      childField: childField ?? this.childField,
     );
   }
 }

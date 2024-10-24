@@ -35,7 +35,7 @@ abstract class EndpointWebsocketRequestHandler {
       for (var module in endpointDispatch.modules.values) {
         for (var endpointConnector in module.connectors.values) {
           await _callStreamOpened(
-              session, endpointConnector.endpoint.name, endpointDispatch);
+              session, endpointConnector.endpoint.name, module);
         }
       }
 
@@ -126,7 +126,7 @@ abstract class EndpointWebsocketRequestHandler {
       for (var module in server.endpoints.modules.values) {
         for (var endpointConnector in module.connectors.values) {
           await _callStreamClosed(
-              session, endpointConnector.endpoint.name, endpointDispatch);
+              session, endpointConnector.endpoint.name, module);
         }
       }
       await session.close(error: error, stackTrace: stackTrace);

@@ -14,17 +14,17 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// Represents a snapshot of a specific health metric. An entry is written every
 /// minute for each server. All health data can be accessed through Serverpod
 /// Insights.
-abstract class ServerHealthMetric extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class ServerHealthMetric
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   ServerHealthMetric._({
-    int? id,
+    this.id,
     required this.name,
     required this.serverId,
     required this.timestamp,
     required this.isHealthy,
     required this.value,
     required this.granularity,
-  }) : super(id);
+  });
 
   factory ServerHealthMetric({
     int? id,
@@ -52,6 +52,9 @@ abstract class ServerHealthMetric extends _i1.TableRow
   static final t = ServerHealthMetricTable();
 
   static const db = ServerHealthMetricRepository._();
+
+  @override
+  int? id;
 
   /// The name of the metric.
   String name;
@@ -277,7 +280,7 @@ class ServerHealthMetricRepository {
   const ServerHealthMetricRepository._();
 
   Future<List<ServerHealthMetric>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? limit,
     int? offset,
@@ -286,19 +289,19 @@ class ServerHealthMetricRepository {
     _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<ServerHealthMetric>(
+    return session.db.find<ServerHealthMetric>(
       where: where?.call(ServerHealthMetric.t),
       orderBy: orderBy?.call(ServerHealthMetric.t),
       orderByList: orderByList?.call(ServerHealthMetric.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<ServerHealthMetric?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? offset,
     _i1.OrderByBuilder<ServerHealthMetricTable>? orderBy,
@@ -306,118 +309,118 @@ class ServerHealthMetricRepository {
     _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<ServerHealthMetric>(
+    return session.db.findFirstRow<ServerHealthMetric>(
       where: where?.call(ServerHealthMetric.t),
       orderBy: orderBy?.call(ServerHealthMetric.t),
       orderByList: orderByList?.call(ServerHealthMetric.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<ServerHealthMetric?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<ServerHealthMetric>(
+    return session.db.findById<ServerHealthMetric>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<ServerHealthMetric>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<ServerHealthMetric> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<ServerHealthMetric>(
+    return session.db.insert<ServerHealthMetric>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<ServerHealthMetric> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     ServerHealthMetric row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<ServerHealthMetric>(
+    return session.db.insertRow<ServerHealthMetric>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<ServerHealthMetric>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<ServerHealthMetric> rows, {
     _i1.ColumnSelections<ServerHealthMetricTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<ServerHealthMetric>(
+    return session.db.update<ServerHealthMetric>(
       rows,
       columns: columns?.call(ServerHealthMetric.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<ServerHealthMetric> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     ServerHealthMetric row, {
     _i1.ColumnSelections<ServerHealthMetricTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<ServerHealthMetric>(
+    return session.db.updateRow<ServerHealthMetric>(
       row,
       columns: columns?.call(ServerHealthMetric.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<ServerHealthMetric>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<ServerHealthMetric> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<ServerHealthMetric>(
+    return session.db.delete<ServerHealthMetric>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<ServerHealthMetric> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     ServerHealthMetric row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<ServerHealthMetric>(
+    return session.db.deleteRow<ServerHealthMetric>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<ServerHealthMetric>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<ServerHealthMetricTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<ServerHealthMetric>(
+    return session.db.deleteWhere<ServerHealthMetric>(
       where: where(ServerHealthMetric.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<ServerHealthMetric>(
+    return session.db.count<ServerHealthMetric>(
       where: where?.call(ServerHealthMetric.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 }

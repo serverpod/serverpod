@@ -797,11 +797,7 @@ class LibraryGenerator {
           refer('MethodConnector', serverpodUrl(true)).call([], {
         'name': literalString(method.name),
         'params': literalMap({
-          for (var param in [
-            ...method.parameters,
-            ...method.parametersPositional,
-            ...method.parametersNamed,
-          ])
+          for (var param in method.allParameters)
             literalString(param.name):
                 refer('ParameterDescription', serverpodUrl(true)).call([], {
               'name': literalString(param.name),
@@ -865,11 +861,7 @@ class LibraryGenerator {
     var methodStreamConnectors = <Object, Object>{};
     for (var method in methods) {
       var (streamingParams, nonStreamingParams) =
-          separateStreamParametersFromParameters([
-        ...method.parameters,
-        ...method.parametersPositional,
-        ...method.parametersNamed,
-      ]);
+          separateStreamParametersFromParameters(method.allParameters);
       methodStreamConnectors[literalString(method.name)] =
           refer('MethodStreamConnector', serverpodUrl(true)).call([], {
         'name': literalString(method.name),

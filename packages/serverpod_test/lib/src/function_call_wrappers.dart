@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
 
-/// Test tools helper to not leak exceptions from awaitable functions.
+/// Test tools helper to not leak exceptions.
+/// Used for calls to awaitable functions with non-stream input parameters.
 /// Used by the generated code.
 Future<T> callAwaitableFunctionAndHandleExceptions<T>(
   Future<T> Function() call,
@@ -20,33 +21,42 @@ Future<T> callAwaitableFunctionAndHandleExceptions<T>(
   }
 }
 
-/// Test tools helper to not leak exceptions from functions that return streams.
-/// The [streamController] is used to start executing the endpoint method immediately up to the first `yield`.
-/// This removes the need for the caller to start listening to the stream to start the execution.
+/// Test tools helper to not leak exceptions.
+/// Used for calls to awaitable functions with streams as input parameters.
 /// Used by the generated code.
-Future<void> callStreamFunctionAndHandleExceptions<T>(
+Future<T> callAwaitableFunctionWithStreamInputAndHandleExceptions<T>(
   Future<Stream<T>> Function() call,
-  StreamController<T> streamController,
 ) async {
   late Stream<T> stream;
   try {
     stream = await call();
   } catch (e) {
-    streamController.addError(_getException(e));
-    return;
+    var handledException = _getException(e);
+    if (handledException != null) {
+      throw handledException;
+    }
+
+    // Rethrow user exceptions to preserve stack trace
+    rethrow;
   }
 
-  var subscription = stream.listen((data) {
-    streamController.add(data);
-  }, onError: (e) {
-    streamController.addError(_getException(e));
-  }, onDone: () {
-    streamController.close();
-  });
+  return stream.first;
+}
 
-  streamController.onCancel = () {
-    subscription.cancel();
-  };
+/// Test tools helper to not leak exceptions.
+/// Used for calls to functions that return a stream, regardless of input parameters.
+/// Used by the generated code.
+Future<void> callStreamFunctionAndHandleExceptions<T>(
+  Future<void> Function() call,
+  StreamController controllerToCloseUponFailure,
+) async {
+  try {
+    await call();
+  } catch (e) {
+    controllerToCloseUponFailure.addError(_getException(e));
+    await controllerToCloseUponFailure.close();
+    return;
+  }
 }
 
 /// The user was not authenticated.
@@ -59,6 +69,13 @@ class ServerpodUnauthenticatedException implements Exception {
 class ServerpodInsufficientAccessException implements Exception {
   /// Creates a new [ServerpodInsufficientAccessException].
   ServerpodInsufficientAccessException();
+}
+
+/// Thrown if a stream connection is closed with an error.
+/// For example, if the user authentication was revoked.
+class ConnectionClosedException implements Exception {
+  /// Creates a new [ConnectionClosedException].
+  const ConnectionClosedException();
 }
 
 dynamic _getException(dynamic e) {

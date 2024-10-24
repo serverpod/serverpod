@@ -89,6 +89,8 @@ class ClassDefinition extends SerializableModelDefinition {
         .firstWhere((element) => element.name == name, orElse: () => null);
   }
 
+  /// Returns the `ClassDefinition` of the parent class.
+  /// If there is no parent class, `null` is returned.
   ClassDefinition? get parentClass {
     var extendsClass = this.extendsClass;
     if (extendsClass is! ResolvedInheritanceDefinition) return null;
@@ -96,8 +98,22 @@ class ClassDefinition extends SerializableModelDefinition {
     return extendsClass.classDefinition;
   }
 
-  List<SerializableModelFieldDefinition> get parentFields =>
-      parentClass?.fields ?? [];
+  /// Returns a list of all fields in the parent class.
+  /// If there is no parent class, an empty list is returned.
+  List<SerializableModelFieldDefinition> get inheritedFields =>
+      parentClass?.fieldsIncludingInherited ?? [];
+
+  /// Returns a list of all fields in this class, including inherited fields.
+  /// It ensures that the 'id' field, if present, is always included at the beginning of the list.
+  List<SerializableModelFieldDefinition> get fieldsIncludingInherited {
+    bool hasIdField = fields.any((element) => element.name == 'id');
+
+    return [
+      if (hasIdField) fields.firstWhere((element) => element.name == 'id'),
+      ...inheritedFields,
+      ...fields.where((element) => element.name != 'id'),
+    ];
+  }
 
   bool get isParentClass => childClasses.isNotEmpty;
 }
@@ -126,12 +142,12 @@ class SerializableModelFieldDefinition {
   // default valdatabase
   final dynamic defaultPersistValue;
 
-  /// returns true if one of the defauls its not null
-  bool get hasDefauls =>
+  /// returns true if one of the defaults its not null
+  bool get hasDefaults =>
       defaultModelValue != null || defaultPersistValue != null;
 
   /// returns true if only has database default
-  bool get hasOnlyDatabaseDefauls =>
+  bool get hasOnlyDatabaseDefaults =>
       defaultModelValue == null && defaultPersistValue != null;
 
   /// If set the field is a relation to another table. The type of the relation

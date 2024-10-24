@@ -2,23 +2,31 @@ import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
 
+import 'test_serverpod.dart';
+
+/// Thrown when trying to create a new transaction while another transaction is ongoing.
+class ConcurrentTransactionsException implements Exception {}
+
 /// Creates a transaction and manages savepoints for a given [Session].
 class TransactionManager {
   final List<String> _savePointIds = [];
 
-  Transaction? _transaction;
+  /// The current transaction.
+  Transaction? currentTransaction;
 
   late Completer _endTransactionScopeCompleter;
 
   /// The underlying Serverpod session.
-  late Session serverpodSession;
+  late InternalServerpodSession serverpodSession;
 
   /// Creates a new [TransactionManager] instance.
   TransactionManager(this.serverpodSession);
 
+  bool _isTransactionStackLocked = false;
+
   /// Creates a new transaction.
   Future<Transaction> createTransaction() async {
-    if (_transaction != null) {
+    if (currentTransaction != null) {
       throw StateError('Transaction already exists.');
     }
 
@@ -27,38 +35,53 @@ class TransactionManager {
     late Transaction localTransaction;
 
     unawaited(
-      serverpodSession.db.transaction((newTransaction) async {
-        localTransaction = newTransaction;
+      serverpodSession.db.transaction(
+        (newTransaction) async {
+          localTransaction = newTransaction;
 
-        transactionStartedCompleter.complete();
+          transactionStartedCompleter.complete();
 
-        await _endTransactionScopeCompleter.future;
+          await _endTransactionScopeCompleter.future;
+        },
+        isUserCall: false,
+      ).catchError((error, stackTrace) {
+        // no-op:
+        // If a database exception occurred during the transaction,
+        // but the exception was caught and the transactions was allowed to complete,
+        // then the transaction will rethrow it when it completes.
+        // This has to be caught, otherwise the dart test runner will fail the test suite.
       }),
     );
 
     await transactionStartedCompleter.future;
 
-    _transaction = localTransaction;
+    currentTransaction = localTransaction;
 
     return localTransaction;
   }
 
   /// Cancels the ongoing transaction.
   Future<void> cancelTransaction() async {
-    var localTransaction = _transaction;
+    var localTransaction = currentTransaction;
     if (localTransaction == null) {
       throw StateError('No ongoing transaction.');
     }
 
     await localTransaction.cancel();
     _endTransactionScopeCompleter.complete();
-    _transaction = null;
+    currentTransaction = null;
   }
 
   /// Creates a savepoint in the current transaction.
-  Future<void> pushSavePoint() async {
-    if (_transaction == null) {
+  Future<void> addSavePoint({bool lock = false}) async {
+    if (currentTransaction == null) {
       throw StateError('No ongoing transaction.');
+    }
+
+    if (_isTransactionStackLocked) {
+      throw ConcurrentTransactionsException();
+    } else if (lock) {
+      _isTransactionStackLocked = true;
     }
 
     var savePointId = _getNextSavePointId();
@@ -66,7 +89,7 @@ class TransactionManager {
 
     await serverpodSession.db.unsafeExecute(
       'SAVEPOINT $savePointId;',
-      transaction: _transaction,
+      transaction: currentTransaction,
     );
   }
 
@@ -80,8 +103,18 @@ class TransactionManager {
   }
 
   /// Rolls back the database to the previous save point in the current transaction.
-  Future<void> popSavePoint() async {
-    if (_transaction == null) {
+  Future<void> rollbackToPreviousSavePoint({bool unlock = false}) async {
+    var savePointId = await removePreviousSavePoint(unlock: unlock);
+
+    await serverpodSession.db.unsafeExecute(
+      'ROLLBACK TO SAVEPOINT $savePointId;',
+      transaction: currentTransaction,
+    );
+  }
+
+  /// Removes the previous save point in the current transaction.
+  Future<String> removePreviousSavePoint({bool unlock = false}) async {
+    if (currentTransaction == null) {
       throw StateError('No ongoing transaction.');
     }
 
@@ -89,9 +122,10 @@ class TransactionManager {
       throw StateError('No previous savepoint to rollback to.');
     }
 
-    await serverpodSession.db.unsafeExecute(
-      'ROLLBACK TO SAVEPOINT ${_savePointIds.removeLast()};',
-      transaction: _transaction,
-    );
+    if (unlock) {
+      _isTransactionStackLocked = false;
+    }
+
+    return _savePointIds.removeLast();
   }
 }

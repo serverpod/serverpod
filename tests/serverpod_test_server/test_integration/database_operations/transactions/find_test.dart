@@ -175,4 +175,146 @@ void main() async {
       });
     });
   });
+
+  test(
+      'Given list relation '
+      'when creating all objects inside a transaction '
+      'then includeList should include the related objects', () async {
+    await session.db.transaction((transaction) async {
+      var serverpod = await Organization.db.insertRow(
+        session,
+        Organization(name: 'Serverpod'),
+        transaction: transaction,
+      );
+
+      var person1 = await Person.db.insertRow(
+        session,
+        Person(name: 'John Doe'),
+        transaction: transaction,
+      );
+      var person2 = await Person.db.insertRow(
+        session,
+        Person(name: 'Jane Doe'),
+        transaction: transaction,
+      );
+
+      await Organization.db.attach.people(
+        session,
+        serverpod,
+        [person1, person2],
+        transaction: transaction,
+      );
+
+      var organizations = await Organization.db.findFirstRow(
+        session,
+        orderBy: (t) => t.id,
+        include: Organization.include(
+          people: Person.includeList(),
+        ),
+        transaction: transaction,
+      );
+
+      expect(organizations?.people, hasLength(2));
+    });
+  });
+
+  test(
+      'Given deeply nested list relation '
+      'when creating all objects inside a transaction '
+      'then includeList should include the nested related objects', () async {
+    await session.db.transaction((transaction) async {
+      var stockholm = await City.db.insertRow(
+        session,
+        City(name: 'Stockholm'),
+        transaction: transaction,
+      );
+      var gothenburg = await City.db.insertRow(
+        session,
+        City(name: 'Gothenburg'),
+        transaction: transaction,
+      );
+
+      var serverpod = await Organization.db.insertRow(
+        session,
+        Organization(name: 'Serverpod'),
+        transaction: transaction,
+      );
+      var flutter = await Organization.db.insertRow(
+        session,
+        Organization(name: 'Flutter'),
+        transaction: transaction,
+      );
+
+      var person1 = await Person.db.insertRow(
+        session,
+        Person(name: 'John Doe'),
+        transaction: transaction,
+      );
+      var person2 = await Person.db.insertRow(
+        session,
+        Person(name: 'Jane Doe'),
+        transaction: transaction,
+      );
+      var person3 = await Person.db.insertRow(
+        session,
+        Person(name: 'Alice'),
+        transaction: transaction,
+      );
+      var person4 = await Person.db.insertRow(
+        session,
+        Person(name: 'Bob'),
+        transaction: transaction,
+      );
+
+      await City.db.attach.citizens(
+        session,
+        stockholm,
+        [person1, person2],
+        transaction: transaction,
+      );
+      await City.db.attach.citizens(
+        session,
+        gothenburg,
+        [person3, person4],
+        transaction: transaction,
+      );
+
+      await City.db.attach.organizations(
+        session,
+        stockholm,
+        [serverpod, flutter],
+        transaction: transaction,
+      );
+
+      await Organization.db.attach.people(
+        session,
+        serverpod,
+        [person1, person2],
+        transaction: transaction,
+      );
+      await Organization.db.attach.people(
+        session,
+        flutter,
+        [person3, person4],
+        transaction: transaction,
+      );
+
+      var organization = await Organization.db.findById(
+        session,
+        serverpod.id!,
+        include: Organization.include(
+          city: City.include(
+            citizens: Person.includeList(),
+          ),
+        ),
+        transaction: transaction,
+      );
+
+      expect(organization?.city?.citizens, hasLength(2));
+
+      var citizenIds = organization?.city?.citizens?.map((e) => e.id);
+      expect(citizenIds, contains(person1.id));
+      expect(citizenIds, contains(person2.id));
+    });
+  });
 }

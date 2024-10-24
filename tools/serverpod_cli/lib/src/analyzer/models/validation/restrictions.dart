@@ -214,52 +214,6 @@ class Restrictions {
     return [];
   }
 
-  List<SourceSpanSeverityException> validateExtendingClassName(
-    String parentNodeName,
-    dynamic parentClassName,
-    SourceSpan? span,
-  ) {
-    if (parentClassName is! String) {
-      return [
-        SourceSpanSeverityException(
-          'The "${Keyword.extendsClass} type must be a String.',
-          span,
-        )
-      ];
-    }
-
-    var parentClass = parsedModels.findByClassName(parentClassName);
-
-    if (parentClass == null) {
-      return [
-        SourceSpanSeverityException(
-          'The class "$parentClassName" was not found in any model.',
-          span,
-        )
-      ];
-    }
-
-    if (parentClass.moduleAlias != defaultModuleAlias) {
-      return [
-        SourceSpanSeverityException(
-          'You can only extend classes from your own project.',
-          span,
-        )
-      ];
-    }
-
-    if (parentClass is ClassDefinition && parentClass.tableName != null) {
-      return [
-        SourceSpanSeverityException(
-          'A parent class cannot have a table definition. Please remove the "table" property from the class "$parentClassName".',
-          span,
-        )
-      ];
-    }
-
-    return [];
-  }
-
   List<SourceSpanSeverityException> validateTableName(
     String parentNodeName,
     dynamic tableName,
@@ -302,6 +256,74 @@ class Restrictions {
           span,
         )
       ];
+    }
+
+    var currentModel = parsedModels.findByTableName(tableName);
+
+    if (currentModel is ClassDefinition) {
+      var ancestorWithTable = _findTableClassInParentClasses(currentModel);
+
+      if (ancestorWithTable != null) {
+        return [
+          SourceSpanSeverityException(
+            'The "table" property is not allowed because another class, "${ancestorWithTable.className}", in the class hierarchy already has one defined. Only one table definition is allowed when using inheritance.',
+            span,
+          )
+        ];
+      }
+    }
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateExtendingClassName(
+    String parentNodeName,
+    dynamic parentClassName,
+    SourceSpan? span,
+  ) {
+    if (parentClassName is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.extendsClass} type must be a String.',
+          span,
+        )
+      ];
+    }
+
+    var parentClass = parsedModels.findByClassName(parentClassName);
+
+    if (parentClass == null) {
+      return [
+        SourceSpanSeverityException(
+          'The class "$parentClassName" was not found in any model.',
+          span,
+        )
+      ];
+    }
+
+    if (parentClass.moduleAlias != defaultModuleAlias) {
+      return [
+        SourceSpanSeverityException(
+          'You can only extend classes from your own project.',
+          span,
+        )
+      ];
+    }
+
+    var currentModel =
+        parsedModels.findByClassName(documentDefinition!.className);
+
+    if (currentModel is ClassDefinition) {
+      var ancestorServerOnlyClass =
+          _findServerOnlyClassInParentClasses(currentModel);
+
+      if (!documentDefinition!.serverOnly && ancestorServerOnlyClass != null) {
+        return [
+          SourceSpanSeverityException(
+            'Cannot extend a "serverOnly" class in the inheritance chain ("${ancestorServerOnlyClass.className}") unless class is marked as "serverOnly".',
+            span,
+          )
+        ];
+      }
     }
 
     return [];
@@ -475,6 +497,27 @@ class Restrictions {
           span,
         )
       ];
+    }
+
+    if (def is ClassDefinition) {
+      var currentModel = parsedModels.findByClassName(def.className);
+
+      if (currentModel is ClassDefinition) {
+        var fieldWithDuplicatedName =
+            _findFieldWithDuplicatedName(currentModel, fieldName);
+        var parentClassWithDuplicatedFieldName =
+            _findAncestorWithDuplicatedFieldName(currentModel, fieldName);
+
+        if (fieldWithDuplicatedName != null &&
+            parentClassWithDuplicatedFieldName != null) {
+          return [
+            SourceSpanSeverityException(
+              'The field name "$fieldName" is already defined in an inherited class ("${parentClassWithDuplicatedFieldName.className}").',
+              span,
+            )
+          ];
+        }
+      }
     }
 
     return [];
@@ -1259,7 +1302,7 @@ class Restrictions {
       );
     }
 
-    if (field.hasOnlyDatabaseDefauls && !field.type.nullable) {
+    if (field.hasOnlyDatabaseDefaults && !field.type.nullable) {
       errors.add(
         SourceSpanSeverityException(
           'When setting only the "defaultPersist" key, its type should be nullable',
@@ -1377,5 +1420,90 @@ class Restrictions {
     if (definition is ClassDefinition) classDefinitions.add(definition);
 
     return classDefinitions;
+  }
+
+  ClassDefinition? _getParentClass(ClassDefinition currentClass) {
+    if (currentClass.extendsClass is! ResolvedInheritanceDefinition) {
+      return null;
+    }
+
+    return (currentClass.extendsClass as ResolvedInheritanceDefinition)
+        .classDefinition;
+  }
+
+  /// Traverses up the class hierarchy from [currentModel], applying [predicate] to each parent.
+  /// Returns the first non-null result from [predicate], or `null` if no match is found.
+  ///
+  /// ```dart
+  /// var serverOnlyAncestor = _findInHierarchy(
+  ///   currentModel,
+  ///  (ClassDefinition ancestor) => ancestor.serverOnly ? ancestor : null,
+  /// );
+  /// ```
+  T? _findInParentHierarchy<T>(
+    ClassDefinition currentModel,
+    T? Function(ClassDefinition) predicate,
+  ) {
+    var parentModel = _getParentClass(currentModel);
+
+    while (parentModel != null) {
+      var result = predicate(parentModel);
+      if (result != null) return result;
+
+      parentModel = _getParentClass(parentModel);
+    }
+
+    return null;
+  }
+
+  ClassDefinition? _findTableClassInParentClasses(
+    ClassDefinition currentModel,
+  ) {
+    return _findInParentHierarchy(
+      currentModel,
+      (ClassDefinition ancestor) =>
+          ancestor.tableName != null ? ancestor : null,
+    );
+  }
+
+  ClassDefinition? _findServerOnlyClassInParentClasses(
+    ClassDefinition currentModel,
+  ) {
+    return _findInParentHierarchy(
+      currentModel,
+      (ClassDefinition ancestor) => ancestor.serverOnly ? ancestor : null,
+    );
+  }
+
+  ClassDefinition? _findAncestorWithDuplicatedFieldName(
+    ClassDefinition currentModel,
+    String fieldName,
+  ) {
+    return _findInParentHierarchy(
+      currentModel,
+      (ClassDefinition ancestor) {
+        var parentFieldNames = ancestor.fields.map((field) => field.name);
+
+        if (parentFieldNames.contains(fieldName)) {
+          return ancestor;
+        }
+
+        return null;
+      },
+    );
+  }
+
+  SerializableModelFieldDefinition? _findFieldWithDuplicatedName(
+    ClassDefinition currentModel,
+    String fieldName,
+  ) {
+    return _findInParentHierarchy(
+      currentModel,
+      (ClassDefinition ancestor) {
+        return ancestor.fields
+            .where((field) => field.name == fieldName)
+            .firstOrNull;
+      },
+    );
   }
 }

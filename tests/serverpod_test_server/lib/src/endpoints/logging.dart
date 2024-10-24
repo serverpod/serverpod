@@ -80,6 +80,10 @@ class LoggingEndpoint extends Endpoint {
     }
   }
 
+  Stream<int> streamException(Session session) async* {
+    throw Exception('This is an exception');
+  }
+
   @override
   Future<void> handleStreamMessage(
     StreamingSession session,

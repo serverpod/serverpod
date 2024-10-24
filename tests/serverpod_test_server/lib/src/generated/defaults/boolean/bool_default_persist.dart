@@ -11,13 +11,13 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class BoolDefaultPersist extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class BoolDefaultPersist
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   BoolDefaultPersist._({
-    int? id,
+    this.id,
     this.boolDefaultPersistTrue,
     this.boolDefaultPersistFalse,
-  }) : super(id);
+  });
 
   factory BoolDefaultPersist({
     int? id,
@@ -38,6 +38,9 @@ abstract class BoolDefaultPersist extends _i1.TableRow
   static final t = BoolDefaultPersistTable();
 
   static const db = BoolDefaultPersistRepository._();
+
+  @override
+  int? id;
 
   bool? boolDefaultPersistTrue;
 
@@ -195,7 +198,7 @@ class BoolDefaultPersistRepository {
   const BoolDefaultPersistRepository._();
 
   Future<List<BoolDefaultPersist>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<BoolDefaultPersistTable>? where,
     int? limit,
     int? offset,
@@ -204,19 +207,19 @@ class BoolDefaultPersistRepository {
     _i1.OrderByListBuilder<BoolDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<BoolDefaultPersist>(
+    return session.db.find<BoolDefaultPersist>(
       where: where?.call(BoolDefaultPersist.t),
       orderBy: orderBy?.call(BoolDefaultPersist.t),
       orderByList: orderByList?.call(BoolDefaultPersist.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<BoolDefaultPersist?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<BoolDefaultPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<BoolDefaultPersistTable>? orderBy,
@@ -224,118 +227,118 @@ class BoolDefaultPersistRepository {
     _i1.OrderByListBuilder<BoolDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<BoolDefaultPersist>(
+    return session.db.findFirstRow<BoolDefaultPersist>(
       where: where?.call(BoolDefaultPersist.t),
       orderBy: orderBy?.call(BoolDefaultPersist.t),
       orderByList: orderByList?.call(BoolDefaultPersist.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<BoolDefaultPersist?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<BoolDefaultPersist>(
+    return session.db.findById<BoolDefaultPersist>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<BoolDefaultPersist>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<BoolDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<BoolDefaultPersist>(
+    return session.db.insert<BoolDefaultPersist>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<BoolDefaultPersist> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     BoolDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<BoolDefaultPersist>(
+    return session.db.insertRow<BoolDefaultPersist>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<BoolDefaultPersist>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<BoolDefaultPersist> rows, {
     _i1.ColumnSelections<BoolDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<BoolDefaultPersist>(
+    return session.db.update<BoolDefaultPersist>(
       rows,
       columns: columns?.call(BoolDefaultPersist.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<BoolDefaultPersist> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     BoolDefaultPersist row, {
     _i1.ColumnSelections<BoolDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<BoolDefaultPersist>(
+    return session.db.updateRow<BoolDefaultPersist>(
       row,
       columns: columns?.call(BoolDefaultPersist.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<BoolDefaultPersist>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<BoolDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<BoolDefaultPersist>(
+    return session.db.delete<BoolDefaultPersist>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<BoolDefaultPersist> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     BoolDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<BoolDefaultPersist>(
+    return session.db.deleteRow<BoolDefaultPersist>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<BoolDefaultPersist>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<BoolDefaultPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<BoolDefaultPersist>(
+    return session.db.deleteWhere<BoolDefaultPersist>(
       where: where(BoolDefaultPersist.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<BoolDefaultPersistTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<BoolDefaultPersist>(
+    return session.db.count<BoolDefaultPersist>(
       where: where?.call(BoolDefaultPersist.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 }

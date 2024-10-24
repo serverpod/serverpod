@@ -11,13 +11,12 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class UniqueData extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class UniqueData implements _i1.TableRow, _i1.ProtocolSerialization {
   UniqueData._({
-    int? id,
+    this.id,
     required this.number,
     required this.email,
-  }) : super(id);
+  });
 
   factory UniqueData({
     int? id,
@@ -36,6 +35,9 @@ abstract class UniqueData extends _i1.TableRow
   static final t = UniqueDataTable();
 
   static const db = UniqueDataRepository._();
+
+  @override
+  int? id;
 
   int number;
 
@@ -182,7 +184,7 @@ class UniqueDataRepository {
   const UniqueDataRepository._();
 
   Future<List<UniqueData>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UniqueDataTable>? where,
     int? limit,
     int? offset,
@@ -191,19 +193,19 @@ class UniqueDataRepository {
     _i1.OrderByListBuilder<UniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<UniqueData>(
+    return session.db.find<UniqueData>(
       where: where?.call(UniqueData.t),
       orderBy: orderBy?.call(UniqueData.t),
       orderByList: orderByList?.call(UniqueData.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<UniqueData?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UniqueDataTable>? where,
     int? offset,
     _i1.OrderByBuilder<UniqueDataTable>? orderBy,
@@ -211,118 +213,118 @@ class UniqueDataRepository {
     _i1.OrderByListBuilder<UniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<UniqueData>(
+    return session.db.findFirstRow<UniqueData>(
       where: where?.call(UniqueData.t),
       orderBy: orderBy?.call(UniqueData.t),
       orderByList: orderByList?.call(UniqueData.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<UniqueData?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<UniqueData>(
+    return session.db.findById<UniqueData>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<UniqueData>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<UniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<UniqueData>(
+    return session.db.insert<UniqueData>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<UniqueData> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<UniqueData>(
+    return session.db.insertRow<UniqueData>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<UniqueData>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<UniqueData> rows, {
     _i1.ColumnSelections<UniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<UniqueData>(
+    return session.db.update<UniqueData>(
       rows,
       columns: columns?.call(UniqueData.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<UniqueData> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     UniqueData row, {
     _i1.ColumnSelections<UniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<UniqueData>(
+    return session.db.updateRow<UniqueData>(
       row,
       columns: columns?.call(UniqueData.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<UniqueData>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<UniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<UniqueData>(
+    return session.db.delete<UniqueData>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<UniqueData> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<UniqueData>(
+    return session.db.deleteRow<UniqueData>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<UniqueData>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<UniqueDataTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<UniqueData>(
+    return session.db.deleteWhere<UniqueData>(
       where: where(UniqueData.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UniqueDataTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<UniqueData>(
+    return session.db.count<UniqueData>(
       where: where?.call(UniqueData.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 }

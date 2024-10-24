@@ -12,13 +12,13 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-abstract class City extends _i1.TableRow implements _i1.ProtocolSerialization {
+abstract class City implements _i1.TableRow, _i1.ProtocolSerialization {
   City._({
-    int? id,
+    this.id,
     required this.name,
     this.citizens,
     this.organizations,
-  }) : super(id);
+  });
 
   factory City({
     int? id,
@@ -43,6 +43,9 @@ abstract class City extends _i1.TableRow implements _i1.ProtocolSerialization {
   static final t = CityTable();
 
   static const db = CityRepository._();
+
+  @override
+  int? id;
 
   String name;
 
@@ -308,7 +311,7 @@ class CityRepository {
   final detachRow = const CityDetachRowRepository._();
 
   Future<List<City>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CityTable>? where,
     int? limit,
     int? offset,
@@ -318,20 +321,20 @@ class CityRepository {
     _i1.Transaction? transaction,
     CityInclude? include,
   }) async {
-    return databaseAccessor.db.find<City>(
+    return session.db.find<City>(
       where: where?.call(City.t),
       orderBy: orderBy?.call(City.t),
       orderByList: orderByList?.call(City.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
       include: include,
     );
   }
 
   Future<City?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CityTable>? where,
     int? offset,
     _i1.OrderByBuilder<CityTable>? orderBy,
@@ -340,121 +343,121 @@ class CityRepository {
     _i1.Transaction? transaction,
     CityInclude? include,
   }) async {
-    return databaseAccessor.db.findFirstRow<City>(
+    return session.db.findFirstRow<City>(
       where: where?.call(City.t),
       orderBy: orderBy?.call(City.t),
       orderByList: orderByList?.call(City.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
       include: include,
     );
   }
 
   Future<City?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     CityInclude? include,
   }) async {
-    return databaseAccessor.db.findById<City>(
+    return session.db.findById<City>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
       include: include,
     );
   }
 
   Future<List<City>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<City> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<City>(
+    return session.db.insert<City>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<City> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     City row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<City>(
+    return session.db.insertRow<City>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<City>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<City> rows, {
     _i1.ColumnSelections<CityTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<City>(
+    return session.db.update<City>(
       rows,
       columns: columns?.call(City.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<City> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     City row, {
     _i1.ColumnSelections<CityTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<City>(
+    return session.db.updateRow<City>(
       row,
       columns: columns?.call(City.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<City>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<City> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<City>(
+    return session.db.delete<City>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<City> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     City row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<City>(
+    return session.db.deleteRow<City>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<City>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<CityTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<City>(
+    return session.db.deleteWhere<City>(
       where: where(City.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CityTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<City>(
+    return session.db.count<City>(
       where: where?.call(City.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -463,7 +466,7 @@ class CityAttachRepository {
   const CityAttachRepository._();
 
   Future<void> citizens(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     City city,
     List<_i2.Person> person, {
     _i1.Transaction? transaction,
@@ -481,15 +484,15 @@ class CityAttachRepository {
               $_cityCitizensCityId: city.id,
             ))
         .toList();
-    await databaseAccessor.db.update<_i2.Person>(
+    await session.db.update<_i2.Person>(
       $person,
       columns: [_i2.Person.t.$_cityCitizensCityId],
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<void> organizations(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     City city,
     List<_i2.Organization> organization, {
     _i1.Transaction? transaction,
@@ -503,10 +506,10 @@ class CityAttachRepository {
 
     var $organization =
         organization.map((e) => e.copyWith(cityId: city.id)).toList();
-    await databaseAccessor.db.update<_i2.Organization>(
+    await session.db.update<_i2.Organization>(
       $organization,
       columns: [_i2.Organization.t.cityId],
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -515,7 +518,7 @@ class CityAttachRowRepository {
   const CityAttachRowRepository._();
 
   Future<void> citizens(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     City city,
     _i2.Person person, {
     _i1.Transaction? transaction,
@@ -531,15 +534,15 @@ class CityAttachRowRepository {
       person,
       $_cityCitizensCityId: city.id,
     );
-    await databaseAccessor.db.updateRow<_i2.Person>(
+    await session.db.updateRow<_i2.Person>(
       $person,
       columns: [_i2.Person.t.$_cityCitizensCityId],
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<void> organizations(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     City city,
     _i2.Organization organization, {
     _i1.Transaction? transaction,
@@ -552,10 +555,10 @@ class CityAttachRowRepository {
     }
 
     var $organization = organization.copyWith(cityId: city.id);
-    await databaseAccessor.db.updateRow<_i2.Organization>(
+    await session.db.updateRow<_i2.Organization>(
       $organization,
       columns: [_i2.Organization.t.cityId],
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -564,7 +567,7 @@ class CityDetachRepository {
   const CityDetachRepository._();
 
   Future<void> citizens(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<_i2.Person> person, {
     _i1.Transaction? transaction,
   }) async {
@@ -578,15 +581,15 @@ class CityDetachRepository {
               $_cityCitizensCityId: null,
             ))
         .toList();
-    await databaseAccessor.db.update<_i2.Person>(
+    await session.db.update<_i2.Person>(
       $person,
       columns: [_i2.Person.t.$_cityCitizensCityId],
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<void> organizations(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<_i2.Organization> organization, {
     _i1.Transaction? transaction,
   }) async {
@@ -596,10 +599,10 @@ class CityDetachRepository {
 
     var $organization =
         organization.map((e) => e.copyWith(cityId: null)).toList();
-    await databaseAccessor.db.update<_i2.Organization>(
+    await session.db.update<_i2.Organization>(
       $organization,
       columns: [_i2.Organization.t.cityId],
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 }
@@ -608,7 +611,7 @@ class CityDetachRowRepository {
   const CityDetachRowRepository._();
 
   Future<void> citizens(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     _i2.Person person, {
     _i1.Transaction? transaction,
   }) async {
@@ -620,15 +623,15 @@ class CityDetachRowRepository {
       person,
       $_cityCitizensCityId: null,
     );
-    await databaseAccessor.db.updateRow<_i2.Person>(
+    await session.db.updateRow<_i2.Person>(
       $person,
       columns: [_i2.Person.t.$_cityCitizensCityId],
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<void> organizations(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     _i2.Organization organization, {
     _i1.Transaction? transaction,
   }) async {
@@ -637,10 +640,10 @@ class CityDetachRowRepository {
     }
 
     var $organization = organization.copyWith(cityId: null);
-    await databaseAccessor.db.updateRow<_i2.Organization>(
+    await session.db.updateRow<_i2.Organization>(
       $organization,
       columns: [_i2.Organization.t.cityId],
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 }

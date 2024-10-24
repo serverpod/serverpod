@@ -61,15 +61,18 @@ class PasswordManager {
 
   /// Load all passwords for the current run mode, or null if passwords fail
   /// to load.
-  Map<String, String>? loadPasswords() {
+  Map<String, String> loadPasswords([
+    String passwordsFilePath = 'config/passwords.yaml',
+  ]) {
+    Map<String, Map> data;
     try {
-      var passwordYaml = File('config/passwords.yaml').readAsStringSync();
-      var data = (loadYaml(passwordYaml) as Map).cast<String, Map>();
-
-      return loadPasswordsFromMap(data, environment: Platform.environment);
+      var passwordYaml = File(passwordsFilePath).readAsStringSync();
+      data = (loadYaml(passwordYaml) as Map).cast<String, Map>();
     } catch (e) {
-      return null;
+      data = {};
     }
+
+    return loadPasswordsFromMap(data, environment: Platform.environment);
   }
 
   /// Merge custom passwords with the existing password collection.

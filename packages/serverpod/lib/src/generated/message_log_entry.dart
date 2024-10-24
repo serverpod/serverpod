@@ -12,10 +12,10 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A log entry for a message sent in a streaming session.
-abstract class MessageLogEntry extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class MessageLogEntry
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   MessageLogEntry._({
-    int? id,
+    this.id,
     required this.sessionLogId,
     required this.serverId,
     required this.messageId,
@@ -26,7 +26,7 @@ abstract class MessageLogEntry extends _i1.TableRow
     this.stackTrace,
     required this.slow,
     required this.order,
-  }) : super(id);
+  });
 
   factory MessageLogEntry({
     int? id,
@@ -61,6 +61,9 @@ abstract class MessageLogEntry extends _i1.TableRow
   static final t = MessageLogEntryTable();
 
   static const db = MessageLogEntryRepository._();
+
+  @override
+  int? id;
 
   /// Id of the session this entry is associated with.
   int sessionLogId;
@@ -360,7 +363,7 @@ class MessageLogEntryRepository {
   const MessageLogEntryRepository._();
 
   Future<List<MessageLogEntry>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? limit,
     int? offset,
@@ -369,19 +372,19 @@ class MessageLogEntryRepository {
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<MessageLogEntry>(
+    return session.db.find<MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<MessageLogEntry?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
@@ -389,118 +392,118 @@ class MessageLogEntryRepository {
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<MessageLogEntry>(
+    return session.db.findFirstRow<MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<MessageLogEntry?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<MessageLogEntry>(
+    return session.db.findById<MessageLogEntry>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<MessageLogEntry>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<MessageLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<MessageLogEntry>(
+    return session.db.insert<MessageLogEntry>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<MessageLogEntry> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     MessageLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<MessageLogEntry>(
+    return session.db.insertRow<MessageLogEntry>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<MessageLogEntry>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<MessageLogEntry> rows, {
     _i1.ColumnSelections<MessageLogEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<MessageLogEntry>(
+    return session.db.update<MessageLogEntry>(
       rows,
       columns: columns?.call(MessageLogEntry.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<MessageLogEntry> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     MessageLogEntry row, {
     _i1.ColumnSelections<MessageLogEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<MessageLogEntry>(
+    return session.db.updateRow<MessageLogEntry>(
       row,
       columns: columns?.call(MessageLogEntry.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<MessageLogEntry>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<MessageLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<MessageLogEntry>(
+    return session.db.delete<MessageLogEntry>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<MessageLogEntry> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     MessageLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<MessageLogEntry>(
+    return session.db.deleteRow<MessageLogEntry>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<MessageLogEntry>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<MessageLogEntry>(
+    return session.db.deleteWhere<MessageLogEntry>(
       where: where(MessageLogEntry.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<MessageLogEntry>(
+    return session.db.count<MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 }

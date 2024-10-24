@@ -16,10 +16,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// If you need to share a user's info with other users, use the
 /// [UserInfoPublic] instead. You can retrieve a [UserInfoPublic] through the
 /// toPublic() method.
-abstract class UserInfo extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class UserInfo implements _i1.TableRow, _i1.ProtocolSerialization {
   UserInfo._({
-    int? id,
+    this.id,
     required this.userIdentifier,
     this.userName,
     this.fullName,
@@ -28,7 +27,7 @@ abstract class UserInfo extends _i1.TableRow
     this.imageUrl,
     required this.scopeNames,
     required this.blocked,
-  }) : super(id);
+  });
 
   factory UserInfo({
     int? id,
@@ -61,6 +60,9 @@ abstract class UserInfo extends _i1.TableRow
   static final t = UserInfoTable();
 
   static const db = UserInfoRepository._();
+
+  @override
+  int? id;
 
   /// Unique identifier of the user, may contain different information depending
   /// on how the user was created.
@@ -322,7 +324,7 @@ class UserInfoRepository {
   const UserInfoRepository._();
 
   Future<List<UserInfo>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UserInfoTable>? where,
     int? limit,
     int? offset,
@@ -331,19 +333,19 @@ class UserInfoRepository {
     _i1.OrderByListBuilder<UserInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<UserInfo>(
+    return session.db.find<UserInfo>(
       where: where?.call(UserInfo.t),
       orderBy: orderBy?.call(UserInfo.t),
       orderByList: orderByList?.call(UserInfo.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<UserInfo?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UserInfoTable>? where,
     int? offset,
     _i1.OrderByBuilder<UserInfoTable>? orderBy,
@@ -351,118 +353,118 @@ class UserInfoRepository {
     _i1.OrderByListBuilder<UserInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<UserInfo>(
+    return session.db.findFirstRow<UserInfo>(
       where: where?.call(UserInfo.t),
       orderBy: orderBy?.call(UserInfo.t),
       orderByList: orderByList?.call(UserInfo.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<UserInfo?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<UserInfo>(
+    return session.db.findById<UserInfo>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<UserInfo>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<UserInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<UserInfo>(
+    return session.db.insert<UserInfo>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<UserInfo> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     UserInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<UserInfo>(
+    return session.db.insertRow<UserInfo>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<UserInfo>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<UserInfo> rows, {
     _i1.ColumnSelections<UserInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<UserInfo>(
+    return session.db.update<UserInfo>(
       rows,
       columns: columns?.call(UserInfo.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<UserInfo> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     UserInfo row, {
     _i1.ColumnSelections<UserInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<UserInfo>(
+    return session.db.updateRow<UserInfo>(
       row,
       columns: columns?.call(UserInfo.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<UserInfo>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<UserInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<UserInfo>(
+    return session.db.delete<UserInfo>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<UserInfo> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     UserInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<UserInfo>(
+    return session.db.deleteRow<UserInfo>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<UserInfo>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<UserInfoTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<UserInfo>(
+    return session.db.deleteWhere<UserInfo>(
       where: where(UserInfo.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<UserInfoTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<UserInfo>(
+    return session.db.count<UserInfo>(
       where: where?.call(UserInfo.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 }

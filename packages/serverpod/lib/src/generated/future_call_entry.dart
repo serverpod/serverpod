@@ -12,16 +12,16 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A serialized future call with bindings to the database.
-abstract class FutureCallEntry extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class FutureCallEntry
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   FutureCallEntry._({
-    int? id,
+    this.id,
     required this.name,
     required this.time,
     this.serializedObject,
     required this.serverId,
     this.identifier,
-  }) : super(id);
+  });
 
   factory FutureCallEntry({
     int? id,
@@ -46,6 +46,9 @@ abstract class FutureCallEntry extends _i1.TableRow
   static final t = FutureCallEntryTable();
 
   static const db = FutureCallEntryRepository._();
+
+  @override
+  int? id;
 
   /// Name of the future call. Used to find the correct method to call.
   String name;
@@ -253,7 +256,7 @@ class FutureCallEntryRepository {
   const FutureCallEntryRepository._();
 
   Future<List<FutureCallEntry>> find(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
     int? limit,
     int? offset,
@@ -262,19 +265,19 @@ class FutureCallEntryRepository {
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.find<FutureCallEntry>(
+    return session.db.find<FutureCallEntry>(
       where: where?.call(FutureCallEntry.t),
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<FutureCallEntry?> findFirstRow(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
@@ -282,118 +285,118 @@ class FutureCallEntryRepository {
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findFirstRow<FutureCallEntry>(
+    return session.db.findFirstRow<FutureCallEntry>(
       where: where?.call(FutureCallEntry.t),
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
       orderDescending: orderDescending,
       offset: offset,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<FutureCallEntry?> findById(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.findById<FutureCallEntry>(
+    return session.db.findById<FutureCallEntry>(
       id,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<FutureCallEntry>> insert(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<FutureCallEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insert<FutureCallEntry>(
+    return session.db.insert<FutureCallEntry>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<FutureCallEntry> insertRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     FutureCallEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.insertRow<FutureCallEntry>(
+    return session.db.insertRow<FutureCallEntry>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<FutureCallEntry>> update(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<FutureCallEntry> rows, {
     _i1.ColumnSelections<FutureCallEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.update<FutureCallEntry>(
+    return session.db.update<FutureCallEntry>(
       rows,
       columns: columns?.call(FutureCallEntry.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<FutureCallEntry> updateRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     FutureCallEntry row, {
     _i1.ColumnSelections<FutureCallEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.updateRow<FutureCallEntry>(
+    return session.db.updateRow<FutureCallEntry>(
       row,
       columns: columns?.call(FutureCallEntry.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<FutureCallEntry>> delete(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     List<FutureCallEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.delete<FutureCallEntry>(
+    return session.db.delete<FutureCallEntry>(
       rows,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<FutureCallEntry> deleteRow(
-    _i1.DatabaseAccessor databaseAccessor,
+    _i1.Session session,
     FutureCallEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteRow<FutureCallEntry>(
+    return session.db.deleteRow<FutureCallEntry>(
       row,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<List<FutureCallEntry>> deleteWhere(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<FutureCallEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.deleteWhere<FutureCallEntry>(
+    return session.db.deleteWhere<FutureCallEntry>(
       where: where(FutureCallEntry.t),
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.DatabaseAccessor databaseAccessor, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return databaseAccessor.db.count<FutureCallEntry>(
+    return session.db.count<FutureCallEntry>(
       where: where?.call(FutureCallEntry.t),
       limit: limit,
-      transaction: transaction ?? databaseAccessor.transaction,
+      transaction: transaction,
     );
   }
 }
