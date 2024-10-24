@@ -25,8 +25,6 @@ class LibraryGenerator {
   Library generateProtocol() {
     var library = LibraryBuilder();
 
-    library.name = 'protocol';
-
     var models = protocolDefinition.models
         .where((model) => serverCode || !model.serverOnly)
         .toList();
