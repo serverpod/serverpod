@@ -123,7 +123,7 @@ class BasicAuthorizationHeader extends AuthorizationHeader {
 
     final base64Part = value.substring(prefix.length).trim();
 
-    if (!_isValidBase64(base64Part)) {
+    if (!base64Part.isValidBase64) {
       throw FormatException('Invalid Base64 encoding');
     }
 

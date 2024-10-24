@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:http_parser/http_parser.dart';
+import 'package:relic/src/extension/base64_extension.dart';
 import 'package:relic/src/headers/extension/http_headers_extension.dart';
 import 'package:relic/src/method/method.dart';
 
 import 'body.dart';
 
-part 'headers/util/headers_util.dart';
 part 'headers/custom_headers.dart';
 part 'headers/authorization_header.dart';
 part 'headers/proxy_authorization_header.dart';
@@ -447,9 +447,9 @@ abstract class Headers {
         ),
       ),
       server: headers.parseSingleValue(
-          _serverHeader,
-          strict: strict,
-        ),
+        _serverHeader,
+        strict: strict,
+      ),
       te: headers.parseMultipleValue(
         _teHeader,
         strict: strict,
