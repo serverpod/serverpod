@@ -90,9 +90,7 @@ class ClassDefinition extends SerializableModelDefinition {
   }) : childClasses = childClasses ?? <InheritanceDefinition>[];
 
   SerializableModelFieldDefinition? findField(String name) {
-    return fields
-        .cast()
-        .firstWhere((element) => element.name == name, orElse: () => null);
+    return fields.where((element) => element.name == name).firstOrNull;
   }
 
   /// Returns the `ClassDefinition` of the parent class.

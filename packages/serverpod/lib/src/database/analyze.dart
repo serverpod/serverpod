@@ -145,12 +145,13 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
         indexName: index[0],
         tableSpace: index[1],
         elements: List.generate(
-            index[4].length,
+            (index[4] as List).length,
             (i) => IndexElementDefinition(
-                type: index[5][i]
+                type: (index[5] as List)[i]
                     ? IndexElementDefinitionType.column
                     : IndexElementDefinitionType.expression,
-                definition: (index[4][i] as String).removeSurroundingQuotes)),
+                definition:
+                    ((index[4] as List)[i] as String).removeSurroundingQuotes)),
         type: index[7],
         isUnique: index[2],
         isPrimary: index[3],

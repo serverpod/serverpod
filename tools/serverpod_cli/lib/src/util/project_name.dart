@@ -18,7 +18,7 @@ Future<String?> getProjectName([Directory? projectDirectory]) async {
     return null;
   }
 
-  String? name = pubspec['name'];
+  String? name = (pubspec as Map)['name'];
   if (name == null) {
     log.error('No name found in pubspec.yaml file.');
     return null;

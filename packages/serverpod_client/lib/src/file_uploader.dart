@@ -110,7 +110,7 @@ class _UploadDescription {
   Map<String, String> requestFields = {};
 
   _UploadDescription(String description) {
-    var data = jsonDecode(description);
+    var data = jsonDecode(description) as Map<String, dynamic>;
     if (data['type'] == 'binary') {
       type = _UploadType.binary;
     } else if (data['type'] == 'multipart') {

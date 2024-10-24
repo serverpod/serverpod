@@ -603,9 +603,9 @@ void _validateJsonConfig(
       throw Exception('$name is missing required configuration for $key.');
     }
 
-    if (jsonConfig[key].runtimeType != value) {
+    if ((jsonConfig[key] as dynamic).runtimeType != value) {
       throw Exception(
-        '$name configuration has invalid type for $key. Expected $value, got ${jsonConfig[key].runtimeType}.',
+        '$name configuration has invalid type for $key. Expected $value, got ${(jsonConfig[key] as dynamic).runtimeType}.',
       );
     }
   }

@@ -219,8 +219,12 @@ abstract class SerializationManager {
               .toList();
         } else if (encodeForProtocol && nonEncodable is ProtocolSerialization) {
           return nonEncodable.toJsonForProtocol();
+        } else if (nonEncodable == null) {
+          return 'null';
         } else {
-          return (nonEncodable as dynamic)?.toJson();
+          // ignore: avoid_dynamic_calls
+          return nonEncodable.toJson();
+          // throws NoSuchMethodError if toJson is not implemented
         }
       },
     ).convert(object);
