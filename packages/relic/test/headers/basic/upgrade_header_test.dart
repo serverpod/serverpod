@@ -2,7 +2,7 @@ import 'package:relic/src/headers.dart';
 import 'package:test/test.dart';
 import 'package:relic/src/relic_server.dart';
 import 'dart:io';
-import '../../static/test_util.dart';
+import '../../test_util.dart';
 
 void main() {
   late RelicServer server;
