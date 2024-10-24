@@ -24,7 +24,7 @@ class AccountPage extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: ElevatedButton(
             onPressed: () {
-              sessionManager.signOut();
+              sessionManager.signOutDevice();
             },
             child: const Text('Sign out'),
           ),

@@ -47,6 +47,15 @@ typedef PasswordHashValidator = Future<bool> Function(
   void Function(Object e)? onError,
 });
 
+/// Enum to define the sign-out behavior for the legacy sign out endpoint.
+enum SignOutBehavior {
+  /// Sign out the user from all active devices.
+  allDevices,
+
+  /// Sign out the user from the current device only.
+  currentDevice,
+}
+
 /// Configuration options for the Auth module.
 class AuthConfig {
   static AuthConfig _config = AuthConfig();
@@ -157,6 +166,12 @@ class AuthConfig {
   /// Create a custom validation for the password in combinaison with [PasswordHashGenerator]
   final PasswordHashValidator passwordHashValidator;
 
+  /// Defines the legacy sign-out behavior for users.
+  ///
+  /// - [SignOutBehavior.allDevices]: Users will be signed out from all active devices.
+  /// - [SignOutBehavior.currentDevice]: Users will be signed out from the current device only.
+  final SignOutBehavior legacyUserSignOutBehavior;
+
   /// Creates a new Auth configuration. Use the [set] method to replace the
   /// default settings. Defaults to `config/firebase_service_account_key.json`.
   AuthConfig({
@@ -189,6 +204,7 @@ class AuthConfig {
     this.allowUnsecureRandom = false,
     this.passwordHashGenerator = defaultGeneratePasswordHash,
     this.passwordHashValidator = defaultValidatePasswordHash,
+    this.legacyUserSignOutBehavior = SignOutBehavior.allDevices,
   }) {
     if (validationCodeLength < 8) {
       stderr.writeln(

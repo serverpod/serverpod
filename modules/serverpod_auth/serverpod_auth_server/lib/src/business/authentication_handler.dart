@@ -23,7 +23,7 @@ Future<AuthenticationInfo?> authenticationHandler(
       enableLogging: false,
     );
 
-    var authKey = await tempSession.db.findById<AuthKey>(keyId);
+    var authKey = await AuthKey.db.findById(tempSession, keyId);
     await tempSession.close();
 
     if (authKey == null) return null;
@@ -41,7 +41,11 @@ Future<AuthenticationInfo?> authenticationHandler(
     for (var scopeName in authKey.scopeNames) {
       scopes.add(Scope(scopeName));
     }
-    return AuthenticationInfo(authKey.userId, scopes);
+    return AuthenticationInfo(
+      authKey.userId,
+      scopes,
+      authId: keyIdStr,
+    );
   } catch (exception, stackTrace) {
     stderr.writeln('Failed authentication: $exception');
     stderr.writeln('$stackTrace');
