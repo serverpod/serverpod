@@ -1,3 +1,7 @@
+// TODO: Remove this library statement when bumping to Dart 3.6.
+// Until then it needs to cause the analyzer to report an issue,
+// in order to avoid a bug in the Dart analyzer.
+// See: https://github.com/serverpod/serverpod/pull/2900
 library serverpod;
 
 // Config
