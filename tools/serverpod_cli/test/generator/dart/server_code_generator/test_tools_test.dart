@@ -66,6 +66,7 @@ void main() {
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  String\? runMode,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  bool\? applyMigrations,\n'
@@ -134,6 +135,7 @@ void main() {
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  String\? runMode,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
               r'\}\)',
             ));
@@ -179,6 +181,7 @@ void main() {
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  String\? runMode,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  bool\? applyMigrations,\n'
@@ -259,6 +262,7 @@ void main() {
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  String\? runMode,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  bool\? applyMigrations,\n'
