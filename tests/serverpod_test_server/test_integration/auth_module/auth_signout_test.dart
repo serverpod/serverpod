@@ -50,7 +50,7 @@ void main() {
       );
 
       test(
-        'when revoking auth key then only one auth key is deleted',
+        'when revoking auth key then only the revoked auth key is deleted',
         () async {
           var authKeys = await AuthKey.db.find(
             session,
@@ -155,7 +155,7 @@ void main() {
       );
 
       test(
-        'when revoking auth key for user1 then user1 loses one session but user2 remains unaffected',
+        'when revoking auth key for user1 then user1 loses one authentication key but user2 remains unaffected',
         () async {
           var authKeysUser1 = await AuthKey.db.find(
             session,

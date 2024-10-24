@@ -9,25 +9,16 @@ void main() {
     'Given no legacy user sign-out option defined and user signed in to multiple devices',
     (sessionBuilder, endpoints) {
       late Session session;
+      late List<AuthKey> authKeys;
 
       setUp(() async {
         session = sessionBuilder.build();
-
-        await Future.wait([
-          UserAuthentication.signInUser(session, userId, 'email'),
-          UserAuthentication.signInUser(session, userId, 'email')
-        ]);
+        authKeys = await _signInUserToMultipleDevices(session, userId);
       });
 
       test(
         'when signing out user then user is signed out of all devices',
         () async {
-          var authKeys = await AuthKey.db.find(
-            session,
-            where: (row) => row.userId.equals(userId),
-          );
-          expect(authKeys, hasLength(2));
-
           sessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
               authKeys.first.userId,
@@ -53,6 +44,7 @@ void main() {
     'Given legacy sign-out option set to all devices and user signed in to multiple devices',
     (sessionBuilder, endpoints) {
       late Session session;
+      late List<AuthKey> authKeys;
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -60,21 +52,12 @@ void main() {
           legacyUserSignOutBehavior: SignOutBehavior.allDevices,
         ));
 
-        await Future.wait([
-          UserAuthentication.signInUser(session, userId, 'email'),
-          UserAuthentication.signInUser(session, userId, 'email')
-        ]);
+        authKeys = await _signInUserToMultipleDevices(session, userId);
       });
 
       test(
         'when signing out user then user is signed out of all devices',
         () async {
-          var authKeys = await AuthKey.db.find(
-            session,
-            where: (row) => row.userId.equals(userId),
-          );
-          expect(authKeys, hasLength(2));
-
           sessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
               authKeys.first.userId,
@@ -99,6 +82,7 @@ void main() {
     'Given legacy sign-out option set to current device and user signed in to multiple devices',
     (sessionBuilder, endpoints) {
       late Session session;
+      late List<AuthKey> authKeys;
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -106,21 +90,12 @@ void main() {
           legacyUserSignOutBehavior: SignOutBehavior.currentDevice,
         ));
 
-        await Future.wait([
-          UserAuthentication.signInUser(session, userId, 'email'),
-          UserAuthentication.signInUser(session, userId, 'email')
-        ]);
+        authKeys = await _signInUserToMultipleDevices(session, userId);
       });
 
       test(
         'when signing out user then only the current device is signed out',
         () async {
-          var authKeys = await AuthKey.db.find(
-            session,
-            where: (row) => row.userId.equals(userId),
-          );
-          expect(authKeys, hasLength(2));
-
           sessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
               authKeys.first.userId,
@@ -140,4 +115,14 @@ void main() {
       );
     },
   );
+}
+
+Future<List<AuthKey>> _signInUserToMultipleDevices(
+  Session session,
+  int userId,
+) async {
+  return Future.wait<AuthKey>([
+    UserAuthentication.signInUser(session, userId, 'email'),
+    UserAuthentication.signInUser(session, userId, 'google'),
+  ]);
 }
