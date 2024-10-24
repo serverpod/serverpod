@@ -101,6 +101,71 @@ abstract class CompilationUnitHelpers {
     return tryFindImportDirective(unit, uri: uri) != null;
   }
 
+  /// Returns [ExportDirective] if the [unit] contains an export directive with
+  /// the given [uri], otherwise returns `null`.
+  static ExportDirective? tryFindExportDirective(
+    CompilationUnit unit, {
+    required String uri,
+  }) {
+    var directives = unit.directives
+        .whereType<ExportDirective>()
+        .where((directive) => directive.uri.stringValue == uri);
+
+    return directives.isNotEmpty ? directives.first : null;
+  }
+
+  /// Returns `true` if the [unit] contains an export directive with the given
+  /// [uri].
+  static bool hasExportDirective(
+    CompilationUnit unit, {
+    required String uri,
+  }) {
+    return tryFindExportDirective(unit, uri: uri) != null;
+  }
+
+  /// Returns [List<PartDirective>] if the [unit] contains a part directive with the
+  /// given [uri], otherwise returns `null`.
+  static PartDirective? tryFindPartDirective(
+    CompilationUnit unit, {
+    required String uri,
+  }) {
+    return unit.directives
+        .whereType<PartDirective>()
+        .where((directive) => directive.uri.stringValue == uri)
+        .firstOrNull;
+  }
+
+  /// Returns `true` if the [unit] contains a part directive with the given
+  /// [uri].
+  static bool hasPartDirective(
+    CompilationUnit unit, {
+    required String uri,
+  }) {
+    return tryFindPartDirective(unit, uri: uri) != null;
+  }
+
+  /// Returns [PartOfDirective] if the [unit] contains a part of directive with
+  /// the given [uri], otherwise returns `null`.
+  static PartOfDirective? tryFindPartOfDirective(
+    CompilationUnit unit, {
+    required String uri,
+  }) {
+    var directives = unit.directives
+        .whereType<PartOfDirective>()
+        .where((directive) => directive.uri?.stringValue == uri);
+
+    return directives.isNotEmpty ? directives.first : null;
+  }
+
+  /// Returns `true` if the [unit] contains a part of directive with the given
+  /// [uri].
+  static bool hasPartOfDirective(
+    CompilationUnit unit, {
+    required String uri,
+  }) {
+    return tryFindPartOfDirective(unit, uri: uri) != null;
+  }
+
   /// Returns `true` if the [classDeclaration] has an extends clause with the
   /// given [name].
   static bool hasExtendsClause(
@@ -220,6 +285,31 @@ abstract class CompilationUnitHelpers {
     );
 
     return maybeDeclaration != null;
+  }
+
+  /// Returns [Annotation] if the class has an annotation with the given [name],
+  /// otherwise returns `null`.
+  static Annotation? tryFindAnnotation(
+    MethodDeclaration methodDeclaration, {
+    required String name,
+  }) {
+    var annotations = methodDeclaration.metadata
+        .where((annotation) => annotation.name.name == name);
+
+    return annotations.isNotEmpty ? annotations.first : null;
+  }
+
+  /// Returns `true` if the class has an annotation with the given [name].
+  static bool hasAnnotation(
+    MethodDeclaration classDeclaration, {
+    required String name,
+  }) {
+    var maybeAnnotation = tryFindAnnotation(
+      classDeclaration,
+      name: name,
+    );
+
+    return maybeAnnotation != null;
   }
 
   /// Returns [FieldDeclaration] if the class has a field with the given [name],

@@ -5,6 +5,8 @@ import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/model_library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/server_test_tools_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/custom_allocators.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_filter_util.dart';
 
 /// A [CodeGenerator] that generates the server side dart code of a
 /// serverpod project.
@@ -20,15 +22,43 @@ class DartServerCodeGenerator extends CodeGenerator {
       serverCode: true,
       config: config,
     );
+
+    var modelAllocatorContext = [];
+
+    var sealedHierarchies = ModelFilterUtil.getSealedHierarchies(models);
+
+    var modelsWithoutSealedHierarchies =
+        ModelFilterUtil.getClassesWithoutSealedHierarchies(models);
+
+    for (var sealedHierarchy in sealedHierarchies) {
+      var partOfAllocator = PartOfAllocator([]);
+      var partAllocator = PartAllocator(partOfAllocator);
+
+      for (var protocolFile in sealedHierarchy) {
+        modelAllocatorContext.add((
+          model: protocolFile,
+          allocator:
+              protocolFile.isSealedTopNode ? partAllocator : partOfAllocator
+        ));
+      }
+    }
+
+    for (var protocolFile in modelsWithoutSealedHierarchies) {
+      modelAllocatorContext.add((
+        model: protocolFile,
+        allocator: null,
+      ));
+    }
+
     return {
-      for (var protocolFile in models)
+      for (var entry in modelAllocatorContext)
         p.joinAll([
           ...config.generatedServeModelPathParts,
-          ...protocolFile.subDirParts,
-          '${protocolFile.fileName}.dart'
+          ...entry.model.subDirParts,
+          '${entry.model.fileName}.dart'
         ]): serverSideGenerator
-            .generateModelLibrary(protocolFile)
-            .generateCode(),
+            .generateModelLibrary(entry.model)
+            .generateCode(allocator: entry.allocator),
     };
   }
 

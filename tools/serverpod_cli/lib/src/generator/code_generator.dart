@@ -39,8 +39,12 @@ abstract class CodeGenerator {
 }
 
 extension GenerateCode on Library {
-  String generateCode() {
-    var code = accept(DartEmitter.scoped(useNullSafetySyntax: true)).toString();
+  String generateCode({Allocator? allocator}) {
+    var code = accept(DartEmitter(
+      useNullSafetySyntax: true,
+      allocator: allocator ?? Allocator.simplePrefixing(),
+    )).toString();
+
     try {
       return DartFormatter().format('''
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */

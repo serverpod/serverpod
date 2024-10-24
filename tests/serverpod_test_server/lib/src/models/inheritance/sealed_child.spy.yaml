@@ -1,0 +1,4 @@
+class: SealedChild
+extends: SealedParent
+fields:
+    nullableInt: int?

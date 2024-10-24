@@ -1,0 +1,5 @@
+class: SealedParent
+sealed: true
+fields: 
+    sealedInt: int
+    sealedString: String
