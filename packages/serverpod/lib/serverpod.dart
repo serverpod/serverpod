@@ -1,3 +1,5 @@
+library serverpod;
+
 // Config
 export 'package:serverpod_shared/src/config.dart';
 
