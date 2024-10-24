@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:projectname_server/src/endpoints/example_endpoint.dart';
+import 'package:projectname_server/src/example_util.dart';
 
 void main() {
   test(
