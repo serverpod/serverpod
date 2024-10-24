@@ -56,10 +56,10 @@ class SerializableModelLibraryGenerator {
           }
         }
 
-        if (classDefinition.sealedTopNode != null &&
-            classDefinition.sealedTopNode != classDefinition) {
+        if (!classDefinition.isSealedTopNode &&
+            classDefinition.sealedTopNode != null) {
           libraryBuilder.directives.add(
-            Directive.partOf('${classDefinition.sealedTopNode!.fileName}.dart'),
+            Directive.partOf('${classDefinition.sealedTopNode?.fileName}.dart'),
           );
         }
 
@@ -245,13 +245,18 @@ class SerializableModelLibraryGenerator {
         classBuilder.methods.add(_buildCopyWithMethod(classDefinition, fields));
       }
       // Serialization
-      classBuilder.methods.add(_buildModelClassToJsonMethod(fields));
+
+      if (!classDefinition.isSealed) {
+        classBuilder.methods.add(_buildModelClassToJsonMethod(fields));
+      }
 
       // Serialization for database and everything
       if (serverCode) {
-        classBuilder.methods.add(
-          _buildModelClassToJsonForProtocolMethod(fields),
-        );
+        if (!classDefinition.isSealed) {
+          classBuilder.methods.add(
+            _buildModelClassToJsonForProtocolMethod(fields),
+          );
+        }
 
         if (tableName != null) {
           classBuilder.methods.addAll([
@@ -267,7 +272,9 @@ class SerializableModelLibraryGenerator {
         }
       }
 
-      classBuilder.methods.add(_buildToStringMethod(serverCode));
+      if (!classDefinition.isSealed) {
+        classBuilder.methods.add(_buildToStringMethod(serverCode));
+      }
     });
   }
 
@@ -281,20 +288,20 @@ class SerializableModelLibraryGenerator {
           .any((field) => field.type.nullable);
     }
 
-    if (classDefinition.isSealedTopNode) {
-      var descendantFields = [];
-      var descendants = classDefinition.descendantClasses;
-
-      for (var descendant in descendants) {
-        descendantFields.addAll(descendant.fields);
-      }
-
-      return descendantFields
-          .where((field) => field.shouldIncludeField(serverCode))
-          .any((field) => field.type.nullable);
+    if (!classDefinition.isSealedTopNode) {
+      return false;
     }
 
-    return false;
+    var descendantFields = [];
+    var descendants = classDefinition.descendantClasses;
+
+    for (var descendant in descendants) {
+      descendantFields.addAll(descendant.fields);
+    }
+
+    return descendantFields
+        .where((field) => field.shouldIncludeField(serverCode))
+        .any((field) => field.type.nullable);
   }
 
   Class _buildUndefinedClass() {

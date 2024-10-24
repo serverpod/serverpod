@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:test/test.dart';
@@ -93,6 +94,33 @@ void main() {
 
         expect(copyWithMethod, isNull);
       });
+
+      test('does NOT have a toJson method', () {
+        var toJsonMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          parentClass!,
+          name: 'toJson',
+        );
+
+        expect(toJsonMethod, isNull);
+      });
+
+      test('does NOT have a toJsonForProtocol method', () {
+        var toJsonForProtocolMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+          parentClass!,
+          name: 'toJsonForProtocol',
+        );
+
+        expect(toJsonForProtocolMethod, isNull);
+      });
+
+      test('does NOT have a toString method', () {
+        var toStringMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          parentClass!,
+          name: 'toString',
+        );
+        expect(toStringMethod, isNull);
+      });
     });
 
     group('Then the ${child.className}', () {
@@ -133,6 +161,34 @@ void main() {
         );
 
         expect(copyWithMethod, isNotNull);
+      });
+
+      test('does have a toJson method', () {
+        var toJsonMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          childClass!,
+          name: 'toJson',
+        );
+
+        expect(toJsonMethod, isNotNull);
+      });
+
+      test('does have a toJsonForProtocol method', () {
+        var toJsonForProtocolMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+          childClass!,
+          name: 'toJsonForProtocol',
+        );
+
+        expect(toJsonForProtocolMethod, isNotNull);
+      });
+
+      test('does have a toString method', () {
+        var toStringMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          childClass!,
+          name: 'toString',
+        );
+
+        expect(toStringMethod, isNotNull);
       });
     });
   });
@@ -594,6 +650,59 @@ void main() {
         );
 
         expect(overrideAnnotation, isNull);
+      });
+    });
+  });
+
+  group('Given a sealed class with no children when generating code', () {
+    var parent = ClassDefinitionBuilder()
+        .withClassName('ExampleParent')
+        .withFileName('example_parent')
+        .withSimpleField('name', 'String')
+        .withIsSealed(true)
+        .build();
+
+    var models = [
+      parent,
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var parentCompilationUnit =
+        parseString(content: codeMap[getExpectedFilePath(parent.fileName)]!)
+            .unit;
+
+    group('then ${parent.className}', () {
+      var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        parentCompilationUnit,
+        name: parent.className,
+      );
+
+      test('is defined', () {
+        expect(parentClass, isNotNull);
+      });
+
+      test('does NOT have a copyWith method', () {
+        var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          parentClass!,
+          name: 'copyWith',
+        );
+
+        expect(copyWithMethod, isNull);
+      });
+
+      var directives = parentCompilationUnit.directives;
+
+      test('has only directive which is an import', () {
+        expect(directives.length, 1);
+        expect(directives.first, isA<ImportDirective>());
+      });
+
+      test('does NOT have a part directive', () {
+        expect(directives.first, isNot(isA<PartDirective>()));
       });
     });
   });
