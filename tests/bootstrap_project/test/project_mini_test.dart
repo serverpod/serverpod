@@ -4,8 +4,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
-import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
+
+import '../lib/src/util.dart';
 
 const tempDirName = 'temp-mini';
 
@@ -24,8 +25,18 @@ void main() async {
     await Process.run('mkdir', [tempDirName], workingDirectory: rootPath);
   });
 
+  tearDownAll(() async {
+    try {
+      await Process.run(
+        'rm',
+        ['-rf', tempDirName],
+        workingDirectory: rootPath,
+      );
+    } catch (e) {}
+  });
+
   group('Given a clean state', () {
-    final (projectName, commandRoot) = createRandomProjectName(tempPath);
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
 
@@ -66,7 +77,7 @@ void main() async {
   });
 
   group('Given a clean state', () {
-    final (projectName, _) = createRandomProjectName(tempPath);
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
 
@@ -92,7 +103,7 @@ void main() async {
         reason: 'Failed to create the serverpod project.',
       );
 
-      final (serverDir, _, _) = createProjectFolderPaths(projectName);
+      final serverDir = createServerFolderPath(projectName);
 
       var configDir =
           Directory(path.join(tempPath, serverDir, 'config')).existsSync();
@@ -138,8 +149,8 @@ void main() async {
   });
 
   group('Given a clean state', () {
-    final (projectName, commandRoot) = createRandomProjectName(tempPath);
-    final (serverDir, _, _) = createProjectFolderPaths(projectName);
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+    final serverDir = createServerFolderPath(projectName);
     late Process createProcess;
 
     tearDown(() async {
@@ -223,8 +234,8 @@ void main() async {
   });
 
   group('Given a clean state', () {
-    final (projectName, _) = createRandomProjectName(tempPath);
-    final (serverDir, _, _) = createProjectFolderPaths(projectName);
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+    final serverDir = createServerFolderPath(projectName);
     late Process createProcess;
 
     test(
@@ -319,38 +330,39 @@ void main() async {
     });
   });
 
-  tearDownAll(() async {
-    try {
-      await Process.run(
-        'rm',
-        ['-rf', tempDirName],
-        workingDirectory: rootPath,
+  group('Given a created mini project', () {
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+
+    late Process createProcess;
+
+    setUp(() async {
+      createProcess = await Process.start(
+        'serverpod',
+        ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
+        workingDirectory: tempPath,
+        environment: {
+          'SERVERPOD_HOME': rootPath,
+        },
       );
-    } catch (e) {}
+      assert((await createProcess.exitCode) == 0);
+    });
+
+    tearDown(() async {
+      createProcess.kill();
+
+      while (!await isNetworkPortAvailable(8090));
+    });
+
+    test('when running tests then example unit and integration tests passes',
+        () async {
+      var testProcess = await Process.start(
+        'dart',
+        ['test'],
+        workingDirectory:
+            path.join(tempPath, projectName, "${projectName}_server"),
+      );
+
+      await expectLater(testProcess.exitCode, completion(0));
+    });
   });
-}
-
-(String, String) createRandomProjectName(String root) {
-  final projectName = 'test_${Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-  final commandRoot = path.join(root, projectName, '${projectName}_server');
-
-  return (projectName, commandRoot);
-}
-
-(String, String, String) createProjectFolderPaths(String projectName) {
-  final serverDir = path.join(projectName, '${projectName}_server');
-  final flutterDir = path.join(projectName, '${projectName}_flutter');
-  final clientDir = path.join(projectName, '${projectName}_client');
-
-  return (serverDir, flutterDir, clientDir);
-}
-
-Future<bool> isNetworkPortAvailable(int port) async {
-  try {
-    var socket = await ServerSocket.bind(InternetAddress.anyIPv4, port);
-    await socket.close();
-    return true;
-  } catch (e) {
-    return false;
-  }
 }

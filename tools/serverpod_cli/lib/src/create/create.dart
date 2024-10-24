@@ -98,6 +98,17 @@ Future<bool> performCreate(
         return true;
       },
     );
+  } else if (template == ServerpodTemplateType.module) {
+    success &= await log.progress(
+        'Writing project files.',
+        () => Future(() {
+              _copyModuleTemplates(
+                serverpodDirs,
+                name: name,
+                customServerpodPath: productionMode ? null : serverpodHome,
+              );
+              return true;
+            }));
   }
 
   if (template == ServerpodTemplateType.server) {
@@ -113,14 +124,16 @@ Future<bool> performCreate(
     );
   }
 
+  success &= await log.progress('Getting server package dependencies.', () {
+    return CommandLineTools.dartPubGet(serverpodDirs.serverDir);
+  });
+
+  success &= await log.progress('Getting client package dependencies.', () {
+    return CommandLineTools.dartPubGet(serverpodDirs.clientDir);
+  });
+
   if (template == ServerpodTemplateType.server ||
       template == ServerpodTemplateType.mini) {
-    success &= await log.progress('Getting server package dependencies.', () {
-      return CommandLineTools.dartPubGet(serverpodDirs.serverDir);
-    });
-    success &= await log.progress('Getting client package dependencies.', () {
-      return CommandLineTools.dartPubGet(serverpodDirs.clientDir);
-    });
     success &=
         await log.progress('Getting Flutter app package dependencies.', () {
       return CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
@@ -129,20 +142,10 @@ Future<bool> performCreate(
       return EntitlementsModifier.addNetworkToEntitlements(
           serverpodDirs.flutterDir);
     });
-  } else if (template == ServerpodTemplateType.module) {
-    success &= await log.progress(
-        'Writing project files.',
-        () => Future(() {
-              _copyModuleTemplates(
-                serverpodDirs,
-                name: name,
-                customServerpodPath: productionMode ? null : serverpodHome,
-              );
-              return true;
-            }));
   }
 
-  if (template == ServerpodTemplateType.server) {
+  if (template == ServerpodTemplateType.server ||
+      template == ServerpodTemplateType.module) {
     success &= await log.progress('Creating default database migration.', () {
       return DatabaseSetup.createDefaultMigration(
         serverpodDirs.serverDir,
@@ -349,10 +352,6 @@ void _copyServerUpgrade(
   required String name,
   bool skipMain = false,
 }) {
-  var dbPassword = generateRandomString();
-  var dbProductionPassword = generateRandomString();
-  var dbStagingPassword = generateRandomString();
-
   var awsName = name.replaceAll('_', '-');
   var randomAwsId = math.Random.secure().nextInt(10000000).toString();
 
@@ -379,6 +378,10 @@ void _copyServerUpgrade(
           replacement: generateRandomString(),
         ),
         Replacement(
+          slotName: 'SERVICE_SECRET_TEST',
+          replacement: generateRandomString(),
+        ),
+        Replacement(
           slotName: 'SERVICE_SECRET_STAGING',
           replacement: generateRandomString(),
         ),
@@ -388,18 +391,26 @@ void _copyServerUpgrade(
         ),
         Replacement(
           slotName: 'DB_PASSWORD',
-          replacement: dbPassword,
+          replacement: generateRandomString(),
+        ),
+        Replacement(
+          slotName: 'DB_TEST_PASSWORD',
+          replacement: generateRandomString(),
         ),
         Replacement(
           slotName: 'DB_PRODUCTION_PASSWORD',
-          replacement: dbProductionPassword,
+          replacement: generateRandomString(),
         ),
         Replacement(
           slotName: 'DB_STAGING_PASSWORD',
-          replacement: dbStagingPassword,
+          replacement: generateRandomString(),
         ),
         Replacement(
           slotName: 'REDIS_PASSWORD',
+          replacement: generateRandomString(),
+        ),
+        Replacement(
+          slotName: 'REDIS_TEST_PASSWORD',
           replacement: generateRandomString(),
         ),
       ],

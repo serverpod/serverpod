@@ -6,6 +6,28 @@ if [ ! -f util/.serverpod_util_root ]; then
     exit 1
 fi
 
+generateServerUpgradeFiles() {
+    # Save current files
+    find . -type f | sort > before.txt 
+
+    # Copy over project files temporarily from base projectname_server template
+    cp -rn $BASE/templates/serverpod_templates/projectname_server/lib/src/* lib/src/
+    cp $BASE/templates/serverpod_templates/projectname_server/pubspec.yaml pubspec.yaml
+    cp -r $BASE/templates/serverpod_templates/projectname_server/.dart_tool .
+
+    dart $CLI generate --no-analytics
+
+    # Save files after generation
+    find . -type f | sort > after.txt
+
+    # Remove all generated files except the test tools file.
+    # The generated endpoint files are already tracked in projectname_server,
+    # and should not be tracked again in the upgrade template.
+    test_tools_file="test/integration/test_tools/serverpod_test_tools.dart"
+    comm -13 before.txt after.txt | grep -v "$test_tools_file" | xargs rm 
+    rm before.txt
+}
+
 # Makes script exit on first non-zero error code
 set -e
 
@@ -38,6 +60,11 @@ dart $CLI generate --no-analytics
 echo "\nprojectname_server"
 cd $BASE/templates/serverpod_templates/projectname_server
 dart $CLI generate --no-analytics
+
+echo "\nprojectname_server_upgrade"
+cd $BASE/templates/serverpod_templates/projectname_server_upgrade
+generateServerUpgradeFiles
+
 
 # Auth module
 
