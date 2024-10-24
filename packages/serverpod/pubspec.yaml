@@ -34,6 +34,7 @@ dependencies:
   system_resources: ^1.6.0
   vm_service: ">=13.0.0 <15.0.0"
   yaml: ^3.1.1
+  relic: 2.1.5
   serverpod_shared: 2.1.5
   serverpod_serialization: 2.1.5
 
@@ -42,6 +43,8 @@ dev_dependencies:
   serverpod_lints: 2.1.5
 
 dependency_overrides:
+  relic:
+    path: ../relic
   serverpod_shared:
     path: ../serverpod_shared
   serverpod_serialization:
