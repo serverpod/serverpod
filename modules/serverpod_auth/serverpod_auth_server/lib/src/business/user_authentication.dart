@@ -6,10 +6,10 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Provides methods for authenticating users.
 class UserAuthentication {
-  /// Signs in a user to the server. The user should have been authenticated
-  /// before signing them in. Sends the `AuthKey.id` and `key` to the client and
-  /// uses that for future authentication. In most situations, you should use
-  /// one of the auth providers instead of this method.
+  /// Signs in an user to the server. The user should have been authenticated
+  /// before signing them in. Send the AuthKey.id and key to the client and
+  /// use that to authenticate in future calls. In most situations you should
+  /// use one of the auth providers instead of this method.
   ///
   /// - `updateSession`: If set to `true`, the session will be updated with
   ///   the authenticated user's information. The default is `true`.
