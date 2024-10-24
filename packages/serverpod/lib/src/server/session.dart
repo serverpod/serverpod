@@ -236,7 +236,7 @@ abstract class Session implements DatabaseAccessor {
 
     try {
       if (_logManager == null && error != null) {
-        serverpod.logVerbose(error);
+        serverpod.logVerbose(error.toString());
         if (stackTrace != null) {
           serverpod.logVerbose(stackTrace.toString());
         }
