@@ -150,7 +150,7 @@ class TestDatabaseProxy implements Database {
 
     try {
       var result = await transactionFunction(localTransaction);
-      await _transactionManager.removePreviousSavePoint(unlock: true);
+      await _transactionManager.releasePreviousSavePoint(unlock: true);
       return result;
     } catch (e) {
       await _transactionManager.rollbackToPreviousSavePoint(unlock: true);
