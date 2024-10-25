@@ -98,14 +98,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
 
   Serverpod? _serverpodInstance;
   Serverpod get _serverpod {
-    var serverpodInstance = _serverpodInstance;
-    if (serverpodInstance != null) {
-      return serverpodInstance;
-    }
-
-    serverpodInstance = _buildServerpodAndInitializeEndpoints();
-    _serverpodInstance = serverpodInstance;
-    return serverpodInstance;
+    return _serverpodInstance ??= _buildServerpodAndInitializeEndpoints();
   }
 
   /// Whether the database is enabled and supported by the project configuration.
