@@ -1,5 +1,3 @@
-library server;
-
 export 'src/authentication/authentication_info.dart';
 export 'src/authentication/scope.dart';
 export 'src/generated/server_health_metric.dart';
@@ -12,3 +10,4 @@ export 'src/server/run_mode.dart';
 export 'src/server/server.dart';
 export 'src/server/serverpod.dart' hide ServerpodInternalMethods;
 export 'src/server/session.dart' hide SessionInternalMethods;
+export 'src/server/command_line_args.dart' show ServerpodLoggingMode;

@@ -345,6 +345,7 @@ class ServerTestToolsGenerator {
           (methodBuilder) {
             methodBuilder
               ..name = 'initialize'
+              ..returns = refer('void')
               ..annotations.add(refer('override'))
               ..requiredParameters.add(
                 Parameter(
@@ -384,6 +385,7 @@ class ServerTestToolsGenerator {
     return Method((methodBuilder) {
       methodBuilder
         ..name = 'withServerpod'
+        ..returns = refer('void')
         ..annotations.add(refer('isTestGroup', serverpodTestUrl))
         ..requiredParameters.addAll([
           Parameter((p) => p
@@ -402,6 +404,10 @@ class ServerTestToolsGenerator {
             ..name = 'enableSessionLogging'
             ..named = true
             ..type = refer('bool?')),
+          Parameter((p) => p
+            ..name = 'serverpodLoggingMode'
+            ..named = true
+            ..type = refer('ServerpodLoggingMode?', serverpodUrl(true))),
           Parameter((p) => p
             ..name = 'testGroupTagsOverride'
             ..named = true
@@ -437,6 +443,7 @@ class ServerTestToolsGenerator {
                 'isDatabaseEnabled': literalBool(
                   config.isFeatureEnabled(ServerpodFeature.database),
                 ),
+                'serverpodLoggingMode': refer('serverpodLoggingMode'),
               },
             ),
           ],

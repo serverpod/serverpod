@@ -1,5 +1,3 @@
-library serverpod_test;
-
 export 'src/with_serverpod.dart';
 export 'src/test_session_builder.dart';
 export 'src/util.dart';

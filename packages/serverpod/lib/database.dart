@@ -1,5 +1,3 @@
-library database;
-
 export 'src/database/concepts/columns.dart';
 export 'src/database/concepts/database_result.dart';
 export 'src/database/concepts/expressions.dart';

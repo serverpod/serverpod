@@ -66,11 +66,12 @@ void main() {
             testToolsFile,
             matches(
               r'@_i\d\.isTestGroup\n'
-              r'withServerpod\(\n'
+              r'void withServerpod\(\n'
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  String\? runMode,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  bool\? applyMigrations,\n'
@@ -138,11 +139,12 @@ void main() {
             testToolsFile,
             matches(
               r'@_i\d\.isTestGroup\n'
-              r'withServerpod\(\n'
+              r'void withServerpod\(\n'
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  String\? runMode,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
               r'\}\)',
             ));
@@ -183,11 +185,12 @@ void main() {
             testToolsFile,
             matches(
               r'@_i\d\.isTestGroup\n'
-              r'withServerpod\(\n'
+              r'void withServerpod\(\n'
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  String\? runMode,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  bool\? applyMigrations,\n'
@@ -263,11 +266,12 @@ void main() {
             testToolsFile,
             matches(
               r'@_i\d\.isTestGroup\n'
-              r'withServerpod\(\n'
+              r'void withServerpod\(\n'
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  String\? runMode,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  bool\? applyMigrations,\n'
