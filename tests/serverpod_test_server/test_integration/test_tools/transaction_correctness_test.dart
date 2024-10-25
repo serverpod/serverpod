@@ -11,6 +11,98 @@ void main() {
       var session = sessionBuilder.build();
 
       test(
+          'when inserting an object '
+          'then should be persisted if transaction completes', () async {
+        await session.db.transaction((transaction) async {
+          await SimpleData.db.insertRow(
+            session,
+            SimpleData(num: 1),
+            transaction: transaction,
+          );
+        });
+
+        var simpleDatas = await SimpleData.db.find(session);
+        expect(simpleDatas, hasLength(1));
+        expect(simpleDatas.first.num, 1);
+      });
+
+      test(
+          'when inserting objects in parallel '
+          'then should be persisted if transaction completes', () async {
+        await session.db.transaction((transaction) async {
+          await Future.wait([
+            SimpleData.db.insertRow(
+              session,
+              SimpleData(num: 1),
+              transaction: transaction,
+            ),
+            SimpleData.db.insertRow(
+              session,
+              SimpleData(num: 2),
+              transaction: transaction,
+            ),
+            SimpleData.db.insertRow(
+              session,
+              SimpleData(num: 3),
+              transaction: transaction,
+            )
+          ]);
+        });
+
+        var simpleDatas = await SimpleData.db.find(session);
+
+        expect(simpleDatas, hasLength(3));
+        expect(simpleDatas.map((s) => s.num), containsAll([1, 2, 3]));
+      });
+
+      test(
+          'when inserting an object in parallel to a transaction'
+          'then should throw exception due to concurrent operations', () async {
+        var future = Future.wait([
+          session.db.transaction((transaction) {
+            return SimpleData.db.insertRow(
+              session,
+              SimpleData(num: 1),
+              transaction: transaction,
+            );
+          }),
+          SimpleData.db.insertRow(session, SimpleData(num: 2)),
+        ]);
+
+        await expectLater(
+            future,
+            throwsA(allOf(
+              isA<Exception>(),
+              (e) =>
+                  e.message ==
+                  'Concurrent database calls or other concurrent transactions '
+                      'are not allowed when a transaction is active.',
+            )));
+      });
+
+      test(
+          'when inserting an object without transaction but is executed inside a transaction'
+          'then should throw exception due to concurrent operations', () async {
+        var future = session.db.transaction((tx) async {
+          await SimpleData.db.insertRow(
+            session,
+            SimpleData(num: 1),
+            transaction: null,
+          );
+        });
+
+        await expectLater(
+            future,
+            throwsA(allOf(
+              isA<Exception>(),
+              (e) =>
+                  e.message ==
+                  'Concurrent database calls or other concurrent transactions '
+                      'are not allowed when a transaction is active.',
+            )));
+      });
+
+      test(
           'when database exception occurs '
           'then should not fail `dart test` by leaking exceptions', () async {
         var future = session.db.transaction((tx) async {
