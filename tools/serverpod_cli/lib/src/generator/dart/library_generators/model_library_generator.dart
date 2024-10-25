@@ -41,6 +41,7 @@ class SerializableModelLibraryGenerator {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
     var fields = classDefinition.fieldsIncludingInherited;
+    var sealedTopNode = classDefinition.sealedTopNode;
 
     var buildRepository = BuildRepositoryClass(
       serverCode: serverCode,
@@ -56,10 +57,9 @@ class SerializableModelLibraryGenerator {
           }
         }
 
-        if (!classDefinition.isSealedTopNode &&
-            classDefinition.sealedTopNode != null) {
+        if (!classDefinition.isSealedTopNode && sealedTopNode != null) {
           libraryBuilder.directives.add(
-            Directive.partOf('${classDefinition.sealedTopNode?.fileName}.dart'),
+            Directive.partOf('${sealedTopNode.fileName}.dart'),
           );
         }
 
