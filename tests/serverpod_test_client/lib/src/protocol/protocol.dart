@@ -8,7 +8,8 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-// ignore_for_file: no_leading_underscores_for_library_prefixes
+library protocol; // ignore_for_file: no_leading_underscores_for_library_prefixes
+
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'defaults/boolean/bool_default.dart' as _i2;
 import 'defaults/boolean/bool_default_mix.dart' as _i3;
@@ -184,6 +185,7 @@ export 'exception_with_data.dart';
 export 'inheritance/child_class.dart';
 export 'inheritance/grandparent_class.dart';
 export 'inheritance/parent_class.dart';
+export 'inheritance/sealed_no_child.dart';
 export 'inheritance/sealed_parent.dart';
 export 'long_identifiers/deep_includes/city_with_long_table_name.dart';
 export 'long_identifiers/deep_includes/organization_with_long_table_name.dart';
