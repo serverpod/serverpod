@@ -4,6 +4,8 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/model_library_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/custom_allocators.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_filter_util.dart';
 
 /// A [CodeGenerator] that generates the client side dart code of a
 /// serverpod project.
@@ -20,14 +22,43 @@ class DartClientCodeGenerator extends CodeGenerator {
       config: config,
     );
 
+    var modelAllocatorContext = [];
+
+    var clientClasses = models.where((element) => !element.serverOnly).toList();
+
+    var sealedHierarchies = ModelFilterUtil.getSealedHierarchies(clientClasses);
+
+    var modelsWithoutSealedHierarchies =
+        ModelFilterUtil.getClassesWithoutSealedHierarchies(clientClasses);
+
+    for (var sealedHierarchy in sealedHierarchies) {
+      var partOfAllocator = PartOfAllocator([]);
+      var partAllocator = PartAllocator(partOfAllocator);
+
+      for (var model in sealedHierarchy) {
+        modelAllocatorContext.add((
+          model: model,
+          allocator: model.isSealedTopNode ? partAllocator : partOfAllocator
+        ));
+      }
+    }
+
+    for (var model in modelsWithoutSealedHierarchies) {
+      modelAllocatorContext.add((
+        model: model,
+        allocator: null,
+      ));
+    }
+
     return {
-      for (var model in models)
-        if (!model.serverOnly)
-          p.joinAll([
-            ...config.generatedDartClientModelPathParts,
-            ...model.subDirParts,
-            '${model.fileName}.dart',
-          ]): clientSideGenerator.generateModelLibrary(model).generateCode(),
+      for (var entry in modelAllocatorContext)
+        p.joinAll([
+          ...config.generatedDartClientModelPathParts,
+          ...entry.model.subDirParts,
+          '${entry.model.fileName}.dart'
+        ]): clientSideGenerator
+            .generateModelLibrary(entry.model)
+            .generateCode(allocator: entry.allocator),
     };
   }
 

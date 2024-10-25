@@ -26,6 +26,15 @@ class ClassYamlDefinition {
         valueRestriction: restrictions.validateClassName,
       ),
       ValidateNode(
+        Keyword.isSealed,
+        valueRestriction: BooleanValueRestriction().validate,
+        mutuallyExclusiveKeys: {
+          Keyword.table,
+        },
+        isHidden: !restrictions.config
+            .isExperimentalFeatureEnabled(ExperimentalFeature.inheritance),
+      ),
+      ValidateNode(
         Keyword.extendsClass,
         valueRestriction: restrictions.validateExtendingClassName,
         isHidden: !restrictions.config
@@ -35,6 +44,9 @@ class ClassYamlDefinition {
         Keyword.table,
         keyRestriction: restrictions.validateTableNameKey,
         valueRestriction: restrictions.validateTableName,
+        mutuallyExclusiveKeys: {
+          Keyword.isSealed,
+        },
       ),
       ValidateNode(
         Keyword.managedMigration,
