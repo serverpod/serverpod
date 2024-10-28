@@ -65,7 +65,6 @@ echo "\nprojectname_server_upgrade"
 cd $BASE/templates/serverpod_templates/projectname_server_upgrade
 generateServerUpgradeFiles
 
-
 # Auth module
 
 echo "\nserverpod_auth_server"
