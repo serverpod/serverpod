@@ -1,13 +1,15 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test/src/transaction_manager.dart';
-
 import 'with_serverpod.dart';
+import 'package:synchronized/synchronized.dart';
 
 /// A database proxy that forwards all calls to the provided database.
 class TestDatabaseProxy implements Database {
   final Database _db;
   final RollbackDatabase _rollbackDatabase;
   final TransactionManager _transactionManager;
+
+  final Lock _databaseOperationLock = Lock();
 
   /// Creates a new [TestDatabaseProxy]
   TestDatabaseProxy(this._db, this._rollbackDatabase, this._transactionManager);
@@ -19,11 +21,14 @@ class TestDatabaseProxy implements Database {
     bool useCache = true,
     Transaction? transaction,
   }) {
-    return _db.count<T>(
-      where: where,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.count<T>(
+        where: where,
+        limit: limit,
+        useCache: useCache,
+        transaction: transaction,
+      ),
+      isPartOfUserTransaction: transaction != null,
     );
   }
 
@@ -32,7 +37,13 @@ class TestDatabaseProxy implements Database {
     List<T> rows, {
     Transaction? transaction,
   }) {
-    return _db.delete<T>(rows, transaction: transaction);
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.delete<T>(
+        rows,
+        transaction: transaction,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
   }
 
   @override
@@ -40,7 +51,13 @@ class TestDatabaseProxy implements Database {
     T row, {
     Transaction? transaction,
   }) {
-    return _db.deleteRow<T>(row, transaction: transaction);
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.deleteRow<T>(
+        row,
+        transaction: transaction,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
   }
 
   @override
@@ -48,7 +65,13 @@ class TestDatabaseProxy implements Database {
     required Expression where,
     Transaction? transaction,
   }) {
-    return _db.deleteWhere<T>(where: where, transaction: transaction);
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.deleteWhere<T>(
+        where: where,
+        transaction: transaction,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
   }
 
   @override
@@ -62,15 +85,18 @@ class TestDatabaseProxy implements Database {
     Transaction? transaction,
     Include? include,
   }) {
-    return _db.find<T>(
-      where: where,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      transaction: transaction,
-      include: include,
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.find<T>(
+        where: where,
+        limit: limit,
+        offset: offset,
+        orderBy: orderBy,
+        orderByList: orderByList,
+        orderDescending: orderDescending,
+        transaction: transaction,
+        include: include,
+      ),
+      isPartOfUserTransaction: transaction != null,
     );
   }
 
@@ -80,7 +106,10 @@ class TestDatabaseProxy implements Database {
     Transaction? transaction,
     Include? include,
   }) {
-    return _db.findById<T>(id, transaction: transaction, include: include);
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.findById<T>(id, transaction: transaction, include: include),
+      isPartOfUserTransaction: transaction != null,
+    );
   }
 
   @override
@@ -93,14 +122,17 @@ class TestDatabaseProxy implements Database {
     Transaction? transaction,
     Include? include,
   }) {
-    return _db.findFirstRow<T>(
-      where: where,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      transaction: transaction,
-      include: include,
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.findFirstRow<T>(
+        where: where,
+        offset: offset,
+        orderBy: orderBy,
+        orderByList: orderByList,
+        orderDescending: orderDescending,
+        transaction: transaction,
+        include: include,
+      ),
+      isPartOfUserTransaction: transaction != null,
     );
   }
 
@@ -109,7 +141,13 @@ class TestDatabaseProxy implements Database {
     List<T> rows, {
     Transaction? transaction,
   }) {
-    return _db.insert<T>(rows, transaction: transaction);
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.insert<T>(
+        rows,
+        transaction: transaction,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
   }
 
   @override
@@ -117,7 +155,13 @@ class TestDatabaseProxy implements Database {
     T row, {
     Transaction? transaction,
   }) {
-    return _db.insertRow<T>(row, transaction: transaction);
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.insertRow<T>(
+        row,
+        transaction: transaction,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
   }
 
   @override
@@ -150,7 +194,7 @@ class TestDatabaseProxy implements Database {
 
     try {
       var result = await transactionFunction(localTransaction);
-      await _transactionManager.removePreviousSavePoint(unlock: true);
+      await _transactionManager.releasePreviousSavePoint(unlock: true);
       return result;
     } catch (e) {
       await _transactionManager.rollbackToPreviousSavePoint(unlock: true);
@@ -160,6 +204,25 @@ class TestDatabaseProxy implements Database {
 
   @override
   Future<int> unsafeExecute(
+    String query, {
+    int? timeoutInSeconds,
+    Transaction? transaction,
+    QueryParameters? parameters,
+  }) {
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.unsafeExecute(
+        query,
+        timeoutInSeconds: timeoutInSeconds,
+        transaction: transaction,
+        parameters: parameters,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
+  }
+
+  /// This method is not guarded by the test guard and should only be
+  /// used by the package internal [TransactionManager].
+  Future<int> unsafeExecuteWithoutDatabaseExceptionGuard(
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
@@ -180,11 +243,14 @@ class TestDatabaseProxy implements Database {
     Transaction? transaction,
     QueryParameters? parameters,
   }) {
-    return _db.unsafeQuery(
-      query,
-      timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
-      parameters: parameters,
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.unsafeQuery(
+        query,
+        timeoutInSeconds: timeoutInSeconds,
+        transaction: transaction,
+        parameters: parameters,
+      ),
+      isPartOfUserTransaction: transaction != null,
     );
   }
 
@@ -194,10 +260,13 @@ class TestDatabaseProxy implements Database {
     int? timeoutInSeconds,
     Transaction? transaction,
   }) {
-    return _db.unsafeSimpleExecute(
-      query,
-      timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.unsafeSimpleExecute(
+        query,
+        timeoutInSeconds: timeoutInSeconds,
+        transaction: transaction,
+      ),
+      isPartOfUserTransaction: transaction != null,
     );
   }
 
@@ -207,10 +276,13 @@ class TestDatabaseProxy implements Database {
     int? timeoutInSeconds,
     Transaction? transaction,
   }) {
-    return _db.unsafeSimpleQuery(
-      query,
-      timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.unsafeSimpleQuery(
+        query,
+        timeoutInSeconds: timeoutInSeconds,
+        transaction: transaction,
+      ),
+      isPartOfUserTransaction: transaction != null,
     );
   }
 
@@ -220,7 +292,14 @@ class TestDatabaseProxy implements Database {
     List<Column>? columns,
     Transaction? transaction,
   }) {
-    return _db.update<T>(rows, columns: columns, transaction: transaction);
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.update<T>(
+        rows,
+        columns: columns,
+        transaction: transaction,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
   }
 
   @override
@@ -229,6 +308,49 @@ class TestDatabaseProxy implements Database {
     List<Column>? columns,
     Transaction? transaction,
   }) {
-    return _db.updateRow<T>(row, columns: columns, transaction: transaction);
+    return _rollbackSingleOperationIfDatabaseException(
+      () async {
+        return _db.updateRow<T>(
+          row,
+          columns: columns,
+          transaction: transaction,
+        );
+      },
+      isPartOfUserTransaction: transaction != null,
+    );
+  }
+
+  Future<T> _rollbackSingleOperationIfDatabaseException<T>(
+    Future<T> Function() databaseOperation, {
+    required bool isPartOfUserTransaction,
+  }) async {
+    if (_rollbackDatabase == RollbackDatabase.disabled) {
+      return databaseOperation();
+    }
+
+    return _databaseOperationLock.synchronized(() async {
+      try {
+        await _transactionManager.addSavePoint(
+          lock: true,
+          isPartOfTransaction: isPartOfUserTransaction,
+        );
+      } on ConcurrentTransactionsException {
+        throw InvalidConfigurationException(
+          'Concurrent database calls outside an already active transaction '
+          'are not supported when database rollbacks are enabled. '
+          'If this is intended, disable rolling back the '
+          'database by setting `rollbackDatabase` to `RollbackDatabase.disabled`.',
+        );
+      }
+
+      try {
+        var result = await databaseOperation();
+        await _transactionManager.releasePreviousSavePoint(unlock: true);
+        return result;
+      } on DatabaseException catch (_) {
+        await _transactionManager.rollbackToPreviousSavePoint(unlock: true);
+        rethrow;
+      }
+    });
   }
 }

@@ -416,4 +416,99 @@ void main() {
       rollbackDatabase: RollbackDatabase.disabled,
     );
   });
+
+  withServerpod(
+    'Given rollbackDatabase is not disabled ',
+    rollbackDatabase: RollbackDatabase.afterEach,
+    (sessionBuilder, _) {
+      var session = sessionBuilder.build();
+
+      group('when creating UniqueData with the same unique value', () {
+        late Future failingInsert;
+        setUp(() async {
+          await UniqueData.db.insertRow(
+            session,
+            UniqueData(email: 'test@test.com', number: 1),
+          );
+          failingInsert = UniqueData.db.insertRow(
+            session,
+            UniqueData(email: 'test@test.com', number: 1),
+          );
+        });
+
+        test('then should throw database exception', () async {
+          await expectLater(
+            failingInsert,
+            throwsA(
+              allOf(
+                isA<DatabaseException>(),
+              ),
+            ),
+          );
+        });
+
+        test(
+            'then catching database exception should not prevent further database operations',
+            () async {
+          SimpleData? simpleData;
+          try {
+            await failingInsert;
+          } on DatabaseException catch (_) {
+            simpleData =
+                await SimpleData.db.insertRow(session, SimpleData(num: 123));
+          }
+
+          expect(simpleData, isNotNull);
+          expect(simpleData?.num, 123);
+        });
+      });
+
+      test(
+          'when creating multiple UniqueData with the same unique value in parallel '
+          'then should throw database exception but still insert the one that was successful',
+          () async {
+        try {
+          await Future.wait([
+            UniqueData.db.insertRow(
+              session,
+              UniqueData(email: 'test@test2.com', number: 2),
+            ),
+            UniqueData.db.insertRow(
+              session,
+              UniqueData(email: 'test@test2.com', number: 2),
+            ),
+          ]);
+        } on DatabaseException catch (_) {}
+
+        var uniqueDatas = await UniqueData.db.find(session);
+
+        expect(uniqueDatas, hasLength(1));
+        expect(uniqueDatas.first.email, 'test@test2.com');
+      });
+
+      test(
+          'when creating multiple SimpleData in parallel '
+          'then should have inserted all', () async {
+        await Future.wait([
+          SimpleData.db.insertRow(
+            session,
+            SimpleData(num: 1),
+          ),
+          SimpleData.db.insertRow(
+            session,
+            SimpleData(num: 2),
+          ),
+          SimpleData.db.insertRow(
+            session,
+            SimpleData(num: 3),
+          ),
+        ]);
+
+        var simpleDatas = await SimpleData.db.find(session);
+
+        expect(simpleDatas, hasLength(3));
+        expect(simpleDatas.map((s) => s.num), containsAll([1, 2, 3]));
+      });
+    },
+  );
 }
