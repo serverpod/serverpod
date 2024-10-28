@@ -465,7 +465,7 @@ void main() {
 
       test(
           'when creating multiple UniqueData with the same unique value in parallel '
-          'then should throw database exception but still insert the first one',
+          'then should throw database exception but still insert the one that was successful',
           () async {
         try {
           await Future.wait([
