@@ -239,14 +239,6 @@ void main() async {
     late Process createProcess;
     tearDown(() async {
       createProcess.kill();
-
-      await Process.run(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-      );
-
-      while (!await isNetworkPortAvailable(8090));
     });
 
     test(
@@ -338,6 +330,23 @@ void main() async {
         isTrue,
         reason: '.gcloudignore should exist but it was not found.',
       );
+    });
+  });
+
+  group('Given a clean state', () {
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+    final serverDir = createServerFolderPath(projectName);
+    late Process createProcess;
+    tearDown(() async {
+      createProcess.kill();
+
+      await Process.run(
+        'docker',
+        ['compose', 'down', '-v'],
+        workingDirectory: commandRoot,
+      );
+
+      while (!await isNetworkPortAvailable(8090));
     });
 
     test(
