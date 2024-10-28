@@ -110,7 +110,10 @@ class _UploadDescription {
   Map<String, String> requestFields = {};
 
   _UploadDescription(String description) {
-    var data = jsonDecode(description) as Map<String, dynamic>;
+    var data = jsonDecode(description);
+    if (data is! Map<String, dynamic>) {
+      throw const FormatException('Description not a JSON (map) object');
+    }
     if (data['type'] == 'binary') {
       type = _UploadType.binary;
     } else if (data['type'] == 'multipart') {

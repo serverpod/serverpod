@@ -1,3 +1,4 @@
+import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
 
 import 'package:serverpod_cli/analyzer.dart';
@@ -23,7 +24,8 @@ class DartServerCodeGenerator extends CodeGenerator {
       config: config,
     );
 
-    var modelAllocatorContext = [];
+    var modelAllocatorContext =
+        <({SerializableModelDefinition model, Allocator? allocator})>[];
 
     var sealedHierarchies = ModelFilterUtil.getSealedHierarchies(models);
 

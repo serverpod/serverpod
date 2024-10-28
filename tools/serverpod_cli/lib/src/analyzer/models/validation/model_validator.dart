@@ -122,7 +122,7 @@ void _collectInvalidKeyErrors(
 ) {
   var validKeys =
       documentStructure.where((e) => !e.isHidden).map((e) => e.key).toSet();
-  for (var keyNode in documentContents.nodes.keys.cast<YamlNode>()) {
+  for (var keyNode in documentContents.nodes.keys.whereType<YamlNode>()) {
     if (keyNode is! YamlScalar) {
       collector.addError(SourceSpanSeverityException(
         'Key must be of type String.',

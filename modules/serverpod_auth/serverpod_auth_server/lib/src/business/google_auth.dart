@@ -21,7 +21,10 @@ class GoogleAuth {
     try {
       var file = File(_configFilePath);
       var jsonData = file.readAsStringSync();
-      var data = jsonDecode(jsonData) as Map<String, dynamic>;
+      var data = jsonDecode(jsonData);
+      if (data is! Map<String, dynamic>) {
+        throw const FormatException('Not a JSON (map) object');
+      }
 
       if (data['web'] == null) {
         throw const FormatException('Missing "web" section');

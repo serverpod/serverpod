@@ -301,7 +301,8 @@ class GeneratorConfig {
     if (generatorConfig['modules'] != null) {
       Map modulesData = generatorConfig['modules'];
       for (var package in modulesData.keys) {
-        var nickname = (modulesData[package] as Map?)?['nickname'];
+        var packageValue = modulesData[package];
+        var nickname = packageValue is Map ? packageValue['nickname'] : null;
         manualModules[package] = nickname is String ? nickname : null;
       }
     }
@@ -319,9 +320,10 @@ class GeneratorConfig {
 
     // Load extraClasses
     var extraClasses = <TypeDefinition>[];
-    if (generatorConfig['extraClasses'] != null) {
+    var configExtraClasses = generatorConfig['extraClasses'];
+    if (configExtraClasses != null) {
       try {
-        for (var extraClassConfig in generatorConfig['extraClasses']) {
+        for (var extraClassConfig in configExtraClasses) {
           extraClasses.add(
             parseType(
               extraClassConfig,
@@ -334,7 +336,7 @@ class GeneratorConfig {
       } catch (e) {
         throw SourceSpanFormatException(
             'Failed to load \'extraClasses\' config',
-            (generatorConfig['extraClasses'] as YamlNode).span);
+            configExtraClasses is YamlNode ? configExtraClasses.span : null);
       }
     }
 

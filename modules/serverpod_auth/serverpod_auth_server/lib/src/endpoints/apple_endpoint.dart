@@ -63,7 +63,14 @@ class AppleEndpoint extends Endpoint {
         failReason: AuthenticationFailReason.invalidCredentials,
       );
     }
-    var jsonContent = payload.jsonContent as Map<String, dynamic>;
+    var jsonContent = payload.jsonContent;
+    if (jsonContent is! Map<String, dynamic>) {
+      session.log('JWS payload not a JSON map object', level: LogLevel.error);
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.invalidCredentials,
+      );
+    }
     if (userIdentifier != jsonContent['sub']) {
       return AuthenticationResponse(
         success: false,
