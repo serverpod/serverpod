@@ -48,7 +48,11 @@ class Protocol extends _i1.SerializationManager {
 
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
-    if (data['className'] == 'ModuleClass') {
+    var dataClassName = data['className'];
+    if (dataClassName is! String) {
+      return super.deserializeByClassName(data);
+    }
+    if (dataClassName == 'ModuleClass') {
       return deserialize<_i2.ModuleClass>(data['data']);
     }
     return super.deserializeByClassName(data);

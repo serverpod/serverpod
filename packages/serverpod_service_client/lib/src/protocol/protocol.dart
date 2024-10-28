@@ -788,169 +788,173 @@ class Protocol extends _i1.SerializationManager {
 
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
-    if (data['className'] == 'CacheInfo') {
+    var dataClassName = data['className'];
+    if (dataClassName is! String) {
+      return super.deserializeByClassName(data);
+    }
+    if (dataClassName == 'CacheInfo') {
       return deserialize<_i2.CacheInfo>(data['data']);
     }
-    if (data['className'] == 'CachesInfo') {
+    if (dataClassName == 'CachesInfo') {
       return deserialize<_i3.CachesInfo>(data['data']);
     }
-    if (data['className'] == 'CloudStorageEntry') {
+    if (dataClassName == 'CloudStorageEntry') {
       return deserialize<_i4.CloudStorageEntry>(data['data']);
     }
-    if (data['className'] == 'CloudStorageDirectUploadEntry') {
+    if (dataClassName == 'CloudStorageDirectUploadEntry') {
       return deserialize<_i5.CloudStorageDirectUploadEntry>(data['data']);
     }
-    if (data['className'] == 'ClusterInfo') {
+    if (dataClassName == 'ClusterInfo') {
       return deserialize<_i6.ClusterInfo>(data['data']);
     }
-    if (data['className'] == 'ClusterServerInfo') {
+    if (dataClassName == 'ClusterServerInfo') {
       return deserialize<_i7.ClusterServerInfo>(data['data']);
     }
-    if (data['className'] == 'BulkData') {
+    if (dataClassName == 'BulkData') {
       return deserialize<_i8.BulkData>(data['data']);
     }
-    if (data['className'] == 'BulkDataException') {
+    if (dataClassName == 'BulkDataException') {
       return deserialize<_i9.BulkDataException>(data['data']);
     }
-    if (data['className'] == 'BulkQueryColumnDescription') {
+    if (dataClassName == 'BulkQueryColumnDescription') {
       return deserialize<_i10.BulkQueryColumnDescription>(data['data']);
     }
-    if (data['className'] == 'BulkQueryResult') {
+    if (dataClassName == 'BulkQueryResult') {
       return deserialize<_i11.BulkQueryResult>(data['data']);
     }
-    if (data['className'] == 'ColumnDefinition') {
+    if (dataClassName == 'ColumnDefinition') {
       return deserialize<_i12.ColumnDefinition>(data['data']);
     }
-    if (data['className'] == 'ColumnMigration') {
+    if (dataClassName == 'ColumnMigration') {
       return deserialize<_i13.ColumnMigration>(data['data']);
     }
-    if (data['className'] == 'ColumnType') {
+    if (dataClassName == 'ColumnType') {
       return deserialize<_i14.ColumnType>(data['data']);
     }
-    if (data['className'] == 'DatabaseDefinition') {
+    if (dataClassName == 'DatabaseDefinition') {
       return deserialize<_i15.DatabaseDefinition>(data['data']);
     }
-    if (data['className'] == 'DatabaseDefinitions') {
+    if (dataClassName == 'DatabaseDefinitions') {
       return deserialize<_i16.DatabaseDefinitions>(data['data']);
     }
-    if (data['className'] == 'DatabaseMigration') {
+    if (dataClassName == 'DatabaseMigration') {
       return deserialize<_i17.DatabaseMigration>(data['data']);
     }
-    if (data['className'] == 'DatabaseMigrationAction') {
+    if (dataClassName == 'DatabaseMigrationAction') {
       return deserialize<_i18.DatabaseMigrationAction>(data['data']);
     }
-    if (data['className'] == 'DatabaseMigrationActionType') {
+    if (dataClassName == 'DatabaseMigrationActionType') {
       return deserialize<_i19.DatabaseMigrationActionType>(data['data']);
     }
-    if (data['className'] == 'DatabaseMigrationVersion') {
+    if (dataClassName == 'DatabaseMigrationVersion') {
       return deserialize<_i20.DatabaseMigrationVersion>(data['data']);
     }
-    if (data['className'] == 'DatabaseMigrationWarning') {
+    if (dataClassName == 'DatabaseMigrationWarning') {
       return deserialize<_i21.DatabaseMigrationWarning>(data['data']);
     }
-    if (data['className'] == 'DatabaseMigrationWarningType') {
+    if (dataClassName == 'DatabaseMigrationWarningType') {
       return deserialize<_i22.DatabaseMigrationWarningType>(data['data']);
     }
-    if (data['className'] == 'EnumSerialization') {
+    if (dataClassName == 'EnumSerialization') {
       return deserialize<_i23.EnumSerialization>(data['data']);
     }
-    if (data['className'] == 'Filter') {
+    if (dataClassName == 'Filter') {
       return deserialize<_i24.Filter>(data['data']);
     }
-    if (data['className'] == 'FilterConstraint') {
+    if (dataClassName == 'FilterConstraint') {
       return deserialize<_i25.FilterConstraint>(data['data']);
     }
-    if (data['className'] == 'FilterConstraintType') {
+    if (dataClassName == 'FilterConstraintType') {
       return deserialize<_i26.FilterConstraintType>(data['data']);
     }
-    if (data['className'] == 'ForeignKeyAction') {
+    if (dataClassName == 'ForeignKeyAction') {
       return deserialize<_i27.ForeignKeyAction>(data['data']);
     }
-    if (data['className'] == 'ForeignKeyDefinition') {
+    if (dataClassName == 'ForeignKeyDefinition') {
       return deserialize<_i28.ForeignKeyDefinition>(data['data']);
     }
-    if (data['className'] == 'ForeignKeyMatchType') {
+    if (dataClassName == 'ForeignKeyMatchType') {
       return deserialize<_i29.ForeignKeyMatchType>(data['data']);
     }
-    if (data['className'] == 'IndexDefinition') {
+    if (dataClassName == 'IndexDefinition') {
       return deserialize<_i30.IndexDefinition>(data['data']);
     }
-    if (data['className'] == 'IndexElementDefinition') {
+    if (dataClassName == 'IndexElementDefinition') {
       return deserialize<_i31.IndexElementDefinition>(data['data']);
     }
-    if (data['className'] == 'IndexElementDefinitionType') {
+    if (dataClassName == 'IndexElementDefinitionType') {
       return deserialize<_i32.IndexElementDefinitionType>(data['data']);
     }
-    if (data['className'] == 'TableDefinition') {
+    if (dataClassName == 'TableDefinition') {
       return deserialize<_i33.TableDefinition>(data['data']);
     }
-    if (data['className'] == 'TableMigration') {
+    if (dataClassName == 'TableMigration') {
       return deserialize<_i34.TableMigration>(data['data']);
     }
-    if (data['className'] == 'DistributedCacheEntry') {
+    if (dataClassName == 'DistributedCacheEntry') {
       return deserialize<_i35.DistributedCacheEntry>(data['data']);
     }
-    if (data['className'] == 'AccessDeniedException') {
+    if (dataClassName == 'AccessDeniedException') {
       return deserialize<_i36.AccessDeniedException>(data['data']);
     }
-    if (data['className'] == 'FileNotFoundException') {
+    if (dataClassName == 'FileNotFoundException') {
       return deserialize<_i37.FileNotFoundException>(data['data']);
     }
-    if (data['className'] == 'FutureCallEntry') {
+    if (dataClassName == 'FutureCallEntry') {
       return deserialize<_i38.FutureCallEntry>(data['data']);
     }
-    if (data['className'] == 'LogEntry') {
+    if (dataClassName == 'LogEntry') {
       return deserialize<_i39.LogEntry>(data['data']);
     }
-    if (data['className'] == 'LogLevel') {
+    if (dataClassName == 'LogLevel') {
       return deserialize<_i40.LogLevel>(data['data']);
     }
-    if (data['className'] == 'LogResult') {
+    if (dataClassName == 'LogResult') {
       return deserialize<_i41.LogResult>(data['data']);
     }
-    if (data['className'] == 'LogSettings') {
+    if (dataClassName == 'LogSettings') {
       return deserialize<_i42.LogSettings>(data['data']);
     }
-    if (data['className'] == 'LogSettingsOverride') {
+    if (dataClassName == 'LogSettingsOverride') {
       return deserialize<_i43.LogSettingsOverride>(data['data']);
     }
-    if (data['className'] == 'MessageLogEntry') {
+    if (dataClassName == 'MessageLogEntry') {
       return deserialize<_i44.MessageLogEntry>(data['data']);
     }
-    if (data['className'] == 'MethodInfo') {
+    if (dataClassName == 'MethodInfo') {
       return deserialize<_i45.MethodInfo>(data['data']);
     }
-    if (data['className'] == 'QueryLogEntry') {
+    if (dataClassName == 'QueryLogEntry') {
       return deserialize<_i46.QueryLogEntry>(data['data']);
     }
-    if (data['className'] == 'ReadWriteTestEntry') {
+    if (dataClassName == 'ReadWriteTestEntry') {
       return deserialize<_i47.ReadWriteTestEntry>(data['data']);
     }
-    if (data['className'] == 'RuntimeSettings') {
+    if (dataClassName == 'RuntimeSettings') {
       return deserialize<_i48.RuntimeSettings>(data['data']);
     }
-    if (data['className'] == 'ServerHealthConnectionInfo') {
+    if (dataClassName == 'ServerHealthConnectionInfo') {
       return deserialize<_i49.ServerHealthConnectionInfo>(data['data']);
     }
-    if (data['className'] == 'ServerHealthMetric') {
+    if (dataClassName == 'ServerHealthMetric') {
       return deserialize<_i50.ServerHealthMetric>(data['data']);
     }
-    if (data['className'] == 'ServerHealthResult') {
+    if (dataClassName == 'ServerHealthResult') {
       return deserialize<_i51.ServerHealthResult>(data['data']);
     }
-    if (data['className'] == 'ServerpodSqlException') {
+    if (dataClassName == 'ServerpodSqlException') {
       return deserialize<_i52.ServerpodSqlException>(data['data']);
     }
-    if (data['className'] == 'SessionLogEntry') {
+    if (dataClassName == 'SessionLogEntry') {
       return deserialize<_i53.SessionLogEntry>(data['data']);
     }
-    if (data['className'] == 'SessionLogFilter') {
+    if (dataClassName == 'SessionLogFilter') {
       return deserialize<_i54.SessionLogFilter>(data['data']);
     }
-    if (data['className'] == 'SessionLogInfo') {
+    if (dataClassName == 'SessionLogInfo') {
       return deserialize<_i55.SessionLogInfo>(data['data']);
     }
-    if (data['className'] == 'SessionLogResult') {
+    if (dataClassName == 'SessionLogResult') {
       return deserialize<_i56.SessionLogResult>(data['data']);
     }
     return super.deserializeByClassName(data);

@@ -6838,382 +6838,386 @@ class Protocol extends _i1.SerializationManagerServer {
 
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
-    if (data['className'] == 'CustomClass') {
+    var dataClassName = data['className'];
+    if (dataClassName is! String) {
+      return super.deserializeByClassName(data);
+    }
+    if (dataClassName == 'CustomClass') {
       return deserialize<_i121.CustomClass>(data['data']);
     }
-    if (data['className'] == 'CustomClass2') {
+    if (dataClassName == 'CustomClass2') {
       return deserialize<_i121.CustomClass2>(data['data']);
     }
-    if (data['className'] == 'CustomClass3') {
+    if (dataClassName == 'CustomClass3') {
       return deserialize<_i121.CustomClass3>(data['data']);
     }
-    if (data['className'] == 'ProtocolCustomClass') {
+    if (dataClassName == 'ProtocolCustomClass') {
       return deserialize<_i124.ProtocolCustomClass>(data['data']);
     }
-    if (data['className'] == 'ExternalCustomClass') {
+    if (dataClassName == 'ExternalCustomClass') {
       return deserialize<_i125.ExternalCustomClass>(data['data']);
     }
-    if (data['className'] == 'FreezedCustomClass') {
+    if (dataClassName == 'FreezedCustomClass') {
       return deserialize<_i125.FreezedCustomClass>(data['data']);
     }
-    if (data['className'] == 'BoolDefault') {
+    if (dataClassName == 'BoolDefault') {
       return deserialize<_i5.BoolDefault>(data['data']);
     }
-    if (data['className'] == 'BoolDefaultMix') {
+    if (dataClassName == 'BoolDefaultMix') {
       return deserialize<_i6.BoolDefaultMix>(data['data']);
     }
-    if (data['className'] == 'BoolDefaultModel') {
+    if (dataClassName == 'BoolDefaultModel') {
       return deserialize<_i7.BoolDefaultModel>(data['data']);
     }
-    if (data['className'] == 'BoolDefaultPersist') {
+    if (dataClassName == 'BoolDefaultPersist') {
       return deserialize<_i8.BoolDefaultPersist>(data['data']);
     }
-    if (data['className'] == 'DateTimeDefault') {
+    if (dataClassName == 'DateTimeDefault') {
       return deserialize<_i9.DateTimeDefault>(data['data']);
     }
-    if (data['className'] == 'DateTimeDefaultMix') {
+    if (dataClassName == 'DateTimeDefaultMix') {
       return deserialize<_i10.DateTimeDefaultMix>(data['data']);
     }
-    if (data['className'] == 'DateTimeDefaultModel') {
+    if (dataClassName == 'DateTimeDefaultModel') {
       return deserialize<_i11.DateTimeDefaultModel>(data['data']);
     }
-    if (data['className'] == 'DateTimeDefaultPersist') {
+    if (dataClassName == 'DateTimeDefaultPersist') {
       return deserialize<_i12.DateTimeDefaultPersist>(data['data']);
     }
-    if (data['className'] == 'DoubleDefault') {
+    if (dataClassName == 'DoubleDefault') {
       return deserialize<_i13.DoubleDefault>(data['data']);
     }
-    if (data['className'] == 'DoubleDefaultMix') {
+    if (dataClassName == 'DoubleDefaultMix') {
       return deserialize<_i14.DoubleDefaultMix>(data['data']);
     }
-    if (data['className'] == 'DoubleDefaultModel') {
+    if (dataClassName == 'DoubleDefaultModel') {
       return deserialize<_i15.DoubleDefaultModel>(data['data']);
     }
-    if (data['className'] == 'DoubleDefaultPersist') {
+    if (dataClassName == 'DoubleDefaultPersist') {
       return deserialize<_i16.DoubleDefaultPersist>(data['data']);
     }
-    if (data['className'] == 'DurationDefault') {
+    if (dataClassName == 'DurationDefault') {
       return deserialize<_i17.DurationDefault>(data['data']);
     }
-    if (data['className'] == 'DurationDefaultMix') {
+    if (dataClassName == 'DurationDefaultMix') {
       return deserialize<_i18.DurationDefaultMix>(data['data']);
     }
-    if (data['className'] == 'DurationDefaultModel') {
+    if (dataClassName == 'DurationDefaultModel') {
       return deserialize<_i19.DurationDefaultModel>(data['data']);
     }
-    if (data['className'] == 'DurationDefaultPersist') {
+    if (dataClassName == 'DurationDefaultPersist') {
       return deserialize<_i20.DurationDefaultPersist>(data['data']);
     }
-    if (data['className'] == 'EnumDefault') {
+    if (dataClassName == 'EnumDefault') {
       return deserialize<_i21.EnumDefault>(data['data']);
     }
-    if (data['className'] == 'EnumDefaultMix') {
+    if (dataClassName == 'EnumDefaultMix') {
       return deserialize<_i22.EnumDefaultMix>(data['data']);
     }
-    if (data['className'] == 'EnumDefaultModel') {
+    if (dataClassName == 'EnumDefaultModel') {
       return deserialize<_i23.EnumDefaultModel>(data['data']);
     }
-    if (data['className'] == 'EnumDefaultPersist') {
+    if (dataClassName == 'EnumDefaultPersist') {
       return deserialize<_i24.EnumDefaultPersist>(data['data']);
     }
-    if (data['className'] == 'ByIndexEnum') {
+    if (dataClassName == 'ByIndexEnum') {
       return deserialize<_i25.ByIndexEnum>(data['data']);
     }
-    if (data['className'] == 'ByNameEnum') {
+    if (dataClassName == 'ByNameEnum') {
       return deserialize<_i26.ByNameEnum>(data['data']);
     }
-    if (data['className'] == 'DefaultException') {
+    if (dataClassName == 'DefaultException') {
       return deserialize<_i27.DefaultException>(data['data']);
     }
-    if (data['className'] == 'IntDefault') {
+    if (dataClassName == 'IntDefault') {
       return deserialize<_i28.IntDefault>(data['data']);
     }
-    if (data['className'] == 'IntDefaultMix') {
+    if (dataClassName == 'IntDefaultMix') {
       return deserialize<_i29.IntDefaultMix>(data['data']);
     }
-    if (data['className'] == 'IntDefaultModel') {
+    if (dataClassName == 'IntDefaultModel') {
       return deserialize<_i30.IntDefaultModel>(data['data']);
     }
-    if (data['className'] == 'IntDefaultPersist') {
+    if (dataClassName == 'IntDefaultPersist') {
       return deserialize<_i31.IntDefaultPersist>(data['data']);
     }
-    if (data['className'] == 'StringDefault') {
+    if (dataClassName == 'StringDefault') {
       return deserialize<_i32.StringDefault>(data['data']);
     }
-    if (data['className'] == 'StringDefaultMix') {
+    if (dataClassName == 'StringDefaultMix') {
       return deserialize<_i33.StringDefaultMix>(data['data']);
     }
-    if (data['className'] == 'StringDefaultModel') {
+    if (dataClassName == 'StringDefaultModel') {
       return deserialize<_i34.StringDefaultModel>(data['data']);
     }
-    if (data['className'] == 'StringDefaultPersist') {
+    if (dataClassName == 'StringDefaultPersist') {
       return deserialize<_i35.StringDefaultPersist>(data['data']);
     }
-    if (data['className'] == 'UuidDefault') {
+    if (dataClassName == 'UuidDefault') {
       return deserialize<_i36.UuidDefault>(data['data']);
     }
-    if (data['className'] == 'UuidDefaultMix') {
+    if (dataClassName == 'UuidDefaultMix') {
       return deserialize<_i37.UuidDefaultMix>(data['data']);
     }
-    if (data['className'] == 'UuidDefaultModel') {
+    if (dataClassName == 'UuidDefaultModel') {
       return deserialize<_i38.UuidDefaultModel>(data['data']);
     }
-    if (data['className'] == 'UuidDefaultPersist') {
+    if (dataClassName == 'UuidDefaultPersist') {
       return deserialize<_i39.UuidDefaultPersist>(data['data']);
     }
-    if (data['className'] == 'EmptyModel') {
+    if (dataClassName == 'EmptyModel') {
       return deserialize<_i40.EmptyModel>(data['data']);
     }
-    if (data['className'] == 'EmptyModelRelationItem') {
+    if (dataClassName == 'EmptyModelRelationItem') {
       return deserialize<_i41.EmptyModelRelationItem>(data['data']);
     }
-    if (data['className'] == 'EmptyModelWithTable') {
+    if (dataClassName == 'EmptyModelWithTable') {
       return deserialize<_i42.EmptyModelWithTable>(data['data']);
     }
-    if (data['className'] == 'RelationEmptyModel') {
+    if (dataClassName == 'RelationEmptyModel') {
       return deserialize<_i43.RelationEmptyModel>(data['data']);
     }
-    if (data['className'] == 'ExceptionWithData') {
+    if (dataClassName == 'ExceptionWithData') {
       return deserialize<_i44.ExceptionWithData>(data['data']);
     }
-    if (data['className'] == 'ChildClass') {
+    if (dataClassName == 'ChildClass') {
       return deserialize<_i45.ChildClass>(data['data']);
     }
-    if (data['className'] == 'GrandparentClass') {
+    if (dataClassName == 'GrandparentClass') {
       return deserialize<_i46.GrandparentClass>(data['data']);
     }
-    if (data['className'] == 'ParentClass') {
+    if (dataClassName == 'ParentClass') {
       return deserialize<_i47.ParentClass>(data['data']);
     }
-    if (data['className'] == 'SealedChild') {
+    if (dataClassName == 'SealedChild') {
       return deserialize<_i48.SealedChild>(data['data']);
     }
-    if (data['className'] == 'SealedGrandChild') {
+    if (dataClassName == 'SealedGrandChild') {
       return deserialize<_i48.SealedGrandChild>(data['data']);
     }
-    if (data['className'] == 'SealedOtherChild') {
+    if (dataClassName == 'SealedOtherChild') {
       return deserialize<_i48.SealedOtherChild>(data['data']);
     }
-    if (data['className'] == 'CityWithLongTableName') {
+    if (dataClassName == 'CityWithLongTableName') {
       return deserialize<_i49.CityWithLongTableName>(data['data']);
     }
-    if (data['className'] == 'OrganizationWithLongTableName') {
+    if (dataClassName == 'OrganizationWithLongTableName') {
       return deserialize<_i50.OrganizationWithLongTableName>(data['data']);
     }
-    if (data['className'] == 'PersonWithLongTableName') {
+    if (dataClassName == 'PersonWithLongTableName') {
       return deserialize<_i51.PersonWithLongTableName>(data['data']);
     }
-    if (data['className'] == 'MaxFieldName') {
+    if (dataClassName == 'MaxFieldName') {
       return deserialize<_i52.MaxFieldName>(data['data']);
     }
-    if (data['className'] == 'LongImplicitIdField') {
+    if (dataClassName == 'LongImplicitIdField') {
       return deserialize<_i53.LongImplicitIdField>(data['data']);
     }
-    if (data['className'] == 'LongImplicitIdFieldCollection') {
+    if (dataClassName == 'LongImplicitIdFieldCollection') {
       return deserialize<_i54.LongImplicitIdFieldCollection>(data['data']);
     }
-    if (data['className'] == 'RelationToMultipleMaxFieldName') {
+    if (dataClassName == 'RelationToMultipleMaxFieldName') {
       return deserialize<_i55.RelationToMultipleMaxFieldName>(data['data']);
     }
-    if (data['className'] == 'UserNote') {
+    if (dataClassName == 'UserNote') {
       return deserialize<_i56.UserNote>(data['data']);
     }
-    if (data['className'] == 'UserNoteCollection') {
+    if (dataClassName == 'UserNoteCollection') {
       return deserialize<_i57.UserNoteCollection>(data['data']);
     }
-    if (data['className'] == 'UserNoteCollectionWithALongName') {
+    if (dataClassName == 'UserNoteCollectionWithALongName') {
       return deserialize<_i58.UserNoteCollectionWithALongName>(data['data']);
     }
-    if (data['className'] == 'UserNoteWithALongName') {
+    if (dataClassName == 'UserNoteWithALongName') {
       return deserialize<_i59.UserNoteWithALongName>(data['data']);
     }
-    if (data['className'] == 'MultipleMaxFieldName') {
+    if (dataClassName == 'MultipleMaxFieldName') {
       return deserialize<_i60.MultipleMaxFieldName>(data['data']);
     }
-    if (data['className'] == 'City') {
+    if (dataClassName == 'City') {
       return deserialize<_i61.City>(data['data']);
     }
-    if (data['className'] == 'Organization') {
+    if (dataClassName == 'Organization') {
       return deserialize<_i62.Organization>(data['data']);
     }
-    if (data['className'] == 'Person') {
+    if (dataClassName == 'Person') {
       return deserialize<_i63.Person>(data['data']);
     }
-    if (data['className'] == 'Course') {
+    if (dataClassName == 'Course') {
       return deserialize<_i64.Course>(data['data']);
     }
-    if (data['className'] == 'Enrollment') {
+    if (dataClassName == 'Enrollment') {
       return deserialize<_i65.Enrollment>(data['data']);
     }
-    if (data['className'] == 'Student') {
+    if (dataClassName == 'Student') {
       return deserialize<_i66.Student>(data['data']);
     }
-    if (data['className'] == 'ObjectUser') {
+    if (dataClassName == 'ObjectUser') {
       return deserialize<_i67.ObjectUser>(data['data']);
     }
-    if (data['className'] == 'ParentUser') {
+    if (dataClassName == 'ParentUser') {
       return deserialize<_i68.ParentUser>(data['data']);
     }
-    if (data['className'] == 'Arena') {
+    if (dataClassName == 'Arena') {
       return deserialize<_i69.Arena>(data['data']);
     }
-    if (data['className'] == 'Player') {
+    if (dataClassName == 'Player') {
       return deserialize<_i70.Player>(data['data']);
     }
-    if (data['className'] == 'Team') {
+    if (dataClassName == 'Team') {
       return deserialize<_i71.Team>(data['data']);
     }
-    if (data['className'] == 'Comment') {
+    if (dataClassName == 'Comment') {
       return deserialize<_i72.Comment>(data['data']);
     }
-    if (data['className'] == 'Customer') {
+    if (dataClassName == 'Customer') {
       return deserialize<_i73.Customer>(data['data']);
     }
-    if (data['className'] == 'Order') {
+    if (dataClassName == 'Order') {
       return deserialize<_i74.Order>(data['data']);
     }
-    if (data['className'] == 'Address') {
+    if (dataClassName == 'Address') {
       return deserialize<_i75.Address>(data['data']);
     }
-    if (data['className'] == 'Citizen') {
+    if (dataClassName == 'Citizen') {
       return deserialize<_i76.Citizen>(data['data']);
     }
-    if (data['className'] == 'Company') {
+    if (dataClassName == 'Company') {
       return deserialize<_i77.Company>(data['data']);
     }
-    if (data['className'] == 'Town') {
+    if (dataClassName == 'Town') {
       return deserialize<_i78.Town>(data['data']);
     }
-    if (data['className'] == 'Blocking') {
+    if (dataClassName == 'Blocking') {
       return deserialize<_i79.Blocking>(data['data']);
     }
-    if (data['className'] == 'Member') {
+    if (dataClassName == 'Member') {
       return deserialize<_i80.Member>(data['data']);
     }
-    if (data['className'] == 'Cat') {
+    if (dataClassName == 'Cat') {
       return deserialize<_i81.Cat>(data['data']);
     }
-    if (data['className'] == 'Post') {
+    if (dataClassName == 'Post') {
       return deserialize<_i82.Post>(data['data']);
     }
-    if (data['className'] == 'ModuleDatatype') {
+    if (dataClassName == 'ModuleDatatype') {
       return deserialize<_i83.ModuleDatatype>(data['data']);
     }
-    if (data['className'] == 'Nullability') {
+    if (dataClassName == 'Nullability') {
       return deserialize<_i84.Nullability>(data['data']);
     }
-    if (data['className'] == 'ObjectFieldPersist') {
+    if (dataClassName == 'ObjectFieldPersist') {
       return deserialize<_i85.ObjectFieldPersist>(data['data']);
     }
-    if (data['className'] == 'ObjectFieldScopes') {
+    if (dataClassName == 'ObjectFieldScopes') {
       return deserialize<_i86.ObjectFieldScopes>(data['data']);
     }
-    if (data['className'] == 'ObjectWithByteData') {
+    if (dataClassName == 'ObjectWithByteData') {
       return deserialize<_i87.ObjectWithByteData>(data['data']);
     }
-    if (data['className'] == 'ObjectWithCustomClass') {
+    if (dataClassName == 'ObjectWithCustomClass') {
       return deserialize<_i88.ObjectWithCustomClass>(data['data']);
     }
-    if (data['className'] == 'ObjectWithDuration') {
+    if (dataClassName == 'ObjectWithDuration') {
       return deserialize<_i89.ObjectWithDuration>(data['data']);
     }
-    if (data['className'] == 'ObjectWithEnum') {
+    if (dataClassName == 'ObjectWithEnum') {
       return deserialize<_i90.ObjectWithEnum>(data['data']);
     }
-    if (data['className'] == 'ObjectWithIndex') {
+    if (dataClassName == 'ObjectWithIndex') {
       return deserialize<_i91.ObjectWithIndex>(data['data']);
     }
-    if (data['className'] == 'ObjectWithMaps') {
+    if (dataClassName == 'ObjectWithMaps') {
       return deserialize<_i92.ObjectWithMaps>(data['data']);
     }
-    if (data['className'] == 'ObjectWithObject') {
+    if (dataClassName == 'ObjectWithObject') {
       return deserialize<_i93.ObjectWithObject>(data['data']);
     }
-    if (data['className'] == 'ObjectWithParent') {
+    if (dataClassName == 'ObjectWithParent') {
       return deserialize<_i94.ObjectWithParent>(data['data']);
     }
-    if (data['className'] == 'ObjectWithSelfParent') {
+    if (dataClassName == 'ObjectWithSelfParent') {
       return deserialize<_i95.ObjectWithSelfParent>(data['data']);
     }
-    if (data['className'] == 'ObjectWithUuid') {
+    if (dataClassName == 'ObjectWithUuid') {
       return deserialize<_i96.ObjectWithUuid>(data['data']);
     }
-    if (data['className'] == 'RelatedUniqueData') {
+    if (dataClassName == 'RelatedUniqueData') {
       return deserialize<_i97.RelatedUniqueData>(data['data']);
     }
-    if (data['className'] == 'ScopeNoneFields') {
+    if (dataClassName == 'ScopeNoneFields') {
       return deserialize<_i98.ScopeNoneFields>(data['data']);
     }
-    if (data['className'] == 'ScopeServerOnlyField') {
+    if (dataClassName == 'ScopeServerOnlyField') {
       return deserialize<_i99.ScopeServerOnlyField>(data['data']);
     }
-    if (data['className'] == 'ScopeServerOnlyFieldChild') {
+    if (dataClassName == 'ScopeServerOnlyFieldChild') {
       return deserialize<_i100.ScopeServerOnlyFieldChild>(data['data']);
     }
-    if (data['className'] == 'DefaultServerOnlyClass') {
+    if (dataClassName == 'DefaultServerOnlyClass') {
       return deserialize<_i101.DefaultServerOnlyClass>(data['data']);
     }
-    if (data['className'] == 'DefaultServerOnlyEnum') {
+    if (dataClassName == 'DefaultServerOnlyEnum') {
       return deserialize<_i102.DefaultServerOnlyEnum>(data['data']);
     }
-    if (data['className'] == 'NotServerOnlyClass') {
+    if (dataClassName == 'NotServerOnlyClass') {
       return deserialize<_i103.NotServerOnlyClass>(data['data']);
     }
-    if (data['className'] == 'NotServerOnlyEnum') {
+    if (dataClassName == 'NotServerOnlyEnum') {
       return deserialize<_i104.NotServerOnlyEnum>(data['data']);
     }
-    if (data['className'] == 'ServerOnlyClass') {
+    if (dataClassName == 'ServerOnlyClass') {
       return deserialize<_i105.ServerOnlyClass>(data['data']);
     }
-    if (data['className'] == 'ServerOnlyEnum') {
+    if (dataClassName == 'ServerOnlyEnum') {
       return deserialize<_i106.ServerOnlyEnum>(data['data']);
     }
-    if (data['className'] == 'ServerOnlyClassField') {
+    if (dataClassName == 'ServerOnlyClassField') {
       return deserialize<_i107.ServerOnlyClassField>(data['data']);
     }
-    if (data['className'] == 'SimpleData') {
+    if (dataClassName == 'SimpleData') {
       return deserialize<_i108.SimpleData>(data['data']);
     }
-    if (data['className'] == 'SimpleDataList') {
+    if (dataClassName == 'SimpleDataList') {
       return deserialize<_i109.SimpleDataList>(data['data']);
     }
-    if (data['className'] == 'SimpleDataMap') {
+    if (dataClassName == 'SimpleDataMap') {
       return deserialize<_i110.SimpleDataMap>(data['data']);
     }
-    if (data['className'] == 'SimpleDataObject') {
+    if (dataClassName == 'SimpleDataObject') {
       return deserialize<_i111.SimpleDataObject>(data['data']);
     }
-    if (data['className'] == 'SimpleDateTime') {
+    if (dataClassName == 'SimpleDateTime') {
       return deserialize<_i112.SimpleDateTime>(data['data']);
     }
-    if (data['className'] == 'TestEnum') {
+    if (dataClassName == 'TestEnum') {
       return deserialize<_i113.TestEnum>(data['data']);
     }
-    if (data['className'] == 'TestEnumStringified') {
+    if (dataClassName == 'TestEnumStringified') {
       return deserialize<_i114.TestEnumStringified>(data['data']);
     }
-    if (data['className'] == 'Types') {
+    if (dataClassName == 'Types') {
       return deserialize<_i115.Types>(data['data']);
     }
-    if (data['className'] == 'TypesList') {
+    if (dataClassName == 'TypesList') {
       return deserialize<_i116.TypesList>(data['data']);
     }
-    if (data['className'] == 'TypesMap') {
+    if (dataClassName == 'TypesMap') {
       return deserialize<_i117.TypesMap>(data['data']);
     }
-    if (data['className'] == 'UniqueData') {
+    if (dataClassName == 'UniqueData') {
       return deserialize<_i118.UniqueData>(data['data']);
     }
-    if (data['className'].startsWith('serverpod.')) {
-      data['className'] = data['className'].substring(10);
+    if (dataClassName.startsWith('serverpod.')) {
+      data['className'] = dataClassName.substring(10);
       return _i2.Protocol().deserializeByClassName(data);
     }
-    if (data['className'].startsWith('serverpod_auth.')) {
-      data['className'] = data['className'].substring(15);
+    if (dataClassName.startsWith('serverpod_auth.')) {
+      data['className'] = dataClassName.substring(15);
       return _i3.Protocol().deserializeByClassName(data);
     }
-    if (data['className'].startsWith('serverpod_test_module.')) {
-      data['className'] = data['className'].substring(22);
+    if (dataClassName.startsWith('serverpod_test_module.')) {
+      data['className'] = dataClassName.substring(22);
       return _i4.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
