@@ -412,6 +412,10 @@ class ServerTestToolsGenerator {
             ..name = 'testGroupTagsOverride'
             ..named = true
             ..type = refer('List<String>?')),
+          Parameter((p) => p
+            ..name = 'serverpodStartTimeout'
+            ..named = true
+            ..type = refer('Duration?')),
           if (config.isFeatureEnabled(ServerpodFeature.database)) ...[
             Parameter((p) => p
               ..name = 'rollbackDatabase'
@@ -454,6 +458,7 @@ class ServerTestToolsGenerator {
                     : literalNull,
             'maybeEnableSessionLogging': refer('enableSessionLogging'),
             'maybeTestGroupTagsOverride': refer('testGroupTagsOverride'),
+            'maybeServerpodStartTimeout': refer('serverpodStartTimeout'),
           },
         ).call([
           refer('testClosure'),

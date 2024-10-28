@@ -66,6 +66,7 @@ void Function(TestClosure<T>)
   required RollbackDatabase? maybeRollbackDatabase,
   required bool? maybeEnableSessionLogging,
   required List<String>? maybeTestGroupTagsOverride,
+  required Duration? maybeServerpodStartTimeout,
 }) {
   var rollbackDatabase = maybeRollbackDatabase ?? RollbackDatabase.afterEach;
 
@@ -75,6 +76,8 @@ void Function(TestClosure<T>)
       'Rollbacks where enabled but the database is not enabled in for this project configuration.',
     );
   }
+
+  var startTimeout = maybeServerpodStartTimeout ?? const Duration(seconds: 15);
 
   var mainServerpodSession = testServerpod.createSession(
     rollbackDatabase: rollbackDatabase,
@@ -118,7 +121,13 @@ void Function(TestClosure<T>)
       testGroupName,
       () {
         setUpAll(() async {
-          await testServerpod.start();
+          await testServerpod.start().timeout(startTimeout, onTimeout: () {
+            throw InitializationException(
+              'Serverpod did not start within the timeout of $startTimeout. '
+              'This might indicate that Serverpod cannot connect to the database. '
+              'Ensure that you have run `docker compose up` and check the logs for more information.',
+            );
+          });
 
           if (rollbackDatabase == RollbackDatabase.afterAll ||
               rollbackDatabase == RollbackDatabase.afterEach) {

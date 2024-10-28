@@ -73,6 +73,7 @@ void main() {
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
+              r'  Duration\? serverpodStartTimeout,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  bool\? applyMigrations,\n'
               r'\}\)',
@@ -146,6 +147,7 @@ void main() {
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
+              r'  Duration\? serverpodStartTimeout,\n'
               r'\}\)',
             ));
       },
@@ -192,6 +194,7 @@ void main() {
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
+              r'  Duration\? serverpodStartTimeout,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  bool\? applyMigrations,\n'
               r'\}\)',
@@ -273,6 +276,7 @@ void main() {
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
+              r'  Duration\? serverpodStartTimeout,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  bool\? applyMigrations,\n'
               r'\}\)',
