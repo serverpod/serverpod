@@ -7,6 +7,10 @@ if [ ! -f util/.serverpod_util_root ]; then
 fi
 
 generateServerUpgradeFiles() {
+    # The upgrade folder doesn't have all the files needed
+    # run `serverpod generate`. Therefore some project files have 
+    # to temporarily be copied over from the base projectname_server template.
+
     # Save current files
     find . -type f | sort > before.txt 
 
