@@ -77,7 +77,7 @@ void Function(TestClosure<T>)
     );
   }
 
-  var startTimeout = maybeServerpodStartTimeout ?? const Duration(seconds: 15);
+  var startTimeout = maybeServerpodStartTimeout ?? const Duration(seconds: 30);
 
   var mainServerpodSession = testServerpod.createSession(
     rollbackDatabase: rollbackDatabase,
