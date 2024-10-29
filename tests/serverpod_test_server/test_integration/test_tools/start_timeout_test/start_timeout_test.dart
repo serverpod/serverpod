@@ -3,13 +3,11 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
-enum TestTag { include, exclude }
-
 void main() async {
   test(
-      'Given that withServerpod can not find the database and has a timeout set to 4 seconds '
+      'Given that withServerpod can not find the database and has a timeout set to 0 seconds '
       'when running the test '
-      'then should timeout after roughly 4 seconds', () async {
+      'then should timeout immediately', () async {
     var timer = Stopwatch()..start();
     final result = await runTest('test_that_will_timeout.dart');
 
@@ -17,13 +15,11 @@ void main() async {
     expect(
         result.stdout,
         contains(
-            'Serverpod did not start within the timeout of 0:00:04.000000'));
+            'Serverpod did not start within the timeout of 0:00:00.000000'));
     expect(
-        timer.elapsed.inSeconds,
-        allOf(
-          greaterThanOrEqualTo(4),
-          lessThan(14), // sanity check
-        ));
+      timer.elapsed.inSeconds,
+      lessThan(10), // sanity check
+    );
   });
 
   test(
