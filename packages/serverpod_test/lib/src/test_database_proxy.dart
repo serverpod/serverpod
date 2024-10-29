@@ -172,10 +172,11 @@ class TestDatabaseProxy implements Database {
   @override
   Future<R> transaction<R>(
     TransactionFunction<R> transactionFunction, {
+    TransactionSettings settings = const TransactionSettings(),
     bool isUserCall = true,
   }) async {
     if (!isUserCall || _rollbackDatabase == RollbackDatabase.disabled) {
-      return _db.transaction(transactionFunction);
+      return _db.transaction(transactionFunction, settings: settings);
     }
 
     var localTransaction = _transactionManager.currentTransaction;
