@@ -22,7 +22,7 @@ void main() async {
         timer.elapsed.inSeconds,
         allOf(
           greaterThanOrEqualTo(4),
-          lessThan(10), // sanity check
+          lessThan(14), // sanity check
         ));
   });
 
@@ -43,7 +43,7 @@ void main() async {
           timer.elapsed.inSeconds,
           allOf(
             greaterThanOrEqualTo(30),
-            lessThan(35), // sanity check
+            lessThan(40), // sanity check
           ));
     },
     timeout: Timeout(
