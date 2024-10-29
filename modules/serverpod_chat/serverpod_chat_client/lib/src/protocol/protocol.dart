@@ -191,42 +191,46 @@ class Protocol extends _i1.SerializationManager {
 
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
-    if (data['className'] == 'ChatJoinChannel') {
+    var dataClassName = data['className'];
+    if (dataClassName is! String) {
+      return super.deserializeByClassName(data);
+    }
+    if (dataClassName == 'ChatJoinChannel') {
       return deserialize<_i2.ChatJoinChannel>(data['data']);
     }
-    if (data['className'] == 'ChatJoinChannelFailed') {
+    if (dataClassName == 'ChatJoinChannelFailed') {
       return deserialize<_i3.ChatJoinChannelFailed>(data['data']);
     }
-    if (data['className'] == 'ChatJoinedChannel') {
+    if (dataClassName == 'ChatJoinedChannel') {
       return deserialize<_i4.ChatJoinedChannel>(data['data']);
     }
-    if (data['className'] == 'ChatLeaveChannel') {
+    if (dataClassName == 'ChatLeaveChannel') {
       return deserialize<_i5.ChatLeaveChannel>(data['data']);
     }
-    if (data['className'] == 'ChatMessage') {
+    if (dataClassName == 'ChatMessage') {
       return deserialize<_i6.ChatMessage>(data['data']);
     }
-    if (data['className'] == 'ChatMessageAttachment') {
+    if (dataClassName == 'ChatMessageAttachment') {
       return deserialize<_i7.ChatMessageAttachment>(data['data']);
     }
-    if (data['className'] == 'ChatMessageAttachmentUploadDescription') {
+    if (dataClassName == 'ChatMessageAttachmentUploadDescription') {
       return deserialize<_i8.ChatMessageAttachmentUploadDescription>(
           data['data']);
     }
-    if (data['className'] == 'ChatMessageChunk') {
+    if (dataClassName == 'ChatMessageChunk') {
       return deserialize<_i9.ChatMessageChunk>(data['data']);
     }
-    if (data['className'] == 'ChatMessagePost') {
+    if (dataClassName == 'ChatMessagePost') {
       return deserialize<_i10.ChatMessagePost>(data['data']);
     }
-    if (data['className'] == 'ChatReadMessage') {
+    if (dataClassName == 'ChatReadMessage') {
       return deserialize<_i11.ChatReadMessage>(data['data']);
     }
-    if (data['className'] == 'ChatRequestMessageChunk') {
+    if (dataClassName == 'ChatRequestMessageChunk') {
       return deserialize<_i12.ChatRequestMessageChunk>(data['data']);
     }
-    if (data['className'].startsWith('serverpod_auth.')) {
-      data['className'] = data['className'].substring(15);
+    if (dataClassName.startsWith('serverpod_auth.')) {
+      data['className'] = dataClassName.substring(15);
       return _i14.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);

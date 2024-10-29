@@ -292,7 +292,7 @@ class SerializableModelLibraryGenerator {
       return false;
     }
 
-    var descendantFields = [];
+    var descendantFields = <SerializableModelFieldDefinition>[];
     var descendants = classDefinition.descendantClasses;
 
     for (var descendant in descendants) {

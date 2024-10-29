@@ -225,13 +225,15 @@ class LibraryGenerator {
           ..name = 'data'
           ..type = refer('Map<String,dynamic>')))
         ..body = Block.of([
+          const Code('var dataClassName = data[\'className\'];'),
+          const Code('if (dataClassName is! String) {'
+              'return super.deserializeByClassName(data);}'),
           for (var extraClass in config.extraClasses)
             Code.scope((a) =>
-                'if(data[\'className\'] == \'${extraClass.className}\'){'
+                'if(dataClassName == \'${extraClass.className}\'){'
                 'return deserialize<${a(extraClass.reference(serverCode, config: config))}>(data[\'data\']);}'),
           for (var classInfo in unsealedModels)
-            Code.scope((a) =>
-                'if(data[\'className\'] == \'${classInfo.className}\'){'
+            Code.scope((a) => 'if(dataClassName == \'${classInfo.className}\'){'
                 'return deserialize<${a(refer(classInfo.className, getRef(classInfo)))}>(data[\'data\']);}'),
           if (config.name != 'serverpod' && serverCode)
             _buildDeserializeByClassNameDelegation(
@@ -325,8 +327,8 @@ class LibraryGenerator {
     String projectName,
   ) {
     return Block.of([
-      Code('if(data[\'className\'].startsWith(\'$projectName.\')){'
-          'data[\'className\'] = data[\'className\'].substring(${projectName.length + 1});'),
+      Code('if(dataClassName.startsWith(\'$projectName.\')){'
+          'data[\'className\'] = dataClassName.substring(${projectName.length + 1});'),
       Code.scope((a) =>
           'return ${a(refer('Protocol', protocolImportPath))}().deserializeByClassName(data);'),
       const Code('}'),

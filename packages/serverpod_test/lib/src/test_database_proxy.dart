@@ -172,7 +172,7 @@ class TestDatabaseProxy implements Database {
   @override
   Future<R> transaction<R>(
     TransactionFunction<R> transactionFunction, {
-    isUserCall = true,
+    bool isUserCall = true,
   }) async {
     if (!isUserCall || _rollbackDatabase == RollbackDatabase.disabled) {
       return _db.transaction(transactionFunction);

@@ -220,7 +220,9 @@ abstract class SerializationManager {
         } else if (encodeForProtocol && nonEncodable is ProtocolSerialization) {
           return nonEncodable.toJsonForProtocol();
         } else {
-          return (nonEncodable as dynamic)?.toJson();
+          // ignore: avoid_dynamic_calls
+          return nonEncodable?.toJson();
+          // throws NoSuchMethodError if toJson is not implemented
         }
       },
     ).convert(object);

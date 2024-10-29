@@ -1,3 +1,4 @@
+import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
 
 import 'package:serverpod_cli/analyzer.dart';
@@ -22,7 +23,8 @@ class DartClientCodeGenerator extends CodeGenerator {
       config: config,
     );
 
-    var modelAllocatorContext = [];
+    var modelAllocatorContext =
+        <({SerializableModelDefinition model, Allocator? allocator})>[];
 
     var clientClasses = models.where((element) => !element.serverOnly).toList();
 

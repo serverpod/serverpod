@@ -785,50 +785,54 @@ class Protocol extends _i1.SerializationManagerServer {
 
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
-    if (data['className'] == 'AppleAuthInfo') {
+    var dataClassName = data['className'];
+    if (dataClassName is! String) {
+      return super.deserializeByClassName(data);
+    }
+    if (dataClassName == 'AppleAuthInfo') {
       return deserialize<_i3.AppleAuthInfo>(data['data']);
     }
-    if (data['className'] == 'AuthKey') {
+    if (dataClassName == 'AuthKey') {
       return deserialize<_i4.AuthKey>(data['data']);
     }
-    if (data['className'] == 'AuthenticationFailReason') {
+    if (dataClassName == 'AuthenticationFailReason') {
       return deserialize<_i5.AuthenticationFailReason>(data['data']);
     }
-    if (data['className'] == 'AuthenticationResponse') {
+    if (dataClassName == 'AuthenticationResponse') {
       return deserialize<_i6.AuthenticationResponse>(data['data']);
     }
-    if (data['className'] == 'EmailAuth') {
+    if (dataClassName == 'EmailAuth') {
       return deserialize<_i7.EmailAuth>(data['data']);
     }
-    if (data['className'] == 'EmailCreateAccountRequest') {
+    if (dataClassName == 'EmailCreateAccountRequest') {
       return deserialize<_i8.EmailCreateAccountRequest>(data['data']);
     }
-    if (data['className'] == 'EmailFailedSignIn') {
+    if (dataClassName == 'EmailFailedSignIn') {
       return deserialize<_i9.EmailFailedSignIn>(data['data']);
     }
-    if (data['className'] == 'EmailPasswordReset') {
+    if (dataClassName == 'EmailPasswordReset') {
       return deserialize<_i10.EmailPasswordReset>(data['data']);
     }
-    if (data['className'] == 'EmailReset') {
+    if (dataClassName == 'EmailReset') {
       return deserialize<_i11.EmailReset>(data['data']);
     }
-    if (data['className'] == 'GoogleRefreshToken') {
+    if (dataClassName == 'GoogleRefreshToken') {
       return deserialize<_i12.GoogleRefreshToken>(data['data']);
     }
-    if (data['className'] == 'UserImage') {
+    if (dataClassName == 'UserImage') {
       return deserialize<_i13.UserImage>(data['data']);
     }
-    if (data['className'] == 'UserInfo') {
+    if (dataClassName == 'UserInfo') {
       return deserialize<_i14.UserInfo>(data['data']);
     }
-    if (data['className'] == 'UserInfoPublic') {
+    if (dataClassName == 'UserInfoPublic') {
       return deserialize<_i15.UserInfoPublic>(data['data']);
     }
-    if (data['className'] == 'UserSettingsConfig') {
+    if (dataClassName == 'UserSettingsConfig') {
       return deserialize<_i16.UserSettingsConfig>(data['data']);
     }
-    if (data['className'].startsWith('serverpod.')) {
-      data['className'] = data['className'].substring(10);
+    if (dataClassName.startsWith('serverpod.')) {
+      data['className'] = dataClassName.substring(10);
       return _i2.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);

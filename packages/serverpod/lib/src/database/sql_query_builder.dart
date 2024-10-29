@@ -330,7 +330,8 @@ class InsertQueryBuilder {
     var columnNames =
         selectedColumns.map((e) => '"${e.columnName}"').join(', ');
 
-    var values = _rows.map((row) => row.toJson()).map((row) {
+    var values =
+        _rows.map((row) => row.toJson() as Map<String, dynamic>).map((row) {
       var values = selectedColumns.map((column) {
         var unformattedValue = row[column.columnName];
         return DatabasePoolManager.encoder.convert(
@@ -1177,7 +1178,8 @@ LinkedHashMap<String, String> _gatherIncludeJoins(
   for (var table in tablesWithTableRelations) {
     var tableRelation = table.tableRelation;
 
-    for (var subTableRelation in tableRelation?.getRelations ?? []) {
+    for (var subTableRelation
+        in tableRelation?.getRelations ?? <TableRelation>[]) {
       joins[subTableRelation.relationQueryAlias] = _buildJoinStatement(
         tableRelation: subTableRelation,
       );

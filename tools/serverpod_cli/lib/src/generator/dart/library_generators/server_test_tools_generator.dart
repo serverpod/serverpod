@@ -212,8 +212,8 @@ class ServerTestToolsGenerator {
   Code _buildEndpointStreamMethodCall(
     EndpointDefinition endpoint,
     MethodDefinition method, {
-    required hasStreamParameter,
-    required returnsStream,
+    required bool hasStreamParameter,
+    required bool returnsStream,
   }) {
     var parameters =
         method.allParameters.where((p) => !p.type.isStreamType).toList();
