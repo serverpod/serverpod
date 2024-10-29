@@ -1,4 +1,4 @@
-import 'package:serverpod/database.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
@@ -41,5 +41,9 @@ void main() async {
     expect(fetchedData, hasLength(2));
     expect(fetchedData.elementAtOrNull(0)?.number, data.number);
     expect(fetchedData.elementAtOrNull(1)?.number, data3.number);
+  });
+
+  tearDown(() async {
+    await UniqueData.db.deleteWhere(session, where: (t) => Constant.bool(true));
   });
 }
