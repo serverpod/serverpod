@@ -114,6 +114,8 @@ void Function(TestClosure<T>)
     mainServerpodSession: mainServerpodSession,
   );
 
+  bool startServerpodFailed = false;
+
   return (
     TestClosure<T> testClosure,
   ) {
@@ -121,13 +123,18 @@ void Function(TestClosure<T>)
       testGroupName,
       () {
         setUpAll(() async {
-          await testServerpod.start().timeout(startTimeout, onTimeout: () {
-            throw InitializationException(
-              'Serverpod did not start within the timeout of $startTimeout. '
-              'This might indicate that Serverpod cannot connect to the database. '
-              'Ensure that you have run `docker compose up` and check the logs for more information.',
-            );
-          });
+          try {
+            await testServerpod.start().timeout(startTimeout, onTimeout: () {
+              throw InitializationException(
+                'Serverpod did not start within the timeout of $startTimeout. '
+                'This might indicate that Serverpod cannot connect to the database. '
+                'Ensure that you have run `docker compose up` and check the logs for more information.',
+              );
+            });
+          } catch (_) {
+            startServerpodFailed = true;
+            rethrow;
+          }
 
           if (rollbackDatabase == RollbackDatabase.afterAll ||
               rollbackDatabase == RollbackDatabase.afterEach) {
@@ -139,6 +146,10 @@ void Function(TestClosure<T>)
         });
 
         tearDown(() async {
+          if (startServerpodFailed) {
+            return;
+          }
+
           if (rollbackDatabase == RollbackDatabase.afterEach) {
             var localTransactionManager = getTransactionManager();
 
@@ -150,6 +161,10 @@ void Function(TestClosure<T>)
         });
 
         tearDownAll(() async {
+          if (startServerpodFailed) {
+            return;
+          }
+
           if (rollbackDatabase == RollbackDatabase.afterAll ||
               rollbackDatabase == RollbackDatabase.afterEach) {
             var localTransactionManager = getTransactionManager();
