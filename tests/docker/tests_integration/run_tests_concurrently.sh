@@ -1,14 +1,8 @@
 #!/bin/bash
 
-# This script runs the integration tests that are not compatible with running concurrently (i.e. with the `--concurrency=1` flag).
-# All tests tagged with 'integration' (default tag for the test tools) will be excluded from this test script.
-
-checkLastExitCode() {
-  local last_exit_code=$?
-  if [ $last_exit_code -ne 0 ]; then
-    exit $last_exit_code
-  fi
-}
+# This script runs the integration tests that are compatible with running concurrently.
+# Only tests tagged with 'integration' (default tag for the test tools) will be run in parallel
+# and the rest are excluded from this job.
 
 # Wait for database to be up (timeout after 60 seconds)
 echo "### Wait for Postgres"
@@ -27,9 +21,7 @@ dart bin/main.dart -m production -r maintenance --apply-migrations
 
 # Run tests
 echo "### Running tests"
-dart test test_integration -x integration --concurrency=1
-checkLastExitCode
-
-cd ../serverpod_test_module/serverpod_test_module_server/
-echo $(pwd)
-dart test ./test/integration
+# Have to set INTEGRATION_TEST_SERVERPOD_MODE to 'test' to use the `test.yaml` config file. 
+# This avoids conflicting server ports in the test files that boots up the server outside
+# of a test group.
+INTEGRATION_TEST_SERVERPOD_MODE=test dart test test_integration -t integration 

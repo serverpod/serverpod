@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:serverpod/protocol.dart' as serverpod;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 
-const _integrationTestFlags = ['-m', 'production'];
+var _integrationTestMode =
+    Platform.environment['INTEGRATION_TEST_SERVERPOD_MODE'] ?? 'production';
+
+var _integrationTestFlags = ['-m', _integrationTestMode];
 
 class IntegrationTestServer extends TestServerpod {
   IntegrationTestServer()

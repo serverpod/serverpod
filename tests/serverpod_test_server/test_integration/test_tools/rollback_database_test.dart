@@ -340,6 +340,7 @@ void main() {
         });
       },
       rollbackDatabase: RollbackDatabase.disabled,
+      testGroupTagsOverride: ['concurrency_one'],
     );
 
     withServerpod(
@@ -363,6 +364,7 @@ void main() {
         });
       },
       rollbackDatabase: RollbackDatabase.disabled,
+      testGroupTagsOverride: ['concurrency_one'],
     );
   });
 }

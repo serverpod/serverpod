@@ -155,74 +155,78 @@ void main() {
     },
   );
 
-  withServerpod('Given transaction calls when rollbacks are disabled',
-      rollbackDatabase: RollbackDatabase.disabled, (sessionBuilder, endpoints) {
-    var session = sessionBuilder.build();
+  withServerpod(
+    'Given transaction calls when rollbacks are disabled',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: ['concurrency_one'],
+    (sessionBuilder, endpoints) {
+      var session = sessionBuilder.build();
 
-    tearDown(() async {
-      await SimpleData.db.deleteWhere(
-        session,
-        where: (_) => Constant.bool(true),
-      );
-    });
-
-    test(
-        'when inserting an object in parallel to a transaction'
-        'then should persist both', () async {
-      await Future.wait([
-        session.db.transaction((transaction) {
-          return SimpleData.db.insertRow(
-            session,
-            SimpleData(num: 1),
-            transaction: transaction,
-          );
-        }),
-        SimpleData.db.insertRow(session, SimpleData(num: 2)),
-      ]);
-      var simpleDatas = await SimpleData.db.find(session);
-      expect(simpleDatas, hasLength(2));
-      expect(simpleDatas.map((s) => s.num), containsAll([1, 2]));
-    });
-
-    test(
-        'when inserting an object without transaction but is executed inside a transaction'
-        'then should persist object', () async {
-      await session.db.transaction((tx) async {
-        // This is a theoretical scenario that would likely be
-        // considered erroneous in real code
-        await SimpleData.db.insertRow(
+      tearDown(() async {
+        await SimpleData.db.deleteWhere(
           session,
-          SimpleData(num: 1),
-          transaction: null,
+          where: (_) => Constant.bool(true),
         );
       });
 
-      var simpleDatas = await SimpleData.db.find(session);
-      expect(simpleDatas, hasLength(1));
-      expect(simpleDatas.first.num, 1);
-    });
-
-    test(
-        'when inserting objects inside transactions in parallel'
-        'then should persist objects', () async {
-      await Future.wait([
-        session.db.transaction((transaction) => SimpleData.db.insertRow(
+      test(
+          'when inserting an object in parallel to a transaction'
+          'then should persist both', () async {
+        await Future.wait([
+          session.db.transaction((transaction) {
+            return SimpleData.db.insertRow(
               session,
               SimpleData(num: 1),
               transaction: transaction,
-            )),
-        session.db.transaction((transaction) => SimpleData.db.insertRow(
-              session,
-              SimpleData(num: 2),
-              transaction: transaction,
-            ))
-      ]);
+            );
+          }),
+          SimpleData.db.insertRow(session, SimpleData(num: 2)),
+        ]);
+        var simpleDatas = await SimpleData.db.find(session);
+        expect(simpleDatas, hasLength(2));
+        expect(simpleDatas.map((s) => s.num), containsAll([1, 2]));
+      });
 
-      var simpleDatas = await SimpleData.db.find(session);
-      expect(simpleDatas, hasLength(2));
-      expect(simpleDatas.map((s) => s.num), containsAll([1, 2]));
-    });
-  });
+      test(
+          'when inserting an object without transaction but is executed inside a transaction'
+          'then should persist object', () async {
+        await session.db.transaction((tx) async {
+          // This is a theoretical scenario that would likely be
+          // considered erroneous in real code
+          await SimpleData.db.insertRow(
+            session,
+            SimpleData(num: 1),
+            transaction: null,
+          );
+        });
+
+        var simpleDatas = await SimpleData.db.find(session);
+        expect(simpleDatas, hasLength(1));
+        expect(simpleDatas.first.num, 1);
+      });
+
+      test(
+          'when inserting objects inside transactions in parallel'
+          'then should persist objects', () async {
+        await Future.wait([
+          session.db.transaction((transaction) => SimpleData.db.insertRow(
+                session,
+                SimpleData(num: 1),
+                transaction: transaction,
+              )),
+          session.db.transaction((transaction) => SimpleData.db.insertRow(
+                session,
+                SimpleData(num: 2),
+                transaction: transaction,
+              ))
+        ]);
+
+        var simpleDatas = await SimpleData.db.find(session);
+        expect(simpleDatas, hasLength(2));
+        expect(simpleDatas.map((s) => s.num), containsAll([1, 2]));
+      });
+    },
+  );
 
   group('Demontrate transaction difference between prod and test tools', () {
     withServerpod(
@@ -271,6 +275,7 @@ void main() {
         });
       },
       rollbackDatabase: RollbackDatabase.disabled,
+      testGroupTagsOverride: ['concurrency_one'],
     );
   });
 }
