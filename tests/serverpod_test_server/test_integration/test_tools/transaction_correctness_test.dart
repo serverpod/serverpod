@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
@@ -25,6 +27,34 @@ void main() {
         var simpleDatas = await SimpleData.db.find(session);
         expect(simpleDatas, hasLength(1));
         expect(simpleDatas.first.num, 1);
+      });
+
+      test(
+          'when inserting an object '
+          'then should be possible to observe the object inside transaction but not after if aborted',
+          () async {
+        var numberOfSimpleDatasInsideTransaction = 0;
+        try {
+          await session.db.transaction((transaction) async {
+            await SimpleData.db.insertRow(
+              session,
+              SimpleData(num: 1),
+              transaction: transaction,
+            );
+
+            var simpleDatas = await SimpleData.db.find(
+              session,
+              transaction: transaction,
+            );
+            numberOfSimpleDatasInsideTransaction = simpleDatas.length;
+
+            throw Exception('Abort transaction');
+          });
+        } catch (_) {}
+
+        var simpleDatas = await SimpleData.db.find(session);
+        expect(simpleDatas, hasLength(0));
+        expect(numberOfSimpleDatasInsideTransaction, 1);
       });
 
       test(
