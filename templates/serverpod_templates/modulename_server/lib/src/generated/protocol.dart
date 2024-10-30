@@ -8,8 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-library protocol; // ignore_for_file: no_leading_underscores_for_library_prefixes
-
+// ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
 import 'module_class.dart' as _i3;
@@ -58,11 +57,15 @@ class Protocol extends _i1.SerializationManagerServer {
 
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
-    if (data['className'] == 'ModuleClass') {
+    var dataClassName = data['className'];
+    if (dataClassName is! String) {
+      return super.deserializeByClassName(data);
+    }
+    if (dataClassName == 'ModuleClass') {
       return deserialize<_i3.ModuleClass>(data['data']);
     }
-    if (data['className'].startsWith('serverpod.')) {
-      data['className'] = data['className'].substring(10);
+    if (dataClassName.startsWith('serverpod.')) {
+      data['className'] = dataClassName.substring(10);
       return _i2.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);

@@ -73,12 +73,15 @@ class TransactionManager {
   }
 
   /// Creates a savepoint in the current transaction.
-  Future<void> addSavePoint({bool lock = false}) async {
+  Future<void> addSavePoint({
+    bool lock = false,
+    bool isPartOfTransaction = false,
+  }) async {
     if (currentTransaction == null) {
       throw StateError('No ongoing transaction.');
     }
 
-    if (_isTransactionStackLocked) {
+    if (_isTransactionStackLocked && !isPartOfTransaction) {
       throw ConcurrentTransactionsException();
     } else if (lock) {
       _isTransactionStackLocked = true;
@@ -87,7 +90,7 @@ class TransactionManager {
     var savePointId = _getNextSavePointId();
     _savePointIds.add(savePointId);
 
-    await serverpodSession.db.unsafeExecute(
+    await serverpodSession.db.unsafeExecuteWithoutDatabaseExceptionGuard(
       'SAVEPOINT $savePointId;',
       transaction: currentTransaction,
     );
@@ -104,16 +107,16 @@ class TransactionManager {
 
   /// Rolls back the database to the previous save point in the current transaction.
   Future<void> rollbackToPreviousSavePoint({bool unlock = false}) async {
-    var savePointId = await removePreviousSavePoint(unlock: unlock);
+    var savePointId = await _popPreviousSavePointId(unlock: unlock);
 
-    await serverpodSession.db.unsafeExecute(
+    await serverpodSession.db.unsafeExecuteWithoutDatabaseExceptionGuard(
       'ROLLBACK TO SAVEPOINT $savePointId;',
       transaction: currentTransaction,
     );
   }
 
   /// Removes the previous save point in the current transaction.
-  Future<String> removePreviousSavePoint({bool unlock = false}) async {
+  Future<String> _popPreviousSavePointId({bool unlock = false}) async {
     if (currentTransaction == null) {
       throw StateError('No ongoing transaction.');
     }
@@ -127,5 +130,15 @@ class TransactionManager {
     }
 
     return _savePointIds.removeLast();
+  }
+
+  /// Releases the previous save point in the current transaction.
+  Future<void> releasePreviousSavePoint({bool unlock = true}) async {
+    var savePointId = await _popPreviousSavePointId(unlock: unlock);
+
+    await serverpodSession.db.unsafeExecuteWithoutDatabaseExceptionGuard(
+      'RELEASE SAVEPOINT $savePointId;',
+      transaction: currentTransaction,
+    );
   }
 }

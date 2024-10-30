@@ -337,4 +337,165 @@ void main() {
       );
     });
   });
+
+  test(
+      'Given a class, when the sealed property is explicitly set to false, no errors are collected',
+      () {
+    var modelSources = [
+      ModelSourceBuilder().withFileName('example1').withYaml(
+        '''
+          class: Example
+          sealed: false
+          fields:
+            name: String
+          ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
+
+    expect(
+      collector.errors,
+      isEmpty,
+      reason: 'Expected no error but one was generated.',
+    );
+  });
+
+  test(
+      'Given a class, when the sealed property is set to a non-boolean value, then an error is collected that the value must be a boolean.',
+      () {
+    var modelSources = [
+      ModelSourceBuilder().withFileName('example1').withYaml(
+        '''
+          class: Example
+          sealed: 'unexpected string'
+          fields:
+            name: String
+          ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected no error but one was generated.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'The value must be a boolean.',
+    );
+  });
+
+  test(
+      'Given a class using the sealed keyword, when inheritance is not enabled, then an error is collected that the "sealed" property is not allowed',
+      () {
+    var modelSources = [
+      ModelSourceBuilder().withFileName('example1').withYaml(
+        '''
+          class: Example
+          sealed: true
+          fields:
+            name: String
+          ''',
+      ).build(),
+    ];
+
+    var generatorConfig = GeneratorConfigBuilder().build();
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(
+            generatorConfig, modelSources, onErrorsCollector(collector))
+        .validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected no error but one was generated.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'The "sealed" property is not allowed for class type. Valid keys are {class, table, managedMigration, serverOnly, fields, indexes}.',
+    );
+  });
+
+  test(
+      'Given a sealed class with a table defined, then an error is collected that "sealed" and "table" properties are mutually exclusive',
+      () {
+    var modelSources = [
+      ModelSourceBuilder().withFileName('example1').withYaml(
+        '''
+          class: Example
+          sealed: true
+          table: example_table
+          fields:
+            name: String
+          ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error but none was generated.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'The "sealed" property is mutually exclusive with the "table" property.',
+    );
+  });
+
+  test(
+      'Given a sealed hierarchy, when a file is not in the same subdirectory, then an error is collected that sealed classes must be in the same subdirectory',
+      () {
+    var modelSources = [
+      ModelSourceBuilder().withFileName('example2').withYaml(
+        '''
+          class: Example
+          sealed: true
+          fields:
+            name: String
+          ''',
+      ).build(),
+      ModelSourceBuilder().withFileName('example3').withYaml(
+        '''
+          class: ExampleChildClass
+          extends: Example
+          fields:
+            age: int
+          ''',
+      ).withProtocolRootPathParts(['sub_dir']).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error but none was generated.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'All models in a sealed library must be in the same subdirectory. The class "ExampleChildClass" needs to be located in the same subdirectory as "Example".',
+    );
+  });
 }

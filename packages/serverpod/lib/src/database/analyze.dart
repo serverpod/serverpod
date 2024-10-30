@@ -141,16 +141,21 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
 ''');
 
     return queryResult.map((index) {
+      var indkeyNames = index[4];
+      var indkeyIsColumn = index[5];
+      if (indkeyNames is! List<String> || indkeyIsColumn is! List<bool>) {
+        throw Exception('Failed to parse index definition.');
+      }
       return IndexDefinition(
         indexName: index[0],
         tableSpace: index[1],
         elements: List.generate(
-            index[4].length,
+            indkeyNames.length,
             (i) => IndexElementDefinition(
-                type: index[5][i]
+                type: indkeyIsColumn[i]
                     ? IndexElementDefinitionType.column
                     : IndexElementDefinitionType.expression,
-                definition: (index[4][i] as String).removeSurroundingQuotes)),
+                definition: indkeyNames[i].removeSurroundingQuotes)),
         type: index[7],
         isUnique: index[2],
         isPrimary: index[3],

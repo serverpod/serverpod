@@ -28,6 +28,7 @@ void withServerpod(
   bool? enableSessionLogging,
   _i2.ServerpodLoggingMode? serverpodLoggingMode,
   List<String>? testGroupTagsOverride,
+  Duration? serverpodStartTimeout,
   _i1.RollbackDatabase? rollbackDatabase,
   bool? applyMigrations,
 }) {
@@ -45,6 +46,7 @@ void withServerpod(
     maybeRollbackDatabase: rollbackDatabase,
     maybeEnableSessionLogging: enableSessionLogging,
     maybeTestGroupTagsOverride: testGroupTagsOverride,
+    maybeServerpodStartTimeout: serverpodStartTimeout,
   )(testClosure);
 }
 

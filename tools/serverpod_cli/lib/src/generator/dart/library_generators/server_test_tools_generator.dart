@@ -212,8 +212,8 @@ class ServerTestToolsGenerator {
   Code _buildEndpointStreamMethodCall(
     EndpointDefinition endpoint,
     MethodDefinition method, {
-    required hasStreamParameter,
-    required returnsStream,
+    required bool hasStreamParameter,
+    required bool returnsStream,
   }) {
     var parameters =
         method.allParameters.where((p) => !p.type.isStreamType).toList();
@@ -412,6 +412,10 @@ class ServerTestToolsGenerator {
             ..name = 'testGroupTagsOverride'
             ..named = true
             ..type = refer('List<String>?')),
+          Parameter((p) => p
+            ..name = 'serverpodStartTimeout'
+            ..named = true
+            ..type = refer('Duration?')),
           if (config.isFeatureEnabled(ServerpodFeature.database)) ...[
             Parameter((p) => p
               ..name = 'rollbackDatabase'
@@ -455,6 +459,7 @@ class ServerTestToolsGenerator {
                         .property('disabled'),
             'maybeEnableSessionLogging': refer('enableSessionLogging'),
             'maybeTestGroupTagsOverride': refer('testGroupTagsOverride'),
+            'maybeServerpodStartTimeout': refer('serverpodStartTimeout'),
           },
         ).call([
           refer('testClosure'),
