@@ -50,8 +50,9 @@ withServerpod('Given Example endpoint', (sessionBuilder, endpoints) {
 
 String buildWithServerpodDocComments(List<String> parameters) {
   return buildDocComment(
-    _methodDescription,
-    _withServerpodDocCommentsByParameter,
-    parameters,
+    generalDescription: _methodDescription,
+    docByParameter: _withServerpodDocCommentsByParameter,
+    parameters: parameters,
+    parameterHeader: 'Configuration options',
   );
 }

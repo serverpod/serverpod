@@ -86,6 +86,15 @@ void main() {
       );
     }, skip: testToolsFile == null);
 
+    test('then configuration options header is present', () async {
+      expect(
+        testToolsFile,
+        contains(
+          '**Configuration options**',
+        ),
+      );
+    }, skip: testToolsFile == null);
+
     test(
       'then doc comments with correct spacing exist for each configurable parameter',
       () async {
@@ -198,6 +207,15 @@ void main() {
       );
     }, skip: testToolsFile == null);
 
+    test('then configuration options header is present', () async {
+      expect(
+        testToolsFile,
+        contains(
+          '**Configuration options**',
+        ),
+      );
+    }, skip: testToolsFile == null);
+
     test(
       'then doc comments with correct spacing exist for each configurable parameter',
       () async {
@@ -294,6 +312,15 @@ void main() {
         testToolsFile,
         contains(
           '/// Creates a new test group that takes a callback that can be used to write tests.',
+        ),
+      );
+    }, skip: testToolsFile == null);
+
+    test('then configuration options header is present', () async {
+      expect(
+        testToolsFile,
+        contains(
+          '**Configuration options**',
         ),
       );
     }, skip: testToolsFile == null);
@@ -420,6 +447,15 @@ void main() {
         testToolsFile,
         contains(
           '/// Creates a new test group that takes a callback that can be used to write tests.',
+        ),
+      );
+    }, skip: testToolsFile == null);
+
+    test('then configuration options header is present', () async {
+      expect(
+        testToolsFile,
+        contains(
+          '**Configuration options**',
         ),
       );
     }, skip: testToolsFile == null);
