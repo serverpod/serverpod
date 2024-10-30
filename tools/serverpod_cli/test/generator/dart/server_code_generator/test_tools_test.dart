@@ -2,7 +2,6 @@ import 'package:path/path.dart' as path;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
-import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:serverpod_cli/src/test_util/builders/endpoint_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
@@ -13,11 +12,7 @@ import 'package:test/test.dart';
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder()
     .withName(projectName)
-    .withEnabledExperimentalFeatures(
-  [
-    ExperimentalFeature.testTools,
-  ],
-).withRelativeServerTestToolsPathParts(
+    .withRelativeServerTestToolsPathParts(
   [
     'integration_test',
     'test_tools',
@@ -107,11 +102,7 @@ void main() {
       () {
     var serverpodMiniConfig = GeneratorConfigBuilder()
         .withName(projectName)
-        .withEnabledExperimentalFeatures(
-      [
-        ExperimentalFeature.testTools,
-      ],
-    ).withRelativeServerTestToolsPathParts(
+        .withRelativeServerTestToolsPathParts(
       [
         'integration_test',
         'test_tools',

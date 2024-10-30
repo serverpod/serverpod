@@ -3,10 +3,11 @@
 // the documentation on how to add endpoints to your server.
 
 import 'package:serverpod/serverpod.dart';
+import '../module_util.dart';
 // import '../generated/protocol.dart';
 
 class ModuleEndpoint extends Endpoint {
   Future<String> hello(Session session, String name) async {
-    return 'Hello $name';
+    return ModuleUtil.buildGreeting(name);
   }
 }

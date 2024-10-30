@@ -4,8 +4,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
-import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
+
+import '../lib/src/util.dart';
 
 const tempDirName = 'temp-mini';
 
@@ -24,8 +25,18 @@ void main() async {
     await Process.run('mkdir', [tempDirName], workingDirectory: rootPath);
   });
 
+  tearDownAll(() async {
+    try {
+      await Process.run(
+        'rm',
+        ['-rf', tempDirName],
+        workingDirectory: rootPath,
+      );
+    } catch (e) {}
+  });
+
   group('Given a clean state', () {
-    final (projectName, commandRoot) = createRandomProjectName(tempPath);
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
 
@@ -66,7 +77,7 @@ void main() async {
   });
 
   group('Given a clean state', () {
-    final (projectName, _) = createRandomProjectName(tempPath);
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
 
@@ -92,7 +103,7 @@ void main() async {
         reason: 'Failed to create the serverpod project.',
       );
 
-      final (serverDir, _, _) = createProjectFolderPaths(projectName);
+      final serverDir = createServerFolderPath(projectName);
 
       var configDir =
           Directory(path.join(tempPath, serverDir, 'config')).existsSync();
@@ -138,8 +149,8 @@ void main() async {
   });
 
   group('Given a clean state', () {
-    final (projectName, commandRoot) = createRandomProjectName(tempPath);
-    final (serverDir, _, _) = createProjectFolderPaths(projectName);
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+    final serverDir = createServerFolderPath(projectName);
     late Process createProcess;
 
     tearDown(() async {
@@ -223,9 +234,12 @@ void main() async {
   });
 
   group('Given a clean state', () {
-    final (projectName, _) = createRandomProjectName(tempPath);
-    final (serverDir, _, _) = createProjectFolderPaths(projectName);
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+    final serverDir = createServerFolderPath(projectName);
     late Process createProcess;
+    tearDown(() async {
+      createProcess.kill();
+    });
 
     test(
         'when creating a new project with the mini template and upgrading it to a full project then the project is created successfully and can be booted in maintenance mode with the apply-migrations flag.',
@@ -319,38 +333,116 @@ void main() async {
     });
   });
 
-  tearDownAll(() async {
-    try {
+  group('Given a clean state', () {
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+    final serverDir = createServerFolderPath(projectName);
+    late Process createProcess;
+    tearDown(() async {
+      createProcess.kill();
+
       await Process.run(
-        'rm',
-        ['-rf', tempDirName],
-        workingDirectory: rootPath,
+        'docker',
+        ['compose', 'down', '-v'],
+        workingDirectory: commandRoot,
       );
-    } catch (e) {}
+
+      while (!await isNetworkPortAvailable(8090));
+    });
+
+    test(
+        'when creating a new project with the mini template and upgrading it to a full project then the tests are passing.',
+        () async {
+      createProcess = await Process.start(
+        'serverpod',
+        ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
+        workingDirectory: tempPath,
+        environment: {
+          'SERVERPOD_HOME': rootPath,
+        },
+      );
+
+      createProcess.stdout.transform(Utf8Decoder()).listen(print);
+      createProcess.stderr.transform(Utf8Decoder()).listen(print);
+
+      var createProjectExitCode = await createProcess.exitCode;
+      expect(
+        createProjectExitCode,
+        0,
+        reason: 'Failed to create the serverpod project.',
+      );
+
+      var upgradeProcess = await Process.start(
+        'serverpod',
+        ['create', '--template', 'server', '.', '-v', '--no-analytics'],
+        workingDirectory: path.join(tempPath, serverDir),
+        environment: {
+          'SERVERPOD_HOME': rootPath,
+        },
+      );
+
+      upgradeProcess.stdout.transform(Utf8Decoder()).listen(print);
+      upgradeProcess.stderr.transform(Utf8Decoder()).listen(print);
+
+      var upgradeProjectExitCode = await upgradeProcess.exitCode;
+      expect(
+        upgradeProjectExitCode,
+        0,
+        reason: 'Failed to upgrade the serverpod project.',
+      );
+
+      final docker = await Process.start(
+        'docker',
+        ['compose', 'up', '--build', '--detach'],
+        workingDirectory: commandRoot,
+      );
+
+      docker.stdout.transform(Utf8Decoder()).listen(print);
+      docker.stderr.transform(Utf8Decoder()).listen(print);
+
+      var dockerExitCode = await docker.exitCode;
+
+      expect(
+        dockerExitCode,
+        0,
+        reason: 'Docker with postgres failed to start.',
+      );
+
+      var testProcess = await Process.run(
+        'dart',
+        ['test'],
+        workingDirectory:
+            path.join(tempPath, projectName, "${projectName}_server"),
+      );
+
+      expect(testProcess.exitCode, 0, reason: 'Tests are failing.');
+    });
   });
-}
 
-(String, String) createRandomProjectName(String root) {
-  final projectName = 'test_${Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-  final commandRoot = path.join(root, projectName, '${projectName}_server');
+  group('Given a created mini project', () {
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
-  return (projectName, commandRoot);
-}
+    setUp(() async {
+      var createProcess = await Process.run(
+        'serverpod',
+        ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
+        workingDirectory: tempPath,
+        environment: {
+          'SERVERPOD_HOME': rootPath,
+        },
+      );
+      assert((await createProcess.exitCode) == 0);
+    });
 
-(String, String, String) createProjectFolderPaths(String projectName) {
-  final serverDir = path.join(projectName, '${projectName}_server');
-  final flutterDir = path.join(projectName, '${projectName}_flutter');
-  final clientDir = path.join(projectName, '${projectName}_client');
+    test('when running tests then example unit and integration tests passes',
+        () async {
+      var testProcess = await Process.run(
+        'dart',
+        ['test'],
+        workingDirectory:
+            path.join(tempPath, projectName, "${projectName}_server"),
+      );
 
-  return (serverDir, flutterDir, clientDir);
-}
-
-Future<bool> isNetworkPortAvailable(int port) async {
-  try {
-    var socket = await ServerSocket.bind(InternetAddress.anyIPv4, port);
-    await socket.close();
-    return true;
-  } catch (e) {
-    return false;
-  }
+      expect(testProcess.exitCode, 0);
+    });
+  });
 }
