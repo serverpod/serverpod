@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
+import 'package:serverpod_test_server/test_util/test_tags.dart';
 import 'package:test/test.dart';
 
 import 'serverpod_test_tools.dart';
@@ -319,6 +320,7 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.disabled,
+        testGroupTagsOverride: [concurrencyOneTestTag],
       );
 
       withServerpod(
@@ -343,6 +345,7 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.disabled,
+        testGroupTagsOverride: [concurrencyOneTestTag],
       );
     });
 
@@ -367,6 +370,7 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.disabled,
+        testGroupTagsOverride: [concurrencyOneTestTag],
       );
 
       withServerpod(
@@ -388,6 +392,7 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.disabled,
+        testGroupTagsOverride: [concurrencyOneTestTag],
       );
     });
 
@@ -414,6 +419,7 @@ void main() {
         });
       },
       rollbackDatabase: RollbackDatabase.disabled,
+      testGroupTagsOverride: [concurrencyOneTestTag],
     );
   });
 

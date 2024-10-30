@@ -8,6 +8,17 @@ services:
     depends_on:
       - 'postgres'
       - 'redis'
+    profiles:
+      - concurrency_one
+  serverpod_test_server_concurrent_tests:
+    build:
+      context: ../../..
+      dockerfile: tests/docker/tests_integration/concurrent.Dockerfile
+    depends_on:
+      - 'postgres'
+      - 'redis'
+    profiles:
+      - concurrent
   postgres:
     image: postgres:16.3
     environment:
