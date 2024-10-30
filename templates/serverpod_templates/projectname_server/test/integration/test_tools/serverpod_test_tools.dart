@@ -31,6 +31,8 @@ export 'package:serverpod_test/serverpod_test_public_exports.dart';
 /// });
 /// ```
 ///
+/// **Configuration options**
+///
 /// [enableSessionLogging] Whether session logging should be enabled. Defaults to `false`
 ///
 /// [runMode] The run mode that Serverpod should be running in. Defaults to `test`.

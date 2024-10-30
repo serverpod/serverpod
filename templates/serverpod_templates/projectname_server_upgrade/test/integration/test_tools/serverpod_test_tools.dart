@@ -31,6 +31,8 @@ export 'package:serverpod_test/serverpod_test_public_exports.dart';
 /// });
 /// ```
 ///
+/// **Configuration options**
+///
 /// [applyMigrations] Whether pending migrations should be applied when starting Serverpod. Defaults to `true`
 ///
 /// [enableSessionLogging] Whether session logging should be enabled. Defaults to `false`
