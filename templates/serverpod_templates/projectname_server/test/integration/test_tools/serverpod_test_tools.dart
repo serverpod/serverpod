@@ -26,6 +26,7 @@ void withServerpod(
   bool? enableSessionLogging,
   _i2.ServerpodLoggingMode? serverpodLoggingMode,
   List<String>? testGroupTagsOverride,
+  Duration? serverpodStartTimeout,
 }) {
   _i1.buildWithServerpod<_InternalTestEndpoints>(
     testGroupName,
@@ -41,6 +42,7 @@ void withServerpod(
     maybeRollbackDatabase: _i1.RollbackDatabase.disabled,
     maybeEnableSessionLogging: enableSessionLogging,
     maybeTestGroupTagsOverride: testGroupTagsOverride,
+    maybeServerpodStartTimeout: serverpodStartTimeout,
   )(testClosure);
 }
 
