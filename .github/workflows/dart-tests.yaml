@@ -308,3 +308,11 @@ jobs:
       - name: Run unit tests
         run: dart test --concurrency=1
         working-directory: ${{ matrix.path }}
+
+  integration_test_flutter:
+    name: Serverpod integration tests (flutter)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run integration tests in Docker
+        run: util/run_tests_flutter_integration
