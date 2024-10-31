@@ -1,5 +1,3 @@
-library protocol;
-
 export 'src/business/authentication_handler.dart';
 export 'src/business/user_authentication.dart';
 export 'src/business/config.dart';

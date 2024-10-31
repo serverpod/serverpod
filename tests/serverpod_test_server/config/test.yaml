@@ -1,21 +1,21 @@
 # Duplicate of production.yaml
 # The test tools use test by default, but the other integration tests use production as run mode
 apiServer:
-  port: 8080
+  port: 0
   publicHost: serverpod_test_server
-  publicPort: 8080
+  publicPort: 0
   publicScheme: http
 
 insightsServer:
-  port: 8081
+  port: 0
   publicHost: serverpod_test_server
-  publicPort: 8081
+  publicPort: 0
   publicScheme: http
 
 webServer:
-  port: 8082
+  port: 0
   publicHost: serverpod_test_server
-  publicPort: 8082
+  publicPort: 0
   publicScheme: http
 
 database:

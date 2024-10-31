@@ -131,14 +131,14 @@ jobs:
         os: [windows-latest, ubuntu-latest]
         path:
           [
-            "tools/serverpod_cli",
-            "packages/serverpod",
-            "packages/serverpod_client",
-            "packages/serverpod_shared",
-            "packages/serverpod_serialization",
-            "tests/serverpod_test_client",
-            "tests/serverpod_test_server",
-            "modules/serverpod_auth/serverpod_auth_server",
+            'tools/serverpod_cli',
+            'packages/serverpod',
+            'packages/serverpod_client',
+            'packages/serverpod_shared',
+            'packages/serverpod_serialization',
+            'tests/serverpod_test_client',
+            'tests/serverpod_test_server',
+            'modules/serverpod_auth/serverpod_auth_server',
           ]
     steps:
       - uses: actions/checkout@v3
@@ -156,10 +156,7 @@ jobs:
       matrix:
         flutter-version: ['3.19.0', '3.24.0']
         os: [ubuntu-latest]
-        path:
-          [
-            "packages/serverpod_client",
-          ]
+        path: ['packages/serverpod_client']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -169,7 +166,7 @@ jobs:
       - name: Run unit tests
         run: dart test -p chrome
         working-directory: ${{ matrix.path }}
-  
+
   e2e_io_tests:
     name: Serverpod E2E IO tests
     runs-on: ubuntu-latest
@@ -183,7 +180,7 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
       - name: Run e2e tests
         run: util/run_tests_e2e
-    
+
   e2e_web_tests:
     name: Serverpod E2E web tests
     runs-on: ubuntu-latest
@@ -204,7 +201,7 @@ jobs:
     strategy:
       matrix:
         flutter-version: ['3.19.0', '3.24.0']
-        path: ["packages/serverpod_shared"]
+        path: ['packages/serverpod_shared']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -227,7 +224,20 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
       - name: Run integration tests
         run: util/run_tests_integration
-        
+
+  integration_test_server_concurrent:
+    name: Serverpod concurrent integration tests (server)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.19.0', '3.24.0']
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+      - name: Run integration tests
+        run: util/run_tests_integration_concurrently
 
   bootstrap_tests:
     name: Bootstrap tests
@@ -237,7 +247,7 @@ jobs:
       matrix:
         flutter-version: ['3.19.0', '3.24.0']
         os: [ubuntu-latest]
-        path: ["tests/bootstrap_project"]
+        path: ['tests/bootstrap_project']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -279,7 +289,7 @@ jobs:
       matrix:
         flutter-version: ['3.19.0', '3.24.0']
         os: [ubuntu-latest]
-        path: ["tests/serverpod_cli_e2e_test"]
+        path: ['tests/serverpod_cli_e2e_test']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2

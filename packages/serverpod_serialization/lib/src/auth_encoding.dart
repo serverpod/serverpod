@@ -1,5 +1,5 @@
 /// Serverpod's default authentication key encoding and decoding.
-library serverpod_serialization.auth_encoding;
+library;
 
 import 'dart:convert';
 

@@ -50,7 +50,9 @@ void withServerpod(
   _i1.TestClosure<TestEndpoints> testClosure, {
   String? runMode,
   bool? enableSessionLogging,
+  _i2.ServerpodLoggingMode? serverpodLoggingMode,
   List<String>? testGroupTagsOverride,
+  Duration? serverpodStartTimeout,
   _i1.RollbackDatabase? rollbackDatabase,
   bool? applyMigrations,
 }) {
@@ -63,10 +65,12 @@ void withServerpod(
       runMode: runMode,
       applyMigrations: applyMigrations,
       isDatabaseEnabled: true,
+      serverpodLoggingMode: serverpodLoggingMode,
     ),
     maybeRollbackDatabase: rollbackDatabase,
     maybeEnableSessionLogging: enableSessionLogging,
     maybeTestGroupTagsOverride: testGroupTagsOverride,
+    maybeServerpodStartTimeout: serverpodStartTimeout,
   )(testClosure);
 }
 

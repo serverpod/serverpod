@@ -212,8 +212,8 @@ class ServerTestToolsGenerator {
   Code _buildEndpointStreamMethodCall(
     EndpointDefinition endpoint,
     MethodDefinition method, {
-    required hasStreamParameter,
-    required returnsStream,
+    required bool hasStreamParameter,
+    required bool returnsStream,
   }) {
     var parameters =
         method.allParameters.where((p) => !p.type.isStreamType).toList();
@@ -405,9 +405,17 @@ class ServerTestToolsGenerator {
             ..named = true
             ..type = refer('bool?')),
           Parameter((p) => p
+            ..name = 'serverpodLoggingMode'
+            ..named = true
+            ..type = refer('ServerpodLoggingMode?', serverpodUrl(true))),
+          Parameter((p) => p
             ..name = 'testGroupTagsOverride'
             ..named = true
             ..type = refer('List<String>?')),
+          Parameter((p) => p
+            ..name = 'serverpodStartTimeout'
+            ..named = true
+            ..type = refer('Duration?')),
           if (config.isFeatureEnabled(ServerpodFeature.database)) ...[
             Parameter((p) => p
               ..name = 'rollbackDatabase'
@@ -439,6 +447,7 @@ class ServerTestToolsGenerator {
                 'isDatabaseEnabled': literalBool(
                   config.isFeatureEnabled(ServerpodFeature.database),
                 ),
+                'serverpodLoggingMode': refer('serverpodLoggingMode'),
               },
             ),
           ],
@@ -446,9 +455,11 @@ class ServerTestToolsGenerator {
             'maybeRollbackDatabase':
                 config.isFeatureEnabled(ServerpodFeature.database)
                     ? refer('rollbackDatabase')
-                    : literalNull,
+                    : refer('RollbackDatabase', serverpodTestUrl)
+                        .property('disabled'),
             'maybeEnableSessionLogging': refer('enableSessionLogging'),
             'maybeTestGroupTagsOverride': refer('testGroupTagsOverride'),
+            'maybeServerpodStartTimeout': refer('serverpodStartTimeout'),
           },
         ).call([
           refer('testClosure'),
