@@ -3,6 +3,7 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/doc_comments/with_serverpod_doc_comment.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 
 class ServerTestToolsGenerator {
@@ -32,6 +33,25 @@ class ServerTestToolsGenerator {
     }
 
     return library.build();
+  }
+
+  void _addPackageDirectives(LibraryBuilder library) {
+    var protocolPackageImportPath = 'package:${config.name}_server/${p.joinAll([
+          ...config.generatedServeModelPackagePathParts,
+          'protocol.dart'
+        ])}';
+    var endpointsPath = 'package:${config.name}_server/${p.joinAll([
+          ...config.generatedServeModelPackagePathParts,
+          'endpoints.dart'
+        ])}';
+
+    library.directives.addAll([
+      Directive.import(protocolPackageImportPath),
+      Directive.import(endpointsPath),
+      Directive.export(serverpodTestPublicExportsUrl),
+    ]);
+
+    library.ignoreForFile.add('no_leading_underscores_for_local_identifiers');
   }
 
   Class _buildEndpointClassWithMethodCalls(EndpointDefinition endpoint) {
@@ -315,26 +335,6 @@ class ServerTestToolsGenerator {
     ]);
   }
 
-  Class _buildPublicTestEndpointsClass() {
-    return Class((classBuilder) {
-      classBuilder.name = 'TestEndpoints';
-
-      for (var endpoint in protocolDefinition.endpoints) {
-        classBuilder.fields.add(
-          Field(
-            (fieldBuilder) {
-              fieldBuilder
-                ..name = endpoint.name
-                ..modifier = FieldModifier.final$
-                ..type = refer('_${endpoint.className}')
-                ..late = true;
-            },
-          ),
-        );
-      }
-    });
-  }
-
   Class _buildPrivateTestEndpointsClass() {
     return Class((classBuilder) {
       classBuilder
@@ -381,9 +381,65 @@ class ServerTestToolsGenerator {
     });
   }
 
+  Class _buildPublicTestEndpointsClass() {
+    return Class((classBuilder) {
+      classBuilder.name = 'TestEndpoints';
+
+      for (var endpoint in protocolDefinition.endpoints) {
+        classBuilder.fields.add(
+          Field(
+            (fieldBuilder) {
+              fieldBuilder
+                ..name = endpoint.name
+                ..modifier = FieldModifier.final$
+                ..type = refer('_${endpoint.className}')
+                ..late = true;
+            },
+          ),
+        );
+      }
+    });
+  }
+
   Method _buildWithServerpodFunction() {
+    var optionalParameters = [
+      Parameter((p) => p
+        ..name = 'runMode'
+        ..named = true
+        ..type = refer('String?')),
+      Parameter((p) => p
+        ..name = 'enableSessionLogging'
+        ..named = true
+        ..type = refer('bool?')),
+      Parameter((p) => p
+        ..name = 'serverpodLoggingMode'
+        ..named = true
+        ..type = refer('ServerpodLoggingMode?', serverpodUrl(true))),
+      Parameter((p) => p
+        ..name = 'testGroupTagsOverride'
+        ..named = true
+        ..type = refer('List<String>?')),
+      Parameter((p) => p
+        ..name = 'serverpodStartTimeout'
+        ..named = true
+        ..type = refer('Duration?')),
+      if (config.isFeatureEnabled(ServerpodFeature.database)) ...[
+        Parameter((p) => p
+          ..name = 'rollbackDatabase'
+          ..named = true
+          ..type = refer('RollbackDatabase?', serverpodTestUrl)),
+        Parameter((p) => p
+          ..name = 'applyMigrations'
+          ..named = true
+          ..type = refer('bool?'))
+      ],
+    ]..sort(_sortParameterByName);
+
     return Method((methodBuilder) {
       methodBuilder
+        ..docs.add(buildWithServerpodDocComments(
+          optionalParameters.map((p) => p.name).toList(),
+        ))
         ..name = 'withServerpod'
         ..returns = refer('void')
         ..annotations.add(refer('isTestGroup', serverpodTestUrl))
@@ -395,38 +451,7 @@ class ServerTestToolsGenerator {
             ..name = 'testClosure'
             ..type = refer('TestClosure<TestEndpoints>', serverpodTestUrl)),
         ])
-        ..optionalParameters.addAll([
-          Parameter((p) => p
-            ..name = 'runMode'
-            ..named = true
-            ..type = refer('String?')),
-          Parameter((p) => p
-            ..name = 'enableSessionLogging'
-            ..named = true
-            ..type = refer('bool?')),
-          Parameter((p) => p
-            ..name = 'serverpodLoggingMode'
-            ..named = true
-            ..type = refer('ServerpodLoggingMode?', serverpodUrl(true))),
-          Parameter((p) => p
-            ..name = 'testGroupTagsOverride'
-            ..named = true
-            ..type = refer('List<String>?')),
-          Parameter((p) => p
-            ..name = 'serverpodStartTimeout'
-            ..named = true
-            ..type = refer('Duration?')),
-          if (config.isFeatureEnabled(ServerpodFeature.database)) ...[
-            Parameter((p) => p
-              ..name = 'rollbackDatabase'
-              ..named = true
-              ..type = refer('RollbackDatabase?', serverpodTestUrl)),
-            Parameter((p) => p
-              ..name = 'applyMigrations'
-              ..named = true
-              ..type = refer('bool?'))
-          ],
-        ])
+        ..optionalParameters.addAll(optionalParameters)
         ..body = refer(
                 'buildWithServerpod<_InternalTestEndpoints>', serverpodTestUrl)
             .call(
@@ -467,22 +492,6 @@ class ServerTestToolsGenerator {
     });
   }
 
-  void _addPackageDirectives(LibraryBuilder library) {
-    var protocolPackageImportPath = 'package:${config.name}_server/${p.joinAll([
-          ...config.generatedServeModelPackagePathParts,
-          'protocol.dart'
-        ])}';
-    var endpointsPath = 'package:${config.name}_server/${p.joinAll([
-          ...config.generatedServeModelPackagePathParts,
-          'endpoints.dart'
-        ])}';
-
-    library.directives.addAll([
-      Directive.import(protocolPackageImportPath),
-      Directive.import(endpointsPath),
-      Directive.export(serverpodTestPublicExportsUrl),
-    ]);
-
-    library.ignoreForFile.add('no_leading_underscores_for_local_identifiers');
-  }
+  int _sortParameterByName(Parameter a, Parameter b) =>
+      a.name.compareTo(b.name);
 }

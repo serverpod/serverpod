@@ -64,15 +64,68 @@ void main() {
               r'void withServerpod\(\n'
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
-              r'  String\? runMode,\n'
-              r'  bool\? enableSessionLogging,\n'
-              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
-              r'  List<String>\? testGroupTagsOverride,\n'
-              r'  Duration\? serverpodStartTimeout,\n'
-              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  bool\? applyMigrations,\n'
+              r'  bool\? enableSessionLogging,\n'
+              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
+              r'  String\? runMode,\n'
+              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
+              r'  Duration\? serverpodStartTimeout,\n'
+              r'  List<String>\? testGroupTagsOverride,\n'
               r'\}\)',
             ));
+      },
+      skip: testToolsFile == null,
+    );
+
+    test('then doc comment with general description is present', () async {
+      expect(
+        testToolsFile,
+        contains(
+          '/// Creates a new test group that takes a callback that can be used to write tests.',
+        ),
+      );
+    }, skip: testToolsFile == null);
+
+    test('then configuration options header is present', () async {
+      expect(
+        testToolsFile,
+        contains(
+          '**Configuration options**',
+        ),
+      );
+    }, skip: testToolsFile == null);
+
+    test(
+      'then doc comments with correct spacing exist for each configurable parameter',
+      () async {
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [applyMigrations] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [enableSessionLogging] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [rollbackDatabase] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [runMode] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [serverpodLoggingMode] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [serverpodStartTimeout] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [testGroupTagsOverride] '),
+        );
       },
       skip: testToolsFile == null,
     );
@@ -134,13 +187,73 @@ void main() {
               r'void withServerpod\(\n'
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
-              r'  String\? runMode,\n'
               r'  bool\? enableSessionLogging,\n'
+              r'  String\? runMode,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
-              r'  List<String>\? testGroupTagsOverride,\n'
               r'  Duration\? serverpodStartTimeout,\n'
+              r'  List<String>\? testGroupTagsOverride,\n'
               r'\}\)',
             ));
+      },
+      skip: testToolsFile == null,
+    );
+
+    test('then doc comment with general description is present', () async {
+      expect(
+        testToolsFile,
+        contains(
+          '/// Creates a new test group that takes a callback that can be used to write tests.',
+        ),
+      );
+    }, skip: testToolsFile == null);
+
+    test('then configuration options header is present', () async {
+      expect(
+        testToolsFile,
+        contains(
+          '**Configuration options**',
+        ),
+      );
+    }, skip: testToolsFile == null);
+
+    test(
+      'then doc comments with correct spacing exist for each configurable parameter',
+      () async {
+        expect(
+          testToolsFile,
+          contains('\n/// [enableSessionLogging] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [runMode] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [serverpodLoggingMode] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [serverpodStartTimeout] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [testGroupTagsOverride] '),
+        );
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then doc comments for `applyMigrations` and `rollbackDatabase` are not present',
+      () async {
+        expect(
+          testToolsFile,
+          isNot(contains('/// [applyMigrations]')),
+        );
+        expect(
+          testToolsFile,
+          isNot(contains('/// [rollbackDatabase]')),
+        );
       },
       skip: testToolsFile == null,
     );
@@ -181,15 +294,68 @@ void main() {
               r'void withServerpod\(\n'
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
-              r'  String\? runMode,\n'
-              r'  bool\? enableSessionLogging,\n'
-              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
-              r'  List<String>\? testGroupTagsOverride,\n'
-              r'  Duration\? serverpodStartTimeout,\n'
-              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  bool\? applyMigrations,\n'
+              r'  bool\? enableSessionLogging,\n'
+              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
+              r'  String\? runMode,\n'
+              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
+              r'  Duration\? serverpodStartTimeout,\n'
+              r'  List<String>\? testGroupTagsOverride,\n'
               r'\}\)',
             ));
+      },
+      skip: testToolsFile == null,
+    );
+
+    test('then doc comment with general description is present', () async {
+      expect(
+        testToolsFile,
+        contains(
+          '/// Creates a new test group that takes a callback that can be used to write tests.',
+        ),
+      );
+    }, skip: testToolsFile == null);
+
+    test('then configuration options header is present', () async {
+      expect(
+        testToolsFile,
+        contains(
+          '**Configuration options**',
+        ),
+      );
+    }, skip: testToolsFile == null);
+
+    test(
+      'then doc comments with correct spacing exist for each configurable parameter',
+      () async {
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [applyMigrations] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [enableSessionLogging] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [rollbackDatabase] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [runMode] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [serverpodLoggingMode] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [serverpodStartTimeout] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [testGroupTagsOverride] '),
+        );
       },
       skip: testToolsFile == null,
     );
@@ -263,15 +429,68 @@ void main() {
               r'void withServerpod\(\n'
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
-              r'  String\? runMode,\n'
-              r'  bool\? enableSessionLogging,\n'
-              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
-              r'  List<String>\? testGroupTagsOverride,\n'
-              r'  Duration\? serverpodStartTimeout,\n'
-              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  bool\? applyMigrations,\n'
+              r'  bool\? enableSessionLogging,\n'
+              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
+              r'  String\? runMode,\n'
+              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
+              r'  Duration\? serverpodStartTimeout,\n'
+              r'  List<String>\? testGroupTagsOverride,\n'
               r'\}\)',
             ));
+      },
+      skip: testToolsFile == null,
+    );
+
+    test('then doc comment with general description is present', () async {
+      expect(
+        testToolsFile,
+        contains(
+          '/// Creates a new test group that takes a callback that can be used to write tests.',
+        ),
+      );
+    }, skip: testToolsFile == null);
+
+    test('then configuration options header is present', () async {
+      expect(
+        testToolsFile,
+        contains(
+          '**Configuration options**',
+        ),
+      );
+    }, skip: testToolsFile == null);
+
+    test(
+      'then doc comments with correct spacing exist for each configurable parameter',
+      () async {
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [applyMigrations] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [enableSessionLogging] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [rollbackDatabase] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [runMode] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [serverpodLoggingMode] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [serverpodStartTimeout] '),
+        );
+        expect(
+          testToolsFile,
+          contains('\n///\n/// [testGroupTagsOverride] '),
+        );
       },
       skip: testToolsFile == null,
     );
