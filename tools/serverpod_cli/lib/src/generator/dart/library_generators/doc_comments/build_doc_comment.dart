@@ -7,19 +7,13 @@ extension PrependSlashes on String {
 String buildDocComment({
   required String generalDescription,
   required Map<String, String> docByParameter,
-  required List<String> parameters,
   String? parameterHeader,
 }) {
   var index = 0;
-  var numberOfParameters = parameters.length;
+  var numberOfParameters = docByParameter.length;
   var parameterDocComments =
-      parameters.fold('', (String previousValue, parameter) {
-    var parameterDoc = docByParameter[parameter];
-    if (parameterDoc == null) {
-      throw StateError('No documentation for parameter $parameter');
-    }
-
-    var formattedParameterDoc = '[$parameter] $parameterDoc';
+      docByParameter.entries.fold('', (String previousValue, entry) {
+    var formattedParameterDoc = '[${entry.key}] ${entry.value}';
 
     var isLastParameter = index == numberOfParameters - 1;
     index++;

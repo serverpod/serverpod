@@ -51,8 +51,10 @@ withServerpod('Given Example endpoint', (sessionBuilder, endpoints) {
 String buildWithServerpodDocComments(List<String> parameters) {
   return buildDocComment(
     generalDescription: _methodDescription,
-    docByParameter: _withServerpodDocCommentsByParameter,
-    parameters: parameters,
+    docByParameter: Map.from(_withServerpodDocCommentsByParameter)
+      ..removeWhere(
+        (key, _) => !parameters.contains(key),
+      ),
     parameterHeader: 'Configuration options',
   );
 }
