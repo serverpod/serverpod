@@ -7,7 +7,6 @@ extension PrependSlashes on String {
 String buildDocComment({
   required String generalDescription,
   required Map<String, String> docByParameter,
-  String? parameterHeader,
 }) {
   var index = 0;
   var numberOfParameters = docByParameter.length;
@@ -22,7 +21,6 @@ String buildDocComment({
 
   return '$generalDescription\n'
           '\n'
-          '${parameterHeader == null ? '' : '**$parameterHeader** \n\n'}'
           '$parameterDocComments'
       .prependSlashes();
 }

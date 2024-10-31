@@ -46,7 +46,9 @@ withServerpod('Given Example endpoint', (sessionBuilder, endpoints) {
     expect(greeting, 'Hello Michael');
   });
 });
-```''';
+```
+
+**Configuration options**''';
 
 String buildWithServerpodDocComments(List<String> parameters) {
   return buildDocComment(
@@ -55,6 +57,5 @@ String buildWithServerpodDocComments(List<String> parameters) {
       ..removeWhere(
         (key, _) => !parameters.contains(key),
       ),
-    parameterHeader: 'Configuration options',
   );
 }
