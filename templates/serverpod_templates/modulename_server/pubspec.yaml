@@ -21,3 +21,5 @@ dependency_overrides:
     path: ../../../packages/serverpod_shared 
   serverpod_test: 
     path: ../../../packages/serverpod_test 
+  serverpod_lints: 
+    path: ../../../packages/serverpod_lints 
