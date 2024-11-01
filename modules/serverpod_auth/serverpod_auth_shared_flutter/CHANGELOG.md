@@ -1,3 +1,14 @@
+## 2.2.0-beta.1
+ - feat: Adds full support for testing framework.
+ - feat: Adds configuration for controlling log output location.
+ - feat: Adds support for signing out a user from a single device.
+ - feat: EXPERIMENTAL. Adds support for inheritance in models.
+ - feat: EXPERIMENTAL. Adds support for sealed classes in models.
+ - fix: Correctly removes account requests after an account is created (auth module).
+ - fix: Passes `String` instead of `Error` object to logger in `session.close`.
+ - fix: Supports database exceptions outside transactions and parallel database calls.
+ - fix: Replaces `null` assert with erro check in `WebWidget`.
+
 ## 2.1.5
  - feat: EXPERIMENTAL. Adds testing framework. [docs](https://docs.serverpod.dev/next/concepts/testing/get-started)
  - fix: Correctly handles method and endpoint streams for modules.
