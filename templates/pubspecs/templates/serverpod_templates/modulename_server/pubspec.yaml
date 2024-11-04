@@ -21,3 +21,5 @@ dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
     path: ../../../packages/serverpod_shared #--CONDITIONALLY_REMOVE_LINE--#
   serverpod_test: #--CONDITIONALLY_REMOVE_LINE--#
     path: ../../../packages/serverpod_test #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_lints: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../packages/serverpod_lints #--CONDITIONALLY_REMOVE_LINE--#
