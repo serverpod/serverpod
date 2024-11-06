@@ -240,13 +240,17 @@ abstract class Route {
   // types of responses too. Or at least clarify the naming of the method.
 
   /// Returns the body of the request, assuming it is standard URL encoded form
-  /// post request.
-  static Future<Map<String, String>> getBody(HttpRequest request) async {
+  /// post request or JSON.
+  static Future<Map<String, dynamic>> getBody(HttpRequest request) async {
     var body = await _readBody(request);
 
     var params = <String, String>{};
 
     if (body != null) {
+      if (request.headers.contentType.toString() == 'application/json') {
+        return jsonDecode(body) as Map<String, dynamic>;
+      }
+
       var encodedParams = body.split('&');
       for (var encodedParam in encodedParams) {
         var comps = encodedParam.split('=');
