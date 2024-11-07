@@ -180,6 +180,11 @@ class TestToolsEndpoint extends Endpoint {
   ) async {
     return simpleDatas;
   }
+
+  Future<void> logMessageWithSession(Session session) async {
+    session.log('test session log in endpoint');
+  }
+
 }
 
 class AuthenticatedTestToolsEndpoint extends Endpoint {

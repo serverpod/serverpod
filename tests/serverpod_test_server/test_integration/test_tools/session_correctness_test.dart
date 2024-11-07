@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_test_server/src/endpoints/test_tools.dart';
+import 'package:serverpod_test_server/test_util/mock_stdout.dart';
 import 'package:test/test.dart';
 
 import 'serverpod_test_tools.dart';
@@ -30,6 +34,24 @@ void main() {
             .returnsSessionEndpointAndMethod(sessionBuilder);
         expect(endpoint, 'testTools');
         expect(method, 'returnsSessionEndpointAndMethod');
+      });
+
+      test('when method logs to session then can be observered in stdout',
+          () async {
+        var stdout = MockStdout();
+        await IOOverrides.runZoned(
+          () async {
+            await endpoints.testTools
+                .logMessageWithSession(sessionBuilder.copyWith(
+              enableLogging: true,
+            ));
+          },
+          stdout: () => stdout,
+          stderr: () => stdout,
+        );
+
+        expect(stdout.output,
+            contains('"message":"test session log in endpoint"'));
       });
     },
   );
