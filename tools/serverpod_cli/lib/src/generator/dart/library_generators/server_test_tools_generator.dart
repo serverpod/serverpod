@@ -179,6 +179,7 @@ class ServerTestToolsGenerator {
                 'method': literalString(method.name),
               }))
               .statement,
+          const Code('try {'),
           refer('var _localCallContext')
               .assign(refer('_endpointDispatch')
                   .awaited
@@ -213,12 +214,14 @@ class ServerTestToolsGenerator {
                     .awaited,
               )
               .statement,
+          refer('_localReturnValue').returned.statement,
+          const Code('} finally {'),
           refer('_localUniqueSession')
               .property('close')
               .call([])
               .awaited
               .statement,
-          refer('_localReturnValue').returned.statement,
+          const Code('}'),
         ])
         ..returns,
     ).closure;

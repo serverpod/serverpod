@@ -53,6 +53,31 @@ void main() {
         expect(stdout.output,
             contains('"message":"test session log in endpoint"'));
       });
+
+      group('when method throws an exception', () {
+        late Future future;
+
+        setUp(() async {
+          future = endpoints.testTools
+              .addWillCloseListenerToSessionAndThrow(sessionBuilder.copyWith(
+            enableLogging: true,
+          ));
+        });
+
+        tearDown(() async {
+          TestToolsEndpoint.willCloseListenerCalled = false;
+        });
+
+        test(
+            'then the session is closed so that the `willCloseListener` is called',
+            () async {
+          try {
+            await future;
+          } catch (_) {}
+
+          expect(TestToolsEndpoint.willCloseListenerCalled, isTrue);
+        });
+      });
     },
   );
 
@@ -87,6 +112,33 @@ void main() {
 
         expect(endpoint, 'testTools');
         expect(method, 'returnsSessionEndpointAndMethodFromStream');
+      });
+
+      group('when method throws an exception', () {
+        late Stream stream;
+
+        setUp(() async {
+          stream = endpoints.testTools
+              .addWillCloseListenerToSessionInStreamMethodAndThrow(
+                  sessionBuilder.copyWith(
+            enableLogging: true,
+          ));
+        });
+
+        tearDown(() async {
+          TestToolsEndpoint.willCloseListenerCalled = false;
+        });
+
+        test(
+            'then the session is closed so that the `willCloseListener` is called',
+            () async {
+          try {
+            await stream.take(1);
+          } catch (_) {}
+          await flushEventQueue();
+
+          expect(TestToolsEndpoint.willCloseListenerCalled, isTrue);
+        });
       });
     },
   );

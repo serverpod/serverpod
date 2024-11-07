@@ -185,6 +185,25 @@ class TestToolsEndpoint extends Endpoint {
     session.log('test session log in endpoint');
   }
 
+  static bool willCloseListenerCalled = false;
+
+  Future<void> addWillCloseListenerToSessionAndThrow(Session session) async {
+    session.addWillCloseListener((Session s) {
+      willCloseListenerCalled = true;
+    });
+
+    throw Exception();
+  }
+
+  Stream<int> addWillCloseListenerToSessionInStreamMethodAndThrow(
+    Session session,
+  ) {
+    session.addWillCloseListener((Session s) {
+      willCloseListenerCalled = true;
+    });
+
+    throw Exception();
+  }
 }
 
 class AuthenticatedTestToolsEndpoint extends Endpoint {
