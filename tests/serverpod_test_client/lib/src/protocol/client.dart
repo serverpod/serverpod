@@ -2330,6 +2330,27 @@ class EndpointTestTools extends _i1.EndpointRef {
         'echoSimpleDatas',
         {'simpleDatas': simpleDatas},
       );
+
+  _i2.Future<void> logMessageWithSession() => caller.callServerEndpoint<void>(
+        'testTools',
+        'logMessageWithSession',
+        {},
+      );
+
+  _i2.Future<void> addWillCloseListenerToSessionAndThrow() =>
+      caller.callServerEndpoint<void>(
+        'testTools',
+        'addWillCloseListenerToSessionAndThrow',
+        {},
+      );
+
+  _i2.Stream<int> addWillCloseListenerToSessionInStreamMethodAndThrow() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'testTools',
+        'addWillCloseListenerToSessionInStreamMethodAndThrow',
+        {},
+        {},
+      );
 }
 
 /// {@category Endpoint}

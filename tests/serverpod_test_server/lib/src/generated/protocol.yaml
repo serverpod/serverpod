@@ -284,6 +284,9 @@ testTools:
   - createSimpleDatasInParallelTransactionCalls:
   - echoSimpleData:
   - echoSimpleDatas:
+  - logMessageWithSession:
+  - addWillCloseListenerToSessionAndThrow:
+  - addWillCloseListenerToSessionInStreamMethodAndThrow:
 authenticatedTestTools:
   - returnsString:
   - returnsStream:

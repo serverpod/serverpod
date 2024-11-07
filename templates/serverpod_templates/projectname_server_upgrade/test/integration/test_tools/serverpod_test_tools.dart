@@ -131,19 +131,22 @@ class _ExampleEndpoint {
         endpoint: 'example',
         method: 'hello',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'example',
-        methodName: 'hello',
-        parameters: _i1.testObjectToJson({'name': name}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<String>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'example',
+          methodName: 'hello',
+          parameters: _i1.testObjectToJson({'name': name}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 }
