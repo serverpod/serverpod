@@ -103,8 +103,8 @@ class WebServer {
 
   void _handleRequest(HttpRequest request) async {
     if (serverpod.runMode == 'production') {
-      request.response.headers.add(
-          'Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
+      request.response.headers.add('Strict-Transport-Security',
+          'max-age=63072000; includeSubDomains; preload');
     }
 
     Uri uri;
