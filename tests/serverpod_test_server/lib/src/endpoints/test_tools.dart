@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 
@@ -185,21 +187,21 @@ class TestToolsEndpoint extends Endpoint {
     session.log('test session log in endpoint');
   }
 
-  static bool willCloseListenerCalled = false;
+  static Completer<void> willCloseListenerCalled = Completer();
 
   Future<void> addWillCloseListenerToSessionAndThrow(Session session) async {
     session.addWillCloseListener((Session s) {
-      willCloseListenerCalled = true;
+      willCloseListenerCalled.complete();
     });
 
     throw Exception();
   }
 
-  Stream<int> addWillCloseListenerToSessionInStreamMethodAndThrow(
+  Stream<int> addWillCloseListenerToSessionIntStreamMethodAndThrow(
     Session session,
   ) {
     session.addWillCloseListener((Session s) {
-      willCloseListenerCalled = true;
+      willCloseListenerCalled.complete();
     });
 
     throw Exception();

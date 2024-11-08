@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
@@ -65,7 +66,7 @@ void main() {
         });
 
         tearDown(() async {
-          TestToolsEndpoint.willCloseListenerCalled = false;
+          TestToolsEndpoint.willCloseListenerCalled = Completer();
         });
 
         test(
@@ -75,7 +76,10 @@ void main() {
             await future;
           } catch (_) {}
 
-          expect(TestToolsEndpoint.willCloseListenerCalled, isTrue);
+          await expectLater(
+            TestToolsEndpoint.willCloseListenerCalled,
+            completes,
+          );
         });
       });
     },
@@ -119,14 +123,14 @@ void main() {
 
         setUp(() async {
           stream = endpoints.testTools
-              .addWillCloseListenerToSessionInStreamMethodAndThrow(
+              .addWillCloseListenerToSessionIntStreamMethodAndThrow(
                   sessionBuilder.copyWith(
             enableLogging: true,
           ));
         });
 
         tearDown(() async {
-          TestToolsEndpoint.willCloseListenerCalled = false;
+          TestToolsEndpoint.willCloseListenerCalled = Completer();
         });
 
         test(
@@ -137,7 +141,10 @@ void main() {
           } catch (_) {}
           await flushEventQueue();
 
-          expect(TestToolsEndpoint.willCloseListenerCalled, isTrue);
+          await expectLater(
+            TestToolsEndpoint.willCloseListenerCalled,
+            completes,
+          );
         });
       });
     },
