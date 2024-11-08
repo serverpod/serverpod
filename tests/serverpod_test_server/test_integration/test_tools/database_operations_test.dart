@@ -320,7 +320,7 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.disabled,
-        testGroupTagsOverride: [concurrencyOneTestTag],
+        testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
       );
 
       withServerpod(
@@ -345,7 +345,7 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.disabled,
-        testGroupTagsOverride: [concurrencyOneTestTag],
+        testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
       );
     });
 
@@ -370,7 +370,7 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.disabled,
-        testGroupTagsOverride: [concurrencyOneTestTag],
+        testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
       );
 
       withServerpod(
@@ -392,7 +392,7 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.disabled,
-        testGroupTagsOverride: [concurrencyOneTestTag],
+        testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
       );
     });
 
@@ -419,7 +419,7 @@ void main() {
         });
       },
       rollbackDatabase: RollbackDatabase.disabled,
-      testGroupTagsOverride: [concurrencyOneTestTag],
+      testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     );
   });
 
