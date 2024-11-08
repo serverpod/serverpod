@@ -6,6 +6,11 @@ import 'package:test/test.dart';
 class MockTransaction implements Transaction {
   @override
   Future<void> cancel() async {}
+
+  @override
+  Future<Savepoint> createSavepoint() {
+    throw UnimplementedError();
+  }
 }
 
 void main() async {
