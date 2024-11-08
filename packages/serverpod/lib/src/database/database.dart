@@ -322,7 +322,7 @@ class Database {
   }) async {
     return await _databaseConnection.transaction(
       transactionFunction,
-      settings: settings,
+      settings: settings ?? const TransactionSettings(),
     );
   }
 

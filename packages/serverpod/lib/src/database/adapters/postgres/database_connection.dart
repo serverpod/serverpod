@@ -544,27 +544,24 @@ class DatabaseConnection {
   /// For most cases use the corresponding method in [Database] instead.
   Future<R> transaction<R>(
     TransactionFunction<R> transactionFunction, {
-    TransactionSettings? settings,
+    required TransactionSettings settings,
   }) {
-    pg.TransactionSettings? transactionSettings;
-    if (settings != null) {
-      transactionSettings = pg.TransactionSettings(
-        isolationLevel: switch (settings.isolationLevel) {
-          IsolationLevel.readCommitted => pg.IsolationLevel.readCommitted,
-          IsolationLevel.readUncommitted => pg.IsolationLevel.readUncommitted,
-          IsolationLevel.repeatableRead => pg.IsolationLevel.repeatableRead,
-          IsolationLevel.serializable => pg.IsolationLevel.serializable,
-          null => null,
-        },
-      );
-    }
+    var pgTransactionSettings = pg.TransactionSettings(
+      isolationLevel: switch (settings.isolationLevel) {
+        IsolationLevel.readCommitted => pg.IsolationLevel.readCommitted,
+        IsolationLevel.readUncommitted => pg.IsolationLevel.readUncommitted,
+        IsolationLevel.repeatableRead => pg.IsolationLevel.repeatableRead,
+        IsolationLevel.serializable => pg.IsolationLevel.serializable,
+        null => null,
+      },
+    );
 
     return _postgresConnection.runTx<R>(
       (ctx) {
         var transaction = _PostgresTransaction(ctx);
         return transactionFunction(transaction);
       },
-      settings: transactionSettings,
+      settings: pgTransactionSettings,
     );
   }
 
