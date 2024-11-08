@@ -286,7 +286,7 @@ testTools:
   - echoSimpleDatas:
   - logMessageWithSession:
   - addWillCloseListenerToSessionAndThrow:
-  - addWillCloseListenerToSessionInStreamMethodAndThrow:
+  - addWillCloseListenerToSessionIntStreamMethodAndThrow:
 authenticatedTestTools:
   - returnsString:
   - returnsStream:

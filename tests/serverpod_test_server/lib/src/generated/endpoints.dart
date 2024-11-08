@@ -5015,9 +5015,9 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['testTools'] as _i36.TestToolsEndpoint)
                   .listenForNumbersOnSharedStream(session),
         ),
-        'addWillCloseListenerToSessionInStreamMethodAndThrow':
+        'addWillCloseListenerToSessionIntStreamMethodAndThrow':
             _i1.MethodStreamConnector(
-          name: 'addWillCloseListenerToSessionInStreamMethodAndThrow',
+          name: 'addWillCloseListenerToSessionIntStreamMethodAndThrow',
           params: {},
           streamParams: {},
           returnType: _i1.MethodStreamReturnType.streamType,
@@ -5027,7 +5027,8 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, Stream> streamParams,
           ) =>
               (endpoints['testTools'] as _i36.TestToolsEndpoint)
-                  .addWillCloseListenerToSessionInStreamMethodAndThrow(session),
+                  .addWillCloseListenerToSessionIntStreamMethodAndThrow(
+                      session),
         ),
       },
     );

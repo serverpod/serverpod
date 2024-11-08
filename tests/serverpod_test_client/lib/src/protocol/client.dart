@@ -2344,10 +2344,10 @@ class EndpointTestTools extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Stream<int> addWillCloseListenerToSessionInStreamMethodAndThrow() =>
+  _i2.Stream<int> addWillCloseListenerToSessionIntStreamMethodAndThrow() =>
       caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
         'testTools',
-        'addWillCloseListenerToSessionInStreamMethodAndThrow',
+        'addWillCloseListenerToSessionIntStreamMethodAndThrow',
         {},
         {},
       );

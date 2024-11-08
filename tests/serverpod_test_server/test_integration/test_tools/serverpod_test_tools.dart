@@ -8088,7 +8088,7 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i3.Stream<int> addWillCloseListenerToSessionInStreamMethodAndThrow(
+  _i3.Stream<int> addWillCloseListenerToSessionIntStreamMethodAndThrow(
       _i1.TestSessionBuilder sessionBuilder) {
     var _localTestStreamManager = _i1.TestStreamManager<int>();
     _i1.callStreamFunctionAndHandleExceptions(
@@ -8096,13 +8096,13 @@ class _TestToolsEndpoint {
         var _localUniqueSession =
             (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
           endpoint: 'testTools',
-          method: 'addWillCloseListenerToSessionInStreamMethodAndThrow',
+          method: 'addWillCloseListenerToSessionIntStreamMethodAndThrow',
         );
         var _localCallContext =
             await _endpointDispatch.getMethodStreamCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
-          methodName: 'addWillCloseListenerToSessionInStreamMethodAndThrow',
+          methodName: 'addWillCloseListenerToSessionIntStreamMethodAndThrow',
           arguments: {},
           requestedInputStreams: [],
           serializationManager: _serializationManager,
