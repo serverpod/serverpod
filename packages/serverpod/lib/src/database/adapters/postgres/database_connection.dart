@@ -307,7 +307,11 @@ class DatabaseConnection {
         .withLimit(limit)
         .build();
 
-    var result = await _query(session, query, transaction: transaction);
+    var result = await _query(
+      session,
+      query,
+      context: _resolveQueryContext(transaction),
+    );
 
     if (result.length != 1) return 0;
 
@@ -328,8 +332,8 @@ class DatabaseConnection {
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
       simpleQueryMode: true,
+      context: _resolveQueryContext(transaction),
     );
 
     return PostgresDatabaseResult(result);
@@ -347,21 +351,21 @@ class DatabaseConnection {
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
       parameters: parameters,
+      context: _resolveQueryContext(transaction),
     );
 
     return PostgresDatabaseResult(result);
   }
 
-  Future<pg.Result> _query(
+  static Future<pg.Result> _query(
     Session session,
     String query, {
     int? timeoutInSeconds,
-    required Transaction? transaction,
     bool ignoreRows = false,
     bool simpleQueryMode = false,
     QueryParameters? parameters,
+    required pg.Session context,
   }) async {
     assert(
       simpleQueryMode == false ||
@@ -369,15 +373,11 @@ class DatabaseConnection {
       'simpleQueryMode does not support parameters',
     );
 
-    var postgresTransaction = _castToPostgresTransaction(transaction);
     var timeout =
         timeoutInSeconds != null ? Duration(seconds: timeoutInSeconds) : null;
 
     var startTime = DateTime.now();
     try {
-      var context =
-          postgresTransaction?.executionContext ?? _postgresConnection;
-
       var result = await context.execute(
         parameters is QueryParametersNamed ? pg.Sql.named(query) : query,
         timeout: timeout,
@@ -441,9 +441,9 @@ class DatabaseConnection {
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
       ignoreRows: true,
       parameters: parameters,
+      context: _resolveQueryContext(transaction),
     );
 
     return result.affectedRows;
@@ -460,9 +460,9 @@ class DatabaseConnection {
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
       ignoreRows: true,
       simpleQueryMode: true,
+      context: _resolveQueryContext(transaction),
     );
 
     return result.affectedRows;
@@ -479,10 +479,15 @@ class DatabaseConnection {
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
+      context: _resolveQueryContext(transaction),
     );
 
     return result.map((row) => row.toColumnMap());
+  }
+
+  pg.Session _resolveQueryContext(Transaction? transaction) {
+    var postgresTransaction = _castToPostgresTransaction(transaction);
+    return postgresTransaction?.executionContext ?? _postgresConnection;
   }
 
   Future<List<T>> _deserializedMappedQuery<T extends TableRow>(
@@ -519,7 +524,7 @@ class DatabaseConnection {
         .toList();
   }
 
-  void _logQuery(
+  static void _logQuery(
     Session session,
     String query,
     DateTime startTime, {
