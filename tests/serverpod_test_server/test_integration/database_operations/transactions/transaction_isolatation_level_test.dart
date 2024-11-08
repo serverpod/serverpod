@@ -19,13 +19,17 @@ void main() async {
       isolationLevel: IsolationLevel.readCommitted,
     );
 
-    test(
-        'when row is modified after first statement in transaction'
-        'then transaction observes the updated value.', () async {
-      var testData = await SimpleData.db.insertRow(
+    late SimpleData testData;
+    setUp(() async {
+      testData = await SimpleData.db.insertRow(
         session,
         SimpleData(num: 1),
       );
+    });
+
+    test(
+        'when row is modified after first statement in transaction '
+        'then transaction observes the updated value.', () async {
       var c1 = Completer();
       var c2 = Completer();
       var transactionFuture = session.db.transaction(
@@ -66,7 +70,7 @@ void main() async {
     );
 
     test(
-        'when row is modified after first statement in transaction'
+        'when row is modified after first statement in transaction '
         'then transaction does NOT observe the updated value.', () async {
       var testData = await SimpleData.db.insertRow(
         session,
@@ -107,7 +111,7 @@ void main() async {
     });
 
     test(
-        'when read row is concurrently modified by other transaction'
+        'when read row is concurrently modified by other transaction '
         'then modifications are preserved', () async {
       var testData1 = await SimpleData.db.insertRow(
         session,
@@ -180,7 +184,7 @@ void main() async {
     );
 
     test(
-        'when row is modified after first statement in transaction'
+        'when row is modified after first statement in transaction '
         'then transaction does NOT observe the updated value.', () async {
       var testData = await SimpleData.db.insertRow(
         session,
@@ -220,7 +224,7 @@ void main() async {
     });
 
     test(
-        'when read row is concurrently modified by other transaction'
+        'when read row is concurrently modified by other transaction '
         'then database exception is thrown for one transaction', () async {
       var testData1 = await SimpleData.db.insertRow(
         session,
