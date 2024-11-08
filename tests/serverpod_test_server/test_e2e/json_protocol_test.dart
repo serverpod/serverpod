@@ -255,8 +255,8 @@ void main() {
       );
     });
 
-    test('then it should return status code 500', () {
-      expect(response.statusCode, 500);
+    test('then it should return status code 400', () {
+      expect(response.statusCode, 400);
     });
 
     test('then the serialized response body should contain the "className" key',
