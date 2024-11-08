@@ -11,14 +11,14 @@ abstract interface class Transaction {
 
 /// Isolation levels for transactions.
 enum IsolationLevel {
+  /// Allow transaction to see uncommitted changes made by other transactions.
+  /// Though in PostgreSQL, this behaves like read committed.
+  readUncommitted,
+
   /// Each statement in the transaction sees a snapshot of the database as of
   /// the beginning of the statement. This means each statement might observe
   /// a different version of the database.
   readCommitted,
-
-  /// Allow transaction to see uncommitted changes made by other transactions.
-  /// Though in PostgreSQL, this behaves like read committed.
-  readUncommitted,
 
   /// The transaction transaction can only see rows committed before the first
   /// statement was executed giving a consistent view of the database.
@@ -30,7 +30,7 @@ enum IsolationLevel {
   /// level.
   repeatableRead,
 
-  /// The transaction transaction can only see rows committed before the first
+  /// The transaction can only see rows committed before the first
   /// statement was executed giving a consistent view of the database.
   ///
   /// If a read row is updated by another transaction, an exception is thrown
