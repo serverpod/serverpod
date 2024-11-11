@@ -184,7 +184,7 @@ class TestDatabaseProxy implements Database {
     }
 
     try {
-      await _transactionManager.addSavePoint(lock: true);
+      await _transactionManager.addSavepoint(lock: true);
     } on ConcurrentTransactionsException {
       throw InvalidConfigurationException(
         'Concurrent calls to transaction are not supported when database rollbacks are enabled. '
@@ -194,10 +194,10 @@ class TestDatabaseProxy implements Database {
 
     try {
       var result = await transactionFunction(localTransaction);
-      await _transactionManager.releasePreviousSavePoint(unlock: true);
+      await _transactionManager.releasePreviousSavepoint(unlock: true);
       return result;
     } catch (e) {
-      await _transactionManager.rollbackToPreviousSavePoint(unlock: true);
+      await _transactionManager.rollbackToPreviousSavepoint(unlock: true);
       rethrow;
     }
   }
@@ -330,7 +330,7 @@ class TestDatabaseProxy implements Database {
 
     return _databaseOperationLock.synchronized(() async {
       try {
-        await _transactionManager.addSavePoint(
+        await _transactionManager.addSavepoint(
           lock: true,
           isPartOfTransaction: isPartOfUserTransaction,
         );
@@ -345,10 +345,10 @@ class TestDatabaseProxy implements Database {
 
       try {
         var result = await databaseOperation();
-        await _transactionManager.releasePreviousSavePoint(unlock: true);
+        await _transactionManager.releasePreviousSavepoint(unlock: true);
         return result;
       } on DatabaseException catch (_) {
-        await _transactionManager.rollbackToPreviousSavePoint(unlock: true);
+        await _transactionManager.rollbackToPreviousSavepoint(unlock: true);
         rethrow;
       }
     });
