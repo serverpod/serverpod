@@ -77,7 +77,7 @@ void main() {
           } catch (_) {}
 
           await expectLater(
-            TestToolsEndpoint.willCloseListenerCalled,
+            TestToolsEndpoint.willCloseListenerCalled.future,
             completes,
           );
         });
@@ -142,7 +142,7 @@ void main() {
           await flushEventQueue();
 
           await expectLater(
-            TestToolsEndpoint.willCloseListenerCalled,
+            TestToolsEndpoint.willCloseListenerCalled.future,
             completes,
           );
         });
