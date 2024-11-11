@@ -319,6 +319,7 @@ class Database {
   Future<R> transaction<R>(TransactionFunction<R> transactionFunction) async {
     return await _databaseConnection.transaction(
       transactionFunction,
+      _session,
     );
   }
 

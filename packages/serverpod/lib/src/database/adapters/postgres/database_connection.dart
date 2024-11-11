@@ -11,6 +11,7 @@ import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/exceptions.dart';
 import 'package:serverpod/src/database/sql_query_builder.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../generated/protocol.dart';
 import '../../../server/session.dart';
@@ -547,10 +548,16 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<R> transaction<R>(TransactionFunction<R> transactionFunction) {
+  Future<R> transaction<R>(
+    TransactionFunction<R> transactionFunction,
+    Session session,
+  ) {
     return _postgresConnection.runTx<R>(
       (ctx) {
-        var transaction = _PostgresTransaction(ctx);
+        var transaction = _PostgresTransaction(
+          ctx,
+          session,
+        );
         return transactionFunction(transaction);
       },
     );
@@ -755,15 +762,55 @@ _PostgresTransaction? _castToPostgresTransaction(
   return transaction;
 }
 
+class _PostgresSavepoint implements Savepoint {
+  @override
+  final String id;
+  final _PostgresTransaction _transaction;
+
+  _PostgresSavepoint(this.id, this._transaction);
+
+  @override
+  Future<void> release() async {
+    await _transaction._query('RELEASE SAVEPOINT $id;');
+  }
+
+  @override
+  Future<void> rollback() async {
+    await _transaction._query('ROLLBACK TO SAVEPOINT $id;');
+  }
+}
+
 /// Postgres specific implementation of transactions.
 class _PostgresTransaction implements Transaction {
   final pg.TxSession executionContext;
+  final Session _session;
 
-  _PostgresTransaction(this.executionContext);
+  _PostgresTransaction(
+    this.executionContext,
+    this._session,
+  );
 
   @override
   Future<void> cancel() async {
     await executionContext.rollback();
+  }
+
+  Future<void> _query(String query, {QueryParameters? parameters}) async {
+    await DatabaseConnection._query(
+      _session,
+      query,
+      parameters: parameters,
+      context: executionContext,
+    );
+  }
+
+  @override
+  Future<Savepoint> createSavepoint() async {
+    var postgresCompatibleRandomString =
+        const Uuid().v4().replaceAll(RegExp(r'-'), '_');
+    var savepointId = 'savepoint_$postgresCompatibleRandomString';
+    await _query('SAVEPOINT $savepointId;');
+    return _PostgresSavepoint(savepointId, this);
   }
 }
 
