@@ -175,19 +175,22 @@ class _AdminEndpoint {
         endpoint: 'admin',
         method: 'getUserInfo',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'admin',
-        methodName: 'getUserInfo',
-        parameters: _i1.testObjectToJson({'userId': userId}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<_i4.UserInfo?>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'getUserInfo',
+          parameters: _i1.testObjectToJson({'userId': userId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i4.UserInfo?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
@@ -201,19 +204,22 @@ class _AdminEndpoint {
         endpoint: 'admin',
         method: 'blockUser',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'admin',
-        methodName: 'blockUser',
-        parameters: _i1.testObjectToJson({'userId': userId}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<void>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'blockUser',
+          parameters: _i1.testObjectToJson({'userId': userId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
@@ -227,19 +233,22 @@ class _AdminEndpoint {
         endpoint: 'admin',
         method: 'unblockUser',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'admin',
-        methodName: 'unblockUser',
-        parameters: _i1.testObjectToJson({'userId': userId}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<void>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'unblockUser',
+          parameters: _i1.testObjectToJson({'userId': userId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 }
@@ -264,19 +273,22 @@ class _AppleEndpoint {
         endpoint: 'apple',
         method: 'authenticate',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'apple',
-        methodName: 'authenticate',
-        parameters: _i1.testObjectToJson({'authInfo': authInfo}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<_i5.AuthenticationResponse>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'apple',
+          methodName: 'authenticate',
+          parameters: _i1.testObjectToJson({'authInfo': authInfo}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i5.AuthenticationResponse>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 }
@@ -302,22 +314,25 @@ class _EmailEndpoint {
         endpoint: 'email',
         method: 'authenticate',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'email',
-        methodName: 'authenticate',
-        parameters: _i1.testObjectToJson({
-          'email': email,
-          'password': password,
-        }),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<_i5.AuthenticationResponse>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'email',
+          methodName: 'authenticate',
+          parameters: _i1.testObjectToJson({
+            'email': email,
+            'password': password,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i5.AuthenticationResponse>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
@@ -332,22 +347,25 @@ class _EmailEndpoint {
         endpoint: 'email',
         method: 'changePassword',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'email',
-        methodName: 'changePassword',
-        parameters: _i1.testObjectToJson({
-          'oldPassword': oldPassword,
-          'newPassword': newPassword,
-        }),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<bool>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'email',
+          methodName: 'changePassword',
+          parameters: _i1.testObjectToJson({
+            'oldPassword': oldPassword,
+            'newPassword': newPassword,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
@@ -361,19 +379,22 @@ class _EmailEndpoint {
         endpoint: 'email',
         method: 'initiatePasswordReset',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'email',
-        methodName: 'initiatePasswordReset',
-        parameters: _i1.testObjectToJson({'email': email}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<bool>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'email',
+          methodName: 'initiatePasswordReset',
+          parameters: _i1.testObjectToJson({'email': email}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
@@ -388,22 +409,25 @@ class _EmailEndpoint {
         endpoint: 'email',
         method: 'resetPassword',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'email',
-        methodName: 'resetPassword',
-        parameters: _i1.testObjectToJson({
-          'verificationCode': verificationCode,
-          'password': password,
-        }),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<bool>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'email',
+          methodName: 'resetPassword',
+          parameters: _i1.testObjectToJson({
+            'verificationCode': verificationCode,
+            'password': password,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
@@ -419,23 +443,26 @@ class _EmailEndpoint {
         endpoint: 'email',
         method: 'createAccountRequest',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'email',
-        methodName: 'createAccountRequest',
-        parameters: _i1.testObjectToJson({
-          'userName': userName,
-          'email': email,
-          'password': password,
-        }),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<bool>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'email',
+          methodName: 'createAccountRequest',
+          parameters: _i1.testObjectToJson({
+            'userName': userName,
+            'email': email,
+            'password': password,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
@@ -450,22 +477,25 @@ class _EmailEndpoint {
         endpoint: 'email',
         method: 'createAccount',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'email',
-        methodName: 'createAccount',
-        parameters: _i1.testObjectToJson({
-          'email': email,
-          'verificationCode': verificationCode,
-        }),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<_i4.UserInfo?>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'email',
+          methodName: 'createAccount',
+          parameters: _i1.testObjectToJson({
+            'email': email,
+            'verificationCode': verificationCode,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i4.UserInfo?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 }
@@ -490,19 +520,22 @@ class _FirebaseEndpoint {
         endpoint: 'firebase',
         method: 'authenticate',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'firebase',
-        methodName: 'authenticate',
-        parameters: _i1.testObjectToJson({'idToken': idToken}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<_i5.AuthenticationResponse>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'firebase',
+          methodName: 'authenticate',
+          parameters: _i1.testObjectToJson({'idToken': idToken}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i5.AuthenticationResponse>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 }
@@ -528,22 +561,25 @@ class _GoogleEndpoint {
         endpoint: 'google',
         method: 'authenticateWithServerAuthCode',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'google',
-        methodName: 'authenticateWithServerAuthCode',
-        parameters: _i1.testObjectToJson({
-          'authenticationCode': authenticationCode,
-          'redirectUri': redirectUri,
-        }),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<_i5.AuthenticationResponse>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'google',
+          methodName: 'authenticateWithServerAuthCode',
+          parameters: _i1.testObjectToJson({
+            'authenticationCode': authenticationCode,
+            'redirectUri': redirectUri,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i5.AuthenticationResponse>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
@@ -557,19 +593,22 @@ class _GoogleEndpoint {
         endpoint: 'google',
         method: 'authenticateWithIdToken',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'google',
-        methodName: 'authenticateWithIdToken',
-        parameters: _i1.testObjectToJson({'idToken': idToken}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<_i5.AuthenticationResponse>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'google',
+          methodName: 'authenticateWithIdToken',
+          parameters: _i1.testObjectToJson({'idToken': idToken}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i5.AuthenticationResponse>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 }
@@ -591,19 +630,22 @@ class _StatusEndpoint {
         endpoint: 'status',
         method: 'isSignedIn',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'status',
-        methodName: 'isSignedIn',
-        parameters: _i1.testObjectToJson({}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<bool>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'status',
+          methodName: 'isSignedIn',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
@@ -614,19 +656,22 @@ class _StatusEndpoint {
         endpoint: 'status',
         method: 'signOut',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'status',
-        methodName: 'signOut',
-        parameters: _i1.testObjectToJson({}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<void>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'status',
+          methodName: 'signOut',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
@@ -637,19 +682,22 @@ class _StatusEndpoint {
         endpoint: 'status',
         method: 'signOutDevice',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'status',
-        methodName: 'signOutDevice',
-        parameters: _i1.testObjectToJson({}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<void>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'status',
+          methodName: 'signOutDevice',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
@@ -661,19 +709,22 @@ class _StatusEndpoint {
         endpoint: 'status',
         method: 'signOutAllDevices',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'status',
-        methodName: 'signOutAllDevices',
-        parameters: _i1.testObjectToJson({}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<void>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'status',
+          methodName: 'signOutAllDevices',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
@@ -685,19 +736,22 @@ class _StatusEndpoint {
         endpoint: 'status',
         method: 'getUserInfo',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'status',
-        methodName: 'getUserInfo',
-        parameters: _i1.testObjectToJson({}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<_i4.UserInfo?>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'status',
+          methodName: 'getUserInfo',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i4.UserInfo?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
@@ -709,19 +763,22 @@ class _StatusEndpoint {
         endpoint: 'status',
         method: 'getUserSettingsConfig',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'status',
-        methodName: 'getUserSettingsConfig',
-        parameters: _i1.testObjectToJson({}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<_i7.UserSettingsConfig>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'status',
+          methodName: 'getUserSettingsConfig',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i7.UserSettingsConfig>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 }
@@ -744,19 +801,22 @@ class _UserEndpoint {
         endpoint: 'user',
         method: 'removeUserImage',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'user',
-        methodName: 'removeUserImage',
-        parameters: _i1.testObjectToJson({}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<bool>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'user',
+          methodName: 'removeUserImage',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
@@ -770,19 +830,22 @@ class _UserEndpoint {
         endpoint: 'user',
         method: 'setUserImage',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'user',
-        methodName: 'setUserImage',
-        parameters: _i1.testObjectToJson({'image': image}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<bool>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'user',
+          methodName: 'setUserImage',
+          parameters: _i1.testObjectToJson({'image': image}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
@@ -796,19 +859,22 @@ class _UserEndpoint {
         endpoint: 'user',
         method: 'changeUserName',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'user',
-        methodName: 'changeUserName',
-        parameters: _i1.testObjectToJson({'userName': userName}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<bool>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'user',
+          methodName: 'changeUserName',
+          parameters: _i1.testObjectToJson({'userName': userName}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
@@ -822,19 +888,22 @@ class _UserEndpoint {
         endpoint: 'user',
         method: 'changeFullName',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'user',
-        methodName: 'changeFullName',
-        parameters: _i1.testObjectToJson({'fullName': fullName}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<bool>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'user',
+          methodName: 'changeFullName',
+          parameters: _i1.testObjectToJson({'fullName': fullName}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 }

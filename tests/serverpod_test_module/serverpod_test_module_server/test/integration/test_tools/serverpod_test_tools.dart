@@ -139,19 +139,22 @@ class _ModuleEndpoint {
         endpoint: 'module',
         method: 'hello',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'module',
-        methodName: 'hello',
-        parameters: _i1.testObjectToJson({'name': name}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<String>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'module',
+          methodName: 'hello',
+          parameters: _i1.testObjectToJson({'name': name}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
@@ -165,19 +168,22 @@ class _ModuleEndpoint {
         endpoint: 'module',
         method: 'modifyModuleObject',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'module',
-        methodName: 'modifyModuleObject',
-        parameters: _i1.testObjectToJson({'object': object}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<_i4.ModuleClass>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'module',
+          methodName: 'modifyModuleObject',
+          parameters: _i1.testObjectToJson({'object': object}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i4.ModuleClass>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 }
@@ -200,19 +206,22 @@ class _StreamingEndpoint {
         endpoint: 'streaming',
         method: 'wasStreamOpenCalled',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'streaming',
-        methodName: 'wasStreamOpenCalled',
-        parameters: _i1.testObjectToJson({}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<bool>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'streaming',
+          methodName: 'wasStreamOpenCalled',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
@@ -224,19 +233,22 @@ class _StreamingEndpoint {
         endpoint: 'streaming',
         method: 'wasStreamClosedCalled',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'streaming',
-        methodName: 'wasStreamClosedCalled',
-        parameters: _i1.testObjectToJson({}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<bool>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'streaming',
+          methodName: 'wasStreamClosedCalled',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
