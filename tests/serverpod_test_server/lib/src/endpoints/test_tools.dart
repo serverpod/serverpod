@@ -187,11 +187,11 @@ class TestToolsEndpoint extends Endpoint {
     session.log('test session log in endpoint');
   }
 
-  static Completer<void> willCloseListenerCalled = Completer();
+  static Completer<void>? willCloseListenerCalled;
 
   Future<void> addWillCloseListenerToSessionAndThrow(Session session) async {
     session.addWillCloseListener((Session s) {
-      willCloseListenerCalled.complete();
+      willCloseListenerCalled?.complete();
     });
 
     throw Exception();
@@ -201,7 +201,7 @@ class TestToolsEndpoint extends Endpoint {
     Session session,
   ) {
     session.addWillCloseListener((Session s) {
-      willCloseListenerCalled.complete();
+      willCloseListenerCalled?.complete();
     });
 
     throw Exception();

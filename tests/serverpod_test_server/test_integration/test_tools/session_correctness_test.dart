@@ -59,6 +59,7 @@ void main() {
         late Future future;
 
         setUp(() async {
+          TestToolsEndpoint.willCloseListenerCalled = Completer();
           future = endpoints.testTools
               .addWillCloseListenerToSessionAndThrow(sessionBuilder.copyWith(
             enableLogging: true,
@@ -66,7 +67,7 @@ void main() {
         });
 
         tearDown(() async {
-          TestToolsEndpoint.willCloseListenerCalled = Completer();
+          TestToolsEndpoint.willCloseListenerCalled = null;
         });
 
         test(
@@ -77,7 +78,7 @@ void main() {
           } catch (_) {}
 
           await expectLater(
-            TestToolsEndpoint.willCloseListenerCalled.future,
+            TestToolsEndpoint.willCloseListenerCalled?.future,
             completes,
           );
         });
@@ -122,6 +123,7 @@ void main() {
         late Stream stream;
 
         setUp(() async {
+          TestToolsEndpoint.willCloseListenerCalled = Completer();
           stream = endpoints.testTools
               .addWillCloseListenerToSessionIntStreamMethodAndThrow(
                   sessionBuilder.copyWith(
@@ -130,7 +132,7 @@ void main() {
         });
 
         tearDown(() async {
-          TestToolsEndpoint.willCloseListenerCalled = Completer();
+          TestToolsEndpoint.willCloseListenerCalled = null;
         });
 
         test(
@@ -142,7 +144,7 @@ void main() {
           await flushEventQueue();
 
           await expectLater(
-            TestToolsEndpoint.willCloseListenerCalled.future,
+            TestToolsEndpoint.willCloseListenerCalled?.future,
             completes,
           );
         });
