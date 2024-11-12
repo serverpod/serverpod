@@ -20,10 +20,10 @@ class EndpointsAnalyzer {
 
   /// Create a new [EndpointsAnalyzer], containing a
   /// [AnalysisContextCollection] that analyzes all dart files in the
-  /// provided [endpointDirectory].
-  EndpointsAnalyzer(Directory endpointDirectory)
+  /// provided [directory].
+  EndpointsAnalyzer(Directory directory)
       : collection = AnalysisContextCollection(
-          includedPaths: [endpointDirectory.absolute.path],
+          includedPaths: [directory.absolute.path],
           resourceProvider: PhysicalResourceProvider.INSTANCE,
         );
 
@@ -37,9 +37,9 @@ class EndpointsAnalyzer {
 
     var endpointDefs = <EndpointDefinition>[];
 
-    List<(ResolvedLibraryResult, String, String)> validLibraries = [];
+    List<(ResolvedLibraryResult, String)> validLibraries = [];
     Map<String, int> endpointClassMap = {};
-    await for (var (library, filePath, rootPath) in _libraries) {
+    await for (var (library, filePath) in _libraries) {
       var maybeDartErrors = await _getErrorsForFile(library.session, filePath);
       if (maybeDartErrors.isNotEmpty) {
         collector.addError(
@@ -64,7 +64,7 @@ class EndpointsAnalyzer {
         );
       }
 
-      validLibraries.add((library, filePath, rootPath));
+      validLibraries.add((library, filePath));
     }
 
     var duplicateEndpointClasses = endpointClassMap.entries
@@ -72,7 +72,7 @@ class EndpointsAnalyzer {
         .map((entry) => entry.key)
         .toSet();
 
-    for (var (library, filePath, rootPath) in validLibraries) {
+    for (var (library, filePath) in validLibraries) {
       var severityExceptions = _validateLibrary(
         library,
         filePath,
@@ -86,7 +86,6 @@ class EndpointsAnalyzer {
         library,
         collector,
         filePath,
-        rootPath,
         failingExceptions,
       ));
     }
@@ -116,7 +115,6 @@ class EndpointsAnalyzer {
     ResolvedLibraryResult library,
     CodeAnalysisCollector collector,
     String filePath,
-    String rootPath,
     Map<String, List<SourceSpanSeverityException>> validationErrors,
   ) {
     var topElements = library.element.topLevelElements;
@@ -150,7 +148,6 @@ class EndpointsAnalyzer {
         classElement,
         methodDefs,
         filePath,
-        rootPath,
       );
 
       endpointDefs.add(endpointDefinition);
@@ -209,7 +206,7 @@ class EndpointsAnalyzer {
     return validationErrors;
   }
 
-  Stream<(ResolvedLibraryResult, String, String)> get _libraries async* {
+  Stream<(ResolvedLibraryResult, String)> get _libraries async* {
     for (var context in collection.contexts) {
       var analyzedFiles = context.contextRoot.analyzedFiles().toList();
       analyzedFiles.sort();
@@ -219,7 +216,7 @@ class EndpointsAnalyzer {
       for (var filePath in analyzedDartFiles) {
         var library = await context.currentSession.getResolvedLibrary(filePath);
         if (library is ResolvedLibraryResult) {
-          yield (library, filePath, context.contextRoot.root.path);
+          yield (library, filePath);
         }
       }
     }
