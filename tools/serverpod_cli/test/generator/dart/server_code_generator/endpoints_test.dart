@@ -270,13 +270,13 @@ void main() {
       config: config,
     );
 
-    test('then client file is created.', () {
+    test('then endpoint file is created.', () {
       expect(codeMap, contains(expectedFileName));
     });
     var endpointsFile = codeMap[expectedFileName];
 
     test(
-        'then client file contains "ignore: deprecated_member_use_from_same_package" comment for method.',
+        'then endpoint file contains "ignore: deprecated_member_use_from_same_package" comment for method.',
         () {
       expect(
         endpointsFile,
