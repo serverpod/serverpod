@@ -311,4 +311,43 @@ void main() {
       );
     });
   });
+
+  group(
+      'Given a protocol definition with an endpoint defined in the lib folder',
+      () {
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [
+        EndpointDefinitionBuilder()
+            .withClassName('MyEndpoint')
+            .withName('myEndpoint')
+            .withFilePath(path.joinAll([
+              ...config.serverPackageDirectoryPathParts,
+              'lib',
+              'my_endpoint.dart'
+            ]))
+            .build(),
+      ],
+      models: [],
+    );
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test('then endpoint file is created.', () {
+      expect(codeMap, contains(expectedFileName));
+    });
+
+    var endpointsFile = codeMap[expectedFileName];
+
+    test('then import path is correct.', () {
+      var importPath = path.joinAll([
+        '..',
+        '..',
+        'my_endpoint.dart',
+      ]);
+      expect(endpointsFile, contains("import '$importPath' as "));
+    });
+  });
 }

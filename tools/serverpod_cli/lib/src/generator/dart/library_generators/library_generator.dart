@@ -757,13 +757,15 @@ class LibraryGenerator {
     ]).code;
   }
 
+  String? _generatedDirectoryPathCache;
+  String _buildGeneratedDirectoryPath() => _generatedDirectoryPathCache ??=
+      p.joinAll([...config.generatedServeModelPathParts]);
+
   String _endpointPath(EndpointDefinition endpoint) {
-    return p.posix.joinAll([
-      '..',
-      'endpoints',
-      ...endpoint.subDirParts,
-      p.basename(endpoint.filePath),
-    ]);
+    return p.relative(
+      endpoint.filePath,
+      from: _buildGeneratedDirectoryPath(),
+    );
   }
 
   Code _buildEndpointLookupMap(List<EndpointDefinition> endpoints) {
