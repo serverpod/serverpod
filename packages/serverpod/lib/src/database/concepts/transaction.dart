@@ -6,7 +6,7 @@ abstract interface class Savepoint {
   /// The id of the savepoint.
   String get id;
 
-  /// Releases the savepoint and any savepoint created after this savepoint.
+  /// Releases the savepoint and any savepoints created after this savepoint.
   Future<void> release();
 
   /// Rolls back the transaction to the state of the savepoint.
