@@ -40,6 +40,11 @@ class EndpointsAnalyzer {
     List<(ResolvedLibraryResult, String)> validLibraries = [];
     Map<String, int> endpointClassMap = {};
     await for (var (library, filePath) in _libraries) {
+      var endpointClasses = _getEndpointClasses(library);
+      if (endpointClasses.isEmpty) {
+        continue;
+      }
+
       var maybeDartErrors = await _getErrorsForFile(library.session, filePath);
       if (maybeDartErrors.isNotEmpty) {
         collector.addError(
@@ -55,7 +60,7 @@ class EndpointsAnalyzer {
         continue;
       }
 
-      for (var endpointClass in _getEndpointClasses(library)) {
+      for (var endpointClass in endpointClasses) {
         var className = endpointClass.name;
         endpointClassMap.update(
           className,
