@@ -267,10 +267,11 @@ fields:
       await Future.delayed(const Duration(seconds: 1));
 
       // Add endpoint file
-      var endpointFile = File(createEndpointFilePath(
-        tempPath,
-        serverDir,
-        'test_endpoint',
+      var endpointFile = File(createProjectDartFilePath(
+        tmpFolder: tempPath,
+        serverDir: serverDir,
+        pathParts: ['endpoints'],
+        fileName: 'test_endpoint',
       ));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
@@ -409,10 +410,11 @@ class TestEndpoint extends Endpoint {
     });
     test('then client endpoint dispatcher is updated as expected.', () async {
       // Add endpoint file
-      var endpointFile = File(createEndpointFilePath(
-        tempPath,
-        serverDir,
-        'test_endpoint',
+      var endpointFile = File(createProjectDartFilePath(
+        tmpFolder: tempPath,
+        serverDir: serverDir,
+        pathParts: ['endpoints'],
+        fileName: 'test_endpoint',
       ));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
@@ -582,19 +584,20 @@ String createProtocolFilePath(
   );
 }
 
-String createEndpointFilePath(
-  String tmpFolder,
-  String serverDir,
-  String fileName,
-) {
-  return path.join(
+String createProjectDartFilePath({
+  required String tmpFolder,
+  required String serverDir,
+  required String fileName,
+  List<String>? pathParts,
+}) {
+  return path.joinAll([
     tmpFolder,
     serverDir,
     'lib',
     'src',
-    'endpoints',
+    ...?pathParts,
     '$fileName.dart',
-  );
+  ]);
 }
 
 String createServerEndpointDispatcherFilePath(
