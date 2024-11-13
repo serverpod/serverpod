@@ -2,6 +2,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
+import 'package:serverpod_shared/annotations.dart';
 
 abstract class EndpointClassAnalyzer {
   /// Parses an [ClassElement] into a [EndpointDefinition].
@@ -33,6 +34,13 @@ abstract class EndpointClassAnalyzer {
   /// be validated and parsed.
   static bool isEndpointClass(ClassElement element) {
     if (element.supertype?.element.name != 'Endpoint') return false;
+    bool markedAsIgnored = element.metadata.any((annotation) {
+      var constant = annotation.computeConstantValue();
+      var type = constant?.type;
+      var typeName = type?.element?.name;
+      return typeName == ServerpodAnnotationClassNames.ignoreEndpoint;
+    });
+    if (markedAsIgnored) return false;
 
     return true;
   }
