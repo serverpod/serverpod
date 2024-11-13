@@ -343,9 +343,15 @@ class MethodStreamManager {
       /// or a request from the client.
       if (isCancelled) return;
       isCancelled = true;
-      session.log(
-          'Cancelling method output stream for ${session.endpoint}.${session.method}, id $methodStreamId',
-          level: LogLevel.debug);
+      var logMessage =
+          'Cancelling method output stream for ${methodStreamCallContext.fullEndpointPath}.'
+          '${methodStreamCallContext.method.name}, id $methodStreamId';
+      if (session.isClosed) {
+        methodStreamCallContext.endpoint.pod
+            .logVerbose('$logMessage (session already closed)');
+      } else {
+        session.log(logMessage, level: LogLevel.debug);
+      }
       await revokedAuthenticationHandler?.destroy(session);
       await _closeOutboundStream(methodStreamCallContext, methodStreamId);
       await session.close();
