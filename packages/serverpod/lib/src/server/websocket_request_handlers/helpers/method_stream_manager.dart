@@ -343,15 +343,9 @@ class MethodStreamManager {
       /// or a request from the client.
       if (isCancelled) return;
       isCancelled = true;
-      var logMessage =
+      session.serverpod.logVerbose(
           'Cancelling method output stream for ${methodStreamCallContext.fullEndpointPath}.'
-          '${methodStreamCallContext.method.name}, id $methodStreamId';
-      if (session.isClosed) {
-        methodStreamCallContext.endpoint.pod
-            .logVerbose('$logMessage (session already closed)');
-      } else {
-        session.log(logMessage, level: LogLevel.debug);
-      }
+          '${methodStreamCallContext.method.name}, id $methodStreamId');
       await revokedAuthenticationHandler?.destroy(session);
       await _closeOutboundStream(methodStreamCallContext, methodStreamId);
       await session.close();
@@ -448,15 +442,9 @@ class MethodStreamManager {
     for (var streamParam in callContext.inputStreams) {
       var parameterName = streamParam.name;
       var controller = StreamController(onCancel: () async {
-        var logMessage =
+        session.serverpod.logVerbose(
             'Cancelling method input stream for ${callContext.fullEndpointPath}.'
-            '${callContext.method.name}.$parameterName, id $methodStreamId';
-        if (session.isClosed) {
-          callContext.endpoint.pod
-              .logVerbose('$logMessage (session already closed)');
-        } else {
-          session.log(logMessage, level: LogLevel.debug);
-        }
+            '${callContext.method.name}.$parameterName, id $methodStreamId');
         var context = _inputStreamContexts.remove(_buildStreamKey(
           endpoint: callContext.fullEndpointPath,
           method: callContext.method.name,
