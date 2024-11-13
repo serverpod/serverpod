@@ -157,6 +157,10 @@ class MethodStreamManager {
         _onOutputStreamError = onOutputStreamError,
         _onOutputStreamValue = onOutputStreamValue;
 
+  int get openInputStreamCount => _inputStreamContexts.length;
+
+  int get openOutputStreamCount => _outputStreamContexts.length;
+
   Future<void> closeAllStreams() async {
     var inputControllers =
         _inputStreamContexts.values.map((c) => c.controller).toList();
@@ -336,9 +340,12 @@ class MethodStreamManager {
       /// or a request from the client.
       if (isCancelled) return;
       isCancelled = true;
+      session.serverpod.logVerbose(
+          'Cancelling method output stream for ${session.endpoint}.${session.method}, id $methodStreamId');
       await revokedAuthenticationHandler?.destroy(session);
       await _closeOutboundStream(methodStreamCallContext, methodStreamId);
-      await session.close();
+      await session
+          .close(); // Will this also close the input streams? If so is this the desired behavior?
     });
 
     late StreamSubscription subscription;
@@ -431,6 +438,9 @@ class MethodStreamManager {
     for (var streamParam in callContext.inputStreams) {
       var parameterName = streamParam.name;
       var controller = StreamController(onCancel: () async {
+        callContext.endpoint.pod.logVerbose(
+            'Cancelling method input stream for ${callContext.fullEndpointPath}.'
+            '${callContext.method.name}.$parameterName, id $methodStreamId');
         var context = _inputStreamContexts.remove(_buildStreamKey(
           endpoint: callContext.fullEndpointPath,
           method: callContext.method.name,
