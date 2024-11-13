@@ -212,6 +212,9 @@ abstract class Session implements DatabaseAccessor {
   /// Returns the duration this session has been open.
   Duration get duration => DateTime.now().difference(_startTime);
 
+  /// Returns true if this session is closed.
+  bool get isClosed => _closed;
+
   /// Closes the session. This method should only be called if you have
   /// manually created a the [Session] e.g. by calling [createSession] on
   /// [Serverpod]. Closing the session finalizes and writes logs to the

@@ -239,8 +239,11 @@ class MethodStreamManager {
       methodStreamId,
     );
 
-    var inputStreams =
-        _createInputStreams(methodStreamCallContext, methodStreamId);
+    var inputStreams = _createInputStreams(
+      methodStreamCallContext,
+      methodStreamId,
+      session,
+    );
     var streamParams = inputStreams.map(
       (key, value) => MapEntry(key, value.stream),
     );
@@ -340,12 +343,12 @@ class MethodStreamManager {
       /// or a request from the client.
       if (isCancelled) return;
       isCancelled = true;
-      session.serverpod.logVerbose(
-          'Cancelling method output stream for ${session.endpoint}.${session.method}, id $methodStreamId');
+      session.log(
+          'Cancelling method output stream for ${session.endpoint}.${session.method}, id $methodStreamId',
+          level: LogLevel.debug);
       await revokedAuthenticationHandler?.destroy(session);
       await _closeOutboundStream(methodStreamCallContext, methodStreamId);
-      await session
-          .close(); // Will this also close the input streams? If so is this the desired behavior?
+      await session.close();
     });
 
     late StreamSubscription subscription;
@@ -432,15 +435,22 @@ class MethodStreamManager {
   Map<String, StreamController> _createInputStreams(
     MethodStreamCallContext callContext,
     UuidValue methodStreamId,
+    Session session,
   ) {
     var inputStreams = <String, StreamController>{};
 
     for (var streamParam in callContext.inputStreams) {
       var parameterName = streamParam.name;
       var controller = StreamController(onCancel: () async {
-        callContext.endpoint.pod.logVerbose(
+        var logMessage =
             'Cancelling method input stream for ${callContext.fullEndpointPath}.'
-            '${callContext.method.name}.$parameterName, id $methodStreamId');
+            '${callContext.method.name}.$parameterName, id $methodStreamId';
+        if (session.isClosed) {
+          callContext.endpoint.pod
+              .logVerbose('$logMessage (session already closed)');
+        } else {
+          session.log(logMessage, level: LogLevel.debug);
+        }
         var context = _inputStreamContexts.remove(_buildStreamKey(
           endpoint: callContext.fullEndpointPath,
           method: callContext.method.name,
