@@ -157,6 +157,10 @@ class MethodStreamManager {
         _onOutputStreamError = onOutputStreamError,
         _onOutputStreamValue = onOutputStreamValue;
 
+  int get openInputStreamCount => _inputStreamContexts.length;
+
+  int get openOutputStreamCount => _outputStreamContexts.length;
+
   Future<void> closeAllStreams() async {
     var inputControllers =
         _inputStreamContexts.values.map((c) => c.controller).toList();
@@ -235,8 +239,11 @@ class MethodStreamManager {
       methodStreamId,
     );
 
-    var inputStreams =
-        _createInputStreams(methodStreamCallContext, methodStreamId);
+    var inputStreams = _createInputStreams(
+      methodStreamCallContext,
+      methodStreamId,
+      session,
+    );
     var streamParams = inputStreams.map(
       (key, value) => MapEntry(key, value.stream),
     );
@@ -336,6 +343,9 @@ class MethodStreamManager {
       /// or a request from the client.
       if (isCancelled) return;
       isCancelled = true;
+      session.serverpod.logVerbose(
+          'Cancelling method output stream for ${methodStreamCallContext.fullEndpointPath}.'
+          '${methodStreamCallContext.method.name}, id $methodStreamId');
       await revokedAuthenticationHandler?.destroy(session);
       await _closeOutboundStream(methodStreamCallContext, methodStreamId);
       await session.close();
@@ -425,12 +435,16 @@ class MethodStreamManager {
   Map<String, StreamController> _createInputStreams(
     MethodStreamCallContext callContext,
     UuidValue methodStreamId,
+    Session session,
   ) {
     var inputStreams = <String, StreamController>{};
 
     for (var streamParam in callContext.inputStreams) {
       var parameterName = streamParam.name;
       var controller = StreamController(onCancel: () async {
+        session.serverpod.logVerbose(
+            'Cancelling method input stream for ${callContext.fullEndpointPath}.'
+            '${callContext.method.name}.$parameterName, id $methodStreamId');
         var context = _inputStreamContexts.remove(_buildStreamKey(
           endpoint: callContext.fullEndpointPath,
           method: callContext.method.name,
