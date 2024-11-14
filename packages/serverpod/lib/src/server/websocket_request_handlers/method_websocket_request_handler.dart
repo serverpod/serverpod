@@ -191,6 +191,8 @@ class MethodWebsocketRequestHandler {
         ));
       },
       onAllStreamsClosed: () {
+        server.serverpod.logVerbose(
+            'Closing method stream websocket on all streams closed.');
         webSocket.close();
       },
     );
