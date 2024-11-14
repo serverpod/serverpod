@@ -1,3 +1,8 @@
+## 2.2.0-beta.2
+ - feat: Improves Serverpod startup and lifecycle events logging.
+ - fix: Responds with 400 when throwing serializable exceptions.
+ - fix: Enables logging for tests and ensures sessions are always closed.
+
 ## 2.2.0-beta.1
  - feat: Adds full support for testing framework.
  - feat: Adds configuration for controlling log output location.
