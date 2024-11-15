@@ -48,11 +48,16 @@ class TypeDefinitionBuilder {
     return this;
   }
 
-  TypeDefinitionBuilder withListOf(String className, [bool nullable = false]) {
+  TypeDefinitionBuilder withListOf(
+    String className, {
+    bool nullable = false,
+    String? url,
+  }) {
     _className = 'List';
     _generics.add(TypeDefinitionBuilder()
         .withClassName(className)
         .withNullable(nullable)
+        .withUrl(url)
         .build());
     return this;
   }
