@@ -76,9 +76,9 @@ class DartServerCodeGenerator extends CodeGenerator {
     );
 
     var codeMap = {
-      p.joinAll([...config.generatedServeModelPathParts, 'protocol.dart']):
+      p.joinAll([...config.generatedServerProtocolFilePathParts]):
           serverClassGenerator.generateProtocol().generateCode(),
-      p.joinAll([...config.generatedServeModelPathParts, 'endpoints.dart']):
+      p.joinAll([...config.generatedServerEndpointFilePathParts]):
           serverClassGenerator.generateServerEndpointDispatch().generateCode(),
     };
 

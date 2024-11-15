@@ -117,6 +117,14 @@ class GeneratorConfig {
   /// server package.
   List<String> get generatedServeModelPackagePathParts => ['src', 'generated'];
 
+  /// The path parts of the generated endpoint file.
+  List<String> get generatedServerEndpointFilePathParts =>
+      [...generatedServeModelPathParts, 'endpoints.dart'];
+
+  /// The path parts of the generated protocol file.
+  List<String> get generatedServerProtocolFilePathParts =>
+      [...generatedServeModelPathParts, 'protocol.dart'];
+
   /// The path parts of the directory, where the generated code is stored in the
   /// server package.
   List<String> get generatedServeModelPathParts => [
