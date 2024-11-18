@@ -149,6 +149,16 @@ class TypeDefinition {
         enumDefinition: enumDefinition,
       );
 
+  static String getRef(SerializableModelDefinition model) {
+    if (model is ClassDefinition) {
+      var sealedTopNode = model.sealedTopNode;
+      if (sealedTopNode != null) {
+        return sealedTopNode.fileRef();
+      }
+    }
+    return model.fileRef();
+  }
+
   /// Generate a [TypeReference] from this definition.
   TypeReference reference(
     bool serverCode, {
