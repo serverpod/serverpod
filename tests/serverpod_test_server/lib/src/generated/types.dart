@@ -11,7 +11,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
-import 'protocol.dart' as _i3;
+import 'test_enum.dart' as _i3;
+import 'test_enum_stringified.dart' as _i4;
 
 abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
   Types._({
@@ -39,7 +40,7 @@ abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
     Duration? aDuration,
     _i1.UuidValue? aUuid,
     _i3.TestEnum? anEnum,
-    _i3.TestEnumStringified? aStringifiedEnum,
+    _i4.TestEnumStringified? aStringifiedEnum,
   }) = _TypesImpl;
 
   factory Types.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -66,7 +67,7 @@ abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
           : _i3.TestEnum.fromJson((jsonSerialization['anEnum'] as int)),
       aStringifiedEnum: jsonSerialization['aStringifiedEnum'] == null
           ? null
-          : _i3.TestEnumStringified.fromJson(
+          : _i4.TestEnumStringified.fromJson(
               (jsonSerialization['aStringifiedEnum'] as String)),
     );
   }
@@ -96,7 +97,7 @@ abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
 
   _i3.TestEnum? anEnum;
 
-  _i3.TestEnumStringified? aStringifiedEnum;
+  _i4.TestEnumStringified? aStringifiedEnum;
 
   @override
   _i1.Table get table => t;
@@ -112,7 +113,7 @@ abstract class Types implements _i1.TableRow, _i1.ProtocolSerialization {
     Duration? aDuration,
     _i1.UuidValue? aUuid,
     _i3.TestEnum? anEnum,
-    _i3.TestEnumStringified? aStringifiedEnum,
+    _i4.TestEnumStringified? aStringifiedEnum,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -194,7 +195,7 @@ class _TypesImpl extends Types {
     Duration? aDuration,
     _i1.UuidValue? aUuid,
     _i3.TestEnum? anEnum,
-    _i3.TestEnumStringified? aStringifiedEnum,
+    _i4.TestEnumStringified? aStringifiedEnum,
   }) : super._(
           id: id,
           anInt: anInt,
@@ -235,7 +236,7 @@ class _TypesImpl extends Types {
       aDuration: aDuration is Duration? ? aDuration : this.aDuration,
       aUuid: aUuid is _i1.UuidValue? ? aUuid : this.aUuid,
       anEnum: anEnum is _i3.TestEnum? ? anEnum : this.anEnum,
-      aStringifiedEnum: aStringifiedEnum is _i3.TestEnumStringified?
+      aStringifiedEnum: aStringifiedEnum is _i4.TestEnumStringified?
           ? aStringifiedEnum
           : this.aStringifiedEnum,
     );
@@ -306,7 +307,7 @@ class TypesTable extends _i1.Table {
 
   late final _i1.ColumnEnum<_i3.TestEnum> anEnum;
 
-  late final _i1.ColumnEnum<_i3.TestEnumStringified> aStringifiedEnum;
+  late final _i1.ColumnEnum<_i4.TestEnumStringified> aStringifiedEnum;
 
   @override
   List<_i1.Column> get columns => [

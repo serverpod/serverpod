@@ -23,7 +23,6 @@ import 'chat_message_chunk.dart' as _i11;
 import 'chat_message_post.dart' as _i12;
 import 'chat_read_message.dart' as _i13;
 import 'chat_request_message_chunk.dart' as _i14;
-import 'protocol.dart' as _i15;
 export 'chat_join_channel.dart';
 export 'chat_join_channel_failed.dart';
 export 'chat_joined_channel.dart';
@@ -273,22 +272,21 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data != null ? _i14.ChatRequestMessageChunk.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<List<_i15.ChatMessageAttachment>?>()) {
+    if (t == _i1.getType<List<_i9.ChatMessageAttachment>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i15.ChatMessageAttachment>(e))
+              .map((e) => deserialize<_i9.ChatMessageAttachment>(e))
               .toList()
           : null) as dynamic;
     }
-    if (t == List<_i15.ChatMessage>) {
-      return (data as List)
-          .map((e) => deserialize<_i15.ChatMessage>(e))
-          .toList() as dynamic;
+    if (t == List<_i8.ChatMessage>) {
+      return (data as List).map((e) => deserialize<_i8.ChatMessage>(e)).toList()
+          as dynamic;
     }
-    if (t == _i1.getType<List<_i15.ChatMessageAttachment>?>()) {
+    if (t == _i1.getType<List<_i9.ChatMessageAttachment>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i15.ChatMessageAttachment>(e))
+              .map((e) => deserialize<_i9.ChatMessageAttachment>(e))
               .toList()
           : null) as dynamic;
     }

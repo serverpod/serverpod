@@ -11,7 +11,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
-import 'protocol.dart' as _i3;
+import 'test_enum.dart' as _i3;
+import 'test_enum_stringified.dart' as _i4;
+import 'types.dart' as _i5;
 
 abstract class TypesList
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -41,10 +43,10 @@ abstract class TypesList
     List<Duration>? aDuration,
     List<_i1.UuidValue>? aUuid,
     List<_i3.TestEnum>? anEnum,
-    List<_i3.TestEnumStringified>? aStringifiedEnum,
-    List<_i3.Types>? anObject,
-    List<Map<String, _i3.Types>>? aMap,
-    List<List<_i3.Types>>? aList,
+    List<_i4.TestEnumStringified>? aStringifiedEnum,
+    List<_i5.Types>? anObject,
+    List<Map<String, _i5.Types>>? aMap,
+    List<List<_i5.Types>>? aList,
   }) = _TypesListImpl;
 
   factory TypesList.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -75,20 +77,20 @@ abstract class TypesList
           ?.map((e) => _i3.TestEnum.fromJson((e as int)))
           .toList(),
       aStringifiedEnum: (jsonSerialization['aStringifiedEnum'] as List?)
-          ?.map((e) => _i3.TestEnumStringified.fromJson((e as String)))
+          ?.map((e) => _i4.TestEnumStringified.fromJson((e as String)))
           .toList(),
       anObject: (jsonSerialization['anObject'] as List?)
-          ?.map((e) => _i3.Types.fromJson((e as Map<String, dynamic>)))
+          ?.map((e) => _i5.Types.fromJson((e as Map<String, dynamic>)))
           .toList(),
       aMap: (jsonSerialization['aMap'] as List?)
           ?.map((e) => (e as Map).map((k, v) => MapEntry(
                 k as String,
-                _i3.Types.fromJson((v as Map<String, dynamic>)),
+                _i5.Types.fromJson((v as Map<String, dynamic>)),
               )))
           .toList(),
       aList: (jsonSerialization['aList'] as List?)
           ?.map((e) => (e as List)
-              .map((e) => _i3.Types.fromJson((e as Map<String, dynamic>)))
+              .map((e) => _i5.Types.fromJson((e as Map<String, dynamic>)))
               .toList())
           .toList(),
     );
@@ -112,13 +114,13 @@ abstract class TypesList
 
   List<_i3.TestEnum>? anEnum;
 
-  List<_i3.TestEnumStringified>? aStringifiedEnum;
+  List<_i4.TestEnumStringified>? aStringifiedEnum;
 
-  List<_i3.Types>? anObject;
+  List<_i5.Types>? anObject;
 
-  List<Map<String, _i3.Types>>? aMap;
+  List<Map<String, _i5.Types>>? aMap;
 
-  List<List<_i3.Types>>? aList;
+  List<List<_i5.Types>>? aList;
 
   TypesList copyWith({
     List<int>? anInt,
@@ -130,10 +132,10 @@ abstract class TypesList
     List<Duration>? aDuration,
     List<_i1.UuidValue>? aUuid,
     List<_i3.TestEnum>? anEnum,
-    List<_i3.TestEnumStringified>? aStringifiedEnum,
-    List<_i3.Types>? anObject,
-    List<Map<String, _i3.Types>>? aMap,
-    List<List<_i3.Types>>? aList,
+    List<_i4.TestEnumStringified>? aStringifiedEnum,
+    List<_i5.Types>? anObject,
+    List<Map<String, _i5.Types>>? aMap,
+    List<List<_i5.Types>>? aList,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -216,10 +218,10 @@ class _TypesListImpl extends TypesList {
     List<Duration>? aDuration,
     List<_i1.UuidValue>? aUuid,
     List<_i3.TestEnum>? anEnum,
-    List<_i3.TestEnumStringified>? aStringifiedEnum,
-    List<_i3.Types>? anObject,
-    List<Map<String, _i3.Types>>? aMap,
-    List<List<_i3.Types>>? aList,
+    List<_i4.TestEnumStringified>? aStringifiedEnum,
+    List<_i5.Types>? anObject,
+    List<Map<String, _i5.Types>>? aMap,
+    List<List<_i5.Types>>? aList,
   }) : super._(
           anInt: anInt,
           aBool: aBool,
@@ -277,13 +279,13 @@ class _TypesListImpl extends TypesList {
       anEnum: anEnum is List<_i3.TestEnum>?
           ? anEnum
           : this.anEnum?.map((e0) => e0).toList(),
-      aStringifiedEnum: aStringifiedEnum is List<_i3.TestEnumStringified>?
+      aStringifiedEnum: aStringifiedEnum is List<_i4.TestEnumStringified>?
           ? aStringifiedEnum
           : this.aStringifiedEnum?.map((e0) => e0).toList(),
-      anObject: anObject is List<_i3.Types>?
+      anObject: anObject is List<_i5.Types>?
           ? anObject
           : this.anObject?.map((e0) => e0.copyWith()).toList(),
-      aMap: aMap is List<Map<String, _i3.Types>>?
+      aMap: aMap is List<Map<String, _i5.Types>>?
           ? aMap
           : this
               .aMap
@@ -296,7 +298,7 @@ class _TypesListImpl extends TypesList {
                         value1.copyWith(),
                       )))
               .toList(),
-      aList: aList is List<List<_i3.Types>>?
+      aList: aList is List<List<_i5.Types>>?
           ? aList
           : this
               .aList

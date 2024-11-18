@@ -10,7 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../long_identifiers/deep_includes/organization_with_long_table_name.dart'
+    as _i2;
 
 abstract class PersonWithLongTableName
     implements _i1.TableRow, _i1.ProtocolSerialization {

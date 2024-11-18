@@ -10,7 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../long_identifiers/models_with_relations/user_note_with_a_long_name.dart'
+    as _i2;
 
 abstract class UserNoteCollectionWithALongName
     implements _i1.TableRow, _i1.ProtocolSerialization {

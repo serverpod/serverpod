@@ -65,9 +65,8 @@ import 'session_log_entry.dart' as _i53;
 import 'session_log_filter.dart' as _i54;
 import 'session_log_info.dart' as _i55;
 import 'session_log_result.dart' as _i56;
-import 'protocol.dart' as _i57;
 import 'package:serverpod_service_client/src/protocol/database/table_definition.dart'
-    as _i58;
+    as _i57;
 export 'cache_info.dart';
 export 'caches_info.dart';
 export 'cloud_storage.dart';
@@ -504,107 +503,107 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List).map((e) => deserialize<String>(e)).toList()
           : null) as dynamic;
     }
-    if (t == List<_i57.ClusterServerInfo>) {
+    if (t == List<_i7.ClusterServerInfo>) {
       return (data as List)
-          .map((e) => deserialize<_i57.ClusterServerInfo>(e))
+          .map((e) => deserialize<_i7.ClusterServerInfo>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i57.BulkQueryColumnDescription>) {
+    if (t == List<_i10.BulkQueryColumnDescription>) {
       return (data as List)
-          .map((e) => deserialize<_i57.BulkQueryColumnDescription>(e))
+          .map((e) => deserialize<_i10.BulkQueryColumnDescription>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i57.TableDefinition>) {
+    if (t == List<_i33.TableDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i57.TableDefinition>(e))
+          .map((e) => deserialize<_i33.TableDefinition>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i57.DatabaseMigrationVersion>) {
+    if (t == List<_i20.DatabaseMigrationVersion>) {
       return (data as List)
-          .map((e) => deserialize<_i57.DatabaseMigrationVersion>(e))
+          .map((e) => deserialize<_i20.DatabaseMigrationVersion>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i57.DatabaseMigrationAction>) {
+    if (t == List<_i18.DatabaseMigrationAction>) {
       return (data as List)
-          .map((e) => deserialize<_i57.DatabaseMigrationAction>(e))
+          .map((e) => deserialize<_i18.DatabaseMigrationAction>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i57.DatabaseMigrationWarning>) {
+    if (t == List<_i21.DatabaseMigrationWarning>) {
       return (data as List)
-          .map((e) => deserialize<_i57.DatabaseMigrationWarning>(e))
+          .map((e) => deserialize<_i21.DatabaseMigrationWarning>(e))
           .toList() as dynamic;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i57.FilterConstraint>) {
+    if (t == List<_i25.FilterConstraint>) {
       return (data as List)
-          .map((e) => deserialize<_i57.FilterConstraint>(e))
+          .map((e) => deserialize<_i25.FilterConstraint>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i57.IndexElementDefinition>) {
+    if (t == List<_i31.IndexElementDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i57.IndexElementDefinition>(e))
+          .map((e) => deserialize<_i31.IndexElementDefinition>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i57.ColumnDefinition>) {
+    if (t == List<_i12.ColumnDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i57.ColumnDefinition>(e))
+          .map((e) => deserialize<_i12.ColumnDefinition>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i57.ForeignKeyDefinition>) {
+    if (t == List<_i28.ForeignKeyDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i57.ForeignKeyDefinition>(e))
+          .map((e) => deserialize<_i28.ForeignKeyDefinition>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i57.IndexDefinition>) {
+    if (t == List<_i30.IndexDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i57.IndexDefinition>(e))
+          .map((e) => deserialize<_i30.IndexDefinition>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i57.ColumnMigration>) {
+    if (t == List<_i13.ColumnMigration>) {
       return (data as List)
-          .map((e) => deserialize<_i57.ColumnMigration>(e))
+          .map((e) => deserialize<_i13.ColumnMigration>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i57.LogEntry>) {
-      return (data as List).map((e) => deserialize<_i57.LogEntry>(e)).toList()
+    if (t == List<_i39.LogEntry>) {
+      return (data as List).map((e) => deserialize<_i39.LogEntry>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i57.LogSettingsOverride>) {
+    if (t == List<_i43.LogSettingsOverride>) {
       return (data as List)
-          .map((e) => deserialize<_i57.LogSettingsOverride>(e))
+          .map((e) => deserialize<_i43.LogSettingsOverride>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i57.ServerHealthMetric>) {
+    if (t == List<_i50.ServerHealthMetric>) {
       return (data as List)
-          .map((e) => deserialize<_i57.ServerHealthMetric>(e))
+          .map((e) => deserialize<_i50.ServerHealthMetric>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i57.ServerHealthConnectionInfo>) {
+    if (t == List<_i49.ServerHealthConnectionInfo>) {
       return (data as List)
-          .map((e) => deserialize<_i57.ServerHealthConnectionInfo>(e))
+          .map((e) => deserialize<_i49.ServerHealthConnectionInfo>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i57.QueryLogEntry>) {
+    if (t == List<_i46.QueryLogEntry>) {
       return (data as List)
-          .map((e) => deserialize<_i57.QueryLogEntry>(e))
+          .map((e) => deserialize<_i46.QueryLogEntry>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i57.MessageLogEntry>) {
+    if (t == List<_i44.MessageLogEntry>) {
       return (data as List)
-          .map((e) => deserialize<_i57.MessageLogEntry>(e))
+          .map((e) => deserialize<_i44.MessageLogEntry>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i57.SessionLogInfo>) {
+    if (t == List<_i55.SessionLogInfo>) {
       return (data as List)
-          .map((e) => deserialize<_i57.SessionLogInfo>(e))
+          .map((e) => deserialize<_i55.SessionLogInfo>(e))
           .toList() as dynamic;
     }
-    if (t == List<_i58.TableDefinition>) {
+    if (t == List<_i57.TableDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i58.TableDefinition>(e))
+          .map((e) => deserialize<_i57.TableDefinition>(e))
           .toList() as dynamic;
     }
     if (t == List<String>) {

@@ -10,7 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../protocol.dart' as _i2;
+import '../database/table_definition.dart' as _i2;
+import '../database/database_migration_version.dart' as _i3;
 
 /// Defines the current state of the database, including information about
 /// installed modules and migrations.
@@ -25,8 +26,8 @@ abstract class DatabaseDefinitions implements _i1.SerializableModel {
   factory DatabaseDefinitions({
     required List<_i2.TableDefinition> target,
     required List<_i2.TableDefinition> live,
-    required List<_i2.DatabaseMigrationVersion> installedMigrations,
-    required List<_i2.DatabaseMigrationVersion> latestAvailableMigrations,
+    required List<_i3.DatabaseMigrationVersion> installedMigrations,
+    required List<_i3.DatabaseMigrationVersion> latestAvailableMigrations,
   }) = _DatabaseDefinitionsImpl;
 
   factory DatabaseDefinitions.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -38,12 +39,12 @@ abstract class DatabaseDefinitions implements _i1.SerializableModel {
           .map((e) => _i2.TableDefinition.fromJson((e as Map<String, dynamic>)))
           .toList(),
       installedMigrations: (jsonSerialization['installedMigrations'] as List)
-          .map((e) => _i2.DatabaseMigrationVersion.fromJson(
+          .map((e) => _i3.DatabaseMigrationVersion.fromJson(
               (e as Map<String, dynamic>)))
           .toList(),
       latestAvailableMigrations:
           (jsonSerialization['latestAvailableMigrations'] as List)
-              .map((e) => _i2.DatabaseMigrationVersion.fromJson(
+              .map((e) => _i3.DatabaseMigrationVersion.fromJson(
                   (e as Map<String, dynamic>)))
               .toList(),
     );
@@ -56,16 +57,16 @@ abstract class DatabaseDefinitions implements _i1.SerializableModel {
   List<_i2.TableDefinition> live;
 
   /// The migrations that are installed in the database.
-  List<_i2.DatabaseMigrationVersion> installedMigrations;
+  List<_i3.DatabaseMigrationVersion> installedMigrations;
 
   /// The latest available migrations that can be applied.
-  List<_i2.DatabaseMigrationVersion> latestAvailableMigrations;
+  List<_i3.DatabaseMigrationVersion> latestAvailableMigrations;
 
   DatabaseDefinitions copyWith({
     List<_i2.TableDefinition>? target,
     List<_i2.TableDefinition>? live,
-    List<_i2.DatabaseMigrationVersion>? installedMigrations,
-    List<_i2.DatabaseMigrationVersion>? latestAvailableMigrations,
+    List<_i3.DatabaseMigrationVersion>? installedMigrations,
+    List<_i3.DatabaseMigrationVersion>? latestAvailableMigrations,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -89,8 +90,8 @@ class _DatabaseDefinitionsImpl extends DatabaseDefinitions {
   _DatabaseDefinitionsImpl({
     required List<_i2.TableDefinition> target,
     required List<_i2.TableDefinition> live,
-    required List<_i2.DatabaseMigrationVersion> installedMigrations,
-    required List<_i2.DatabaseMigrationVersion> latestAvailableMigrations,
+    required List<_i3.DatabaseMigrationVersion> installedMigrations,
+    required List<_i3.DatabaseMigrationVersion> latestAvailableMigrations,
   }) : super._(
           target: target,
           live: live,
@@ -102,8 +103,8 @@ class _DatabaseDefinitionsImpl extends DatabaseDefinitions {
   DatabaseDefinitions copyWith({
     List<_i2.TableDefinition>? target,
     List<_i2.TableDefinition>? live,
-    List<_i2.DatabaseMigrationVersion>? installedMigrations,
-    List<_i2.DatabaseMigrationVersion>? latestAvailableMigrations,
+    List<_i3.DatabaseMigrationVersion>? installedMigrations,
+    List<_i3.DatabaseMigrationVersion>? latestAvailableMigrations,
   }) {
     return DatabaseDefinitions(
       target: target ?? this.target.map((e0) => e0.copyWith()).toList(),
