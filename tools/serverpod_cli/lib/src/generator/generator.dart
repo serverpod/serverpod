@@ -49,16 +49,16 @@ Future<bool> performGenerate({
     changedFiles.add(changedFilePath);
   }
 
+  var endpointAnalyzerCollector = CodeGenerationCollector();
   var endpoints = await endpointsAnalyzer.analyze(
-    collector: collector,
+    collector: endpointAnalyzerCollector,
     changedFiles: changedFiles,
   );
 
-  if (collector.hasSeverErrors) {
+  if (endpointAnalyzerCollector.hasSeverErrors) {
     success = false;
   }
-  collector.printErrors();
-  collector.clearErrors();
+  endpointAnalyzerCollector.printErrors();
 
   log.debug('Generating the protocol.');
 
