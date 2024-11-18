@@ -12,7 +12,6 @@ Future<bool> performGenerate({
   required EndpointsAnalyzer endpointsAnalyzer,
   String? changedFilePath,
 }) async {
-  var collector = CodeGenerationCollector();
   bool success = true;
 
   log.debug('Analyzing serializable models in the protocol directory.');
@@ -34,14 +33,7 @@ Future<bool> performGenerate({
       await ServerpodCodeGenerator.generateSerializableModels(
     models: models,
     config: config,
-    collector: collector,
   );
-
-  if (collector.hasSeverErrors) {
-    success = false;
-  }
-  collector.printErrors();
-  collector.clearErrors();
 
   log.debug('Analyzing the endpoints.');
 
@@ -50,16 +42,16 @@ Future<bool> performGenerate({
     changedFiles.add(changedFilePath);
   }
 
+  var endpointAnalyzerCollector = CodeGenerationCollector();
   var endpoints = await endpointsAnalyzer.analyze(
-    collector: collector,
+    collector: endpointAnalyzerCollector,
     changedFiles: changedFiles,
   );
 
-  if (collector.hasSeverErrors) {
+  if (endpointAnalyzerCollector.hasSeverErrors) {
     success = false;
   }
-  collector.printErrors();
-  collector.clearErrors();
+  endpointAnalyzerCollector.printErrors();
 
   log.debug('Generating the protocol.');
 
@@ -72,14 +64,7 @@ Future<bool> performGenerate({
       await ServerpodCodeGenerator.generateProtocolDefinition(
     protocolDefinition: protocolDefinition,
     config: config,
-    collector: collector,
   );
-
-  if (collector.hasSeverErrors) {
-    success = false;
-  }
-  collector.printErrors();
-  collector.clearErrors();
 
   log.debug('Cleaning old files.');
 
