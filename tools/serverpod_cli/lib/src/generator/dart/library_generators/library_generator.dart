@@ -145,29 +145,37 @@ class LibraryGenerator {
                   '.fromJson(data) :null) as T'),
           }..addEntries([
                   for (var classInfo in unsealedModels)
+                    // Generate deserialization for fields of models.
                     if (classInfo is ClassDefinition)
                       for (var field in classInfo.fields.where(
                           (field) => field.shouldIncludeField(serverCode)))
                         ...field.type.generateDeserialization(serverCode,
                             config: config),
                   for (var endPoint in protocolDefinition.endpoints)
+                    // Generate deserialization for endpoint methods.
                     for (var method in endPoint.methods) ...[
+                      // Generate deserialization for the return type of the method.
                       ...method.returnType
                           .retrieveGenericType()
                           .generateDeserialization(serverCode, config: config),
+                      // Generate deserialization for parameters of the method.
                       for (var parameter in method.parameters)
                         ...parameter.type.generateDeserialization(serverCode,
                             config: config),
+                      // Generate deserialization for positional parameters of the method.
                       for (var parameter in method.parametersPositional)
                         ...parameter.type.generateDeserialization(serverCode,
                             config: config),
+                      // Generate deserialization for named parameters of the method.
                       for (var parameter in method.parametersNamed)
                         ...parameter.type.generateDeserialization(serverCode,
                             config: config),
                     ],
+                  // Generate deserialization for extra classes.
                   for (var extraClass in config.extraClasses)
                     ...extraClass.generateDeserialization(serverCode,
                         config: config),
+                  // Generate deserialization for extra classes as nullables.
                   for (var extraClass in config.extraClasses)
                     ...extraClass.asNullable
                         .generateDeserialization(serverCode, config: config)
