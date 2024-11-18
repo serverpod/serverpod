@@ -10,7 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../models_with_relations/many_to_many/student.dart' as _i2;
+import '../../models_with_relations/many_to_many/course.dart' as _i3;
 
 abstract class Enrollment implements _i1.SerializableModel {
   Enrollment._({
@@ -26,7 +27,7 @@ abstract class Enrollment implements _i1.SerializableModel {
     required int studentId,
     _i2.Student? student,
     required int courseId,
-    _i2.Course? course,
+    _i3.Course? course,
   }) = _EnrollmentImpl;
 
   factory Enrollment.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -40,7 +41,7 @@ abstract class Enrollment implements _i1.SerializableModel {
       courseId: jsonSerialization['courseId'] as int,
       course: jsonSerialization['course'] == null
           ? null
-          : _i2.Course.fromJson(
+          : _i3.Course.fromJson(
               (jsonSerialization['course'] as Map<String, dynamic>)),
     );
   }
@@ -56,14 +57,14 @@ abstract class Enrollment implements _i1.SerializableModel {
 
   int courseId;
 
-  _i2.Course? course;
+  _i3.Course? course;
 
   Enrollment copyWith({
     int? id,
     int? studentId,
     _i2.Student? student,
     int? courseId,
-    _i2.Course? course,
+    _i3.Course? course,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -90,7 +91,7 @@ class _EnrollmentImpl extends Enrollment {
     required int studentId,
     _i2.Student? student,
     required int courseId,
-    _i2.Course? course,
+    _i3.Course? course,
   }) : super._(
           id: id,
           studentId: studentId,
@@ -112,7 +113,7 @@ class _EnrollmentImpl extends Enrollment {
       studentId: studentId ?? this.studentId,
       student: student is _i2.Student? ? student : this.student?.copyWith(),
       courseId: courseId ?? this.courseId,
-      course: course is _i2.Course? ? course : this.course?.copyWith(),
+      course: course is _i3.Course? ? course : this.course?.copyWith(),
     );
   }
 }

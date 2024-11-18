@@ -10,7 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../protocol.dart' as _i2;
+import '../empty_model/empty_model_relation_item.dart' as _i2;
 
 abstract class RelationEmptyModel
     implements _i1.TableRow, _i1.ProtocolSerialization {

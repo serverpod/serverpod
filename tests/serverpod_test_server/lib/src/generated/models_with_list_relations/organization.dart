@@ -10,7 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../protocol.dart' as _i2;
+import '../models_with_list_relations/person.dart' as _i2;
+import '../models_with_list_relations/city.dart' as _i3;
 
 abstract class Organization implements _i1.TableRow, _i1.ProtocolSerialization {
   Organization._({
@@ -26,7 +27,7 @@ abstract class Organization implements _i1.TableRow, _i1.ProtocolSerialization {
     required String name,
     List<_i2.Person>? people,
     int? cityId,
-    _i2.City? city,
+    _i3.City? city,
   }) = _OrganizationImpl;
 
   factory Organization.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -39,7 +40,7 @@ abstract class Organization implements _i1.TableRow, _i1.ProtocolSerialization {
       cityId: jsonSerialization['cityId'] as int?,
       city: jsonSerialization['city'] == null
           ? null
-          : _i2.City.fromJson(
+          : _i3.City.fromJson(
               (jsonSerialization['city'] as Map<String, dynamic>)),
     );
   }
@@ -57,7 +58,7 @@ abstract class Organization implements _i1.TableRow, _i1.ProtocolSerialization {
 
   int? cityId;
 
-  _i2.City? city;
+  _i3.City? city;
 
   @override
   _i1.Table get table => t;
@@ -67,7 +68,7 @@ abstract class Organization implements _i1.TableRow, _i1.ProtocolSerialization {
     String? name,
     List<_i2.Person>? people,
     int? cityId,
-    _i2.City? city,
+    _i3.City? city,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -95,7 +96,7 @@ abstract class Organization implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static OrganizationInclude include({
     _i2.PersonIncludeList? people,
-    _i2.CityInclude? city,
+    _i3.CityInclude? city,
   }) {
     return OrganizationInclude._(
       people: people,
@@ -137,7 +138,7 @@ class _OrganizationImpl extends Organization {
     required String name,
     List<_i2.Person>? people,
     int? cityId,
-    _i2.City? city,
+    _i3.City? city,
   }) : super._(
           id: id,
           name: name,
@@ -161,7 +162,7 @@ class _OrganizationImpl extends Organization {
           ? people
           : this.people?.map((e0) => e0.copyWith()).toList(),
       cityId: cityId is int? ? cityId : this.cityId,
-      city: city is _i2.City? ? city : this.city?.copyWith(),
+      city: city is _i3.City? ? city : this.city?.copyWith(),
     );
   }
 }
@@ -186,7 +187,7 @@ class OrganizationTable extends _i1.Table {
 
   late final _i1.ColumnInt cityId;
 
-  _i2.CityTable? _city;
+  _i3.CityTable? _city;
 
   _i2.PersonTable get __people {
     if (___people != null) return ___people!;
@@ -201,15 +202,15 @@ class OrganizationTable extends _i1.Table {
     return ___people!;
   }
 
-  _i2.CityTable get city {
+  _i3.CityTable get city {
     if (_city != null) return _city!;
     _city = _i1.createRelationTable(
       relationFieldName: 'city',
       field: Organization.t.cityId,
-      foreignField: _i2.City.t.id,
+      foreignField: _i3.City.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.CityTable(tableRelation: foreignTableRelation),
+          _i3.CityTable(tableRelation: foreignTableRelation),
     );
     return _city!;
   }
@@ -254,7 +255,7 @@ class OrganizationTable extends _i1.Table {
 class OrganizationInclude extends _i1.IncludeObject {
   OrganizationInclude._({
     _i2.PersonIncludeList? people,
-    _i2.CityInclude? city,
+    _i3.CityInclude? city,
   }) {
     _people = people;
     _city = city;
@@ -262,7 +263,7 @@ class OrganizationInclude extends _i1.IncludeObject {
 
   _i2.PersonIncludeList? _people;
 
-  _i2.CityInclude? _city;
+  _i3.CityInclude? _city;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -489,7 +490,7 @@ class OrganizationAttachRowRepository {
   Future<void> city(
     _i1.Session session,
     Organization organization,
-    _i2.City city, {
+    _i3.City city, {
     _i1.Transaction? transaction,
   }) async {
     if (organization.id == null) {

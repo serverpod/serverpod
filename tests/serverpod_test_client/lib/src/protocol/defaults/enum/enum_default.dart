@@ -10,27 +10,28 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
+import '../../defaults/enum/enums/by_index_enum.dart' as _i3;
 
 abstract class EnumDefault implements _i1.SerializableModel {
   EnumDefault._({
     this.id,
     _i2.ByNameEnum? byNameEnumDefault,
     _i2.ByNameEnum? byNameEnumDefaultNull,
-    _i2.ByIndexEnum? byIndexEnumDefault,
-    _i2.ByIndexEnum? byIndexEnumDefaultNull,
+    _i3.ByIndexEnum? byIndexEnumDefault,
+    _i3.ByIndexEnum? byIndexEnumDefaultNull,
   })  : byNameEnumDefault = byNameEnumDefault ?? _i2.ByNameEnum.byName1,
         byNameEnumDefaultNull = byNameEnumDefaultNull ?? _i2.ByNameEnum.byName2,
-        byIndexEnumDefault = byIndexEnumDefault ?? _i2.ByIndexEnum.byIndex1,
+        byIndexEnumDefault = byIndexEnumDefault ?? _i3.ByIndexEnum.byIndex1,
         byIndexEnumDefaultNull =
-            byIndexEnumDefaultNull ?? _i2.ByIndexEnum.byIndex2;
+            byIndexEnumDefaultNull ?? _i3.ByIndexEnum.byIndex2;
 
   factory EnumDefault({
     int? id,
     _i2.ByNameEnum? byNameEnumDefault,
     _i2.ByNameEnum? byNameEnumDefaultNull,
-    _i2.ByIndexEnum? byIndexEnumDefault,
-    _i2.ByIndexEnum? byIndexEnumDefaultNull,
+    _i3.ByIndexEnum? byIndexEnumDefault,
+    _i3.ByIndexEnum? byIndexEnumDefaultNull,
   }) = _EnumDefaultImpl;
 
   factory EnumDefault.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -42,12 +43,12 @@ abstract class EnumDefault implements _i1.SerializableModel {
           ? null
           : _i2.ByNameEnum.fromJson(
               (jsonSerialization['byNameEnumDefaultNull'] as String)),
-      byIndexEnumDefault: _i2.ByIndexEnum.fromJson(
+      byIndexEnumDefault: _i3.ByIndexEnum.fromJson(
           (jsonSerialization['byIndexEnumDefault'] as int)),
       byIndexEnumDefaultNull:
           jsonSerialization['byIndexEnumDefaultNull'] == null
               ? null
-              : _i2.ByIndexEnum.fromJson(
+              : _i3.ByIndexEnum.fromJson(
                   (jsonSerialization['byIndexEnumDefaultNull'] as int)),
     );
   }
@@ -61,16 +62,16 @@ abstract class EnumDefault implements _i1.SerializableModel {
 
   _i2.ByNameEnum? byNameEnumDefaultNull;
 
-  _i2.ByIndexEnum byIndexEnumDefault;
+  _i3.ByIndexEnum byIndexEnumDefault;
 
-  _i2.ByIndexEnum? byIndexEnumDefaultNull;
+  _i3.ByIndexEnum? byIndexEnumDefaultNull;
 
   EnumDefault copyWith({
     int? id,
     _i2.ByNameEnum? byNameEnumDefault,
     _i2.ByNameEnum? byNameEnumDefaultNull,
-    _i2.ByIndexEnum? byIndexEnumDefault,
-    _i2.ByIndexEnum? byIndexEnumDefaultNull,
+    _i3.ByIndexEnum? byIndexEnumDefault,
+    _i3.ByIndexEnum? byIndexEnumDefaultNull,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -98,8 +99,8 @@ class _EnumDefaultImpl extends EnumDefault {
     int? id,
     _i2.ByNameEnum? byNameEnumDefault,
     _i2.ByNameEnum? byNameEnumDefaultNull,
-    _i2.ByIndexEnum? byIndexEnumDefault,
-    _i2.ByIndexEnum? byIndexEnumDefaultNull,
+    _i3.ByIndexEnum? byIndexEnumDefault,
+    _i3.ByIndexEnum? byIndexEnumDefaultNull,
   }) : super._(
           id: id,
           byNameEnumDefault: byNameEnumDefault,
@@ -113,7 +114,7 @@ class _EnumDefaultImpl extends EnumDefault {
     Object? id = _Undefined,
     _i2.ByNameEnum? byNameEnumDefault,
     Object? byNameEnumDefaultNull = _Undefined,
-    _i2.ByIndexEnum? byIndexEnumDefault,
+    _i3.ByIndexEnum? byIndexEnumDefault,
     Object? byIndexEnumDefaultNull = _Undefined,
   }) {
     return EnumDefault(
@@ -123,7 +124,7 @@ class _EnumDefaultImpl extends EnumDefault {
           ? byNameEnumDefaultNull
           : this.byNameEnumDefaultNull,
       byIndexEnumDefault: byIndexEnumDefault ?? this.byIndexEnumDefault,
-      byIndexEnumDefaultNull: byIndexEnumDefaultNull is _i2.ByIndexEnum?
+      byIndexEnumDefaultNull: byIndexEnumDefaultNull is _i3.ByIndexEnum?
           ? byIndexEnumDefaultNull
           : this.byIndexEnumDefaultNull,
     );

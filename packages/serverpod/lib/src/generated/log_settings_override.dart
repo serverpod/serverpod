@@ -10,7 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'log_settings.dart' as _i2;
 
 /// Information about an override for log settings for either an entire
 /// endpoint or a specific method.

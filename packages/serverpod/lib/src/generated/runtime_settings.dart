@@ -10,7 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'log_settings.dart' as _i2;
+import 'log_settings_override.dart' as _i3;
 
 /// Runtime settings of the server.
 abstract class RuntimeSettings
@@ -26,7 +27,7 @@ abstract class RuntimeSettings
   factory RuntimeSettings({
     int? id,
     required _i2.LogSettings logSettings,
-    required List<_i2.LogSettingsOverride> logSettingsOverrides,
+    required List<_i3.LogSettingsOverride> logSettingsOverrides,
     required bool logServiceCalls,
     required bool logMalformedCalls,
   }) = _RuntimeSettingsImpl;
@@ -38,7 +39,7 @@ abstract class RuntimeSettings
           (jsonSerialization['logSettings'] as Map<String, dynamic>)),
       logSettingsOverrides: (jsonSerialization['logSettingsOverrides'] as List)
           .map((e) =>
-              _i2.LogSettingsOverride.fromJson((e as Map<String, dynamic>)))
+              _i3.LogSettingsOverride.fromJson((e as Map<String, dynamic>)))
           .toList(),
       logServiceCalls: jsonSerialization['logServiceCalls'] as bool,
       logMalformedCalls: jsonSerialization['logMalformedCalls'] as bool,
@@ -56,7 +57,7 @@ abstract class RuntimeSettings
   _i2.LogSettings logSettings;
 
   /// List of log setting overrides.
-  List<_i2.LogSettingsOverride> logSettingsOverrides;
+  List<_i3.LogSettingsOverride> logSettingsOverrides;
 
   /// True if service calls to Serverpod Insights should be logged.
   bool logServiceCalls;
@@ -70,7 +71,7 @@ abstract class RuntimeSettings
   RuntimeSettings copyWith({
     int? id,
     _i2.LogSettings? logSettings,
-    List<_i2.LogSettingsOverride>? logSettingsOverrides,
+    List<_i3.LogSettingsOverride>? logSettingsOverrides,
     bool? logServiceCalls,
     bool? logMalformedCalls,
   });
@@ -134,7 +135,7 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
   _RuntimeSettingsImpl({
     int? id,
     required _i2.LogSettings logSettings,
-    required List<_i2.LogSettingsOverride> logSettingsOverrides,
+    required List<_i3.LogSettingsOverride> logSettingsOverrides,
     required bool logServiceCalls,
     required bool logMalformedCalls,
   }) : super._(
@@ -149,7 +150,7 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
   RuntimeSettings copyWith({
     Object? id = _Undefined,
     _i2.LogSettings? logSettings,
-    List<_i2.LogSettingsOverride>? logSettingsOverrides,
+    List<_i3.LogSettingsOverride>? logSettingsOverrides,
     bool? logServiceCalls,
     bool? logMalformedCalls,
   }) {

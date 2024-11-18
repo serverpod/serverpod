@@ -10,7 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
 
 abstract class Player implements _i1.TableRow, _i1.ProtocolSerialization {
   Player._({

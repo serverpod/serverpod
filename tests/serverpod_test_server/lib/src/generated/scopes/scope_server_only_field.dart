@@ -10,7 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../protocol.dart' as _i2;
+import '../types.dart' as _i2;
+import '../scopes/scope_server_only_field.dart' as _i3;
 
 class ScopeServerOnlyField
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -33,7 +34,7 @@ class ScopeServerOnlyField
               (jsonSerialization['serverOnlyScope'] as Map<String, dynamic>)),
       nested: jsonSerialization['nested'] == null
           ? null
-          : _i2.ScopeServerOnlyField.fromJson(
+          : _i3.ScopeServerOnlyField.fromJson(
               (jsonSerialization['nested'] as Map<String, dynamic>)),
     );
   }
@@ -42,7 +43,7 @@ class ScopeServerOnlyField
 
   _i2.Types? serverOnlyScope;
 
-  _i2.ScopeServerOnlyField? nested;
+  _i3.ScopeServerOnlyField? nested;
 
   ScopeServerOnlyField copyWith({
     Object? allScope = _Undefined,
@@ -54,7 +55,7 @@ class ScopeServerOnlyField
       serverOnlyScope: serverOnlyScope is _i2.Types?
           ? serverOnlyScope
           : this.serverOnlyScope?.copyWith(),
-      nested: nested is _i2.ScopeServerOnlyField?
+      nested: nested is _i3.ScopeServerOnlyField?
           ? nested
           : this.nested?.copyWith(),
     );
