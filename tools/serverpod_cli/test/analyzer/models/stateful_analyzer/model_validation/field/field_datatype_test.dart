@@ -61,6 +61,70 @@ void main() {
       });
     }
 
+    group('Given a class with a field containing another model', () {
+      var containedClassName = 'User';
+      var testClassName = 'Example';
+      var models = [
+        ModelSourceBuilder().withFileName('user.spy.yaml').withYaml(
+          '''
+class: $containedClassName
+fields:
+  nickname: String
+          ''',
+        ).build(),
+        ModelSourceBuilder().withYaml(
+          '''
+class: $testClassName
+fields:
+  user: User 
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+
+      test('then no errors was generated', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then model definition is created for class.', () {
+        var gameDefinition = definitions
+            .where((e) => e.className == testClassName)
+            .firstOrNull as ClassDefinition?;
+        expect(gameDefinition, isNotNull);
+      });
+
+      test('then class field type has referenced model name.', () {
+        var gameDefinition = definitions
+            .where((e) => e.className == testClassName)
+            .firstOrNull as ClassDefinition?;
+        expect(gameDefinition?.fields.first.type.className, containedClassName);
+      });
+
+      test('then field type has url set to protocol', () {
+        var gameDefinition = definitions
+            .where((e) => e.className == testClassName)
+            .firstOrNull as ClassDefinition?;
+        expect(gameDefinition?.fields.first.type.url, 'protocol');
+      });
+
+      test('then field type has projectModelDefinition set', () {
+        var gameDefinition = definitions
+            .where((e) => e.className == testClassName)
+            .firstOrNull as ClassDefinition?;
+        expect(
+          gameDefinition?.fields.first.type.projectModelDefinition,
+          isNotNull,
+        );
+      });
+    });
+
     group('Given a class with a field with a module type', () {
       var models = [
         ModelSourceBuilder().withModuleAlias('auth').withYaml(
@@ -92,11 +156,19 @@ void main() {
         expect(collector.errors, isEmpty);
       });
 
-      test(
-          'then a class with that field type set to module:auth:UserInfo is generated.',
-          () {
+      test('then field type has module model class name.', () {
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.first.type.className, 'UserInfo');
+      });
+
+      test('then field type has url set to module:auth', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.first.type.url, 'module:auth');
+      });
+
+      test('then field type does not have projectModelDefinition set', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.first.type.projectModelDefinition, isNull);
       });
     });
 
@@ -133,9 +205,19 @@ void main() {
         expect(collector.errors, isEmpty);
       });
 
-      test('then the class name is the one defined in serverpod.', () {
+      test('then field type has serverpod model class name.', () {
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.first.type.className, 'ServerpodClass');
+      });
+
+      test('then field type has url set to module:serverpod', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.first.type.url, 'module:serverpod');
+      });
+
+      test('then field type does not have projectModelDefinition set', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.first.type.projectModelDefinition, isNull);
       });
     });
 
@@ -172,9 +254,19 @@ void main() {
         expect(collector.errors, isEmpty);
       });
 
-      test('then the class name is the one defined in serverpod.', () {
+      test('then field type has serverpod model class name.', () {
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.first.type.className, 'ServerpodClass');
+      });
+
+      test('then field type has url set to serverpod', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.first.type.url, 'serverpod');
+      });
+
+      test('then field type does not have projectModelDefinition set', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.first.type.projectModelDefinition, isNull);
       });
     });
 
@@ -292,6 +384,11 @@ void main() {
           'dart:typed_data:ByteData',
         );
       });
+
+      test('then field type does not have projectModelDefinition set', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.first.type.projectModelDefinition, isNull);
+      });
     });
 
     group('Given a class with a field with the type MyEnum', () {
@@ -334,11 +431,14 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.first.type.isEnumType, isTrue);
       });
+
+      test('then the type has projectModelDefinition', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.first.type.projectModelDefinition, isNotNull);
+      });
     });
 
-    test(
-        'Given a class with a field with the type List<MyEnum> then the nested type is tagged as an enum',
-        () {
+    group('Given a class with a field with the type List<MyEnum>', () {
       var models = [
         ModelSourceBuilder().withFileName('example').withYaml(
           '''
@@ -365,11 +465,21 @@ void main() {
       );
       var definitions = analyzer.validateAll();
 
-      var definition = definitions.first as ClassDefinition;
-      expect(
-        definition.fields.first.type.generics.first.isEnumType,
-        isTrue,
-      );
+      test('then the nested type is tagged as an enum', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(
+          definition.fields.first.type.generics.first.isEnumType,
+          isTrue,
+        );
+      });
+
+      test('then the nested type has projectModelDefinition set', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(
+          definition.fields.first.type.generics.first.projectModelDefinition,
+          isNotNull,
+        );
+      });
     });
 
     test(
@@ -1085,6 +1195,11 @@ void main() {
     test('then the type is not nullable', () {
       var definition = definitions.first as ClassDefinition;
       expect(definition.fields.first.type.nullable, isFalse);
+    });
+
+    test('then field type does not have projectModelDefinition set', () {
+      var definition = definitions.first as ClassDefinition;
+      expect(definition.fields.first.type.projectModelDefinition, isNull);
     });
   });
 
