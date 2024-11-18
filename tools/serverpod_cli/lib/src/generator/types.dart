@@ -205,8 +205,16 @@ class TypeDefinition {
               '/${split[1]}';
         } else if (url == defaultModuleAlias) {
           // protocol: reference
-          t.url = p.posix
-              .joinAll([...subDirParts.map((e) => '..'), 'protocol.dart']);
+          var localProjectModelDefinition = projectModelDefinition;
+          String reference = switch (localProjectModelDefinition) {
+            // Import model directly
+            SerializableModelDefinition modelDefinition =>
+              getRef(modelDefinition),
+            // Import model through generated protocol file
+            null => 'protocol.dart',
+          };
+
+          t.url = p.posix.joinAll([...subDirParts.map((e) => '..'), reference]);
         } else if (!serverCode &&
             (url?.startsWith('package:${config.serverPackage}') ?? false)) {
           // import from the server package
