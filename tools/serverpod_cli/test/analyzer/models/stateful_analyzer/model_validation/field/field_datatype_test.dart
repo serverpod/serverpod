@@ -93,33 +93,27 @@ fields:
         expect(collector.errors, isEmpty);
       });
 
+      var testClassDefinition = definitions
+          .whereType<ClassDefinition>()
+          .where((e) => e.className == testClassName)
+          .firstOrNull;
+
       test('then model definition is created for class.', () {
-        var gameDefinition = definitions
-            .where((e) => e.className == testClassName)
-            .firstOrNull as ClassDefinition?;
-        expect(gameDefinition, isNotNull);
+        expect(testClassDefinition, isNotNull);
       });
 
       test('then class field type has referenced model name.', () {
-        var gameDefinition = definitions
-            .where((e) => e.className == testClassName)
-            .firstOrNull as ClassDefinition?;
-        expect(gameDefinition?.fields.first.type.className, containedClassName);
+        expect(testClassDefinition?.fields.first.type.className,
+            containedClassName);
       });
 
       test('then field type has url set to protocol', () {
-        var gameDefinition = definitions
-            .where((e) => e.className == testClassName)
-            .firstOrNull as ClassDefinition?;
-        expect(gameDefinition?.fields.first.type.url, 'protocol');
+        expect(testClassDefinition?.fields.first.type.url, 'protocol');
       });
 
       test('then field type has projectModelDefinition set', () {
-        var gameDefinition = definitions
-            .where((e) => e.className == testClassName)
-            .firstOrNull as ClassDefinition?;
         expect(
-          gameDefinition?.fields.first.type.projectModelDefinition,
+          testClassDefinition?.fields.first.type.projectModelDefinition,
           isNotNull,
         );
       });
