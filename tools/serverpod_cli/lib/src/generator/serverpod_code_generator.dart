@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
@@ -26,9 +25,7 @@ abstract class ServerpodCodeGenerator {
   static Future<List<String>> generateSerializableModels({
     required List<SerializableModelDefinition> models,
     required GeneratorConfig config,
-    required CodeGenerationCollector collector,
   }) async {
-    collector.generatedFiles.clear();
     var allFiles = {
       for (var generator in _generators)
         ...generator.generateSerializableModelsCode(
@@ -42,8 +39,6 @@ abstract class ServerpodCodeGenerator {
         var out = File(file.key);
         await out.create(recursive: true);
         await out.writeAsString(file.value, flush: true);
-
-        collector.addGeneratedFile(out);
       } catch (e, stackTrace) {
         log.error('Failed to generate ${file.key}!');
         printInternalError(e, stackTrace);
@@ -60,9 +55,7 @@ abstract class ServerpodCodeGenerator {
   static Future<List<String>> generateProtocolDefinition({
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
-    required CodeGenerationCollector collector,
   }) async {
-    collector.generatedFiles.clear();
     var allFiles = {
       for (var generator in _generators)
         ...generator.generateProtocolCode(
@@ -76,8 +69,6 @@ abstract class ServerpodCodeGenerator {
         var out = File(file.key);
         await out.create(recursive: true);
         await out.writeAsString(file.value, flush: true);
-
-        collector.addGeneratedFile(out);
       } catch (e, stackTrace) {
         log.error('Failed to generate ${file.key}');
         printInternalError(e, stackTrace);

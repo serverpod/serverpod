@@ -34,7 +34,6 @@ Future<bool> performGenerate({
       await ServerpodCodeGenerator.generateSerializableModels(
     models: models,
     config: config,
-    collector: collector,
   );
 
   if (collector.hasSeverErrors) {
@@ -72,7 +71,6 @@ Future<bool> performGenerate({
       await ServerpodCodeGenerator.generateProtocolDefinition(
     protocolDefinition: protocolDefinition,
     config: config,
-    collector: collector,
   );
 
   if (collector.hasSeverErrors) {
