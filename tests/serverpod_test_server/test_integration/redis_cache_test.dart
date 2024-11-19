@@ -8,7 +8,13 @@ import 'package:test/test.dart';
 
 void main() async {
   var session = await IntegrationTestServer().session();
-  var cache = RedisCache(Protocol(), session.serverpod.redisController);
+
+  late RedisCache cache;
+  setUpAll(() async {
+    var redisController = session.serverpod.redisController;
+    await redisController?.start();
+    cache = RedisCache(Protocol(), redisController);
+  });
 
   tearDown(() async => await cache.clear());
 
