@@ -1,4 +1,5 @@
 import 'package:code_builder/code_builder.dart';
+import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 
 import 'package:serverpod_cli/analyzer.dart';
@@ -58,15 +59,32 @@ class SerializableModelLibraryGenerator {
       (libraryBuilder) {
         if (classDefinition.isSealedTopNode) {
           for (var child in classDefinition.descendantClasses) {
-            libraryBuilder.directives
-                .add(Directive.part('${child.fileName}.dart'));
+            var childPath = p.relative(
+              p.joinAll([
+                ...child.subDirParts,
+                '${child.fileName}.dart',
+              ]),
+              from: p.dirname(p.joinAll([
+                ...classDefinition.subDirParts,
+                '${classDefinition.fileName}.dart'
+              ])),
+            );
+            libraryBuilder.directives.add(Directive.part(childPath));
           }
         }
 
         if (!classDefinition.isSealedTopNode && sealedTopNode != null) {
-          libraryBuilder.directives.add(
-            Directive.partOf('${sealedTopNode.fileName}.dart'),
+          var topNodePath = p.relative(
+            p.joinAll([
+              ...sealedTopNode.subDirParts,
+              '${sealedTopNode.fileName}.dart',
+            ]),
+            from: p.dirname(p.joinAll([
+              ...classDefinition.subDirParts,
+              '${classDefinition.fileName}.dart'
+            ])),
           );
+          libraryBuilder.directives.add(Directive.partOf(topNodePath));
         }
 
         libraryBuilder.body.addAll([
