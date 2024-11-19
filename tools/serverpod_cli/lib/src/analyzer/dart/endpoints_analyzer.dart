@@ -27,6 +27,8 @@ class EndpointsAnalyzer {
           resourceProvider: PhysicalResourceProvider.INSTANCE,
         );
 
+  Set<EndpointDefinition> _endpointDefinitions = {};
+
   /// Analyze all files in the [AnalysisContextCollection].
   /// Use [changedFiles] to mark files, that need reloading.
   Future<List<EndpointDefinition>> analyze({
@@ -95,6 +97,7 @@ class EndpointsAnalyzer {
       ));
     }
 
+    _endpointDefinitions = endpointDefs.toSet();
     return endpointDefs;
   }
 
