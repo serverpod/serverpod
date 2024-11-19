@@ -1,10 +1,9 @@
-import 'package:serverpod/database.dart';
 import 'package:serverpod_auth_server/module.dart';
-import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
+import '../../serverpod_test_tools.dart';
+
 void main() async {
-  var session = await IntegrationTestServer().session();
   AuthConfig.set(
     AuthConfig(
       sendValidationEmail: (session, email, validationCode) async {
@@ -15,15 +14,11 @@ void main() async {
     ),
   );
 
-  group('Given create account request ', () {
+  withServerpod('Given create account request ', (sessionBuilder, _) {
+    var session = sessionBuilder.build();
     var userName = 'test';
     var email = 'test@serverpod.dev';
     var password = 'password';
-
-    tearDown(() async {
-      await EmailCreateAccountRequest.db
-          .deleteWhere(session, where: (t) => Constant.bool(true));
-    });
 
     setUp(() async {
       await Emails.createAccountRequest(session, userName, email, password);
@@ -52,18 +47,11 @@ void main() async {
     });
   });
 
-  group('Given a created user', () {
+  withServerpod('Given a created user', (sessionBuilder, _) {
+    var session = sessionBuilder.build();
     var userName = 'test';
     var email = 'test@serverpod.dev';
     var password = 'password';
-
-    tearDown(() async {
-      await Future.wait([
-        UserInfo.db.deleteWhere(session, where: (t) => Constant.bool(true)),
-        EmailAuth.db.deleteWhere(session, where: (t) => Constant.bool(true)),
-        UserImage.db.deleteWhere(session, where: (t) => Constant.bool(true)),
-      ]);
-    });
 
     setUp(() async {
       await Emails.createUser(session, userName, email, password);
@@ -91,18 +79,12 @@ void main() async {
     });
   });
 
-  group('Given user with legacy password hash when authenticating', () {
+  withServerpod('Given user with legacy password hash when authenticating',
+      (sessionBuilder, _) {
+    var session = sessionBuilder.build();
     var userName = 'test';
     var email = 'test@serverpod.dev';
     var password = 'hunter2';
-
-    tearDown(() async {
-      await Future.wait([
-        UserInfo.db.deleteWhere(session, where: (t) => Constant.bool(true)),
-        EmailAuth.db.deleteWhere(session, where: (t) => Constant.bool(true)),
-        UserImage.db.deleteWhere(session, where: (t) => Constant.bool(true)),
-      ]);
-    });
 
     setUp(() async {
       await Emails.createUser(session, userName, email, password);
@@ -144,11 +126,9 @@ void main() async {
     });
   });
 
-  group('Given all password hash types in database', () {
-    tearDown(
-      () async => await EmailAuth.db
-          .deleteWhere(session, where: (t) => Constant.bool(true)),
-    );
+  withServerpod('Given all password hash types in database',
+      (sessionBuilder, _) {
+    var session = sessionBuilder.build();
 
     setUp(
       () async => await EmailAuth.db.insert(session, [
