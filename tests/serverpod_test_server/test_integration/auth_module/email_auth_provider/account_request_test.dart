@@ -2,7 +2,7 @@ import 'package:serverpod/database.dart';
 import 'package:serverpod_auth_server/module.dart';
 import 'package:test/test.dart';
 
-import '../../serverpod_test_tools.dart';
+import '../../test_tools/serverpod_test_tools.dart';
 
 void main() async {
   withServerpod('Given no account request when trying to create account ', (
