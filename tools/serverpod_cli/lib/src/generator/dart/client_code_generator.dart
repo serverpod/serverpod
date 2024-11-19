@@ -5,6 +5,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/model_library_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/custom_allocators.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_filter_util.dart';
 
@@ -34,13 +35,26 @@ class DartClientCodeGenerator extends CodeGenerator {
         ModelFilterUtil.getClassesWithoutSealedHierarchies(clientClasses);
 
     for (var sealedHierarchy in sealedHierarchies) {
-      var partOfAllocator = PartOfAllocator([]);
-      var partAllocator = PartAllocator(partOfAllocator);
+      var topNode =
+          sealedHierarchy.firstWhere((element) => element.isSealedTopNode);
+
+      var importCollector = ImportCollector(
+        getGeneratedModelPath(topNode, config, false),
+      );
 
       for (var model in sealedHierarchy) {
+        var currentPath = getGeneratedModelPath(model, config, false);
+
+        var partOfAllocator = PartOfAllocator(
+          currentPath: currentPath,
+          importCollector: importCollector,
+        );
+
         modelAllocatorContext.add((
           model: model,
-          allocator: model.isSealedTopNode ? partAllocator : partOfAllocator
+          allocator: model.isSealedTopNode
+              ? PartAllocator(partOfAllocator: partOfAllocator)
+              : partOfAllocator,
         ));
       }
     }
@@ -54,11 +68,7 @@ class DartClientCodeGenerator extends CodeGenerator {
 
     return {
       for (var entry in modelAllocatorContext)
-        p.joinAll([
-          ...config.generatedDartClientModelPathParts,
-          ...entry.model.subDirParts,
-          '${entry.model.fileName}.dart'
-        ]): clientSideGenerator
+        getGeneratedModelPath(entry.model, config, false): clientSideGenerator
             .generateModelLibrary(entry.model)
             .generateCode(allocator: entry.allocator),
     };
