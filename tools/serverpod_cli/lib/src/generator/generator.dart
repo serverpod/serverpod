@@ -10,7 +10,6 @@ Future<bool> performGenerate({
   bool dartFormat = true,
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
-  String? changedFilePath,
 }) async {
   bool success = true;
 
@@ -37,15 +36,10 @@ Future<bool> performGenerate({
 
   log.debug('Analyzing the endpoints.');
 
-  var changedFiles = generatedModelFiles.toSet();
-  if (changedFilePath != null) {
-    changedFiles.add(changedFilePath);
-  }
-
   var endpointAnalyzerCollector = CodeGenerationCollector();
   var endpoints = await endpointsAnalyzer.analyze(
     collector: endpointAnalyzerCollector,
-    changedFiles: changedFiles,
+    changedFiles: generatedModelFiles.toSet(),
   );
 
   if (endpointAnalyzerCollector.hasSeverErrors) {

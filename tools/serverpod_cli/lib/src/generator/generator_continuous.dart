@@ -32,10 +32,11 @@ Future<bool> performGenerateContinuously({
       newParagraph: true,
     );
     log.info('File changed: $event');
+
+    await endpointsAnalyzer.updateFileContexts({event.path});
     success = await _performSafeGenerate(
       config: config,
       endpointsAnalyzer: endpointsAnalyzer,
-      changedFilePath: event.path,
       completionMessage: 'Incremental code generation complete.',
     );
   }
@@ -73,7 +74,6 @@ bool _directoryPathExists(String path) {
 Future<bool> _performSafeGenerate({
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
-  String? changedFilePath,
   required String completionMessage,
 }) async {
   var success = false;
@@ -83,7 +83,6 @@ Future<bool> _performSafeGenerate({
         () => performGenerate(
               config: config,
               endpointsAnalyzer: endpointsAnalyzer,
-              changedFilePath: changedFilePath,
             ));
     log.info(completionMessage);
   } catch (e) {
