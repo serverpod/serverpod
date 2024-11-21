@@ -101,13 +101,20 @@ class GeneratorConfig {
   List<String> get libSourcePathParts =>
       [...serverPackageDirectoryPathParts, 'lib'];
 
+  /// Relative path parts to the protocol directory
+  List<String> get relativeProtocolSourcePathParts =>
+      ['lib', 'src', 'protocol'];
+
   /// Path parts to the protocol directory of the server package.
   List<String> get protocolSourcePathParts =>
-      [...serverPackageDirectoryPathParts, 'lib', 'src', 'protocol'];
+      [...serverPackageDirectoryPathParts, ...relativeProtocolSourcePathParts];
+
+  /// Relative path parts to the model directory
+  List<String> get relativeModelSourcePathParts => ['lib', 'src', 'models'];
 
   /// Path parts to the model directory of the server package.
   List<String> get modelSourcePathParts =>
-      [...serverPackageDirectoryPathParts, 'lib', 'src', 'models'];
+      [...serverPackageDirectoryPathParts, ...relativeModelSourcePathParts];
 
   /// Path parts to the endpoints directory of the server package.
   List<String> get endpointsSourcePathParts =>
