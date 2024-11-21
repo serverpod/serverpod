@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:async/async.dart';
@@ -32,6 +33,8 @@ Future<bool> performGenerateContinuously({
 
   var modelSourcePath = p.joinAll(config.modelSourcePathParts);
   var protocolSourcePath = p.joinAll(config.protocolSourcePathParts);
+
+  Timer? generateDispatch;
   await for (WatchEvent event in watchers) {
     log.debug('File changed: $event');
 
@@ -62,18 +65,21 @@ Future<bool> performGenerateContinuously({
 
     if (!shouldGenerate) continue;
 
-    log.info(
-      DateFormat('MMM dd - HH:mm:ss:SS').format(DateTime.now()),
-      newParagraph: true,
-    );
-    log.info('File changed: $event');
+    generateDispatch?.cancel();
+    generateDispatch = Timer(const Duration(milliseconds: 500), () async {
+      log.info(
+        DateFormat('MMM dd - HH:mm:ss:SS').format(DateTime.now()),
+        newParagraph: true,
+      );
+      log.info('File changed: $event');
 
-    success = await _performSafeGenerate(
-      config: config,
-      endpointsAnalyzer: endpointsAnalyzer,
-      modelAnalyzer: modelAnalyzer,
-      completionMessage: 'Incremental code generation complete.',
-    );
+      success = await _performSafeGenerate(
+        config: config,
+        endpointsAnalyzer: endpointsAnalyzer,
+        modelAnalyzer: modelAnalyzer,
+        completionMessage: 'Incremental code generation complete.',
+      );
+    });
   }
 
   return success;
