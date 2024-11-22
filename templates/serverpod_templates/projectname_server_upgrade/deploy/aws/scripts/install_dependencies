@@ -1,40 +1,48 @@
 #!/bin/bash
+set -e  # Exit on any error
+
+# Variables for configuration
 DART_VERSION=3.5.1
+USERNAME=ec2-user
+WORKDIR=/home/$USERNAME
+DART_INSTALL_DIR="/usr/lib/dart$DART_VERSION"
 
-## Uncomment the following code if you have already generated the project with the older version of serverpod cli
-## What this code do is to remove our previous way of setting dart version in the launch template
-#if [ -f "/etc/profile.d/script.sh" ]; then
-#    sudo rm /etc/profile.d/script.sh
-#fi
+# Uncomment the following lines if migrating from an older serverpod CLI version
+# if [ -f "/etc/profile.d/script.sh" ]; then
+#     sudo rm /etc/profile.d/script.sh
+# fi
 
-## install specified dart version if it is not present on the machine
-
-if [ ! -d "/usr/lib/dart$DART_VERSION" ]; then
+# Install the specified Dart version if not already installed
+if [ ! -d "$DART_INSTALL_DIR" ]; then
+  echo "Installing Dart $DART_VERSION..."
   wget -q https://storage.googleapis.com/dart-archive/channels/stable/release/$DART_VERSION/sdk/dartsdk-linux-x64-release.zip -P /tmp
   cd /tmp || exit
   unzip -q dartsdk-linux-x64-release.zip
-  sudo mv dart-sdk/ /usr/lib/dart$DART_VERSION/
-  sudo chmod -R 755 /usr/lib/dart$DART_VERSION/
+  sudo mv dart-sdk/ "$DART_INSTALL_DIR"
+  sudo chmod -R 755 "$DART_INSTALL_DIR"
   rm -rf dartsdk-linux-x64-release.zip
 fi
 
-## make symlink to use this dart as default
-sudo ln -sf "/usr/lib/dart$DART_VERSION/bin/dart" /usr/local/bin/dart
+# Make symlink for Dart binaries
+sudo ln -sf $DART_INSTALL_DIR/bin/* /usr/local/bin/
 
+# Write the systemd unit file
 cat > /lib/systemd/system/serverpod.service << EOF
 [Unit]
 Description=Serverpod server
-After=multi-user.target
+After=network-online.target
 
 [Service]
-User=ec2-user
-WorkingDirectory=/home/ec2-user
-ExecStart=/home/ec2-user/serverpod/active/projectname_server/deploy/aws/scripts/run_serverpod
+User=$USERNAME
+WorkingDirectory=$WORKDIR
+ExecStart=$WORKDIR/serverpod/active/projectname_server/deploy/aws/scripts/run_serverpod
 Restart=always
 
 [Install]
-WantedBy=muti-user.target
 WantedBy=network-online.target
 EOF
 
+# Reload systemd configuration, enable, and start the service
 systemctl daemon-reload
+systemctl enable serverpod.service
+systemctl start serverpod.service

@@ -1,18 +1,26 @@
 #!/bin/bash
+
+# Variables for dynamic configuration
+USERNAME=ec2-user
+WORKDIR=/home/$USERNAME
+
+# Write the systemd unit file
 cat > /lib/systemd/system/serverpod.service << EOF
 [Unit]
 Description=Serverpod server
-After=multi-user.target
+After=network-online.target
 
 [Service]
-User=ec2-user
-WorkingDirectory=/home/ec2-user
-ExecStart=/home/ec2-user/serverpod/active/auth_example_server/aws/scripts/run_serverpod
+User=$USERNAME
+WorkingDirectory=$WORKDIR
+ExecStart=$WORKDIR/serverpod/active/auth_example_server/aws/scripts/run_serverpod
 Restart=always
 
 [Install]
-WantedBy=muti-user.target
 WantedBy=network-online.target
 EOF
 
+# Reload systemd, enable and start the service
 systemctl daemon-reload
+systemctl enable serverpod.service
+systemctl start serverpod.service
