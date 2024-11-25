@@ -149,6 +149,22 @@ class ExampleEndpoint extends Endpoint {
         completion(true),
       );
     });
+
+    test(
+        'when the file context is updated with a non endpoint file '
+        'then false is returned.', () async {
+      var nonEndpointFile =
+          File(path.join(trackedDirectory.path, 'non_endpoint.dart'));
+      nonEndpointFile.createSync(recursive: true);
+      nonEndpointFile.writeAsStringSync('''
+class ExampleClass {}
+''');
+
+      await expectLater(
+        analyzer.updateFileContexts({nonEndpointFile.path}),
+        completion(false),
+      );
+    });
   });
 
   group('Given a tracked and analyzed directory with valid non-endpoint file',
