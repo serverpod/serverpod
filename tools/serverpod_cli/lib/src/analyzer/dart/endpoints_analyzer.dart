@@ -40,11 +40,10 @@ class EndpointsAnalyzer {
   Future<bool> updateFileContexts(Set<String> filePaths) async {
     await _refreshContextForFiles(filePaths);
 
-    var oldDefinitions = _endpointDefinitions;
+    var oldDefinitionsLength = _endpointDefinitions.length;
     await analyze(collector: CodeGenerationCollector());
 
-    var shared = _endpointDefinitions.intersection(oldDefinitions);
-    if (shared.length != oldDefinitions.length) {
+    if (_endpointDefinitions.length != oldDefinitionsLength) {
       return true;
     }
 

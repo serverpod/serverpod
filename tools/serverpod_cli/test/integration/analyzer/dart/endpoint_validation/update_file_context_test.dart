@@ -149,6 +149,44 @@ class ExampleEndpoint extends Endpoint {
         completion(true),
       );
     });
+
+    test(
+        'when the file context is updated with a non endpoint file '
+        'then false is returned.', () async {
+      var nonEndpointFile =
+          File(path.join(trackedDirectory.path, 'non_endpoint.dart'));
+      nonEndpointFile.createSync(recursive: true);
+      nonEndpointFile.writeAsStringSync('''
+class ExampleClass {}
+''');
+
+      await expectLater(
+        analyzer.updateFileContexts({nonEndpointFile.path}),
+        completion(false),
+      );
+    });
+
+    test(
+        'when the file context is updated with a new endpoint file '
+        'then true is returned.', () async {
+      var newEndpointFile =
+          File(path.join(trackedDirectory.path, 'new_endpoint.dart'));
+      newEndpointFile.createSync(recursive: true);
+      newEndpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class NewEndpoint extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  });
+}
+''');
+
+      await expectLater(
+        analyzer.updateFileContexts({newEndpointFile.path}),
+        completion(true),
+      );
+    });
   });
 
   group('Given a tracked and analyzed directory with valid non-endpoint file',
@@ -211,8 +249,9 @@ class ExampleEndpoint extends Endpoint {
 import 'package:serverpod/serverpod.dart';
 
 class ExampleEndpoint extends Endpoint {
-
-
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
 ''');
       analyzer = EndpointsAnalyzer(trackedDirectory);
       await analyzer.analyze(collector: CodeGenerationCollector());
@@ -257,6 +296,7 @@ import 'invalid_dart.dart';
 
 class ExampleClass extends Endpoint {
   Future<String> hello(Session session, String name) async {
+    InvalidClass example = InvalidClass();
     return 'Hello \$name';
   }
 }
@@ -264,9 +304,9 @@ class ExampleClass extends Endpoint {
       invalidDartFile =
           File(path.join(trackedDirectory.path, 'invalid_dart.dart'));
       invalidDartFile.createSync(recursive: true);
-      // Class is missing closing brackets
+      // Class keyword is combined with class name
       invalidDartFile.writeAsStringSync('''
-class MyClass {
+classInvalidClass {}
 ''');
       analyzer = EndpointsAnalyzer(trackedDirectory);
       await analyzer.analyze(collector: CodeGenerationCollector());
@@ -276,7 +316,7 @@ class MyClass {
         'when the file context is updated with a fix for the invalid dart file '
         'then true is returned.', () async {
       invalidDartFile.writeAsStringSync('''
-class MyClass {}
+class InvalidClass {}
 ''');
 
       await expectLater(
