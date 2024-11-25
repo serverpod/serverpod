@@ -249,8 +249,9 @@ class ExampleEndpoint extends Endpoint {
 import 'package:serverpod/serverpod.dart';
 
 class ExampleEndpoint extends Endpoint {
-
-
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
 ''');
       analyzer = EndpointsAnalyzer(trackedDirectory);
       await analyzer.analyze(collector: CodeGenerationCollector());
@@ -295,6 +296,7 @@ import 'invalid_dart.dart';
 
 class ExampleClass extends Endpoint {
   Future<String> hello(Session session, String name) async {
+    InvalidClass example = InvalidClass();
     return 'Hello \$name';
   }
 }
@@ -302,9 +304,9 @@ class ExampleClass extends Endpoint {
       invalidDartFile =
           File(path.join(trackedDirectory.path, 'invalid_dart.dart'));
       invalidDartFile.createSync(recursive: true);
-      // Class is missing closing brackets
+      // Class keyword is combined with class name
       invalidDartFile.writeAsStringSync('''
-class MyClass {
+classInvalidClass {}
 ''');
       analyzer = EndpointsAnalyzer(trackedDirectory);
       await analyzer.analyze(collector: CodeGenerationCollector());
@@ -314,7 +316,7 @@ class MyClass {
         'when the file context is updated with a fix for the invalid dart file '
         'then true is returned.', () async {
       invalidDartFile.writeAsStringSync('''
-class MyClass {}
+class InvalidClass {}
 ''');
 
       await expectLater(
