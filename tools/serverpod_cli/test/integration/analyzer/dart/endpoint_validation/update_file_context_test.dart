@@ -180,7 +180,7 @@ class NewEndpoint extends Endpoint {
     return 'Hello \$name';
   });
 }
-  ''');
+''');
 
       await expectLater(
         analyzer.updateFileContexts({newEndpointFile.path}),
