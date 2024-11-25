@@ -11,10 +11,6 @@ extension EndpointParametersExtension on List<ParameterElement> {
     var parameter = first;
 
     return parameter.type.element?.displayName == Keyword.sessionClassName &&
-        // Check if the parameter is a required positional parameter.
-        // e.g. `Future<String> hello(Session session)`
-        // and not `Future<String> hello({required Session session})`
-        // or `Future<String> hello([Session? session])`
         parameter.isRequiredPositional;
   }
 
