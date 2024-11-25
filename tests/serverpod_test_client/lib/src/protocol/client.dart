@@ -2392,6 +2392,20 @@ class EndpointAuthenticatedTestTools extends _i1.EndpointRef {
       );
 }
 
+/// {@category Endpoint}
+class EndpointMyFeature extends _i1.EndpointRef {
+  EndpointMyFeature(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'myFeature';
+
+  _i2.Future<String> myFeatureMethod() => caller.callServerEndpoint<String>(
+        'myFeature',
+        'myFeatureMethod',
+        {},
+      );
+}
+
 class Modules {
   Modules(Client client) {
     auth = _i3.Caller(client);
@@ -2470,6 +2484,7 @@ class Client extends _i1.ServerpodClientShared {
     subDirTest = EndpointSubDirTest(this);
     testTools = EndpointTestTools(this);
     authenticatedTestTools = EndpointAuthenticatedTestTools(this);
+    myFeature = EndpointMyFeature(this);
     modules = Modules(this);
   }
 
@@ -2554,6 +2569,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointAuthenticatedTestTools authenticatedTestTools;
 
+  late final EndpointMyFeature myFeature;
+
   late final Modules modules;
 
   @override
@@ -2598,6 +2615,7 @@ class Client extends _i1.ServerpodClientShared {
         'subDirTest': subDirTest,
         'testTools': testTools,
         'authenticatedTestTools': authenticatedTestTools,
+        'myFeature': myFeature,
       };
 
   @override
