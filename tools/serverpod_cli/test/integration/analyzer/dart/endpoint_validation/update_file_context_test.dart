@@ -165,6 +165,28 @@ class ExampleClass {}
         completion(false),
       );
     });
+
+    test(
+        'when the file context is updated with a new endpoint file '
+        'then true is returned.', () async {
+      var newEndpointFile =
+          File(path.join(trackedDirectory.path, 'new_endpoint.dart'));
+      newEndpointFile.createSync(recursive: true);
+      newEndpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class NewEndpoint extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  });
+}
+  ''');
+
+      await expectLater(
+        analyzer.updateFileContexts({newEndpointFile.path}),
+        completion(true),
+      );
+    });
   });
 
   group('Given a tracked and analyzed directory with valid non-endpoint file',
