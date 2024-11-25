@@ -34,7 +34,7 @@ Future<bool> performGenerateContinuously({
   var modelSourcePath = p.joinAll(config.modelSourcePathParts);
   var protocolSourcePath = p.joinAll(config.protocolSourcePathParts);
 
-  Timer? generateDispatch;
+  Timer? debouncedGenerate;
   await for (WatchEvent event in watchers) {
     log.debug('File changed: $event');
 
@@ -65,8 +65,8 @@ Future<bool> performGenerateContinuously({
 
     if (!shouldGenerate) continue;
 
-    generateDispatch?.cancel();
-    generateDispatch = Timer(const Duration(milliseconds: 500), () async {
+    debouncedGenerate?.cancel();
+    debouncedGenerate = Timer(const Duration(milliseconds: 500), () async {
       log.info(
         DateFormat('MMM dd - HH:mm:ss:SS').format(DateTime.now()),
         newParagraph: true,

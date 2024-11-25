@@ -42,7 +42,6 @@ void main() {
         'then false is returned.', () async {
       var emptyFile = File(path.join(trackedDirectory.path, 'empty_file.dart'));
       emptyFile.createSync(recursive: true);
-      // Empty file
       emptyFile.writeAsStringSync('');
 
       await expectLater(
