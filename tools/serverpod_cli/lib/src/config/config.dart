@@ -46,8 +46,28 @@ class ServerpodModulesNotFoundException implements Exception {
   String toString() => message;
 }
 
+abstract interface class ModelLoadConfig {
+  /// Path parts to the lib/src/protocol directory of the server package.
+  List<String> get protocolSourcePathParts;
+
+  /// Path parts to the lib/src/models directory of the server package.
+  List<String> get modelSourcePathParts;
+
+  /// Path parts to the lib/src folder of the server package.
+  List<String> get srcSourcePathParts;
+
+  /// Path parts to the lib folder of the server package.
+  List<String> get libSourcePathParts;
+
+  /// Relative path parts to the model directory
+  List<String> get relativeModelSourcePathParts;
+
+  /// Relative path parts to the protocol directory
+  List<String> get relativeProtocolSourcePathParts;
+}
+
 /// The configuration of the generation and analyzing process.
-class GeneratorConfig {
+class GeneratorConfig implements ModelLoadConfig {
   const GeneratorConfig({
     required this.name,
     required this.type,
@@ -97,22 +117,25 @@ class GeneratorConfig {
   /// Might be relative.
   final List<String> serverPackageDirectoryPathParts;
 
-  /// Path parts to the lib folder of the server package.
+  @override
   List<String> get libSourcePathParts =>
       [...serverPackageDirectoryPathParts, 'lib'];
 
-  /// Relative path parts to the protocol directory
+  @override
+  List<String> get srcSourcePathParts => [...libSourcePathParts, 'src'];
+
+  @override
   List<String> get relativeProtocolSourcePathParts =>
       ['lib', 'src', 'protocol'];
 
-  /// Path parts to the protocol directory of the server package.
+  @override
   List<String> get protocolSourcePathParts =>
       [...serverPackageDirectoryPathParts, ...relativeProtocolSourcePathParts];
 
-  /// Relative path parts to the model directory
+  @override
   List<String> get relativeModelSourcePathParts => ['lib', 'src', 'models'];
 
-  /// Path parts to the model directory of the server package.
+  @override
   List<String> get modelSourcePathParts =>
       [...serverPackageDirectoryPathParts, ...relativeModelSourcePathParts];
 
@@ -439,7 +462,7 @@ generatedServerModel: ${p.joinAll(generatedServeModelPathParts)}
 }
 
 /// Describes the configuration of a Serverpod module a package depends on.
-class ModuleConfig {
+class ModuleConfig implements ModelLoadConfig {
   PackageType type;
 
   /// The user defined nickname of the module.
@@ -458,13 +481,27 @@ class ModuleConfig {
   /// Might be relative.
   final List<String> serverPackageDirectoryPathParts;
 
-  /// Path parts to the protocol directory of the server package.
-  List<String> get protocolSourcePathParts =>
-      [...serverPackageDirectoryPathParts, 'lib', 'src', 'protocol'];
+  @override
+  List<String> get libSourcePathParts =>
+      [...serverPackageDirectoryPathParts, 'lib'];
 
-  /// Path parts to the model directory of the server package.
+  @override
+  List<String> get srcSourcePathParts => [...libSourcePathParts, 'src'];
+
+  @override
+  List<String> get relativeProtocolSourcePathParts =>
+      ['lib', 'src', 'protocol'];
+
+  @override
+  List<String> get protocolSourcePathParts =>
+      [...serverPackageDirectoryPathParts, ...relativeProtocolSourcePathParts];
+
+  @override
+  List<String> get relativeModelSourcePathParts => ['lib', 'src', 'models'];
+
+  @override
   List<String> get modelSourcePathParts =>
-      [...serverPackageDirectoryPathParts, 'lib', 'src', 'models'];
+      [...serverPackageDirectoryPathParts, ...relativeModelSourcePathParts];
 
   /// The migration versions of the module.
   List<String> migrationVersions;
