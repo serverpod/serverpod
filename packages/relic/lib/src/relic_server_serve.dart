@@ -23,8 +23,8 @@ import 'dart:io' as io;
 import 'package:relic/src/relic_server.dart';
 
 import 'handler/handler.dart';
-import 'request.dart';
-import 'response.dart';
+import 'message/request.dart';
+import 'message/response.dart';
 
 /// Starts an [HttpServer] that listens on the specified [address] and
 /// [port] and sends requests to [handler].
@@ -48,30 +48,21 @@ Future<io.HttpServer> serve(
   io.SecurityContext? securityContext,
   int? backlog,
   bool shared = false,
-  String? poweredByHeader = 'Dart with package:relic_server',
   bool strictHeaders = false,
+  String? poweredByHeader,
 }) async {
   backlog ??= 0;
 
-  var server = await switch (securityContext == null) {
-    true => RelicServer.bind(
-        address,
-        port,
-        backlog: backlog,
-        shared: shared,
-      ),
-    false => RelicServer.bindSecure(
-        address,
-        port,
-        securityContext!,
-        backlog: backlog,
-        shared: shared,
-      ),
-  };
-  server.mount(
-    handler,
-    poweredByHeader: poweredByHeader,
+  var server = await RelicServer.createServer(
+    address,
+    port,
+    securityContext: securityContext,
+    backlog: backlog,
+    shared: shared,
     strictHeaders: strictHeaders,
+    poweredByHeader: poweredByHeader,
   );
+
+  server.mountAndStart(handler);
   return server.server;
 }

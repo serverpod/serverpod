@@ -10,14 +10,14 @@ import 'package:async/async.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' as parser;
 import 'package:relic/relic.dart';
-import 'package:relic/src/headers.dart';
+import 'package:relic/src/headers/headers.dart';
 import 'package:relic/src/method/method.dart';
 import 'package:relic/src/relic_server_serve.dart' as relic_server;
 import 'package:relic/src/util/util.dart';
 import 'package:test/test.dart';
 
-import 'ssl_certs.dart';
-import 'test_util.dart';
+import 'ssl/ssl_certs.dart';
+import 'util/test_util.dart';
 
 void main() {
   tearDown(() async {
@@ -150,23 +150,19 @@ void main() {
           'requested-values-length': [
             request.headers.custom['request-values']!.length.toString()
           ],
-          'set-cookie-values': request.headers.custom['set-cookie']!,
-          'set-cookie-values-length': [
-            request.headers.custom['set-cookie']!.length.toString()
-          ],
         })),
       );
     });
 
-    final response = await _get(headers: {
-      'request-values': ['a', 'b'],
-      'set-cookie': ['c', 'd'],
-    });
+    final response = await _get(
+      headers: {
+        'request-values': 'a,b',
+        'set-cookie': 'c,d',
+      },
+    );
     expect(response.statusCode, HttpStatus.ok);
     expect(response.headers['requested-values'], 'a, b');
     expect(response.headers['requested-values-length'], '2');
-    expect(response.headers['set-cookie-values'], 'c, d');
-    expect(response.headers['set-cookie-values-length'], '2');
   });
 
   test('custom status code is received by the client', () async {
@@ -374,13 +370,13 @@ void main() {
 
   group('X-Powered-By header', () {
     const poweredBy = 'x-powered-by';
-    test('defaults to "Dart with package:relic_server"', () async {
+    test('defaults to "Relic"', () async {
       await _scheduleServer(syncHandler);
 
       var response = await _get();
       expect(
-        response.headers,
-        containsPair(poweredBy, 'Dart with package:relic_server'),
+        response.headers[poweredBy],
+        equals('Relic'),
       );
     });
 
@@ -430,21 +426,6 @@ void main() {
       var response = await _get();
       expect(response.headers, containsPair(poweredBy, 'myServer'));
     });
-
-    test('is omitted when set to null', () async {
-      _server = await relic_server.serve(
-        syncHandler,
-        'localhost',
-        0,
-        poweredByHeader: null,
-      );
-
-      var response = await _get();
-      expect(
-        response.headers,
-        isNot(contains(poweredBy)),
-      );
-    });
   });
 
   group('chunked coding', () {
@@ -471,7 +452,7 @@ void main() {
             ),
             headers: Headers.response(
               transferEncoding: TransferEncodingHeader(
-                encodings: ['identity'],
+                encodings: [TransferEncoding('identity')],
               ),
             ),
           );
@@ -497,7 +478,7 @@ void main() {
           ),
           headers: Headers.response(
             transferEncoding: TransferEncodingHeader(
-              encodings: ['chunked'],
+              encodings: [TransferEncoding.chunked],
             ),
           ),
         );
@@ -657,19 +638,28 @@ Future<void> _scheduleServer(
   );
 }
 
-Future<http.Response> _get(
-        {Map<String, /* String | List<String> */ Object>? headers,
-        String path = ''}) =>
-    _request((client, url) => client.getUrl(url), headers: headers, path: path);
+Future<http.Response> _get({
+  Map<String, String>? headers,
+  String path = '',
+}) {
+  return _request(
+    (client, url) => client.getUrl(url),
+    headers: headers,
+    path: path,
+  );
+}
 
 Future<http.Response> _request(
   Future<HttpClientRequest> Function(HttpClient, Uri) request, {
-  Map<String, /* String | List<String> */ Object>? headers,
+  Map<String, Object>? headers,
   String path = '',
 }) async {
   final client = HttpClient();
   try {
-    final rq = await request(client, Uri.http('localhost:$_serverPort', path));
+    final rq = await request(
+      client,
+      Uri.http('localhost:$_serverPort', path),
+    );
     headers?.forEach((key, value) {
       rq.headers.add(key, value);
     });
@@ -688,10 +678,14 @@ Future<http.Response> _request(
   }
 }
 
-Future<http.StreamedResponse> _post(
-    {Map<String, String>? headers, String? body}) {
-  var request =
-      http.Request(Method.post.value, Uri.http('localhost:$_serverPort', ''));
+Future<http.StreamedResponse> _post({
+  Map<String, String>? headers,
+  String? body,
+}) {
+  var request = http.Request(
+    Method.post.value,
+    Uri.http('localhost:$_serverPort', ''),
+  );
 
   if (headers != null) request.headers.addAll(headers);
   if (body != null) request.body = body;

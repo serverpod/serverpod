@@ -37,7 +37,7 @@ class Method {
   /// it returns a new [Method] instance with the method name in uppercase.
   static Method parse(String method) {
     if (method.isEmpty) {
-      throw ArgumentError.value(method, 'method', 'cannot be empty.');
+      throw FormatException('Value cannot be empty');
     }
 
     return values.firstWhere(
@@ -46,21 +46,9 @@ class Method {
     );
   }
 
-  /// Tries to parse a [method] string and returns the corresponding [Method] instance.
-  ///
-  /// Returns `null` if the [method] is `null` or empty.
-  /// If the method is not found in the predefined values,
-  /// it returns a new [Method] instance with the method name in uppercase.
-  static Method? tryParse(String? method) {
-    if (method == null || method.isEmpty) return null;
-
-    return values.firstWhere(
-      (m) => m.value.toLowerCase() == method.toLowerCase(),
-      orElse: () => Method(method.toUpperCase()),
-    );
-  }
-
   /// Returns the string representation of the HTTP method.
+  String toHeaderString() => value;
+
   @override
-  String toString() => value;
+  String toString() => 'Method($value)';
 }

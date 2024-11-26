@@ -8,28 +8,28 @@ import 'package:http/http.dart' as http;
 import 'package:relic/src/relic_server.dart';
 import 'package:test/test.dart';
 
-import 'test_util.dart';
+import 'util/test_util.dart';
 
 void main() {
   late RelicServer server;
 
   setUp(() async {
     try {
-      server = await RelicServer.bind(InternetAddress.loopbackIPv6, 0);
+      server = await RelicServer.createServer(InternetAddress.loopbackIPv6, 0);
     } on SocketException catch (_) {
-      server = await RelicServer.bind(InternetAddress.loopbackIPv4, 0);
+      server = await RelicServer.createServer(InternetAddress.loopbackIPv4, 0);
     }
   });
 
   tearDown(() => server.close());
 
   test('serves HTTP requests with the mounted handler', () async {
-    server.mount(syncHandler);
+    server.mountAndStart(syncHandler);
     expect(await http.read(server.url), equals('Hello from /'));
   });
 
   test('Handles malformed requests gracefully.', () async {
-    server.mount(syncHandler);
+    server.mountAndStart(syncHandler);
     final rs = await http
         .get(Uri.parse('${server.url}/%D0%C2%BD%A8%CE%C4%BC%FE%BC%D0.zip'));
     expect(rs.statusCode, 400);
@@ -40,17 +40,17 @@ void main() {
     expect(http.read(server.url), completion(equals('Hello from /')));
     await Future<void>.delayed(Duration.zero);
 
-    server.mount(asyncHandler);
+    server.mountAndStart(asyncHandler);
   });
 
   test('disallows more than one handler from being mounted', () async {
-    server.mount((_) => throw UnimplementedError());
+    server.mountAndStart((_) => throw UnimplementedError());
     expect(
-      () => server.mount((_) => throw UnimplementedError()),
+      () => server.mountAndStart((_) => throw UnimplementedError()),
       throwsStateError,
     );
     expect(
-      () => server.mount((_) => throw UnimplementedError()),
+      () => server.mountAndStart((_) => throw UnimplementedError()),
       throwsStateError,
     );
   });
