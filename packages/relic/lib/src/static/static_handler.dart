@@ -9,12 +9,12 @@ import 'package:path/path.dart' as p;
 import 'package:relic/src/method/method.dart';
 import 'package:relic/src/static/extension/datetime_extension.dart';
 
-import '../body.dart';
+import '../body/body.dart';
 import '../handler/handler.dart';
-import '../headers.dart';
-import '../headers/types/mime_type.dart';
-import '../request.dart';
-import '../response.dart';
+import '../headers/headers.dart';
+import '../body/types/mime_type.dart';
+import '../message/request.dart';
+import '../message/response.dart';
 
 import 'directory_listing.dart';
 
@@ -207,7 +207,7 @@ Future<Response> _handleFile(
   final contentType = await getContentType();
   final headers = Headers.response(
     lastModified: stat.modified,
-    acceptRanges: ['bytes'],
+    acceptRanges: AcceptRangesHeader.bytes(),
   );
 
   var response = _fileRangeResponse(request, file, headers);
@@ -245,8 +245,8 @@ Response? _fileRangeResponse(
   if (range == null) return null;
 
   final actualLength = file.lengthSync();
-  final startMatch = range.start;
-  final endMatch = range.end;
+  final startMatch = range.ranges.firstOrNull?.start;
+  final endMatch = range.ranges.firstOrNull?.end;
 
   if (startMatch == null && endMatch == null) return null;
 
@@ -266,16 +266,18 @@ Response? _fileRangeResponse(
 
   // If the range is syntactically invalid the Range header
   // MUST be ignored (RFC 2616 section 14.35.1).
-  if (start > end || start >= actualLength) {
-    return Response(
-      HttpStatus.requestedRangeNotSatisfiable,
-      headers: headers,
-    );
-  }
+  if (start > end) return null;
 
   // Adjust end if it's beyond the actual file length.
   if (end >= actualLength) {
     end = actualLength - 1;
+  }
+
+  if (start >= actualLength) {
+    return Response(
+      HttpStatus.requestedRangeNotSatisfiable,
+      headers: headers,
+    );
   }
 
   return Response(
@@ -285,13 +287,14 @@ Response? _fileRangeResponse(
         : Body.fromDataStream(
             file.openRead(start, end + 1).cast<Uint8List>(),
             encoding: null,
+            contentLength: (end - start) + 1,
             mimeType: MimeType.binary,
           ),
     headers: headers.copyWith(
       contentRange: ContentRangeHeader(
         start: start,
         end: end,
-        totalSize: actualLength,
+        size: actualLength,
       ),
     ),
   );

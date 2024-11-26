@@ -32,8 +32,8 @@ void main() {
     Link(p.join(d.sandbox, 'alt_root', 'link_dir')).createSync(originalsDir);
   });
 
-  group('access outside of root disabled', () {
-    test('access real file', () async {
+  group('Given access outside of root is disabled', () {
+    test('when accessing a real file then it returns the file content', () async {
       final handler = createStaticHandler(d.sandbox);
 
       final response = await makeRequest(handler, '/originals/index.html');
@@ -42,9 +42,9 @@ void main() {
       expect(response.readAsString(), completion('<html></html>'));
     });
 
-    group('links under root dir', () {
+    group('Given links under root dir', () {
       test(
-        'access sym linked file in real dir',
+        'when accessing a sym linked file in a real dir then it returns the file content',
         () async {
           final handler = createStaticHandler(d.sandbox);
 
@@ -56,7 +56,7 @@ void main() {
         onPlatform: _skipSymlinksOnWindows,
       );
 
-      test('access file in sym linked dir', () async {
+      test('when accessing a file in a sym linked dir then it returns the file content', () async {
         final handler = createStaticHandler(d.sandbox);
 
         final response = await makeRequest(handler, '/link_dir/index.html');
@@ -66,15 +66,15 @@ void main() {
       });
     });
 
-    group('links not under root dir', () {
-      test('access sym linked file in real dir', () async {
+    group('Given links not under root dir', () {
+      test('when accessing a sym linked file in a real dir then it returns a 404', () async {
         final handler = createStaticHandler(p.join(d.sandbox, 'alt_root'));
 
         final response = await makeRequest(handler, '/link_index.html');
         expect(response.statusCode, HttpStatus.notFound);
       });
 
-      test('access file in sym linked dir', () async {
+      test('when accessing a file in a sym linked dir then it returns a 404', () async {
         final handler = createStaticHandler(p.join(d.sandbox, 'alt_root'));
 
         final response = await makeRequest(handler, '/link_dir/index.html');
@@ -83,8 +83,8 @@ void main() {
     });
   });
 
-  group('access outside of root enabled', () {
-    test('access real file', () async {
+  group('Given access outside of root is enabled', () {
+    test('when accessing a real file then it returns the file content', () async {
       final handler =
           createStaticHandler(d.sandbox, serveFilesOutsidePath: true);
 
@@ -94,9 +94,9 @@ void main() {
       expect(response.readAsString(), completion('<html></html>'));
     });
 
-    group('links under root dir', () {
+    group('Given links under root dir', () {
       test(
-        'access sym linked file in real dir',
+        'when accessing a sym linked file in a real dir then it returns the file content',
         () async {
           final handler =
               createStaticHandler(d.sandbox, serveFilesOutsidePath: true);
@@ -109,7 +109,7 @@ void main() {
         onPlatform: _skipSymlinksOnWindows,
       );
 
-      test('access file in sym linked dir', () async {
+      test('when accessing a file in a sym linked dir then it returns the file content', () async {
         final handler =
             createStaticHandler(d.sandbox, serveFilesOutsidePath: true);
 
@@ -120,9 +120,9 @@ void main() {
       });
     });
 
-    group('links not under root dir', () {
+    group('Given links not under root dir', () {
       test(
-        'access sym linked file in real dir',
+        'when accessing a sym linked file in a real dir then it returns the file content',
         () async {
           final handler = createStaticHandler(p.join(d.sandbox, 'alt_root'),
               serveFilesOutsidePath: true);
@@ -135,7 +135,7 @@ void main() {
         onPlatform: _skipSymlinksOnWindows,
       );
 
-      test('access file in sym linked dir', () async {
+      test('when accessing a file in a sym linked dir then it returns the file content', () async {
         final handler = createStaticHandler(p.join(d.sandbox, 'alt_root'),
             serveFilesOutsidePath: true);
 

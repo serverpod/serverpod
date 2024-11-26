@@ -16,8 +16,8 @@ void main() {
     ]).create();
   });
 
-  group('default document value', () {
-    test('cannot contain slashes', () {
+  group('Given a default document value', () {
+    test('when it contains slashes then it throws an ArgumentError', () {
       final invalidValues = [
         'file/foo.txt',
         '/bar.txt',
@@ -33,8 +33,8 @@ void main() {
     });
   });
 
-  group('no default document specified', () {
-    test('access "/index.html"', () async {
+  group('Given no default document specified', () {
+    test('when accessing "/index.html" then it returns the file content', () async {
       final handler = createStaticHandler(d.sandbox);
 
       final response = await makeRequest(handler, '/index.html');
@@ -43,21 +43,21 @@ void main() {
       expect(response.readAsString(), completion('<html></html>'));
     });
 
-    test('access "/"', () async {
+    test('when accessing "/" then it returns a 404', () async {
       final handler = createStaticHandler(d.sandbox);
 
       final response = await makeRequest(handler, '/');
       expect(response.statusCode, HttpStatus.notFound);
     });
 
-    test('access "/files"', () async {
+    test('when accessing "/files" then it returns a 404', () async {
       final handler = createStaticHandler(d.sandbox);
 
       final response = await makeRequest(handler, '/files');
       expect(response.statusCode, HttpStatus.notFound);
     });
 
-    test('access "/files/" dir', () async {
+    test('when accessing "/files/" dir then it returns a 404', () async {
       final handler = createStaticHandler(d.sandbox);
 
       final response = await makeRequest(handler, '/files/');
@@ -65,8 +65,8 @@ void main() {
     });
   });
 
-  group('default document specified', () {
-    test('access "/index.html"', () async {
+  group('Given a default document specified', () {
+    test('when accessing "/index.html" then it returns the file content', () async {
       final handler =
           createStaticHandler(d.sandbox, defaultDocument: 'index.html');
 
@@ -77,7 +77,7 @@ void main() {
       expect(response.mimeType, 'text/html');
     });
 
-    test('access "/"', () async {
+    test('when accessing "/" then it returns the default document', () async {
       final handler =
           createStaticHandler(d.sandbox, defaultDocument: 'index.html');
 
@@ -88,7 +88,7 @@ void main() {
       expect(response.mimeType, 'text/html');
     });
 
-    test('access "/files"', () async {
+    test('when accessing "/files" then it redirects to "/files/"', () async {
       final handler =
           createStaticHandler(d.sandbox, defaultDocument: 'index.html');
 
@@ -100,7 +100,7 @@ void main() {
       );
     });
 
-    test('access "/files/" dir', () async {
+    test('when accessing "/files/" dir then it returns the default document', () async {
       final handler =
           createStaticHandler(d.sandbox, defaultDocument: 'index.html');
 

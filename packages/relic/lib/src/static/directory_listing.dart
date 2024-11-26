@@ -5,8 +5,8 @@ import 'dart:typed_data';
 
 import 'package:path/path.dart' as path;
 
-import '../body.dart';
-import '../response.dart';
+import '../body/body.dart';
+import '../message/response.dart';
 
 String _getHeader(String sanitizedHeading) => '''<!DOCTYPE html>
 <html>

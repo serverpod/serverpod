@@ -12,21 +12,21 @@ void main() {
     ]).create();
   });
 
-  test('non-existent relative path', () async {
+  test('Given a non-existent relative path when creating a static handler then it throws an ArgumentError', () async {
     expect(() => createStaticHandler('random/relative'), throwsArgumentError);
   });
 
-  test('existing relative path', () async {
+  test('Given an existing relative path when creating a static handler then it returns normally', () async {
     final existingRelative = p.relative(d.sandbox);
     expect(() => createStaticHandler(existingRelative), returnsNormally);
   });
 
-  test('non-existent absolute path', () {
+  test('Given a non-existent absolute path when creating a static handler then it throws an ArgumentError', () {
     final nonExistingAbsolute = p.join(d.sandbox, 'not_here');
     expect(() => createStaticHandler(nonExistingAbsolute), throwsArgumentError);
   });
 
-  test('existing absolute path', () {
+  test('Given an existing absolute path when creating a static handler then it returns normally', () {
     expect(() => createStaticHandler(d.sandbox), returnsNormally);
   });
 }
