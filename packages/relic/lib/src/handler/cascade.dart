@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'handler.dart';
-import '../response.dart';
+import '../message/response.dart';
 
 /// A typedef for [Cascade._shouldCascade].
 typedef _ShouldCascade = bool Function(Response response);

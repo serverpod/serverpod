@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import '../request.dart';
-import '../response.dart';
+import '../message/request.dart';
+import '../message/response.dart';
 
 /// A function which handles a [Request].
 ///
