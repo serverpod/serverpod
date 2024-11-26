@@ -26,8 +26,8 @@ void main() {
   group('Test path extraction - extractPathFromConfig.', () {
     var serverRootDir = Directory(join(
       'test',
-      'integration'
-          'util',
+      'integration',
+      'util',
       'test_assets',
       'protocol_helper',
       'has_serverpod_server_project',
@@ -39,8 +39,8 @@ void main() {
         () {
       var modelFile = File(join(
         'test',
-        'integration'
-            'util',
+        'integration',
+        'util',
         'test_assets',
         'protocol_helper',
         'has_serverpod_server_project',
@@ -66,6 +66,7 @@ void main() {
         () {
       var modelFile = File(join(
         'test',
+        'integration',
         'util',
         'test_assets',
         'protocol_helper',
@@ -94,6 +95,7 @@ void main() {
         () {
       var modelFile = File(join(
         'test',
+        'integration',
         'util',
         'test_assets',
         'protocol_helper',
@@ -101,7 +103,7 @@ void main() {
         'test_server',
         'lib',
         'src',
-        'model',
+        'models',
         'nested',
         'folder',
         'test.yaml',
@@ -123,8 +125,8 @@ void main() {
         () {
       var modelFile = File(join(
         'test',
-        'integration'
-            'util',
+        'integration',
+        'util',
         'test_assets',
         'protocol_helper',
         'has_serverpod_server_project',
@@ -137,8 +139,8 @@ void main() {
 
       var rootPath = [
         'test',
-        'integration'
-            'util',
+        'integration',
+        'util',
         'test_assets',
         'protocol_helper',
         'has_serverpod_server_project',
