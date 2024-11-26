@@ -139,7 +139,8 @@ abstract class CompilationUnitHelpers {
           !directiveUri.startsWith('../')) {
         directiveUri = directiveUri.replaceFirst('..', '../');
       }
-
+      print('directiveUri: $directiveUri');
+      print('uri: $uri');
       return directiveUri == uri;
     }).firstOrNull;
   }
