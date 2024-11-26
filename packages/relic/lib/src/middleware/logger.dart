@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:relic/src/method/method.dart';
 import 'package:stack_trace/stack_trace.dart';
 
-import '../exception/hijack_exception.dart';
+import '../hijack/exception/hijack_exception.dart';
 import 'middleware.dart';
 
 /// Middleware which prints the time of the request, the elapsed time for the

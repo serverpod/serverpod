@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import '../handler/handler.dart';
-import '../exception/hijack_exception.dart';
-import '../request.dart';
-import '../response.dart';
+import '../hijack/exception/hijack_exception.dart';
+import '../message/request.dart';
+import '../message/response.dart';
 
 /// A function which creates a new [Handler] by wrapping a [Handler].
 ///
