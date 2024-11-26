@@ -768,6 +768,11 @@ void main() {
           grandparentCompilationUnit,
           uri: p.join('..', '${parent.fileName}.dart'),
         );
+        print('pardDirective: $partDirective');
+        print(
+          'grandparent directives ${grandparentCompilationUnit.directives}',
+        );
+
         expect(
           partDirective,
           isNotNull,
@@ -775,9 +780,13 @@ void main() {
       });
 
       test('has a part directive with ${child.className} uri', () {
+        var normalizedUri = p
+            .toUri(p.normalize(p.join('..', '${child.fileName}.dart')))
+            .toString();
+
         var partDirective = CompilationUnitHelpers.tryFindPartDirective(
           grandparentCompilationUnit,
-          uri: p.join('..', '${child.fileName}.dart'),
+          uri: normalizedUri,
         );
         expect(
           partDirective,
