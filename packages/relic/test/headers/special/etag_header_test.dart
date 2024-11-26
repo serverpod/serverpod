@@ -1,142 +1,162 @@
 import 'dart:io';
-import 'package:relic/src/headers.dart';
-import 'package:relic/src/relic_server.dart';
 import 'package:test/test.dart';
+import 'package:relic/src/headers/headers.dart';
+import 'package:relic/src/relic_server.dart';
 
-import '../../test_util.dart';
+import '../headers_test_utils.dart';
+import '../docs/strict_validation_docs.dart';
 
+/// Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag
+/// About empty value test, check the [StrictValidationDocs] class for more details.
 void main() {
-  late RelicServer server;
+  group('Given an ETag header with the strict flag true', () {
+    late RelicServer server;
 
-  setUp(() async {
-    try {
-      server = await RelicServer.bind(InternetAddress.loopbackIPv6, 0);
-    } on SocketException catch (_) {
-      server = await RelicServer.bind(InternetAddress.loopbackIPv4, 0);
-    }
-  });
-
-  tearDown(() => server.close());
-
-  group('ETagHeader Class Tests', () {
-    test('ETagHeader should parse a strong ETag value correctly', () {
-      var headerValue = '"strong-etag"';
-      var eTagHeader = ETagHeader.fromHeaderValue(headerValue);
-
-      expect(
-        eTagHeader.value,
-        equals('strong-etag'),
-      );
-      expect(eTagHeader.isWeak, isFalse);
+    setUp(() async {
+      try {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv6,
+          0,
+          strictHeaders: true,
+        );
+      } on SocketException catch (_) {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv4,
+          0,
+          strictHeaders: true,
+        );
+      }
     });
 
-    test('ETagHeader should parse a weak ETag value correctly', () {
-      var headerValue = 'W/"weak-etag"';
-      var eTagHeader = ETagHeader.fromHeaderValue(headerValue);
-
-      expect(
-        eTagHeader.value,
-        equals('weak-etag'),
-      );
-      expect(eTagHeader.isWeak, isTrue);
-    });
-
-    test('ETagHeader should return null when parsing a null value', () {
-      var eTagHeader = ETagHeader.tryParse(null);
-      expect(eTagHeader, isNull);
-    });
-
-    test('ETagHeader should return valid string representation for strong ETag',
-        () {
-      var eTagHeader = ETagHeader(value: 'strong-etag');
-      var result = eTagHeader.toString();
-
-      expect(
-        result,
-        equals('"strong-etag"'),
-      );
-    });
-
-    test('ETagHeader should return valid string representation for weak ETag',
-        () {
-      var eTagHeader = ETagHeader(value: 'weak-etag', isWeak: true);
-      var result = eTagHeader.toString();
-
-      expect(
-        result,
-        equals('W/"weak-etag"'),
-      );
-    });
-
-    test('ETagHeader should compare two strong ETags for equality', () {
-      var eTag1 = ETagHeader(value: 'etag-value');
-      var eTag2 = ETagHeader(value: 'etag-value');
-
-      expect(eTag1.compare(eTag2), isTrue);
-    });
+    tearDown(() => server.close());
 
     test(
-        'ETagHeader should fail comparison if one ETag is weak and the other is strong',
-        () {
-      var eTag1 = ETagHeader(value: 'etag-value', isWeak: true);
-      var eTag2 = ETagHeader(value: 'etag-value');
+      'when an empty ETag header is passed then the server responds '
+      'with a bad request including a message that states the header value '
+      'cannot be empty',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'etag': ''},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Value cannot be empty'),
+            ),
+          ),
+        );
+      },
+    );
 
-      expect(eTag1.compare(eTag2), isFalse);
-    });
+    test(
+      'when an invalid ETag is passed then the server responds with a bad request '
+      'including a message that states the ETag is invalid',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'etag': '123456'},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Invalid format'),
+            ),
+          ),
+        );
+      },
+    );
 
-    test('ETagHeader should compare two weak ETags for equality', () {
-      var eTag1 = ETagHeader(value: 'etag-value', isWeak: true);
-      var eTag2 = ETagHeader(value: 'etag-value', isWeak: true);
+    test(
+      'when a valid strong ETag is passed then it should parse correctly',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'etag': '"123456"'},
+        );
 
-      expect(eTag1.compare(eTag2), isTrue);
-    });
+        expect(headers.etag?.value, equals('123456'));
+        expect(headers.etag?.isWeak, isFalse);
+      },
+    );
 
-    test('ETagHeader should fail comparison for different ETag values', () {
-      var eTag1 = ETagHeader(value: 'etag-value-1');
-      var eTag2 = ETagHeader(value: 'etag-value-2');
+    test(
+      'when a valid weak ETag is passed then it should parse correctly',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'etag': 'W/"123456"'},
+        );
 
-      expect(eTag1.compare(eTag2), isFalse);
-    });
+        expect(headers.etag?.value, equals('123456'));
+        expect(headers.etag?.isWeak, isTrue);
+      },
+    );
+
+    test(
+      'when no ETag header is passed then it should return null',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {},
+        );
+
+        expect(headers.etag, isNull);
+      },
+    );
   });
 
-  group('ETagHeader HttpRequest Tests', () {
-    test('Given a valid strong ETag header, it should parse correctly',
-        () async {
-      var headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'ETag': '"strong-etag"'},
-      );
-      var eTagHeader = headers.etag;
+  group('Given an ETag header with the strict flag false', () {
+    late RelicServer server;
 
-      expect(
-        eTagHeader!.value,
-        equals('strong-etag'),
-      );
-      expect(eTagHeader.isWeak, isFalse);
+    setUp(() async {
+      try {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv6,
+          0,
+          strictHeaders: false,
+        );
+      } on SocketException catch (_) {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv4,
+          0,
+          strictHeaders: false,
+        );
+      }
     });
 
-    test('Given a valid weak ETag header, it should parse correctly', () async {
-      var headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'ETag': 'W/"weak-etag"'},
-      );
-      var eTagHeader = headers.etag;
+    tearDown(() => server.close());
 
-      expect(
-        eTagHeader!.value,
-        equals('weak-etag'),
-      );
-      expect(eTagHeader.isWeak, isTrue);
-    });
-
-    test('Given an invalid ETag header, it should throw FormatException',
+    group('when an invalid ETag header is passed', () {
+      test(
+        'then it should return null',
         () async {
-      expect(
-        () async => await getServerRequestHeaders(
-          server: server,
-          headers: {'ETag': 'invalid-header'},
-        ),
-        throwsFormatException,
+          Headers headers = await getServerRequestHeaders(
+            server: server,
+            headers: {'etag': '123456'},
+          );
+
+          expect(headers.etag, isNull);
+        },
+      );
+
+      test(
+        'then it should be recorded in the "failedHeadersToParse" field',
+        () async {
+          Headers headers = await getServerRequestHeaders(
+            server: server,
+            headers: {'etag': '123456'},
+          );
+
+          expect(
+            headers.failedHeadersToParse['etag'],
+            equals(['123456']),
+          );
+        },
       );
     });
   });

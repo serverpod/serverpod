@@ -1,60 +1,157 @@
-import 'package:relic/src/headers.dart';
-import 'package:test/test.dart';
-import 'package:relic/src/relic_server.dart';
 import 'dart:io';
-import '../../test_util.dart';
+import 'package:test/test.dart';
+import 'package:relic/src/headers/headers.dart';
+import 'package:relic/src/relic_server.dart';
 
+import '../headers_test_utils.dart';
+import '../docs/strict_validation_docs.dart';
+
+/// Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Trailer
+/// About empty value test, check the [StrictValidationDocs] class for more details.
 void main() {
-  late RelicServer server;
+  group('Given a Trailer header with the strict flag true', () {
+    late RelicServer server;
 
-  setUp(() async {
-    try {
-      server = await RelicServer.bind(InternetAddress.loopbackIPv6, 0);
-    } on SocketException catch (_) {
-      server = await RelicServer.bind(InternetAddress.loopbackIPv4, 0);
-    }
-  });
-
-  tearDown(() => server.close());
-
-  group('Trailer Header Tests', () {
-    test('Given a valid Trailer header, it should parse correctly as a list',
-        () async {
-      Headers headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'trailer': 'content-md5, etag'},
-      );
-
-      expect(headers.trailer, equals(['content-md5', 'etag']));
+    setUp(() async {
+      try {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv6,
+          0,
+          strictHeaders: true,
+        );
+      } on SocketException catch (_) {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv4,
+          0,
+          strictHeaders: true,
+        );
+      }
     });
 
-    test('Given no Trailer header, it should be null', () async {
-      Headers headers = await getServerRequestHeaders(
-        server: server,
-        headers: {},
-      );
-
-      expect(headers.trailer, isNull);
-    });
-
-    test('Given an empty Trailer header, it should return null', () async {
-      Headers headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'trailer': ''},
-      );
-
-      expect(headers.trailer, isNull);
-    });
+    tearDown(() => server.close());
 
     test(
-        'Given a Trailer header with multiple values as a single string, it should split them correctly',
-        () async {
-      Headers headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'trailer': 'content-md5, etag'},
-      );
+      'when an empty Trailer header is passed then the server should respond with a bad request '
+      'including a message that states the value cannot be empty',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'trailer': ''},
+          ),
+          throwsA(isA<BadRequestException>().having(
+            (e) => e.message,
+            'message',
+            contains('Value cannot be empty'),
+          )),
+        );
+      },
+    );
 
-      expect(headers.trailer, equals(['content-md5', 'etag']));
+    test(
+      'when a valid Trailer header is passed then it should parse correctly',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'trailer': 'Expires, Content-MD5, Content-Language'},
+        );
+
+        expect(
+          headers.trailer,
+          equals(['Expires', 'Content-MD5', 'Content-Language']),
+        );
+      },
+    );
+
+    test(
+      'when a Trailer header with whitespace is passed then it should parse correctly',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'trailer': ' Expires , Content-MD5 , Content-Language '},
+        );
+
+        expect(
+          headers.trailer,
+          equals(['Expires', 'Content-MD5', 'Content-Language']),
+        );
+      },
+    );
+
+    test(
+      'when a Trailer header with custom values is passed then it should parse correctly',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'trailer': 'custom-header, AnotherHeader'},
+        );
+
+        expect(
+          headers.trailer,
+          equals(['custom-header', 'AnotherHeader']),
+        );
+      },
+    );
+
+    test(
+      'when no Trailer header is passed then it should return null',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {},
+        );
+
+        expect(headers.trailer, isNull);
+      },
+    );
+  });
+
+  group('Given a Trailer header with the strict flag false', () {
+    late RelicServer server;
+
+    setUp(() async {
+      try {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv6,
+          0,
+          strictHeaders: false,
+        );
+      } on SocketException catch (_) {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv4,
+          0,
+          strictHeaders: false,
+        );
+      }
     });
+
+    tearDown(() => server.close());
+
+    test(
+      'when a custom Trailer header is passed then it should parse correctly',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'trailer': 'custom-header'},
+        );
+
+        expect(headers.trailer, equals(['custom-header']));
+      },
+    );
+
+    test(
+      'when an empty Trailer header is passed then it should be recorded in failedHeadersToParse',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'trailer': ''},
+        );
+
+        expect(
+          headers.failedHeadersToParse['trailer'],
+          equals(['']),
+        );
+      },
+    );
   });
 }

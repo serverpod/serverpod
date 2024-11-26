@@ -1,110 +1,171 @@
 import 'dart:io';
-
-import 'package:relic/src/headers.dart';
-import 'package:relic/src/relic_server.dart';
 import 'package:test/test.dart';
+import 'package:relic/src/headers/headers.dart';
+import 'package:relic/src/relic_server.dart';
 
-import '../../test_util.dart';
+import '../headers_test_utils.dart';
+import '../docs/strict_validation_docs.dart';
 
+/// Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
+/// About empty value test, check the [StrictValidationDocs] class for more details.
 void main() {
-  late RelicServer server;
+  group('Given a Transfer-Encoding header with the strict flag true', () {
+    late RelicServer server;
 
-  setUp(() async {
-    try {
-      server = await RelicServer.bind(InternetAddress.loopbackIPv6, 0);
-    } on SocketException catch (_) {
-      server = await RelicServer.bind(InternetAddress.loopbackIPv4, 0);
-    }
-  });
-
-  tearDown(() => server.close());
-
-  group('TransferEncodingHeader Class Tests', () {
-    test('TransferEncodingHeader should parse multiple transfer encodings', () {
-      var headerValue = 'chunked, gzip';
-      var transferEncodingHeader =
-          TransferEncodingHeader.fromHeaderValue([headerValue]);
-
-      expect(transferEncodingHeader.encodings.length, equals(2));
-      expect(transferEncodingHeader.encodings.contains('chunked'), isTrue);
-      expect(transferEncodingHeader.encodings.contains('gzip'), isTrue);
+    setUp(() async {
+      try {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv6,
+          0,
+          strictHeaders: true,
+        );
+      } on SocketException catch (_) {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv4,
+          0,
+          strictHeaders: true,
+        );
+      }
     });
 
-    test('TransferEncodingHeader should parse a single encoding', () {
-      var headerValue = 'chunked';
-      var transferEncodingHeader =
-          TransferEncodingHeader.fromHeaderValue([headerValue]);
-
-      expect(transferEncodingHeader.encodings.length, equals(1));
-      expect(transferEncodingHeader.encodings.contains('chunked'), isTrue);
-    });
-
-    test('TransferEncodingHeader should handle empty string as input', () {
-      var transferEncodingHeader = TransferEncodingHeader.fromHeaderValue(['']);
-      expect(transferEncodingHeader.encodings, isEmpty);
-    });
-
-    test('TransferEncodingHeader should return null when parsing a null value',
-        () {
-      var transferEncodingHeader = TransferEncodingHeader.tryParse(null);
-      expect(transferEncodingHeader, isNull);
-    });
-
-    test('TransferEncodingHeader should contain a specific encoding', () {
-      var headerValue = 'chunked, gzip';
-      var transferEncodingHeader =
-          TransferEncodingHeader.fromHeaderValue([headerValue]);
-
-      expect(transferEncodingHeader.containsEncoding('chunked'), isTrue);
-      expect(transferEncodingHeader.containsEncoding('deflate'), isFalse);
-    });
-
-    test('TransferEncodingHeader should return valid string representation',
-        () {
-      var transferEncodingHeader =
-          TransferEncodingHeader(encodings: ['chunked', 'gzip']);
-      var result = transferEncodingHeader.toString();
-
-      expect(result, equals('chunked, gzip'));
-    });
-  });
-
-  group('TransferEncodingHeader HttpRequest Tests', () {
-    test('Given a valid Transfer-Encoding header, it should parse correctly',
-        () async {
-      var headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'Transfer-Encoding': 'chunked, gzip'},
-      );
-      var transferEncodingHeader = headers.transferEncoding;
-
-      expect(transferEncodingHeader!.encodings.length, equals(2));
-      expect(transferEncodingHeader.encodings.contains('chunked'), isTrue);
-      expect(transferEncodingHeader.encodings.contains('gzip'), isTrue);
-    });
+    tearDown(() => server.close());
 
     test(
-        'Given a Transfer-Encoding header with a single encoding, it should parse correctly',
-        () async {
-      var headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'Transfer-Encoding': 'chunked'},
-      );
-      var transferEncodingHeader = headers.transferEncoding;
+      'when an empty Transfer-Encoding header is passed then the server should respond with a bad request '
+      'including a message that states the encodings cannot be empty',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'transfer-encoding': ''},
+          ),
+          throwsA(isA<BadRequestException>().having(
+            (e) => e.message,
+            'message',
+            contains('Value cannot be empty'),
+          )),
+        );
+      },
+    );
 
-      expect(transferEncodingHeader!.encodings.length, equals(1));
-      expect(transferEncodingHeader.encodings.contains('chunked'), isTrue);
+    test(
+      'when a valid Transfer-Encoding header is passed then it should parse the encodings correctly',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'transfer-encoding': 'chunked, gzip'},
+        );
+
+        expect(
+          headers.transferEncoding?.encodings.map((e) => e.name),
+          equals(['chunked', 'gzip']),
+        );
+      },
+    );
+
+    test(
+      'when a Transfer-Encoding header with duplicate encodings is passed then '
+      'it should parse the encodings correctly and remove duplicates',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'transfer-encoding': 'chunked, gzip, chunked'},
+        );
+
+        expect(
+          headers.transferEncoding?.encodings.map((e) => e.name),
+          equals(['chunked', 'gzip']),
+        );
+      },
+    );
+
+    test(
+      'when a Transfer-Encoding header with custom encoding is passed then it should parse correctly',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'transfer-encoding': 'custom-encoding'},
+        );
+
+        expect(
+          headers.transferEncoding?.encodings.map((e) => e.name),
+          equals(['custom-encoding']),
+        );
+      },
+    );
+
+    test(
+      'when a Transfer-Encoding header contains "chunked" then isChunked should be true',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'transfer-encoding': 'chunked, gzip'},
+        );
+
+        expect(headers.transferEncoding?.isChunked, isTrue);
+      },
+    );
+
+    test(
+      'when no Transfer-Encoding header is passed then it should return null',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {},
+        );
+
+        expect(headers.transferEncoding, isNull);
+      },
+    );
+  });
+
+  group('Given a Transfer-Encoding header with the strict flag false', () {
+    late RelicServer server;
+
+    setUp(() async {
+      try {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv6,
+          0,
+          strictHeaders: false,
+        );
+      } on SocketException catch (_) {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv4,
+          0,
+          strictHeaders: false,
+        );
+      }
     });
 
-    test('Given an empty Transfer-Encoding header, it should return null',
-        () async {
-      var headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'Transfer-Encoding': ''},
-      );
-      var transferEncodingHeader = headers.transferEncoding;
+    tearDown(() => server.close());
 
-      expect(transferEncodingHeader?.encodings, isNull);
+    group('when an empty Transfer-Encoding header is passed', () {
+      test(
+        'then it should return null',
+        () async {
+          Headers headers = await getServerRequestHeaders(
+            server: server,
+            headers: {'transfer-encoding': ''},
+          );
+
+          expect(headers.transferEncoding, isNull);
+        },
+      );
+      test(
+        'then it should be recorded in the "failedHeadersToParse" field',
+        () async {
+          Headers headers = await getServerRequestHeaders(
+            server: server,
+            headers: {'transfer-encoding': ''},
+          );
+
+          expect(
+            headers.failedHeadersToParse['transfer-encoding'],
+            equals(['']),
+          );
+        },
+      );
     });
   });
 }

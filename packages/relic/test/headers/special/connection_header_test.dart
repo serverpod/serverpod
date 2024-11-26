@@ -1,113 +1,178 @@
 import 'dart:io';
-import 'package:relic/src/headers.dart';
-import 'package:relic/src/relic_server.dart';
+import 'package:relic/src/headers/headers.dart';
 import 'package:test/test.dart';
+import 'package:relic/src/relic_server.dart';
 
-import '../../test_util.dart';
+import '../headers_test_utils.dart';
+import '../docs/strict_validation_docs.dart';
 
+/// Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Connection
+/// About empty value test, check the [StrictValidationDocs] class for more details.
 void main() {
-  late RelicServer server;
+  group('Given a Connection header with the strict flag true', () {
+    late RelicServer server;
 
-  setUp(() async {
-    try {
-      server = await RelicServer.bind(InternetAddress.loopbackIPv6, 0);
-    } on SocketException catch (_) {
-      server = await RelicServer.bind(InternetAddress.loopbackIPv4, 0);
-    }
+    setUp(() async {
+      try {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv6,
+          0,
+          strictHeaders: true,
+        );
+      } on SocketException catch (_) {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv4,
+          0,
+          strictHeaders: true,
+        );
+      }
+    });
+
+    tearDown(() => server.close());
+
+    test(
+      'when an empty Connection header is passed then the server responds '
+      'with a bad request including a message that states the directives '
+      'cannot be empty',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'connection': ''},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Value cannot be empty'),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when a Connection header with directives are passed then they should be parsed correctly',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'connection': 'keep-alive, upgrade'},
+        );
+
+        expect(
+          headers.connection?.directives.map((d) => d.value),
+          containsAll(['keep-alive', 'upgrade']),
+        );
+      },
+    );
+
+    test(
+      'when a Connection header with duplicate directives are passed then '
+      'they should be parsed correctly and remove duplicates',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'connection': 'keep-alive, upgrade, keep-alive'},
+        );
+
+        expect(
+          headers.connection?.directives.map((d) => d.value),
+          containsAll(['keep-alive', 'upgrade']),
+        );
+      },
+    );
+
+    test(
+      'when a custom connection directive is passed then it should be handled correctly',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'connection': 'custom-directive'},
+        );
+
+        expect(
+          headers.connection?.directives.map((d) => d.value),
+          contains('custom-directive'),
+        );
+      },
+    );
+
+    test(
+      'when a Connection header with keep-alive is passed then isKeepAlive should be true',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'connection': 'keep-alive'},
+        );
+
+        expect(headers.connection?.isKeepAlive, isTrue);
+      },
+    );
+
+    test(
+      'when a Connection header with close is passed then isClose should be true',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'connection': 'close'},
+        );
+
+        expect(headers.connection?.isClose, isTrue);
+      },
+    );
   });
 
-  tearDown(() => server.close());
+  group('Given a Connection header with the strict flag false', () {
+    late RelicServer server;
 
-  group('ConnectionHeader Class Tests', () {
-    test(
-        'ConnectionHeader should parse valid Connection header with single directive',
-        () {
-      var headerValue = 'keep-alive';
-      var connectionHeader = ConnectionHeader.fromHeaderValue([headerValue]);
-
-      expect(connectionHeader.directives.length, equals(1));
-      expect(connectionHeader.isKeepAlive, isTrue);
-      expect(connectionHeader.isClose, isFalse);
+    setUp(() async {
+      try {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv6,
+          0,
+          strictHeaders: false,
+        );
+      } on SocketException catch (_) {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv4,
+          0,
+          strictHeaders: false,
+        );
+      }
     });
 
-    test('ConnectionHeader should parse multiple connection directives', () {
-      var headerValue = 'upgrade, keep-alive';
-      var connectionHeader = ConnectionHeader.fromHeaderValue([headerValue]);
+    tearDown(() => server.close());
 
-      expect(connectionHeader.directives.length, equals(2));
-      expect(connectionHeader.isKeepAlive, isTrue);
-      expect(connectionHeader.directives.contains('upgrade'), isTrue);
-      expect(connectionHeader.isClose, isFalse);
-    });
+    group(
+      'when an invalid Connection header is passed',
+      () {
+        test(
+          'then it should return null',
+          () async {
+            Headers headers = await getServerRequestHeaders(
+              server: server,
+              headers: {'connection': ''},
+            );
 
-    test('ConnectionHeader should handle `close` directive', () {
-      var headerValue = 'close';
-      var connectionHeader = ConnectionHeader.fromHeaderValue([headerValue]);
+            expect(headers.connection, isNull);
+          },
+        );
 
-      expect(connectionHeader.directives.length, equals(1));
-      expect(connectionHeader.isClose, isTrue);
-      expect(connectionHeader.isKeepAlive, isFalse);
-    });
+        test(
+          'then it should be recorded in failedHeadersToParse',
+          () async {
+            Headers headers = await getServerRequestHeaders(
+              server: server,
+              headers: {'connection': ''},
+            );
 
-    test('ConnectionHeader should handle empty string as input', () {
-      var connectionHeader = ConnectionHeader.fromHeaderValue(['']);
-      expect(connectionHeader.directives, isEmpty);
-    });
-
-    test('ConnectionHeader should return null when parsing a null value', () {
-      var connectionHeader = ConnectionHeader.tryParse(null);
-      expect(connectionHeader, isNull);
-    });
-
-    test(
-        'ConnectionHeader should return valid string representation of the header',
-        () {
-      var connectionHeader =
-          ConnectionHeader(directives: ['keep-alive', 'upgrade']);
-      var result = connectionHeader.toString();
-
-      expect(result, equals('keep-alive, upgrade'));
-    });
-  });
-
-  group('ConnectionHeader HttpRequest Tests', () {
-    test(
-        'Given a valid Connection header with multiple directives, it should parse correctly',
-        () async {
-      var headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'Connection': 'keep-alive, upgrade'},
-      );
-      var connectionHeader = headers.connection;
-
-      expect(connectionHeader!.directives.length, equals(2));
-      expect(connectionHeader.isKeepAlive, isTrue);
-      expect(connectionHeader.directives.contains('upgrade'), isTrue);
-    });
-
-    test(
-        'Given a Connection header with `close`, it should handle it correctly',
-        () async {
-      var headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'Connection': 'close'},
-      );
-      var connectionHeader = headers.connection;
-
-      expect(connectionHeader!.isClose, isTrue);
-      expect(connectionHeader.isKeepAlive, isFalse);
-    });
-
-    test(
-        'Given an empty Connection header, it should return null ConnectionHeader',
-        () async {
-      var headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'Connection': ''},
-      );
-      var connectionHeader = headers.connection;
-
-      expect(connectionHeader, isNull);
-    });
+            expect(
+              headers.failedHeadersToParse['connection'],
+              equals(['']),
+            );
+          },
+        );
+      },
+    );
   });
 }

@@ -1,155 +1,258 @@
 import 'dart:io';
-import 'package:relic/src/headers.dart';
-import 'package:relic/src/relic_server.dart';
 import 'package:test/test.dart';
+import 'package:relic/src/headers/headers.dart';
+import 'package:relic/src/relic_server.dart';
+import '../headers_test_utils.dart';
 
-import '../../test_util.dart';
+import '../docs/strict_validation_docs.dart';
 
+/// Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/From
+/// About empty value test, check the [StrictValidationDocs] class for more details.
 void main() {
-  late RelicServer server;
+  group('Given a From header with the strict flag true', () {
+    late RelicServer server;
 
-  setUp(() async {
-    try {
-      server = await RelicServer.bind(InternetAddress.loopbackIPv6, 0);
-    } on SocketException catch (_) {
-      server = await RelicServer.bind(InternetAddress.loopbackIPv4, 0);
-    }
+    setUp(() async {
+      try {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv6,
+          0,
+          strictHeaders: true,
+        );
+      } on SocketException catch (_) {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv4,
+          0,
+          strictHeaders: true,
+        );
+      }
+    });
+
+    tearDown(() => server.close());
+
+    test(
+      'when an empty From header is passed then the server responds '
+      'with a bad request including a message that states the header value '
+      'cannot be empty',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'from': ''},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Value cannot be empty'),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when a From header with an invalid email format is passed '
+      'then the server responds with a bad request including a message that '
+      'states the email format is invalid',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'from': 'invalid-email-format'},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Invalid email format'),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when a valid From header is passed then it should parse the email correctly',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'from': 'user@example.com'},
+        );
+
+        expect(headers.from?.emails, equals(['user@example.com']));
+      },
+    );
+
+    test(
+      'when a From header with extra whitespace is passed then it should parse the email correctly',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'from': ' user@example.com '},
+        );
+
+        expect(headers.from?.emails, equals(['user@example.com']));
+      },
+    );
+
+    group('when multiple', () {
+      test(
+        'From headers are passed then they should parse all emails correctly',
+        () async {
+          Headers headers = await getServerRequestHeaders(
+            server: server,
+            headers: {'from': 'user1@example.com, user2@example.com'},
+          );
+
+          expect(
+            headers.from?.emails,
+            equals(['user1@example.com', 'user2@example.com']),
+          );
+        },
+      );
+
+      test(
+        'From headers with extra whitespace are passed then they should parse all emails correctly',
+        () async {
+          Headers headers = await getServerRequestHeaders(
+            server: server,
+            headers: {'from': ' user1@example.com , user2@example.com '},
+          );
+
+          expect(
+            headers.from?.emails,
+            equals(['user1@example.com', 'user2@example.com']),
+          );
+        },
+      );
+
+      test(
+        'From headers with extra duplicate values are passed then they should '
+        'parse all emails correctly and remove duplicates',
+        () async {
+          Headers headers = await getServerRequestHeaders(
+            server: server,
+            headers: {
+              'from': 'user1@example.com, user2@example.com, user1@example.com'
+            },
+          );
+
+          expect(
+            headers.from?.emails,
+            equals(['user1@example.com', 'user2@example.com']),
+          );
+        },
+      );
+
+      test(
+        'From headers with an invalid email format among valid ones are passed '
+        'then the server responds with a bad request including a message that '
+        'states the email format is invalid',
+        () async {
+          expect(
+            () async => await getServerRequestHeaders(
+              server: server,
+              headers: {
+                'from':
+                    'user1@example.com, invalid-email-format, user2@example.com'
+              },
+            ),
+            throwsA(
+              isA<BadRequestException>().having(
+                (e) => e.message,
+                'message',
+                contains('Invalid email format'),
+              ),
+            ),
+          );
+        },
+      );
+    });
+
+    test(
+      'when no From header is passed then it should return null',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {},
+        );
+
+        expect(headers.from, isNull);
+      },
+    );
   });
 
-  tearDown(() => server.close());
+  group('Given a From header with the strict flag false', () {
+    late RelicServer server;
 
-  group('FromHeader Class Tests', () {
-    test('FromHeader should parse a single email correctly', () {
-      var fromHeader = FromHeader(['user@example.com']);
-
-      expect(
-        fromHeader.emails.length,
-        equals(1),
-      );
-      expect(
-        fromHeader.emails.first,
-        equals('user@example.com'),
-      );
+    setUp(() async {
+      try {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv6,
+          0,
+          strictHeaders: false,
+        );
+      } on SocketException catch (_) {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv4,
+          0,
+          strictHeaders: false,
+        );
+      }
     });
 
-    test('FromHeader should parse multiple emails correctly', () {
-      var fromHeader = FromHeader(['user1@example.com, user2@example.com']);
+    tearDown(() => server.close());
 
-      expect(
-        fromHeader.emails.length,
-        equals(2),
-      );
-      expect(
-        fromHeader.emails[0],
-        equals('user1@example.com'),
-      );
-      expect(
-        fromHeader.emails[1],
-        equals('user2@example.com'),
-      );
-    });
-
-    test('FromHeader should return null for tryParse when input is null', () {
-      var fromHeader = FromHeader.tryParse(null);
-
-      expect(fromHeader, isNull);
-    });
-
-    test('FromHeader should handle empty string input and return an empty list',
-        () {
-      var fromHeader = FromHeader(['']);
-
-      expect(fromHeader.emails.isEmpty, isTrue);
-    });
-
-    test(
-        'FromHeader should return correct string representation of multiple emails',
-        () {
-      var fromHeader = FromHeader(['user1@example.com, user2@example.com']);
-      var result = fromHeader.toString();
-
-      expect(
-        result,
-        equals('user1@example.com, user2@example.com'),
-      );
-    });
-
-    test(
-        'FromHeader should return the single email when there is only one email',
-        () {
-      var fromHeader = FromHeader(['user@example.com']);
-
-      expect(
-        fromHeader.singleEmail,
-        equals('user@example.com'),
-      );
-    });
-
-    test(
-        'FromHeader should return null for singleEmail when there are multiple emails',
-        () {
-      var fromHeader = FromHeader(['user1@example.com, user2@example.com']);
-
-      expect(fromHeader.singleEmail, isNull);
-    });
-  });
-
-  group('FromHeader HttpRequest Tests', () {
-    test('Given a valid From header, it should parse correctly', () async {
-      var headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'From': 'user@example.com'},
-      );
-
-      expect(
-        headers.from.toString(),
-        equals('user@example.com'),
-      );
-    });
-
-    test('Given multiple From headers, it should parse all values correctly',
+    group('when an invalid From header is passed', () {
+      test(
+        'then it should return null',
         () async {
-      var headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'From': 'user1@example.com, user2@example.com'},
+          Headers headers = await getServerRequestHeaders(
+            server: server,
+            headers: {'from': 'invalid-email-format'},
+          );
+
+          expect(headers.from, isNull);
+        },
       );
 
-      expect(
-        headers.from.toString(),
-        equals('user1@example.com, user2@example.com'),
+      test(
+        'then it should be recorded in the "failedHeadersToParse" field',
+        () async {
+          Headers headers = await getServerRequestHeaders(
+            server: server,
+            headers: {'from': 'invalid-email-format'},
+          );
+
+          expect(
+            headers.failedHeadersToParse['from'],
+            equals(['invalid-email-format']),
+          );
+        },
       );
-    });
-
-    test('Given no From header, it should return null', () async {
-      var headers = await getServerRequestHeaders(
-        server: server,
-        headers: {},
-      );
-
-      expect(headers.from, isNull);
-    });
-
-    test('Given an empty From header, it should return null', () async {
-      var headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'From': ''},
-      );
-
-      expect(headers.from?.emails, isNull);
     });
 
     test(
-        'Given a From header with multiple values in a single string, it should split them correctly',
-        () async {
-      var headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'From': 'user1@example.com, user2@example.com'},
-      );
+      'when multiple From headers with an invalid email format among valid ones are passed '
+      'then they should be recorded in failedHeadersToParse',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {
+            'from': 'user1@example.com, invalid-email-format, user2@example.com'
+          },
+        );
 
-      expect(
-        headers.from.toString(),
-        equals('user1@example.com, user2@example.com'),
-      );
-    });
+        expect(
+          headers.failedHeadersToParse['from'],
+          equals([
+            'user1@example.com',
+            'invalid-email-format',
+            'user2@example.com'
+          ]),
+        );
+      },
+    );
   });
 }

@@ -1,143 +1,227 @@
 import 'dart:io';
-import 'package:relic/src/headers.dart';
-import 'package:relic/src/relic_server.dart';
 import 'package:test/test.dart';
+import 'package:relic/src/headers/headers.dart';
+import 'package:relic/src/relic_server.dart';
 
-import '../../test_util.dart';
+import '../headers_test_utils.dart';
+import '../docs/strict_validation_docs.dart';
 
+/// Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Range
+/// About empty value test, check the [StrictValidationDocs] class for more details.
 void main() {
-  late RelicServer server;
+  group('Given a Content-Range header with the strict flag true', () {
+    late RelicServer server;
 
-  setUp(() async {
-    try {
-      server = await RelicServer.bind(InternetAddress.loopbackIPv6, 0);
-    } on SocketException catch (_) {
-      server = await RelicServer.bind(InternetAddress.loopbackIPv4, 0);
-    }
-  });
-
-  tearDown(() => server.close());
-
-  group('ContentRangeHeader Class Tests', () {
-    test('ContentRangeHeader should parse valid Content-Range header correctly',
-        () {
-      var headerValue = 'bytes 0-499/1234';
-      var contentRangeHeader = ContentRangeHeader.fromHeaderValue(headerValue);
-
-      expect(contentRangeHeader.start, equals(0));
-      expect(contentRangeHeader.end, equals(499));
-      expect(contentRangeHeader.totalSize, equals(1234));
+    setUp(() async {
+      try {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv6,
+          0,
+          strictHeaders: true,
+        );
+      } on SocketException catch (_) {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv4,
+          0,
+          strictHeaders: true,
+        );
+      }
     });
 
-    test('ContentRangeHeader should handle unknown total size (*)', () {
-      var headerValue = 'bytes 0-499/*';
-      var contentRangeHeader = ContentRangeHeader.fromHeaderValue(headerValue);
-
-      expect(contentRangeHeader.start, equals(0));
-      expect(contentRangeHeader.end, equals(499));
-      expect(contentRangeHeader.totalSize, isNull);
-    });
-
-    test('ContentRangeHeader should throw FormatException for invalid header',
-        () {
-      var headerValue = 'invalid-header';
-      expect(
-        () => ContentRangeHeader.fromHeaderValue(headerValue),
-        throwsFormatException,
-      );
-    });
+    tearDown(() => server.close());
 
     test(
-        'ContentRangeHeader should throw FormatException for negative start value',
-        () {
-      var headerValue = 'bytes -1-499/1234';
-      expect(
-        () => ContentRangeHeader.fromHeaderValue(headerValue),
-        throwsFormatException,
-      );
-    });
+      'when an empty Content-Range header is passed then the server responds '
+      'with a bad request including a message that states the header value '
+      'cannot be empty',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'content-range': ''},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Value cannot be empty'),
+            ),
+          ),
+        );
+      },
+    );
 
     test(
-        'ContentRangeHeader should throw FormatException for end value less than start',
-        () {
-      var headerValue = 'bytes 500-499/1234';
-      expect(
-        () => ContentRangeHeader.fromHeaderValue(headerValue),
-        throwsA(isA<AssertionError>()),
-      );
-    });
+      'when an invalid Content-Range header with non-numeric characters is passed '
+      'then the server responds with a bad request including a message that '
+      'states the header value has an invalid format',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'content-range': 'bytes 0-abc/1234'},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Invalid format'),
+            ),
+          ),
+        );
+      },
+    );
 
     test(
-        'ContentRangeHeader should return null when trying to parse a null value',
-        () {
-      var contentRangeHeader = ContentRangeHeader.tryParse(null);
-      expect(contentRangeHeader, isNull);
-    });
+      'when an invalid Content-Range header with negative numbers is passed then '
+      'the server responds with a bad request including a message that '
+      'states the header value has an invalid format',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'content-range': 'bytes -10-499/1234'},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Invalid format'),
+            ),
+          ),
+        );
+      },
+    );
 
     test(
-        'ContentRangeHeader should return valid string representation of the header',
-        () {
-      var contentRangeHeader = ContentRangeHeader(
-        start: 0,
-        end: 499,
-        totalSize: 1234,
-      );
-      var result = contentRangeHeader.toString();
-
-      expect(result, equals('bytes 0-499/1234'));
-    });
-
-    test(
-        'ContentRangeHeader should return valid string when total size is unknown',
-        () {
-      var contentRangeHeader = ContentRangeHeader(
-        start: 0,
-        end: 499,
-        totalSize: null,
-      );
-      var result = contentRangeHeader.toString();
-
-      expect(result, equals('bytes 0-499/*'));
-    });
-  });
-
-  group('ContentRangeHeader HttpRequest Tests', () {
-    test('Given a valid Content-Range header, it should parse correctly',
-        () async {
-      var headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'Content-Range': 'bytes 0-499/1234'},
-      );
-      var contentRangeHeader = headers.contentRange;
-
-      expect(contentRangeHeader!.start, equals(0));
-      expect(contentRangeHeader.end, equals(499));
-      expect(contentRangeHeader.totalSize, equals(1234));
-    });
+      'when an invalid Content-Range header with start greater than end is '
+      'passed then the server responds with a bad request including a message '
+      'that states the header value has an invalid range',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'content-range': 'bytes 500-499/1234'},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Invalid range'),
+            ),
+          ),
+        );
+      },
+    );
 
     test(
-        'Given a Content-Range header with unknown total size, it should handle it correctly',
-        () async {
-      var headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'Content-Range': 'bytes 0-499/*'},
-      );
-      var contentRangeHeader = headers.contentRange;
-
-      expect(contentRangeHeader!.start, equals(0));
-      expect(contentRangeHeader.end, equals(499));
-      expect(contentRangeHeader.totalSize, isNull);
-    });
-
-    test(
-        'Given an invalid Content-Range header, it should throw FormatException',
-        () async {
-      expect(
-        () async => await getServerRequestHeaders(
+      'when a Content-Range header with a valid byte range is passed then it '
+      'should parse correctly',
+      () async {
+        Headers headers = await getServerRequestHeaders(
           server: server,
-          headers: {'Content-Range': 'invalid-header'},
-        ),
-        throwsFormatException,
+          headers: {'content-range': 'bytes 0-499/1234'},
+        );
+
+        expect(headers.contentRange?.unit, equals('bytes'));
+        expect(headers.contentRange?.start, equals(0));
+        expect(headers.contentRange?.end, equals(499));
+        expect(headers.contentRange?.size, equals(1234));
+      },
+    );
+
+    test(
+      'when a Content-Range header with a valid byte range and unknown size is '
+      'passed then it should parse correctly',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'content-range': 'bytes 0-499/*'},
+        );
+
+        expect(headers.contentRange?.unit, equals('bytes'));
+        expect(headers.contentRange?.start, equals(0));
+        expect(headers.contentRange?.end, equals(499));
+        expect(headers.contentRange?.size, isNull);
+      },
+    );
+
+    test(
+      'when a Content-Range header with a valid unsatisfiable range is passed '
+      'then it should parse correctly',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'content-range': 'bytes */1234'},
+        );
+
+        expect(headers.contentRange?.unit, equals('bytes'));
+        expect(headers.contentRange?.start, isNull);
+        expect(headers.contentRange?.end, isNull);
+        expect(headers.contentRange?.size, equals(1234));
+      },
+    );
+
+    test(
+      'when no Content-Range header is passed then it should return null',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {},
+        );
+
+        expect(headers.contentRange, isNull);
+      },
+    );
+  });
+
+  group('Given a Content-Range header with the strict flag false', () {
+    late RelicServer server;
+
+    setUp(() async {
+      try {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv6,
+          0,
+          strictHeaders: false,
+        );
+      } on SocketException catch (_) {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv4,
+          0,
+          strictHeaders: false,
+        );
+      }
+    });
+
+    tearDown(() => server.close());
+
+    group('when an invalid Content-Range header is passed', () {
+      test(
+        'then it should return null',
+        () async {
+          Headers headers = await getServerRequestHeaders(
+            server: server,
+            headers: {'content-range': 'bytes 0-499/invalid'},
+          );
+
+          expect(headers.contentRange, isNull);
+        },
+      );
+
+      test(
+        'then it should be recorded in the "failedHeadersToParse" field',
+        () async {
+          Headers headers = await getServerRequestHeaders(
+            server: server,
+            headers: {'content-range': 'bytes 0-499/invalid'},
+          );
+
+          expect(
+            headers.failedHeadersToParse['content-range'],
+            equals(['bytes 0-499/invalid']),
+          );
+        },
       );
     });
   });

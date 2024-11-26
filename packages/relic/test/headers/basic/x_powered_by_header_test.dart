@@ -1,49 +1,128 @@
-import 'package:relic/src/headers.dart';
-import 'package:test/test.dart';
-import 'package:relic/src/relic_server.dart';
 import 'dart:io';
-import '../../test_util.dart';
+import 'package:test/test.dart';
+import 'package:relic/src/headers/headers.dart';
+import 'package:relic/src/relic_server.dart';
 
+import '../headers_test_utils.dart';
+import '../docs/strict_validation_docs.dart';
+
+/// About empty value test, check the [StrictValidationDocs] class for more details.
 void main() {
-  late RelicServer server;
+  group('Given an X-Powered-By header with the strict flag true', () {
+    late RelicServer server;
 
-  setUp(() async {
-    try {
-      server = await RelicServer.bind(InternetAddress.loopbackIPv6, 0);
-    } on SocketException catch (_) {
-      server = await RelicServer.bind(InternetAddress.loopbackIPv4, 0);
-    }
+    setUp(() async {
+      try {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv6,
+          0,
+          strictHeaders: true,
+        );
+      } on SocketException catch (_) {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv4,
+          0,
+          strictHeaders: true,
+        );
+      }
+    });
+
+    tearDown(() => server.close());
+
+    test(
+      'when an empty X-Powered-By header is passed then the server responds '
+      'with a bad request including a message that states the header value '
+      'cannot be empty',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'x-powered-by': ''},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Value cannot be empty'),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when a valid X-Powered-By value is passed then it should parse correctly',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'x-powered-by': 'Express'},
+        );
+
+        expect(headers.xPoweredBy, equals('Express'));
+      },
+    );
+
+    test(
+      'when no X-Powered-By header is passed then it should return null',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {},
+        );
+
+        expect(headers.xPoweredBy, isNull);
+      },
+    );
   });
 
-  tearDown(() => server.close());
+  group('Given an X-Powered-By header with the strict flag false', () {
+    late RelicServer server;
 
-  group('X-Powered-By Header Tests', () {
-    test('Given a valid X-Powered-By header, it should parse correctly',
+    setUp(() async {
+      try {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv6,
+          0,
+          strictHeaders: false,
+        );
+      } on SocketException catch (_) {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv4,
+          0,
+          strictHeaders: false,
+        );
+      }
+    });
+
+    tearDown(() => server.close());
+
+    group('when an invalid X-Powered-By header is passed', () {
+      test(
+        'when an invalid X-Powered-By header is passed then it should return null',
         () async {
-      Headers headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'x-powered-by': 'Dart'},
+          Headers headers = await getServerRequestHeaders(
+            server: server,
+            headers: {'x-powered-by': ''},
+          );
+
+          expect(headers.xPoweredBy, isNull);
+        },
       );
 
-      expect(headers.xPoweredBy, equals('Dart'));
-    });
+      test(
+        'when an invalid X-Powered-By header is passed then it should be recorded in failedHeadersToParse',
+        () async {
+          Headers headers = await getServerRequestHeaders(
+            server: server,
+            headers: {'x-powered-by': ''},
+          );
 
-    test('Given an empty X-Powered-By header, it should return null', () async {
-      Headers headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'x-powered-by': ''},
+          expect(
+            headers.failedHeadersToParse['x-powered-by'],
+            equals(['']),
+          );
+        },
       );
-
-      expect(headers.xPoweredBy, isNull);
-    });
-
-    test('Given no X-Powered-By header, it should return null', () async {
-      Headers headers = await getServerRequestHeaders(
-        server: server,
-        headers: {},
-      );
-
-      expect(headers.xPoweredBy, isNull);
     });
   });
 }

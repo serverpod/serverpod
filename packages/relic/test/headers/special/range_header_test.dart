@@ -1,133 +1,240 @@
 import 'dart:io';
-
-import 'package:relic/src/headers.dart';
-import 'package:relic/src/relic_server.dart';
 import 'package:test/test.dart';
+import 'package:relic/src/headers/headers.dart';
+import 'package:relic/src/relic_server.dart';
 
-import '../../test_util.dart';
+import '../headers_test_utils.dart';
+import '../docs/strict_validation_docs.dart';
 
+/// Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Range
+/// About empty value test, check the [StrictValidationDocs] class for more details.
 void main() {
-  late RelicServer server;
+  group('Given a Range header with the strict flag true', () {
+    late RelicServer server;
 
-  setUp(() async {
-    try {
-      server = await RelicServer.bind(InternetAddress.loopbackIPv6, 0);
-    } on SocketException catch (_) {
-      server = await RelicServer.bind(InternetAddress.loopbackIPv4, 0);
-    }
-  });
-
-  tearDown(() => server.close());
-
-  group('RangeHeader Class Tests', () {
-    test('RangeHeader should parse valid range with start and end', () {
-      var headerValue = 'bytes=0-499';
-      var rangeHeader = RangeHeader.fromHeaderValue(headerValue);
-
-      expect(rangeHeader.start, equals(0));
-      expect(rangeHeader.end, equals(499));
+    setUp(() async {
+      try {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv6,
+          0,
+          strictHeaders: true,
+        );
+      } on SocketException catch (_) {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv4,
+          0,
+          strictHeaders: true,
+        );
+      }
     });
 
-    test('RangeHeader should parse valid range with only start', () {
-      var headerValue = 'bytes=500-';
-      var rangeHeader = RangeHeader.fromHeaderValue(headerValue);
-
-      expect(rangeHeader.start, equals(500));
-      expect(rangeHeader.end, isNull);
-    });
-
-    test('RangeHeader should parse valid range with only end', () {
-      var headerValue = 'bytes=-500';
-      var rangeHeader = RangeHeader.fromHeaderValue(headerValue);
-
-      expect(rangeHeader.start, isNull);
-      expect(rangeHeader.end, equals(500));
-    });
-
-    test('RangeHeader should throw FormatException for invalid range', () {
-      var headerValue = 'invalid-range';
-
-      expect(
-        () => RangeHeader.fromHeaderValue(headerValue),
-        throwsFormatException,
-      );
-    });
-
-    test('RangeHeader should return null when parsing a null value', () {
-      var rangeHeader = RangeHeader.tryParse(null);
-      expect(rangeHeader, isNull);
-    });
+    tearDown(() => server.close());
 
     test(
-        'RangeHeader should return valid string representation for start and end',
-        () {
-      var rangeHeader = RangeHeader(start: 0, end: 499);
-      var result = rangeHeader.toString();
+      'when a Range header with an empty value is passed then the server '
+      'responds with a bad request including a message that states the '
+      'header value cannot be empty',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'range': ''},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Value cannot be empty'),
+            ),
+          ),
+        );
+      },
+    );
 
-      expect(result, equals('bytes=0-499'));
-    });
+    test(
+      'when a range with invalid format is passed then the server responds with a '
+      'bad request including a message that states the range format is invalid',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'range': 'bytes=abc-xyz'},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Invalid range'),
+            ),
+          ),
+        );
+      },
+    );
 
-    test('RangeHeader should return valid string representation for only start',
-        () {
-      var rangeHeader = RangeHeader(start: 500);
-      var result = rangeHeader.toString();
+    test(
+      'when a range with both start and end empty is passed then the server responds '
+      'with a bad request including a message that states both values cannot be empty',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'range': 'bytes=-'},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Both start and end cannot be empty'),
+            ),
+          ),
+        );
+      },
+    );
 
-      expect(result, equals('bytes=500-'));
-    });
+    test(
+      'when a Range header with a single valid range is passed then it '
+      'should parse correctly',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'range': 'bytes=0-499'},
+        );
 
-    test('RangeHeader should return valid string representation for only end',
-        () {
-      var rangeHeader = RangeHeader(end: 500);
-      var result = rangeHeader.toString();
+        expect(headers.range?.unit, equals('bytes'));
+        expect(headers.range?.ranges.length, equals(1));
+        expect(headers.range?.ranges.first.start, equals(0));
+        expect(headers.range?.ranges.first.end, equals(499));
+      },
+    );
 
-      expect(result, equals('bytes=-500'));
+    test(
+      'when a Range header with a range that only has a start is passed then it '
+      'should parse correctly',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'range': 'bytes=500-'},
+        );
+
+        expect(headers.range?.unit, equals('bytes'));
+        expect(headers.range?.ranges.length, equals(1));
+        expect(headers.range?.ranges.first.start, equals(500));
+        expect(headers.range?.ranges.first.end, isNull);
+      },
+    );
+
+    test(
+      'when a Range header with a range that only has an end is passed then it '
+      'should parse correctly',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'range': 'bytes=-500'},
+        );
+
+        expect(headers.range?.unit, equals('bytes'));
+        expect(headers.range?.ranges.length, equals(1));
+        expect(headers.range?.ranges.first.start, isNull);
+        expect(headers.range?.ranges.first.end, equals(500));
+      },
+    );
+
+    test(
+      'when no Range header is passed then it should return null',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {},
+        );
+
+        expect(headers.range, isNull);
+      },
+    );
+
+    group('when multiple Range headers are passed', () {
+      test(
+        'then they should parse correctly',
+        () async {
+          Headers headers = await getServerRequestHeaders(
+            server: server,
+            headers: {'range': 'bytes=0-499, 500-999, 1000-'},
+          );
+
+          expect(headers.range?.unit, equals('bytes'));
+          expect(headers.range?.ranges.length, equals(3));
+
+          var ranges = headers.range!.ranges;
+          expect(ranges[0].start, equals(0));
+          expect(ranges[0].end, equals(499));
+          expect(ranges[1].start, equals(500));
+          expect(ranges[1].end, equals(999));
+          expect(ranges[2].start, equals(1000));
+          expect(ranges[2].end, isNull);
+        },
+      );
+
+      test(
+        'with extra whitespace are passed then they should parse correctly',
+        () async {
+          Headers headers = await getServerRequestHeaders(
+            server: server,
+            headers: {'range': ' bytes = 0-499 , 500-999 , 1000- '},
+          );
+
+          expect(headers.range?.ranges.length, equals(3));
+          expect(headers.range?.unit, equals('bytes'));
+        },
+      );
     });
   });
 
-  group('RangeHeader HttpRequest Tests', () {
-    test('Given a valid Range header, it should parse correctly', () async {
-      var headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'Range': 'bytes=0-499'},
-      );
-      var rangeHeader = headers.range;
+  group('Given a Range header with the strict flag false', () {
+    late RelicServer server;
 
-      expect(rangeHeader!.start, equals(0));
-      expect(rangeHeader.end, equals(499));
+    setUp(() async {
+      try {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv6,
+          0,
+          strictHeaders: false,
+        );
+      } on SocketException catch (_) {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv4,
+          0,
+          strictHeaders: false,
+        );
+      }
     });
 
-    test('Given a Range header with only start, it should parse correctly',
+    tearDown(() => server.close());
+
+    group('when an invalid Range header is passed', () {
+      test(
+        'then it should return null',
         () async {
-      var headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'Range': 'bytes=500-'},
+          Headers headers = await getServerRequestHeaders(
+            server: server,
+            headers: {'range': 'invalid-range'},
+          );
+
+          expect(headers.range, isNull);
+        },
       );
-      var rangeHeader = headers.range;
 
-      expect(rangeHeader!.start, equals(500));
-      expect(rangeHeader.end, isNull);
-    });
-
-    test('Given a Range header with only end, it should parse correctly',
+      test(
+        'then it should be recorded in "failedHeadersToParse" field',
         () async {
-      var headers = await getServerRequestHeaders(
-        server: server,
-        headers: {'Range': 'bytes=-500'},
-      );
-      var rangeHeader = headers.range;
+          Headers headers = await getServerRequestHeaders(
+            server: server,
+            headers: {'range': 'invalid-range'},
+          );
 
-      expect(rangeHeader!.start, isNull);
-      expect(rangeHeader.end, equals(500));
-    });
-
-    test('Given an invalid Range header, it should throw FormatException',
-        () async {
-      expect(
-        () async => await getServerRequestHeaders(
-          server: server,
-          headers: {'Range': 'invalid-range'},
-        ),
-        throwsA(isA<FormatException>()),
+          expect(
+            headers.failedHeadersToParse['range'],
+            equals(['invalid-range']),
+          );
+        },
       );
     });
   });

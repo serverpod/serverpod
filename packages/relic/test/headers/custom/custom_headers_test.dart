@@ -1,25 +1,13 @@
 import 'dart:io';
-import 'package:relic/src/headers.dart';
+import 'package:relic/src/headers/headers.dart';
 import 'package:relic/src/relic_server.dart';
 import 'package:test/test.dart';
 
-import '../../test_util.dart';
+import '../headers_test_utils.dart';
 
 void main() {
-  late RelicServer server;
-
-  setUp(() async {
-    try {
-      server = await RelicServer.bind(InternetAddress.loopbackIPv6, 0);
-    } on SocketException catch (_) {
-      server = await RelicServer.bind(InternetAddress.loopbackIPv4, 0);
-    }
-  });
-
-  tearDown(() => server.close());
-
-  group('CustomHeaders', () {
-    test('CustomHeaders should allow adding new headers', () {
+  group('Given direct manipulation of CustomHeaders', () {
+    test('when adding new custom headers then it allows the addition', () {
       var headers = CustomHeaders.empty();
       var updatedHeaders =
           headers.add('X-Custom-Authorization', ['Bearer token']);
@@ -30,7 +18,7 @@ void main() {
       );
     });
 
-    test('CustomHeaders should allow updating existing headers', () {
+    test('when updating existing custom headers then it allows the update', () {
       var headers = CustomHeaders({
         'X-Custom-Header': ['custom-value'],
       });
@@ -42,7 +30,7 @@ void main() {
       );
     });
 
-    test('CustomHeaders should allow removing headers', () {
+    test('when removing custom headers then it allows the removal', () {
       var headers = CustomHeaders({
         'X-Custom-Header1': ['custom-value1'],
         'X-Custom-Header2': ['custom-value2'],
@@ -56,7 +44,7 @@ void main() {
       );
     });
 
-    test('CustomHeaders copyWith should allow modifying headers', () {
+    test('when using copyWith on custom headers then it allows modifying headers', () {
       var headers = CustomHeaders({
         'X-Custom-Header': ['custom-value'],
       });
@@ -74,9 +62,30 @@ void main() {
         equals(['Bearer token']),
       );
     });
+  });
 
-    test('Given headers with multiple values, it should combine them correctly',
-        () async {
+  group('Given server request with custom headers', () {
+    late RelicServer server;
+
+    setUp(() async {
+      try {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv6,
+          0,
+          strictHeaders: false,
+        );
+      } on SocketException catch (_) {
+        server = await RelicServer.createServer(
+          InternetAddress.loopbackIPv4,
+          0,
+          strictHeaders: false,
+        );
+      }
+    });
+
+    tearDown(() => server.close());
+
+    test('when custom headers have multiple values then it combines them correctly', () async {
       var headers = await getServerRequestHeaders(
         server: server,
         headers: {
@@ -96,9 +105,7 @@ void main() {
       );
     });
 
-    test(
-        'Given headers with empty values, it should ignore the empty values and combine non-empty ones',
-        () async {
+    test('when custom headers have empty values then it ignores the empty values and combines non-empty ones', () async {
       var headers = await getServerRequestHeaders(
         server: server,
         headers: {
@@ -118,9 +125,7 @@ void main() {
       );
     });
 
-    test(
-        'Given headers with multiple managed and custom values, it should correctly separate and handle them',
-        () async {
+    test('when custom headers have multiple managed and custom values then it correctly separates and handles them', () async {
       var headers = await getServerRequestHeaders(
         server: server,
         headers: {
@@ -140,9 +145,7 @@ void main() {
       );
     });
 
-    test(
-        'Given headers with a normal format and multiple values, it should handle all custom headers without interference',
-        () async {
+    test('when custom headers have a normal format and multiple values then it handles all custom headers without interference', () async {
       var headers = await getServerRequestHeaders(
         server: server,
         headers: {
