@@ -129,18 +129,26 @@ abstract class CompilationUnitHelpers {
   static PartDirective? tryFindPartDirective(
     CompilationUnit unit, {
     required String uri,
+    List<String>? subDirParts,
   }) {
     return unit.directives.whereType<PartDirective>().where((directive) {
       String directiveUri = directive.uri.stringValue!;
 
-      // Specific fix for Windows-style incomplete relative paths
-      if (Platform.isWindows &&
-          directiveUri.startsWith('..') &&
-          !directiveUri.startsWith('../')) {
-        directiveUri = directiveUri.replaceFirst('..', '../');
+      if (Platform.isWindows) {
+        if (directiveUri.startsWith('..') && !directiveUri.startsWith('../')) {
+          directiveUri = directiveUri.replaceFirst('..', '../');
+        }
+
+        if (subDirParts != null) {
+          for (var part in subDirParts) {
+            directiveUri = directiveUri.replaceAll(part, '$part/');
+          }
+        }
       }
+
       print('directiveUri: $directiveUri');
       print('uri: $uri');
+
       return directiveUri == uri;
     }).firstOrNull;
   }
