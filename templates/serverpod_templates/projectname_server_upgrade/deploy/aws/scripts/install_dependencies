@@ -42,7 +42,5 @@ Restart=always
 WantedBy=network-online.target
 EOF
 
-# Reload systemd configuration, enable, and start the service
+# Reload systemd configuration
 systemctl daemon-reload
-systemctl enable serverpod.service
-systemctl start serverpod.service
