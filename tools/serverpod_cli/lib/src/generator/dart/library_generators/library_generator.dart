@@ -492,7 +492,7 @@ class LibraryGenerator {
     if (hasModules) {
       library.body.add(
         Class((c) => c
-          ..name = '_Modules'
+          ..name = 'Modules'
           ..fields.addAll([
             for (var module in config.modules)
               Field((f) => f
@@ -536,7 +536,7 @@ class LibraryGenerator {
                 ..late = true
                 ..modifier = FieldModifier.final$
                 ..name = 'modules'
-                ..type = refer('_Modules')),
+                ..type = refer('Modules')),
           ])
           ..constructors.add(
             Constructor((c) {
@@ -642,7 +642,7 @@ class LibraryGenerator {
                       .statement,
                 if (hasModules)
                   refer('modules')
-                      .assign(refer('_Modules').call([refer('this')]))
+                      .assign(refer('Modules').call([refer('this')]))
                       .statement,
               ]);
             }),
