@@ -118,7 +118,34 @@ void main() {
 
       expect(pathParts, ['nested', 'folder']);
     });
+
+    test(
+        'Given a model with a path outside of the protocol or models folder, then parts list contains all the path parts',
+        () {
+      var filePathParts = [
+        'test',
+        'integration',
+        'util',
+        'test_assets',
+        'protocol_helper',
+        'has_serverpod_server_project',
+        'test_server',
+        'lib',
+        'src',
+      ];
+      var modelFile = File(joinAll(filePathParts));
+
+      var config = createGeneratorConfig(split(serverRootDir.path));
+
+      var pathParts = ModelHelper.extractPathFromConfig(
+        config,
+        modelFile.uri,
+      );
+
+      expect(pathParts, filePathParts);
+    });
   });
+
   group('Test path extraction - extractPathFromModelRoot.', () {
     test(
         'Given a model path directly inside the model folder, then the parts list is empty.',
