@@ -161,11 +161,20 @@ abstract class CompilationUnitHelpers {
     CompilationUnit unit, {
     required String uri,
   }) {
-    var directives = unit.directives
-        .whereType<PartOfDirective>()
-        .where((directive) => directive.uri?.stringValue == uri);
+    return unit.directives.whereType<PartOfDirective>().where((directive) {
+      String directiveUri = directive.uri!.stringValue!;
 
-    return directives.isNotEmpty ? directives.first : null;
+      // Windows-specific: separator fix
+      if (Platform.isWindows) {
+        directiveUri = directiveUri.replaceAll('/', '');
+        uri = uri.replaceAll('/', '');
+      }
+
+      print('directiveUri: $directiveUri');
+      print('uri: $uri');
+
+      return directiveUri == uri;
+    }).firstOrNull;
   }
 
   /// Returns `true` if the [unit] contains a part of directive with the given
