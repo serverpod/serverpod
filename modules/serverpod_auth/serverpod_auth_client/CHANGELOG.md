@@ -10,7 +10,6 @@
  - fix: Removes redundant file collection from code generation.
  - fix: Fixes error in `serverpod generate` when a `Session` is set as a named required parameter.
  - fix: Responds with 400 when throwing serializable exceptions.
- - fix: Enables logging for tests and ensures sessions are always closed.
  - fix: Correctly removes account requests after an account is created (auth module).
  - fix: Passes `String` instead of `Error` object to logger in `session.close`.
  - fix: Replaces `null` assert with error check in `WebWidget`.
