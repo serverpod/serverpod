@@ -139,12 +139,14 @@ class WebServer {
       await for (var request in httpServer) {
         try {
           var response = await _handler(
-            Request.fromHttpRequest(request),
+            Request.fromHttpRequest(
+              request,
+              poweredByHeader: 'serverpod-relic',
+            ),
           );
           logDebug('Writing response!');
           await response.writeHttpResponse(
             request.response,
-            poweredByHeader: 'serverpod-relic',
           );
           logDebug('Done!');
         } catch (e, stackTrace) {
@@ -168,12 +170,8 @@ class WebServer {
       return Response.badRequest();
     }
 
-    String? authenticationKey;
-    for (var cookie in request.cookies) {
-      if (cookie.name == 'auth') {
-        authenticationKey = cookie.value;
-      }
-    }
+    String? authenticationKey =
+        request.headers.cookie?.getCookie('auth')?.value;
 
     var queryParameters = request.url.queryParameters;
     authenticationKey ??= queryParameters['auth'];
