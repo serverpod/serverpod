@@ -28,7 +28,9 @@ void main() {
     expect(response.statusCode, equals(HttpStatus.notFound));
   });
 
-  test('Given a file under a custom URL when served then it returns the file contents', () async {
+  test(
+      'Given a file under a custom URL when served then it returns the file contents',
+      () async {
     final handler =
         createFileHandler(p.join(d.sandbox, 'file.txt'), url: 'foo/bar');
     final response = await makeRequest(handler, '/foo/bar');
@@ -37,7 +39,9 @@ void main() {
     expect(response.readAsString(), completion(equals('contents')));
   });
 
-  test("Given a custom URL that isn't matched when served then it returns a 404", () async {
+  test(
+      "Given a custom URL that isn't matched when served then it returns a 404",
+      () async {
     final handler =
         createFileHandler(p.join(d.sandbox, 'file.txt'), url: 'foo/bar');
     final response = await makeRequest(handler, '/file.txt');
@@ -59,7 +63,8 @@ void main() {
       expect(response.mimeType, isNull);
     });
 
-    test('when provided by the contentType parameter then it is used', () async {
+    test('when provided by the contentType parameter then it is used',
+        () async {
       final handler = createFileHandler(p.join(d.sandbox, 'file.txt'),
           contentType: 'something/weird');
       final response = await makeRequest(handler, '/file.txt');
@@ -69,7 +74,8 @@ void main() {
   });
 
   group('Given the content range header', () {
-    test('when bytes from 0 to 4 are requested then it returns partial content', () async {
+    test('when bytes from 0 to 4 are requested then it returns partial content',
+        () async {
       final handler = createFileHandler(p.join(d.sandbox, 'file.txt'));
       final response = await makeRequest(
         handler,
@@ -88,7 +94,9 @@ void main() {
       expect(response.headers.contentRange?.size, 8);
     });
 
-    test('when range at the end overflows from 0 to 9 then it returns partial content', () async {
+    test(
+        'when range at the end overflows from 0 to 9 then it returns partial content',
+        () async {
       final handler = createFileHandler(p.join(d.sandbox, 'file.txt'));
       final response = await makeRequest(
         handler,
@@ -113,7 +121,9 @@ void main() {
       expect(response.body.contentLength, 8);
     });
 
-    test('when range at the start overflows from 8 to 9 then it returns requested range not satisfiable', () async {
+    test(
+        'when range at the start overflows from 8 to 9 then it returns requested range not satisfiable',
+        () async {
       final handler = createFileHandler(p.join(d.sandbox, 'file.txt'));
       final response = await makeRequest(
         handler,
@@ -138,7 +148,9 @@ void main() {
       );
     });
 
-    test('when invalid request with start > end is ignored then it returns the full content', () async {
+    test(
+        'when invalid request with start > end is ignored then it returns the full content',
+        () async {
       final handler = createFileHandler(p.join(d.sandbox, 'file.txt'));
       final response = await makeRequest(
         handler,
@@ -152,7 +164,9 @@ void main() {
       expect(response.readAsString(), completion(equals('contents')));
     });
 
-    test('when request with start > end is ignored then it returns the full content', () async {
+    test(
+        'when request with start > end is ignored then it returns the full content',
+        () async {
       final handler = createFileHandler(p.join(d.sandbox, 'file.txt'));
       final response = await makeRequest(
         handler,
@@ -173,7 +187,8 @@ void main() {
           throwsArgumentError);
     });
 
-    test('when an absolute URL is provided then it throws an ArgumentError', () {
+    test('when an absolute URL is provided then it throws an ArgumentError',
+        () {
       expect(
           () => createFileHandler(p.join(d.sandbox, 'nothing.txt'),
               url: '/foo/bar'),

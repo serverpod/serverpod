@@ -22,28 +22,36 @@ void main() {
     });
   });
 
-  test('Given a response with a Uint8List body when read then it does not copy the body', () async {
+  test(
+      'Given a response with a Uint8List body when read then it does not copy the body',
+      () async {
     var bytes = Uint8List(10);
     var response = Response.ok(body: Body.fromData(bytes));
     expect(response.body.contentLength, 10);
     expect(await response.read().single, same(bytes));
   });
 
-  test('Given a response with a Stream<Uint8List> body when read then it does not copy the body', () async {
+  test(
+      'Given a response with a Stream<Uint8List> body when read then it does not copy the body',
+      () async {
     var bytes = Stream.value(Uint8List.fromList([1, 2, 3, 4]));
     var response = Response.ok(body: Body.fromDataStream(bytes));
     expect(response.read(), same(bytes));
   });
 
   group('Given a new Response.internalServerError without a body', () {
-    test('when readAsString is called then it sets the body to "Internal Server Error"', () {
+    test(
+        'when readAsString is called then it sets the body to "Internal Server Error"',
+        () {
       var response = Response.internalServerError();
-      expect(response.readAsString(), completion(equals('Internal Server Error')));
+      expect(
+          response.readAsString(), completion(equals('Internal Server Error')));
     });
 
     test('when checked then it sets the content-type header to text/plain', () {
       var response = Response.internalServerError();
-      expect(response.body.contentType.toString(), equals('text/plain; charset=utf-8'));
+      expect(response.body.contentType.toString(),
+          equals('text/plain; charset=utf-8'));
       expect(response.body.contentLength, equals(21));
     });
   });
@@ -55,21 +63,26 @@ void main() {
     });
 
     test('when a body is set then it returns the correct body', () {
-      var response = Response.badRequest(body: Body.fromString('missing token'));
+      var response =
+          Response.badRequest(body: Body.fromString('missing token'));
       expect(response.readAsString(), completion(equals('missing token')));
     });
   });
 
   group('Given a Response.unauthorized', () {
-    test('when a body is set then it returns the correct body and status code', () {
-      var response = Response.unauthorized(body: Body.fromString('request unauthorized'));
-      expect(response.readAsString(), completion(equals('request unauthorized')));
+    test('when a body is set then it returns the correct body and status code',
+        () {
+      var response =
+          Response.unauthorized(body: Body.fromString('request unauthorized'));
+      expect(
+          response.readAsString(), completion(equals('request unauthorized')));
       expect(response.statusCode, 401);
     });
   });
 
   group('Given a Response redirect', () {
-    test('when a String is used then it sets the location header correctly', () {
+    test('when a String is used then it sets the location header correctly',
+        () {
       var response = Response.found(Uri.parse('/foo'));
       expect(response.headers.location.toString(), equals('/foo'));
     });
@@ -82,10 +95,12 @@ void main() {
 
   group('Given a response with an Expires header', () {
     test('when no Expires header is present then expires is null', () {
-      expect(Response.ok(body: Body.fromString('okay!')).headers.expires, isNull);
+      expect(
+          Response.ok(body: Body.fromString('okay!')).headers.expires, isNull);
     });
 
-    test('when an Expires header is present then it returns the correct date', () {
+    test('when an Expires header is present then it returns the correct date',
+        () {
       expect(
         Response.ok(
           body: Body.fromString('okay!'),
@@ -99,11 +114,15 @@ void main() {
   });
 
   group('Given a response with a Last-Modified header', () {
-    test('when no Last-Modified header is present then lastModified is null', () {
-      expect(Response.ok(body: Body.fromString('okay!')).headers.lastModified, isNull);
+    test('when no Last-Modified header is present then lastModified is null',
+        () {
+      expect(Response.ok(body: Body.fromString('okay!')).headers.lastModified,
+          isNull);
     });
 
-    test('when a Last-Modified header is present then it returns the correct date', () {
+    test(
+        'when a Last-Modified header is present then it returns the correct date',
+        () {
       expect(
         Response.ok(
           body: Body.fromString('okay!'),
@@ -117,7 +136,9 @@ void main() {
   });
 
   group('Given a response change', () {
-    test('when no arguments are provided then it returns an instance with equal values', () {
+    test(
+        'when no arguments are provided then it returns an instance with equal values',
+        () {
       var controller = StreamController<Object>();
 
       var request = Response(

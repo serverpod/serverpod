@@ -19,7 +19,9 @@ void main() {
     expect(msg, contains('[200]'));
   }
 
-  test('Given a request with a synchronous response when logged then it logs the request', () async {
+  test(
+      'Given a request with a synchronous response when logged then it logs the request',
+      () async {
     var handler = const Pipeline()
         .addMiddleware(logRequests(logger: logger))
         .addHandler(syncHandler);
@@ -28,7 +30,9 @@ void main() {
     expect(gotLog, isTrue);
   });
 
-  test('Given a request with an asynchronous response when logged then it logs the request', () async {
+  test(
+      'Given a request with an asynchronous response when logged then it logs the request',
+      () async {
     var handler = const Pipeline()
         .addMiddleware(logRequests(logger: logger))
         .addHandler(asyncHandler);
@@ -37,7 +41,9 @@ void main() {
     expect(gotLog, isTrue);
   });
 
-  test('Given a request with an asynchronous error response when logged then it logs the error', () {
+  test(
+      'Given a request with an asynchronous error response when logged then it logs the error',
+      () {
     var handler =
         const Pipeline().addMiddleware(logRequests(logger: (msg, isError) {
       expect(gotLog, isFalse);
@@ -52,7 +58,8 @@ void main() {
     expect(makeSimpleRequest(handler), throwsA(isOhNoStateError));
   });
 
-  test("Given a HijackException when thrown then it doesn't log the exception", () {
+  test("Given a HijackException when thrown then it doesn't log the exception",
+      () {
     var handler = const Pipeline()
         .addMiddleware(logRequests(logger: logger))
         .addHandler((request) => throw const HijackException());

@@ -35,7 +35,8 @@ void main() {
     ]).create();
   });
 
-  test('Given a root file when accessed then it returns the file content', () async {
+  test('Given a root file when accessed then it returns the file content',
+      () async {
     final handler = createStaticHandler(d.sandbox);
 
     final response = await makeRequest(handler, '/root.txt');
@@ -44,7 +45,9 @@ void main() {
     expect(response.readAsString(), completion('root txt'));
   });
 
-  test('Given a HEAD request when made then it returns the correct headers without body', () async {
+  test(
+      'Given a HEAD request when made then it returns the correct headers without body',
+      () async {
     final handler = createStaticHandler(d.sandbox);
 
     final response =
@@ -54,7 +57,9 @@ void main() {
     expect(await response.readAsString(), isEmpty);
   });
 
-  test('Given a root file with space when accessed then it returns the file content', () async {
+  test(
+      'Given a root file with space when accessed then it returns the file content',
+      () async {
     final handler = createStaticHandler(d.sandbox);
 
     final response = await makeRequest(handler, '/files/with%20space.txt');
@@ -63,7 +68,9 @@ void main() {
     expect(response.readAsString(), completion('with space content'));
   });
 
-  test('Given a root file with unencoded space when accessed then it returns the file content', () async {
+  test(
+      'Given a root file with unencoded space when accessed then it returns the file content',
+      () async {
     final handler = createStaticHandler(d.sandbox);
 
     final response = await makeRequest(handler, '/files/with%20space.txt');
@@ -72,7 +79,9 @@ void main() {
     expect(response.readAsString(), completion('with space content'));
   });
 
-  test('Given a file under directory when accessed then it returns the file content', () async {
+  test(
+      'Given a file under directory when accessed then it returns the file content',
+      () async {
     final handler = createStaticHandler(d.sandbox);
 
     final response = await makeRequest(handler, '/files/test.txt');
@@ -81,14 +90,17 @@ void main() {
     expect(response.readAsString(), completion('test txt content'));
   });
 
-  test('Given a non-existent file when accessed then it returns a 404 status', () async {
+  test('Given a non-existent file when accessed then it returns a 404 status',
+      () async {
     final handler = createStaticHandler(d.sandbox);
 
     final response = await makeRequest(handler, '/not_here.txt');
     expect(response.statusCode, HttpStatus.notFound);
   });
 
-  test('Given a file when accessed then it returns the correct last modified date', () async {
+  test(
+      'Given a file when accessed then it returns the correct last modified date',
+      () async {
     final handler = createStaticHandler(d.sandbox);
 
     final rootPath = p.join(d.sandbox, 'root.txt');
@@ -102,7 +114,8 @@ void main() {
   });
 
   group('Given if modified since', () {
-    test('when it is the same as last modified then it returns not modified', () async {
+    test('when it is the same as last modified then it returns not modified',
+        () async {
       final handler = createStaticHandler(d.sandbox);
 
       final rootPath = p.join(d.sandbox, 'root.txt');
@@ -140,7 +153,8 @@ void main() {
       );
     });
 
-    test('when it is after last modified then it returns not modified', () async {
+    test('when it is after last modified then it returns not modified',
+        () async {
       final handler = createStaticHandler(d.sandbox);
 
       final rootPath = p.join(d.sandbox, 'root.txt');
@@ -160,7 +174,9 @@ void main() {
       expect(response.body.contentLength, 0);
     });
 
-    test('when file is modified after the request then it returns the updated file', () async {
+    test(
+        'when file is modified after the request then it returns the updated file',
+        () async {
       final handler = createStaticHandler(d.sandbox);
       final rootPath = p.join(d.sandbox, 'root.txt');
 
@@ -209,7 +225,8 @@ void main() {
       expect(response.mimeType, isNull);
     });
 
-    test('when accessing header_bytes_test_image then it should be image/png', () async {
+    test('when accessing header_bytes_test_image then it should be image/png',
+        () async {
       final handler =
           createStaticHandler(d.sandbox, useHeaderBytesForContentType: true);
 
@@ -218,7 +235,8 @@ void main() {
       expect(response.mimeType, 'image/png');
     });
 
-    test('when accessing header_bytes_test_webp then it should be image/webp', () async {
+    test('when accessing header_bytes_test_webp then it should be image/webp',
+        () async {
       final resolver = mime.MimeTypeResolver()
         ..addMagicNumber(
           <int>[

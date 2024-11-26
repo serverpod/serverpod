@@ -58,7 +58,8 @@ void main() {
   test(
     'Given a hijackable request, when hijack is not called, then onHijack is not triggered',
     () {
-      var request = Request(Method.get, localhostUri, onHijack: expectAsync1((_) {}, count: 0));
+      var request = Request(Method.get, localhostUri,
+          onHijack: expectAsync1((_) {}, count: 0));
       expect(() => request.hijack((_) {}), throwsStateError);
     },
   );

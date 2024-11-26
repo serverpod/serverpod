@@ -34,7 +34,8 @@ void main() {
   });
 
   group('Given no default document specified', () {
-    test('when accessing "/index.html" then it returns the file content', () async {
+    test('when accessing "/index.html" then it returns the file content',
+        () async {
       final handler = createStaticHandler(d.sandbox);
 
       final response = await makeRequest(handler, '/index.html');
@@ -66,7 +67,8 @@ void main() {
   });
 
   group('Given a default document specified', () {
-    test('when accessing "/index.html" then it returns the file content', () async {
+    test('when accessing "/index.html" then it returns the file content',
+        () async {
       final handler =
           createStaticHandler(d.sandbox, defaultDocument: 'index.html');
 
@@ -100,7 +102,8 @@ void main() {
       );
     });
 
-    test('when accessing "/files/" dir then it returns the default document', () async {
+    test('when accessing "/files/" dir then it returns the default document',
+        () async {
       final handler =
           createStaticHandler(d.sandbox, defaultDocument: 'index.html');
 

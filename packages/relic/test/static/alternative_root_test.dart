@@ -15,7 +15,8 @@ void main() {
     ]).create();
   });
 
-  test('Given a root file when accessed then it returns the file content', () async {
+  test('Given a root file when accessed then it returns the file content',
+      () async {
     final handler = createStaticHandler(d.sandbox);
 
     final response =
@@ -25,7 +26,9 @@ void main() {
     expect(response.readAsString(), completion('root txt'));
   });
 
-  test('Given a root file with space when accessed then it returns the file content', () async {
+  test(
+      'Given a root file with space when accessed then it returns the file content',
+      () async {
     final handler = createStaticHandler(d.sandbox);
 
     final response = await makeRequest(
@@ -36,7 +39,9 @@ void main() {
     expect(response.readAsString(), completion('with space content'));
   });
 
-  test('Given a root file with unencoded space when accessed then it returns the file content', () async {
+  test(
+      'Given a root file with unencoded space when accessed then it returns the file content',
+      () async {
     final handler = createStaticHandler(d.sandbox);
 
     final response = await makeRequest(
@@ -47,7 +52,9 @@ void main() {
     expect(response.readAsString(), completion('with space content'));
   });
 
-  test('Given a file under directory when accessed then it returns the file content', () async {
+  test(
+      'Given a file under directory when accessed then it returns the file content',
+      () async {
     final handler = createStaticHandler(d.sandbox);
 
     final response = await makeRequest(handler, '/static/files/test.txt',
@@ -57,7 +64,8 @@ void main() {
     expect(response.readAsString(), completion('test txt content'));
   });
 
-  test('Given a non-existent file when accessed then it returns a 404 status', () async {
+  test('Given a non-existent file when accessed then it returns a 404 status',
+      () async {
     final handler = createStaticHandler(d.sandbox);
 
     final response = await makeRequest(handler, '/static/not_here.txt',

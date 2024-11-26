@@ -33,7 +33,8 @@ void main() {
   });
 
   group('Given access outside of root is disabled', () {
-    test('when accessing a real file then it returns the file content', () async {
+    test('when accessing a real file then it returns the file content',
+        () async {
       final handler = createStaticHandler(d.sandbox);
 
       final response = await makeRequest(handler, '/originals/index.html');
@@ -56,7 +57,9 @@ void main() {
         onPlatform: _skipSymlinksOnWindows,
       );
 
-      test('when accessing a file in a sym linked dir then it returns the file content', () async {
+      test(
+          'when accessing a file in a sym linked dir then it returns the file content',
+          () async {
         final handler = createStaticHandler(d.sandbox);
 
         final response = await makeRequest(handler, '/link_dir/index.html');
@@ -67,14 +70,17 @@ void main() {
     });
 
     group('Given links not under root dir', () {
-      test('when accessing a sym linked file in a real dir then it returns a 404', () async {
+      test(
+          'when accessing a sym linked file in a real dir then it returns a 404',
+          () async {
         final handler = createStaticHandler(p.join(d.sandbox, 'alt_root'));
 
         final response = await makeRequest(handler, '/link_index.html');
         expect(response.statusCode, HttpStatus.notFound);
       });
 
-      test('when accessing a file in a sym linked dir then it returns a 404', () async {
+      test('when accessing a file in a sym linked dir then it returns a 404',
+          () async {
         final handler = createStaticHandler(p.join(d.sandbox, 'alt_root'));
 
         final response = await makeRequest(handler, '/link_dir/index.html');
@@ -84,7 +90,8 @@ void main() {
   });
 
   group('Given access outside of root is enabled', () {
-    test('when accessing a real file then it returns the file content', () async {
+    test('when accessing a real file then it returns the file content',
+        () async {
       final handler =
           createStaticHandler(d.sandbox, serveFilesOutsidePath: true);
 
@@ -109,7 +116,9 @@ void main() {
         onPlatform: _skipSymlinksOnWindows,
       );
 
-      test('when accessing a file in a sym linked dir then it returns the file content', () async {
+      test(
+          'when accessing a file in a sym linked dir then it returns the file content',
+          () async {
         final handler =
             createStaticHandler(d.sandbox, serveFilesOutsidePath: true);
 
@@ -135,7 +144,9 @@ void main() {
         onPlatform: _skipSymlinksOnWindows,
       );
 
-      test('when accessing a file in a sym linked dir then it returns the file content', () async {
+      test(
+          'when accessing a file in a sym linked dir then it returns the file content',
+          () async {
         final handler = createStaticHandler(p.join(d.sandbox, 'alt_root'),
             serveFilesOutsidePath: true);
 

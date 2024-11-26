@@ -17,7 +17,9 @@ void main() {
     ]).create();
   });
 
-  test('Given directory listing is enabled when accessing "/" then it lists the directory contents', () async {
+  test(
+      'Given directory listing is enabled when accessing "/" then it lists the directory contents',
+      () async {
     final handler = createStaticHandler(d.sandbox, listDirectories: true);
 
     final response = await makeRequest(handler, '/');
@@ -25,7 +27,9 @@ void main() {
     expect(response.readAsString(), completes);
   });
 
-  test('Given directory listing is enabled when accessing "/files" then it redirects to "/files/"', () async {
+  test(
+      'Given directory listing is enabled when accessing "/files" then it redirects to "/files/"',
+      () async {
     final handler = createStaticHandler(d.sandbox, listDirectories: true);
 
     final response = await makeRequest(handler, '/files');
@@ -36,7 +40,9 @@ void main() {
     );
   });
 
-  test('Given directory listing is enabled when accessing "/files/" then it lists the directory contents', () async {
+  test(
+      'Given directory listing is enabled when accessing "/files/" then it lists the directory contents',
+      () async {
     final handler = createStaticHandler(d.sandbox, listDirectories: true);
 
     final response = await makeRequest(handler, '/files/');
@@ -44,7 +50,9 @@ void main() {
     expect(response.readAsString(), completes);
   });
 
-  test('Given directory listing is enabled when accessing "/files/empty subfolder" then it redirects to "/files/empty subfolder/"', () async {
+  test(
+      'Given directory listing is enabled when accessing "/files/empty subfolder" then it redirects to "/files/empty subfolder/"',
+      () async {
     final handler = createStaticHandler(d.sandbox, listDirectories: true);
 
     final response = await makeRequest(handler, '/files/empty subfolder');
@@ -55,7 +63,9 @@ void main() {
     );
   });
 
-  test('Given directory listing is enabled when accessing "/files/empty subfolder/" then it lists the directory contents', () async {
+  test(
+      'Given directory listing is enabled when accessing "/files/empty subfolder/" then it lists the directory contents',
+      () async {
     final handler = createStaticHandler(d.sandbox, listDirectories: true);
 
     final response = await makeRequest(handler, '/files/empty subfolder/');

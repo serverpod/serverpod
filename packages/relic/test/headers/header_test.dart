@@ -49,7 +49,8 @@ void main() {
       expect(headers.custom['CASE-INSENSITIVE'], contains('value'));
     });
 
-    test('when headers are copied then modifications are correctly applied', () {
+    test('when headers are copied then modifications are correctly applied',
+        () {
       var headers = Headers.request(
         custom: CustomHeaders({
           'Initial-Header': ['initial']
@@ -74,7 +75,8 @@ void main() {
       expect(map['Map-Header'], equals(['map-value']));
     });
 
-    test('when headers are applied to a Response then they are set correctly', () {
+    test('when headers are applied to a Response then they are set correctly',
+        () {
       var headers = Headers.response(
         custom: CustomHeaders({
           'Response-Header': ['response-value']

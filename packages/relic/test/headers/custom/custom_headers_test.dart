@@ -44,7 +44,9 @@ void main() {
       );
     });
 
-    test('when using copyWith on custom headers then it allows modifying headers', () {
+    test(
+        'when using copyWith on custom headers then it allows modifying headers',
+        () {
       var headers = CustomHeaders({
         'X-Custom-Header': ['custom-value'],
       });
@@ -85,7 +87,9 @@ void main() {
 
     tearDown(() => server.close());
 
-    test('when custom headers have multiple values then it combines them correctly', () async {
+    test(
+        'when custom headers have multiple values then it combines them correctly',
+        () async {
       var headers = await getServerRequestHeaders(
         server: server,
         headers: {
@@ -105,7 +109,9 @@ void main() {
       );
     });
 
-    test('when custom headers have empty values then it ignores the empty values and combines non-empty ones', () async {
+    test(
+        'when custom headers have empty values then it ignores the empty values and combines non-empty ones',
+        () async {
       var headers = await getServerRequestHeaders(
         server: server,
         headers: {
@@ -125,7 +131,9 @@ void main() {
       );
     });
 
-    test('when custom headers have multiple managed and custom values then it correctly separates and handles them', () async {
+    test(
+        'when custom headers have multiple managed and custom values then it correctly separates and handles them',
+        () async {
       var headers = await getServerRequestHeaders(
         server: server,
         headers: {
@@ -145,7 +153,9 @@ void main() {
       );
     });
 
-    test('when custom headers have a normal format and multiple values then it handles all custom headers without interference', () async {
+    test(
+        'when custom headers have a normal format and multiple values then it handles all custom headers without interference',
+        () async {
       var headers = await getServerRequestHeaders(
         server: server,
         headers: {

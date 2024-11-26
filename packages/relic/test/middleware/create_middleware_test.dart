@@ -9,7 +9,9 @@ import 'package:test/test.dart';
 import '../util/test_util.dart';
 
 void main() {
-  test('Given a middleware with null handlers when a request is processed then it forwards the request and response', () async {
+  test(
+      'Given a middleware with null handlers when a request is processed then it forwards the request and response',
+      () async {
     var handler = const Pipeline()
         .addMiddleware(createMiddleware())
         .addHandler((request) {
@@ -26,7 +28,9 @@ void main() {
   });
 
   group('Given a requestHandler', () {
-    test('when sync null response is returned then it forwards to inner handler', () async {
+    test(
+        'when sync null response is returned then it forwards to inner handler',
+        () async {
       var handler = const Pipeline()
           .addMiddleware(createMiddleware(requestHandler: (request) => null))
           .addHandler(syncHandler);
@@ -35,7 +39,9 @@ void main() {
       expect(response.headers.custom['from'], isNull);
     });
 
-    test('when async null response is returned then it forwards to inner handler', () async {
+    test(
+        'when async null response is returned then it forwards to inner handler',
+        () async {
       var handler = const Pipeline()
           .addMiddleware(
               createMiddleware(requestHandler: (request) => Future.value(null)))
@@ -66,7 +72,8 @@ void main() {
     });
 
     group('Given a responseHandler', () {
-      test('when sync result is returned then responseHandler is not called', () async {
+      test('when sync result is returned then responseHandler is not called',
+          () async {
         var middleware = createMiddleware(
             requestHandler: (request) => _middlewareResponse,
             responseHandler: (response) => fail('should not be called'));
@@ -78,7 +85,8 @@ void main() {
         expect(response.headers.from?.emails, contains('middleware'));
       });
 
-      test('when async result is returned then responseHandler is not called', () async {
+      test('when async result is returned then responseHandler is not called',
+          () async {
         var middleware = createMiddleware(
             requestHandler: (request) => Future.value(_middlewareResponse),
             responseHandler: (response) => fail('should not be called'));
@@ -92,7 +100,9 @@ void main() {
   });
 
   group('Given a responseHandler', () {
-    test('when innerHandler sync response is seen then replaced value continues', () async {
+    test(
+        'when innerHandler sync response is seen then replaced value continues',
+        () async {
       var handler = const Pipeline()
           .addMiddleware(createMiddleware(responseHandler: (response) {
         expect(response.headers.from?.emails, contains('handler'));
@@ -110,7 +120,8 @@ void main() {
       expect(response.headers.from?.emails, contains('middleware'));
     });
 
-    test('when innerHandler async response is seen then async value continues', () async {
+    test('when innerHandler async response is seen then async value continues',
+        () async {
       var handler = const Pipeline().addMiddleware(
         createMiddleware(
           responseHandler: (response) {
@@ -135,7 +146,8 @@ void main() {
   });
 
   group('Given error handling', () {
-    test('when sync error is thrown by requestHandler then it bubbles down', () {
+    test('when sync error is thrown by requestHandler then it bubbles down',
+        () {
       var handler = const Pipeline()
           .addMiddleware(createMiddleware(
               requestHandler: (request) => throw 'middleware error'))
@@ -144,7 +156,8 @@ void main() {
       expect(makeSimpleRequest(handler), throwsA('middleware error'));
     });
 
-    test('when async error is thrown by requestHandler then it bubbles down', () {
+    test('when async error is thrown by requestHandler then it bubbles down',
+        () {
       var handler = const Pipeline()
           .addMiddleware(createMiddleware(
               requestHandler: (request) => Future.error('middleware error')))
@@ -153,7 +166,8 @@ void main() {
       expect(makeSimpleRequest(handler), throwsA('middleware error'));
     });
 
-    test('when throw from responseHandler then it does not hit error handler', () {
+    test('when throw from responseHandler then it does not hit error handler',
+        () {
       var middleware = createMiddleware(
           responseHandler: (response) {
             throw 'middleware error';
@@ -179,7 +193,9 @@ void main() {
       expect(makeSimpleRequest(handler), throwsA('middleware error'));
     });
 
-    test('when inner handler throws then it is caught by errorHandler with response', () async {
+    test(
+        'when inner handler throws then it is caught by errorHandler with response',
+        () async {
       var middleware = createMiddleware(errorHandler: (error, stack) {
         expect(error, 'bad handler');
         return _middlewareResponse;
@@ -194,7 +210,9 @@ void main() {
       expect(response.headers.from?.emails, contains('middleware'));
     });
 
-    test('when inner handler throws then it is caught by errorHandler and rethrown', () {
+    test(
+        'when inner handler throws then it is caught by errorHandler and rethrown',
+        () {
       var middleware = createMiddleware(errorHandler: (Object error, stack) {
         expect(error, 'bad handler');
         throw error;
@@ -208,7 +226,9 @@ void main() {
       expect(makeSimpleRequest(handler), throwsA('bad handler'));
     });
 
-    test('when error is thrown by inner handler without a middleware errorHandler then it is rethrown', () {
+    test(
+        'when error is thrown by inner handler without a middleware errorHandler then it is rethrown',
+        () {
       var middleware = createMiddleware();
 
       var handler =

@@ -148,7 +148,9 @@ void main() {
       expect(request.read().toList(), completion(equals([helloBytes])));
     });
 
-    test('when read()/readAsString() is called multiple times then it throws a StateError', () {
+    test(
+        'when read()/readAsString() is called multiple times then it throws a StateError',
+        () {
       Message request;
 
       request = _createMessage();
@@ -170,7 +172,9 @@ void main() {
   });
 
   group('Given content-length', () {
-    test('when the body is default and no content-length header is present then it is 0', () {
+    test(
+        'when the body is default and no content-length header is present then it is 0',
+        () {
       var request = _createMessage();
       expect(request.body.contentLength, 0);
     });

@@ -34,7 +34,9 @@ void main() {
     return syncHandler(request);
   }
 
-  test('Given a pipeline with middlewareA and middlewareB when a request is processed then it completes with accessLocation 5', () async {
+  test(
+      'Given a pipeline with middlewareA and middlewareB when a request is processed then it completes with accessLocation 5',
+      () async {
     var handler = const Pipeline()
         .addMiddleware(middlewareA)
         .addMiddleware(middlewareB)
@@ -45,7 +47,9 @@ void main() {
     expect(accessLocation, 5);
   });
 
-  test('Given middlewareA and middlewareB when composed using extensions then a request completes with accessLocation 5', () async {
+  test(
+      'Given middlewareA and middlewareB when composed using extensions then a request completes with accessLocation 5',
+      () async {
     var handler =
         middlewareA.addMiddleware(middlewareB).addHandler(innerHandler);
 
@@ -54,7 +58,9 @@ void main() {
     expect(accessLocation, 5);
   });
 
-  test('Given a pipeline used as middleware when a request is processed then it completes with accessLocation 5', () async {
+  test(
+      'Given a pipeline used as middleware when a request is processed then it completes with accessLocation 5',
+      () async {
     var innerPipeline =
         const Pipeline().addMiddleware(middlewareA).addMiddleware(middlewareB);
 
