@@ -170,9 +170,6 @@ abstract class CompilationUnitHelpers {
         uri = uri.replaceAll('/', '');
       }
 
-      print('directiveUri: $directiveUri');
-      print('uri: $uri');
-
       return directiveUri == uri;
     }).firstOrNull;
   }
