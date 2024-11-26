@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:path/path.dart' as p;
 
 abstract class CompilationUnitHelpers {
   /// Returns [TypeAlias] if the [unit] contains a type alias with the given
@@ -129,10 +130,12 @@ abstract class CompilationUnitHelpers {
     CompilationUnit unit, {
     required String uri,
   }) {
-    return unit.directives
-        .whereType<PartDirective>()
-        .where((directive) => directive.uri.stringValue == uri)
-        .firstOrNull;
+    var normalizedUri = p.posix.normalize(uri);
+
+    return unit.directives.whereType<PartDirective>().where((directive) {
+      var directiveUri = p.posix.normalize(directive.uri.stringValue!);
+      return directiveUri == normalizedUri;
+    }).firstOrNull;
   }
 
   /// Returns `true` if the [unit] contains a part directive with the given

@@ -766,11 +766,7 @@ void main() {
       test('has a part directive with ${parent.className} uri', () {
         var partDirective = CompilationUnitHelpers.tryFindPartDirective(
           grandparentCompilationUnit,
-          uri: p.join('..', '${parent.fileName}.dart'),
-        );
-        print('pardDirective: $partDirective');
-        print(
-          'grandparent directives ${grandparentCompilationUnit.directives}',
+          uri: '../${parent.fileName}.dart',
         );
 
         expect(
@@ -780,13 +776,9 @@ void main() {
       });
 
       test('has a part directive with ${child.className} uri', () {
-        var normalizedUri = p
-            .toUri(p.normalize(p.join('..', '${child.fileName}.dart')))
-            .toString();
-
         var partDirective = CompilationUnitHelpers.tryFindPartDirective(
           grandparentCompilationUnit,
-          uri: normalizedUri,
+          uri: '../${child.fileName}.dart',
         );
         expect(
           partDirective,
@@ -799,7 +791,7 @@ void main() {
       test('has a part-of directive with ${grandparent.className} uri', () {
         var partOfDirective = CompilationUnitHelpers.tryFindPartOfDirective(
           parentCompilationUnit,
-          uri: p.join('sub_dir', '${grandparent.fileName}.dart'),
+          uri: 'sub_dir/${grandparent.fileName}.dart',
         );
         expect(
           partOfDirective,
@@ -812,7 +804,7 @@ void main() {
       test('has a part-of directive with ${grandparent.className} uri', () {
         var partOfDirective = CompilationUnitHelpers.tryFindPartOfDirective(
           childCompilationUnit,
-          uri: p.join('sub_dir', '${grandparent.fileName}.dart'),
+          uri: 'sub_dir/${grandparent.fileName}.dart',
         );
         expect(
           partOfDirective,
@@ -875,7 +867,7 @@ void main() {
       test('has a part directive with ${parent.className} uri', () {
         var partDirective = CompilationUnitHelpers.tryFindPartDirective(
           grandparentCompilationUnit,
-          uri: p.join('sub_dir', '${parent.fileName}.dart'),
+          uri: 'sub_dir/${parent.fileName}.dart',
         );
         expect(
           partDirective,
@@ -899,7 +891,7 @@ void main() {
       test('has a part-of directive with ${grandparent.className} uri', () {
         var partOfDirective = CompilationUnitHelpers.tryFindPartOfDirective(
           parentCompilationUnit,
-          uri: p.join('..', '${grandparent.fileName}.dart'),
+          uri: '../${grandparent.fileName}.dart',
         );
         expect(
           partOfDirective,
@@ -986,7 +978,7 @@ void main() {
       test('has a part directive with ${child.className} uri', () {
         var partDirective = CompilationUnitHelpers.tryFindPartDirective(
           grandparentCompilationUnit,
-          uri: p.join('sub_dir', '${child.fileName}.dart'),
+          uri: 'sub_dir/${child.fileName}.dart',
         );
         expect(
           partDirective,
@@ -1012,7 +1004,7 @@ void main() {
       test('has a part-of directive with ${grandparent.className} uri', () {
         var partOfDirective = CompilationUnitHelpers.tryFindPartOfDirective(
           childCompilationUnit,
-          uri: p.join('..', '${grandparent.fileName}.dart'),
+          uri: '../${grandparent.fileName}.dart',
         );
         expect(
           partOfDirective,
