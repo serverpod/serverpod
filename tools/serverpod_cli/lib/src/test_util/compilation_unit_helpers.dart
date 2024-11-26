@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:analyzer/dart/ast/ast.dart';
 
 abstract class CompilationUnitHelpers {
@@ -130,8 +131,16 @@ abstract class CompilationUnitHelpers {
     required String uri,
   }) {
     return unit.directives.whereType<PartDirective>().where((directive) {
-      print('directive.uri.stringValue: ${directive.uri.stringValue}');
-      return directive.uri.stringValue == uri;
+      String directiveUri = directive.uri.stringValue!;
+
+      // Specific fix for Windows-style incomplete relative paths
+      if (Platform.isWindows &&
+          directiveUri.startsWith('..') &&
+          !directiveUri.startsWith('../')) {
+        directiveUri = directiveUri.replaceFirst('..', '../');
+      }
+
+      return directiveUri == uri;
     }).firstOrNull;
   }
 
