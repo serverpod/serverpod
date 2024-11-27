@@ -103,7 +103,7 @@ class ModelHelper {
         moduleAlias,
         yaml,
         model.uri,
-        extractPathFromModelRoot(pathParts, model.uri),
+        _extractPathFromModelRoot(pathParts, model.uri),
       ));
     }
 
@@ -158,17 +158,17 @@ class ModelHelper {
 
   static List<String> extractPathFromConfig(GeneratorConfig config, Uri uri) {
     if (isWithin(joinAll(config.protocolSourcePathParts), uri.path)) {
-      return extractPathFromModelRoot(config.protocolSourcePathParts, uri);
+      return _extractPathFromModelRoot(config.protocolSourcePathParts, uri);
     }
 
     if (isWithin(joinAll(config.modelSourcePathParts), uri.path)) {
-      return extractPathFromModelRoot(config.modelSourcePathParts, uri);
+      return _extractPathFromModelRoot(config.modelSourcePathParts, uri);
     }
 
     return split(uri.path);
   }
 
-  static List<String> extractPathFromModelRoot(
+  static List<String> _extractPathFromModelRoot(
     List<String> pathParts,
     Uri fileUri,
   ) {
