@@ -10,7 +10,10 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'session_log_entry.dart' as _i2;
+import 'query_log_entry.dart' as _i3;
+import 'log_entry.dart' as _i4;
+import 'message_log_entry.dart' as _i5;
 
 /// Compounded information about a session log.
 abstract class SessionLogInfo implements _i1.SerializableModel {
@@ -23,9 +26,9 @@ abstract class SessionLogInfo implements _i1.SerializableModel {
 
   factory SessionLogInfo({
     required _i2.SessionLogEntry sessionLogEntry,
-    required List<_i2.QueryLogEntry> queries,
-    required List<_i2.LogEntry> logs,
-    required List<_i2.MessageLogEntry> messages,
+    required List<_i3.QueryLogEntry> queries,
+    required List<_i4.LogEntry> logs,
+    required List<_i5.MessageLogEntry> messages,
   }) = _SessionLogInfoImpl;
 
   factory SessionLogInfo.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -33,13 +36,13 @@ abstract class SessionLogInfo implements _i1.SerializableModel {
       sessionLogEntry: _i2.SessionLogEntry.fromJson(
           (jsonSerialization['sessionLogEntry'] as Map<String, dynamic>)),
       queries: (jsonSerialization['queries'] as List)
-          .map((e) => _i2.QueryLogEntry.fromJson((e as Map<String, dynamic>)))
+          .map((e) => _i3.QueryLogEntry.fromJson((e as Map<String, dynamic>)))
           .toList(),
       logs: (jsonSerialization['logs'] as List)
-          .map((e) => _i2.LogEntry.fromJson((e as Map<String, dynamic>)))
+          .map((e) => _i4.LogEntry.fromJson((e as Map<String, dynamic>)))
           .toList(),
       messages: (jsonSerialization['messages'] as List)
-          .map((e) => _i2.MessageLogEntry.fromJson((e as Map<String, dynamic>)))
+          .map((e) => _i5.MessageLogEntry.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }
@@ -48,19 +51,19 @@ abstract class SessionLogInfo implements _i1.SerializableModel {
   _i2.SessionLogEntry sessionLogEntry;
 
   /// List of queries made during the session.
-  List<_i2.QueryLogEntry> queries;
+  List<_i3.QueryLogEntry> queries;
 
   /// List of log entries made during the session.
-  List<_i2.LogEntry> logs;
+  List<_i4.LogEntry> logs;
 
   /// List of messages sent during the session.
-  List<_i2.MessageLogEntry> messages;
+  List<_i5.MessageLogEntry> messages;
 
   SessionLogInfo copyWith({
     _i2.SessionLogEntry? sessionLogEntry,
-    List<_i2.QueryLogEntry>? queries,
-    List<_i2.LogEntry>? logs,
-    List<_i2.MessageLogEntry>? messages,
+    List<_i3.QueryLogEntry>? queries,
+    List<_i4.LogEntry>? logs,
+    List<_i5.MessageLogEntry>? messages,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -81,9 +84,9 @@ abstract class SessionLogInfo implements _i1.SerializableModel {
 class _SessionLogInfoImpl extends SessionLogInfo {
   _SessionLogInfoImpl({
     required _i2.SessionLogEntry sessionLogEntry,
-    required List<_i2.QueryLogEntry> queries,
-    required List<_i2.LogEntry> logs,
-    required List<_i2.MessageLogEntry> messages,
+    required List<_i3.QueryLogEntry> queries,
+    required List<_i4.LogEntry> logs,
+    required List<_i5.MessageLogEntry> messages,
   }) : super._(
           sessionLogEntry: sessionLogEntry,
           queries: queries,
@@ -94,9 +97,9 @@ class _SessionLogInfoImpl extends SessionLogInfo {
   @override
   SessionLogInfo copyWith({
     _i2.SessionLogEntry? sessionLogEntry,
-    List<_i2.QueryLogEntry>? queries,
-    List<_i2.LogEntry>? logs,
-    List<_i2.MessageLogEntry>? messages,
+    List<_i3.QueryLogEntry>? queries,
+    List<_i4.LogEntry>? logs,
+    List<_i5.MessageLogEntry>? messages,
   }) {
     return SessionLogInfo(
       sessionLogEntry: sessionLogEntry ?? this.sessionLogEntry.copyWith(),

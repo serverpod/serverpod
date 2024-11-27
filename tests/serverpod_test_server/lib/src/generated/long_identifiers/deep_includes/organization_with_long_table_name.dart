@@ -10,7 +10,10 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../long_identifiers/deep_includes/person_with_long_table_name.dart'
+    as _i2;
+import '../../long_identifiers/deep_includes/city_with_long_table_name.dart'
+    as _i3;
 
 abstract class OrganizationWithLongTableName
     implements _i1.TableRow, _i1.ProtocolSerialization {
@@ -27,7 +30,7 @@ abstract class OrganizationWithLongTableName
     required String name,
     List<_i2.PersonWithLongTableName>? people,
     int? cityId,
-    _i2.CityWithLongTableName? city,
+    _i3.CityWithLongTableName? city,
   }) = _OrganizationWithLongTableNameImpl;
 
   factory OrganizationWithLongTableName.fromJson(
@@ -42,7 +45,7 @@ abstract class OrganizationWithLongTableName
       cityId: jsonSerialization['cityId'] as int?,
       city: jsonSerialization['city'] == null
           ? null
-          : _i2.CityWithLongTableName.fromJson(
+          : _i3.CityWithLongTableName.fromJson(
               (jsonSerialization['city'] as Map<String, dynamic>)),
     );
   }
@@ -60,7 +63,7 @@ abstract class OrganizationWithLongTableName
 
   int? cityId;
 
-  _i2.CityWithLongTableName? city;
+  _i3.CityWithLongTableName? city;
 
   @override
   _i1.Table get table => t;
@@ -70,7 +73,7 @@ abstract class OrganizationWithLongTableName
     String? name,
     List<_i2.PersonWithLongTableName>? people,
     int? cityId,
-    _i2.CityWithLongTableName? city,
+    _i3.CityWithLongTableName? city,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -98,7 +101,7 @@ abstract class OrganizationWithLongTableName
 
   static OrganizationWithLongTableNameInclude include({
     _i2.PersonWithLongTableNameIncludeList? people,
-    _i2.CityWithLongTableNameInclude? city,
+    _i3.CityWithLongTableNameInclude? city,
   }) {
     return OrganizationWithLongTableNameInclude._(
       people: people,
@@ -140,7 +143,7 @@ class _OrganizationWithLongTableNameImpl extends OrganizationWithLongTableName {
     required String name,
     List<_i2.PersonWithLongTableName>? people,
     int? cityId,
-    _i2.CityWithLongTableName? city,
+    _i3.CityWithLongTableName? city,
   }) : super._(
           id: id,
           name: name,
@@ -164,7 +167,7 @@ class _OrganizationWithLongTableNameImpl extends OrganizationWithLongTableName {
           ? people
           : this.people?.map((e0) => e0.copyWith()).toList(),
       cityId: cityId is int? ? cityId : this.cityId,
-      city: city is _i2.CityWithLongTableName? ? city : this.city?.copyWith(),
+      city: city is _i3.CityWithLongTableName? ? city : this.city?.copyWith(),
     );
   }
 }
@@ -192,7 +195,7 @@ class OrganizationWithLongTableNameTable extends _i1.Table {
 
   late final _i1.ColumnInt cityId;
 
-  _i2.CityWithLongTableNameTable? _city;
+  _i3.CityWithLongTableNameTable? _city;
 
   _i2.PersonWithLongTableNameTable get __people {
     if (___people != null) return ___people!;
@@ -207,15 +210,15 @@ class OrganizationWithLongTableNameTable extends _i1.Table {
     return ___people!;
   }
 
-  _i2.CityWithLongTableNameTable get city {
+  _i3.CityWithLongTableNameTable get city {
     if (_city != null) return _city!;
     _city = _i1.createRelationTable(
       relationFieldName: 'city',
       field: OrganizationWithLongTableName.t.cityId,
-      foreignField: _i2.CityWithLongTableName.t.id,
+      foreignField: _i3.CityWithLongTableName.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.CityWithLongTableNameTable(tableRelation: foreignTableRelation),
+          _i3.CityWithLongTableNameTable(tableRelation: foreignTableRelation),
     );
     return _city!;
   }
@@ -260,7 +263,7 @@ class OrganizationWithLongTableNameTable extends _i1.Table {
 class OrganizationWithLongTableNameInclude extends _i1.IncludeObject {
   OrganizationWithLongTableNameInclude._({
     _i2.PersonWithLongTableNameIncludeList? people,
-    _i2.CityWithLongTableNameInclude? city,
+    _i3.CityWithLongTableNameInclude? city,
   }) {
     _people = people;
     _city = city;
@@ -268,7 +271,7 @@ class OrganizationWithLongTableNameInclude extends _i1.IncludeObject {
 
   _i2.PersonWithLongTableNameIncludeList? _people;
 
-  _i2.CityWithLongTableNameInclude? _city;
+  _i3.CityWithLongTableNameInclude? _city;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -498,7 +501,7 @@ class OrganizationWithLongTableNameAttachRowRepository {
   Future<void> city(
     _i1.Session session,
     OrganizationWithLongTableName organizationWithLongTableName,
-    _i2.CityWithLongTableName city, {
+    _i3.CityWithLongTableName city, {
     _i1.Transaction? transaction,
   }) async {
     if (organizationWithLongTableName.id == null) {

@@ -10,7 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../protocol.dart' as _i2;
+import '../database/table_definition.dart' as _i2;
+import '../database/database_migration_version.dart' as _i3;
 
 /// Defines the structure of the database used by Serverpod.
 abstract class DatabaseDefinition implements _i1.SerializableModel {
@@ -26,7 +27,7 @@ abstract class DatabaseDefinition implements _i1.SerializableModel {
     String? name,
     required String moduleName,
     required List<_i2.TableDefinition> tables,
-    required List<_i2.DatabaseMigrationVersion> installedModules,
+    required List<_i3.DatabaseMigrationVersion> installedModules,
     required int migrationApiVersion,
   }) = _DatabaseDefinitionImpl;
 
@@ -38,7 +39,7 @@ abstract class DatabaseDefinition implements _i1.SerializableModel {
           .map((e) => _i2.TableDefinition.fromJson((e as Map<String, dynamic>)))
           .toList(),
       installedModules: (jsonSerialization['installedModules'] as List)
-          .map((e) => _i2.DatabaseMigrationVersion.fromJson(
+          .map((e) => _i3.DatabaseMigrationVersion.fromJson(
               (e as Map<String, dynamic>)))
           .toList(),
       migrationApiVersion: jsonSerialization['migrationApiVersion'] as int,
@@ -57,7 +58,7 @@ abstract class DatabaseDefinition implements _i1.SerializableModel {
 
   /// Modules installed in the database, together with their version. Only
   /// set if known.
-  List<_i2.DatabaseMigrationVersion> installedModules;
+  List<_i3.DatabaseMigrationVersion> installedModules;
 
   /// The version of the database definition.
   int migrationApiVersion;
@@ -66,7 +67,7 @@ abstract class DatabaseDefinition implements _i1.SerializableModel {
     String? name,
     String? moduleName,
     List<_i2.TableDefinition>? tables,
-    List<_i2.DatabaseMigrationVersion>? installedModules,
+    List<_i3.DatabaseMigrationVersion>? installedModules,
     int? migrationApiVersion,
   });
   @override
@@ -94,7 +95,7 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
     String? name,
     required String moduleName,
     required List<_i2.TableDefinition> tables,
-    required List<_i2.DatabaseMigrationVersion> installedModules,
+    required List<_i3.DatabaseMigrationVersion> installedModules,
     required int migrationApiVersion,
   }) : super._(
           name: name,
@@ -109,7 +110,7 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
     Object? name = _Undefined,
     String? moduleName,
     List<_i2.TableDefinition>? tables,
-    List<_i2.DatabaseMigrationVersion>? installedModules,
+    List<_i3.DatabaseMigrationVersion>? installedModules,
     int? migrationApiVersion,
   }) {
     return DatabaseDefinition(

@@ -10,7 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
+import '../../defaults/enum/enums/by_index_enum.dart' as _i3;
 
 abstract class EnumDefaultPersist implements _i1.SerializableModel {
   EnumDefaultPersist._({
@@ -22,7 +23,7 @@ abstract class EnumDefaultPersist implements _i1.SerializableModel {
   factory EnumDefaultPersist({
     int? id,
     _i2.ByNameEnum? byNameEnumDefaultPersist,
-    _i2.ByIndexEnum? byIndexEnumDefaultPersist,
+    _i3.ByIndexEnum? byIndexEnumDefaultPersist,
   }) = _EnumDefaultPersistImpl;
 
   factory EnumDefaultPersist.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -36,7 +37,7 @@ abstract class EnumDefaultPersist implements _i1.SerializableModel {
       byIndexEnumDefaultPersist:
           jsonSerialization['byIndexEnumDefaultPersist'] == null
               ? null
-              : _i2.ByIndexEnum.fromJson(
+              : _i3.ByIndexEnum.fromJson(
                   (jsonSerialization['byIndexEnumDefaultPersist'] as int)),
     );
   }
@@ -48,12 +49,12 @@ abstract class EnumDefaultPersist implements _i1.SerializableModel {
 
   _i2.ByNameEnum? byNameEnumDefaultPersist;
 
-  _i2.ByIndexEnum? byIndexEnumDefaultPersist;
+  _i3.ByIndexEnum? byIndexEnumDefaultPersist;
 
   EnumDefaultPersist copyWith({
     int? id,
     _i2.ByNameEnum? byNameEnumDefaultPersist,
-    _i2.ByIndexEnum? byIndexEnumDefaultPersist,
+    _i3.ByIndexEnum? byIndexEnumDefaultPersist,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -78,7 +79,7 @@ class _EnumDefaultPersistImpl extends EnumDefaultPersist {
   _EnumDefaultPersistImpl({
     int? id,
     _i2.ByNameEnum? byNameEnumDefaultPersist,
-    _i2.ByIndexEnum? byIndexEnumDefaultPersist,
+    _i3.ByIndexEnum? byIndexEnumDefaultPersist,
   }) : super._(
           id: id,
           byNameEnumDefaultPersist: byNameEnumDefaultPersist,
@@ -96,7 +97,7 @@ class _EnumDefaultPersistImpl extends EnumDefaultPersist {
       byNameEnumDefaultPersist: byNameEnumDefaultPersist is _i2.ByNameEnum?
           ? byNameEnumDefaultPersist
           : this.byNameEnumDefaultPersist,
-      byIndexEnumDefaultPersist: byIndexEnumDefaultPersist is _i2.ByIndexEnum?
+      byIndexEnumDefaultPersist: byIndexEnumDefaultPersist is _i3.ByIndexEnum?
           ? byIndexEnumDefaultPersist
           : this.byIndexEnumDefaultPersist,
     );

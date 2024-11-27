@@ -10,7 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../long_identifiers/models_with_relations/long_implicit_id_field.dart'
+    as _i2;
 
 abstract class LongImplicitIdFieldCollection implements _i1.SerializableModel {
   LongImplicitIdFieldCollection._({

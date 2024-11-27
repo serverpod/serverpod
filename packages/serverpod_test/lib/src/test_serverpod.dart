@@ -76,11 +76,17 @@ class InternalServerpodSession extends Session {
   }
 }
 
-List<String> _getServerpodStartUpArgs(String? runMode, bool? applyMigrations) =>
+List<String> _getServerpodStartUpArgs({
+  String? runMode,
+  bool? applyMigrations,
+  ServerpodLoggingMode? loggingMode,
+}) =>
     [
       '-m',
       runMode ?? ServerpodRunMode.test,
       if (applyMigrations ?? true) '--apply-migrations',
+      '--logging',
+      loggingMode?.name ?? ServerpodLoggingMode.normal.name,
     ];
 
 /// A facade for the real Serverpod instance.
@@ -88,38 +94,46 @@ class TestServerpod<T extends InternalTestEndpoints> {
   /// The test endpoints that are exposed to the user.
   T testEndpoints;
 
-  late final Serverpod _serverpod;
+  late final Serverpod Function() _buildServerpodAndInitializeEndpoints;
+
+  Serverpod? _serverpodInstance;
+  Serverpod get _serverpod {
+    return _serverpodInstance ??= _buildServerpodAndInitializeEndpoints();
+  }
 
   /// Whether the database is enabled and supported by the project configuration.
   final bool isDatabaseEnabled;
 
   /// Creates a new test serverpod instance.
   TestServerpod({
-    bool? applyMigrations,
+    required bool? applyMigrations,
     required EndpointDispatch endpoints,
     required SerializationManagerServer serializationManager,
     required this.isDatabaseEnabled,
     required this.testEndpoints,
-    String? runMode,
+    required ServerpodLoggingMode? serverpodLoggingMode,
+    required String? runMode,
   }) {
     // Ignore output from the Serverpod constructor to avoid spamming the console.
     // Should be changed when a proper logger is implemented.
     // Tracked in issue: https://github.com/serverpod/serverpod/issues/2847
-    IOOverrides.runZoned(
-      () {
-        _serverpod = Serverpod(
-          _getServerpodStartUpArgs(
-            runMode,
-            applyMigrations,
-          ),
-          serializationManager,
-          endpoints,
+    _buildServerpodAndInitializeEndpoints = () => IOOverrides.runZoned(
+          () {
+            var serverpod = Serverpod(
+              _getServerpodStartUpArgs(
+                runMode: runMode,
+                applyMigrations: applyMigrations,
+                loggingMode: serverpodLoggingMode,
+              ),
+              serializationManager,
+              endpoints,
+            );
+            endpoints.initializeEndpoints(serverpod.server);
+            return serverpod;
+          },
+          stdout: () => NullStdOut(),
+          stderr: () => NullStdOut(),
         );
-      },
-      stdout: () => NullStdOut(),
-      stderr: () => NullStdOut(),
-    );
-    endpoints.initializeEndpoints(_serverpod.server);
     testEndpoints.initialize(serializationManager, endpoints);
   }
 

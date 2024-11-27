@@ -1,5 +1,3 @@
-library serverpod_shared;
-
 export 'src/certificates.dart';
 export 'src/config.dart';
 export 'src/constants.dart';

@@ -36,7 +36,13 @@ class MethodWebsocketRequestHandler {
         }
 
         switch (message) {
-          case OpenMethodStreamCommand():
+          case OpenMethodStreamCommand(
+              endpoint: var endpoint,
+              method: var method,
+              connectionId: var connectionId,
+            ):
+            server.serverpod.logVerbose(
+                'Open method stream command for $endpoint.$method, id $connectionId');
             webSocket.tryAdd(
               await _handleOpenMethodStreamCommand(
                 server,
@@ -46,7 +52,13 @@ class MethodWebsocketRequestHandler {
               ),
             );
             break;
-          case OpenMethodStreamResponse():
+          case OpenMethodStreamResponse(
+              endpoint: var endpoint,
+              method: var method,
+              connectionId: var connectionId,
+            ):
+            server.serverpod.logVerbose(
+                'Open method stream response for $endpoint.$method, id $connectionId');
             break;
           case MethodStreamMessage():
             _dispatchMethodStreamMessage(
@@ -56,7 +68,13 @@ class MethodWebsocketRequestHandler {
               methodStreamManager,
             );
             break;
-          case CloseMethodStreamCommand():
+          case CloseMethodStreamCommand(
+              endpoint: var endpoint,
+              method: var method,
+              connectionId: var connectionId,
+            ):
+            server.serverpod.logVerbose(
+                'Close method stream command for $endpoint.$method, id $connectionId');
             await methodStreamManager.closeStream(
               endpoint: message.endpoint,
               method: message.method,
@@ -87,13 +105,18 @@ class MethodWebsocketRequestHandler {
         }
       }
     } catch (e, stackTrace) {
-      if (server.serverpod.runtimeSettings.logMalformedCalls) {
+      if (e is! UnknownMessageException ||
+          server.serverpod.runtimeSettings.logMalformedCalls) {
         stderr.writeln(
-            '${DateTime.now().toUtc()} Method stream websocket error.');
-        stderr.writeln('$e');
+            '${DateTime.now().toUtc()} Method stream websocket error: $e');
         stderr.writeln('$stackTrace');
       }
     } finally {
+      server.serverpod.logVerbose(
+        'Closing method stream websocket while '
+        '${methodStreamManager.openOutputStreamCount} out-streams and '
+        '${methodStreamManager.openInputStreamCount} in-streams still open.',
+      );
       await methodStreamManager.closeAllStreams();
       // Send a close message to the client.
       await webSocket.close();
@@ -168,6 +191,8 @@ class MethodWebsocketRequestHandler {
         ));
       },
       onAllStreamsClosed: () {
+        server.serverpod.logVerbose(
+            'Closing method stream websocket on all streams closed.');
         webSocket.close();
       },
     );

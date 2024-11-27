@@ -20,15 +20,62 @@ import 'package:serverpod_test_module_server/src/generated/protocol.dart';
 import 'package:serverpod_test_module_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
 
+/// Creates a new test group that takes a callback that can be used to write tests.
+/// The callback has two parameters: `sessionBuilder` and `endpoints`.
+/// `sessionBuilder` is used to build a `Session` object that represents the server state during an endpoint call and is used to set up scenarios.
+/// `endpoints` contains all your Serverpod endpoints and lets you call them:
+/// ```dart
+/// withServerpod('Given Example endpoint', (sessionBuilder, endpoints) {
+///   test('when calling `hello` then should return greeting', () async {
+///     final greeting = await endpoints.example.hello(sessionBuilder, 'Michael');
+///     expect(greeting, 'Hello Michael');
+///   });
+/// });
+/// ```
+///
+/// **Configuration options**
+///
+/// [applyMigrations] Whether pending migrations should be applied when starting Serverpod. Defaults to `true`
+///
+/// [enableSessionLogging] Whether session logging should be enabled. Defaults to `false`
+///
+/// [rollbackDatabase] Options for when to rollback the database during the test lifecycle.
+/// By default `withServerpod` does all database operations inside a transaction that is rolled back after each `test` case.
+/// Just like the following enum describes, the behavior of the automatic rollbacks can be configured:
+/// ```dart
+/// /// Options for when to rollback the database during the test lifecycle.
+/// enum RollbackDatabase {
+///   /// After each test. This is the default.
+///   afterEach,
+///
+///   /// After all tests.
+///   afterAll,
+///
+///   /// Disable rolling back the database.
+///   disabled,
+/// }
+/// ```
+///
+/// [runMode] The run mode that Serverpod should be running in. Defaults to `test`.
+///
+/// [serverpodLoggingMode] The logging mode used when creating Serverpod. Defaults to `ServerpodLoggingMode.normal`
+///
+/// [serverpodStartTimeout] The timeout to use when starting Serverpod, which connects to the database among other things. Defaults to `Duration(seconds: 30)`.
+///
+/// [testGroupTagsOverride] By default Serverpod test tools tags the `withServerpod` test group with `"integration"`.
+/// This is to provide a simple way to only run unit or integration tests.
+/// This property allows this tag to be overridden to something else. Defaults to `['integration']`.
 @_i1.isTestGroup
 void withServerpod(
   String testGroupName,
   _i1.TestClosure<TestEndpoints> testClosure, {
-  String? runMode,
-  bool? enableSessionLogging,
-  List<String>? testGroupTagsOverride,
-  _i1.RollbackDatabase? rollbackDatabase,
   bool? applyMigrations,
+  bool? enableSessionLogging,
+  _i1.RollbackDatabase? rollbackDatabase,
+  String? runMode,
+  _i2.ServerpodLoggingMode? serverpodLoggingMode,
+  Duration? serverpodStartTimeout,
+  List<String>? testGroupTagsOverride,
 }) {
   _i1.buildWithServerpod<_InternalTestEndpoints>(
     testGroupName,
@@ -39,10 +86,12 @@ void withServerpod(
       runMode: runMode,
       applyMigrations: applyMigrations,
       isDatabaseEnabled: true,
+      serverpodLoggingMode: serverpodLoggingMode,
     ),
     maybeRollbackDatabase: rollbackDatabase,
     maybeEnableSessionLogging: enableSessionLogging,
     maybeTestGroupTagsOverride: testGroupTagsOverride,
+    maybeServerpodStartTimeout: serverpodStartTimeout,
   )(testClosure);
 }
 
@@ -90,19 +139,22 @@ class _ModuleEndpoint {
         endpoint: 'module',
         method: 'hello',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'module',
-        methodName: 'hello',
-        parameters: _i1.testObjectToJson({'name': name}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<String>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'module',
+          methodName: 'hello',
+          parameters: _i1.testObjectToJson({'name': name}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
@@ -116,19 +168,22 @@ class _ModuleEndpoint {
         endpoint: 'module',
         method: 'modifyModuleObject',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'module',
-        methodName: 'modifyModuleObject',
-        parameters: _i1.testObjectToJson({'object': object}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<_i4.ModuleClass>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'module',
+          methodName: 'modifyModuleObject',
+          parameters: _i1.testObjectToJson({'object': object}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i4.ModuleClass>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 }
@@ -151,19 +206,22 @@ class _StreamingEndpoint {
         endpoint: 'streaming',
         method: 'wasStreamOpenCalled',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'streaming',
-        methodName: 'wasStreamOpenCalled',
-        parameters: _i1.testObjectToJson({}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<bool>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'streaming',
+          methodName: 'wasStreamOpenCalled',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 
@@ -175,19 +233,22 @@ class _StreamingEndpoint {
         endpoint: 'streaming',
         method: 'wasStreamClosedCalled',
       );
-      var _localCallContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => _localUniqueSession,
-        endpointPath: 'streaming',
-        methodName: 'wasStreamClosedCalled',
-        parameters: _i1.testObjectToJson({}),
-        serializationManager: _serializationManager,
-      );
-      var _localReturnValue = await (_localCallContext.method.call(
-        _localUniqueSession,
-        _localCallContext.arguments,
-      ) as _i3.Future<bool>);
-      await _localUniqueSession.close();
-      return _localReturnValue;
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'streaming',
+          methodName: 'wasStreamClosedCalled',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
     });
   }
 

@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
+import 'package:serverpod_test_server/test_util/test_tags.dart';
 import 'package:test/test.dart';
 
 import 'serverpod_test_tools.dart';
@@ -319,6 +320,7 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.disabled,
+        testGroupTagsOverride: [concurrencyOneTestTag],
       );
 
       withServerpod(
@@ -343,6 +345,7 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.disabled,
+        testGroupTagsOverride: [concurrencyOneTestTag],
       );
     });
 
@@ -367,6 +370,7 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.disabled,
+        testGroupTagsOverride: [concurrencyOneTestTag],
       );
 
       withServerpod(
@@ -388,6 +392,7 @@ void main() {
           });
         },
         rollbackDatabase: RollbackDatabase.disabled,
+        testGroupTagsOverride: [concurrencyOneTestTag],
       );
     });
 
@@ -414,6 +419,287 @@ void main() {
         });
       },
       rollbackDatabase: RollbackDatabase.disabled,
+      testGroupTagsOverride: [concurrencyOneTestTag],
     );
   });
+
+  withServerpod(
+    'Given rollbackDatabase is not disabled (transaction active) ',
+    rollbackDatabase: RollbackDatabase.afterEach,
+    (sessionBuilder, _) {
+      var session = sessionBuilder.build();
+
+      group('when creating UniqueData with the same unique value', () {
+        late Future failingInsert;
+        setUp(() async {
+          await UniqueData.db.insertRow(
+            session,
+            UniqueData(email: 'test@test.com', number: 1),
+          );
+          failingInsert = UniqueData.db.insertRow(
+            session,
+            UniqueData(email: 'test@test.com', number: 1),
+          );
+        });
+
+        test('then should throw database exception', () async {
+          await expectLater(
+            failingInsert,
+            throwsA(
+              allOf(
+                isA<DatabaseException>(),
+              ),
+            ),
+          );
+        });
+
+        test(
+            'then catching database exception should not prevent further database operations',
+            () async {
+          SimpleData? simpleData;
+          try {
+            await failingInsert;
+          } on DatabaseException catch (_) {
+            simpleData =
+                await SimpleData.db.insertRow(session, SimpleData(num: 123));
+          }
+
+          expect(simpleData, isNotNull);
+          expect(simpleData?.num, 123);
+        });
+      });
+
+      test(
+          'when creating multiple UniqueData with the same unique value in parallel '
+          'then should throw database exception but still insert the one that was successful',
+          () async {
+        try {
+          await Future.wait([
+            UniqueData.db.insertRow(
+              session,
+              UniqueData(email: 'test@test2.com', number: 2),
+            ),
+            UniqueData.db.insertRow(
+              session,
+              UniqueData(email: 'test@test2.com', number: 2),
+            ),
+          ]);
+        } on DatabaseException catch (_) {}
+
+        var uniqueDatas = await UniqueData.db.find(session);
+
+        expect(uniqueDatas, hasLength(1));
+        expect(uniqueDatas.first.email, 'test@test2.com');
+      });
+
+      test(
+          'when creating multiple SimpleData in parallel '
+          'then should have inserted all', () async {
+        await Future.wait([
+          SimpleData.db.insertRow(
+            session,
+            SimpleData(num: 1),
+          ),
+          SimpleData.db.insertRow(
+            session,
+            SimpleData(num: 2),
+          ),
+          SimpleData.db.insertRow(
+            session,
+            SimpleData(num: 3),
+          ),
+        ]);
+
+        var simpleDatas = await SimpleData.db.find(session);
+
+        expect(simpleDatas, hasLength(3));
+        expect(simpleDatas.map((s) => s.num), containsAll([1, 2, 3]));
+      });
+
+      group('when calling database operation insertRow', () {
+        setUp(() async {
+          await SimpleData.db.insertRow(
+            session,
+            SimpleData(num: 123),
+          );
+        });
+
+        test('then should have inserted row', () async {
+          var simpleDatas = await SimpleData.db.find(session);
+          expect(simpleDatas.length, 1);
+          expect(simpleDatas.first.num, 123);
+        });
+      });
+
+      group('when calling database operation insert', () {
+        setUp(() async {
+          await SimpleData.db.insert(
+            session,
+            [
+              SimpleData(num: 1),
+              SimpleData(num: 2),
+            ],
+          );
+        });
+
+        test('then should have inserted rows', () async {
+          var simpleDatas = await SimpleData.db.find(session);
+          expect(simpleDatas.length, 2);
+          expect(simpleDatas.map((s) => s.num), containsAll([1, 2]));
+        });
+      });
+
+      group('and SimpleDatas exist', () {
+        late List<SimpleData> insertedSimpleDatas;
+        late SimpleData insertedSimpleData1;
+
+        setUp(() async {
+          insertedSimpleDatas = await SimpleData.db.insert(
+            session,
+            [
+              SimpleData(num: 1),
+              SimpleData(num: 2),
+            ],
+          );
+          insertedSimpleData1 =
+              insertedSimpleDatas.firstWhere((s) => s.num == 1);
+        });
+
+        test(
+            'when calling database operation updateRow '
+            'then should update row', () async {
+          insertedSimpleData1.num = 10;
+          var updatedSimpleData =
+              await SimpleData.db.updateRow(session, insertedSimpleData1);
+          expect(updatedSimpleData.num, 10);
+        });
+
+        test(
+            'when calling database operation update '
+            'then should update rows', () async {
+          var simpleDatas = await SimpleData.db.update(
+            session,
+            insertedSimpleDatas.map((s) => s..num = s.num + 10).toList(),
+          );
+          expect(simpleDatas.map((s) => s.num), containsAll([11, 12]));
+        });
+
+        test(
+            'when calling database operation findById'
+            'then should find the saved row by id', () async {
+          var simpleData = await SimpleData.db.findById(
+            session,
+            insertedSimpleData1.id!,
+          );
+          expect(simpleData, isNotNull);
+          expect(simpleData?.num, 1);
+        });
+
+        test(
+            'when calling database operation findFirstRow'
+            'then should be possible to find first row', () async {
+          var simpleData = await SimpleData.db.findFirstRow(session);
+
+          expect(simpleData, isNotNull);
+          expect(simpleData?.num, 1);
+        });
+
+        test(
+            'when calling database operation find '
+            'then should be possible to find all rows', () async {
+          var simpleDatas = await SimpleData.db.find(session);
+          expect(simpleDatas.length, 2);
+        });
+
+        test(
+            'when calling database operation deleteRow '
+            'then should delete rows', () async {
+          await SimpleData.db.deleteRow(session, insertedSimpleData1);
+          var simpleDatas = await SimpleData.db.find(session);
+          expect(simpleDatas.length, 1);
+          expect(simpleDatas.first.num, 2);
+        });
+
+        test(
+            'when calling database operation deleteWhere'
+            'then rows should be deleted', () async {
+          await SimpleData.db.deleteWhere(
+            session,
+            where: (t) => t.num.equals(1),
+          );
+
+          var simpleDatas = await SimpleData.db.find(session);
+
+          expect(simpleDatas.length, 1);
+          expect(simpleDatas.first.num, 2);
+        });
+
+        test(
+            'when calling database operation delete '
+            'then rows should be deleted', () async {
+          await SimpleData.db.delete(
+            session,
+            insertedSimpleDatas,
+          );
+
+          var simpleDatas = await SimpleData.db.find(session);
+          expect(simpleDatas.length, 0);
+        });
+
+        test(
+            'when calling database operation count'
+            'then rows should be counted', () async {
+          var count = await SimpleData.db.count(session);
+          expect(count, 2);
+        });
+
+        test(
+            'when calling database operation unsafeQuery with select statement '
+            'then should find inserted row', () async {
+          var result = await session.db.unsafeQuery(
+            'SELECT num from simple_data where num = @num',
+            parameters: QueryParameters.named({'num': 2}),
+          );
+          expect(result.length, 1);
+          expect(result.first.first, 2);
+        });
+
+        test(
+            'when calling database operation unsafeExecute with delete statement '
+            'then should delete row', () async {
+          var rowsAffected = await session.db.unsafeExecute(
+            'DELETE FROM simple_data WHERE num = @num',
+            parameters: QueryParameters.named({'num': 2}),
+          );
+
+          expect(rowsAffected, 1);
+        });
+
+        test(
+            'when calling database operation unsafeSimpleQuery with select statement '
+            'then should find inserted row', () async {
+          var result = await session.db.unsafeSimpleQuery(
+            'SELECT num from simple_data',
+          );
+          expect(result.length, 2);
+          expect(
+              result,
+              containsAll([
+                [1],
+                [2],
+              ]));
+        });
+
+        test(
+            'when calling database operation unsafeSimpleExecute with delete statement '
+            'then should delete row', () async {
+          var rowsAffected = await session.db.unsafeSimpleExecute(
+            'DELETE FROM simple_data WHERE num = 2',
+          );
+
+          expect(rowsAffected, 1);
+        });
+      });
+    },
+  );
 }

@@ -2,3 +2,4 @@ type: module
 nickname: auth
 
 client_package_path: ../serverpod_auth_client
+server_test_tools_path: test/integration/test_tools

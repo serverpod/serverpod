@@ -11,6 +11,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import '../protocol.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
+import '../types.dart' as _i3;
+import '../scopes/scope_server_only_field.dart' as _i4;
 
 abstract class ScopeServerOnlyFieldChild extends _i1.ScopeServerOnlyField
     implements _i2.SerializableModel, _i2.ProtocolSerialization {
@@ -22,9 +24,9 @@ abstract class ScopeServerOnlyFieldChild extends _i1.ScopeServerOnlyField
   });
 
   factory ScopeServerOnlyFieldChild({
-    _i1.Types? allScope,
-    _i1.Types? serverOnlyScope,
-    _i1.ScopeServerOnlyField? nested,
+    _i3.Types? allScope,
+    _i3.Types? serverOnlyScope,
+    _i4.ScopeServerOnlyField? nested,
     required String childFoo,
   }) = _ScopeServerOnlyFieldChildImpl;
 
@@ -33,15 +35,15 @@ abstract class ScopeServerOnlyFieldChild extends _i1.ScopeServerOnlyField
     return ScopeServerOnlyFieldChild(
       allScope: jsonSerialization['allScope'] == null
           ? null
-          : _i1.Types.fromJson(
+          : _i3.Types.fromJson(
               (jsonSerialization['allScope'] as Map<String, dynamic>)),
       serverOnlyScope: jsonSerialization['serverOnlyScope'] == null
           ? null
-          : _i1.Types.fromJson(
+          : _i3.Types.fromJson(
               (jsonSerialization['serverOnlyScope'] as Map<String, dynamic>)),
       nested: jsonSerialization['nested'] == null
           ? null
-          : _i1.ScopeServerOnlyField.fromJson(
+          : _i4.ScopeServerOnlyField.fromJson(
               (jsonSerialization['nested'] as Map<String, dynamic>)),
       childFoo: jsonSerialization['childFoo'] as String,
     );
@@ -85,9 +87,9 @@ class _Undefined {}
 
 class _ScopeServerOnlyFieldChildImpl extends ScopeServerOnlyFieldChild {
   _ScopeServerOnlyFieldChildImpl({
-    _i1.Types? allScope,
-    _i1.Types? serverOnlyScope,
-    _i1.ScopeServerOnlyField? nested,
+    _i3.Types? allScope,
+    _i3.Types? serverOnlyScope,
+    _i4.ScopeServerOnlyField? nested,
     required String childFoo,
   }) : super._(
           allScope: allScope,
@@ -104,11 +106,11 @@ class _ScopeServerOnlyFieldChildImpl extends ScopeServerOnlyFieldChild {
     String? childFoo,
   }) {
     return ScopeServerOnlyFieldChild(
-      allScope: allScope is _i1.Types? ? allScope : this.allScope?.copyWith(),
-      serverOnlyScope: serverOnlyScope is _i1.Types?
+      allScope: allScope is _i3.Types? ? allScope : this.allScope?.copyWith(),
+      serverOnlyScope: serverOnlyScope is _i3.Types?
           ? serverOnlyScope
           : this.serverOnlyScope?.copyWith(),
-      nested: nested is _i1.ScopeServerOnlyField?
+      nested: nested is _i4.ScopeServerOnlyField?
           ? nested
           : this.nested?.copyWith(),
       childFoo: childFoo ?? this.childFoo,

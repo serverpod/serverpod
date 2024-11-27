@@ -10,7 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../protocol.dart' as _i2;
+import '../database/index_element_definition_type.dart' as _i2;
 
 /// Defines an element of an index.
 abstract class IndexElementDefinition implements _i1.SerializableModel {

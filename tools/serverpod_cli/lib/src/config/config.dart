@@ -117,6 +117,14 @@ class GeneratorConfig {
   /// server package.
   List<String> get generatedServeModelPackagePathParts => ['src', 'generated'];
 
+  /// The path parts of the generated endpoint file.
+  List<String> get generatedServerEndpointFilePathParts =>
+      [...generatedServeModelPathParts, 'endpoints.dart'];
+
+  /// The path parts of the generated protocol file.
+  List<String> get generatedServerProtocolFilePathParts =>
+      [...generatedServeModelPathParts, 'protocol.dart'];
+
   /// The path parts of the directory, where the generated code is stored in the
   /// server package.
   List<String> get generatedServeModelPathParts => [
@@ -142,10 +150,6 @@ class GeneratorConfig {
   ];
 
   List<String>? get generatedServerTestToolsPathParts {
-    if (!isExperimentalFeatureEnabled(ExperimentalFeature.testTools)) {
-      return null;
-    }
-
     var localRelativeServerTestToolsPathParts =
         _relativeServerTestToolsPathParts;
     if (localRelativeServerTestToolsPathParts != null) {
@@ -260,10 +264,10 @@ class GeneratorConfig {
         'pubspec.yaml'
       ]));
       var yamlStr = file.readAsStringSync();
-      var yaml = loadYaml(yamlStr);
+      Map yaml = loadYaml(yamlStr);
       dartClientPackage = yaml['name'];
       dartClientDependsOnServiceClient =
-          yaml['dependencies'].containsKey('serverpod_service_client');
+          (yaml['dependencies'] as Map).containsKey('serverpod_service_client');
     } catch (_) {
       throw const ServerpodProjectNotFoundException(
         'Failed to load client pubspec.yaml. If you are using a none default '
@@ -301,7 +305,8 @@ class GeneratorConfig {
     if (generatorConfig['modules'] != null) {
       Map modulesData = generatorConfig['modules'];
       for (var package in modulesData.keys) {
-        var nickname = modulesData[package]?['nickname'];
+        var packageValue = modulesData[package];
+        var nickname = packageValue is Map ? packageValue['nickname'] : null;
         manualModules[package] = nickname is String ? nickname : null;
       }
     }
@@ -319,9 +324,10 @@ class GeneratorConfig {
 
     // Load extraClasses
     var extraClasses = <TypeDefinition>[];
-    if (generatorConfig['extraClasses'] != null) {
+    var configExtraClasses = generatorConfig['extraClasses'];
+    if (configExtraClasses != null) {
       try {
-        for (var extraClassConfig in generatorConfig['extraClasses']) {
+        for (var extraClassConfig in configExtraClasses) {
           extraClasses.add(
             parseType(
               extraClassConfig,
@@ -334,7 +340,7 @@ class GeneratorConfig {
       } catch (e) {
         throw SourceSpanFormatException(
             'Failed to load \'extraClasses\' config',
-            generatorConfig['extraClasses'].span);
+            configExtraClasses is YamlNode ? configExtraClasses.span : null);
       }
     }
 

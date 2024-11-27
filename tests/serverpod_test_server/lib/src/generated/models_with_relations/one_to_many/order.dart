@@ -10,7 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../models_with_relations/one_to_many/customer.dart' as _i2;
+import '../../models_with_relations/one_to_many/comment.dart' as _i3;
 
 abstract class Order implements _i1.TableRow, _i1.ProtocolSerialization {
   Order._({
@@ -26,7 +27,7 @@ abstract class Order implements _i1.TableRow, _i1.ProtocolSerialization {
     required String description,
     required int customerId,
     _i2.Customer? customer,
-    List<_i2.Comment>? comments,
+    List<_i3.Comment>? comments,
   }) = _OrderImpl;
 
   factory Order.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -39,7 +40,7 @@ abstract class Order implements _i1.TableRow, _i1.ProtocolSerialization {
           : _i2.Customer.fromJson(
               (jsonSerialization['customer'] as Map<String, dynamic>)),
       comments: (jsonSerialization['comments'] as List?)
-          ?.map((e) => _i2.Comment.fromJson((e as Map<String, dynamic>)))
+          ?.map((e) => _i3.Comment.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }
@@ -57,7 +58,7 @@ abstract class Order implements _i1.TableRow, _i1.ProtocolSerialization {
 
   _i2.Customer? customer;
 
-  List<_i2.Comment>? comments;
+  List<_i3.Comment>? comments;
 
   @override
   _i1.Table get table => t;
@@ -67,7 +68,7 @@ abstract class Order implements _i1.TableRow, _i1.ProtocolSerialization {
     String? description,
     int? customerId,
     _i2.Customer? customer,
-    List<_i2.Comment>? comments,
+    List<_i3.Comment>? comments,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -95,7 +96,7 @@ abstract class Order implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static OrderInclude include({
     _i2.CustomerInclude? customer,
-    _i2.CommentIncludeList? comments,
+    _i3.CommentIncludeList? comments,
   }) {
     return OrderInclude._(
       customer: customer,
@@ -137,7 +138,7 @@ class _OrderImpl extends Order {
     required String description,
     required int customerId,
     _i2.Customer? customer,
-    List<_i2.Comment>? comments,
+    List<_i3.Comment>? comments,
   }) : super._(
           id: id,
           description: description,
@@ -160,7 +161,7 @@ class _OrderImpl extends Order {
       customerId: customerId ?? this.customerId,
       customer:
           customer is _i2.Customer? ? customer : this.customer?.copyWith(),
-      comments: comments is List<_i2.Comment>?
+      comments: comments is List<_i3.Comment>?
           ? comments
           : this.comments?.map((e0) => e0.copyWith()).toList(),
     );
@@ -185,9 +186,9 @@ class OrderTable extends _i1.Table {
 
   _i2.CustomerTable? _customer;
 
-  _i2.CommentTable? ___comments;
+  _i3.CommentTable? ___comments;
 
-  _i1.ManyRelation<_i2.CommentTable>? _comments;
+  _i1.ManyRelation<_i3.CommentTable>? _comments;
 
   _i2.CustomerTable get customer {
     if (_customer != null) return _customer!;
@@ -202,32 +203,32 @@ class OrderTable extends _i1.Table {
     return _customer!;
   }
 
-  _i2.CommentTable get __comments {
+  _i3.CommentTable get __comments {
     if (___comments != null) return ___comments!;
     ___comments = _i1.createRelationTable(
       relationFieldName: '__comments',
       field: Order.t.id,
-      foreignField: _i2.Comment.t.orderId,
+      foreignField: _i3.Comment.t.orderId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.CommentTable(tableRelation: foreignTableRelation),
+          _i3.CommentTable(tableRelation: foreignTableRelation),
     );
     return ___comments!;
   }
 
-  _i1.ManyRelation<_i2.CommentTable> get comments {
+  _i1.ManyRelation<_i3.CommentTable> get comments {
     if (_comments != null) return _comments!;
     var relationTable = _i1.createRelationTable(
       relationFieldName: 'comments',
       field: Order.t.id,
-      foreignField: _i2.Comment.t.orderId,
+      foreignField: _i3.Comment.t.orderId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.CommentTable(tableRelation: foreignTableRelation),
+          _i3.CommentTable(tableRelation: foreignTableRelation),
     );
-    _comments = _i1.ManyRelation<_i2.CommentTable>(
+    _comments = _i1.ManyRelation<_i3.CommentTable>(
       tableWithRelations: relationTable,
-      table: _i2.CommentTable(
+      table: _i3.CommentTable(
           tableRelation: relationTable.tableRelation!.lastRelation),
     );
     return _comments!;
@@ -255,7 +256,7 @@ class OrderTable extends _i1.Table {
 class OrderInclude extends _i1.IncludeObject {
   OrderInclude._({
     _i2.CustomerInclude? customer,
-    _i2.CommentIncludeList? comments,
+    _i3.CommentIncludeList? comments,
   }) {
     _customer = customer;
     _comments = comments;
@@ -263,7 +264,7 @@ class OrderInclude extends _i1.IncludeObject {
 
   _i2.CustomerInclude? _customer;
 
-  _i2.CommentIncludeList? _comments;
+  _i3.CommentIncludeList? _comments;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -460,7 +461,7 @@ class OrderAttachRepository {
   Future<void> comments(
     _i1.Session session,
     Order order,
-    List<_i2.Comment> comment, {
+    List<_i3.Comment> comment, {
     _i1.Transaction? transaction,
   }) async {
     if (comment.any((e) => e.id == null)) {
@@ -471,9 +472,9 @@ class OrderAttachRepository {
     }
 
     var $comment = comment.map((e) => e.copyWith(orderId: order.id)).toList();
-    await session.db.update<_i2.Comment>(
+    await session.db.update<_i3.Comment>(
       $comment,
-      columns: [_i2.Comment.t.orderId],
+      columns: [_i3.Comment.t.orderId],
       transaction: transaction,
     );
   }
@@ -506,7 +507,7 @@ class OrderAttachRowRepository {
   Future<void> comments(
     _i1.Session session,
     Order order,
-    _i2.Comment comment, {
+    _i3.Comment comment, {
     _i1.Transaction? transaction,
   }) async {
     if (comment.id == null) {
@@ -517,9 +518,9 @@ class OrderAttachRowRepository {
     }
 
     var $comment = comment.copyWith(orderId: order.id);
-    await session.db.updateRow<_i2.Comment>(
+    await session.db.updateRow<_i3.Comment>(
       $comment,
-      columns: [_i2.Comment.t.orderId],
+      columns: [_i3.Comment.t.orderId],
       transaction: transaction,
     );
   }

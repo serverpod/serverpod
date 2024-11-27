@@ -90,11 +90,6 @@ class ExampleEndpoint extends Endpoint {
               'endpoint.dart',
             ));
       });
-
-      test('has expected subDirParts.', () {
-        var subDirParts = endpointDefinitions.firstOrNull?.subDirParts;
-        expect(subDirParts, isEmpty);
-      });
     });
   });
 

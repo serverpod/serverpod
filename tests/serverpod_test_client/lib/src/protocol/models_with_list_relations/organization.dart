@@ -10,7 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../protocol.dart' as _i2;
+import '../models_with_list_relations/person.dart' as _i2;
+import '../models_with_list_relations/city.dart' as _i3;
 
 abstract class Organization implements _i1.SerializableModel {
   Organization._({
@@ -26,7 +27,7 @@ abstract class Organization implements _i1.SerializableModel {
     required String name,
     List<_i2.Person>? people,
     int? cityId,
-    _i2.City? city,
+    _i3.City? city,
   }) = _OrganizationImpl;
 
   factory Organization.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -39,7 +40,7 @@ abstract class Organization implements _i1.SerializableModel {
       cityId: jsonSerialization['cityId'] as int?,
       city: jsonSerialization['city'] == null
           ? null
-          : _i2.City.fromJson(
+          : _i3.City.fromJson(
               (jsonSerialization['city'] as Map<String, dynamic>)),
     );
   }
@@ -55,14 +56,14 @@ abstract class Organization implements _i1.SerializableModel {
 
   int? cityId;
 
-  _i2.City? city;
+  _i3.City? city;
 
   Organization copyWith({
     int? id,
     String? name,
     List<_i2.Person>? people,
     int? cityId,
-    _i2.City? city,
+    _i3.City? city,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -90,7 +91,7 @@ class _OrganizationImpl extends Organization {
     required String name,
     List<_i2.Person>? people,
     int? cityId,
-    _i2.City? city,
+    _i3.City? city,
   }) : super._(
           id: id,
           name: name,
@@ -114,7 +115,7 @@ class _OrganizationImpl extends Organization {
           ? people
           : this.people?.map((e0) => e0.copyWith()).toList(),
       cityId: cityId is int? ? cityId : this.cityId,
-      city: city is _i2.City? ? city : this.city?.copyWith(),
+      city: city is _i3.City? ? city : this.city?.copyWith(),
     );
   }
 }

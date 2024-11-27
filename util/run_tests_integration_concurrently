@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# This script runs the integration tests that are compatible with running concurrently.
+# Only tests tagged with 'integration' (default tag for the test tools) will be run in parallel
+# and the rest are excluded from this job.
+
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/run_tests_integration_concurrently"
+    exit 1
+fi
+
+# Makes script exit on first non-zero error code
+set -e
+
+cd tests/docker/tests_integration
+
+docker compose --profile concurrent up --abort-on-container-exit --exit-code-from  serverpod_test_server_concurrent_tests  --build --remove-orphans 

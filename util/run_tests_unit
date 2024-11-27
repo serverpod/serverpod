@@ -17,6 +17,7 @@ declare -a projectPaths=(
     "packages/relic"
     "tests/serverpod_test_client"
     "tests/serverpod_test_server"
+    "tests/serverpod_test_flutter"
     "modules/serverpod_auth/serverpod_auth_server"
 )
 

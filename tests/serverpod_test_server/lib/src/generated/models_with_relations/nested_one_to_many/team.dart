@@ -10,7 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../models_with_relations/nested_one_to_many/arena.dart' as _i2;
+import '../../models_with_relations/nested_one_to_many/player.dart' as _i3;
 
 abstract class Team implements _i1.TableRow, _i1.ProtocolSerialization {
   Team._({
@@ -26,7 +27,7 @@ abstract class Team implements _i1.TableRow, _i1.ProtocolSerialization {
     required String name,
     int? arenaId,
     _i2.Arena? arena,
-    List<_i2.Player>? players,
+    List<_i3.Player>? players,
   }) = _TeamImpl;
 
   factory Team.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -39,7 +40,7 @@ abstract class Team implements _i1.TableRow, _i1.ProtocolSerialization {
           : _i2.Arena.fromJson(
               (jsonSerialization['arena'] as Map<String, dynamic>)),
       players: (jsonSerialization['players'] as List?)
-          ?.map((e) => _i2.Player.fromJson((e as Map<String, dynamic>)))
+          ?.map((e) => _i3.Player.fromJson((e as Map<String, dynamic>)))
           .toList(),
     );
   }
@@ -57,7 +58,7 @@ abstract class Team implements _i1.TableRow, _i1.ProtocolSerialization {
 
   _i2.Arena? arena;
 
-  List<_i2.Player>? players;
+  List<_i3.Player>? players;
 
   @override
   _i1.Table get table => t;
@@ -67,7 +68,7 @@ abstract class Team implements _i1.TableRow, _i1.ProtocolSerialization {
     String? name,
     int? arenaId,
     _i2.Arena? arena,
-    List<_i2.Player>? players,
+    List<_i3.Player>? players,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -95,7 +96,7 @@ abstract class Team implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static TeamInclude include({
     _i2.ArenaInclude? arena,
-    _i2.PlayerIncludeList? players,
+    _i3.PlayerIncludeList? players,
   }) {
     return TeamInclude._(
       arena: arena,
@@ -137,7 +138,7 @@ class _TeamImpl extends Team {
     required String name,
     int? arenaId,
     _i2.Arena? arena,
-    List<_i2.Player>? players,
+    List<_i3.Player>? players,
   }) : super._(
           id: id,
           name: name,
@@ -159,7 +160,7 @@ class _TeamImpl extends Team {
       name: name ?? this.name,
       arenaId: arenaId is int? ? arenaId : this.arenaId,
       arena: arena is _i2.Arena? ? arena : this.arena?.copyWith(),
-      players: players is List<_i2.Player>?
+      players: players is List<_i3.Player>?
           ? players
           : this.players?.map((e0) => e0.copyWith()).toList(),
     );
@@ -184,9 +185,9 @@ class TeamTable extends _i1.Table {
 
   _i2.ArenaTable? _arena;
 
-  _i2.PlayerTable? ___players;
+  _i3.PlayerTable? ___players;
 
-  _i1.ManyRelation<_i2.PlayerTable>? _players;
+  _i1.ManyRelation<_i3.PlayerTable>? _players;
 
   _i2.ArenaTable get arena {
     if (_arena != null) return _arena!;
@@ -201,32 +202,32 @@ class TeamTable extends _i1.Table {
     return _arena!;
   }
 
-  _i2.PlayerTable get __players {
+  _i3.PlayerTable get __players {
     if (___players != null) return ___players!;
     ___players = _i1.createRelationTable(
       relationFieldName: '__players',
       field: Team.t.id,
-      foreignField: _i2.Player.t.teamId,
+      foreignField: _i3.Player.t.teamId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.PlayerTable(tableRelation: foreignTableRelation),
+          _i3.PlayerTable(tableRelation: foreignTableRelation),
     );
     return ___players!;
   }
 
-  _i1.ManyRelation<_i2.PlayerTable> get players {
+  _i1.ManyRelation<_i3.PlayerTable> get players {
     if (_players != null) return _players!;
     var relationTable = _i1.createRelationTable(
       relationFieldName: 'players',
       field: Team.t.id,
-      foreignField: _i2.Player.t.teamId,
+      foreignField: _i3.Player.t.teamId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.PlayerTable(tableRelation: foreignTableRelation),
+          _i3.PlayerTable(tableRelation: foreignTableRelation),
     );
-    _players = _i1.ManyRelation<_i2.PlayerTable>(
+    _players = _i1.ManyRelation<_i3.PlayerTable>(
       tableWithRelations: relationTable,
-      table: _i2.PlayerTable(
+      table: _i3.PlayerTable(
           tableRelation: relationTable.tableRelation!.lastRelation),
     );
     return _players!;
@@ -254,7 +255,7 @@ class TeamTable extends _i1.Table {
 class TeamInclude extends _i1.IncludeObject {
   TeamInclude._({
     _i2.ArenaInclude? arena,
-    _i2.PlayerIncludeList? players,
+    _i3.PlayerIncludeList? players,
   }) {
     _arena = arena;
     _players = players;
@@ -262,7 +263,7 @@ class TeamInclude extends _i1.IncludeObject {
 
   _i2.ArenaInclude? _arena;
 
-  _i2.PlayerIncludeList? _players;
+  _i3.PlayerIncludeList? _players;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -463,7 +464,7 @@ class TeamAttachRepository {
   Future<void> players(
     _i1.Session session,
     Team team,
-    List<_i2.Player> player, {
+    List<_i3.Player> player, {
     _i1.Transaction? transaction,
   }) async {
     if (player.any((e) => e.id == null)) {
@@ -474,9 +475,9 @@ class TeamAttachRepository {
     }
 
     var $player = player.map((e) => e.copyWith(teamId: team.id)).toList();
-    await session.db.update<_i2.Player>(
+    await session.db.update<_i3.Player>(
       $player,
-      columns: [_i2.Player.t.teamId],
+      columns: [_i3.Player.t.teamId],
       transaction: transaction,
     );
   }
@@ -509,7 +510,7 @@ class TeamAttachRowRepository {
   Future<void> players(
     _i1.Session session,
     Team team,
-    _i2.Player player, {
+    _i3.Player player, {
     _i1.Transaction? transaction,
   }) async {
     if (player.id == null) {
@@ -520,9 +521,9 @@ class TeamAttachRowRepository {
     }
 
     var $player = player.copyWith(teamId: team.id);
-    await session.db.updateRow<_i2.Player>(
+    await session.db.updateRow<_i3.Player>(
       $player,
-      columns: [_i2.Player.t.teamId],
+      columns: [_i3.Player.t.teamId],
       transaction: transaction,
     );
   }
@@ -533,7 +534,7 @@ class TeamDetachRepository {
 
   Future<void> players(
     _i1.Session session,
-    List<_i2.Player> player, {
+    List<_i3.Player> player, {
     _i1.Transaction? transaction,
   }) async {
     if (player.any((e) => e.id == null)) {
@@ -541,9 +542,9 @@ class TeamDetachRepository {
     }
 
     var $player = player.map((e) => e.copyWith(teamId: null)).toList();
-    await session.db.update<_i2.Player>(
+    await session.db.update<_i3.Player>(
       $player,
-      columns: [_i2.Player.t.teamId],
+      columns: [_i3.Player.t.teamId],
       transaction: transaction,
     );
   }
@@ -571,7 +572,7 @@ class TeamDetachRowRepository {
 
   Future<void> players(
     _i1.Session session,
-    _i2.Player player, {
+    _i3.Player player, {
     _i1.Transaction? transaction,
   }) async {
     if (player.id == null) {
@@ -579,9 +580,9 @@ class TeamDetachRowRepository {
     }
 
     var $player = player.copyWith(teamId: null);
-    await session.db.updateRow<_i2.Player>(
+    await session.db.updateRow<_i3.Player>(
       $player,
-      columns: [_i2.Player.t.teamId],
+      columns: [_i3.Player.t.teamId],
       transaction: transaction,
     );
   }

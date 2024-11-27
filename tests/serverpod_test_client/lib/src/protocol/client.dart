@@ -2330,6 +2330,27 @@ class EndpointTestTools extends _i1.EndpointRef {
         'echoSimpleDatas',
         {'simpleDatas': simpleDatas},
       );
+
+  _i2.Future<void> logMessageWithSession() => caller.callServerEndpoint<void>(
+        'testTools',
+        'logMessageWithSession',
+        {},
+      );
+
+  _i2.Future<void> addWillCloseListenerToSessionAndThrow() =>
+      caller.callServerEndpoint<void>(
+        'testTools',
+        'addWillCloseListenerToSessionAndThrow',
+        {},
+      );
+
+  _i2.Stream<int> addWillCloseListenerToSessionIntStreamMethodAndThrow() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'testTools',
+        'addWillCloseListenerToSessionIntStreamMethodAndThrow',
+        {},
+        {},
+      );
 }
 
 /// {@category Endpoint}
@@ -2371,8 +2392,8 @@ class EndpointAuthenticatedTestTools extends _i1.EndpointRef {
       );
 }
 
-class _Modules {
-  _Modules(Client client) {
+class Modules {
+  Modules(Client client) {
     auth = _i3.Caller(client);
     module = _i17.Caller(client);
   }
@@ -2449,7 +2470,7 @@ class Client extends _i1.ServerpodClientShared {
     subDirTest = EndpointSubDirTest(this);
     testTools = EndpointTestTools(this);
     authenticatedTestTools = EndpointAuthenticatedTestTools(this);
-    modules = _Modules(this);
+    modules = Modules(this);
   }
 
   late final EndpointAsyncTasks asyncTasks;
@@ -2533,7 +2554,7 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointAuthenticatedTestTools authenticatedTestTools;
 
-  late final _Modules modules;
+  late final Modules modules;
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {

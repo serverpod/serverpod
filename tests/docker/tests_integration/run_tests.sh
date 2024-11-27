@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This script runs the integration tests that are not compatible with running concurrently (i.e. with the `--concurrency=1` flag).
+# All tests tagged with 'integration' (default tag for the test tools) will be excluded from this test script.
+
 checkLastExitCode() {
   local last_exit_code=$?
   if [ $last_exit_code -ne 0 ]; then
@@ -24,7 +27,7 @@ dart bin/main.dart -m production -r maintenance --apply-migrations
 
 # Run tests
 echo "### Running tests"
-dart test test_integration --concurrency=1
+dart test test_integration -x integration --concurrency=1
 checkLastExitCode
 
 cd ../serverpod_test_module/serverpod_test_module_server/

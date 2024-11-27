@@ -8,8 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 
-library protocol; // ignore_for_file: no_leading_underscores_for_library_prefixes
-
+// ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'channel.dart' as _i2;
 import 'package:chat_client/src/protocol/channel.dart' as _i3;
@@ -70,15 +69,19 @@ class Protocol extends _i1.SerializationManager {
 
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
-    if (data['className'] == 'Channel') {
+    var dataClassName = data['className'];
+    if (dataClassName is! String) {
+      return super.deserializeByClassName(data);
+    }
+    if (dataClassName == 'Channel') {
       return deserialize<_i2.Channel>(data['data']);
     }
-    if (data['className'].startsWith('serverpod_auth.')) {
-      data['className'] = data['className'].substring(15);
+    if (dataClassName.startsWith('serverpod_auth.')) {
+      data['className'] = dataClassName.substring(15);
       return _i4.Protocol().deserializeByClassName(data);
     }
-    if (data['className'].startsWith('serverpod_chat.')) {
-      data['className'] = data['className'].substring(15);
+    if (dataClassName.startsWith('serverpod_chat.')) {
+      data['className'] = dataClassName.substring(15);
       return _i5.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);

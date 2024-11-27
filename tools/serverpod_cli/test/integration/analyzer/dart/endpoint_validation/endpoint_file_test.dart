@@ -130,10 +130,16 @@ class ExampleEndpoint extends Endpoint {
       expect(endpointDefinitions, hasLength(1));
     });
 
-    test('then endpoint definition has expected subDirParts.', () {
-      var subDirParts = endpointDefinitions.firstOrNull?.subDirParts;
-      expect(subDirParts, hasLength(1));
-      expect(subDirParts?.first, 'subdirectory');
+    test('then endpoint definition has expected file path.', () {
+      var filePath = endpointDefinitions.firstOrNull?.filePath;
+      expect(
+          filePath,
+          path.join(
+            Directory.current.path,
+            testDirectory.path,
+            'subdirectory',
+            'endpoint.dart',
+          ));
     });
   });
 

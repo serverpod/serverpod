@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 
@@ -179,6 +181,30 @@ class TestToolsEndpoint extends Endpoint {
     List<SimpleData> simpleDatas,
   ) async {
     return simpleDatas;
+  }
+
+  Future<void> logMessageWithSession(Session session) async {
+    session.log('test session log in endpoint');
+  }
+
+  static Completer<void>? willCloseListenerCalled;
+
+  Future<void> addWillCloseListenerToSessionAndThrow(Session session) async {
+    session.addWillCloseListener((Session s) {
+      willCloseListenerCalled?.complete();
+    });
+
+    throw Exception();
+  }
+
+  Stream<int> addWillCloseListenerToSessionIntStreamMethodAndThrow(
+    Session session,
+  ) {
+    session.addWillCloseListener((Session s) {
+      willCloseListenerCalled?.complete();
+    });
+
+    throw Exception();
   }
 }
 
