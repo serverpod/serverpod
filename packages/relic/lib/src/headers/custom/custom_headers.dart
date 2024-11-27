@@ -86,21 +86,6 @@ class CustomHeaders extends UnmodifiableMapView<String, List<String>> {
 
     return CustomHeaders(updatedHeaders);
   }
-
-  /// Sets headers from another `CustomHeaders` instance.
-  CustomHeaders _withOther(CustomHeaders other) {
-    if (other.isEmpty) return this;
-
-    // Create a new map with all entries from the current instance.
-    var mergedEntries = Map<String, List<String>>.from(this);
-
-    // Add/override entries from the other instance.
-    other.forEach((key, value) {
-      mergedEntries[key] = List<String>.from(value);
-    });
-
-    return CustomHeaders(mergedEntries);
-  }
 }
 
 /// Converts a list of [MapEntry] to a case-insensitive map.
