@@ -142,13 +142,18 @@ class ModelHelper {
         ));
   }
 
-  static List<String> extractPathFromConfig(GeneratorConfig config, Uri uri) {
-    if (isWithin(joinAll(config.protocolSourcePathParts), uri.path)) {
-      return _extractPathFromModelRoot(config.protocolSourcePathParts, uri);
-    }
+  static List<String> extractPathFromConfig(ModelLoadConfig config, Uri uri) {
+    List<List<String>> paths = [
+      config.protocolSourcePathParts,
+      config.modelSourcePathParts,
+      config.srcSourcePathParts,
+      config.libSourcePathParts,
+    ];
 
-    if (isWithin(joinAll(config.modelSourcePathParts), uri.path)) {
-      return _extractPathFromModelRoot(config.modelSourcePathParts, uri);
+    for (var path in paths) {
+      if (isWithin(joinAll(path), uri.path)) {
+        return _extractPathFromModelRoot(path, uri);
+      }
     }
 
     return split(uri.path);

@@ -120,7 +120,7 @@ void main() {
     });
 
     test(
-        'Given a model with a path outside of the protocol or models folder, then parts list contains all the path parts',
+        'Given a model with a path outside of the lib folder, then parts list contains all the path parts',
         () {
       var filePathParts = [
         'test',
@@ -130,8 +130,6 @@ void main() {
         'protocol_helper',
         'has_serverpod_server_project',
         'test_server',
-        'lib',
-        'src',
       ];
       var modelFile = File(joinAll(filePathParts));
 
