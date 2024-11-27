@@ -11,7 +11,11 @@ void main() {
     gotLog = false;
   });
 
-  void logger(String msg, bool isError) {
+  void logger(
+    String msg, {
+    bool isError = false,
+    StackTrace? stackTrace,
+  }) {
     expect(gotLog, isFalse);
     gotLog = true;
     expect(isError, isFalse);
@@ -44,16 +48,19 @@ void main() {
   test(
       'Given a request with an asynchronous error response when logged then it logs the error',
       () {
-    var handler =
-        const Pipeline().addMiddleware(logRequests(logger: (msg, isError) {
-      expect(gotLog, isFalse);
-      gotLog = true;
-      expect(isError, isTrue);
-      expect(msg, contains('\tGET\t/'));
-      expect(msg, contains('oh no'));
-    })).addHandler((request) {
-      throw StateError('oh no');
-    });
+    var handler = const Pipeline().addMiddleware(logRequests(
+      logger: (msg, {isError = false, stackTrace}) {
+        expect(gotLog, isFalse);
+        gotLog = true;
+        expect(isError, isTrue);
+        expect(msg, contains('\tGET\t/'));
+        expect(msg, contains('oh no'));
+      },
+    )).addHandler(
+      (request) {
+        throw StateError('oh no');
+      },
+    );
 
     expect(makeSimpleRequest(handler), throwsA(isOhNoStateError));
   });

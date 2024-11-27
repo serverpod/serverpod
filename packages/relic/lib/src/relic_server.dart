@@ -4,14 +4,12 @@ import 'dart:io';
 import 'package:relic/src/body/body.dart';
 import 'package:relic/src/hijack/exception/hijack_exception.dart';
 import 'package:relic/src/headers/exception/invalid_header_exception.dart';
+import 'package:relic/src/logger/logger.dart';
 import 'package:relic/src/message/request.dart';
 import 'package:relic/src/message/response.dart';
 import 'package:relic/src/util/util.dart';
-import 'package:stack_trace/stack_trace.dart';
 
 import 'handler/handler.dart';
-
-part './logger/error_logger.dart';
 
 /// A [Server] backed by a `dart:io` [HttpServer].
 class RelicServer {
@@ -111,9 +109,9 @@ class RelicServer {
     catchTopLevelErrors(() {
       server.listen(_handleRequest);
     }, (error, stackTrace) {
-      _logTopLevelError(
+      logError(
         'Asynchronous error\n$error',
-        stackTrace,
+        stackTrace: stackTrace,
       );
     });
   }
@@ -135,7 +133,10 @@ class RelicServer {
         poweredByHeader: poweredByHeader,
       );
     } catch (error, stackTrace) {
-      _logTopLevelError('Error parsing request.\n$error', stackTrace);
+      logError(
+        'Error parsing request.\n$error',
+        stackTrace: stackTrace,
+      );
 
       Response errorResponse;
       // If the error is an [InvalidHeaderException], respond with a 400 Bad Request status.
@@ -201,4 +202,16 @@ class RelicServer {
 
     await response.writeHttpResponse(request.response);
   }
+}
+
+void _logError(Request request, String message, StackTrace stackTrace) {
+  var buffer = StringBuffer();
+  buffer.write('${request.method} ${request.requestedUri.path}');
+  if (request.requestedUri.query.isNotEmpty) {
+    buffer.write('?${request.requestedUri.query}');
+  }
+  buffer.writeln();
+  buffer.write(message);
+
+  logError(buffer.toString(), stackTrace: stackTrace);
 }
