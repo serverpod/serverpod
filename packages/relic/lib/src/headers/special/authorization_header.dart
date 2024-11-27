@@ -128,21 +128,16 @@ class BasicAuthorizationHeader extends AuthorizationHeader {
 
     final base64Part = value.substring(prefix.length).trim();
 
-    if (!base64Part.isValidBase64) {
-      throw FormatException('Invalid basic token encoding');
-    }
-
-    final decoded = base64Part.decodeBase64;
-    final parts = decoded.split(':');
-
-    if (parts.length != 2) {
+    try {
+      final decoded = base64Part.decodeBase64;
+      final parts = decoded.split(':');
+      return BasicAuthorizationHeader(
+        username: parts[0],
+        password: parts[1],
+      );
+    } catch (e) {
       throw FormatException('Invalid basic token format');
     }
-
-    return BasicAuthorizationHeader(
-      username: parts[0],
-      password: parts[1],
-    );
   }
 
   /// Returns the full authorization string, including the "Basic " prefix.

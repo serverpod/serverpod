@@ -119,7 +119,7 @@ void main() {
               isA<BadRequestException>().having(
                 (e) => e.message,
                 'message',
-                contains('Invalid basic token encoding'),
+                contains('Invalid basic token format'),
               ),
             ),
           );
