@@ -110,7 +110,7 @@ Handler createStaticHandler(
       return _redirectToAddTrailingSlash(uri);
     }
 
-    return _handleFile(request, file, () async {
+    return _handleFile(request, file, getContentType: () async {
       if (useHeaderBytesForContentType) {
         final length =
             math.min(mimeResolver.magicNumbersMaxLength, file.lengthSync());
@@ -119,9 +119,14 @@ Handler createStaticHandler(
 
         await file.openRead(0, length).listen(byteSink.add).asFuture<void>();
 
-        return mimeResolver.lookup(file.path, headerBytes: byteSink.bytes);
+        var type = mimeResolver.lookup(file.path, headerBytes: byteSink.bytes);
+        if (type == null) return null;
+
+        return MimeType.parse(type);
       } else {
-        return mimeResolver.lookup(file.path);
+        var type = mimeResolver.lookup(file.path);
+        if (type == null) return null;
+        return MimeType.parse(type);
       }
     });
   };
@@ -161,7 +166,11 @@ File? _tryDefaultFile(String dirPath, String? defaultFile) {
 /// This uses the given [contentType] for the Content-Type header. It defaults
 /// to looking up a content type based on [path]'s file extension, and failing
 /// that doesn't sent a [contentType] header at all.
-Handler createFileHandler(String path, {String? url, String? contentType}) {
+Handler createFileHandler(
+  String path, {
+  String? url,
+  MimeType? contentType,
+}) {
   final file = File(path);
   if (!file.existsSync()) {
     throw ArgumentError.value(path, 'path', 'does not exist.');
@@ -169,7 +178,6 @@ Handler createFileHandler(String path, {String? url, String? contentType}) {
     throw ArgumentError.value(url, 'url', 'must be relative.');
   }
 
-  final mimeType = contentType ?? _defaultMimeTypeResolver.lookup(path);
   url ??= p.toUri(p.basename(path)).toString();
 
   return (request) {
@@ -180,7 +188,19 @@ Handler createFileHandler(String path, {String? url, String? contentType}) {
         ),
       );
     }
-    return _handleFile(request, file, () => mimeType);
+
+    var mimeType = contentType;
+    if (mimeType == null) {
+      var type = _defaultMimeTypeResolver.lookup(path);
+      if (type != null) {
+        mimeType = MimeType.parse(type);
+      }
+    }
+    return _handleFile(
+      request,
+      file,
+      getContentType: () => mimeType,
+    );
   };
 }
 
@@ -191,9 +211,9 @@ Handler createFileHandler(String path, {String? url, String? contentType}) {
 /// [getContentType] and uses it to populate the Content-Type header.
 Future<Response> _handleFile(
   Request request,
-  File file,
-  FutureOr<String?> Function() getContentType,
-) async {
+  File file, {
+  required FutureOr<MimeType?> Function() getContentType,
+}) async {
   final stat = file.statSync();
   final ifModifiedSince = request.headers.ifModifiedSince;
 
@@ -203,8 +223,6 @@ Future<Response> _handleFile(
       return Response.notModified();
     }
   }
-
-  final contentType = await getContentType();
   final headers = Headers.response(
     lastModified: stat.modified,
     acceptRanges: AcceptRangesHeader.bytes(),
@@ -213,14 +231,18 @@ Future<Response> _handleFile(
   var response = _fileRangeResponse(request, file, headers);
   if (response != null) return response;
 
+  Body? body;
+
+  if (request.method != Method.head) {
+    body = Body.fromDataStream(
+      file.openRead().cast<Uint8List>(),
+      mimeType: await getContentType(),
+      contentLength: file.lengthSync(),
+    );
+  }
+
   return Response.ok(
-    body: request.method == Method.head
-        ? null
-        : Body.fromDataStream(
-            file.openRead().cast<Uint8List>(),
-            mimeType: MimeType.tryParse(contentType),
-            contentLength: file.lengthSync(),
-          ),
+    body: body,
     headers: Headers.response(
       lastModified: file.lastModifiedSync(),
     ),
@@ -280,16 +302,19 @@ Response? _fileRangeResponse(
     );
   }
 
+  Body? body;
+  if (request.method != Method.head) {
+    body = Body.fromDataStream(
+      file.openRead(start, end + 1).cast<Uint8List>(),
+      encoding: null,
+      contentLength: (end - start) + 1,
+      mimeType: MimeType.binary,
+    );
+  }
+
   return Response(
     HttpStatus.partialContent,
-    body: request.method == Method.head
-        ? null
-        : Body.fromDataStream(
-            file.openRead(start, end + 1).cast<Uint8List>(),
-            encoding: null,
-            contentLength: (end - start) + 1,
-            mimeType: MimeType.binary,
-          ),
+    body: body,
     headers: headers.copyWith(
       contentRange: ContentRangeHeader(
         start: start,

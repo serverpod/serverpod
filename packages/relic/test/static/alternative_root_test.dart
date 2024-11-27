@@ -19,8 +19,11 @@ void main() {
       () async {
     final handler = createStaticHandler(d.sandbox);
 
-    final response =
-        await makeRequest(handler, '/static/root.txt', handlerPath: 'static');
+    final response = await makeRequest(
+      handler,
+      '/static/root.txt',
+      handlerPath: 'static',
+    );
     expect(response.statusCode, HttpStatus.ok);
     expect(response.body.contentLength, 8);
     expect(response.readAsString(), completion('root txt'));

@@ -315,6 +315,10 @@ class Response extends Message {
     );
   }
 
+  /// Writes the response to an [HttpResponse].
+  ///
+  /// This method sets the status code, headers, and body on the [httpResponse]
+  /// and returns a [Future] that completes when the body has been written.
   Future<void> writeHttpResponse(
     HttpResponse httpResponse,
   ) async {

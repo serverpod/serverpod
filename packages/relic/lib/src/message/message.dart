@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import '../body/body.dart';
 import '../headers/headers.dart';
@@ -23,7 +24,7 @@ abstract class Message {
   /// Returns the MIME type from the Content-Type header, if available.
   String? get mimeType {
     if (body.contentType == null) return null;
-    return "${body.contentType!.mimeType}";
+    return body.contentType!.mimeType.toHeaderValue();
   }
 
   /// Returns the encoding specified in the Content-Type header, or null if not specified.
@@ -33,9 +34,10 @@ abstract class Message {
   }
 
   /// Reads the body as a stream of bytes. Can only be called once.
-  Stream<List<int>> read() => body.read();
+  Stream<Uint8List> read() => body.read();
 
   /// Reads the body as a string, decoding it using the specified or detected encoding.
+  /// Defaults to utf8 if no encoding is provided or detected.
   Future<String> readAsString([Encoding? encoding]) {
     encoding ??= body.contentType?.encoding ?? utf8;
     return encoding.decodeStream(read());

@@ -50,8 +50,10 @@ void main() {
 
     test('when checked then it sets the content-type header to text/plain', () {
       var response = Response.internalServerError();
-      expect(response.body.contentType.toString(),
-          equals('text/plain; charset=utf-8'));
+      expect(
+        response.body.contentType?.toHeaderValue(),
+        equals('text/plain; charset=utf-8'),
+      );
       expect(response.body.contentLength, equals(21));
     });
   });

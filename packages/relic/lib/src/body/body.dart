@@ -21,6 +21,16 @@ class Body {
   /// determined efficiently.
   final int? contentLength;
 
+  /// The content type of the body.
+  ///
+  /// This will be `null` if the body is empty.
+  ///
+  /// This is a convenience property that combines [mimeType] and [encoding].
+  /// Example:
+  /// ```dart
+  /// var body = Body.fromString('hello', mimeType: MimeType.plainText);
+  /// print(body.contentType); // ContentType(text/plain; charset=utf-8)
+  /// ```
   final BodyType? contentType;
 
   Body._(
@@ -32,6 +42,7 @@ class Body {
             ? null
             : BodyType(mimeType: mimeType, encoding: encoding);
 
+  /// Creates an empty body.
   factory Body.empty({
     Encoding encoding = utf8,
     MimeType mimeType = MimeType.plainText,
@@ -43,6 +54,7 @@ class Body {
         mimeType: mimeType,
       );
 
+  /// Creates a body from a [HttpRequest].
   factory Body.fromHttpRequest(HttpRequest request) {
     return Body._(
       request,
@@ -52,6 +64,7 @@ class Body {
     );
   }
 
+  /// Creates a body from a string.
   factory Body.fromString(
     String body, {
     Encoding encoding = utf8,
@@ -66,6 +79,7 @@ class Body {
     );
   }
 
+  /// Creates a body from a [Stream] of [Uint8List].
   factory Body.fromDataStream(
     Stream<Uint8List> body, {
     Encoding? encoding = utf8,
@@ -80,6 +94,7 @@ class Body {
     );
   }
 
+  /// Creates a body from a [Uint8List].
   factory Body.fromData(
     Uint8List body, {
     Encoding? encoding,
@@ -108,6 +123,9 @@ class Body {
     return stream;
   }
 
+  /// Returns the content type of the body as a [ContentType].
+  ///
+  /// This is a convenience method that combines [mimeType] and [encoding].
   ContentType? getContentType() {
     var mContentType = contentType;
     if (mContentType == null) return null;

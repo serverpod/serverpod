@@ -99,7 +99,7 @@ void main() {
       expect(request.readAsString(), completion(equals('')));
     });
 
-    test('when the body is a Stream<List<int>> then it reads correctly', () {
+    test('when the body is a Stream<Uint8List> then it reads correctly', () {
       var controller = StreamController<Uint8List>();
       var request =
           _createMessage(body: Body.fromDataStream(controller.stream));
@@ -127,7 +127,7 @@ void main() {
       expect(request.read().toList(), completion(isEmpty));
     });
 
-    test('when the body is a Stream<List<int>> then it reads correctly', () {
+    test('when the body is a Stream<Uint8List> then it reads correctly', () {
       var controller = StreamController<Uint8List>();
       var request = _createMessage(
         body: Body.fromDataStream(controller.stream),

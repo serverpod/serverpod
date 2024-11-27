@@ -66,7 +66,7 @@ void main() {
     test('when provided by the contentType parameter then it is used',
         () async {
       final handler = createFileHandler(p.join(d.sandbox, 'file.txt'),
-          contentType: 'something/weird');
+          contentType: MimeType.parse('something/weird'));
       final response = await makeRequest(handler, '/file.txt');
       expect(response.statusCode, equals(HttpStatus.ok));
       expect(response.mimeType, equals('something/weird'));
@@ -86,8 +86,8 @@ void main() {
       );
       expect(response.statusCode, equals(HttpStatus.partialContent));
       expect(
-        response.headers.acceptRanges,
-        contains('bytes'),
+        response.headers.acceptRanges?.isBytes,
+        isTrue,
       );
       expect(response.headers.contentRange?.start, 0);
       expect(response.headers.contentRange?.end, 4);
@@ -110,8 +110,8 @@ void main() {
         equals(HttpStatus.partialContent),
       );
       expect(
-        response.headers.acceptRanges,
-        contains('bytes'),
+        response.headers.acceptRanges?.isBytes,
+        isTrue,
       );
 
       expect(response.headers.contentRange?.start, 0);
@@ -139,8 +139,8 @@ void main() {
       );
 
       expect(
-        response.headers.acceptRanges,
-        contains('bytes'),
+        response.headers.acceptRanges?.isBytes,
+        isTrue,
       );
       expect(
         response.statusCode,
@@ -183,16 +183,19 @@ void main() {
 
   group('Given an ArgumentError is thrown for', () {
     test("when a file doesn't exist then it throws an ArgumentError", () {
-      expect(() => createFileHandler(p.join(d.sandbox, 'nothing.txt')),
-          throwsArgumentError);
+      expect(
+        () => createFileHandler(p.join(d.sandbox, 'nothing.txt')),
+        throwsArgumentError,
+      );
     });
 
     test('when an absolute URL is provided then it throws an ArgumentError',
         () {
       expect(
-          () => createFileHandler(p.join(d.sandbox, 'nothing.txt'),
-              url: '/foo/bar'),
-          throwsArgumentError);
+        () => createFileHandler(p.join(d.sandbox, 'nothing.txt'),
+            url: '/foo/bar'),
+        throwsArgumentError,
+      );
     });
   });
 }

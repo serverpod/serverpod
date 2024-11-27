@@ -135,6 +135,10 @@ class Request extends Message {
           onHijack: onHijack == null ? null : _OnHijack(onHijack),
         );
 
+  /// Creates a new [Request] from an [io.HttpRequest].
+  ///
+  /// [strictHeaders] determines whether to strictly enforce header parsing
+  /// rules. [poweredByHeader] sets the value of the `X-Powered-By` header.
   factory Request.fromHttpRequest(
     io.HttpRequest request, {
     bool strictHeaders = false,
