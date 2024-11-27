@@ -17,11 +17,13 @@ void main() {
         server = await RelicServer.createServer(
           InternetAddress.loopbackIPv6,
           0,
+          strictHeaders: true,
         );
       } on SocketException catch (_) {
         server = await RelicServer.createServer(
           InternetAddress.loopbackIPv4,
           0,
+          strictHeaders: true,
         );
       }
     });
@@ -115,11 +117,13 @@ void main() {
         server = await RelicServer.createServer(
           InternetAddress.loopbackIPv6,
           0,
+          strictHeaders: false,
         );
       } on SocketException catch (_) {
         server = await RelicServer.createServer(
           InternetAddress.loopbackIPv4,
           0,
+          strictHeaders: false,
         );
       }
     });

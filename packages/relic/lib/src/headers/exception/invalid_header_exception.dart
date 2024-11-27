@@ -15,8 +15,6 @@ class InvalidHeaderException implements Exception {
 
   @override
   String toString() {
-    final temp = 'Invalid \'$headerType\' header: $message';
-    print(temp);
-    return temp;
+    return 'Invalid \'$headerType\' header: $message';
   }
 }

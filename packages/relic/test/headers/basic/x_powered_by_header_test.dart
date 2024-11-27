@@ -63,14 +63,14 @@ void main() {
     );
 
     test(
-      'when no X-Powered-By header is passed then it should return null',
+      'when no X-Powered-By header is passed then it should default to Relic',
       () async {
         Headers headers = await getServerRequestHeaders(
           server: server,
           headers: {},
         );
 
-        expect(headers.xPoweredBy, isNull);
+        expect(headers.xPoweredBy, equals('Relic'));
       },
     );
   });
@@ -98,29 +98,14 @@ void main() {
 
     group('when an invalid X-Powered-By header is passed', () {
       test(
-        'when an invalid X-Powered-By header is passed then it should return null',
+        'when an invalid X-Powered-By header is passed then it should default to Relic',
         () async {
           Headers headers = await getServerRequestHeaders(
             server: server,
             headers: {'x-powered-by': ''},
           );
 
-          expect(headers.xPoweredBy, isNull);
-        },
-      );
-
-      test(
-        'when an invalid X-Powered-By header is passed then it should be recorded in failedHeadersToParse',
-        () async {
-          Headers headers = await getServerRequestHeaders(
-            server: server,
-            headers: {'x-powered-by': ''},
-          );
-
-          expect(
-            headers.failedHeadersToParse['x-powered-by'],
-            equals(['']),
-          );
+          expect(headers.xPoweredBy, equals('Relic'));
         },
       );
     });

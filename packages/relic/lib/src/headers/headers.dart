@@ -511,7 +511,10 @@ abstract class Headers {
 
       // Response Headers
       location: dartIOHeaders.parseUri(_locationHeader),
-      xPoweredBy: xPoweredBy,
+      xPoweredBy: dartIOHeaders.parseString(
+            _xPoweredByHeader,
+          ) ??
+          xPoweredBy,
       accessControlAllowCredentials: dartIOHeaders.parseBool(
         _accessControlAllowCredentialsHeader,
         allowFalse: false,
