@@ -24,7 +24,7 @@ if [ ! -d "$DART_INSTALL_DIR" ]; then
 fi
 
 # Make symlink for Dart binaries
-sudo ln -sf $DART_INSTALL_DIR/bin/* /usr/local/bin/
+sudo ln -sf "$DART_INSTALL_DIR/bin/dart" /usr/local/bin/dart
 
 # Write the systemd unit file
 cat > /lib/systemd/system/serverpod.service << EOF
