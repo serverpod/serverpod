@@ -141,7 +141,7 @@ void Function(TestClosure<T>)
             var localTransactionManager = getTransactionManager();
 
             await localTransactionManager.createTransaction();
-            await localTransactionManager.addSavePoint();
+            await localTransactionManager.addSavepoint();
           }
         });
 
@@ -153,8 +153,8 @@ void Function(TestClosure<T>)
           if (rollbackDatabase == RollbackDatabase.afterEach) {
             var localTransactionManager = getTransactionManager();
 
-            await localTransactionManager.rollbackToPreviousSavePoint();
-            await localTransactionManager.addSavePoint();
+            await localTransactionManager.rollbackToPreviousSavepoint();
+            await localTransactionManager.addSavepoint();
           }
 
           await GlobalStreamManager.closeAllStreams();

@@ -323,6 +323,7 @@ class Database {
     return await _databaseConnection.transaction(
       transactionFunction,
       settings: settings ?? const TransactionSettings(),
+      session: _session,
     );
   }
 
