@@ -8,3 +8,49 @@ abstract interface class Transaction {
   /// exception depending on driver.
   Future<void> cancel();
 }
+
+/// Isolation levels for transactions.
+enum IsolationLevel {
+  /// Allow transaction to see uncommitted changes made by other transactions.
+  /// Though in PostgreSQL, this behaves like read committed.
+  readUncommitted,
+
+  /// Each statement in the transaction sees a snapshot of the database as of
+  /// the beginning of the statement. This means each statement might observe
+  /// a different version of the database.
+  readCommitted,
+
+  /// The transaction transaction can only see rows committed before the first
+  /// statement was executed giving a consistent view of the database.
+  ///
+  /// If conflicting writes among concurrent transactions occur, an exception is
+  /// thrown and the transaction is rolled back.
+  ///
+  /// It is good to be prepared to retry transactions when using this isolation
+  /// level.
+  repeatableRead,
+
+  /// The transaction can only see rows committed before the first
+  /// statement was executed giving a consistent view of the database.
+  ///
+  /// If a read row is updated by another transaction, an exception is thrown
+  /// and the transaction is rolled back.
+  ///
+  /// If conflicting writes among concurrent transactions occur, an
+  /// exception is thrown and the transaction is rolled back.
+  ///
+  /// It is good to be prepared to retry transactions when using this isolation
+  /// level.
+  serializable,
+}
+
+/// Settings for a transaction.
+class TransactionSettings {
+  /// The isolation level of the transaction.
+  final IsolationLevel? isolationLevel;
+
+  /// Creates a new transaction settings object.
+  const TransactionSettings({
+    this.isolationLevel,
+  });
+}
