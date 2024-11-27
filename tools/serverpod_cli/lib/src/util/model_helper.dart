@@ -33,23 +33,17 @@ class ModelHelper {
   ) async {
     var modelSources = <ModelSource>[];
 
-    var relativeModelSourcePath = joinAll(config.relativeModelSourcePathParts);
-    var relativeProtocolSourcePath =
-        joinAll(config.relativeProtocolSourcePathParts);
-
     var modelSource = await _loadYamlModelsFromDisk(
       defaultModuleAlias,
       _absolutePathParts(config.modelSourcePathParts),
-      relativeModelSourcePath: relativeModelSourcePath,
-      relativeProtocolSourcePath: relativeProtocolSourcePath,
+      loadConfig: config,
     );
     modelSources.addAll(modelSource);
 
     modelSource = await _loadYamlModelsFromDisk(
       defaultModuleAlias,
       _absolutePathParts(config.protocolSourcePathParts),
-      relativeModelSourcePath: relativeModelSourcePath,
-      relativeProtocolSourcePath: relativeProtocolSourcePath,
+      loadConfig: config,
     );
     modelSources.addAll(modelSource);
 
@@ -57,16 +51,14 @@ class ModelHelper {
       modelSource = await _loadYamlModelsFromDisk(
         module.nickname,
         module.modelSourcePathParts,
-        relativeModelSourcePath: relativeModelSourcePath,
-        relativeProtocolSourcePath: relativeProtocolSourcePath,
+        loadConfig: module,
       );
       modelSources.addAll(modelSource);
 
       modelSource = await _loadYamlModelsFromDisk(
         module.nickname,
         module.protocolSourcePathParts,
-        relativeModelSourcePath: relativeModelSourcePath,
-        relativeProtocolSourcePath: relativeProtocolSourcePath,
+        loadConfig: module,
       );
       modelSources.addAll(modelSource);
     }
@@ -86,14 +78,9 @@ class ModelHelper {
   static Future<List<ModelSource>> _loadYamlModelsFromDisk(
     String moduleAlias,
     List<String> pathParts, {
-    required String relativeModelSourcePath,
-    required String relativeProtocolSourcePath,
+    required ModelLoadConfig loadConfig,
   }) async {
-    var files = await _loadAllModelFiles(
-      pathParts,
-      relativeModelSourcePath: relativeModelSourcePath,
-      relativeProtocolSourcePath: relativeProtocolSourcePath,
-    );
+    var files = await _loadAllModelFiles(pathParts, loadConfig: loadConfig);
 
     List<ModelSource> sources = [];
     for (var model in files) {
@@ -111,14 +98,15 @@ class ModelHelper {
   }
 
   static bool isModelFile(
-    String path,
-    String modelSourcePath,
-    String protocolSourcePath,
-  ) {
-    var hasValidPath = path.containsAny([
-      modelSourcePath,
-      protocolSourcePath,
-    ]);
+    String path, {
+    required ModelLoadConfig loadConfig,
+  }) {
+    var allowedModelPaths = [
+      joinAll(loadConfig.relativeModelSourcePathParts),
+      joinAll(loadConfig.relativeProtocolSourcePathParts),
+    ];
+
+    var hasValidPath = path.containsAny(allowedModelPaths);
 
     var hasValidExtension = modelFileExtensions.any(
       (ext) => path.endsWith(ext),
@@ -129,8 +117,7 @@ class ModelHelper {
 
   static Future<Iterable<File>> _loadAllModelFiles(
     List<String> absolutePathParts, {
-    required String relativeModelSourcePath,
-    required String relativeProtocolSourcePath,
+    required ModelLoadConfig loadConfig,
   }) async {
     List<FileSystemEntity> modelSourceFileList = [];
 
@@ -151,8 +138,7 @@ class ModelHelper {
 
     return modelSourceFileList.whereType<File>().where((file) => isModelFile(
           file.path,
-          relativeModelSourcePath,
-          relativeProtocolSourcePath,
+          loadConfig: loadConfig,
         ));
   }
 
