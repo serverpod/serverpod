@@ -161,7 +161,11 @@ class ModelHelper {
       return extractPathFromModelRoot(config.protocolSourcePathParts, uri);
     }
 
-    return extractPathFromModelRoot(config.modelSourcePathParts, uri);
+    if (isWithin(joinAll(config.modelSourcePathParts), uri.path)) {
+      return extractPathFromModelRoot(config.modelSourcePathParts, uri);
+    }
+
+    return split(uri.path);
   }
 
   static List<String> extractPathFromModelRoot(

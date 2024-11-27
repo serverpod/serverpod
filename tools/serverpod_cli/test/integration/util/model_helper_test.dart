@@ -26,8 +26,8 @@ void main() {
   group('Test path extraction - extractPathFromConfig.', () {
     var serverRootDir = Directory(join(
       'test',
-      'integration'
-          'util',
+      'integration',
+      'util',
       'test_assets',
       'protocol_helper',
       'has_serverpod_server_project',
@@ -39,8 +39,8 @@ void main() {
         () {
       var modelFile = File(join(
         'test',
-        'integration'
-            'util',
+        'integration',
+        'util',
         'test_assets',
         'protocol_helper',
         'has_serverpod_server_project',
@@ -66,6 +66,7 @@ void main() {
         () {
       var modelFile = File(join(
         'test',
+        'integration',
         'util',
         'test_assets',
         'protocol_helper',
@@ -94,6 +95,7 @@ void main() {
         () {
       var modelFile = File(join(
         'test',
+        'integration',
         'util',
         'test_assets',
         'protocol_helper',
@@ -101,7 +103,7 @@ void main() {
         'test_server',
         'lib',
         'src',
-        'model',
+        'models',
         'nested',
         'folder',
         'test.yaml',
@@ -116,15 +118,42 @@ void main() {
 
       expect(pathParts, ['nested', 'folder']);
     });
+
+    test(
+        'Given a model with a path outside of the protocol or models folder, then parts list contains all the path parts',
+        () {
+      var filePathParts = [
+        'test',
+        'integration',
+        'util',
+        'test_assets',
+        'protocol_helper',
+        'has_serverpod_server_project',
+        'test_server',
+        'lib',
+        'src',
+      ];
+      var modelFile = File(joinAll(filePathParts));
+
+      var config = createGeneratorConfig(split(serverRootDir.path));
+
+      var pathParts = ModelHelper.extractPathFromConfig(
+        config,
+        modelFile.uri,
+      );
+
+      expect(pathParts, filePathParts);
+    });
   });
+
   group('Test path extraction - extractPathFromModelRoot.', () {
     test(
         'Given a model path directly inside the model folder, then the parts list is empty.',
         () {
       var modelFile = File(join(
         'test',
-        'integration'
-            'util',
+        'integration',
+        'util',
         'test_assets',
         'protocol_helper',
         'has_serverpod_server_project',
@@ -137,8 +166,8 @@ void main() {
 
       var rootPath = [
         'test',
-        'integration'
-            'util',
+        'integration',
+        'util',
         'test_assets',
         'protocol_helper',
         'has_serverpod_server_project',
