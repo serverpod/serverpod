@@ -34,7 +34,7 @@ jobs:
     strategy:
       matrix:
         flutter-version: ['3.19.0']
-        os: [windows-latest, ubuntu-latest]
+        os: [windows-latest]
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
