@@ -342,11 +342,11 @@ void main() {
     var endpointsFile = codeMap[expectedFileName];
 
     test('then import path is correct.', () {
-      var importPath = path.joinAll([
+      var importPath = [
         '..',
         '..',
         'my_endpoint.dart',
-      ]);
+      ].join('/');
       expect(endpointsFile, contains("import '$importPath' as "));
     });
   });
