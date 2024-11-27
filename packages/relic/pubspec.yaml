@@ -1,6 +1,6 @@
 name: relic
 description: A lightweight web server inspired by Shelf.
-version: 0.1.0
+version: 2.2.0
 repository: https://github.com/serverpod/serverpod
 
 environment:
