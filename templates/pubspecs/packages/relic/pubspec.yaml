@@ -1,0 +1,25 @@
+name: relic
+description: A lightweight web server inspired by Shelf.
+version: SERVERPOD_VERSION
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: DART_VERSION
+
+dependencies:
+  async: ^2.11.0
+  collection: ^1.17.1
+  http_parser: ^4.0.2
+  path: ^1.8.2
+  stack_trace: ^1.10.0
+  stream_channel: ^2.1.1
+  http_methods: ^1.1.1
+  mime: ^1.0.6
+  convert: ^3.1.1
+  meta: ^1.8.0
+
+dev_dependencies:
+  dart_flutter_team_lints: ^3.0.0
+  http: '>=1.0.0 <2.0.0'
+  test: ^1.24.2
+  test_descriptor: ^2.0.1
