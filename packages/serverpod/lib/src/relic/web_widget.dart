@@ -76,26 +76,12 @@ class WidgetJson extends AbstractWidget {
 }
 
 /// A widget that renders a HTTP redirect to the provided [url].
-class WidgetRedirectPermanently extends AbstractWidget {
+class WidgetRedirect extends AbstractWidget {
   /// The [url] to redirect to.
-  final Uri url;
+  final String url;
 
   /// Creates a new widget that renders a redirect.
-  WidgetRedirectPermanently({required this.url});
-
-  @override
-  String toString() {
-    return '';
-  }
-}
-
-/// A widget that renders a HTTP redirect to the provided [url].
-class WidgetRedirectTemporarily extends AbstractWidget {
-  /// The [url] to redirect to.
-  final Uri url;
-
-  /// Creates a new widget that renders a redirect.
-  WidgetRedirectTemporarily({required this.url});
+  WidgetRedirect({required this.url});
 
   @override
   String toString() {
