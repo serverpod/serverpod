@@ -6,7 +6,6 @@ repository: https://github.com/serverpod/serverpod
 environment:
   sdk: '>=3.2.0 <4.0.0'
 
-# Add regular dependencies here.
 dependencies:
   async: ^2.11.0
   collection: ^1.17.1
