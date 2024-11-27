@@ -4,7 +4,8 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
-import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/keywords.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/extension/endpoint_parameters_extension.dart';
+
 import 'package:serverpod_cli/src/generator/types.dart';
 
 abstract class EndpointParameterAnalyzer {
@@ -17,7 +18,8 @@ abstract class EndpointParameterAnalyzer {
     var positionalParameters = <ParameterDefinition>[];
     var namedParameters = <ParameterDefinition>[];
 
-    for (var parameter in parameters) {
+    var filteredParameters = parameters.withoutSessionParameter;
+    for (var parameter in filteredParameters) {
       var definition = ParameterDefinition(
         name: parameter.name,
         required: _isRequired(parameter),
@@ -46,18 +48,25 @@ abstract class EndpointParameterAnalyzer {
   ) {
     List<SourceSpanSeverityException> exceptions = [];
 
-    bool firstParameterIsSession = parameters.isNotEmpty &&
-        parameters.first.type.element?.displayName == Keyword.sessionClassName;
+    if (!parameters.isFirstRequiredParameterSession) {
+      exceptions.add(
+        SourceSpanSeverityException(
+          'The first parameter of an endpoint method must be a required positional parameter of type "Session".',
+          parameters.first.span,
+          severity: SourceSpanSeverity.error,
+        ),
+      );
+      return exceptions;
+    }
 
-    if (firstParameterIsSession) {
-      bool sessionIsNullable =
-          parameters.first.type.nullabilitySuffix != NullabilitySuffix.none;
-      if (sessionIsNullable) {
-        exceptions.add(SourceSpanSeverityException(
-            'The "Session" argument in an endpoint method does not have to be nullable, consider making it non-nullable.',
-            parameters.first.span,
-            severity: SourceSpanSeverity.hint));
-      }
+    if (parameters.isSessionParameterNullable) {
+      exceptions.add(
+        SourceSpanSeverityException(
+          'The "Session" argument in an endpoint method does not have to be nullable, consider making it non-nullable.',
+          parameters.first.span,
+          severity: SourceSpanSeverity.hint,
+        ),
+      );
     }
 
     exceptions.addAll(parameters.map((parameter) {

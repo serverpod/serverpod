@@ -10,7 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../models_with_relations/one_to_one/address.dart' as _i2;
+import '../../models_with_relations/one_to_one/company.dart' as _i3;
 
 abstract class Citizen implements _i1.TableRow, _i1.ProtocolSerialization {
   Citizen._({
@@ -28,9 +29,9 @@ abstract class Citizen implements _i1.TableRow, _i1.ProtocolSerialization {
     required String name,
     _i2.Address? address,
     required int companyId,
-    _i2.Company? company,
+    _i3.Company? company,
     int? oldCompanyId,
-    _i2.Company? oldCompany,
+    _i3.Company? oldCompany,
   }) = _CitizenImpl;
 
   factory Citizen.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -44,12 +45,12 @@ abstract class Citizen implements _i1.TableRow, _i1.ProtocolSerialization {
       companyId: jsonSerialization['companyId'] as int,
       company: jsonSerialization['company'] == null
           ? null
-          : _i2.Company.fromJson(
+          : _i3.Company.fromJson(
               (jsonSerialization['company'] as Map<String, dynamic>)),
       oldCompanyId: jsonSerialization['oldCompanyId'] as int?,
       oldCompany: jsonSerialization['oldCompany'] == null
           ? null
-          : _i2.Company.fromJson(
+          : _i3.Company.fromJson(
               (jsonSerialization['oldCompany'] as Map<String, dynamic>)),
     );
   }
@@ -67,11 +68,11 @@ abstract class Citizen implements _i1.TableRow, _i1.ProtocolSerialization {
 
   int companyId;
 
-  _i2.Company? company;
+  _i3.Company? company;
 
   int? oldCompanyId;
 
-  _i2.Company? oldCompany;
+  _i3.Company? oldCompany;
 
   @override
   _i1.Table get table => t;
@@ -81,9 +82,9 @@ abstract class Citizen implements _i1.TableRow, _i1.ProtocolSerialization {
     String? name,
     _i2.Address? address,
     int? companyId,
-    _i2.Company? company,
+    _i3.Company? company,
     int? oldCompanyId,
-    _i2.Company? oldCompany,
+    _i3.Company? oldCompany,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -113,8 +114,8 @@ abstract class Citizen implements _i1.TableRow, _i1.ProtocolSerialization {
 
   static CitizenInclude include({
     _i2.AddressInclude? address,
-    _i2.CompanyInclude? company,
-    _i2.CompanyInclude? oldCompany,
+    _i3.CompanyInclude? company,
+    _i3.CompanyInclude? oldCompany,
   }) {
     return CitizenInclude._(
       address: address,
@@ -157,9 +158,9 @@ class _CitizenImpl extends Citizen {
     required String name,
     _i2.Address? address,
     required int companyId,
-    _i2.Company? company,
+    _i3.Company? company,
     int? oldCompanyId,
-    _i2.Company? oldCompany,
+    _i3.Company? oldCompany,
   }) : super._(
           id: id,
           name: name,
@@ -185,10 +186,10 @@ class _CitizenImpl extends Citizen {
       name: name ?? this.name,
       address: address is _i2.Address? ? address : this.address?.copyWith(),
       companyId: companyId ?? this.companyId,
-      company: company is _i2.Company? ? company : this.company?.copyWith(),
+      company: company is _i3.Company? ? company : this.company?.copyWith(),
       oldCompanyId: oldCompanyId is int? ? oldCompanyId : this.oldCompanyId,
       oldCompany:
-          oldCompany is _i2.Company? ? oldCompany : this.oldCompany?.copyWith(),
+          oldCompany is _i3.Company? ? oldCompany : this.oldCompany?.copyWith(),
     );
   }
 }
@@ -215,11 +216,11 @@ class CitizenTable extends _i1.Table {
 
   late final _i1.ColumnInt companyId;
 
-  _i2.CompanyTable? _company;
+  _i3.CompanyTable? _company;
 
   late final _i1.ColumnInt oldCompanyId;
 
-  _i2.CompanyTable? _oldCompany;
+  _i3.CompanyTable? _oldCompany;
 
   _i2.AddressTable get address {
     if (_address != null) return _address!;
@@ -234,28 +235,28 @@ class CitizenTable extends _i1.Table {
     return _address!;
   }
 
-  _i2.CompanyTable get company {
+  _i3.CompanyTable get company {
     if (_company != null) return _company!;
     _company = _i1.createRelationTable(
       relationFieldName: 'company',
       field: Citizen.t.companyId,
-      foreignField: _i2.Company.t.id,
+      foreignField: _i3.Company.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.CompanyTable(tableRelation: foreignTableRelation),
+          _i3.CompanyTable(tableRelation: foreignTableRelation),
     );
     return _company!;
   }
 
-  _i2.CompanyTable get oldCompany {
+  _i3.CompanyTable get oldCompany {
     if (_oldCompany != null) return _oldCompany!;
     _oldCompany = _i1.createRelationTable(
       relationFieldName: 'oldCompany',
       field: Citizen.t.oldCompanyId,
-      foreignField: _i2.Company.t.id,
+      foreignField: _i3.Company.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.CompanyTable(tableRelation: foreignTableRelation),
+          _i3.CompanyTable(tableRelation: foreignTableRelation),
     );
     return _oldCompany!;
   }
@@ -286,8 +287,8 @@ class CitizenTable extends _i1.Table {
 class CitizenInclude extends _i1.IncludeObject {
   CitizenInclude._({
     _i2.AddressInclude? address,
-    _i2.CompanyInclude? company,
-    _i2.CompanyInclude? oldCompany,
+    _i3.CompanyInclude? company,
+    _i3.CompanyInclude? oldCompany,
   }) {
     _address = address;
     _company = company;
@@ -296,9 +297,9 @@ class CitizenInclude extends _i1.IncludeObject {
 
   _i2.AddressInclude? _address;
 
-  _i2.CompanyInclude? _company;
+  _i3.CompanyInclude? _company;
 
-  _i2.CompanyInclude? _oldCompany;
+  _i3.CompanyInclude? _oldCompany;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -517,7 +518,7 @@ class CitizenAttachRowRepository {
   Future<void> company(
     _i1.Session session,
     Citizen citizen,
-    _i2.Company company, {
+    _i3.Company company, {
     _i1.Transaction? transaction,
   }) async {
     if (citizen.id == null) {
@@ -538,7 +539,7 @@ class CitizenAttachRowRepository {
   Future<void> oldCompany(
     _i1.Session session,
     Citizen citizen,
-    _i2.Company oldCompany, {
+    _i3.Company oldCompany, {
     _i1.Transaction? transaction,
   }) async {
     if (citizen.id == null) {

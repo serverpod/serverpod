@@ -4829,6 +4829,26 @@ class Endpoints extends _i1.EndpointDispatch {
             params['simpleDatas'],
           ),
         ),
+        'logMessageWithSession': _i1.MethodConnector(
+          name: 'logMessageWithSession',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testTools'] as _i36.TestToolsEndpoint)
+                  .logMessageWithSession(session),
+        ),
+        'addWillCloseListenerToSessionAndThrow': _i1.MethodConnector(
+          name: 'addWillCloseListenerToSessionAndThrow',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['testTools'] as _i36.TestToolsEndpoint)
+                  .addWillCloseListenerToSessionAndThrow(session),
+        ),
         'returnsSessionIdFromStream': _i1.MethodStreamConnector(
           name: 'returnsSessionIdFromStream',
           params: {},
@@ -4994,6 +5014,21 @@ class Endpoints extends _i1.EndpointDispatch {
           ) =>
               (endpoints['testTools'] as _i36.TestToolsEndpoint)
                   .listenForNumbersOnSharedStream(session),
+        ),
+        'addWillCloseListenerToSessionIntStreamMethodAndThrow':
+            _i1.MethodStreamConnector(
+          name: 'addWillCloseListenerToSessionIntStreamMethodAndThrow',
+          params: {},
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['testTools'] as _i36.TestToolsEndpoint)
+                  .addWillCloseListenerToSessionIntStreamMethodAndThrow(
+                      session),
         ),
       },
     );

@@ -6,7 +6,7 @@ import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_para
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
-import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/keywords.dart';
+import 'extension/endpoint_parameters_extension.dart';
 
 const _excludedMethodNameSet = {
   'streamOpened',
@@ -32,8 +32,7 @@ abstract class EndpointMethodAnalyzer {
         name: method.name,
         documentationComment: method.documentationComment,
         annotations: _parseAnnotations(dartElement: method),
-        // TODO: Move removal of session parameter to Parameter analyzer
-        parameters: parameters.required.sublist(1), // Skip session parameter,
+        parameters: parameters.required,
         parametersNamed: parameters.named,
         parametersPositional: parameters.positional,
         returnType: TypeDefinition.fromDartType(method.returnType),
@@ -44,8 +43,7 @@ abstract class EndpointMethodAnalyzer {
       name: method.name,
       documentationComment: method.documentationComment,
       annotations: _parseAnnotations(dartElement: method),
-      // TODO: Move removal of session parameter to Parameter analyzer
-      parameters: parameters.required.sublist(1), // Skip session parameter,
+      parameters: parameters.required,
       parametersNamed: parameters.named,
       parametersPositional: parameters.positional,
       returnType: TypeDefinition.fromDartType(method.returnType),
@@ -72,9 +70,7 @@ abstract class EndpointMethodAnalyzer {
 
     if (_excludedMethodNameSet.contains(method.name)) return false;
 
-    if (_missingSessionParameter(method.parameters)) return false;
-
-    return true;
+    return method.parameters.isFirstRequiredParameterSession;
   }
 
   /// Validates the [MethodElement] and returns a list of
@@ -89,17 +85,6 @@ abstract class EndpointMethodAnalyzer {
     ];
 
     return errors.whereType<SourceSpanSeverityException>().toList();
-  }
-
-  static bool _missingSessionParameter(List<ParameterElement> parameters) {
-    if (parameters.isEmpty) return true;
-
-    bool firstParameterIsNotSession =
-        parameters.first.type.element?.displayName != Keyword.sessionClassName;
-
-    return firstParameterIsNotSession ||
-        parameters.first.isNamed ||
-        parameters.first.isOptional;
   }
 
   static SourceSpanSeverityException? _validateReturnType({

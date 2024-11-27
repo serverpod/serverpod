@@ -9,6 +9,7 @@ class TypeDefinitionBuilder {
   DartType? _dartType;
   bool _customClass;
   EnumDefinition? _enumDefinition;
+  SerializableModelDefinition? _modelDefinition;
 
   TypeDefinitionBuilder()
       : _className = 'DefaultClassName',
@@ -16,7 +17,8 @@ class TypeDefinitionBuilder {
         _nullable = false,
         _url = null,
         _dartType = null,
-        _customClass = false;
+        _customClass = false,
+        _modelDefinition = null;
 
   TypeDefinitionBuilder withClassName(String className) {
     _className = className;
@@ -48,12 +50,23 @@ class TypeDefinitionBuilder {
     return this;
   }
 
-  TypeDefinitionBuilder withListOf(String className, [bool nullable = false]) {
+  TypeDefinitionBuilder withListOf(
+    String className, {
+    bool nullable = false,
+    String? url,
+    SerializableModelDefinition? modelInfo,
+  }) {
     _className = 'List';
-    _generics.add(TypeDefinitionBuilder()
+    var generic = TypeDefinitionBuilder()
         .withClassName(className)
         .withNullable(nullable)
-        .build());
+        .withUrl(url);
+
+    if (modelInfo != null) {
+      generic.withModelDefinition(modelInfo);
+    }
+
+    _generics.add(generic.build());
     return this;
   }
 
@@ -96,6 +109,13 @@ class TypeDefinitionBuilder {
     return this;
   }
 
+  TypeDefinitionBuilder withModelDefinition(
+    SerializableModelDefinition modelDefinition,
+  ) {
+    _modelDefinition = modelDefinition;
+    return this;
+  }
+
   TypeDefinition build() {
     return TypeDefinition(
       className: _className,
@@ -105,6 +125,7 @@ class TypeDefinitionBuilder {
       dartType: _dartType,
       customClass: _customClass,
       enumDefinition: _enumDefinition,
+      projectModelDefinition: _modelDefinition,
     );
   }
 }

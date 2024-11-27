@@ -10,7 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'chat_message_attachment.dart' as _i2;
 
 /// A chat message post request.
 abstract class ChatMessagePost

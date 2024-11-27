@@ -189,7 +189,7 @@ void main() {
   withServerpod(
     'Given transaction calls when rollbacks are disabled',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: [concurrencyOneTestTag],
+    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     (sessionBuilder, endpoints) {
       var session = sessionBuilder.build();
 
@@ -306,7 +306,7 @@ void main() {
         });
       },
       rollbackDatabase: RollbackDatabase.disabled,
-      testGroupTagsOverride: [concurrencyOneTestTag],
+      testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     );
   });
 }

@@ -6,7 +6,6 @@ class EndpointDefinitionBuilder {
   String _className = 'ExampleEndpoint';
   String _filePath = 'example.dart';
   List<MethodDefinition> _methods = [];
-  List<String> _subDirParts = [];
 
   EndpointDefinitionBuilder();
 
@@ -36,11 +35,6 @@ class EndpointDefinitionBuilder {
     return this;
   }
 
-  EndpointDefinitionBuilder withSubDirParts(List<String> subDirParts) {
-    _subDirParts = subDirParts;
-    return this;
-  }
-
   EndpointDefinition build() {
     return EndpointDefinition(
       name: _name,
@@ -48,7 +42,6 @@ class EndpointDefinitionBuilder {
       className: _className,
       filePath: _filePath,
       methods: _methods,
-      subDirParts: _subDirParts,
     );
   }
 }

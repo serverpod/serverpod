@@ -43,19 +43,10 @@ class LibraryGenerator {
         .where((model) => !(model is ClassDefinition && model.isSealed))
         .toList();
 
-    String getRef(SerializableModelDefinition classInfo) {
-      if (classInfo is ClassDefinition) {
-        var sealedTopNode = classInfo.sealedTopNode;
-        if (sealedTopNode != null) {
-          return sealedTopNode.fileRef();
-        }
-      }
-      return classInfo.fileRef();
-    }
-
     // exports
     library.directives.addAll([
-      for (var classInfo in topLevelModels) Directive.export(getRef(classInfo)),
+      for (var classInfo in topLevelModels)
+        Directive.export(TypeDefinition.getRef(classInfo)),
       if (!serverCode) Directive.export('client.dart'),
     ]);
 
@@ -129,45 +120,56 @@ class LibraryGenerator {
           const Code('t ??= T;'),
           ...(<Expression, Code>{
             for (var classInfo in unsealedModels)
-              refer(classInfo.className, getRef(classInfo)): Code.scope(
-                  (a) => '${a(refer(classInfo.className, getRef(classInfo)))}'
-                      '.fromJson(data) as T'),
+              refer(
+                  classInfo.className,
+                  TypeDefinition.getRef(
+                      classInfo)): Code.scope((a) =>
+                  '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}'
+                  '.fromJson(data) as T'),
             for (var classInfo in unsealedModels)
               refer('getType', serverpodUrl(serverCode)).call([], {}, [
                 TypeReference(
                   (b) => b
                     ..symbol = classInfo.className
-                    ..url = getRef(classInfo)
+                    ..url = TypeDefinition.getRef(classInfo)
                     ..isNullable = true,
                 )
               ]): Code.scope((a) => '(data!=null?'
-                  '${a(refer(classInfo.className, getRef(classInfo)))}'
+                  '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}'
                   '.fromJson(data) :null) as T'),
           }..addEntries([
                   for (var classInfo in unsealedModels)
+                    // Generate deserialization for fields of models.
                     if (classInfo is ClassDefinition)
                       for (var field in classInfo.fields.where(
                           (field) => field.shouldIncludeField(serverCode)))
                         ...field.type.generateDeserialization(serverCode,
                             config: config),
                   for (var endPoint in protocolDefinition.endpoints)
+                    // Generate deserialization for endpoint methods.
                     for (var method in endPoint.methods) ...[
+                      // Generate deserialization for the return type of the method.
                       ...method.returnType
                           .retrieveGenericType()
                           .generateDeserialization(serverCode, config: config),
+                      // Generate deserialization for parameters of the method.
                       for (var parameter in method.parameters)
                         ...parameter.type.generateDeserialization(serverCode,
                             config: config),
+                      // Generate deserialization for positional parameters of the method.
                       for (var parameter in method.parametersPositional)
                         ...parameter.type.generateDeserialization(serverCode,
                             config: config),
+                      // Generate deserialization for named parameters of the method.
                       for (var parameter in method.parametersNamed)
                         ...parameter.type.generateDeserialization(serverCode,
                             config: config),
                     ],
+                  // Generate deserialization for extra classes.
                   for (var extraClass in config.extraClasses)
                     ...extraClass.generateDeserialization(serverCode,
                         config: config),
+                  // Generate deserialization for extra classes as nullables.
                   for (var extraClass in config.extraClasses)
                     ...extraClass.asNullable
                         .generateDeserialization(serverCode, config: config)
@@ -208,7 +210,7 @@ class LibraryGenerator {
                 'if(data is ${a(extraClass.reference(serverCode, config: config))}) {return \'${extraClass.className}\';}'),
           for (var classInfo in unsealedModels)
             Code.scope((a) =>
-                'if(data is ${a(refer(classInfo.className, getRef(classInfo)))}) {return \'${classInfo.className}\';}'),
+                'if(data is ${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}) {return \'${classInfo.className}\';}'),
           if (config.name != 'serverpod' && serverCode)
             _buildGetClassNameForObjectDelegation(
                 serverpodProtocolUrl(serverCode), 'serverpod'),
@@ -234,7 +236,7 @@ class LibraryGenerator {
                 'return deserialize<${a(extraClass.reference(serverCode, config: config))}>(data[\'data\']);}'),
           for (var classInfo in unsealedModels)
             Code.scope((a) => 'if(dataClassName == \'${classInfo.className}\'){'
-                'return deserialize<${a(refer(classInfo.className, getRef(classInfo)))}>(data[\'data\']);}'),
+                'return deserialize<${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}>(data[\'data\']);}'),
           if (config.name != 'serverpod' && serverCode)
             _buildDeserializeByClassNameDelegation(
               serverpodProtocolUrl(serverCode),
@@ -277,8 +279,8 @@ class LibraryGenerator {
                     if (classInfo is ClassDefinition &&
                         classInfo.tableName != null)
                       Code.scope((a) =>
-                          'case ${a(refer(classInfo.className, getRef(classInfo)))}:'
-                          'return ${a(refer(classInfo.className, getRef(classInfo)))}.t;'),
+                          'case ${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}:'
+                          'return ${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}.t;'),
                   const Code('}'),
                 ]),
               const Code('return null;'),
@@ -490,7 +492,7 @@ class LibraryGenerator {
     if (hasModules) {
       library.body.add(
         Class((c) => c
-          ..name = '_Modules'
+          ..name = 'Modules'
           ..fields.addAll([
             for (var module in config.modules)
               Field((f) => f
@@ -534,7 +536,7 @@ class LibraryGenerator {
                 ..late = true
                 ..modifier = FieldModifier.final$
                 ..name = 'modules'
-                ..type = refer('_Modules')),
+                ..type = refer('Modules')),
           ])
           ..constructors.add(
             Constructor((c) {
@@ -640,7 +642,7 @@ class LibraryGenerator {
                       .statement,
                 if (hasModules)
                   refer('modules')
-                      .assign(refer('_Modules').call([refer('this')]))
+                      .assign(refer('Modules').call([refer('this')]))
                       .statement,
               ]);
             }),
@@ -757,13 +759,15 @@ class LibraryGenerator {
     ]).code;
   }
 
+  String? _generatedDirectoryPathCache;
+  String _buildGeneratedDirectoryPath() => _generatedDirectoryPathCache ??=
+      p.joinAll([...config.generatedServeModelPathParts]);
+
   String _endpointPath(EndpointDefinition endpoint) {
-    return p.posix.joinAll([
-      '..',
-      'endpoints',
-      ...endpoint.subDirParts,
-      p.basename(endpoint.filePath),
-    ]);
+    return p.relative(
+      endpoint.filePath,
+      from: _buildGeneratedDirectoryPath(),
+    );
   }
 
   Code _buildEndpointLookupMap(List<EndpointDefinition> endpoints) {

@@ -10,7 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'session_log_info.dart' as _i2;
 
 /// A list of SessionLogInfo.
 abstract class SessionLogResult implements _i1.SerializableModel {

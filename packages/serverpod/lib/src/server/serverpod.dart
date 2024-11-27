@@ -291,11 +291,17 @@ class Serverpod {
     this.httpResponseHeaders = _defaultHttpResponseHeaders,
     this.httpOptionsResponseHeaders = _defaultHttpOptionsResponseHeaders,
   }) {
+    stdout.writeln(
+      'SERVERPOD version: $serverpodVersion, dart: ${Platform.version}, time: ${DateTime.now().toUtc()}',
+    );
+
     _instance = this;
     _internalSerializationManager = internal.Protocol();
 
     // Read command line arguments.
     commandLineArgs = CommandLineArgs(args);
+    stdout.writeln(commandLineArgs.toString());
+
     _runMode = commandLineArgs.runMode;
     serverId = commandLineArgs.serverId;
 
@@ -310,6 +316,8 @@ class Serverpod {
           serverId,
           _passwords,
         );
+    logVerbose(this.config.toString());
+
     Features(this.config);
 
     // Create a temporary log manager with default settings, until we have
@@ -397,12 +405,7 @@ class Serverpod {
       _webServer = WebServer(serverpod: this);
     }
 
-    // Print version and runtime arguments.
-    stdout.writeln(
-      'SERVERPOD version: $serverpodVersion, dart: ${Platform.version}, time: ${DateTime.now().toUtc()}',
-    );
-    stdout.writeln(commandLineArgs.toString());
-    logVerbose(this.config.toString());
+    stdout.writeln('SERVERPOD initialized, time: ${DateTime.now().toUtc()}');
   }
 
   int _exitCode = 0;

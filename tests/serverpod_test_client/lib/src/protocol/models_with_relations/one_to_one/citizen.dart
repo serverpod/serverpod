@@ -10,7 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../models_with_relations/one_to_one/address.dart' as _i2;
+import '../../models_with_relations/one_to_one/company.dart' as _i3;
 
 abstract class Citizen implements _i1.SerializableModel {
   Citizen._({
@@ -28,9 +29,9 @@ abstract class Citizen implements _i1.SerializableModel {
     required String name,
     _i2.Address? address,
     required int companyId,
-    _i2.Company? company,
+    _i3.Company? company,
     int? oldCompanyId,
-    _i2.Company? oldCompany,
+    _i3.Company? oldCompany,
   }) = _CitizenImpl;
 
   factory Citizen.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -44,12 +45,12 @@ abstract class Citizen implements _i1.SerializableModel {
       companyId: jsonSerialization['companyId'] as int,
       company: jsonSerialization['company'] == null
           ? null
-          : _i2.Company.fromJson(
+          : _i3.Company.fromJson(
               (jsonSerialization['company'] as Map<String, dynamic>)),
       oldCompanyId: jsonSerialization['oldCompanyId'] as int?,
       oldCompany: jsonSerialization['oldCompany'] == null
           ? null
-          : _i2.Company.fromJson(
+          : _i3.Company.fromJson(
               (jsonSerialization['oldCompany'] as Map<String, dynamic>)),
     );
   }
@@ -65,20 +66,20 @@ abstract class Citizen implements _i1.SerializableModel {
 
   int companyId;
 
-  _i2.Company? company;
+  _i3.Company? company;
 
   int? oldCompanyId;
 
-  _i2.Company? oldCompany;
+  _i3.Company? oldCompany;
 
   Citizen copyWith({
     int? id,
     String? name,
     _i2.Address? address,
     int? companyId,
-    _i2.Company? company,
+    _i3.Company? company,
     int? oldCompanyId,
-    _i2.Company? oldCompany,
+    _i3.Company? oldCompany,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -107,9 +108,9 @@ class _CitizenImpl extends Citizen {
     required String name,
     _i2.Address? address,
     required int companyId,
-    _i2.Company? company,
+    _i3.Company? company,
     int? oldCompanyId,
-    _i2.Company? oldCompany,
+    _i3.Company? oldCompany,
   }) : super._(
           id: id,
           name: name,
@@ -135,10 +136,10 @@ class _CitizenImpl extends Citizen {
       name: name ?? this.name,
       address: address is _i2.Address? ? address : this.address?.copyWith(),
       companyId: companyId ?? this.companyId,
-      company: company is _i2.Company? ? company : this.company?.copyWith(),
+      company: company is _i3.Company? ? company : this.company?.copyWith(),
       oldCompanyId: oldCompanyId is int? ? oldCompanyId : this.oldCompanyId,
       oldCompany:
-          oldCompany is _i2.Company? ? oldCompany : this.oldCompany?.copyWith(),
+          oldCompany is _i3.Company? ? oldCompany : this.oldCompany?.copyWith(),
     );
   }
 }

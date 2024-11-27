@@ -196,4 +196,73 @@ class ExampleEndpointValid extends Endpoint {
       expect(endpointDefinitions, hasLength(1));
     });
   });
+
+  group('Given an invalid dart file without an endpoint definition', () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var invalidDartFile =
+          File(path.join(testDirectory.path, 'my_class.dart'));
+      invalidDartFile.createSync(recursive: true);
+      // Class is missing closing brackets
+      invalidDartFile.writeAsStringSync('''
+class InvalidClass {
+
+
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation error for invalid Dart syntax is reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+  });
+
+  group(
+      'Given an invalid dart file without an endpoint definition and a valid endpoint definition file',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var invalidDartFile =
+          File(path.join(testDirectory.path, 'my_class.dart'));
+      invalidDartFile.createSync(recursive: true);
+      // Class is missing closing brackets
+      invalidDartFile.writeAsStringSync('''
+class InvalidClass {
+
+
+''');
+      var secondEndpointFile =
+          File(path.join(testDirectory.path, 'valid_endpoint.dart'));
+      secondEndpointFile.createSync(recursive: true);
+      secondEndpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpointValid extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation error for invalid Dart syntax is reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then one endpoint definitions is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+  });
 }

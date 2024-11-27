@@ -316,10 +316,14 @@ class Database {
   }
 
   /// Executes a [Transaction].
-  Future<R> transaction<R>(TransactionFunction<R> transactionFunction) async {
+  Future<R> transaction<R>(
+    TransactionFunction<R> transactionFunction, {
+    TransactionSettings? settings,
+  }) async {
     return await _databaseConnection.transaction(
       transactionFunction,
-      _session,
+      settings: settings ?? const TransactionSettings(),
+      session: _session,
     );
   }
 

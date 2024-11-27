@@ -10,7 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../protocol.dart' as _i2;
+import '../database/index_element_definition.dart' as _i2;
 
 /// The definition of a (desired) index in the database.
 abstract class IndexDefinition

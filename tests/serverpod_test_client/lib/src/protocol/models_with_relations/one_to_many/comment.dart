@@ -10,7 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../models_with_relations/one_to_many/order.dart' as _i2;
 
 abstract class Comment implements _i1.SerializableModel {
   Comment._({
