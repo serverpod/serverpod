@@ -258,11 +258,11 @@ void main() {
     });
 
     test(
-        'Given a serverpod project with model files then the converted model path has the rootPathParts set to empty arrays.',
+        'Given a serverpod project with model files then the converted model path has the subDirPathParts set to empty arrays.',
         () async {
       var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
-      var rootPathParts = models.map((e) => e.protocolRootPathParts);
+      var rootPathParts = models.map((e) => e.subDirPathParts);
 
       expect(rootPathParts.first, []);
 
@@ -270,7 +270,7 @@ void main() {
     });
 
     test(
-        'Given a serverpod project with model files in a nested folder then the converted model path has the rootPathParts set to the nested folder inside the models directory.',
+        'Given a serverpod project with model files in a nested folder then the converted model path has the subDirPathParts set to the nested folder inside the models directory.',
         () async {
       var serverRootDir = Directory(join(
         'test',
@@ -286,7 +286,7 @@ void main() {
 
       var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
-      var rootPathParts = models.map((e) => e.protocolRootPathParts);
+      var rootPathParts = models.map((e) => e.subDirPathParts);
 
       expect(rootPathParts.first, ['nested', 'folder']);
     });

@@ -69,7 +69,7 @@ class ModelParser {
       fileName: outFileName,
       fields: fields,
       indexes: indexes,
-      subDirParts: protocolSource.protocolRootPathParts,
+      subDirParts: protocolSource.subDirPathParts,
       documentation: classDocumentation,
       isException: documentTypeName == Keyword.exceptionType,
       serverOnly: serverOnly,
@@ -106,7 +106,7 @@ class ModelParser {
       values: values,
       serialized: serializeAs,
       documentation: enumDocumentation,
-      subDirParts: protocolSource.protocolRootPathParts,
+      subDirParts: protocolSource.subDirPathParts,
       serverOnly: serverOnly,
       type: enumType,
     );

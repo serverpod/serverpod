@@ -9,13 +9,13 @@ class ModelSource {
   String moduleAlias;
   String yaml;
   Uri yamlSourceUri;
-  List<String> protocolRootPathParts;
+  List<String> subDirPathParts;
 
   ModelSource(
     this.moduleAlias,
     this.yaml,
     this.yamlSourceUri,
-    this.protocolRootPathParts,
+    this.subDirPathParts,
   );
 }
 
