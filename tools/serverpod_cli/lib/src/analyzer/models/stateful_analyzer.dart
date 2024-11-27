@@ -13,6 +13,11 @@ class StatefulAnalyzer {
   final Map<String, _ModelState> _modelStates = {};
   List<SerializableModelDefinition> _models = [];
 
+  /// Returns true if any of the models have severe errors.
+  bool get hasSeverErrors => _modelStates.values.any(
+        (state) => CodeAnalysisCollector.containsSeverErrors(state.errors),
+      );
+
   Function(Uri, CodeGenerationCollector)? _onErrorsChangedNotifier;
 
   StatefulAnalyzer(

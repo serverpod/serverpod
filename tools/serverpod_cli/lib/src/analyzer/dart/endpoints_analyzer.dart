@@ -11,12 +11,15 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
+import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 
 import 'definitions.dart';
 
 /// Analyzes dart files for the protocol specification.
 class EndpointsAnalyzer {
   final AnalysisContextCollection collection;
+
+  final String absoluteIncludedPaths;
 
   /// Create a new [EndpointsAnalyzer], containing a
   /// [AnalysisContextCollection] that analyzes all dart files in the
@@ -25,10 +28,33 @@ class EndpointsAnalyzer {
       : collection = AnalysisContextCollection(
           includedPaths: [directory.absolute.path],
           resourceProvider: PhysicalResourceProvider.INSTANCE,
-        );
+        ),
+        absoluteIncludedPaths = directory.absolute.path;
+
+  Set<EndpointDefinition> _endpointDefinitions = {};
+
+  /// Inform the analyzer that the provided [filePaths] have been updated.
+  ///
+  /// This will trigger a re-analysis of the files and return true if the
+  /// updated files should trigger a code generation.
+  Future<bool> updateFileContexts(Set<String> filePaths) async {
+    await _refreshContextForFiles(filePaths);
+
+    var oldDefinitionsLength = _endpointDefinitions.length;
+    await analyze(collector: CodeGenerationCollector());
+
+    if (_endpointDefinitions.length != oldDefinitionsLength) {
+      return true;
+    }
+
+    return filePaths.any((e) => _isEndpointFile(File(e)));
+  }
 
   /// Analyze all files in the [AnalysisContextCollection].
-  /// Use [changedFiles] to mark files, that need reloading.
+  ///
+  /// [changedFiles] is an optional list of files that should have their context
+  /// refreshed before analysis. This is useful when only a subset of files have
+  /// changed since [updateFileContexts] was last called.
   Future<List<EndpointDefinition>> analyze({
     required CodeAnalysisCollector collector,
     Set<String>? changedFiles,
@@ -95,6 +121,7 @@ class EndpointsAnalyzer {
       ));
     }
 
+    _endpointDefinitions = endpointDefs.toSet();
     return endpointDefs;
   }
 
@@ -171,6 +198,17 @@ class EndpointsAnalyzer {
       }
       await context.applyPendingFileChanges();
     }
+  }
+
+  bool _isEndpointFile(File file) {
+    if (!file.absolute.path.startsWith(absoluteIncludedPaths)) return false;
+    if (!file.path.endsWith('.dart')) return false;
+    if (!file.existsSync()) return false;
+
+    var contents = file.readAsStringSync();
+    if (!contents.contains('extends Endpoint')) return false;
+
+    return true;
   }
 
   Map<String, List<SourceSpanSeverityException>> _validateLibrary(

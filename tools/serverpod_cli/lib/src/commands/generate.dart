@@ -5,11 +5,13 @@ import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/generator/generator_continuous.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 class GenerateCommand extends ServerpodCommand {
@@ -59,11 +61,17 @@ class GenerateCommand extends ServerpodCommand {
         Directory(path.joinAll(config.endpointsSourcePathParts));
     var endpointsAnalyzer = EndpointsAnalyzer(endpointDirectory);
 
+    var yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+    var modelAnalyzer = StatefulAnalyzer(config, yamlModels, (uri, collector) {
+      collector.printErrors();
+    });
+
     bool success = true;
     if (watch) {
       success = await performGenerateContinuously(
         config: config,
         endpointsAnalyzer: endpointsAnalyzer,
+        modelAnalyzer: modelAnalyzer,
       );
     } else {
       success = await log.progress(
@@ -71,6 +79,7 @@ class GenerateCommand extends ServerpodCommand {
         () => performGenerate(
           config: config,
           endpointsAnalyzer: endpointsAnalyzer,
+          modelAnalyzer: modelAnalyzer,
         ),
       );
     }

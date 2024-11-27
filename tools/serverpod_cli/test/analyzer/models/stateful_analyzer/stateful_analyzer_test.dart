@@ -122,6 +122,20 @@ fields:
   });
 
   test(
+      'Given a model with a severe error (invalid syntax), when validating all, then hasSeverErrors returns true',
+      () {
+    var yamlSource = ModelSourceBuilder().withYaml('''''').build();
+
+    var statefulAnalyzer = StatefulAnalyzer(
+      config,
+      [yamlSource],
+    );
+
+    statefulAnalyzer.validateAll();
+    expect(statefulAnalyzer.hasSeverErrors, true);
+  });
+
+  test(
       'Given a model with multi line invalid yaml syntax when validating all then error is reported.',
       () {
     var invalidSource = ModelSourceBuilder().withYaml(

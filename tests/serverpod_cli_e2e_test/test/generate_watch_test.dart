@@ -67,14 +67,6 @@ void main() async {
       createProcess.kill();
       generateWatch?.kill();
       generateStreamSearch.cancel();
-
-      await Process.run(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-      );
-
-      while (!await isNetworkPortAvailable(8090)) {}
     });
 
     test('then the entity files are generated and updated as expected.',
@@ -242,14 +234,6 @@ fields:
       createProcess.kill();
       generateWatch?.kill();
       generateStreamSearch.cancel();
-
-      await Process.run(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-      );
-
-      while (!await isNetworkPortAvailable(8090)) {}
     });
     test('then endpoint dispatcher is generated and updated as expected.',
         () async {
@@ -422,14 +406,6 @@ class TestEndpoint extends Endpoint {
       createProcess.kill();
       generateWatch?.kill();
       generateStreamSearch.cancel();
-
-      await Process.run(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-      );
-
-      while (!await isNetworkPortAvailable(8090)) {}
     });
     test('then client endpoint dispatcher is updated as expected.', () async {
       // Add endpoint file
