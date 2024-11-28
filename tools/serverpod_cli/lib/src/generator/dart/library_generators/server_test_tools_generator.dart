@@ -36,14 +36,15 @@ class ServerTestToolsGenerator {
   }
 
   void _addPackageDirectives(LibraryBuilder library) {
-    var protocolPackageImportPath = 'package:${config.name}_server/${p.joinAll([
-          ...config.generatedServeModelPackagePathParts,
-          'protocol.dart'
-        ])}';
-    var endpointsPath = 'package:${config.name}_server/${p.joinAll([
-          ...config.generatedServeModelPackagePathParts,
-          'endpoints.dart'
-        ])}';
+    var protocolPackageImportPath =
+        'package:${config.name}_server/${p.split(p.joinAll([
+                  ...config.generatedServeModelPackagePathParts,
+                  'protocol.dart'
+                ])).join('/')}';
+    var endpointsPath = 'package:${config.name}_server/${p.split(p.joinAll([
+              ...config.generatedServeModelPackagePathParts,
+              'endpoints.dart'
+            ])).join('/')}';
 
     library.directives.addAll([
       Directive.import(protocolPackageImportPath),
