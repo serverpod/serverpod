@@ -34,31 +34,17 @@ class ModelHelper {
     var modelSources = <ModelSource>[];
 
     var modelSource = await _loadYamlModelsFromDisk(
-      defaultModuleAlias,
-      _absolutePathParts(config.modelSourcePathParts),
+      moduleAlias: defaultModuleAlias,
       loadConfig: config,
+      makeConfigPathsAbsolute: true,
     );
     modelSources.addAll(modelSource);
 
-    modelSource = await _loadYamlModelsFromDisk(
-      defaultModuleAlias,
-      _absolutePathParts(config.protocolSourcePathParts),
-      loadConfig: config,
-    );
-    modelSources.addAll(modelSource);
-
-    for (var module in config.modulesDependent) {
+    for (var moduleConfig in config.modulesDependent) {
       modelSource = await _loadYamlModelsFromDisk(
-        module.nickname,
-        module.modelSourcePathParts,
-        loadConfig: module,
-      );
-      modelSources.addAll(modelSource);
-
-      modelSource = await _loadYamlModelsFromDisk(
-        module.nickname,
-        module.protocolSourcePathParts,
-        loadConfig: module,
+        moduleAlias: moduleConfig.nickname,
+        loadConfig: moduleConfig,
+        makeConfigPathsAbsolute: false,
       );
       modelSources.addAll(modelSource);
     }
@@ -75,12 +61,17 @@ class ModelHelper {
     return split(absolute(joinAll(pathParts)));
   }
 
-  static Future<List<ModelSource>> _loadYamlModelsFromDisk(
-    String moduleAlias,
-    List<String> pathParts, {
+  static Future<List<ModelSource>> _loadYamlModelsFromDisk({
     required ModelLoadConfig loadConfig,
+    required String moduleAlias,
+    required makeConfigPathsAbsolute,
   }) async {
-    var files = await _loadAllModelFiles(pathParts, loadConfig: loadConfig);
+    var files = await _loadAllModelFiles(
+      loadConfig: loadConfig,
+      makeConfigPathsAbsolute
+          ? _absolutePathParts(loadConfig.libSourcePathParts)
+          : loadConfig.libSourcePathParts,
+    );
 
     List<ModelSource> sources = [];
     for (var model in files) {
@@ -90,7 +81,10 @@ class ModelHelper {
         moduleAlias,
         yaml,
         model.uri,
-        _extractPathFromModelRoot(pathParts, model.uri),
+        extractPathFromConfig(
+          loadConfig,
+          model.uri,
+        ),
       ));
     }
 
@@ -142,17 +136,21 @@ class ModelHelper {
         ));
   }
 
-  static List<String> extractPathFromConfig(ModelLoadConfig config, Uri uri) {
-    List<List<String>> paths = [
+  static List<String> extractPathFromConfig(
+    ModelLoadConfig config,
+    Uri uri,
+  ) {
+    List<List<String>> modelRootPathParts = [
       config.protocolSourcePathParts,
       config.modelSourcePathParts,
       config.srcSourcePathParts,
       config.libSourcePathParts,
     ];
 
-    for (var path in paths) {
-      if (isWithin(joinAll(path), uri.path)) {
-        return _extractPathFromModelRoot(path, uri);
+    for (var pathParts in modelRootPathParts) {
+      var directory = Directory(joinAll(pathParts));
+      if (isWithin(directory.absolute.path, uri.toFilePath())) {
+        return _extractPathFromModelRoot(directory, uri);
       }
     }
 
@@ -160,12 +158,18 @@ class ModelHelper {
   }
 
   static List<String> _extractPathFromModelRoot(
-    List<String> pathParts,
+    Directory sourceDir,
     Uri fileUri,
   ) {
-    var sourceDir = Directory(joinAll(pathParts));
-    var sourceDirPartsLength = split(sourceDir.path).length;
+    var relativePath = relative(
+      dirname(fileUri.toFilePath()),
+      from: sourceDir.path,
+    );
 
-    return split(dirname(fromUri(fileUri))).skip(sourceDirPartsLength).toList();
+    if (relativePath == '.') {
+      return [];
+    }
+
+    return split(relativePath);
   }
 }
