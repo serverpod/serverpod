@@ -1,26 +1,9 @@
 import 'dart:io';
 
 import 'package:path/path.dart';
-import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
-
-GeneratorConfig createGeneratorConfig([
-  List<String> serverPackageDirectoryPathParts = const [],
-]) {
-  return GeneratorConfig(
-    name: 'test',
-    type: PackageType.server,
-    serverPackage: 'test_server',
-    dartClientPackage: 'test_client',
-    dartClientDependsOnServiceClient: true,
-    serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
-    relativeDartClientPackagePathParts: [],
-    modules: [],
-    extraClasses: [],
-    enabledFeatures: [],
-  );
-}
 
 void main() {
   group('Test path extraction - extractPathFromConfig.', () {
@@ -51,7 +34,9 @@ void main() {
         'test.yaml',
       ));
 
-      var config = createGeneratorConfig(split(serverRootDir.path));
+      var config = GeneratorConfigBuilder()
+          .withServerPackageDirectoryPathParts(split(serverRootDir.path))
+          .build();
 
       var pathParts = ModelHelper.extractPathFromConfig(
         config,
@@ -80,7 +65,9 @@ void main() {
         'test.yaml',
       ));
 
-      var config = createGeneratorConfig(split(serverRootDir.path));
+      var config = GeneratorConfigBuilder()
+          .withServerPackageDirectoryPathParts(split(serverRootDir.path))
+          .build();
 
       var pathParts = ModelHelper.extractPathFromConfig(
         config,
@@ -109,7 +96,9 @@ void main() {
         'test.yaml',
       ));
 
-      var config = createGeneratorConfig(split(serverRootDir.path));
+      var config = GeneratorConfigBuilder()
+          .withServerPackageDirectoryPathParts(split(serverRootDir.path))
+          .build();
 
       var pathParts = ModelHelper.extractPathFromConfig(
         config,
@@ -133,7 +122,9 @@ void main() {
       ];
       var modelFile = File(joinAll(filePathParts));
 
-      var config = createGeneratorConfig(split(serverRootDir.path));
+      var config = GeneratorConfigBuilder()
+          .withServerPackageDirectoryPathParts(split(serverRootDir.path))
+          .build();
 
       var pathParts = ModelHelper.extractPathFromConfig(
         config,
@@ -155,7 +146,9 @@ void main() {
       'test_server',
     ));
 
-    var config = createGeneratorConfig(split(serverRootDir.path));
+    var config = GeneratorConfigBuilder()
+        .withServerPackageDirectoryPathParts(split(serverRootDir.path))
+        .withModules([]).build();
 
     test(
         'Given a serverpod project with model files then the converted model path has the file uri set.',
@@ -202,7 +195,9 @@ void main() {
         'test_server',
       ));
 
-      var config = createGeneratorConfig(split(serverRootDir.path));
+      var config = GeneratorConfigBuilder()
+          .withServerPackageDirectoryPathParts(split(serverRootDir.path))
+          .withModules([]).build();
 
       var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
@@ -243,7 +238,9 @@ fields:
       'test_server',
     ));
 
-    var config = createGeneratorConfig(split(serverRootDir.path));
+    var config = GeneratorConfigBuilder()
+        .withServerPackageDirectoryPathParts(split(serverRootDir.path))
+        .withModules([]).build();
 
     var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
@@ -265,7 +262,9 @@ fields:
       'test_server',
     ));
 
-    var config = createGeneratorConfig(split(serverRootDir.path));
+    var config = GeneratorConfigBuilder()
+        .withServerPackageDirectoryPathParts(split(serverRootDir.path))
+        .withModules([]).build();
 
     var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 

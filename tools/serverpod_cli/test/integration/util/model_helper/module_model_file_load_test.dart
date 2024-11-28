@@ -2,35 +2,11 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/module_config_builder.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
-
-GeneratorConfig createGeneratorConfig({
-  required List<String> serverPackageDirectoryPathParts,
-  required List<String> modulePathParts,
-}) {
-  return GeneratorConfig(
-    name: 'test',
-    type: PackageType.server,
-    serverPackage: 'test_server',
-    dartClientPackage: 'test_client',
-    dartClientDependsOnServiceClient: true,
-    serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
-    relativeDartClientPackagePathParts: [],
-    modules: [
-      ModuleConfig(
-        type: PackageType.module,
-        name: 'test_module',
-        nickname: 'test_module',
-        migrationVersions: [],
-        serverPackageDirectoryPathParts: modulePathParts,
-      )
-    ],
-    extraClasses: [],
-    enabledFeatures: [],
-  );
-}
 
 void main() {
   late Directory testDirectory;
@@ -55,10 +31,13 @@ void main() {
     setUp(() {
       moduleProject = Directory(join(testDirectory.path, const Uuid().v4()));
       moduleProject.createSync(recursive: true);
-      config = createGeneratorConfig(
-        serverPackageDirectoryPathParts: testProjectPathParts,
-        modulePathParts: split(moduleProject.path),
-      );
+      config = GeneratorConfigBuilder()
+          .withServerPackageDirectoryPathParts(testProjectPathParts)
+          .withModules([
+        ModuleConfigBuilder('test_module')
+            .withServerPackageDirectoryPathParts(split(moduleProject.path))
+            .build()
+      ]).build();
     });
 
     tearDown(() {
@@ -189,10 +168,13 @@ void main() {
     setUp(() {
       moduleProject = Directory(join(testDirectory.path, const Uuid().v4()));
       moduleProject.createSync(recursive: true);
-      config = createGeneratorConfig(
-        serverPackageDirectoryPathParts: testProjectPathParts,
-        modulePathParts: split(moduleProject.path),
-      );
+      config = GeneratorConfigBuilder()
+          .withServerPackageDirectoryPathParts(testProjectPathParts)
+          .withModules([
+        ModuleConfigBuilder('test_module')
+            .withServerPackageDirectoryPathParts(split(moduleProject.path))
+            .build()
+      ]).build();
     });
 
     tearDown(() {
@@ -356,10 +338,13 @@ void main() {
     setUp(() {
       moduleProject = Directory(join(testDirectory.path, const Uuid().v4()));
       moduleProject.createSync(recursive: true);
-      config = createGeneratorConfig(
-        serverPackageDirectoryPathParts: testProjectPathParts,
-        modulePathParts: split(moduleProject.path),
-      );
+      config = GeneratorConfigBuilder()
+          .withServerPackageDirectoryPathParts(testProjectPathParts)
+          .withModules([
+        ModuleConfigBuilder('test_module')
+            .withServerPackageDirectoryPathParts(split(moduleProject.path))
+            .build()
+      ]).build();
     });
 
     tearDown(() {
@@ -523,10 +508,13 @@ void main() {
     setUp(() {
       moduleProject = Directory(join(testDirectory.path, const Uuid().v4()));
       moduleProject.createSync(recursive: true);
-      config = createGeneratorConfig(
-        serverPackageDirectoryPathParts: testProjectPathParts,
-        modulePathParts: split(moduleProject.path),
-      );
+      config = GeneratorConfigBuilder()
+          .withServerPackageDirectoryPathParts(testProjectPathParts)
+          .withModules([
+        ModuleConfigBuilder('test_module')
+            .withServerPackageDirectoryPathParts(split(moduleProject.path))
+            .build()
+      ]).build();
     });
 
     tearDown(() {
@@ -690,10 +678,13 @@ void main() {
     setUp(() {
       moduleProject = Directory(join(testDirectory.path, const Uuid().v4()));
       moduleProject.createSync(recursive: true);
-      config = createGeneratorConfig(
-        serverPackageDirectoryPathParts: testProjectPathParts,
-        modulePathParts: split(moduleProject.path),
-      );
+      config = GeneratorConfigBuilder()
+          .withServerPackageDirectoryPathParts(testProjectPathParts)
+          .withModules([
+        ModuleConfigBuilder('test_module')
+            .withServerPackageDirectoryPathParts(split(moduleProject.path))
+            .build()
+      ]).build();
     });
 
     tearDown(() {
