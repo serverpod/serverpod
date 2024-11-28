@@ -148,6 +148,26 @@ void main() {
       },
       skip: testToolsFile == null,
     );
+
+    test('then import path towards project protocol is correct.', () {
+      var importPath = [
+        'package:example_project_server',
+        'src',
+        'generated',
+        'protocol.dart',
+      ].join('/');
+      expect(testToolsFile, contains("import '$importPath';"));
+    }, skip: testToolsFile == null);
+
+    test('then import path towards project endpoints is correct.', () {
+      var importPath = [
+        'package:example_project_server',
+        'src',
+        'generated',
+        'endpoints.dart',
+      ].join('/');
+      expect(testToolsFile, contains("import '$importPath';"));
+    }, skip: testToolsFile == null);
   });
 
   group(
