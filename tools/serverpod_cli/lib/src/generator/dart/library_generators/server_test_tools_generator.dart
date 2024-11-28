@@ -1,5 +1,4 @@
 import 'package:code_builder/code_builder.dart';
-import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
@@ -36,14 +35,17 @@ class ServerTestToolsGenerator {
   }
 
   void _addPackageDirectives(LibraryBuilder library) {
-    var protocolPackageImportPath = 'package:${config.name}_server/${p.joinAll([
-          ...config.generatedServeModelPackagePathParts,
-          'protocol.dart'
-        ])}';
-    var endpointsPath = 'package:${config.name}_server/${p.joinAll([
-          ...config.generatedServeModelPackagePathParts,
-          'endpoints.dart'
-        ])}';
+    var protocolPackageImportPath = [
+      'package:${config.name}_server',
+      ...config.generatedServeModelPackagePathParts,
+      'protocol.dart',
+    ].join('/');
+
+    var endpointsPath = [
+      'package:${config.name}_server',
+      ...config.generatedServeModelPackagePathParts,
+      'endpoints.dart'
+    ].join('/');
 
     library.directives.addAll([
       Directive.import(protocolPackageImportPath),
