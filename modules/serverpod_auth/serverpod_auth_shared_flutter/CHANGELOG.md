@@ -1,5 +1,5 @@
 ## 2.2.1
- - fix: Uses valid Dart import paths for endpoints on all platforms.
+ - fix: Fixes an issue where invalid Dart import paths would be generated on Windows.
 
 ## 2.2.0
  - feat: Improves Serverpod startup and lifecycle events logging.
