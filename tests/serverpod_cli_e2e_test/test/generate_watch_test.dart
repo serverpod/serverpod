@@ -43,7 +43,6 @@ void main() async {
       keywords: generateWatchCompletionKeywords,
     );
     setUp(() async {
-      // Create project
       createProcess = await Process.start(
         'serverpod',
         ['create', projectName, '-v', '--no-analytics'],
@@ -71,7 +70,6 @@ void main() async {
 
     test('then the entity files are generated and updated as expected.',
         () async {
-      // Start generate watch
       generateWatch = await Process.start(
         'serverpod',
         ['generate', '--watch', '-v', '--no-analytics'],
@@ -103,7 +101,6 @@ void main() async {
       // ready to receive file changes after the initial generation.
       await Future.delayed(const Duration(seconds: 1));
 
-      // Add model file
       var protocolFileName = 'test_entity';
       var protocolFile = File(createProtocolFilePath(
         tempPath,
@@ -180,7 +177,6 @@ fields:
         reason: 'Entity file did not contain the added field.',
       );
 
-      // Remove model file
       protocolFile.deleteSync();
       await expectLater(
         generateStreamSearch.keywordFound,
@@ -189,7 +185,6 @@ fields:
             'Incremental code generation did not complete before timeout was reached.',
       );
 
-      // Validate file is removed
       entityFiles = entityDirectory.listSync();
       expect(
         entityFiles.map((e) => path.basename(e.path)),
@@ -210,7 +205,6 @@ fields:
       keywords: generateWatchCompletionKeywords,
     );
     setUp(() async {
-      // Create project
       createProcess = await Process.start(
         'serverpod',
         ['create', projectName, '-v', '--no-analytics'],
@@ -237,7 +231,6 @@ fields:
     });
     test('then endpoint dispatcher is generated and updated as expected.',
         () async {
-      // Start generate watch
       generateWatch = await Process.start(
         'serverpod',
         ['generate', '--watch', '-v', '--no-analytics'],
@@ -266,7 +259,6 @@ fields:
       // ready to receive file changes after the initial generation.
       await Future.delayed(const Duration(seconds: 1));
 
-      // Add endpoint file
       var endpointFile = File(createProjectDartFilePath(
         tmpFolder: tempPath,
         serverDir: serverDir,
@@ -350,7 +342,6 @@ class TestEndpoint extends Endpoint {
             'Endpoint dispatcher file did not contain the new endpoint method.',
       );
 
-      // Remove endpoint file
       endpointFile.deleteSync();
 
       await expectLater(
@@ -383,7 +374,6 @@ class TestEndpoint extends Endpoint {
       keywords: generateWatchCompletionKeywords,
     );
     setUp(() async {
-      // Create project
       createProcess = await Process.start(
         'serverpod',
         ['create', projectName, '-v', '--no-analytics'],
@@ -407,19 +397,10 @@ class TestEndpoint extends Endpoint {
       createProcess.kill();
       generateWatch?.kill();
       generateStreamSearch.cancel();
-
-      await Process.run(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-      );
-
-      while (!await isNetworkPortAvailable(8090)) {}
     });
 
     test('then endpoint dispatcher is generated and updated as expected.',
         () async {
-      // Start generate watch
       generateWatch = await Process.start(
         'serverpod',
         ['generate', '--watch', '-v', '--no-analytics'],
@@ -448,7 +429,6 @@ class TestEndpoint extends Endpoint {
       // ready to receive file changes after the initial generation.
       await Future.delayed(const Duration(seconds: 1));
 
-      // Add endpoint file
       var endpointFile = File(createProjectDartFilePath(
         tmpFolder: tempPath,
         serverDir: serverDir,
@@ -531,7 +511,6 @@ class TestEndpoint extends Endpoint {
             'Endpoint dispatcher file did not contain the new endpoint method.',
       );
 
-      // Remove endpoint file
       endpointFile.deleteSync();
 
       await expectLater(
@@ -565,7 +544,6 @@ class TestEndpoint extends Endpoint {
       keywords: generateWatchCompletionKeywords,
     );
     setUp(() async {
-      // Create project
       createProcess = await Process.start(
         'serverpod',
         ['create', projectName, '-v', '--no-analytics'],
@@ -591,7 +569,6 @@ class TestEndpoint extends Endpoint {
       generateStreamSearch.cancel();
     });
     test('then client endpoint dispatcher is updated as expected.', () async {
-      // Add endpoint file
       var endpointFile = File(createProjectDartFilePath(
         tmpFolder: tempPath,
         serverDir: serverDir,
@@ -610,7 +587,6 @@ class TestEndpoint extends Endpoint {
 }
 ''', flush: true);
 
-      // Add model file
       var protocolFileName = 'test_entity';
       var protocolFile = File(createProtocolFilePath(
         tempPath,
@@ -624,7 +600,6 @@ fields:
   name: String
 ''', flush: true);
 
-      // Start generate watch
       generateWatch = await Process.start(
         'serverpod',
         ['generate', '--watch', '-v', '--no-analytics'],
@@ -727,7 +702,6 @@ fields:
       keywords: generateWatchCompletionKeywords,
     );
     setUp(() async {
-      // Create project
       createProcess = await Process.start(
         'serverpod',
         ['create', projectName, '-v', '--no-analytics'],
@@ -751,18 +725,9 @@ fields:
       createProcess.kill();
       generateWatch?.kill();
       generateStreamSearch.cancel();
-
-      await Process.run(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-      );
-
-      while (!await isNetworkPortAvailable(8090)) {}
     });
 
     test('then generator is not triggered.', () async {
-      // Start generate watch
       generateWatch = await Process.start(
         'serverpod',
         ['generate', '--watch', '-v', '--no-analytics'],
@@ -794,7 +759,6 @@ fields:
       // ready to receive file changes after the initial generation.
       await Future.delayed(const Duration(seconds: 1));
 
-      // Add model file
       var protocolFileName = 'test_entity';
       var protocolFile = File(createProtocolFilePath(
         tempPath,
@@ -944,14 +908,4 @@ String createClientEndpointDispatcherFilePath(
     'protocol',
     'client.dart',
   );
-}
-
-Future<bool> isNetworkPortAvailable(int port) async {
-  try {
-    var socket = await ServerSocket.bind(InternetAddress.anyIPv4, port);
-    await socket.close();
-    return true;
-  } catch (e) {
-    return false;
-  }
 }
