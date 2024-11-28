@@ -764,10 +764,13 @@ class LibraryGenerator {
       p.joinAll([...config.generatedServeModelPathParts]);
 
   String _endpointPath(EndpointDefinition endpoint) {
-    return p.relative(
+    var relativePath = p.relative(
       endpoint.filePath,
       from: _buildGeneratedDirectoryPath(),
     );
+
+    // Replace backslashes with forward slashes to make it work on Windows.
+    return p.split(relativePath).join('/');
   }
 
   Code _buildEndpointLookupMap(List<EndpointDefinition> endpoints) {
