@@ -1,5 +1,7 @@
+import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 
 /// A collection of all parsed models, and their potential collisions.
 class ParsedModelsCollection {
@@ -8,12 +10,14 @@ class ParsedModelsCollection {
   late final Map<String, List<SerializableModelDefinition>> classNames;
   late final Map<String, List<SerializableModelDefinition>> tableNames;
   late final Map<String, List<SerializableModelDefinition>> indexNames;
+  late final Map<String, List<SerializableModelDefinition>> filePaths;
 
   ParsedModelsCollection(this.models) {
     modules = models.map((e) => e.moduleAlias).toSet();
     classNames = _createClassNameMap(models);
     tableNames = _createTableNameMap(models);
     indexNames = _createIndexNameMap(models);
+    filePaths = _createFilePathMap(models);
   }
 
   Set<String> get moduleNames => modules;
@@ -74,6 +78,44 @@ class ParsedModelsCollection {
     }
 
     return indexNames;
+  }
+
+  Map<String, List<SerializableModelDefinition>> _createFilePathMap(
+    List<SerializableModelDefinition> models,
+  ) {
+    Map<String, List<SerializableModelDefinition>> filePaths = {};
+    for (var model
+        in models.where((e) => e.moduleAlias == defaultModuleAlias)) {
+      filePaths.update(
+        _buildFilePath(model),
+        (value) => value..add(model),
+        ifAbsent: () => [model],
+      );
+    }
+
+    return filePaths;
+  }
+
+  String _buildFilePath(SerializableModelDefinition model) {
+    return path.joinAll([...model.subDirParts, '${model.fileName}.dart']);
+  }
+
+  bool isFilePathUnique(
+    SerializableModelDefinition classDefinition,
+  ) {
+    return _isKeyGloballyUnique(
+      classDefinition,
+      _buildFilePath(classDefinition),
+      filePaths,
+    );
+  }
+
+  SerializableModelDefinition findByFilePath(
+    SerializableModelDefinition model, {
+    SerializableModelDefinition? ignore,
+  }) {
+    var models = _filterIgnored(filePaths[_buildFilePath(model)], ignore);
+    return models.first;
   }
 
   bool isTableNameUnique(

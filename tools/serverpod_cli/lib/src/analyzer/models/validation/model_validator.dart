@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions.dart';
 import 'package:serverpod_cli/src/util/extensions.dart';
 import 'package:yaml/yaml.dart';
 
@@ -40,6 +41,29 @@ List<SourceSpanSeverityException> validateTopLevelModelType(
       .toList();
 
   return errors;
+}
+
+List<SourceSpanSeverityException> validateDuplicateFileName(
+  YamlMap documentContents,
+  Restrictions restrictions,
+) {
+  var model = restrictions.documentDefinition;
+  var parsedModels = restrictions.parsedModels;
+
+  if (model == null) return [];
+
+  if (!parsedModels.isFilePathUnique(model)) {
+    var otherClass = parsedModels.findByFilePath(model, ignore: model);
+
+    return [
+      SourceSpanSeverityException(
+        'File collision with "${otherClass.className}" was detected for the generated model, please provide a unique path or filename for the model.',
+        documentContents.span,
+      )
+    ];
+  }
+
+  return [];
 }
 
 /// Recursively validates a yaml document against a set of [ValidateNode]s.
