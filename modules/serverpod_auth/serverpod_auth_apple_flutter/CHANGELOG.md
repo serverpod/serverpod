@@ -1,3 +1,6 @@
+## 2.2.1
+ - fix: Fixes an issue where invalid Dart import paths would be generated on Windows.
+
 ## 2.2.0
  - feat: Improves Serverpod startup and lifecycle events logging.
  - feat: Adds full support for testing framework.
