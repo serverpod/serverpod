@@ -43,7 +43,6 @@ void main() async {
       keywords: generateWatchCompletionKeywords,
     );
     setUp(() async {
-      // Create project
       createProcess = await Process.start(
         'serverpod',
         ['create', projectName, '-v', '--no-analytics'],
@@ -71,7 +70,6 @@ void main() async {
 
     test('then the entity files are generated and updated as expected.',
         () async {
-      // Start generate watch
       generateWatch = await Process.start(
         'serverpod',
         ['generate', '--watch', '-v', '--no-analytics'],
@@ -103,7 +101,6 @@ void main() async {
       // ready to receive file changes after the initial generation.
       await Future.delayed(const Duration(seconds: 1));
 
-      // Add model file
       var protocolFileName = 'test_entity';
       var protocolFile = File(createProtocolFilePath(
         tempPath,
@@ -180,7 +177,6 @@ fields:
         reason: 'Entity file did not contain the added field.',
       );
 
-      // Remove model file
       protocolFile.deleteSync();
       await expectLater(
         generateStreamSearch.keywordFound,
@@ -189,7 +185,6 @@ fields:
             'Incremental code generation did not complete before timeout was reached.',
       );
 
-      // Validate file is removed
       entityFiles = entityDirectory.listSync();
       expect(
         entityFiles.map((e) => path.basename(e.path)),
@@ -210,7 +205,6 @@ fields:
       keywords: generateWatchCompletionKeywords,
     );
     setUp(() async {
-      // Create project
       createProcess = await Process.start(
         'serverpod',
         ['create', projectName, '-v', '--no-analytics'],
@@ -237,7 +231,6 @@ fields:
     });
     test('then endpoint dispatcher is generated and updated as expected.',
         () async {
-      // Start generate watch
       generateWatch = await Process.start(
         'serverpod',
         ['generate', '--watch', '-v', '--no-analytics'],
@@ -266,11 +259,11 @@ fields:
       // ready to receive file changes after the initial generation.
       await Future.delayed(const Duration(seconds: 1));
 
-      // Add endpoint file
-      var endpointFile = File(createEndpointFilePath(
-        tempPath,
-        serverDir,
-        'test_endpoint',
+      var endpointFile = File(createProjectDartFilePath(
+        tmpFolder: tempPath,
+        serverDir: serverDir,
+        pathParts: ['endpoints'],
+        fileName: 'test_endpoint',
       ));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
@@ -349,7 +342,6 @@ class TestEndpoint extends Endpoint {
             'Endpoint dispatcher file did not contain the new endpoint method.',
       );
 
-      // Remove endpoint file
       endpointFile.deleteSync();
 
       await expectLater(
@@ -371,6 +363,176 @@ class TestEndpoint extends Endpoint {
   });
 
   group(
+      'Given an endpoint file in the "lib/src" folder that is changed when generate watch is active',
+      () {
+    var (projectName, commandRoot) = createRandomProjectName(tempPath);
+    var (serverDir, _, _) = createProjectFolderPaths(projectName);
+
+    late Process createProcess;
+    Process? generateWatch;
+    KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
+      keywords: generateWatchCompletionKeywords,
+    );
+    setUp(() async {
+      createProcess = await Process.start(
+        'serverpod',
+        ['create', projectName, '-v', '--no-analytics'],
+        workingDirectory: tempPath,
+        environment: {
+          'SERVERPOD_HOME': rootPath,
+        },
+      );
+
+      createProcess.stdout.transform(const Utf8Decoder()).listen(print);
+      createProcess.stderr.transform(const Utf8Decoder()).listen(print);
+
+      var createProjectExitCode = await createProcess.exitCode;
+      assert(
+        createProjectExitCode == 0,
+        'Failed to create the serverpod project.',
+      );
+    });
+
+    tearDown(() async {
+      createProcess.kill();
+      generateWatch?.kill();
+      generateStreamSearch.cancel();
+    });
+
+    test('then endpoint dispatcher is generated and updated as expected.',
+        () async {
+      generateWatch = await Process.start(
+        'serverpod',
+        ['generate', '--watch', '-v', '--no-analytics'],
+        workingDirectory: path.join(tempPath, serverDir),
+        environment: {
+          'SERVERPOD_HOME': rootPath,
+        },
+      );
+
+      generateWatch!.stdout
+          .transform(const Utf8Decoder())
+          .transform(const LineSplitter())
+          .listen(generateStreamSearch.onData);
+      generateWatch!.stderr
+          .transform(const Utf8Decoder())
+          .transform(const LineSplitter())
+          .listen(print);
+
+      await expectLater(
+        generateStreamSearch.keywordFound,
+        completion(isTrue),
+        reason:
+            'Initial code generation did not complete before timeout was reached.',
+      );
+      // This delay is required to ensure that the generate watch is
+      // ready to receive file changes after the initial generation.
+      await Future.delayed(const Duration(seconds: 1));
+
+      var endpointFile = File(createProjectDartFilePath(
+        tmpFolder: tempPath,
+        serverDir: serverDir,
+        fileName: 'test_endpoint',
+      ));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class TestEndpoint extends Endpoint {
+  Future<String> testEndpointMethod(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+
+''', flush: true);
+
+      await expectLater(
+        generateStreamSearch.keywordFound,
+        completion(isTrue),
+        reason:
+            'Incremental code generation did not complete before timeout was reached.',
+      );
+
+      // Validate endpoint client methods are generated
+      var endpointDispatcherFile = File(createServerEndpointDispatcherFilePath(
+        tempPath,
+        serverDir,
+      ));
+      expect(
+        endpointDispatcherFile.existsSync(),
+        isTrue,
+        reason: 'Endpoint dispatcher file not found.',
+      );
+      var endpointDispatcherFileContents =
+          endpointDispatcherFile.readAsStringSync();
+      expect(
+        endpointDispatcherFileContents,
+        contains('TestEndpoint'),
+        reason:
+            'Endpoint dispatcher file did not contain added endpoint class.',
+      );
+      expect(
+        endpointDispatcherFileContents,
+        contains('testEndpointMethod'),
+        reason:
+            'Endpoint dispatcher file did not contain the test endpoint method.',
+      );
+
+      // Update endpoint file
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class TestEndpoint extends Endpoint {
+  Future<String> testEndpointMethod(Session session, String name) async {
+    return 'Hello \$name';
+  }
+
+  Future<String> newTestEndpointMethod(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+
+''', flush: true);
+
+      await expectLater(
+        generateStreamSearch.keywordFound,
+        completion(isTrue),
+        reason:
+            'Incremental code generation did not complete before timeout was reached.',
+      );
+
+      // Validate that endpoint changes are reflected in endpoint dispatcher
+      endpointDispatcherFileContents =
+          endpointDispatcherFile.readAsStringSync();
+      expect(
+        endpointDispatcherFileContents,
+        contains('newTestEndpointMethod'),
+        reason:
+            'Endpoint dispatcher file did not contain the new endpoint method.',
+      );
+
+      endpointFile.deleteSync();
+
+      await expectLater(
+        generateStreamSearch.keywordFound,
+        completion(isTrue),
+        reason:
+            'Incremental code generation did not complete before timeout was reached.',
+      );
+
+      // Validate that endpoint is removed from endpoint dispatcher
+      endpointDispatcherFileContents =
+          endpointDispatcherFile.readAsStringSync();
+      expect(
+        endpointDispatcherFileContents,
+        isNot(contains('TestEndpoint')),
+        reason:
+            'Endpoint dispatcher still contained removed endpoint in "lib/src".',
+      );
+    });
+  });
+
+  group(
       'Given a serializable model used in an endpoint that is moved to a subfolder when generate watch is active',
       () {
     var (projectName, commandRoot) = createRandomProjectName(tempPath);
@@ -382,7 +544,6 @@ class TestEndpoint extends Endpoint {
       keywords: generateWatchCompletionKeywords,
     );
     setUp(() async {
-      // Create project
       createProcess = await Process.start(
         'serverpod',
         ['create', projectName, '-v', '--no-analytics'],
@@ -408,11 +569,11 @@ class TestEndpoint extends Endpoint {
       generateStreamSearch.cancel();
     });
     test('then client endpoint dispatcher is updated as expected.', () async {
-      // Add endpoint file
-      var endpointFile = File(createEndpointFilePath(
-        tempPath,
-        serverDir,
-        'test_endpoint',
+      var endpointFile = File(createProjectDartFilePath(
+        tmpFolder: tempPath,
+        serverDir: serverDir,
+        pathParts: ['endpoints'],
+        fileName: 'test_endpoint',
       ));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
@@ -426,7 +587,6 @@ class TestEndpoint extends Endpoint {
 }
 ''', flush: true);
 
-      // Add model file
       var protocolFileName = 'test_entity';
       var protocolFile = File(createProtocolFilePath(
         tempPath,
@@ -440,7 +600,6 @@ fields:
   name: String
 ''', flush: true);
 
-      // Start generate watch
       generateWatch = await Process.start(
         'serverpod',
         ['generate', '--watch', '-v', '--no-analytics'],
@@ -531,6 +690,131 @@ fields:
       );
     });
   });
+
+  group('Given a generated file that is changed when generate watch is active',
+      () {
+    var (projectName, commandRoot) = createRandomProjectName(tempPath);
+    var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
+
+    late Process createProcess;
+    Process? generateWatch;
+    KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
+      keywords: generateWatchCompletionKeywords,
+    );
+    setUp(() async {
+      createProcess = await Process.start(
+        'serverpod',
+        ['create', projectName, '-v', '--no-analytics'],
+        workingDirectory: tempPath,
+        environment: {
+          'SERVERPOD_HOME': rootPath,
+        },
+      );
+
+      createProcess.stdout.transform(const Utf8Decoder()).listen(print);
+      createProcess.stderr.transform(const Utf8Decoder()).listen(print);
+
+      var createProjectExitCode = await createProcess.exitCode;
+      assert(
+        createProjectExitCode == 0,
+        'Failed to create the serverpod project.',
+      );
+    });
+
+    tearDown(() async {
+      createProcess.kill();
+      generateWatch?.kill();
+      generateStreamSearch.cancel();
+    });
+
+    test('then generator is not triggered.', () async {
+      generateWatch = await Process.start(
+        'serverpod',
+        ['generate', '--watch', '-v', '--no-analytics'],
+        workingDirectory: path.join(tempPath, serverDir),
+        environment: {
+          'SERVERPOD_HOME': rootPath,
+        },
+      );
+
+      generateStreamSearch = KeywordSearchInStream(
+        keywords: generateWatchCompletionKeywords,
+      );
+      generateWatch!.stdout
+          .transform(const Utf8Decoder())
+          .transform(const LineSplitter())
+          .listen(generateStreamSearch.onData);
+      generateWatch!.stderr
+          .transform(const Utf8Decoder())
+          .transform(const LineSplitter())
+          .listen(print);
+
+      await expectLater(
+        generateStreamSearch.keywordFound,
+        completion(isTrue),
+        reason:
+            'Initial code generation did not complete before timeout was reached.',
+      );
+      // This delay is required to ensure that the generate watch is
+      // ready to receive file changes after the initial generation.
+      await Future.delayed(const Duration(seconds: 1));
+
+      var protocolFileName = 'test_entity';
+      var protocolFile = File(createProtocolFilePath(
+        tempPath,
+        serverDir,
+        protocolFileName,
+      ));
+      protocolFile.createSync(recursive: true);
+      protocolFile.writeAsStringSync('''
+class: TestEntity
+fields:
+  name: String
+''', flush: true);
+
+      await expectLater(
+        generateStreamSearch.keywordFound,
+        completion(isTrue),
+        reason:
+            'Incremental code generation did not complete before timeout was reached.',
+      );
+
+      // Validate that entity file is generated
+      var entityFileName = '$protocolFileName.dart';
+      var entityDirectory =
+          Directory(createClientModelDirectoryPath(tempPath, clientDir));
+      var entityFiles = entityDirectory.listSync();
+      expect(
+        entityFiles.map((e) => path.basename(e.path)),
+        contains(entityFileName),
+        reason: 'Entity file not found.',
+      );
+
+      // Read generated file
+      var entityFile = entityFiles.firstWhereOrNull(
+        (e) => path.basename(e.path) == entityFileName,
+      );
+      expect(
+        entityFile,
+        isA<File>(),
+        reason: 'Entity file did not have expected type.',
+      );
+
+      // Modify generated file
+      var entityFileContents = (entityFile as File).readAsStringSync();
+      var modifiedEntityFileContents = '''$entityFileContents
+\n// Modified
+      ''';
+      entityFile.writeAsStringSync(modifiedEntityFileContents, flush: true);
+
+      await expectLater(
+        generateStreamSearch.keywordFound,
+        completion(isFalse),
+        reason:
+            'Incremental code generation was triggered when generated file was modified.',
+      );
+    });
+  });
 }
 
 (String, String) createRandomProjectName(String root) {
@@ -582,19 +866,20 @@ String createProtocolFilePath(
   );
 }
 
-String createEndpointFilePath(
-  String tmpFolder,
-  String serverDir,
-  String fileName,
-) {
-  return path.join(
+String createProjectDartFilePath({
+  required String tmpFolder,
+  required String serverDir,
+  required String fileName,
+  List<String>? pathParts,
+}) {
+  return path.joinAll([
     tmpFolder,
     serverDir,
     'lib',
     'src',
-    'endpoints',
+    ...?pathParts,
     '$fileName.dart',
-  );
+  ]);
 }
 
 String createServerEndpointDispatcherFilePath(
@@ -623,14 +908,4 @@ String createClientEndpointDispatcherFilePath(
     'protocol',
     'client.dart',
   );
-}
-
-Future<bool> isNetworkPortAvailable(int port) async {
-  try {
-    var socket = await ServerSocket.bind(InternetAddress.anyIPv4, port);
-    await socket.close();
-    return true;
-  } catch (e) {
-    return false;
-  }
 }

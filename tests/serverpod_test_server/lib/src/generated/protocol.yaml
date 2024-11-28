@@ -292,3 +292,5 @@ authenticatedTestTools:
   - returnsStream:
   - returnsListFromInputStream:
   - intEchoStream:
+myFeature:
+  - myFeatureMethod:

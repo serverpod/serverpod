@@ -116,10 +116,6 @@ class GeneratorConfig {
   List<String> get modelSourcePathParts =>
       [...serverPackageDirectoryPathParts, ...relativeModelSourcePathParts];
 
-  /// Path parts to the endpoints directory of the server package.
-  List<String> get endpointsSourcePathParts =>
-      [...serverPackageDirectoryPathParts, 'lib', 'src', 'endpoints'];
-
   /// The internal package path parts of the directory, where the generated code is stored in the
   /// server package.
   List<String> get generatedServeModelPackagePathParts => ['src', 'generated'];
@@ -429,7 +425,6 @@ class GeneratorConfig {
     var str = '''type: $type
 sourceProtocol: ${p.joinAll(protocolSourcePathParts)}
 sourceModel: ${p.joinAll(modelSourcePathParts)}
-sourceEndpoints: ${p.joinAll(endpointsSourcePathParts)}
 generatedClientDart: ${p.joinAll(generatedDartClientModelPathParts)}
 generatedServerModel: ${p.joinAll(generatedServeModelPathParts)}
 ''';

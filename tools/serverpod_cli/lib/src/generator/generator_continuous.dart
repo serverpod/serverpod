@@ -88,23 +88,22 @@ Future<bool> performGenerateContinuously({
 Stream<WatchEvent> _setupAllWatchedDirectories(GeneratorConfig config) {
   var watchers = <DirectoryWatcher>[];
 
-  var protocolPath = p.joinAll(config.protocolSourcePathParts);
-  var modelPath = p.joinAll(config.modelSourcePathParts);
-  var endpointPath = p.joinAll(config.endpointsSourcePathParts);
+  var libPath = p.joinAll(config.libSourcePathParts);
 
-  if (_directoryPathExists(protocolPath)) {
-    watchers.add(DirectoryWatcher(p.joinAll(config.protocolSourcePathParts)));
+  if (_directoryPathExists(libPath)) {
+    watchers.add(DirectoryWatcher(libPath));
   }
 
-  if (_directoryPathExists(modelPath)) {
-    watchers.add(DirectoryWatcher(p.joinAll(config.modelSourcePathParts)));
+  bool notInGeneratedDirectory(WatchEvent e) {
+    var generatedFile = e.path.contains(
+      p.joinAll(config.generatedServeModelPackagePathParts),
+    );
+
+    return !generatedFile;
   }
 
-  if (_directoryPathExists(endpointPath)) {
-    watchers.add(DirectoryWatcher(p.joinAll(config.endpointsSourcePathParts)));
-  }
-
-  return StreamGroup.merge(watchers.map((w) => w.events));
+  return StreamGroup.merge(watchers.map((w) => w.events))
+      .where(notInGeneratedDirectory);
 }
 
 bool _directoryPathExists(String path) {
