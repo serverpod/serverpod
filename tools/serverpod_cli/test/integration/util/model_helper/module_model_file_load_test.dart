@@ -475,7 +475,62 @@ void main() {
       });
     });
 
-    group('placed in the module "lib/src" directory when loaded', () {
+    group('placed in the "lib" directory when loaded', () {
+      late List<ModelSource> models;
+
+      setUp(() async {
+        var modelFile = File(join(
+          moduleProject.path,
+          'lib',
+          modelFileName,
+        ));
+        modelFile.createSync(recursive: true);
+        modelFile.writeAsStringSync('''
+  class: Example
+  fields:
+    name: String
+''');
+        models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+      });
+
+      test('then the class is serialized.', () async {
+        expect(models, hasLength(1));
+      });
+
+      test('then modelSource has the correct subDirPathParts', () async {
+        expect(models.firstOrNull?.subDirPathParts, isEmpty);
+      });
+    });
+
+    group('placed in a feature directory inside of "lib" when loaded', () {
+      late List<ModelSource> models;
+
+      setUp(() async {
+        var modelFile = File(join(
+          moduleProject.path,
+          'lib',
+          'my_feature',
+          modelFileName,
+        ));
+        modelFile.createSync(recursive: true);
+        modelFile.writeAsStringSync('''
+  class: Example
+  fields:
+    name: String
+''');
+        models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+      });
+
+      test('then the class is serialized.', () async {
+        expect(models, hasLength(1));
+      });
+
+      test('then modelSource has the correct subDirPathParts', () async {
+        expect(models.firstOrNull?.subDirPathParts, ['my_feature']);
+      });
+    });
+
+    group('placed in the "lib/src" directory when loaded', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -494,8 +549,41 @@ void main() {
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
 
-      test('then the class is not serialized.', () async {
-        expect(models, hasLength(0));
+      test('then the class is serialized.', () async {
+        expect(models, hasLength(1));
+      });
+
+      test('then modelSource has the correct subDirPathParts', () async {
+        expect(models.firstOrNull?.subDirPathParts, isEmpty);
+      });
+    });
+
+    group('placed in a feature directory inside of "lib/src" when loaded', () {
+      late List<ModelSource> models;
+
+      setUp(() async {
+        var modelFile = File(join(
+          moduleProject.path,
+          'lib',
+          'src',
+          'my_feature',
+          modelFileName,
+        ));
+        modelFile.createSync(recursive: true);
+        modelFile.writeAsStringSync('''
+  class: Example
+  fields:
+    name: String
+''');
+        models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+      });
+
+      test('then the class is serialized.', () async {
+        expect(models, hasLength(1));
+      });
+
+      test('then modelSource has the correct subDirPathParts', () async {
+        expect(models.firstOrNull?.subDirPathParts, ['my_feature']);
       });
     });
   });
@@ -645,7 +733,62 @@ void main() {
       });
     });
 
-    group('placed in the module "lib/src" directory when loaded', () {
+    group('placed in the "lib" directory when loaded', () {
+      late List<ModelSource> models;
+
+      setUp(() async {
+        var modelFile = File(join(
+          moduleProject.path,
+          'lib',
+          modelFileName,
+        ));
+        modelFile.createSync(recursive: true);
+        modelFile.writeAsStringSync('''
+  class: Example
+  fields:
+    name: String
+''');
+        models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+      });
+
+      test('then the class is serialized.', () async {
+        expect(models, hasLength(1));
+      });
+
+      test('then modelSource has the correct subDirPathParts', () async {
+        expect(models.firstOrNull?.subDirPathParts, isEmpty);
+      });
+    });
+
+    group('placed in a feature directory inside of "lib" when loaded', () {
+      late List<ModelSource> models;
+
+      setUp(() async {
+        var modelFile = File(join(
+          moduleProject.path,
+          'lib',
+          'my_feature',
+          modelFileName,
+        ));
+        modelFile.createSync(recursive: true);
+        modelFile.writeAsStringSync('''
+  class: Example
+  fields:
+    name: String
+''');
+        models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+      });
+
+      test('then the class is serialized.', () async {
+        expect(models, hasLength(1));
+      });
+
+      test('then modelSource has the correct subDirPathParts', () async {
+        expect(models.firstOrNull?.subDirPathParts, ['my_feature']);
+      });
+    });
+
+    group('placed in the "lib/src" directory when loaded', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -664,8 +807,41 @@ void main() {
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
 
-      test('then the class is not serialized.', () async {
-        expect(models, hasLength(0));
+      test('then the class is serialized.', () async {
+        expect(models, hasLength(1));
+      });
+
+      test('then modelSource has the correct subDirPathParts', () async {
+        expect(models.firstOrNull?.subDirPathParts, isEmpty);
+      });
+    });
+
+    group('placed in a feature directory inside of "lib/src" when loaded', () {
+      late List<ModelSource> models;
+
+      setUp(() async {
+        var modelFile = File(join(
+          moduleProject.path,
+          'lib',
+          'src',
+          'my_feature',
+          modelFileName,
+        ));
+        modelFile.createSync(recursive: true);
+        modelFile.writeAsStringSync('''
+  class: Example
+  fields:
+    name: String
+''');
+        models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+      });
+
+      test('then the class is serialized.', () async {
+        expect(models, hasLength(1));
+      });
+
+      test('then modelSource has the correct subDirPathParts', () async {
+        expect(models.firstOrNull?.subDirPathParts, ['my_feature']);
       });
     });
   });
@@ -815,7 +991,62 @@ void main() {
       });
     });
 
-    group('placed in the module "lib/src" directory when loaded', () {
+    group('placed in the "lib" directory when loaded', () {
+      late List<ModelSource> models;
+
+      setUp(() async {
+        var modelFile = File(join(
+          moduleProject.path,
+          'lib',
+          modelFileName,
+        ));
+        modelFile.createSync(recursive: true);
+        modelFile.writeAsStringSync('''
+  class: Example
+  fields:
+    name: String
+''');
+        models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+      });
+
+      test('then the class is serialized.', () async {
+        expect(models, hasLength(1));
+      });
+
+      test('then modelSource has the correct subDirPathParts', () async {
+        expect(models.firstOrNull?.subDirPathParts, isEmpty);
+      });
+    });
+
+    group('placed in a feature directory inside of "lib" when loaded', () {
+      late List<ModelSource> models;
+
+      setUp(() async {
+        var modelFile = File(join(
+          moduleProject.path,
+          'lib',
+          'my_feature',
+          modelFileName,
+        ));
+        modelFile.createSync(recursive: true);
+        modelFile.writeAsStringSync('''
+  class: Example
+  fields:
+    name: String
+''');
+        models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+      });
+
+      test('then the class is serialized.', () async {
+        expect(models, hasLength(1));
+      });
+
+      test('then modelSource has the correct subDirPathParts', () async {
+        expect(models.firstOrNull?.subDirPathParts, ['my_feature']);
+      });
+    });
+
+    group('placed in the "lib/src" directory when loaded', () {
       late List<ModelSource> models;
 
       setUp(() async {
@@ -834,8 +1065,41 @@ void main() {
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
 
-      test('then the class is not serialized.', () async {
-        expect(models, hasLength(0));
+      test('then the class is serialized.', () async {
+        expect(models, hasLength(1));
+      });
+
+      test('then modelSource has the correct subDirPathParts', () async {
+        expect(models.firstOrNull?.subDirPathParts, isEmpty);
+      });
+    });
+
+    group('placed in a feature directory inside of "lib/src" when loaded', () {
+      late List<ModelSource> models;
+
+      setUp(() async {
+        var modelFile = File(join(
+          moduleProject.path,
+          'lib',
+          'src',
+          'my_feature',
+          modelFileName,
+        ));
+        modelFile.createSync(recursive: true);
+        modelFile.writeAsStringSync('''
+  class: Example
+  fields:
+    name: String
+''');
+        models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+      });
+
+      test('then the class is serialized.', () async {
+        expect(models, hasLength(1));
+      });
+
+      test('then modelSource has the correct subDirPathParts', () async {
+        expect(models.firstOrNull?.subDirPathParts, ['my_feature']);
       });
     });
   });

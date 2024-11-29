@@ -19,12 +19,20 @@ class ModelSource {
   );
 }
 
-const modelFileExtensions = [
-  '.yaml',
-  '.yml',
+const spyModelFileExtensions = [
   '.spy',
   '.spy.yaml',
   '.spy.yml',
+];
+
+const yamlModelFileExtensions = [
+  '.yaml',
+  '.yml',
+];
+
+const modelFileExtensions = [
+  ...spyModelFileExtensions,
+  ...yamlModelFileExtensions,
 ];
 
 class ModelHelper {
@@ -95,18 +103,22 @@ class ModelHelper {
     String path, {
     required ModelLoadConfig loadConfig,
   }) {
-    var allowedModelPaths = [
+    if (spyModelFileExtensions.any((ext) => path.endsWith(ext))) {
+      return true;
+    }
+
+    var allowedYamlExtensionModelPaths = [
       joinAll(loadConfig.relativeModelSourcePathParts),
       joinAll(loadConfig.relativeProtocolSourcePathParts),
     ];
 
-    var hasValidPath = path.containsAny(allowedModelPaths);
+    var allowedYamlPath = path.containsAny(allowedYamlExtensionModelPaths);
 
-    var hasValidExtension = modelFileExtensions.any(
+    var yamlExtension = yamlModelFileExtensions.any(
       (ext) => path.endsWith(ext),
     );
 
-    return hasValidPath && hasValidExtension;
+    return allowedYamlPath && yamlExtension;
   }
 
   static Future<Iterable<File>> _loadAllModelFiles(
