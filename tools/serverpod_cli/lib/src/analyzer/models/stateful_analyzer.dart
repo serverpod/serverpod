@@ -34,8 +34,9 @@ class StatefulAnalyzer {
     _onErrorsChangedNotifier = onErrorsChangedNotifier;
   }
 
-  /// Returns all valid models in the state.
-  List<SerializableModelDefinition> get _validModels => _modelStates.values
+  /// Returns all valid models in the state that are part of the project.
+  List<SerializableModelDefinition> get _validProjectModels => _modelStates
+      .values
       .where(
           (state) => !CodeAnalysisCollector.containsSeverErrors(state.errors))
       .where((state) => state.source.moduleAlias == defaultModuleAlias)
@@ -75,7 +76,7 @@ class StatefulAnalyzer {
   List<SerializableModelDefinition> validateAll() {
     _updateAllModels();
     _validateAllModels();
-    return _validModels;
+    return _validProjectModels;
   }
 
   /// Runs the validation on a single model. The model must exist in the
@@ -98,7 +99,7 @@ class StatefulAnalyzer {
 
     // This can be optimized to only validate the files we know have related errors.
     _validateAllModels();
-    return _validModels;
+    return _validProjectModels;
   }
 
   void _updateAllModels() {
