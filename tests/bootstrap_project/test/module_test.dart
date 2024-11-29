@@ -51,7 +51,7 @@ void main() {
 
     group('when creating a new project', () {
       setUpAll(() async {
-        var process = await Process.start(
+        var process = await startProcess(
           'serverpod',
           [
             'create',
@@ -67,22 +67,16 @@ void main() {
           },
         );
 
-        process.stdout.transform(Utf8Decoder()).listen(print);
-        process.stderr.transform(Utf8Decoder()).listen(print);
-
         var exitCode = await process.exitCode;
         assert(exitCode == 0);
       });
 
       test('then there are no linting errors in the new project', () async {
-        final process = await Process.start(
+        final process = await startProcess(
           'dart',
           ['analyze', '--fatal-infos', '--fatal-warnings', projectName],
           workingDirectory: tempPath,
         );
-
-        process.stdout.transform(Utf8Decoder()).listen(print);
-        process.stderr.transform(Utf8Decoder()).listen(print);
 
         var exitCode = await process.exitCode;
         expect(exitCode, 0, reason: 'Linting errors in new project.');
@@ -244,7 +238,7 @@ void main() {
     late Process createProcess;
 
     setUp(() async {
-      createProcess = await Process.start(
+      createProcess = await startProcess(
         'serverpod',
         ['create', '--template', 'module', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
@@ -254,7 +248,7 @@ void main() {
       );
       assert((await createProcess.exitCode) == 0);
 
-      final docker = await Process.start(
+      final docker = await startProcess(
         'docker',
         ['compose', 'up', '--build', '--detach'],
         workingDirectory: commandRoot,
@@ -277,7 +271,7 @@ void main() {
 
     test('when running tests then example unit and integration tests passes',
         () async {
-      var testProcess = await Process.start(
+      var testProcess = await startProcess(
         'dart',
         ['test'],
         workingDirectory:
