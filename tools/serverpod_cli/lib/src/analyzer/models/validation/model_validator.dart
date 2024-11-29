@@ -47,23 +47,28 @@ List<SourceSpanSeverityException> validateDuplicateFileName(
   YamlMap documentContents,
   Restrictions restrictions,
 ) {
-  var model = restrictions.documentDefinition;
+  var modelDefinition = restrictions.documentDefinition;
   var parsedModels = restrictions.parsedModels;
 
-  if (model == null) return [];
+  if (modelDefinition == null) return [];
 
-  if (!parsedModels.isFilePathUnique(model)) {
-    var otherClass = parsedModels.findByFilePath(model, ignore: model);
-
-    return [
-      SourceSpanSeverityException(
-        'File collision with "${otherClass.className}" was detected for the generated model, please provide a unique path or filename for the model.',
-        documentContents.span,
-      )
-    ];
+  if (parsedModels.isFilePathUnique(modelDefinition)) {
+    return [];
   }
 
-  return [];
+  var result = parsedModels.findByFilePath(
+    modelDefinition,
+    ignore: modelDefinition,
+  );
+  if (result == null) return [];
+
+  var (:documentPath, model: otherClass) = result;
+  return [
+    SourceSpanSeverityException(
+      'File collision with "${otherClass.className}" was detected for the generated model, please provide a unique path or filename for the model.',
+      documentContents.span,
+    )
+  ];
 }
 
 /// Recursively validates a yaml document against a set of [ValidateNode]s.

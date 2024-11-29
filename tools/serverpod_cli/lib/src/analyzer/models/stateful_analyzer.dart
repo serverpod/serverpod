@@ -119,7 +119,11 @@ class StatefulAnalyzer {
   void _validateAllModels() {
     var modelsToValidate = _modelStates.values
         .where((state) => state.source.moduleAlias == defaultModuleAlias);
-    var models = _models;
+    var models = _modelStates.values
+        .map((state) =>
+            (documentPath: state.source.yamlSourceUri.path, model: state.model))
+        .whereType<({String documentPath, SerializableModelDefinition model})>()
+        .toList();
 
     for (var state in modelsToValidate) {
       var collector = CodeGenerationCollector();

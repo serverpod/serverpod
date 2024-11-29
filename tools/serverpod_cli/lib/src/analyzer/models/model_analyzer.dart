@@ -104,7 +104,7 @@ class SerializableModelAnalyzer {
     Uri sourceUri,
     CodeAnalysisCollector collector,
     SerializableModelDefinition? model,
-    List<SerializableModelDefinition> models,
+    List<({String documentPath, SerializableModelDefinition model})> models,
   ) {
     var yamlErrors = ErrorCollector();
     YamlMap? document = _loadYamlMap(yaml, sourceUri, yamlErrors);

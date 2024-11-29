@@ -5,19 +5,24 @@ import 'package:serverpod_cli/src/util/model_helper.dart';
 
 /// A collection of all parsed models, and their potential collisions.
 class ParsedModelsCollection {
-  final List<SerializableModelDefinition> models;
   late final Set<String> modules;
   late final Map<String, List<SerializableModelDefinition>> classNames;
   late final Map<String, List<SerializableModelDefinition>> tableNames;
   late final Map<String, List<SerializableModelDefinition>> indexNames;
-  late final Map<String, List<SerializableModelDefinition>> filePaths;
+  late final Map<String,
+          List<({String documentPath, SerializableModelDefinition model})>>
+      filePaths;
 
-  ParsedModelsCollection(this.models) {
+  ParsedModelsCollection(
+    List<({String documentPath, SerializableModelDefinition model})>
+        modelWithPath,
+  ) {
+    var models = modelWithPath.map((e) => e.model).toList();
     modules = models.map((e) => e.moduleAlias).toSet();
     classNames = _createClassNameMap(models);
     tableNames = _createTableNameMap(models);
     indexNames = _createIndexNameMap(models);
-    filePaths = _createFilePathMap(models);
+    filePaths = _createFilePathMap(modelWithPath);
   }
 
   Set<String> get moduleNames => modules;
@@ -80,16 +85,19 @@ class ParsedModelsCollection {
     return indexNames;
   }
 
-  Map<String, List<SerializableModelDefinition>> _createFilePathMap(
-    List<SerializableModelDefinition> models,
+  Map<String, List<({String documentPath, SerializableModelDefinition model})>>
+      _createFilePathMap(
+    List<({String documentPath, SerializableModelDefinition model})> models,
   ) {
-    Map<String, List<SerializableModelDefinition>> filePaths = {};
-    for (var model
-        in models.where((e) => e.moduleAlias == defaultModuleAlias)) {
+    Map<String,
+            List<({String documentPath, SerializableModelDefinition model})>>
+        filePaths = {};
+    for (var (:documentPath, :model)
+        in models.where((e) => e.model.moduleAlias == defaultModuleAlias)) {
       filePaths.update(
         _buildFilePath(model),
-        (value) => value..add(model),
-        ifAbsent: () => [model],
+        (value) => value..add((documentPath: documentPath, model: model)),
+        ifAbsent: () => [(documentPath: documentPath, model: model)],
       );
     }
 
@@ -103,19 +111,16 @@ class ParsedModelsCollection {
   bool isFilePathUnique(
     SerializableModelDefinition classDefinition,
   ) {
-    return _isKeyGloballyUnique(
-      classDefinition,
-      _buildFilePath(classDefinition),
-      filePaths,
-    );
+    return filePaths[_buildFilePath(classDefinition)]?.length == 1;
   }
 
-  SerializableModelDefinition findByFilePath(
+  ({String documentPath, SerializableModelDefinition model})? findByFilePath(
     SerializableModelDefinition model, {
     SerializableModelDefinition? ignore,
   }) {
-    var models = _filterIgnored(filePaths[_buildFilePath(model)], ignore);
-    return models.first;
+    var entries = filePaths[_buildFilePath(model)];
+    var filteredEntries = entries?.where((e) => e.model != ignore).toList();
+    return filteredEntries?.firstOrNull;
   }
 
   bool isTableNameUnique(
