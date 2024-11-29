@@ -44,7 +44,7 @@ class ModelHelper {
     var modelSource = await _loadYamlModelsFromDisk(
       moduleAlias: defaultModuleAlias,
       loadConfig: config,
-      makeConfigPathsAbsolute: true,
+      absoluteSourcePathParts: _absolutePathParts(config.libSourcePathParts),
     );
     modelSources.addAll(modelSource);
 
@@ -52,7 +52,7 @@ class ModelHelper {
       modelSource = await _loadYamlModelsFromDisk(
         moduleAlias: moduleConfig.nickname,
         loadConfig: moduleConfig,
-        makeConfigPathsAbsolute: false,
+        absoluteSourcePathParts: moduleConfig.libSourcePathParts,
       );
       modelSources.addAll(modelSource);
     }
@@ -70,15 +70,13 @@ class ModelHelper {
   }
 
   static Future<List<ModelSource>> _loadYamlModelsFromDisk({
+    required List<String> absoluteSourcePathParts,
     required ModelLoadConfig loadConfig,
     required String moduleAlias,
-    required makeConfigPathsAbsolute,
   }) async {
     var files = await _loadAllModelFiles(
       loadConfig: loadConfig,
-      makeConfigPathsAbsolute
-          ? _absolutePathParts(loadConfig.libSourcePathParts)
-          : loadConfig.libSourcePathParts,
+      absoluteSourcePathParts,
     );
 
     List<ModelSource> sources = [];
