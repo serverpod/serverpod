@@ -16,4 +16,16 @@ void main() {
       await expectLater(response, completion('Hello, world!'));
     });
   });
+
+  group(
+      'Given an endpoint that returns a model defined outside of the models directory',
+      () {
+    test('when calling the endpoint then call is successful', () async {
+      var response = client.myFeature.myFeatureModel();
+      await expectLater(
+          response,
+          completion(isA<MyFeatureModel>()
+              .having((model) => model.name, 'name', 'Alex')));
+    });
+  });
 }
