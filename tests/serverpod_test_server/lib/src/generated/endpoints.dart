@@ -5145,7 +5145,17 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['myFeature'] as _i37.MyFeatureEndpoint)
                   .myFeatureMethod(session),
-        )
+        ),
+        'myFeatureModel': _i1.MethodConnector(
+          name: 'myFeatureModel',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['myFeature'] as _i37.MyFeatureEndpoint)
+                  .myFeatureModel(session),
+        ),
       },
     );
     modules['serverpod_auth'] = _i50.Endpoints()..initializeEndpoints(server);

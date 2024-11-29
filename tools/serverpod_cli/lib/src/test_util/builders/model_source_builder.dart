@@ -2,22 +2,25 @@ import 'package:path/path.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 
 class ModelSourceBuilder {
-  late String moduleAlias;
-  late String yaml;
-  late List<String> _yamlSourcePathParts;
+  String moduleAlias;
+  String yaml;
+  String fileName;
+  List<String> yamlSourcePathParts;
   Uri? yamlSourceUri;
-  late List<String> protocolRootPathParts;
+  List<String> subDirPathParts;
+  String fileExtension;
 
-  ModelSourceBuilder() {
-    withYaml('''
+  ModelSourceBuilder()
+      : fileExtension = '.yaml',
+        subDirPathParts = [],
+        fileName = 'example',
+        yamlSourcePathParts = ['lib', 'src', 'model'],
+        moduleAlias = defaultModuleAlias,
+        yaml = '''
     class: Example
     fields:
       name: String
-    ''');
-    _yamlSourcePathParts = ['lib', 'src', 'model', 'example.yaml'];
-    protocolRootPathParts = [];
-    moduleAlias = defaultModuleAlias;
-  }
+''';
 
   ModelSourceBuilder withModuleAlias(String moduleAlias) {
     this.moduleAlias = moduleAlias;
@@ -25,7 +28,7 @@ class ModelSourceBuilder {
   }
 
   ModelSourceBuilder withFileName(String fileName) {
-    _yamlSourcePathParts = ['lib', 'src', 'model', '$fileName.yaml'];
+    this.fileName = fileName;
     return this;
   }
 
@@ -39,21 +42,37 @@ class ModelSourceBuilder {
     return this;
   }
 
-  ModelSourceBuilder withProtocolRootPathParts(
-      List<String> protocolRootPathParts) {
-    this.protocolRootPathParts = protocolRootPathParts;
+  ModelSourceBuilder withProtocolRootPathParts(List<String> subDirPathParts) {
+    this.subDirPathParts = subDirPathParts;
+    return this;
+  }
+
+  ModelSourceBuilder withYamlSourcePathParts(List<String> yamlSourcePathParts) {
+    this.yamlSourcePathParts = yamlSourcePathParts;
+    return this;
+  }
+
+  ModelSourceBuilder withFileExtension(String fileExtension) {
+    this.fileExtension = fileExtension;
     return this;
   }
 
   ModelSource build() {
     var yamlSourceUri = Uri(
-      path: joinAll(['module', moduleAlias, ..._yamlSourcePathParts]),
+      path: joinAll(
+        [
+          'module',
+          moduleAlias,
+          ...yamlSourcePathParts,
+          '$fileName$fileExtension'
+        ],
+      ),
     );
     return ModelSource(
       moduleAlias,
       yaml,
       this.yamlSourceUri ?? yamlSourceUri,
-      protocolRootPathParts,
+      subDirPathParts,
     );
   }
 }

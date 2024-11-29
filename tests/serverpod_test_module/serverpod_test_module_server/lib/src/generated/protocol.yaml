@@ -6,3 +6,6 @@ streaming:
   - wasStreamClosedCalled:
   - intEchoStream:
   - simpleInputReturnStream:
+myModuleFeature:
+  - myFeatureMethod:
+  - myFeatureModel:

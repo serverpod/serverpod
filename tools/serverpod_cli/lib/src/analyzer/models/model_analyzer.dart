@@ -146,6 +146,12 @@ class SerializableModelAnalyzer {
       parsedModels: ParsedModelsCollection(models),
     );
 
+    var generateCollisionErrors = validateDuplicateFileName(
+      documentContents,
+      restrictions,
+    );
+    collector.addErrors(generateCollisionErrors);
+
     Set<ValidateNode> documentStructure;
     switch (definitionType) {
       case Keyword.classType:
