@@ -9,13 +9,13 @@ class ModelSource {
   String moduleAlias;
   String yaml;
   Uri yamlSourceUri;
-  List<String> protocolRootPathParts;
+  List<String> subDirPathParts;
 
   ModelSource(
     this.moduleAlias,
     this.yaml,
     this.yamlSourceUri,
-    this.protocolRootPathParts,
+    this.subDirPathParts,
   );
 }
 
@@ -33,23 +33,17 @@ class ModelHelper {
   ) async {
     var modelSources = <ModelSource>[];
 
-    var relativeModelSourcePath = joinAll(config.relativeModelSourcePathParts);
-    var relativeProtocolSourcePath =
-        joinAll(config.relativeProtocolSourcePathParts);
-
     var modelSource = await _loadYamlModelsFromDisk(
       defaultModuleAlias,
       _absolutePathParts(config.modelSourcePathParts),
-      relativeModelSourcePath: relativeModelSourcePath,
-      relativeProtocolSourcePath: relativeProtocolSourcePath,
+      loadConfig: config,
     );
     modelSources.addAll(modelSource);
 
     modelSource = await _loadYamlModelsFromDisk(
       defaultModuleAlias,
       _absolutePathParts(config.protocolSourcePathParts),
-      relativeModelSourcePath: relativeModelSourcePath,
-      relativeProtocolSourcePath: relativeProtocolSourcePath,
+      loadConfig: config,
     );
     modelSources.addAll(modelSource);
 
@@ -57,16 +51,14 @@ class ModelHelper {
       modelSource = await _loadYamlModelsFromDisk(
         module.nickname,
         module.modelSourcePathParts,
-        relativeModelSourcePath: relativeModelSourcePath,
-        relativeProtocolSourcePath: relativeProtocolSourcePath,
+        loadConfig: module,
       );
       modelSources.addAll(modelSource);
 
       modelSource = await _loadYamlModelsFromDisk(
         module.nickname,
         module.protocolSourcePathParts,
-        relativeModelSourcePath: relativeModelSourcePath,
-        relativeProtocolSourcePath: relativeProtocolSourcePath,
+        loadConfig: module,
       );
       modelSources.addAll(modelSource);
     }
@@ -86,14 +78,9 @@ class ModelHelper {
   static Future<List<ModelSource>> _loadYamlModelsFromDisk(
     String moduleAlias,
     List<String> pathParts, {
-    required String relativeModelSourcePath,
-    required String relativeProtocolSourcePath,
+    required ModelLoadConfig loadConfig,
   }) async {
-    var files = await _loadAllModelFiles(
-      pathParts,
-      relativeModelSourcePath: relativeModelSourcePath,
-      relativeProtocolSourcePath: relativeProtocolSourcePath,
-    );
+    var files = await _loadAllModelFiles(pathParts, loadConfig: loadConfig);
 
     List<ModelSource> sources = [];
     for (var model in files) {
@@ -103,7 +90,7 @@ class ModelHelper {
         moduleAlias,
         yaml,
         model.uri,
-        extractPathFromModelRoot(pathParts, model.uri),
+        _extractPathFromModelRoot(pathParts, model.uri),
       ));
     }
 
@@ -111,14 +98,15 @@ class ModelHelper {
   }
 
   static bool isModelFile(
-    String path,
-    String modelSourcePath,
-    String protocolSourcePath,
-  ) {
-    var hasValidPath = path.containsAny([
-      modelSourcePath,
-      protocolSourcePath,
-    ]);
+    String path, {
+    required ModelLoadConfig loadConfig,
+  }) {
+    var allowedModelPaths = [
+      joinAll(loadConfig.relativeModelSourcePathParts),
+      joinAll(loadConfig.relativeProtocolSourcePathParts),
+    ];
+
+    var hasValidPath = path.containsAny(allowedModelPaths);
 
     var hasValidExtension = modelFileExtensions.any(
       (ext) => path.endsWith(ext),
@@ -129,8 +117,7 @@ class ModelHelper {
 
   static Future<Iterable<File>> _loadAllModelFiles(
     List<String> absolutePathParts, {
-    required String relativeModelSourcePath,
-    required String relativeProtocolSourcePath,
+    required ModelLoadConfig loadConfig,
   }) async {
     List<FileSystemEntity> modelSourceFileList = [];
 
@@ -151,24 +138,28 @@ class ModelHelper {
 
     return modelSourceFileList.whereType<File>().where((file) => isModelFile(
           file.path,
-          relativeModelSourcePath,
-          relativeProtocolSourcePath,
+          loadConfig: loadConfig,
         ));
   }
 
-  static List<String> extractPathFromConfig(GeneratorConfig config, Uri uri) {
-    if (isWithin(joinAll(config.protocolSourcePathParts), uri.path)) {
-      return extractPathFromModelRoot(config.protocolSourcePathParts, uri);
-    }
+  static List<String> extractPathFromConfig(ModelLoadConfig config, Uri uri) {
+    List<List<String>> paths = [
+      config.protocolSourcePathParts,
+      config.modelSourcePathParts,
+      config.srcSourcePathParts,
+      config.libSourcePathParts,
+    ];
 
-    if (isWithin(joinAll(config.modelSourcePathParts), uri.path)) {
-      return extractPathFromModelRoot(config.modelSourcePathParts, uri);
+    for (var path in paths) {
+      if (isWithin(joinAll(path), uri.path)) {
+        return _extractPathFromModelRoot(path, uri);
+      }
     }
 
     return split(uri.path);
   }
 
-  static List<String> extractPathFromModelRoot(
+  static List<String> _extractPathFromModelRoot(
     List<String> pathParts,
     Uri fileUri,
   ) {

@@ -31,9 +31,6 @@ Future<bool> performGenerateContinuously({
         'Initial code generation complete. Listening for changes.',
   );
 
-  var modelSourcePath = p.joinAll(config.modelSourcePathParts);
-  var protocolSourcePath = p.joinAll(config.protocolSourcePathParts);
-
   Timer? debouncedGenerate;
   await for (WatchEvent event in watchers) {
     log.debug('File changed: $event');
@@ -43,8 +40,7 @@ Future<bool> performGenerateContinuously({
 
     if (ModelHelper.isModelFile(
       event.path,
-      modelSourcePath,
-      protocolSourcePath,
+      loadConfig: config,
     )) {
       shouldGenerate = true;
       var modelUri = Uri.parse(p.absolute(event.path));
