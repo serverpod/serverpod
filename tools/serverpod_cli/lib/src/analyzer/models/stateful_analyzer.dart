@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/model_relations.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 
@@ -119,11 +120,13 @@ class StatefulAnalyzer {
   void _validateAllModels() {
     var modelsToValidate = _modelStates.values
         .where((state) => state.source.moduleAlias == defaultModuleAlias);
-    var models = _modelStates.values
+    var modelsWithDocumentPath = _modelStates.values
         .map((state) =>
             (documentPath: state.source.yamlSourceUri.path, model: state.model))
-        .whereType<({String documentPath, SerializableModelDefinition model})>()
+        .whereType<ModelWithDocumentPath>()
         .toList();
+
+    var parsedModels = ParsedModelsCollection(modelsWithDocumentPath);
 
     for (var state in modelsToValidate) {
       var collector = CodeGenerationCollector();
@@ -133,7 +136,7 @@ class StatefulAnalyzer {
         state.source.yamlSourceUri,
         collector,
         state.model,
-        models,
+        parsedModels,
       );
 
       if (collector.hasSeverErrors) {

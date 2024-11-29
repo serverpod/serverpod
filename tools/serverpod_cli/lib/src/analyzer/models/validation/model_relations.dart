@@ -3,15 +3,18 @@ import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 
+typedef ModelWithDocumentPath = ({
+  String documentPath,
+  SerializableModelDefinition model
+});
+
 /// A collection of all parsed models, and their potential collisions.
 class ParsedModelsCollection {
   late final Set<String> modules;
   late final Map<String, List<SerializableModelDefinition>> classNames;
   late final Map<String, List<SerializableModelDefinition>> tableNames;
   late final Map<String, List<SerializableModelDefinition>> indexNames;
-  late final Map<String,
-          List<({String documentPath, SerializableModelDefinition model})>>
-      generatedFilePaths;
+  late final Map<String, List<ModelWithDocumentPath>> generatedFilePaths;
 
   ParsedModelsCollection(
     List<({String documentPath, SerializableModelDefinition model})>
@@ -85,13 +88,10 @@ class ParsedModelsCollection {
     return indexNames;
   }
 
-  Map<String, List<({String documentPath, SerializableModelDefinition model})>>
-      _createGenerateFilePathMap(
-    List<({String documentPath, SerializableModelDefinition model})> models,
+  Map<String, List<ModelWithDocumentPath>> _createGenerateFilePathMap(
+    List<ModelWithDocumentPath> models,
   ) {
-    Map<String,
-            List<({String documentPath, SerializableModelDefinition model})>>
-        filePaths = {};
+    Map<String, List<ModelWithDocumentPath>> filePaths = {};
     for (var (:documentPath, :model)
         in models.where((e) => e.model.moduleAlias == defaultModuleAlias)) {
       filePaths.update(
@@ -116,8 +116,7 @@ class ParsedModelsCollection {
         1;
   }
 
-  ({String documentPath, SerializableModelDefinition model})?
-      findByGeneratedFilePath(
+  ModelWithDocumentPath? findByGeneratedFilePath(
     SerializableModelDefinition model, {
     SerializableModelDefinition? ignore,
   }) {
