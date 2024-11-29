@@ -20,7 +20,7 @@ class ModelSourceBuilder {
     class: Example
     fields:
       name: String
-    ''';
+''';
 
   ModelSourceBuilder withModuleAlias(String moduleAlias) {
     this.moduleAlias = moduleAlias;

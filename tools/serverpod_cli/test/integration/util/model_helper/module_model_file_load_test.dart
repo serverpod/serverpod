@@ -57,9 +57,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -86,9 +86,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -118,9 +118,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
@@ -147,9 +147,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -194,9 +194,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -223,9 +223,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -255,9 +255,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
@@ -288,9 +288,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
@@ -317,9 +317,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -364,9 +364,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -393,9 +393,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -425,9 +425,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
@@ -458,9 +458,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
@@ -486,9 +486,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -514,9 +514,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -542,9 +542,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -571,9 +571,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -622,9 +622,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -651,9 +651,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -683,9 +683,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
@@ -716,9 +716,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
@@ -744,9 +744,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -772,9 +772,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -800,9 +800,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -829,9 +829,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -880,9 +880,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -909,9 +909,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -941,9 +941,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
@@ -974,9 +974,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
@@ -1002,9 +1002,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -1030,9 +1030,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -1058,9 +1058,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
@@ -1087,9 +1087,9 @@ void main() {
         ));
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
-  class: Example
-  fields:
-    name: String
+class: Example
+fields:
+  name: String
 ''');
         models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
       });
