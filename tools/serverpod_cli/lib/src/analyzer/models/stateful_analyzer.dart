@@ -11,7 +11,6 @@ var onErrorsCollector = (CodeGenerationCollector collector) {
 class StatefulAnalyzer {
   final GeneratorConfig config;
   final Map<String, _ModelState> _modelStates = {};
-  List<SerializableModelDefinition> _models = [];
 
   /// Returns true if any of the models have severe errors.
   bool get hasSeverErrors => _modelStates.values.any(
@@ -44,6 +43,12 @@ class StatefulAnalyzer {
       .whereType<SerializableModelDefinition>()
       .toList();
 
+  /// Returns all models in the state.
+  List<SerializableModelDefinition> get _models => _modelStates.values
+      .map((state) => state.model)
+      .whereType<SerializableModelDefinition>()
+      .toList();
+
   /// Adds a new model to the state but leaves the responsibility of validating
   /// it to the caller. Please note that [validateAll] should be called to
   /// guarantee that all errors are found.
@@ -65,9 +70,6 @@ class StatefulAnalyzer {
   /// guarantee that all related errors are cleared.
   void removeYamlModel(Uri modelUri) {
     _modelStates.remove(modelUri.path);
-    _models.removeWhere(
-      (model) => model.sourceFileName == modelUri.path,
-    );
   }
 
   /// Runs the validation on all models in the state. If no models are
@@ -84,7 +86,7 @@ class StatefulAnalyzer {
   /// Errors are reported through the [onErrorsChangedNotifier].
   List<SerializableModelDefinition> validateModel(String yaml, Uri uri) {
     var state = _modelStates[uri.path];
-    if (state == null) return _models;
+    if (state == null) return _validProjectModels;
 
     state.source.yaml = yaml;
 
@@ -93,9 +95,9 @@ class StatefulAnalyzer {
       config.extraClasses,
     );
     state.model = doc;
-    if (doc != null) {
-      _upsertModel(doc, uri);
-    }
+
+    // Can be optimized to only resolve the model we know has changed.
+    SerializableModelAnalyzer.resolveModelDependencies(_models);
 
     // This can be optimized to only validate the files we know have related errors.
     _validateAllModels();
@@ -111,34 +113,13 @@ class StatefulAnalyzer {
       state.model = model;
     }
 
-    _models = _modelStates.values
-        .map((state) => state.model)
-        .whereType<SerializableModelDefinition>()
-        .toList();
-
-    SerializableModelAnalyzer.resolveModelDependencies(_models);
-  }
-
-  void _upsertModel(
-    SerializableModelDefinition model,
-    Uri uri,
-  ) {
-    var index = _models.indexWhere(
-      (element) => element.sourceFileName == uri.path,
-    );
-    if (index == -1) {
-      _models.add(model);
-    } else {
-      _models[index] = model;
-    }
-
-    // Can be optimized to only resolve the model we know has changed.
     SerializableModelAnalyzer.resolveModelDependencies(_models);
   }
 
   void _validateAllModels() {
     var modelsToValidate = _modelStates.values
         .where((state) => state.source.moduleAlias == defaultModuleAlias);
+    var models = _models;
 
     for (var state in modelsToValidate) {
       var collector = CodeGenerationCollector();
@@ -148,7 +129,7 @@ class StatefulAnalyzer {
         state.source.yamlSourceUri,
         collector,
         state.model,
-        _models,
+        models,
       );
 
       if (collector.hasSeverErrors) {
