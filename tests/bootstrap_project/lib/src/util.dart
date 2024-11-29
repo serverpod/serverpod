@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
@@ -33,4 +34,27 @@ Future<bool> isNetworkPortAvailable(int port) async {
   } catch (e) {
     return false;
   }
+}
+
+Future<Process> startProcess(
+  String command,
+  List<String> arguments, {
+  String? workingDirectory,
+  Map<String, String>? environment,
+}) async {
+  var process = await Process.start(
+    command,
+    arguments,
+    workingDirectory: workingDirectory,
+    environment: environment,
+  );
+
+  process.stderr
+      .transform(utf8.decoder)
+      .listen((e) => print('COMMAND "$command" stderr: $e'));
+  process.stdout
+      .transform(utf8.decoder)
+      .listen((e) => print('COMMAND "$command" stdout: $e'));
+
+  return process;
 }

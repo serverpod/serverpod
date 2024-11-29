@@ -43,7 +43,7 @@ void main() async {
     test(
         'when creating a new project with the mini template then the project is created successfully and can be booted in maintenance mode.',
         () async {
-      createProcess = await Process.start(
+      createProcess = await startProcess(
         'serverpod',
         ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
@@ -52,9 +52,6 @@ void main() async {
         },
       );
 
-      createProcess.stdout.transform(Utf8Decoder()).listen(print);
-      createProcess.stderr.transform(Utf8Decoder()).listen(print);
-
       var createProjectExitCode = await createProcess.exitCode;
       expect(
         createProjectExitCode,
@@ -62,14 +59,11 @@ void main() async {
         reason: 'Failed to create the serverpod project.',
       );
 
-      var startProjectProcess = await Process.start(
+      var startProjectProcess = await startProcess(
         'dart',
         ['bin/main.dart', '--role', 'maintenance'],
         workingDirectory: commandRoot,
       );
-
-      startProjectProcess.stdout.transform(Utf8Decoder()).listen(print);
-      startProjectProcess.stderr.transform(Utf8Decoder()).listen(print);
 
       var startProjectExitCode = await startProjectProcess.exitCode;
       expect(startProjectExitCode, 0);
@@ -84,7 +78,7 @@ void main() async {
     test(
         'when creating a new project with the mini template then the project is created successfully without the full configuration of a full project.',
         () async {
-      createProcess = await Process.start(
+      createProcess = await startProcess(
         'serverpod',
         ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
@@ -92,9 +86,6 @@ void main() async {
           'SERVERPOD_HOME': rootPath,
         },
       );
-
-      createProcess.stdout.transform(Utf8Decoder()).listen(print);
-      createProcess.stderr.transform(Utf8Decoder()).listen(print);
 
       var createProjectExitCode = await createProcess.exitCode;
       expect(
@@ -164,7 +155,7 @@ void main() async {
     test(
         'when creating a new project with the mini template and upgrading it to a full project then the project is created successfully and can be booted in maintenance mode with the apply-migrations flag.',
         () async {
-      createProcess = await Process.start(
+      createProcess = await startProcess(
         'serverpod',
         ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
@@ -173,9 +164,6 @@ void main() async {
         },
       );
 
-      createProcess.stdout.transform(Utf8Decoder()).listen(print);
-      createProcess.stderr.transform(Utf8Decoder()).listen(print);
-
       var createProjectExitCode = await createProcess.exitCode;
       expect(
         createProjectExitCode,
@@ -183,7 +171,7 @@ void main() async {
         reason: 'Failed to create the serverpod project.',
       );
 
-      var upgradeProcess = await Process.start(
+      var upgradeProcess = await startProcess(
         'serverpod',
         ['create', '--template', 'server', '.', '-v', '--no-analytics'],
         workingDirectory: path.join(tempPath, serverDir),
@@ -192,9 +180,6 @@ void main() async {
         },
       );
 
-      upgradeProcess.stdout.transform(Utf8Decoder()).listen(print);
-      upgradeProcess.stderr.transform(Utf8Decoder()).listen(print);
-
       var upgradeProjectExitCode = await upgradeProcess.exitCode;
       expect(
         upgradeProjectExitCode,
@@ -202,14 +187,11 @@ void main() async {
         reason: 'Failed to create the serverpod project.',
       );
 
-      final docker = await Process.start(
+      final docker = await startProcess(
         'docker',
         ['compose', 'up', '--build', '--detach'],
         workingDirectory: commandRoot,
       );
-
-      docker.stdout.transform(Utf8Decoder()).listen(print);
-      docker.stderr.transform(Utf8Decoder()).listen(print);
 
       var dockerExitCode = await docker.exitCode;
 
@@ -219,14 +201,11 @@ void main() async {
         reason: 'Docker with postgres failed to start.',
       );
 
-      var startProjectProcess = await Process.start(
+      var startProjectProcess = await startProcess(
         'dart',
         ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
         workingDirectory: commandRoot,
       );
-
-      startProjectProcess.stdout.transform(Utf8Decoder()).listen(print);
-      startProjectProcess.stderr.transform(Utf8Decoder()).listen(print);
 
       var startProjectExitCode = await startProjectProcess.exitCode;
       expect(startProjectExitCode, 0);
@@ -244,7 +223,7 @@ void main() async {
     test(
         'when creating a new project with the mini template and upgrading it to a full project then the project is created successfully and can be booted in maintenance mode with the apply-migrations flag.',
         () async {
-      createProcess = await Process.start(
+      createProcess = await startProcess(
         'serverpod',
         ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
@@ -253,9 +232,6 @@ void main() async {
         },
       );
 
-      createProcess.stdout.transform(Utf8Decoder()).listen(print);
-      createProcess.stderr.transform(Utf8Decoder()).listen(print);
-
       var createProjectExitCode = await createProcess.exitCode;
       expect(
         createProjectExitCode,
@@ -263,7 +239,7 @@ void main() async {
         reason: 'Failed to create the serverpod project.',
       );
 
-      var upgradeProcess = await Process.start(
+      var upgradeProcess = await startProcess(
         'serverpod',
         ['create', '--template', 'server', '.', '-v', '--no-analytics'],
         workingDirectory: path.join(tempPath, serverDir),
@@ -271,9 +247,6 @@ void main() async {
           'SERVERPOD_HOME': rootPath,
         },
       );
-
-      upgradeProcess.stdout.transform(Utf8Decoder()).listen(print);
-      upgradeProcess.stderr.transform(Utf8Decoder()).listen(print);
 
       var upgradeProjectExitCode = await upgradeProcess.exitCode;
       expect(
@@ -352,7 +325,7 @@ void main() async {
     test(
         'when creating a new project with the mini template and upgrading it to a full project then the tests are passing.',
         () async {
-      createProcess = await Process.start(
+      createProcess = await startProcess(
         'serverpod',
         ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
@@ -361,9 +334,6 @@ void main() async {
         },
       );
 
-      createProcess.stdout.transform(Utf8Decoder()).listen(print);
-      createProcess.stderr.transform(Utf8Decoder()).listen(print);
-
       var createProjectExitCode = await createProcess.exitCode;
       expect(
         createProjectExitCode,
@@ -371,7 +341,7 @@ void main() async {
         reason: 'Failed to create the serverpod project.',
       );
 
-      var upgradeProcess = await Process.start(
+      var upgradeProcess = await startProcess(
         'serverpod',
         ['create', '--template', 'server', '.', '-v', '--no-analytics'],
         workingDirectory: path.join(tempPath, serverDir),
@@ -380,9 +350,6 @@ void main() async {
         },
       );
 
-      upgradeProcess.stdout.transform(Utf8Decoder()).listen(print);
-      upgradeProcess.stderr.transform(Utf8Decoder()).listen(print);
-
       var upgradeProjectExitCode = await upgradeProcess.exitCode;
       expect(
         upgradeProjectExitCode,
@@ -390,14 +357,11 @@ void main() async {
         reason: 'Failed to upgrade the serverpod project.',
       );
 
-      final docker = await Process.start(
+      final docker = await startProcess(
         'docker',
         ['compose', 'up', '--build', '--detach'],
         workingDirectory: commandRoot,
       );
-
-      docker.stdout.transform(Utf8Decoder()).listen(print);
-      docker.stderr.transform(Utf8Decoder()).listen(print);
 
       var dockerExitCode = await docker.exitCode;
 
