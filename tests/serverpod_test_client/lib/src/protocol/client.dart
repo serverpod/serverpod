@@ -37,7 +37,9 @@ import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_fiel
     as _i19;
 import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field_child.dart'
     as _i20;
-import 'protocol.dart' as _i21;
+import 'package:serverpod_test_client/src/protocol/my_feature/models/my_feature_model.dart'
+    as _i21;
+import 'protocol.dart' as _i22;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -2404,6 +2406,13 @@ class EndpointMyFeature extends _i1.EndpointRef {
         'myFeatureMethod',
         {},
       );
+
+  _i2.Future<_i21.MyFeatureModel> myFeatureModel() =>
+      caller.callServerEndpoint<_i21.MyFeatureModel>(
+        'myFeature',
+        'myFeatureModel',
+        {},
+      );
 }
 
 class Modules {
@@ -2433,7 +2442,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i21.Protocol(),
+          _i22.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
