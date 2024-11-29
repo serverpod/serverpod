@@ -62,16 +62,16 @@ void main() async {
         reason: 'Failed to create the serverpod project.',
       );
 
-      var startProcess = await Process.start(
+      var startProjectProcess = await Process.start(
         'dart',
         ['bin/main.dart', '--role', 'maintenance'],
         workingDirectory: commandRoot,
       );
 
-      startProcess.stdout.transform(Utf8Decoder()).listen(print);
-      startProcess.stderr.transform(Utf8Decoder()).listen(print);
+      startProjectProcess.stdout.transform(Utf8Decoder()).listen(print);
+      startProjectProcess.stderr.transform(Utf8Decoder()).listen(print);
 
-      var startProjectExitCode = await startProcess.exitCode;
+      var startProjectExitCode = await startProjectProcess.exitCode;
       expect(startProjectExitCode, 0);
     });
   });
@@ -219,16 +219,16 @@ void main() async {
         reason: 'Docker with postgres failed to start.',
       );
 
-      var startProcess = await Process.start(
+      var startProjectProcess = await Process.start(
         'dart',
         ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
         workingDirectory: commandRoot,
       );
 
-      startProcess.stdout.transform(Utf8Decoder()).listen(print);
-      startProcess.stderr.transform(Utf8Decoder()).listen(print);
+      startProjectProcess.stdout.transform(Utf8Decoder()).listen(print);
+      startProjectProcess.stderr.transform(Utf8Decoder()).listen(print);
 
-      var startProjectExitCode = await startProcess.exitCode;
+      var startProjectExitCode = await startProjectProcess.exitCode;
       expect(startProjectExitCode, 0);
     });
   });
