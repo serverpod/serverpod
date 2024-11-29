@@ -11,7 +11,7 @@ class ParsedModelsCollection {
   late final Map<String, List<SerializableModelDefinition>> indexNames;
   late final Map<String,
           List<({String documentPath, SerializableModelDefinition model})>>
-      filePaths;
+      generatedFilePaths;
 
   ParsedModelsCollection(
     List<({String documentPath, SerializableModelDefinition model})>
@@ -22,7 +22,7 @@ class ParsedModelsCollection {
     classNames = _createClassNameMap(models);
     tableNames = _createTableNameMap(models);
     indexNames = _createIndexNameMap(models);
-    filePaths = _createFilePathMap(modelWithPath);
+    generatedFilePaths = _createGenerateFilePathMap(modelWithPath);
   }
 
   Set<String> get moduleNames => modules;
@@ -86,7 +86,7 @@ class ParsedModelsCollection {
   }
 
   Map<String, List<({String documentPath, SerializableModelDefinition model})>>
-      _createFilePathMap(
+      _createGenerateFilePathMap(
     List<({String documentPath, SerializableModelDefinition model})> models,
   ) {
     Map<String,
@@ -95,7 +95,7 @@ class ParsedModelsCollection {
     for (var (:documentPath, :model)
         in models.where((e) => e.model.moduleAlias == defaultModuleAlias)) {
       filePaths.update(
-        _buildFilePath(model),
+        _buildGeneratedFilePath(model),
         (value) => value..add((documentPath: documentPath, model: model)),
         ifAbsent: () => [(documentPath: documentPath, model: model)],
       );
@@ -104,21 +104,24 @@ class ParsedModelsCollection {
     return filePaths;
   }
 
-  String _buildFilePath(SerializableModelDefinition model) {
+  String _buildGeneratedFilePath(SerializableModelDefinition model) {
     return path.joinAll([...model.subDirParts, '${model.fileName}.dart']);
   }
 
   bool isFilePathUnique(
     SerializableModelDefinition classDefinition,
   ) {
-    return filePaths[_buildFilePath(classDefinition)]?.length == 1;
+    return generatedFilePaths[_buildGeneratedFilePath(classDefinition)]
+            ?.length ==
+        1;
   }
 
-  ({String documentPath, SerializableModelDefinition model})? findByFilePath(
+  ({String documentPath, SerializableModelDefinition model})?
+      findByGeneratedFilePath(
     SerializableModelDefinition model, {
     SerializableModelDefinition? ignore,
   }) {
-    var entries = filePaths[_buildFilePath(model)];
+    var entries = generatedFilePaths[_buildGeneratedFilePath(model)];
     var filteredEntries = entries?.where((e) => e.model != ignore).toList();
     return filteredEntries?.firstOrNull;
   }

@@ -51,7 +51,7 @@ void main() {
       var error = collector.errors.first;
       expect(
         error.message,
-        'File collision with "MySecondModel" was detected for the generated model, please provide a unique path or filename for the model.',
+        'File path collision detected: This model and "module/protocol/lib/src/protocol/example.yaml" would generate files at the same location. Please modify the path or filename to ensure each model generates to a unique location.',
       );
     });
   });

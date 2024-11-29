@@ -56,16 +56,18 @@ List<SourceSpanSeverityException> validateDuplicateFileName(
     return [];
   }
 
-  var result = parsedModels.findByFilePath(
+  var result = parsedModels.findByGeneratedFilePath(
     modelDefinition,
     ignore: modelDefinition,
   );
   if (result == null) return [];
 
-  var (:documentPath, model: otherClass) = result;
+  var (documentPath: otherDocumentPath, model: _) = result;
+
   return [
     SourceSpanSeverityException(
-      'File collision with "${otherClass.className}" was detected for the generated model, please provide a unique path or filename for the model.',
+      'File path collision detected: This model and "$otherDocumentPath" would generate files at the same location. '
+      'Please modify the path or filename to ensure each model generates to a unique location.',
       documentContents.span,
     )
   ];
