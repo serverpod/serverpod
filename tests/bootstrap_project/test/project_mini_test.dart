@@ -21,16 +21,12 @@ void main() async {
       workingDirectory: cliPath,
     );
 
-    await Process.run('mkdir', [tempDirName], workingDirectory: rootPath);
+    await Directory(tempPath).create();
   });
 
   tearDownAll(() async {
     try {
-      await Process.run(
-        'rm',
-        ['-rf', tempDirName],
-        workingDirectory: rootPath,
-      );
+      Directory(tempPath).deleteSync(recursive: true);
     } catch (e) {}
   });
 

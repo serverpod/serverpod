@@ -22,16 +22,12 @@ void main() async {
       workingDirectory: cliPath,
     );
 
-    await Process.run('mkdir', [tempDirName], workingDirectory: rootPath);
+    await Directory(tempPath).create();
   });
 
   tearDownAll(() async {
     try {
-      await Process.run(
-        'rm',
-        ['-rf', tempDirName],
-        workingDirectory: rootPath,
-      );
+      await Directory(tempPath).delete(recursive: true);
     } catch (e) {}
   });
 
@@ -488,10 +484,17 @@ void main() async {
       expect(createProjectExitCode, 0);
 
       // Delete generated files
-      await Process.run(
-          'rm', ['-f', '${serverDir}/lib/src/generated/protocol.yaml']);
-      await Process.run('rm', ['-f', '${serverDir}/lib/src/generated/*.dart']);
-      await Process.run('rm', ['-f', '${clientDir}/lib/src/protocol/*.dart']);
+      var generatedServerDir = Directory(
+        path.normalize(
+            path.join(tempPath, serverDir, 'lib', 'src', 'generated')),
+      );
+      generatedServerDir.deleteSync(recursive: true);
+
+      var generatedClientDir = Directory(
+        path.normalize(
+            path.join(tempPath, clientDir, 'lib', 'src', 'protocol')),
+      );
+      generatedClientDir.deleteSync(recursive: true);
 
       var generateProcess = await Process.run(
         'serverpod',
