@@ -268,5 +268,8 @@ void main() {
 
       await expectLater(testProcess.exitCode, completion(0));
     });
-  });
+  },
+      skip: Platform.isWindows
+          ? 'Windows does not support postgres docker image in github actions'
+          : null);
 }

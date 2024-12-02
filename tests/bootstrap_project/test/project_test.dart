@@ -91,7 +91,10 @@ void main() async {
 
       var startProjectExitCode = await startProjectProcess.exitCode;
       expect(startProjectExitCode, 0);
-    });
+    },
+        skip: Platform.isWindows
+            ? 'Windows does not support postgres docker image in github actions'
+            : null);
   });
 
   group('Given a clean state', () {
@@ -170,7 +173,10 @@ void main() async {
 
       expect(serverStarted, isTrue,
           reason: 'Failed to get 200 response from server.');
-    });
+    },
+        skip: Platform.isWindows
+            ? 'Windows does not support postgres docker image in github actions'
+            : null);
   });
 
   group('Given a clean state', () {
@@ -379,7 +385,10 @@ void main() async {
 ''';
           expect(contents.trim(), expected.trim(),
               reason: "DebugProfile entitlements is not as expected.");
-        });
+        },
+            skip: Platform.isWindows
+                ? 'Return characters are generated on windows'
+                : null);
 
         test('macOS Release entitlements has network client tag and true', () {
           var entitlementsPath = path.join(
@@ -403,7 +412,11 @@ void main() async {
 
           expect(contents.trim(), expected.trim(),
               reason: "Release entitlements is not as expected.");
-        });
+        },
+            skip: Platform.isWindows
+                ? 'Return characters are generated on windows'
+                : null);
+
         test('has a main file', () {
           expect(
             File(path.join(tempPath, flutterDir, 'lib', 'main.dart'))
@@ -612,6 +625,9 @@ void main() async {
       );
 
       await expectLater(testProcess.exitCode, completion(0));
-    });
+    },
+        skip: Platform.isWindows
+            ? 'Windows does not support postgres docker image in github actions'
+            : null);
   });
 }

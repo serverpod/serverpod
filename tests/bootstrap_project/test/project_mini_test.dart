@@ -206,7 +206,10 @@ void main() async {
 
       var startProjectExitCode = await startProjectProcess.exitCode;
       expect(startProjectExitCode, 0);
-    });
+    },
+        skip: Platform.isWindows
+            ? 'Windows does not support postgres docker image in github actions'
+            : null);
   });
 
   group('Given a clean state', () {
@@ -378,7 +381,10 @@ void main() async {
       );
 
       expect(testProcess.exitCode, 0, reason: 'Tests are failing.');
-    });
+    },
+        skip: Platform.isWindows
+            ? 'Windows does not support postgres docker image in github actions'
+            : null);
   });
 
   group('Given a created mini project', () {
