@@ -16,7 +16,7 @@ void main() async {
   final tempPath = path.join(rootPath, tempDirName);
 
   setUpAll(() async {
-    await Process.run(
+    await runProcess(
       'dart',
       ['pub', 'global', 'activate', '-s', 'path', '.'],
       workingDirectory: cliPath,
@@ -39,10 +39,11 @@ void main() async {
     tearDown(() async {
       createProcess.kill();
 
-      await Process.run(
+      await runProcess(
         'docker',
         ['compose', 'down', '-v'],
         workingDirectory: commandRoot,
+        skipBatExtentionOnWindows: true,
       );
 
       while (!await isNetworkPortAvailable(8090));
@@ -71,6 +72,7 @@ void main() async {
         'docker',
         ['compose', 'up', '--build', '--detach'],
         workingDirectory: commandRoot,
+        ignorePlatform: true,
       );
 
       var dockerExitCode = await docker.exitCode;
@@ -102,10 +104,11 @@ void main() async {
       createProcess.kill();
       startProjectProcess?.kill();
 
-      await Process.run(
+      await runProcess(
         'docker',
         ['compose', 'down', '-v'],
         workingDirectory: commandRoot,
+        skipBatExtentionOnWindows: true,
       );
 
       while (!await isNetworkPortAvailable(8090));
@@ -134,6 +137,7 @@ void main() async {
         'docker',
         ['compose', 'up', '--build', '--detach'],
         workingDirectory: commandRoot,
+        ignorePlatform: true,
       );
 
       var dockerExitCode = await docker.exitCode;
@@ -175,10 +179,11 @@ void main() async {
         createProjectFolderPaths(projectName);
 
     tearDownAll(() async {
-      await Process.run(
+      await runProcess(
         'docker',
         ['compose', 'down', '-v'],
         workingDirectory: commandRoot,
+        skipBatExtentionOnWindows: true,
       );
       while (!await isNetworkPortAvailable(8090));
     });
@@ -490,7 +495,7 @@ void main() async {
       );
       generatedClientDir.deleteSync(recursive: true);
 
-      var generateProcess = await Process.run(
+      var generateProcess = await runProcess(
         'serverpod',
         ['generate'],
         workingDirectory: commandRoot,
@@ -578,6 +583,7 @@ void main() async {
         'docker',
         ['compose', 'up', '--build', '--detach'],
         workingDirectory: commandRoot,
+        ignorePlatform: true,
       );
 
       assert((await docker.exitCode) == 0);
@@ -586,10 +592,11 @@ void main() async {
     tearDown(() async {
       createProcess.kill();
 
-      await Process.run(
+      await runProcess(
         'docker',
         ['compose', 'down', '-v'],
         workingDirectory: commandRoot,
+        skipBatExtentionOnWindows: true,
       );
 
       while (!await isNetworkPortAvailable(8090));

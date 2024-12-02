@@ -15,7 +15,7 @@ void main() {
   final tempPath = path.join(rootPath, tempDirName);
 
   setUpAll(() async {
-    await Process.run(
+    await runProcess(
       'dart',
       ['pub', 'global', 'activate', '-s', 'path', '.'],
       workingDirectory: cliPath,
@@ -238,6 +238,7 @@ void main() {
         'docker',
         ['compose', 'up', '--build', '--detach'],
         workingDirectory: commandRoot,
+        ignorePlatform: true,
       );
 
       assert((await docker.exitCode) == 0);
@@ -246,10 +247,11 @@ void main() {
     tearDown(() async {
       createProcess.kill();
 
-      await Process.run(
+      await runProcess(
         'docker',
         ['compose', 'down', '-v'],
         workingDirectory: commandRoot,
+        skipBatExtentionOnWindows: true,
       );
 
       while (!await isNetworkPortAvailable(8090));

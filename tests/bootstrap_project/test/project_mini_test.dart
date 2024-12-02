@@ -15,7 +15,7 @@ void main() async {
   final tempPath = path.join(rootPath, tempDirName);
 
   setUpAll(() async {
-    await Process.run(
+    await runProcess(
       'dart',
       ['pub', 'global', 'activate', '-s', 'path', '.'],
       workingDirectory: cliPath,
@@ -140,10 +140,11 @@ void main() async {
     late Process createProcess;
 
     tearDown(() async {
-      await Process.run(
+      await runProcess(
         'docker',
         ['compose', 'down', '-v'],
         workingDirectory: commandRoot,
+        skipBatExtentionOnWindows: true,
       );
     });
 
@@ -186,6 +187,7 @@ void main() async {
         'docker',
         ['compose', 'up', '--build', '--detach'],
         workingDirectory: commandRoot,
+        ignorePlatform: true,
       );
 
       var dockerExitCode = await docker.exitCode;
@@ -308,10 +310,11 @@ void main() async {
     tearDown(() async {
       createProcess.kill();
 
-      await Process.run(
+      await runProcess(
         'docker',
         ['compose', 'down', '-v'],
         workingDirectory: commandRoot,
+        skipBatExtentionOnWindows: true,
       );
 
       while (!await isNetworkPortAvailable(8090));
@@ -356,6 +359,7 @@ void main() async {
         'docker',
         ['compose', 'up', '--build', '--detach'],
         workingDirectory: commandRoot,
+        ignorePlatform: true,
       );
 
       var dockerExitCode = await docker.exitCode;
@@ -366,7 +370,7 @@ void main() async {
         reason: 'Docker with postgres failed to start.',
       );
 
-      var testProcess = await Process.run(
+      var testProcess = await runProcess(
         'dart',
         ['test'],
         workingDirectory:
@@ -381,7 +385,7 @@ void main() async {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     setUp(() async {
-      var createProcess = await Process.run(
+      var createProcess = await runProcess(
         'serverpod',
         ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
@@ -394,7 +398,7 @@ void main() async {
 
     test('when running tests then example unit and integration tests passes',
         () async {
-      var testProcess = await Process.run(
+      var testProcess = await runProcess(
         'dart',
         ['test'],
         workingDirectory:
