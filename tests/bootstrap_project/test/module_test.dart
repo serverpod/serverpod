@@ -35,15 +35,6 @@ void main() {
     final (:serverDir, :flutterDir, :clientDir) =
         createProjectFolderPaths(projectName);
 
-    tearDownAll(() async {
-      await Process.run(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-      );
-      while (!await isNetworkPortAvailable(8090));
-    });
-
     group('when creating a new project', () {
       setUpAll(() async {
         var process = await startProcess(

@@ -460,12 +460,6 @@ void main() async {
 
     tearDown(() async {
       createProcess.kill();
-      await Process.run(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-      );
-      while (!await isNetworkPortAvailable(8090));
     });
 
     test(
