@@ -36,7 +36,11 @@ abstract class ObjectWithCustomClass
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'customClassField': customClassField.toJsonForProtocol()};
+    return {
+      'customClassField': customClassField is _i1.ProtocolSerialization
+          ? (customClassField as _i1.ProtocolSerialization).toJsonForProtocol()
+          : customClassField.toJson()
+    };
   }
 
   @override
