@@ -893,6 +893,44 @@ class SerializableModelLibraryGenerator {
 
     Expression fieldExpression = fieldRef;
 
+    // If the field is a custom class and we are generating 'toJsonForProtocol',
+    // we need to check if it implements the ProtocolSerialization interface. If
+    // it does, we use the 'toJsonForProtocol' method to convert the field to
+    // JSON. Otherwise we use the 'toJson' method.
+    if (fieldType.customClass && toJsonMethodName == 'toJsonForProtocol') {
+      var protocolSerialization = refer(
+        'ProtocolSerialization',
+        serverpodUrl(serverCode),
+      );
+
+      var toJsonForProtocolExpression = switch (fieldType.nullable) {
+        true => fieldExpression
+            .asA(protocolSerialization)
+            .nullSafeProperty('toJsonForProtocol'),
+        false => fieldExpression
+            .asA(protocolSerialization)
+            .property('toJsonForProtocol'),
+      };
+
+      var toJsonExpression = switch (fieldType.nullable) {
+        true => fieldExpression.nullSafeProperty('toJson'),
+        false => fieldExpression.property('toJson'),
+      };
+
+      fieldExpression = CodeExpression(
+        Block.of(
+          [
+            fieldExpression.isA(protocolSerialization).code,
+            const Code('?'),
+            toJsonForProtocolExpression.call([]).code,
+            const Code(':'),
+            toJsonExpression.call([]).code,
+          ],
+        ),
+      );
+      return fieldExpression;
+    }
+
     var toJson = fieldType.isSerializedByExtension || fieldType.isEnumType
         ? 'toJson'
         : toJsonMethodName;
@@ -938,6 +976,7 @@ class SerializableModelLibraryGenerator {
           ).closure
         };
       }
+
       if (!fieldType.generics.last.isSerializedValue) {
         namedParams = {
           ...namedParams,

@@ -49,7 +49,8 @@ void main() {
       name: testClassName,
     );
 
-    test('fromJson method should pass data as dynamic to custom class fromJson',
+    test(
+        'then fromJson method should pass data as dynamic to custom class fromJson',
         () {
       var fromJsonConstructor =
           CompilationUnitHelpers.tryFindConstructorDeclaration(
@@ -68,5 +69,53 @@ void main() {
             'The fromJson method should pass data as dynamic to CustomClass.fromJson but doesn\'t.',
       );
     });
+
+    test(
+      'then toJsonForProtocol method should correctly serialize customClassField by calling the appropriate toJson method',
+      () {
+        var toJsonForProtocolMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+          maybeClassNamedExample!,
+          name: 'toJsonForProtocol',
+        );
+
+        var toJsonForProtocolCode = toJsonForProtocolMethod!.toSource();
+
+        var expectedCode =
+            '@override Map<String, dynamic> toJsonForProtocol() {'
+            'return {'
+            "'customClassField' : customClassField is _i1.ProtocolSerialization "
+            '? (customClassField as _i1.ProtocolSerialization).toJsonForProtocol() : customClassField.toJson()'
+            '};'
+            '}';
+
+        expect(
+          toJsonForProtocolCode,
+          equals(expectedCode),
+          reason:
+              'The toJsonForProtocol method should correctly serialize customClassField '
+              'by checking if it implements ProtocolSerialization and calling the '
+              'appropriate toJsonForProtocol or toJson method.',
+        );
+      },
+    );
+
+    test(
+      'then toJson method should not call toJsonForProtocol method',
+      () {
+        var toJsonMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          maybeClassNamedExample!,
+          name: 'toJson',
+        );
+
+        var toJsonCode = toJsonMethod!.toSource();
+
+        expect(
+          toJsonCode.contains('toJsonForProtocol'),
+          isFalse,
+          reason: 'The toJson method should not call toJsonForProtocol method.',
+        );
+      },
+    );
   });
 }
