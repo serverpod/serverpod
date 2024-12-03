@@ -17,7 +17,7 @@ Pubspec parsePubspec(File pubspecFile) {
 List<File> findPubspecsFiles(Directory dir,
     {List<String> ignorePaths = const []}) {
   var pubspecFiles = <File>[];
-  for (var file in dir.listSync(recursive: true)) {
+  for (var file in dir.listSync(recursive: true, followLinks: false)) {
     if (shouldBeIgnored(file.path, ignorePaths)) continue;
 
     if (file is File && p.basename(file.path) == 'pubspec.yaml') {

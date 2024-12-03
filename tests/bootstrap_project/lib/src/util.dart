@@ -36,14 +36,35 @@ Future<bool> isNetworkPortAvailable(int port) async {
   }
 }
 
+Future<ProcessResult> runProcess(
+  String command,
+  List<String> arguments, {
+  String? workingDirectory,
+  Map<String, String>? environment,
+  bool skipBatExtentionOnWindows = false,
+}) async {
+  var process = await Process.run(
+    _getCommandToRun(command, skipBatExtentionOnWindows),
+    arguments,
+    workingDirectory: workingDirectory,
+    environment: environment,
+  );
+
+  print('COMMAND "$command" stdout: ${process.stdout}');
+  print('COMMAND "$command" stderr: ${process.stderr}');
+
+  return process;
+}
+
 Future<Process> startProcess(
   String command,
   List<String> arguments, {
   String? workingDirectory,
   Map<String, String>? environment,
+  bool ignorePlatform = false,
 }) async {
   var process = await Process.start(
-    command,
+    _getCommandToRun(command, ignorePlatform),
     arguments,
     workingDirectory: workingDirectory,
     environment: environment,
@@ -57,4 +78,12 @@ Future<Process> startProcess(
       .listen((e) => print('COMMAND "$command" stdout: $e'));
 
   return process;
+}
+
+String _getCommandToRun(String command, bool ignorePlatform) {
+  if (ignorePlatform) {
+    return command;
+  }
+
+  return Platform.isWindows ? '$command.bat' : command;
 }

@@ -16,22 +16,18 @@ void main() async {
   final tempPath = path.join(rootPath, tempDirName);
 
   setUpAll(() async {
-    await Process.run(
+    await runProcess(
       'dart',
       ['pub', 'global', 'activate', '-s', 'path', '.'],
       workingDirectory: cliPath,
     );
 
-    await Process.run('mkdir', [tempDirName], workingDirectory: rootPath);
+    await Directory(tempPath).create();
   });
 
   tearDownAll(() async {
     try {
-      await Process.run(
-        'rm',
-        ['-rf', tempDirName],
-        workingDirectory: rootPath,
-      );
+      await Directory(tempPath).delete(recursive: true);
     } catch (e) {}
   });
 
@@ -43,10 +39,11 @@ void main() async {
     tearDown(() async {
       createProcess.kill();
 
-      await Process.run(
+      await runProcess(
         'docker',
         ['compose', 'down', '-v'],
         workingDirectory: commandRoot,
+        skipBatExtentionOnWindows: true,
       );
 
       while (!await isNetworkPortAvailable(8090));
@@ -75,6 +72,7 @@ void main() async {
         'docker',
         ['compose', 'up', '--build', '--detach'],
         workingDirectory: commandRoot,
+        ignorePlatform: true,
       );
 
       var dockerExitCode = await docker.exitCode;
@@ -93,7 +91,10 @@ void main() async {
 
       var startProjectExitCode = await startProjectProcess.exitCode;
       expect(startProjectExitCode, 0);
-    });
+    },
+        skip: Platform.isWindows
+            ? 'Windows does not support postgres docker image in github actions'
+            : null);
   });
 
   group('Given a clean state', () {
@@ -106,10 +107,11 @@ void main() async {
       createProcess.kill();
       startProjectProcess?.kill();
 
-      await Process.run(
+      await runProcess(
         'docker',
         ['compose', 'down', '-v'],
         workingDirectory: commandRoot,
+        skipBatExtentionOnWindows: true,
       );
 
       while (!await isNetworkPortAvailable(8090));
@@ -138,6 +140,7 @@ void main() async {
         'docker',
         ['compose', 'up', '--build', '--detach'],
         workingDirectory: commandRoot,
+        ignorePlatform: true,
       );
 
       var dockerExitCode = await docker.exitCode;
@@ -170,7 +173,10 @@ void main() async {
 
       expect(serverStarted, isTrue,
           reason: 'Failed to get 200 response from server.');
-    });
+    },
+        skip: Platform.isWindows
+            ? 'Windows does not support postgres docker image in github actions'
+            : null);
   });
 
   group('Given a clean state', () {
@@ -179,10 +185,11 @@ void main() async {
         createProjectFolderPaths(projectName);
 
     tearDownAll(() async {
-      await Process.run(
+      await runProcess(
         'docker',
         ['compose', 'down', '-v'],
         workingDirectory: commandRoot,
+        skipBatExtentionOnWindows: true,
       );
       while (!await isNetworkPortAvailable(8090));
     });
@@ -378,7 +385,10 @@ void main() async {
 ''';
           expect(contents.trim(), expected.trim(),
               reason: "DebugProfile entitlements is not as expected.");
-        });
+        },
+            skip: Platform.isWindows
+                ? 'Return characters are generated on windows'
+                : null);
 
         test('macOS Release entitlements has network client tag and true', () {
           var entitlementsPath = path.join(
@@ -402,7 +412,11 @@ void main() async {
 
           expect(contents.trim(), expected.trim(),
               reason: "Release entitlements is not as expected.");
-        });
+        },
+            skip: Platform.isWindows
+                ? 'Return characters are generated on windows'
+                : null);
+
         test('has a main file', () {
           expect(
             File(path.join(tempPath, flutterDir, 'lib', 'main.dart'))
@@ -464,12 +478,6 @@ void main() async {
 
     tearDown(() async {
       createProcess.kill();
-      await Process.run(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-      );
-      while (!await isNetworkPortAvailable(8090));
     });
 
     test(
@@ -488,12 +496,19 @@ void main() async {
       expect(createProjectExitCode, 0);
 
       // Delete generated files
-      await Process.run(
-          'rm', ['-f', '${serverDir}/lib/src/generated/protocol.yaml']);
-      await Process.run('rm', ['-f', '${serverDir}/lib/src/generated/*.dart']);
-      await Process.run('rm', ['-f', '${clientDir}/lib/src/protocol/*.dart']);
+      var generatedServerDir = Directory(
+        path.normalize(
+            path.join(tempPath, serverDir, 'lib', 'src', 'generated')),
+      );
+      generatedServerDir.deleteSync(recursive: true);
 
-      var generateProcess = await Process.run(
+      var generatedClientDir = Directory(
+        path.normalize(
+            path.join(tempPath, clientDir, 'lib', 'src', 'protocol')),
+      );
+      generatedClientDir.deleteSync(recursive: true);
+
+      var generateProcess = await runProcess(
         'serverpod',
         ['generate'],
         workingDirectory: commandRoot,
@@ -581,6 +596,7 @@ void main() async {
         'docker',
         ['compose', 'up', '--build', '--detach'],
         workingDirectory: commandRoot,
+        ignorePlatform: true,
       );
 
       assert((await docker.exitCode) == 0);
@@ -589,10 +605,11 @@ void main() async {
     tearDown(() async {
       createProcess.kill();
 
-      await Process.run(
+      await runProcess(
         'docker',
         ['compose', 'down', '-v'],
         workingDirectory: commandRoot,
+        skipBatExtentionOnWindows: true,
       );
 
       while (!await isNetworkPortAvailable(8090));
@@ -608,6 +625,9 @@ void main() async {
       );
 
       await expectLater(testProcess.exitCode, completion(0));
-    });
+    },
+        skip: Platform.isWindows
+            ? 'Windows does not support postgres docker image in github actions'
+            : null);
   });
 }

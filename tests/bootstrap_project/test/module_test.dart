@@ -15,22 +15,18 @@ void main() {
   final tempPath = path.join(rootPath, tempDirName);
 
   setUpAll(() async {
-    await Process.run(
+    await runProcess(
       'dart',
       ['pub', 'global', 'activate', '-s', 'path', '.'],
       workingDirectory: cliPath,
     );
 
-    await Process.run('mkdir', [tempDirName], workingDirectory: rootPath);
+    await Directory(tempPath).create();
   });
 
   tearDownAll(() async {
     try {
-      await Process.run(
-        'rm',
-        ['-rf', tempDirName],
-        workingDirectory: rootPath,
-      );
+      Directory(tempDirName).deleteSync(recursive: true);
     } catch (e) {}
   });
 
@@ -38,15 +34,6 @@ void main() {
     var (:commandRoot, :projectName) = createRandomProjectName(tempPath);
     final (:serverDir, :flutterDir, :clientDir) =
         createProjectFolderPaths(projectName);
-
-    tearDownAll(() async {
-      await Process.run(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-      );
-      while (!await isNetworkPortAvailable(8090));
-    });
 
     group('when creating a new project', () {
       setUpAll(() async {
@@ -251,6 +238,7 @@ void main() {
         'docker',
         ['compose', 'up', '--build', '--detach'],
         workingDirectory: commandRoot,
+        ignorePlatform: true,
       );
 
       assert((await docker.exitCode) == 0);
@@ -259,10 +247,11 @@ void main() {
     tearDown(() async {
       createProcess.kill();
 
-      await Process.run(
+      await runProcess(
         'docker',
         ['compose', 'down', '-v'],
         workingDirectory: commandRoot,
+        skipBatExtentionOnWindows: true,
       );
 
       while (!await isNetworkPortAvailable(8090));
@@ -279,5 +268,8 @@ void main() {
 
       await expectLater(testProcess.exitCode, completion(0));
     });
-  });
+  },
+      skip: Platform.isWindows
+          ? 'Windows does not support postgres docker image in github actions'
+          : null);
 }
