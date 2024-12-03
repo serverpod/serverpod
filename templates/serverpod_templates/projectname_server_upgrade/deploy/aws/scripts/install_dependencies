@@ -30,7 +30,8 @@ sudo ln -sf "$DART_INSTALL_DIR/bin/dart" /usr/local/bin/dart
 cat > /lib/systemd/system/serverpod.service << EOF
 [Unit]
 Description=Serverpod server
-After=network-online.target
+After=network.target
+Wants=network-online.target
 
 [Service]
 User=$USERNAME
@@ -39,7 +40,7 @@ ExecStart=$WORKDIR/serverpod/active/projectname_server/deploy/aws/scripts/run_se
 Restart=always
 
 [Install]
-WantedBy=network-online.target
+WantedBy=multi-user.target
 EOF
 
 # Reload systemd configuration
