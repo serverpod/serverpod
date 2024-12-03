@@ -435,8 +435,10 @@ class TypeDefinition {
   TypeDefinition applyProtocolReferences(
     List<SerializableModelDefinition> classDefinitions,
   ) {
-    var modelDefinition =
-        classDefinitions.where((c) => c.className == className).firstOrNull;
+    var modelDefinition = classDefinitions
+        .where((c) => c.className == className)
+        .where((c) => c.moduleAlias == defaultModuleAlias)
+        .firstOrNull;
     bool isProjectModel =
         url == defaultModuleAlias || (url == null && modelDefinition != null);
     return TypeDefinition(
