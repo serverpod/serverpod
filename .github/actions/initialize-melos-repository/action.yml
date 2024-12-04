@@ -1,0 +1,45 @@
+name: "Initialize Melos repository"
+description: "Initializes a Melos repository"
+inputs:
+  path:
+    description: "The path where the Melos repository should be initialized."
+    required: false
+    default: "."
+  skipLink:
+    description: "Whether to skip linking the packages."
+    required: false
+    default: "false"
+  sshKey:
+    description: "The SSH key to use for the repository."
+    required: false
+    default: ""
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Flutter SDK
+      uses: subosito/flutter-action@v2
+      with:
+        cache: true
+    - name: Install Melos
+      run: dart pub global activate melos
+      shell: bash
+    - name: Print versions
+      run: |
+        dart --version
+        flutter --version
+        echo "Melos version:" $(melos --version)
+      shell: bash
+    - uses: webfactory/ssh-agent@v0.9.0
+      if: inputs.sshKey != ''
+      with:
+        ssh-private-key: ${{ inputs.sshKey }}
+    - name: Initialize repository
+      run: |
+        cd ${{inputs.path}}
+        if [ "${{inputs.skipLink}}" != "false" ]; then
+          melos run pub_get
+          melos bootstrap --skip-linking
+        else
+          melos bootstrap
+        fi
+      shell: bash
