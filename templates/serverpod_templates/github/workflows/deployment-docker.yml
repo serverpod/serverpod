@@ -1,0 +1,166 @@
+name: Deploy to Docker
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Target"
+        required: true
+        default: "production"
+        type: choice
+        options:
+          - "production"
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  # TODO Update with your GitHub username or organization
+  GHCR_ORG: "<ORGANIZATION>"
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    defaults:
+      run:
+        working-directory: ./projectname_server
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          build-args: |
+            GITHUB_PAT=${{ secrets.PAT_GITHUB }}
+            GITHUB_USER=${{ secrets.PAT_USER_GITHUB }}
+          context: ./projectname_server
+          file: ./projectname_server/Dockerfile
+          push: true
+          # TODO This same value is used in docker-compose.production.yaml too,
+          #  maybe it should be an environment variable
+          tags: ghcr.io/${{ env.GHCR_ORG }}/projectname_server:latest
+          labels: ${{ steps.meta.outputs.labels }}
+          # This determines which hardware platforms the image will run on
+          # further details: https://docs.docker.com/build/building/multi-platform/
+          platforms: linux/arm/v7, linux/arm64/v8
+
+  deploy:
+    needs: build-and-push-image
+    name: deploy to production
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install ssh keys
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Add SSH key to the agent
+        run: |
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_rsa
+
+      - name: Test SSH Connection
+        run: ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "echo SSH connection successful"
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: List files in the directory
+        run: ls -la ./projectname_server/
+
+      - name: Run docker-compose
+        run: |
+          docker compose -f ./projectname_server/docker-compose.production.yaml pull
+          docker compose -f ./projectname_server/docker-compose.production.yaml up -d
+        env:
+          DOCKER_HOST: "ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
+          # The database name
+          POSTGRES_DB: ${{ secrets.SERVERPOD_DATABASE_NAME }}
+          # The user name for the database
+          POSTGRES_USER: ${{ secrets.SERVERPOD_DATABASE_USER }}
+          # The password for the database
+          POSTGRES_PASSWORD: ${{ secrets.SERVERPOD_DATABASE_PASSWORD }}
+          # The database name
+          SERVERPOD_DATABASE_NAME: ${{ secrets.SERVERPOD_DATABASE_NAME }}
+          # The user name for the database
+          SERVERPOD_DATABASE_USER: ${{ secrets.SERVERPOD_DATABASE_USER }}
+          # The password for the database
+          SERVERPOD_DATABASE_PASSWORD: ${{ secrets.SERVERPOD_DATABASE_PASSWORD }}
+          # The public host address of the API server
+          SERVERPOD_API_SERVER_PUBLIC_HOST: ${{ secrets.SERVERPOD_API_SERVER_PUBLIC_HOST }}
+          # The public port number for the API server, 443 for https
+          SERVERPOD_API_SERVER_PUBLIC_PORT: 443
+          # This is the internal port number for the API server
+          SERVERPOD_API_SERVER_PORT: 8080
+          # The public scheme (http/https) for the API server
+          SERVERPOD_API_SERVER_PUBLIC_SCHEME: "https"
+          # The public host address of the Insights server
+          SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST: ${{ secrets.SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST }}
+          # The public port number for the Insights server
+          SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT: 443
+          # This is the internal port number for the Insights server
+          SERVERPOD_INSIGHTS_SERVER_PORT: 8081
+          # The public scheme (http/https) for the Insights server
+          SERVERPOD_INSIGHTS_SERVER_PUBLIC_SCHEME: "https"
+          # The public host address of the Web server
+          SERVERPOD_WEB_SERVER_PUBLIC_HOST: ${{ secrets.SERVERPOD_WEB_SERVER_PUBLIC_HOST }}
+          # The public port number for the Web server
+          SERVERPOD_WEB_SERVER_PUBLIC_PORT: 443
+          # This is the internal port number for the Web server
+          SERVERPOD_WEB_SERVER_PORT: 8082
+          # The public scheme (http/https) for the Web server
+          SERVERPOD_WEB_SERVER_PUBLIC_SCHEME: "https"
+          # The host address of the database
+          # This is hardcoded since the connection is done internally through
+          # the docker network. If you want to have access from the outside, you
+          # need to connect to your server with ssh
+          SERVERPOD_DATABASE_HOST: postgres
+          # The port number for the database connection
+          # If you need to change this port, you will also have to adjust
+          # postgres configuration in the docker-compose.production.yaml file
+          SERVERPOD_DATABASE_PORT: 5432
+          # Indicates if SSL is required for the database
+          # Set to false since it is behind the firewall and the database can
+          # only be accessed by utilizing the SSH tunnel
+          SERVERPOD_DATABASE_REQUIRE_SSL: false
+          # Specifies if the database connection is a Unix socket
+          SERVERPOD_DATABASE_IS_UNIX_SOCKET: false
+          # Redis is not required for this setup
+          # Disabled since right if supplying any of the redis settings, you
+          # MUST supply all of them, otherwise serverpod will fail to start
+          # SERVERPOD_REDIS_ENABLED: false
+          # The maximum size of requests allowed in bytes
+          SERVERPOD_MAX_REQUEST_SIZE: ${{ secrets.SERVERPOD_MAX_REQUEST_SIZE }}
+          # The token used to connect with insights must be at least 20 chars
+          SERVERPOD_SERVICE_SECRET: ${{ secrets.SERVERPOD_SERVICE_SECRET }}
+
+      - name: cleanup
+        run: rm -rf ~/.ssh

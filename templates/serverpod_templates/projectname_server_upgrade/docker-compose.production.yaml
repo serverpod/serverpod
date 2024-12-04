@@ -1,0 +1,120 @@
+services:
+  traefik:
+    restart: on-failure
+    image: traefik:v2.3
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      # TODO Change this to your email address, Let's Encrypt will use this to notify you about certificate expiration
+      - "--certificatesresolvers.myresolver.acme.email=damian_and_paul@examplepod.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./letsencrypt:/letsencrypt"
+    depends_on:
+      - postgres
+      - serverpod
+    networks:
+      - serverpod-network
+
+  postgres:
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: on-failure
+    image: postgres:14.1
+    labels:
+      - "traefik.enable=false" # We typically don't expose databases externally via HTTP
+    ports:
+      # You should have a firewall in place that DOES NOT allow acces from the
+      # internet on this port. On the host machine, we need access to it.
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_DB
+      - POSTGRES_PASSWORD
+    volumes:
+      - projectname_data:/var/lib/postgresql/data
+    networks:
+      - serverpod-network
+
+  serverpod:
+    restart: on-failure
+    image: ghcr.io/${GHCR_ORG}/projectname_server:latest
+    environment:
+      - SERVERPOD_DATABASE_PASSWORD
+      - SERVERPOD_DATABASE_HOST
+      - SERVERPOD_DATABASE_NAME
+      - SERVERPOD_DATABASE_USER
+      - SERVERPOD_DATABASE_PORT
+      - SERVERPOD_DATABASE_REQUIRE_SSL
+      - SERVERPOD_DATABASE_IS_UNIX_SOCKET
+      - SERVERPOD_API_SERVER_PUBLIC_HOST
+      - SERVERPOD_API_SERVER_PUBLIC_PORT
+      - SERVERPOD_API_SERVER_PUBLIC_SCHEME
+      - SERVERPOD_API_SERVER_PORT
+      - SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST
+      - SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT
+      - SERVERPOD_INSIGHTS_SERVER_PUBLIC_SCHEME
+      - SERVERPOD_INSIGHTS_SERVER_PORT
+      - SERVERPOD_WEB_SERVER_PUBLIC_HOST
+      - SERVERPOD_WEB_SERVER_PUBLIC_PORT
+      - SERVERPOD_WEB_SERVER_PUBLIC_SCHEME
+      - SERVERPOD_WEB_SERVER_PORT
+      - SERVERPOD_SERVICE_SECRET
+      - SERVERPOD_MAX_REQUEST_SIZE
+    command:
+      [
+        "--mode",
+        "production",
+        "--server-id",
+        "default",
+        "--logging",
+        "normal",
+        "--role",
+        "monolith",
+        "--apply-migrations",
+      ]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`${SERVERPOD_API_SERVER_PUBLIC_HOST}`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.service=api-service"
+      - "traefik.http.routers.api.tls.certresolver=myresolver"
+      - "traefik.http.services.api-service.loadbalancer.server.port=${SERVERPOD_API_SERVER_PORT}"
+
+      - "traefik.http.routers.insights.rule=Host(`${SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST}`)"
+      - "traefik.http.routers.insights.entrypoints=websecure"
+      - "traefik.http.routers.insights.service=insights-service"
+      - "traefik.http.routers.insights.tls.certresolver=myresolver"
+      - "traefik.http.services.insights-service.loadbalancer.server.port=${SERVERPOD_INSIGHTS_SERVER_PORT}"
+
+      - "traefik.http.routers.web.rule=Host(`${SERVERPOD_WEB_SERVER_PUBLIC_HOST}`)"
+      - "traefik.http.routers.web.entrypoints=websecure"
+      - "traefik.http.routers.web.service=web-service"
+      - "traefik.http.routers.web.tls.certresolver=myresolver"
+      - "traefik.http.services.web-service.loadbalancer.server.port=${SERVERPOD_WEB_SERVER_PORT}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - serverpod-network
+
+networks:
+  # explicitly setting up a docker virutal network for the serverpod services
+  # by default, a network is implicitly created for each compose file
+  # this makes it easier to connect to any other docker containers,
+  # i.e. when using a separate docker compose to setup grafana, prometheus, etc.
+  serverpod-network:
+    name: serverpod-network
+    driver: bridge
+volumes:
+  projectname_data:
