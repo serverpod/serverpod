@@ -1,10 +1,9 @@
-// ignore: depend_on_referenced_packages
-import 'package:serverpod_client/serverpod_client.dart';
-
 // Usually such a class should be placed in a common package.
 // But since this is only a test project, it should be fine.
 // Just be careful while importing, since the serialization
 // system treats the two implementations this classes differently.
+
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 class CustomClass implements SerializableModel {
   final String value;
@@ -31,7 +30,6 @@ class CustomClass2 {
   dynamic toJson() => {'text': value};
 }
 
-/// Custom class that does not implement ProtocolSerialization.
 class CustomClassWithoutProtocolSerialization {
   final String? serverSideValue;
   final String? value;
@@ -58,7 +56,6 @@ class CustomClassWithoutProtocolSerialization {
   }
 }
 
-/// Custom class that implements ProtocolSerialization.
 class CustomClassWithProtocolSerialization implements ProtocolSerialization {
   final String? serverSideValue;
   final String? value;
@@ -68,8 +65,12 @@ class CustomClassWithProtocolSerialization implements ProtocolSerialization {
     this.value,
   });
 
-  Map<String, dynamic> toJson() => {'serverSideValue': serverSideValue};
+  Map<String, dynamic> toJson() => {
+        'serverSideValue': serverSideValue,
+        'value': value,
+      };
 
+  @override
   Map<String, dynamic> toJsonForProtocol() => {'value': value};
 
   CustomClassWithProtocolSerialization copyWith() => this;
@@ -95,7 +96,10 @@ class CustomClassWithProtocolSerializationMethod {
     this.value,
   });
 
-  Map<String, dynamic> toJson() => {'serverSideValue': serverSideValue};
+  Map<String, dynamic> toJson() => {
+        'serverSideValue': serverSideValue,
+        'value': value,
+      };
 
   Map<String, dynamic> toJsonForProtocol() => {'value': value};
 
