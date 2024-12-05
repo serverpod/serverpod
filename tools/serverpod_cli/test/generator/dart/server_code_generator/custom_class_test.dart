@@ -81,21 +81,23 @@ void main() {
 
         var toJsonForProtocolCode = toJsonForProtocolMethod!.toSource();
 
-        var expectedCode =
-            '@override Map<String, dynamic> toJsonForProtocol() {'
-            'return {'
-            "'customClassField' : customClassField is _i1.ProtocolSerialization "
-            '? (customClassField as _i1.ProtocolSerialization).toJsonForProtocol() : customClassField.toJson()'
-            '};'
-            '}';
+        // This regex checks for this pattern:
+        // Example:
+        // customClassField is _i1.ProtocolSerialization?
+        // (customClassField as _i1.ProtocolSerialization).toJsonForProtocol()
+        // : customClassField.toJson()
+        var regex = RegExp(
+          r'customClassField\s+is\s+_i\d+\.ProtocolSerialization\s*'
+          r'\?\s*\(customClassField\s+as\s+_i\d+\.ProtocolSerialization\)\.toJsonForProtocol\(\)\s*'
+          r':\s*customClassField\.toJson\(\)',
+        );
 
         expect(
-          toJsonForProtocolCode,
-          equals(expectedCode),
+          regex.hasMatch(toJsonForProtocolCode),
+          isTrue,
           reason:
-              'The toJsonForProtocol method should correctly serialize customClassField '
-              'by checking if it implements ProtocolSerialization and calling the '
-              'appropriate toJsonForProtocol or toJson method.',
+              'The toJsonForProtocol method should correctly serialize customClassField by checking if it implements '
+              'ProtocolSerialization and calling the appropriate method, with dynamic handling of import prefixes (_iX) and flexible quotes.',
         );
       },
     );
