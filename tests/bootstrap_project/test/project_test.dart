@@ -1,6 +1,5 @@
 @Timeout(Duration(minutes: 12))
 
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -17,22 +16,18 @@ void main() async {
   final tempPath = path.join(rootPath, tempDirName);
 
   setUpAll(() async {
-    await Process.run(
+    await runProcess(
       'dart',
       ['pub', 'global', 'activate', '-s', 'path', '.'],
       workingDirectory: cliPath,
     );
 
-    await Process.run('mkdir', [tempDirName], workingDirectory: rootPath);
+    await Directory(tempPath).create();
   });
 
   tearDownAll(() async {
     try {
-      await Process.run(
-        'rm',
-        ['-rf', tempDirName],
-        workingDirectory: rootPath,
-      );
+      await Directory(tempPath).delete(recursive: true);
     } catch (e) {}
   });
 
@@ -44,10 +39,11 @@ void main() async {
     tearDown(() async {
       createProcess.kill();
 
-      await Process.run(
+      await runProcess(
         'docker',
         ['compose', 'down', '-v'],
         workingDirectory: commandRoot,
+        skipBatExtentionOnWindows: true,
       );
 
       while (!await isNetworkPortAvailable(8090));
@@ -56,7 +52,7 @@ void main() async {
     test(
         'when creating a new project then the project is created successfully and can be booted',
         () async {
-      createProcess = await Process.start(
+      createProcess = await startProcess(
         'serverpod',
         ['create', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
@@ -65,9 +61,6 @@ void main() async {
         },
       );
 
-      createProcess.stdout.transform(Utf8Decoder()).listen(print);
-      createProcess.stderr.transform(Utf8Decoder()).listen(print);
-
       var createProjectExitCode = await createProcess.exitCode;
       expect(
         createProjectExitCode,
@@ -75,14 +68,12 @@ void main() async {
         reason: 'Failed to create the serverpod project.',
       );
 
-      final docker = await Process.start(
+      final docker = await startProcess(
         'docker',
         ['compose', 'up', '--build', '--detach'],
         workingDirectory: commandRoot,
+        ignorePlatform: true,
       );
-
-      docker.stdout.transform(Utf8Decoder()).listen(print);
-      docker.stderr.transform(Utf8Decoder()).listen(print);
 
       var dockerExitCode = await docker.exitCode;
 
@@ -92,34 +83,35 @@ void main() async {
         reason: 'Docker with postgres failed to start.',
       );
 
-      var startProcess = await Process.start(
+      var startProjectProcess = await startProcess(
         'dart',
         ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
         workingDirectory: commandRoot,
       );
 
-      startProcess.stdout.transform(Utf8Decoder()).listen(print);
-      startProcess.stderr.transform(Utf8Decoder()).listen(print);
-
-      var startProjectExitCode = await startProcess.exitCode;
+      var startProjectExitCode = await startProjectProcess.exitCode;
       expect(startProjectExitCode, 0);
-    });
+    },
+        skip: Platform.isWindows
+            ? 'Windows does not support postgres docker image in github actions'
+            : null);
   });
 
   group('Given a clean state', () {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
-    Process? startProcess;
+    Process? startProjectProcess;
 
     tearDown(() async {
       createProcess.kill();
-      startProcess?.kill();
+      startProjectProcess?.kill();
 
-      await Process.run(
+      await runProcess(
         'docker',
         ['compose', 'down', '-v'],
         workingDirectory: commandRoot,
+        skipBatExtentionOnWindows: true,
       );
 
       while (!await isNetworkPortAvailable(8090));
@@ -128,7 +120,7 @@ void main() async {
     test(
         'when creating a new project then the project can be booted without applying migrations',
         () async {
-      createProcess = await Process.start(
+      createProcess = await startProcess(
         'serverpod',
         ['create', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
@@ -137,9 +129,6 @@ void main() async {
         },
       );
 
-      createProcess.stdout.transform(Utf8Decoder()).listen(print);
-      createProcess.stderr.transform(Utf8Decoder()).listen(print);
-
       var createProjectExitCode = await createProcess.exitCode;
       expect(
         createProjectExitCode,
@@ -147,14 +136,12 @@ void main() async {
         reason: 'Failed to create the serverpod project.',
       );
 
-      final docker = await Process.start(
+      final docker = await startProcess(
         'docker',
         ['compose', 'up', '--build', '--detach'],
         workingDirectory: commandRoot,
+        ignorePlatform: true,
       );
-
-      docker.stdout.transform(Utf8Decoder()).listen(print);
-      docker.stderr.transform(Utf8Decoder()).listen(print);
 
       var dockerExitCode = await docker.exitCode;
 
@@ -164,14 +151,11 @@ void main() async {
         reason: 'Docker with postgres failed to start.',
       );
 
-      startProcess = await Process.start(
+      startProjectProcess = await startProcess(
         'dart',
         ['bin/main.dart', '--apply-migrations'],
         workingDirectory: commandRoot,
       );
-
-      startProcess?.stdout.transform(Utf8Decoder()).listen(print);
-      startProcess?.stderr.transform(Utf8Decoder()).listen(print);
 
       var serverStarted = false;
       for (int retries = 0; retries < 10; retries++) {
@@ -189,7 +173,10 @@ void main() async {
 
       expect(serverStarted, isTrue,
           reason: 'Failed to get 200 response from server.');
-    });
+    },
+        skip: Platform.isWindows
+            ? 'Windows does not support postgres docker image in github actions'
+            : null);
   });
 
   group('Given a clean state', () {
@@ -198,17 +185,18 @@ void main() async {
         createProjectFolderPaths(projectName);
 
     tearDownAll(() async {
-      await Process.run(
+      await runProcess(
         'docker',
         ['compose', 'down', '-v'],
         workingDirectory: commandRoot,
+        skipBatExtentionOnWindows: true,
       );
       while (!await isNetworkPortAvailable(8090));
     });
 
     group('when creating a new project', () {
       setUpAll(() async {
-        var process = await Process.start(
+        var process = await startProcess(
           'serverpod',
           ['create', projectName, '-v', '--no-analytics'],
           workingDirectory: tempPath,
@@ -217,22 +205,16 @@ void main() async {
           },
         );
 
-        process.stdout.transform(Utf8Decoder()).listen(print);
-        process.stderr.transform(Utf8Decoder()).listen(print);
-
         var exitCode = await process.exitCode;
         assert(exitCode == 0);
       });
 
       test('then there are no linting errors in the new project', () async {
-        final process = await Process.start(
+        final process = await startProcess(
           'dart',
           ['analyze', '--fatal-infos', '--fatal-warnings', projectName],
           workingDirectory: tempPath,
         );
-
-        process.stdout.transform(Utf8Decoder()).listen(print);
-        process.stderr.transform(Utf8Decoder()).listen(print);
 
         var exitCode = await process.exitCode;
         expect(exitCode, 0, reason: 'Linting errors in new project.');
@@ -403,7 +385,10 @@ void main() async {
 ''';
           expect(contents.trim(), expected.trim(),
               reason: "DebugProfile entitlements is not as expected.");
-        });
+        },
+            skip: Platform.isWindows
+                ? 'Return characters are generated on windows'
+                : null);
 
         test('macOS Release entitlements has network client tag and true', () {
           var entitlementsPath = path.join(
@@ -427,7 +412,11 @@ void main() async {
 
           expect(contents.trim(), expected.trim(),
               reason: "Release entitlements is not as expected.");
-        });
+        },
+            skip: Platform.isWindows
+                ? 'Return characters are generated on windows'
+                : null);
+
         test('has a main file', () {
           expect(
             File(path.join(tempPath, flutterDir, 'lib', 'main.dart'))
@@ -489,18 +478,12 @@ void main() async {
 
     tearDown(() async {
       createProcess.kill();
-      await Process.run(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-      );
-      while (!await isNetworkPortAvailable(8090));
     });
 
     test(
         'when removing generated files from a new project and running generate then the files are recreated successfully',
         () async {
-      createProcess = await Process.start(
+      createProcess = await startProcess(
         'serverpod',
         ['create', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
@@ -509,19 +492,23 @@ void main() async {
         },
       );
 
-      createProcess.stdout.transform(Utf8Decoder()).listen(print);
-      createProcess.stderr.transform(Utf8Decoder()).listen(print);
-
       var createProjectExitCode = await createProcess.exitCode;
       expect(createProjectExitCode, 0);
 
       // Delete generated files
-      await Process.run(
-          'rm', ['-f', '${serverDir}/lib/src/generated/protocol.yaml']);
-      await Process.run('rm', ['-f', '${serverDir}/lib/src/generated/*.dart']);
-      await Process.run('rm', ['-f', '${clientDir}/lib/src/protocol/*.dart']);
+      var generatedServerDir = Directory(
+        path.normalize(
+            path.join(tempPath, serverDir, 'lib', 'src', 'generated')),
+      );
+      generatedServerDir.deleteSync(recursive: true);
 
-      var generateProcess = await Process.run(
+      var generatedClientDir = Directory(
+        path.normalize(
+            path.join(tempPath, clientDir, 'lib', 'src', 'protocol')),
+      );
+      generatedClientDir.deleteSync(recursive: true);
+
+      var generateProcess = await runProcess(
         'serverpod',
         ['generate'],
         workingDirectory: commandRoot,
@@ -595,7 +582,7 @@ void main() async {
     late Process createProcess;
 
     setUp(() async {
-      createProcess = await Process.start(
+      createProcess = await startProcess(
         'serverpod',
         ['create', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
@@ -605,10 +592,11 @@ void main() async {
       );
       assert((await createProcess.exitCode) == 0);
 
-      final docker = await Process.start(
+      final docker = await startProcess(
         'docker',
         ['compose', 'up', '--build', '--detach'],
         workingDirectory: commandRoot,
+        ignorePlatform: true,
       );
 
       assert((await docker.exitCode) == 0);
@@ -617,10 +605,11 @@ void main() async {
     tearDown(() async {
       createProcess.kill();
 
-      await Process.run(
+      await runProcess(
         'docker',
         ['compose', 'down', '-v'],
         workingDirectory: commandRoot,
+        skipBatExtentionOnWindows: true,
       );
 
       while (!await isNetworkPortAvailable(8090));
@@ -628,7 +617,7 @@ void main() async {
 
     test('when running tests then example unit and integration tests passes',
         () async {
-      var testProcess = await Process.start(
+      var testProcess = await startProcess(
         'dart',
         ['test'],
         workingDirectory:
@@ -636,6 +625,9 @@ void main() async {
       );
 
       await expectLater(testProcess.exitCode, completion(0));
-    });
+    },
+        skip: Platform.isWindows
+            ? 'Windows does not support postgres docker image in github actions'
+            : null);
   });
 }

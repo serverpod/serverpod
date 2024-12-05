@@ -37,6 +37,7 @@ dependencies:
   relic: 2.2.0
   serverpod_shared: 2.2.0
   serverpod_serialization: 2.2.0
+  uuid: ^4.1.0
 
 dev_dependencies:
   test: ^1.24.2

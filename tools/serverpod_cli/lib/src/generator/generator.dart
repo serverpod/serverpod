@@ -2,7 +2,6 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/serverpod_code_generator.dart';
-import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 /// Analyze the server package and generate the code.
@@ -10,22 +9,14 @@ Future<bool> performGenerate({
   bool dartFormat = true,
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
-  String? changedFilePath,
+  required StatefulAnalyzer modelAnalyzer,
 }) async {
   bool success = true;
 
   log.debug('Analyzing serializable models in the protocol directory.');
-  var protocols = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
-  var analyzer = StatefulAnalyzer(config, protocols, (uri, collector) {
-    collector.printErrors();
-
-    if (collector.hasSeverErrors) {
-      success = false;
-    }
-  });
-
-  var models = analyzer.validateAll();
+  var models = modelAnalyzer.validateAll();
+  success &= !modelAnalyzer.hasSeverErrors;
 
   log.debug('Generating files for serializable models.');
 
@@ -37,20 +28,13 @@ Future<bool> performGenerate({
 
   log.debug('Analyzing the endpoints.');
 
-  var changedFiles = generatedModelFiles.toSet();
-  if (changedFilePath != null) {
-    changedFiles.add(changedFilePath);
-  }
-
   var endpointAnalyzerCollector = CodeGenerationCollector();
   var endpoints = await endpointsAnalyzer.analyze(
     collector: endpointAnalyzerCollector,
-    changedFiles: changedFiles,
+    changedFiles: generatedModelFiles.toSet(),
   );
 
-  if (endpointAnalyzerCollector.hasSeverErrors) {
-    success = false;
-  }
+  success &= !endpointAnalyzerCollector.hasSeverErrors;
   endpointAnalyzerCollector.printErrors();
 
   log.debug('Generating the protocol.');

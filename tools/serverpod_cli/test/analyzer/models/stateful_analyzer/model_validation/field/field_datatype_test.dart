@@ -119,6 +119,69 @@ fields:
       });
     });
 
+    group(
+        'Given a class with a field containing a model first defined in a module and then the project (order matters)',
+        () {
+      var containedClassName = 'User';
+      var testClassName = 'Example';
+      var models = [
+        ModelSourceBuilder()
+            .withFileName('user.spy.yaml')
+            .withModuleAlias('module')
+            .withYaml(
+          '''
+class: $containedClassName
+fields:
+  nickname: String
+          ''',
+        ).build(),
+        ModelSourceBuilder().withFileName('user.spy.yaml').withYaml(
+          '''
+class: $containedClassName
+fields:
+  nickname: String
+          ''',
+        ).build(),
+        ModelSourceBuilder().withYaml(
+          '''
+class: $testClassName
+fields:
+  user: User 
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+
+      test('then no errors was generated', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      var testClassDefinition = definitions
+          .whereType<ClassDefinition>()
+          .where((e) => e.className == testClassName)
+          .firstOrNull;
+
+      test('then field projectModelDefinition type is the project model', () {
+        expect(
+          testClassDefinition
+              ?.fields.first.type.projectModelDefinition?.moduleAlias,
+          'protocol',
+        );
+
+        expect(
+          testClassDefinition?.fields.first.type.className,
+          containedClassName,
+        );
+      });
+    });
+
     group('Given a class with a field with a module type', () {
       var models = [
         ModelSourceBuilder().withModuleAlias('auth').withYaml(

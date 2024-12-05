@@ -9,7 +9,7 @@ class ConcurrentTransactionsException implements Exception {}
 
 /// Creates a transaction and manages savepoints for a given [Session].
 class TransactionManager {
-  final List<String> _savePointIds = [];
+  final List<Savepoint> _savepoints = [];
 
   /// The current transaction.
   Transaction? currentTransaction;
@@ -73,11 +73,12 @@ class TransactionManager {
   }
 
   /// Creates a savepoint in the current transaction.
-  Future<void> addSavePoint({
+  Future<void> addSavepoint({
     bool lock = false,
     bool isPartOfTransaction = false,
   }) async {
-    if (currentTransaction == null) {
+    var localTransaction = currentTransaction;
+    if (localTransaction == null) {
       throw StateError('No ongoing transaction.');
     }
 
@@ -87,41 +88,24 @@ class TransactionManager {
       _isTransactionStackLocked = true;
     }
 
-    var savePointId = _getNextSavePointId();
-    _savePointIds.add(savePointId);
+    var savepoint = await localTransaction.createSavepoint();
 
-    await serverpodSession.db.unsafeExecuteWithoutDatabaseExceptionGuard(
-      'SAVEPOINT $savePointId;',
-      transaction: currentTransaction,
-    );
+    _savepoints.add(savepoint);
   }
 
-  /// Generates and returns the next savepoint id.
-  String _getNextSavePointId() {
-    var postgresCompatibleRandomString =
-        const Uuid().v4obj().toString().replaceAll(RegExp(r'-'), '_');
-    var savePointId = 'savepoint_$postgresCompatibleRandomString';
-
-    return savePointId;
+  /// Rolls back the database to the previous savepoint in the current transaction.
+  Future<void> rollbackToPreviousSavepoint({bool unlock = false}) async {
+    var savepoint = await _popPreviousSavepoint(unlock: unlock);
+    await savepoint.rollback();
   }
 
-  /// Rolls back the database to the previous save point in the current transaction.
-  Future<void> rollbackToPreviousSavePoint({bool unlock = false}) async {
-    var savePointId = await _popPreviousSavePointId(unlock: unlock);
-
-    await serverpodSession.db.unsafeExecuteWithoutDatabaseExceptionGuard(
-      'ROLLBACK TO SAVEPOINT $savePointId;',
-      transaction: currentTransaction,
-    );
-  }
-
-  /// Removes the previous save point in the current transaction.
-  Future<String> _popPreviousSavePointId({bool unlock = false}) async {
+  /// Removes the previous savepoint in the current transaction.
+  Future<Savepoint> _popPreviousSavepoint({bool unlock = false}) async {
     if (currentTransaction == null) {
       throw StateError('No ongoing transaction.');
     }
 
-    if (_savePointIds.isEmpty) {
+    if (_savepoints.isEmpty) {
       throw StateError('No previous savepoint to rollback to.');
     }
 
@@ -129,16 +113,13 @@ class TransactionManager {
       _isTransactionStackLocked = false;
     }
 
-    return _savePointIds.removeLast();
+    return _savepoints.removeLast();
   }
 
-  /// Releases the previous save point in the current transaction.
-  Future<void> releasePreviousSavePoint({bool unlock = true}) async {
-    var savePointId = await _popPreviousSavePointId(unlock: unlock);
+  /// Releases the previous savepoint in the current transaction.
+  Future<void> releasePreviousSavepoint({bool unlock = true}) async {
+    var savepoint = await _popPreviousSavepoint(unlock: unlock);
 
-    await serverpodSession.db.unsafeExecuteWithoutDatabaseExceptionGuard(
-      'RELEASE SAVEPOINT $savePointId;',
-      transaction: currentTransaction,
-    );
+    await savepoint.release();
   }
 }

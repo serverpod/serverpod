@@ -13,6 +13,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 import 'package:serverpod_test_module_client/src/protocol/module_class.dart'
     as _i3;
+import 'package:serverpod_test_module_client/src/protocol/module_feature/models/my_feature_model.dart'
+    as _i4;
 
 /// {@category Endpoint}
 class EndpointModule extends _i1.EndpointRef {
@@ -71,19 +73,44 @@ class EndpointStreaming extends _i1.EndpointRef {
       );
 }
 
+/// {@category Endpoint}
+class EndpointMyModuleFeature extends _i1.EndpointRef {
+  EndpointMyModuleFeature(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'serverpod_test_module.myModuleFeature';
+
+  _i2.Future<String> myFeatureMethod() => caller.callServerEndpoint<String>(
+        'serverpod_test_module.myModuleFeature',
+        'myFeatureMethod',
+        {},
+      );
+
+  _i2.Future<_i4.MyModuleFeatureModel> myFeatureModel() =>
+      caller.callServerEndpoint<_i4.MyModuleFeatureModel>(
+        'serverpod_test_module.myModuleFeature',
+        'myFeatureModel',
+        {},
+      );
+}
+
 class Caller extends _i1.ModuleEndpointCaller {
   Caller(_i1.ServerpodClientShared client) : super(client) {
     module = EndpointModule(this);
     streaming = EndpointStreaming(this);
+    myModuleFeature = EndpointMyModuleFeature(this);
   }
 
   late final EndpointModule module;
 
   late final EndpointStreaming streaming;
 
+  late final EndpointMyModuleFeature myModuleFeature;
+
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
         'serverpod_test_module.module': module,
         'serverpod_test_module.streaming': streaming,
+        'serverpod_test_module.myModuleFeature': myModuleFeature,
       };
 }

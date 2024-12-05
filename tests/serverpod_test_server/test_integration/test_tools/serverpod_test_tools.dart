@@ -40,6 +40,8 @@ import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_fie
     as _i20;
 import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_field_child.dart'
     as _i21;
+import 'package:serverpod_test_server/src/generated/my_feature/models/my_feature_model.dart'
+    as _i22;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -200,6 +202,8 @@ class TestEndpoints {
   late final _TestToolsEndpoint testTools;
 
   late final _AuthenticatedTestToolsEndpoint authenticatedTestTools;
+
+  late final _MyFeatureEndpoint myFeature;
 }
 
 class _InternalTestEndpoints extends TestEndpoints
@@ -366,6 +370,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     authenticatedTestTools = _AuthenticatedTestToolsEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    myFeature = _MyFeatureEndpoint(
       endpoints,
       serializationManager,
     );
@@ -8250,5 +8258,70 @@ class _AuthenticatedTestToolsEndpoint {
       _localTestStreamManager.outputStreamController,
     );
     return _localTestStreamManager.outputStreamController.stream;
+  }
+}
+
+class _MyFeatureEndpoint {
+  _MyFeatureEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<String> myFeatureMethod(
+      _i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'myFeature',
+        method: 'myFeatureMethod',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'myFeature',
+          methodName: 'myFeatureMethod',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i22.MyFeatureModel> myFeatureModel(
+      _i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'myFeature',
+        method: 'myFeatureModel',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'myFeature',
+          methodName: 'myFeatureModel',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i22.MyFeatureModel>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
   }
 }

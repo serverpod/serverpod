@@ -1,33 +1,16 @@
 import 'dart:io';
 
 import 'package:path/path.dart';
-import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
-
-GeneratorConfig createGeneratorConfig([
-  List<String> serverPackageDirectoryPathParts = const [],
-]) {
-  return GeneratorConfig(
-    name: 'test',
-    type: PackageType.server,
-    serverPackage: 'test_server',
-    dartClientPackage: 'test_client',
-    dartClientDependsOnServiceClient: true,
-    serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
-    relativeDartClientPackagePathParts: [],
-    modules: [],
-    extraClasses: [],
-    enabledFeatures: [],
-  );
-}
 
 void main() {
   group('Test path extraction - extractPathFromConfig.', () {
     var serverRootDir = Directory(join(
       'test',
-      'integration'
-          'util',
+      'integration',
+      'util',
       'test_assets',
       'protocol_helper',
       'has_serverpod_server_project',
@@ -39,8 +22,8 @@ void main() {
         () {
       var modelFile = File(join(
         'test',
-        'integration'
-            'util',
+        'integration',
+        'util',
         'test_assets',
         'protocol_helper',
         'has_serverpod_server_project',
@@ -51,7 +34,9 @@ void main() {
         'test.yaml',
       ));
 
-      var config = createGeneratorConfig(split(serverRootDir.path));
+      var config = GeneratorConfigBuilder()
+          .withServerPackageDirectoryPathParts(split(serverRootDir.path))
+          .build();
 
       var pathParts = ModelHelper.extractPathFromConfig(
         config,
@@ -66,6 +51,7 @@ void main() {
         () {
       var modelFile = File(join(
         'test',
+        'integration',
         'util',
         'test_assets',
         'protocol_helper',
@@ -79,7 +65,9 @@ void main() {
         'test.yaml',
       ));
 
-      var config = createGeneratorConfig(split(serverRootDir.path));
+      var config = GeneratorConfigBuilder()
+          .withServerPackageDirectoryPathParts(split(serverRootDir.path))
+          .build();
 
       var pathParts = ModelHelper.extractPathFromConfig(
         config,
@@ -94,6 +82,7 @@ void main() {
         () {
       var modelFile = File(join(
         'test',
+        'integration',
         'util',
         'test_assets',
         'protocol_helper',
@@ -101,13 +90,15 @@ void main() {
         'test_server',
         'lib',
         'src',
-        'model',
+        'models',
         'nested',
         'folder',
         'test.yaml',
       ));
 
-      var config = createGeneratorConfig(split(serverRootDir.path));
+      var config = GeneratorConfigBuilder()
+          .withServerPackageDirectoryPathParts(split(serverRootDir.path))
+          .build();
 
       var pathParts = ModelHelper.extractPathFromConfig(
         config,
@@ -116,82 +107,31 @@ void main() {
 
       expect(pathParts, ['nested', 'folder']);
     });
-  });
-  group('Test path extraction - extractPathFromModelRoot.', () {
-    test(
-        'Given a model path directly inside the model folder, then the parts list is empty.',
-        () {
-      var modelFile = File(join(
-        'test',
-        'integration'
-            'util',
-        'test_assets',
-        'protocol_helper',
-        'has_serverpod_server_project',
-        'test_server',
-        'lib',
-        'src',
-        'protocol',
-        'test.yaml',
-      ));
-
-      var rootPath = [
-        'test',
-        'integration'
-            'util',
-        'test_assets',
-        'protocol_helper',
-        'has_serverpod_server_project',
-        'test_server',
-        'lib',
-        'src',
-        'protocol',
-      ];
-
-      var pathParts = ModelHelper.extractPathFromModelRoot(
-        rootPath,
-        modelFile.uri,
-      );
-
-      expect(pathParts, []);
-    });
 
     test(
-        'Given a model with a nested path inside the model folder, then the parts list contains the nested path.',
+        'Given a model with a path outside of the lib folder, then parts list contains all the path parts',
         () {
-      var modelFile = File(join(
+      var filePathParts = [
         'test',
+        'integration',
         'util',
         'test_assets',
         'protocol_helper',
         'has_serverpod_server_project',
         'test_server',
-        'lib',
-        'src',
-        'protocol',
-        'nested',
-        'folder',
-        'test.yaml',
-      ));
-
-      var rootPath = [
-        'test',
-        'util',
-        'test_assets',
-        'protocol_helper',
-        'has_serverpod_server_project',
-        'test_server',
-        'lib',
-        'src',
-        'protocol'
       ];
+      var modelFile = File(joinAll(filePathParts));
 
-      var pathParts = ModelHelper.extractPathFromModelRoot(
-        rootPath,
+      var config = GeneratorConfigBuilder()
+          .withServerPackageDirectoryPathParts(split(serverRootDir.path))
+          .build();
+
+      var pathParts = ModelHelper.extractPathFromConfig(
+        config,
         modelFile.uri,
       );
 
-      expect(pathParts, ['nested', 'folder']);
+      expect(pathParts, filePathParts);
     });
   });
 
@@ -206,7 +146,9 @@ void main() {
       'test_server',
     ));
 
-    var config = createGeneratorConfig(split(serverRootDir.path));
+    var config = GeneratorConfigBuilder()
+        .withServerPackageDirectoryPathParts(split(serverRootDir.path))
+        .withModules([]).build();
 
     test(
         'Given a serverpod project with model files then the converted model path has the file uri set.',
@@ -229,11 +171,11 @@ void main() {
     });
 
     test(
-        'Given a serverpod project with model files then the converted model path has the rootPathParts set to empty arrays.',
+        'Given a serverpod project with model files then the converted model path has the subDirPathParts set to empty arrays.',
         () async {
       var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
-      var rootPathParts = models.map((e) => e.protocolRootPathParts);
+      var rootPathParts = models.map((e) => e.subDirPathParts);
 
       expect(rootPathParts.first, []);
 
@@ -241,7 +183,7 @@ void main() {
     });
 
     test(
-        'Given a serverpod project with model files in a nested folder then the converted model path has the rootPathParts set to the nested folder inside the models directory.',
+        'Given a serverpod project with model files in a nested folder then the converted model path has the subDirPathParts set to the nested folder inside the models directory.',
         () async {
       var serverRootDir = Directory(join(
         'test',
@@ -253,11 +195,13 @@ void main() {
         'test_server',
       ));
 
-      var config = createGeneratorConfig(split(serverRootDir.path));
+      var config = GeneratorConfigBuilder()
+          .withServerPackageDirectoryPathParts(split(serverRootDir.path))
+          .withModules([]).build();
 
       var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
-      var rootPathParts = models.map((e) => e.protocolRootPathParts);
+      var rootPathParts = models.map((e) => e.subDirPathParts);
 
       expect(rootPathParts.first, ['nested', 'folder']);
     });
@@ -294,7 +238,9 @@ fields:
       'test_server',
     ));
 
-    var config = createGeneratorConfig(split(serverRootDir.path));
+    var config = GeneratorConfigBuilder()
+        .withServerPackageDirectoryPathParts(split(serverRootDir.path))
+        .withModules([]).build();
 
     var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
@@ -316,7 +262,9 @@ fields:
       'test_server',
     ));
 
-    var config = createGeneratorConfig(split(serverRootDir.path));
+    var config = GeneratorConfigBuilder()
+        .withServerPackageDirectoryPathParts(split(serverRootDir.path))
+        .withModules([]).build();
 
     var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 

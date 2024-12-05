@@ -1,6 +1,5 @@
 @Timeout(Duration(minutes: 12))
 
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
@@ -16,22 +15,18 @@ void main() {
   final tempPath = path.join(rootPath, tempDirName);
 
   setUpAll(() async {
-    await Process.run(
+    await runProcess(
       'dart',
       ['pub', 'global', 'activate', '-s', 'path', '.'],
       workingDirectory: cliPath,
     );
 
-    await Process.run('mkdir', [tempDirName], workingDirectory: rootPath);
+    await Directory(tempPath).create();
   });
 
   tearDownAll(() async {
     try {
-      await Process.run(
-        'rm',
-        ['-rf', tempDirName],
-        workingDirectory: rootPath,
-      );
+      Directory(tempDirName).deleteSync(recursive: true);
     } catch (e) {}
   });
 
@@ -40,18 +35,9 @@ void main() {
     final (:serverDir, :flutterDir, :clientDir) =
         createProjectFolderPaths(projectName);
 
-    tearDownAll(() async {
-      await Process.run(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-      );
-      while (!await isNetworkPortAvailable(8090));
-    });
-
     group('when creating a new project', () {
       setUpAll(() async {
-        var process = await Process.start(
+        var process = await startProcess(
           'serverpod',
           [
             'create',
@@ -67,22 +53,16 @@ void main() {
           },
         );
 
-        process.stdout.transform(Utf8Decoder()).listen(print);
-        process.stderr.transform(Utf8Decoder()).listen(print);
-
         var exitCode = await process.exitCode;
         assert(exitCode == 0);
       });
 
       test('then there are no linting errors in the new project', () async {
-        final process = await Process.start(
+        final process = await startProcess(
           'dart',
           ['analyze', '--fatal-infos', '--fatal-warnings', projectName],
           workingDirectory: tempPath,
         );
-
-        process.stdout.transform(Utf8Decoder()).listen(print);
-        process.stderr.transform(Utf8Decoder()).listen(print);
 
         var exitCode = await process.exitCode;
         expect(exitCode, 0, reason: 'Linting errors in new project.');
@@ -244,7 +224,7 @@ void main() {
     late Process createProcess;
 
     setUp(() async {
-      createProcess = await Process.start(
+      createProcess = await startProcess(
         'serverpod',
         ['create', '--template', 'module', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
@@ -254,10 +234,11 @@ void main() {
       );
       assert((await createProcess.exitCode) == 0);
 
-      final docker = await Process.start(
+      final docker = await startProcess(
         'docker',
         ['compose', 'up', '--build', '--detach'],
         workingDirectory: commandRoot,
+        ignorePlatform: true,
       );
 
       assert((await docker.exitCode) == 0);
@@ -266,10 +247,11 @@ void main() {
     tearDown(() async {
       createProcess.kill();
 
-      await Process.run(
+      await runProcess(
         'docker',
         ['compose', 'down', '-v'],
         workingDirectory: commandRoot,
+        skipBatExtentionOnWindows: true,
       );
 
       while (!await isNetworkPortAvailable(8090));
@@ -277,7 +259,7 @@ void main() {
 
     test('when running tests then example unit and integration tests passes',
         () async {
-      var testProcess = await Process.start(
+      var testProcess = await startProcess(
         'dart',
         ['test'],
         workingDirectory:
@@ -286,5 +268,8 @@ void main() {
 
       await expectLater(testProcess.exitCode, completion(0));
     });
-  });
+  },
+      skip: Platform.isWindows
+          ? 'Windows does not support postgres docker image in github actions'
+          : null);
 }

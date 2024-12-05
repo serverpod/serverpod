@@ -1,0 +1,3 @@
+class: MyFeatureModel
+fields:
+    name: String

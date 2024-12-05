@@ -104,7 +104,7 @@ class SerializableModelAnalyzer {
     Uri sourceUri,
     CodeAnalysisCollector collector,
     SerializableModelDefinition? model,
-    List<SerializableModelDefinition> models,
+    ParsedModelsCollection parsedModels,
   ) {
     var yamlErrors = ErrorCollector();
     YamlMap? document = _loadYamlMap(yaml, sourceUri, yamlErrors);
@@ -141,10 +141,14 @@ class SerializableModelAnalyzer {
       documentType: definitionType,
       documentContents: documentContents,
       documentDefinition: model,
-      // TODO: move instance creation of EntityRelations to StatefulAnalyzer
-      // to resolve n-squared time complexity.
-      parsedModels: ParsedModelsCollection(models),
+      parsedModels: parsedModels,
     );
+
+    var generateCollisionErrors = validateDuplicateFileName(
+      documentContents,
+      restrictions,
+    );
+    collector.addErrors(generateCollisionErrors);
 
     Set<ValidateNode> documentStructure;
     switch (definitionType) {

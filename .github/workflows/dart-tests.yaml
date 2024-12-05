@@ -246,7 +246,7 @@ jobs:
       fail-fast: false
       matrix:
         flutter-version: ['3.19.0', '3.24.0']
-        os: [ubuntu-latest]
+        os: [windows-latest, ubuntu-latest]
         path: ['tests/bootstrap_project']
     steps:
       - uses: actions/checkout@v3
