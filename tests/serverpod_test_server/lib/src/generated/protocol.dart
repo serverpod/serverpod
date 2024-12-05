@@ -5735,8 +5735,15 @@ class Protocol extends _i1.SerializationManagerServer {
               (k, v) => MapEntry(deserialize<String>(k), deserialize<int?>(v)))
           : null) as dynamic;
     }
-    if (t == _i121.CustomClass3) {
-      return _i121.CustomClass3.fromJson(data) as T;
+    if (t == _i121.CustomClassWithoutProtocolSerialization) {
+      return _i121.CustomClassWithoutProtocolSerialization.fromJson(data) as T;
+    }
+    if (t == _i121.CustomClassWithProtocolSerialization) {
+      return _i121.CustomClassWithProtocolSerialization.fromJson(data) as T;
+    }
+    if (t == _i121.CustomClassWithProtocolSerializationMethod) {
+      return _i121.CustomClassWithProtocolSerializationMethod.fromJson(data)
+          as T;
     }
     if (t == List<_i113.TestEnum>) {
       return (data as List).map((e) => deserialize<_i113.TestEnum>(e)).toList()
@@ -6431,8 +6438,20 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i121.CustomClass2?>()) {
       return (data != null ? _i121.CustomClass2.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i121.CustomClass3?>()) {
-      return (data != null ? _i121.CustomClass3.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i121.CustomClassWithoutProtocolSerialization?>()) {
+      return (data != null
+          ? _i121.CustomClassWithoutProtocolSerialization.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i121.CustomClassWithProtocolSerialization?>()) {
+      return (data != null
+          ? _i121.CustomClassWithProtocolSerialization.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i121.CustomClassWithProtocolSerializationMethod?>()) {
+      return (data != null
+          ? _i121.CustomClassWithProtocolSerializationMethod.fromJson(data)
+          : null) as T;
     }
     if (t == _i1.getType<_i124.ProtocolCustomClass?>()) {
       return (data != null ? _i124.ProtocolCustomClass.fromJson(data) : null)
@@ -6468,8 +6487,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i121.CustomClass2) {
       return 'CustomClass2';
     }
-    if (data is _i121.CustomClass3) {
-      return 'CustomClass3';
+    if (data is _i121.CustomClassWithoutProtocolSerialization) {
+      return 'CustomClassWithoutProtocolSerialization';
+    }
+    if (data is _i121.CustomClassWithProtocolSerialization) {
+      return 'CustomClassWithProtocolSerialization';
+    }
+    if (data is _i121.CustomClassWithProtocolSerializationMethod) {
+      return 'CustomClassWithProtocolSerializationMethod';
     }
     if (data is _i124.ProtocolCustomClass) {
       return 'ProtocolCustomClass';
@@ -6858,8 +6883,17 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'CustomClass2') {
       return deserialize<_i121.CustomClass2>(data['data']);
     }
-    if (dataClassName == 'CustomClass3') {
-      return deserialize<_i121.CustomClass3>(data['data']);
+    if (dataClassName == 'CustomClassWithoutProtocolSerialization') {
+      return deserialize<_i121.CustomClassWithoutProtocolSerialization>(
+          data['data']);
+    }
+    if (dataClassName == 'CustomClassWithProtocolSerialization') {
+      return deserialize<_i121.CustomClassWithProtocolSerialization>(
+          data['data']);
+    }
+    if (dataClassName == 'CustomClassWithProtocolSerializationMethod') {
+      return deserialize<_i121.CustomClassWithProtocolSerializationMethod>(
+          data['data']);
     }
     if (dataClassName == 'ProtocolCustomClass') {
       return deserialize<_i124.ProtocolCustomClass>(data['data']);

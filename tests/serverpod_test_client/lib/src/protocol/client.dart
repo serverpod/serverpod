@@ -413,6 +413,35 @@ class EndpointCustomTypes extends _i1.EndpointRef {
         'returnFreezedCustomClassNullable',
         {'data': data},
       );
+
+  _i2.Future<_i7.CustomClassWithoutProtocolSerialization>
+      returnCustomClassWithoutProtocolSerialization(
+              _i7.CustomClassWithoutProtocolSerialization data) =>
+          caller
+              .callServerEndpoint<_i7.CustomClassWithoutProtocolSerialization>(
+            'customTypes',
+            'returnCustomClassWithoutProtocolSerialization',
+            {'data': data},
+          );
+
+  _i2.Future<_i7.CustomClassWithProtocolSerialization>
+      returnCustomClassWithProtocolSerialization(
+              _i7.CustomClassWithProtocolSerialization data) =>
+          caller.callServerEndpoint<_i7.CustomClassWithProtocolSerialization>(
+            'customTypes',
+            'returnCustomClassWithProtocolSerialization',
+            {'data': data},
+          );
+
+  _i2.Future<_i7.CustomClassWithProtocolSerializationMethod>
+      returnCustomClassWithProtocolSerializationMethod(
+              _i7.CustomClassWithProtocolSerializationMethod data) =>
+          caller.callServerEndpoint<
+              _i7.CustomClassWithProtocolSerializationMethod>(
+            'customTypes',
+            'returnCustomClassWithProtocolSerializationMethod',
+            {'data': data},
+          );
 }
 
 /// {@category Endpoint}

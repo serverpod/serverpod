@@ -14,32 +14,89 @@ import 'package:serverpod_test_server/src/custom_classes.dart' as _i2;
 
 abstract class ObjectWithCustomClass
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  ObjectWithCustomClass._({required this.customClassField});
+  ObjectWithCustomClass._({
+    required this.customClassWithoutProtocolSerialization,
+    required this.customClassWithProtocolSerialization,
+    required this.customClassWithProtocolSerializationMethod,
+  });
 
-  factory ObjectWithCustomClass({required _i2.CustomClass3 customClassField}) =
-      _ObjectWithCustomClassImpl;
+  factory ObjectWithCustomClass({
+    required _i2.CustomClassWithoutProtocolSerialization
+        customClassWithoutProtocolSerialization,
+    required _i2.CustomClassWithProtocolSerialization
+        customClassWithProtocolSerialization,
+    required _i2.CustomClassWithProtocolSerializationMethod
+        customClassWithProtocolSerializationMethod,
+  }) = _ObjectWithCustomClassImpl;
 
   factory ObjectWithCustomClass.fromJson(
       Map<String, dynamic> jsonSerialization) {
     return ObjectWithCustomClass(
-        customClassField:
-            _i2.CustomClass3.fromJson(jsonSerialization['customClassField']));
+      customClassWithoutProtocolSerialization:
+          _i2.CustomClassWithoutProtocolSerialization.fromJson(
+              jsonSerialization['customClassWithoutProtocolSerialization']),
+      customClassWithProtocolSerialization:
+          _i2.CustomClassWithProtocolSerialization.fromJson(
+              jsonSerialization['customClassWithProtocolSerialization']),
+      customClassWithProtocolSerializationMethod:
+          _i2.CustomClassWithProtocolSerializationMethod.fromJson(
+              jsonSerialization['customClassWithProtocolSerializationMethod']),
+    );
   }
 
-  _i2.CustomClass3 customClassField;
+  _i2.CustomClassWithoutProtocolSerialization
+      customClassWithoutProtocolSerialization;
 
-  ObjectWithCustomClass copyWith({_i2.CustomClass3? customClassField});
+  _i2.CustomClassWithProtocolSerialization customClassWithProtocolSerialization;
+
+  _i2.CustomClassWithProtocolSerializationMethod
+      customClassWithProtocolSerializationMethod;
+
+  ObjectWithCustomClass copyWith({
+    _i2.CustomClassWithoutProtocolSerialization?
+        customClassWithoutProtocolSerialization,
+    _i2.CustomClassWithProtocolSerialization?
+        customClassWithProtocolSerialization,
+    _i2.CustomClassWithProtocolSerializationMethod?
+        customClassWithProtocolSerializationMethod,
+  });
   @override
   Map<String, dynamic> toJson() {
-    return {'customClassField': customClassField.toJson()};
+    return {
+      'customClassWithoutProtocolSerialization':
+          customClassWithoutProtocolSerialization.toJson(),
+      'customClassWithProtocolSerialization':
+          customClassWithProtocolSerialization.toJson(),
+      'customClassWithProtocolSerializationMethod':
+          customClassWithProtocolSerializationMethod.toJson(),
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      'customClassField': customClassField is _i1.ProtocolSerialization
-          ? (customClassField as _i1.ProtocolSerialization).toJsonForProtocol()
-          : customClassField.toJson()
+      'customClassWithoutProtocolSerialization':
+// ignore: unnecessary_type_check
+          customClassWithoutProtocolSerialization is _i1.ProtocolSerialization
+              ? (customClassWithoutProtocolSerialization
+                      as _i1.ProtocolSerialization)
+                  .toJsonForProtocol()
+              : customClassWithoutProtocolSerialization.toJson(),
+      'customClassWithProtocolSerialization':
+// ignore: unnecessary_type_check
+          customClassWithProtocolSerialization is _i1.ProtocolSerialization
+              ? (customClassWithProtocolSerialization
+                      as _i1.ProtocolSerialization)
+                  .toJsonForProtocol()
+              : customClassWithProtocolSerialization.toJson(),
+      'customClassWithProtocolSerializationMethod':
+// ignore: unnecessary_type_check
+          customClassWithProtocolSerializationMethod
+                  is _i1.ProtocolSerialization
+              ? (customClassWithProtocolSerializationMethod
+                      as _i1.ProtocolSerialization)
+                  .toJsonForProtocol()
+              : customClassWithProtocolSerializationMethod.toJson(),
     };
   }
 
@@ -50,12 +107,41 @@ abstract class ObjectWithCustomClass
 }
 
 class _ObjectWithCustomClassImpl extends ObjectWithCustomClass {
-  _ObjectWithCustomClassImpl({required _i2.CustomClass3 customClassField})
-      : super._(customClassField: customClassField);
+  _ObjectWithCustomClassImpl({
+    required _i2.CustomClassWithoutProtocolSerialization
+        customClassWithoutProtocolSerialization,
+    required _i2.CustomClassWithProtocolSerialization
+        customClassWithProtocolSerialization,
+    required _i2.CustomClassWithProtocolSerializationMethod
+        customClassWithProtocolSerializationMethod,
+  }) : super._(
+          customClassWithoutProtocolSerialization:
+              customClassWithoutProtocolSerialization,
+          customClassWithProtocolSerialization:
+              customClassWithProtocolSerialization,
+          customClassWithProtocolSerializationMethod:
+              customClassWithProtocolSerializationMethod,
+        );
 
   @override
-  ObjectWithCustomClass copyWith({_i2.CustomClass3? customClassField}) {
+  ObjectWithCustomClass copyWith({
+    _i2.CustomClassWithoutProtocolSerialization?
+        customClassWithoutProtocolSerialization,
+    _i2.CustomClassWithProtocolSerialization?
+        customClassWithProtocolSerialization,
+    _i2.CustomClassWithProtocolSerializationMethod?
+        customClassWithProtocolSerializationMethod,
+  }) {
     return ObjectWithCustomClass(
-        customClassField: customClassField ?? this.customClassField.copyWith());
+      customClassWithoutProtocolSerialization:
+          customClassWithoutProtocolSerialization ??
+              this.customClassWithoutProtocolSerialization.copyWith(),
+      customClassWithProtocolSerialization:
+          customClassWithProtocolSerialization ??
+              this.customClassWithProtocolSerialization.copyWith(),
+      customClassWithProtocolSerializationMethod:
+          customClassWithProtocolSerializationMethod ??
+              this.customClassWithProtocolSerializationMethod.copyWith(),
+    );
   }
 }

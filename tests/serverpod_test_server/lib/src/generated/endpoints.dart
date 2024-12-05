@@ -1106,6 +1106,64 @@ class Endpoints extends _i1.EndpointDispatch {
             params['data'],
           ),
         ),
+        'returnCustomClassWithoutProtocolSerialization': _i1.MethodConnector(
+          name: 'returnCustomClassWithoutProtocolSerialization',
+          params: {
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<_i40.CustomClassWithoutProtocolSerialization>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['customTypes'] as _i8.CustomTypesEndpoint)
+                  .returnCustomClassWithoutProtocolSerialization(
+            session,
+            params['data'],
+          ),
+        ),
+        'returnCustomClassWithProtocolSerialization': _i1.MethodConnector(
+          name: 'returnCustomClassWithProtocolSerialization',
+          params: {
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<_i40.CustomClassWithProtocolSerialization>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['customTypes'] as _i8.CustomTypesEndpoint)
+                  .returnCustomClassWithProtocolSerialization(
+            session,
+            params['data'],
+          ),
+        ),
+        'returnCustomClassWithProtocolSerializationMethod': _i1.MethodConnector(
+          name: 'returnCustomClassWithProtocolSerializationMethod',
+          params: {
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1
+                  .getType<_i40.CustomClassWithProtocolSerializationMethod>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['customTypes'] as _i8.CustomTypesEndpoint)
+                  .returnCustomClassWithProtocolSerializationMethod(
+            session,
+            params['data'],
+          ),
+        ),
       },
     );
     connectors['basicDatabase'] = _i1.EndpointConnector(

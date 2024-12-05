@@ -1627,6 +1627,96 @@ class _CustomTypesEndpoint {
       }
     });
   }
+
+  _i3.Future<_i8.CustomClassWithoutProtocolSerialization>
+      returnCustomClassWithoutProtocolSerialization(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i8.CustomClassWithoutProtocolSerialization data,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'customTypes',
+        method: 'returnCustomClassWithoutProtocolSerialization',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'customTypes',
+          methodName: 'returnCustomClassWithoutProtocolSerialization',
+          parameters: _i1.testObjectToJson({'data': data}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i8.CustomClassWithoutProtocolSerialization>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i8.CustomClassWithProtocolSerialization>
+      returnCustomClassWithProtocolSerialization(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i8.CustomClassWithProtocolSerialization data,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'customTypes',
+        method: 'returnCustomClassWithProtocolSerialization',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'customTypes',
+          methodName: 'returnCustomClassWithProtocolSerialization',
+          parameters: _i1.testObjectToJson({'data': data}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i8.CustomClassWithProtocolSerialization>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i8.CustomClassWithProtocolSerializationMethod>
+      returnCustomClassWithProtocolSerializationMethod(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i8.CustomClassWithProtocolSerializationMethod data,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'customTypes',
+        method: 'returnCustomClassWithProtocolSerializationMethod',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'customTypes',
+          methodName: 'returnCustomClassWithProtocolSerializationMethod',
+          parameters: _i1.testObjectToJson({'data': data}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i8.CustomClassWithProtocolSerializationMethod>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
 }
 
 class _BasicDatabase {
