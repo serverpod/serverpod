@@ -20,7 +20,7 @@ Middleware logRequests({
   Logger? logger,
 }) =>
     (innerHandler) {
-      final theLogger = logger ?? logError;
+      final localLogger = logger ?? loggMessage;
 
       return (request) {
         var startTime = DateTime.now();
@@ -38,7 +38,7 @@ Middleware logRequests({
               watch.elapsed,
             );
 
-            theLogger(msg, isError: false);
+            localLogger(msg);
 
             return response;
           },
@@ -53,9 +53,9 @@ Middleware logRequests({
               error,
             );
 
-            theLogger(
+            localLogger(
               msg,
-              isError: true,
+              type: LoggerType.error,
               stackTrace: stackTrace,
             );
 

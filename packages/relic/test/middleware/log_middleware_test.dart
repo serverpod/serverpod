@@ -1,4 +1,5 @@
 import 'package:relic/relic.dart';
+import 'package:relic/src/logger/logger.dart';
 import 'package:relic/src/method/method.dart';
 import 'package:test/test.dart';
 
@@ -13,12 +14,12 @@ void main() {
 
   void logger(
     String msg, {
-    bool isError = false,
+    LoggerType type = LoggerType.info,
     StackTrace? stackTrace,
   }) {
     expect(gotLog, isFalse);
     gotLog = true;
-    expect(isError, isFalse);
+    expect(type, LoggerType.info);
     expect(msg, contains(Method.get.value));
     expect(msg, contains('[200]'));
   }
@@ -46,24 +47,29 @@ void main() {
   });
 
   test(
-      'Given a request with an asynchronous error response when logged then it logs the error',
-      () {
-    var handler = const Pipeline().addMiddleware(logRequests(
-      logger: (msg, {isError = false, stackTrace}) {
-        expect(gotLog, isFalse);
-        gotLog = true;
-        expect(isError, isTrue);
-        expect(msg, contains('\tGET\t/'));
-        expect(msg, contains('oh no'));
-      },
-    )).addHandler(
-      (request) {
-        throw StateError('oh no');
-      },
-    );
+    'Given a request with an asynchronous error response when logged then it logs the error',
+    () {
+      var handler = const Pipeline().addMiddleware(logRequests(
+        logger: (
+          msg, {
+          LoggerType type = LoggerType.info,
+          StackTrace? stackTrace,
+        }) {
+          expect(gotLog, isFalse);
+          gotLog = true;
+          expect(type, LoggerType.error);
+          expect(msg, contains('\tGET\t/'));
+          expect(msg, contains('oh no'));
+        },
+      )).addHandler(
+        (request) {
+          throw StateError('oh no');
+        },
+      );
 
-    expect(makeSimpleRequest(handler), throwsA(isOhNoStateError));
-  });
+      expect(makeSimpleRequest(handler), throwsA(isOhNoStateError));
+    },
+  );
 
   test("Given a HijackException when thrown then it doesn't log the exception",
       () {

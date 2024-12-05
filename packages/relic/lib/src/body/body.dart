@@ -56,11 +56,12 @@ class Body {
 
   /// Creates a body from a [HttpRequest].
   factory Body.fromHttpRequest(HttpRequest request) {
+    var contentType = request.headers.contentType;
     return Body._(
       request,
       request.contentLength <= 0 ? null : request.contentLength,
-      encoding: Encoding.getByName(request.headers.contentType?.charset),
-      mimeType: MimeType.byContentType(request.headers.contentType),
+      encoding: Encoding.getByName(contentType?.charset),
+      mimeType: contentType?.toMimeType,
     );
   }
 

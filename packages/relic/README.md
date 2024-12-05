@@ -1,9 +1,5 @@
-![Serverpod banner](https://github.com/serverpod/serverpod/raw/main/misc/images/github-header.webp)
+# Relic
 
-# Serverpod
-This package is a core part of Serverpod. For documentation, visit: [https://docs.serverpod.dev](https://docs.serverpod.dev).
+Relic is a basic HTTP server based on Shelf. Unlike Shelf, Relic is strictly typed, and it has some other performance improvements. This release is still experimental.
 
-## What is Serverpod?
-Serverpod is an open-source, scalable app server, written in Dart for the Flutter community. Check it out!
-
-[Serverpod.dev](https://serverpod.dev)
+Relic is primarily created for [Serverpod](https://serverpod.dev).

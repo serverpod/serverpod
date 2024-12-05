@@ -1,10 +1,10 @@
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:http_parser/http_parser.dart';
-import 'package:relic/src/extension/base64_extension.dart';
-import 'package:relic/src/headers/extension/http_request_extension.dart';
 import 'package:relic/src/headers/extension/string_list_extensions.dart';
+import 'package:relic/src/headers/parser/headers_parser.dart';
 import 'package:relic/src/method/method.dart';
 
 import '../body/body.dart';
@@ -386,7 +386,8 @@ abstract class Headers {
     required String? xPoweredBy,
   }) {
     Map<String, List<String>> failedHeadersToParse = {};
-    var dartIOHeaders = request.getHeadersParser(
+    var dartIOHeaders = HeadersParser(
+      headers: request.headers,
       strict: strict,
       onHeaderFailedToParse: (String key, List<String> value) {
         // We dont remove empty values because we want to save the
@@ -977,7 +978,7 @@ abstract class Headers {
     if (accessControlAllowOrigin != null) {
       headers.set(
         _accessControlAllowOriginHeader,
-        accessControlAllowOrigin!,
+        accessControlAllowOrigin!.toHeaderString(),
       );
     }
     if (accessControlExposeHeaders != null) {

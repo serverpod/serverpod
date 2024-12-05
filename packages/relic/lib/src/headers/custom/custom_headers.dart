@@ -93,7 +93,6 @@ CaseInsensitiveMap<List<String>> _toCaseInsensitiveMap(
   Iterable<MapEntry<String, List<String>>> entries,
 ) {
   final validEntries = entries
-      .where((entry) => entry.value.isNotEmpty)
       .map((entry) => MapEntry(entry.key, _withNoEmptyValues(entry.value)));
 
   return CaseInsensitiveMap.from(

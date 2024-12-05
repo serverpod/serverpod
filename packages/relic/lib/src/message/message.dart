@@ -2,8 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import '../body/body.dart';
-import '../headers/headers.dart';
+import 'package:relic/relic.dart';
 
 abstract class Message {
   /// The HTTP headers associated with this message.
@@ -22,16 +21,10 @@ abstract class Message {
   });
 
   /// Returns the MIME type from the Content-Type header, if available.
-  String? get mimeType {
-    if (body.contentType == null) return null;
-    return body.contentType!.mimeType.toHeaderValue();
-  }
+  MimeType? get mimeType => body.contentType?.mimeType;
 
   /// Returns the encoding specified in the Content-Type header, or null if not specified.
-  Encoding? get encoding {
-    if (body.contentType == null) return null;
-    return body.contentType!.encoding;
-  }
+  Encoding? get encoding => body.contentType?.encoding;
 
   /// Reads the body as a stream of bytes. Can only be called once.
   Stream<Uint8List> read() => body.read();

@@ -1,5 +1,5 @@
+import 'dart:convert';
 import 'dart:io';
-import 'package:relic/src/extension/base64_extension.dart';
 import 'package:test/test.dart';
 import 'package:relic/src/headers/headers.dart';
 import 'package:relic/src/relic_server.dart';
@@ -130,7 +130,7 @@ void main() {
         'when a Basic token is passed then it should parse the credentials '
         'correctly',
         () async {
-          final credentials = 'user:pass'.encodeBase64;
+          final credentials = base64Encode(utf8.encode('user:pass'));
           Headers headers = await getServerRequestHeaders(
             server: server,
             headers: {'proxy-authorization': 'Basic $credentials'},

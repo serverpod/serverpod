@@ -109,9 +109,10 @@ class RelicServer {
     catchTopLevelErrors(() {
       server.listen(_handleRequest);
     }, (error, stackTrace) {
-      logError(
+      loggMessage(
         'Asynchronous error\n$error',
         stackTrace: stackTrace,
+        type: LoggerType.error,
       );
     });
   }
@@ -133,7 +134,7 @@ class RelicServer {
         poweredByHeader: poweredByHeader,
       );
     } catch (error, stackTrace) {
-      logError(
+      loggMessage(
         'Error parsing request.\n$error',
         stackTrace: stackTrace,
       );
@@ -213,5 +214,9 @@ void _logError(Request request, String message, StackTrace stackTrace) {
   buffer.writeln();
   buffer.write(message);
 
-  logError(buffer.toString(), stackTrace: stackTrace);
+  loggMessage(
+    buffer.toString(),
+    stackTrace: stackTrace,
+    type: LoggerType.error,
+  );
 }

@@ -74,6 +74,7 @@ class AuthenticationParameter {
 
   const AuthenticationParameter(this.key, this.value);
 
+  //TODO: fix it
   @override
   String toString() => key.isEmpty ? value : '$key="$value"';
 }

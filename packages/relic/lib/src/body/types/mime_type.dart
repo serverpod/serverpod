@@ -61,19 +61,16 @@ class MimeType {
     return MimeType(primaryType, subType);
   }
 
-  /// Parses a mime type from a [ContentType].
-  /// Returns null if the [ContentType] is null.
-  static MimeType? byContentType(ContentType? type) {
-    if (type == null) return null;
-    return MimeType(
-      type.primaryType,
-      type.subType,
-    );
-  }
-
   /// Returns the value to use for the Content-Type header.
   String toHeaderValue() => '$primaryType/$subType';
 
   @override
   String toString() => 'MimeType(primaryType: $primaryType, subType: $subType)';
+}
+
+/// Extension to convert a [ContentType] to a [MimeType].
+extension ContentTypeExtension on ContentType {
+  /// Converts a [ContentType] to a [MimeType].
+  /// We are calling this method 'toMimeType' to avoid conflict with the 'mimeType' property.
+  MimeType get toMimeType => MimeType(primaryType, subType);
 }

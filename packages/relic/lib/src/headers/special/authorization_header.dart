@@ -129,7 +129,7 @@ class BasicAuthorizationHeader extends AuthorizationHeader {
     final base64Part = value.substring(prefix.length).trim();
 
     try {
-      final decoded = base64Part.decodeBase64;
+      final decoded = utf8.decode(base64Decode(base64Part));
       final parts = decoded.split(':');
       return BasicAuthorizationHeader(
         username: parts[0],
@@ -143,7 +143,7 @@ class BasicAuthorizationHeader extends AuthorizationHeader {
   /// Returns the full authorization string, including the "Basic " prefix.
   @override
   String get headerValue {
-    final credentials = '$username:$password'.encodeBase64;
+    final credentials = base64Encode(utf8.encode('$username:$password'));
     return '$prefix$credentials';
   }
 
