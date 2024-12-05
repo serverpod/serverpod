@@ -351,24 +351,31 @@ class MethodStreamManager {
       await session.close();
     });
 
+    var streamKey = _buildStreamKey(
+      endpoint: methodStreamCallContext.fullEndpointPath,
+      method: methodStreamCallContext.method.name,
+      methodStreamId: methodStreamId,
+    );
+
     late StreamSubscription subscription;
     subscription = outputController.stream.listen(
-      (value) {
+      (value) async {
         _onOutputStreamValue?.call(
             methodStreamId, value, methodStreamCallContext);
       },
-      onError: (e, s) async {
+      onError: (e, s) {
+        if (e is _StreamComplete) {
+          _updateCloseReason(streamKey, CloseReason.done);
+          subscription.cancel();
+          return;
+        }
+
         _onOutputStreamError?.call(
             methodStreamId, e, s, methodStreamCallContext);
 
-        var streamKey = _buildStreamKey(
-          endpoint: methodStreamCallContext.fullEndpointPath,
-          method: methodStreamCallContext.method.name,
-          methodStreamId: methodStreamId,
-        );
         _updateCloseReason(streamKey, CloseReason.error);
 
-        await session.close(error: e, stackTrace: s);
+        session.close(error: e, stackTrace: s);
 
         /// Required to close stream when error occurs.
         /// This will also close the input streams.
@@ -376,7 +383,7 @@ class MethodStreamManager {
         /// for the listen method because this cancels
         /// the stream before the onError callback has
         /// been called.
-        await subscription.cancel();
+        subscription.cancel();
       },
     );
 
@@ -571,21 +578,13 @@ class MethodStreamManager {
     }
 
     outputController.addStream(methodStream).whenComplete(
-      () async {
-        var streamKey = _buildStreamKey(
-          endpoint: methodStreamCallContext.fullEndpointPath,
-          method: methodStreamCallContext.method.name,
-          methodStreamId: methodStreamId,
+          // The stream complete message is sent as an error to circumvent
+          // branching when passing along stream events to the the handler.
+          () => outputController.addError(_StreamComplete()),
         );
-
-        var closeReasonIsNotAlreadySetToError =
-            _outputStreamContexts[streamKey]?.closeReason != CloseReason.error;
-        if (closeReasonIsNotAlreadySetToError) {
-          _updateCloseReason(streamKey, CloseReason.done);
-        }
-
-        await subscription.cancel();
-      },
-    );
   }
 }
+
+// Passed as the last message on a stream to indicate that the stream is
+// complete and no more messages will be sent from the endpoint.
+class _StreamComplete {}
