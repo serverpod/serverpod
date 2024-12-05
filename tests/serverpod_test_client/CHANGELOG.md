@@ -1,3 +1,6 @@
+## 2.2.2
+ - fix: Fixes possible import issue in generated code when the same model name is used in different modules.
+
 ## 2.2.1
  - fix: Fixes an issue where invalid Dart import paths would be generated on Windows.
 
