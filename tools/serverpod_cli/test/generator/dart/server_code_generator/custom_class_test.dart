@@ -81,7 +81,7 @@ void main() {
 
         var toJsonForProtocolCode = toJsonForProtocolMethod!.toSource();
 
-        // This regex checks for this pattern:
+        // his regex checks for this pattern but allows any number on the import.
         // Example:
         // customClassField is _i1.ProtocolSerialization?
         // (customClassField as _i1.ProtocolSerialization).toJsonForProtocol()

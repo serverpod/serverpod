@@ -18,8 +18,6 @@ const String _toJsonMethodName = 'toJson';
 /// The name of the method used to convert a model to JSON for protocol serialization.
 const String _toJsonForProtocolMethodName = 'toJsonForProtocol';
 
-const String _serverSideServerpodUrl = 'package:serverpod/serverpod.dart';
-
 /// Generates the dart libraries for [SerializableModelDefinition]s.
 class SerializableModelLibraryGenerator {
   final bool serverCode;
@@ -1347,7 +1345,7 @@ class SerializableModelLibraryGenerator {
           (t) => t
             ..symbol = 'Table'
             ..isNullable = true
-            ..url = _serverSideServerpodUrl,
+            ..url = serverpodUrl(true),
         )
         ..name = 'getRelationTable'
         ..requiredParameters.add(
@@ -1387,7 +1385,7 @@ class SerializableModelLibraryGenerator {
           (t) => t
             ..symbol = 'List'
             ..types.add(
-              refer('Column', _serverSideServerpodUrl),
+              refer('Column', serverpodUrl(true)),
             ),
         )
         ..name = 'columns'
@@ -1418,7 +1416,7 @@ class SerializableModelLibraryGenerator {
           ..docs.addAll(field.documentation ?? [])
           ..type = TypeReference((t) => t
             ..symbol = field.type.columnType
-            ..url = _serverSideServerpodUrl
+            ..url = serverpodUrl(true)
             ..types.addAll(field.type.isEnumType
                 ? [
                     field.type.reference(
@@ -1537,7 +1535,7 @@ class SerializableModelLibraryGenerator {
               .assign(
                 refer(
                   'createRelationTable',
-                  _serverSideServerpodUrl,
+                  serverpodUrl(true),
                 ).call(
                   [],
                   {
@@ -1601,7 +1599,7 @@ class SerializableModelLibraryGenerator {
               .assign(
                 refer(
                   'createRelationTable',
-                  _serverSideServerpodUrl,
+                  serverpodUrl(true),
                 ).call(
                   [],
                   {
@@ -1719,7 +1717,7 @@ class SerializableModelLibraryGenerator {
     assert(!field.type.isEnumType);
     return TypeReference((t) => t
       ..symbol = field.type.columnType
-      ..url = _serverSideServerpodUrl
+      ..url = serverpodUrl(true)
       ..types.addAll([])).call([
       literalString(field.name),
       refer('this'),
@@ -1747,7 +1745,7 @@ class SerializableModelLibraryGenerator {
 
     return TypeReference((t) => t
       ..symbol = field.type.columnType
-      ..url = _serverSideServerpodUrl
+      ..url = serverpodUrl(true)
       ..types.addAll([])).call([
       literalString(field.name),
       refer('this'),
@@ -1763,7 +1761,7 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
   ) {
     return Class(((c) {
-      c.extend = refer('IncludeObject', _serverSideServerpodUrl);
+      c.extend = refer('IncludeObject', serverpodUrl(true));
       c.name = '${className}Include';
       var relationFields = fields
           .where((f) =>
@@ -1794,7 +1792,7 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
   ) {
     return Class(((c) {
-      c.extend = refer('IncludeList', _serverSideServerpodUrl);
+      c.extend = refer('IncludeList', serverpodUrl(true));
       c.name = '${className}IncludeList';
 
       c.constructors.add(_buildModelIncludeListClassConstructor(className));
@@ -1879,7 +1877,7 @@ class SerializableModelLibraryGenerator {
           ..symbol = 'Map'
           ..types.addAll([
             refer('String'),
-            refer('Include?', _serverSideServerpodUrl),
+            refer('Include?', serverpodUrl(true)),
           ]))
         ..name = 'includes'
         ..lambda = true
@@ -1914,7 +1912,7 @@ class SerializableModelLibraryGenerator {
           ..symbol = 'Map'
           ..types.addAll([
             refer('String'),
-            refer('Include?', _serverSideServerpodUrl),
+            refer('Include?', serverpodUrl(true)),
           ]))
         ..name = 'includes'
         ..lambda = true
