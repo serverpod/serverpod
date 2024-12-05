@@ -45,6 +45,9 @@ customTypes:
   - returnExternalCustomClassNullable:
   - returnFreezedCustomClass:
   - returnFreezedCustomClassNullable:
+  - returnCustomClassWithoutProtocolSerialization:
+  - returnCustomClassWithProtocolSerialization:
+  - returnCustomClassWithProtocolSerializationMethod:
 basicDatabase:
   - deleteAllSimpleTestData:
   - deleteSimpleTestDataLessThan:

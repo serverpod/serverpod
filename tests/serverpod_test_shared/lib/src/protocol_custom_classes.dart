@@ -1,5 +1,4 @@
-// ignore: depend_on_referenced_packages
-import 'package:serverpod_client/serverpod_client.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 class ProtocolCustomClass implements SerializableModel, ProtocolSerialization {
   final String? value;
