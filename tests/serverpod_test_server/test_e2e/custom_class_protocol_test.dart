@@ -1,14 +1,23 @@
+import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_shared/serverpod_test_shared.dart';
 import 'package:test/test.dart';
-
-import '../test_integration/test_tools/serverpod_test_tools.dart';
 
 /// Unit tests for custom class serialization.
 /// These tests are designed to avoid creating multiple endpoint methods for each test case.
 /// Instead, custom class parameters are passed from the client side, and the server validates
 /// whether the expected values are returned correctly.
 void main() {
-  withServerpod('Given a custom class ', (sessionBuilder, endpoints) {
+  late Client client;
+  setUpAll(() {
+    client = Client(serverUrl);
+  });
+
+  tearDownAll(() {
+    client.close();
+  });
+
+  group('Given a custom class', () {
     group('that does not implement ProtocolSerialization', () {
       test(
         'with the "serverSideValue" field set when the method is called then the server returns the "serverSideValue"',
@@ -16,9 +25,8 @@ void main() {
           final customClass = CustomClassWithoutProtocolSerialization(
             serverSideValue: 'serverSideValue',
           );
-          final result = await endpoints.customTypes
+          final result = await client.customTypes
               .returnCustomClassWithoutProtocolSerialization(
-            sessionBuilder,
             customClass,
           );
           expect(
@@ -34,9 +42,8 @@ void main() {
           final customClass = CustomClassWithoutProtocolSerialization(
             value: 'value',
           );
-          final result = await endpoints.customTypes
+          final result = await client.customTypes
               .returnCustomClassWithoutProtocolSerialization(
-            sessionBuilder,
             customClass,
           );
           expect(
@@ -55,9 +62,8 @@ void main() {
             serverSideValue: 'serverSideValue',
             value: 'value',
           );
-          final result = await endpoints.customTypes
+          final result = await client.customTypes
               .returnCustomClassWithProtocolSerialization(
-            sessionBuilder,
             customClass,
           );
           expect(
@@ -73,9 +79,8 @@ void main() {
           final customClass = CustomClassWithProtocolSerialization(
             value: 'value',
           );
-          final result = await endpoints.customTypes
+          final result = await client.customTypes
               .returnCustomClassWithProtocolSerialization(
-            sessionBuilder,
             customClass,
           );
           expect(
@@ -95,9 +100,8 @@ void main() {
           final customClass = CustomClassWithProtocolSerializationMethod(
             serverSideValue: 'serverSideValue',
           );
-          final result = await endpoints.customTypes
+          final result = await client.customTypes
               .returnCustomClassWithProtocolSerializationMethod(
-            sessionBuilder,
             customClass,
           );
           expect(
@@ -108,22 +112,20 @@ void main() {
       );
 
       test(
-        'with the "value" field set when the method is called then the server returns the "value"',
-        () async {
-          final customClass = CustomClassWithProtocolSerializationMethod(
-            value: 'value',
-          );
-          final result = await endpoints.customTypes
-              .returnCustomClassWithProtocolSerializationMethod(
-            sessionBuilder,
-            customClass,
-          );
-          expect(
-            result.value,
-            customClass.value,
-          );
-        },
-      );
+          'with the "value" field set when the method is called then the server returns the "value"',
+          () async {
+        final customClass = CustomClassWithProtocolSerializationMethod(
+          value: 'value',
+        );
+        final result = await client.customTypes
+            .returnCustomClassWithProtocolSerializationMethod(
+          customClass,
+        );
+        expect(
+          result.value,
+          customClass.value,
+        );
+      });
     });
   });
 }
