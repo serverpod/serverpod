@@ -1,8 +1,3 @@
-// Usually such a class should be placed in a common package.
-// But since this is only a test project, it should be fine.
-// Just be careful while importing, since the serialization
-// system treats the two implementations this classes differently.
-
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 class CustomClass implements SerializableModel {
