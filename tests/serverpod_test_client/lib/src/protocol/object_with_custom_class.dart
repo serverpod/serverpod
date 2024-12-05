@@ -10,7 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_test_client/src/custom_classes.dart' as _i2;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i2;
 
 abstract class ObjectWithCustomClass implements _i1.SerializableModel {
   ObjectWithCustomClass._({

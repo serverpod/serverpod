@@ -48,7 +48,7 @@ import '../endpoints/test_tools.dart' as _i36;
 import '../my_feature/endpoints/my_feature_endpoint.dart' as _i37;
 import 'dart:typed_data' as _i38;
 import 'package:uuid/uuid_value.dart' as _i39;
-import 'package:serverpod_test_server/src/custom_classes.dart' as _i40;
+import 'package:serverpod_test_shared/src/custom_classes.dart' as _i40;
 import 'package:serverpod_test_shared/src/external_custom_class.dart' as _i41;
 import 'package:serverpod_test_shared/src/freezed_custom_class.dart' as _i42;
 import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i43;
