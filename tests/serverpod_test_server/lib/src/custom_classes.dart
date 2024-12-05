@@ -14,7 +14,7 @@ class CustomClass implements SerializableModel {
   @override
   String toJson() => value;
 
-  static CustomClass fromJson(dynamic data) {
+  factory CustomClass.fromJson(dynamic data) {
     return CustomClass(data);
   }
 }
@@ -31,19 +31,82 @@ class CustomClass2 {
   dynamic toJson() => {'text': value};
 }
 
-class CustomClass3 implements SerializableModel {
-  final String value;
+/// Custom class that does not implement ProtocolSerialization.
+class CustomClassWithoutProtocolSerialization {
+  final String? serverSideValue;
+  final String? value;
 
-  CustomClass3(this.value);
+  CustomClassWithoutProtocolSerialization({
+    this.serverSideValue,
+    this.value,
+  });
 
-  @override
-  String toJson() => value;
+  Map<String, dynamic> toJson() => {
+        'serverSideValue': serverSideValue,
+        'value': value,
+      };
 
-  String toJsonForProtocol() => value;
+  CustomClassWithoutProtocolSerialization copyWith() => this;
 
-  CustomClass3 copyWith() => this;
+  factory CustomClassWithoutProtocolSerialization.fromJson(
+    Map<String, dynamic> data,
+  ) {
+    return CustomClassWithoutProtocolSerialization(
+      serverSideValue: data['serverSideValue'] as String?,
+      value: data['value'] as String?,
+    );
+  }
+}
 
-  static CustomClass3 fromJson(dynamic data) {
-    return CustomClass3(data);
+/// Custom class that implements ProtocolSerialization.
+class CustomClassWithProtocolSerialization implements ProtocolSerialization {
+  final String? serverSideValue;
+  final String? value;
+
+  CustomClassWithProtocolSerialization({
+    this.serverSideValue,
+    this.value,
+  });
+
+  Map<String, dynamic> toJson() => {'serverSideValue': serverSideValue};
+
+  Map<String, dynamic> toJsonForProtocol() => {'value': value};
+
+  CustomClassWithProtocolSerialization copyWith() => this;
+
+  factory CustomClassWithProtocolSerialization.fromJson(
+    Map<String, dynamic> data,
+  ) {
+    return CustomClassWithProtocolSerialization(
+      serverSideValue: data['serverSideValue'] as String?,
+      value: data['value'] as String?,
+    );
+  }
+}
+
+/// Custom class that does not implement ProtocolSerialization but has the
+/// "toJsonForProtocol" method.
+class CustomClassWithProtocolSerializationMethod {
+  final String? serverSideValue;
+  final String? value;
+
+  CustomClassWithProtocolSerializationMethod({
+    this.serverSideValue,
+    this.value,
+  });
+
+  Map<String, dynamic> toJson() => {'serverSideValue': serverSideValue};
+
+  Map<String, dynamic> toJsonForProtocol() => {'value': value};
+
+  CustomClassWithProtocolSerializationMethod copyWith() => this;
+
+  factory CustomClassWithProtocolSerializationMethod.fromJson(
+    Map<String, dynamic> data,
+  ) {
+    return CustomClassWithProtocolSerializationMethod(
+      serverSideValue: data['serverSideValue'] as String?,
+      value: data['value'] as String?,
+    );
   }
 }

@@ -59,6 +59,30 @@ class CustomTypesEndpoint extends Endpoint {
     return data;
   }
 
+  Future<CustomClassWithoutProtocolSerialization>
+      returnCustomClassWithoutProtocolSerialization(
+    Session session,
+    CustomClassWithoutProtocolSerialization data,
+  ) async {
+    return data;
+  }
+
+  Future<CustomClassWithProtocolSerialization>
+      returnCustomClassWithProtocolSerialization(
+    Session session,
+    CustomClassWithProtocolSerialization data,
+  ) async {
+    return data;
+  }
+
+  Future<CustomClassWithProtocolSerializationMethod>
+      returnCustomClassWithProtocolSerializationMethod(
+    Session session,
+    CustomClassWithProtocolSerializationMethod data,
+  ) async {
+    return data;
+  }
+
   @override
   Future<void> handleStreamMessage(
     StreamingSession session,
