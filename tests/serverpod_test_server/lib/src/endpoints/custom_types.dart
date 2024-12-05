@@ -1,5 +1,4 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_test_shared/src/custom_classes.dart';
 import 'package:serverpod_test_shared/serverpod_test_shared.dart';
 
 class CustomTypesEndpoint extends Endpoint {
