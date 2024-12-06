@@ -1,5 +1,4 @@
 import 'dart:collection';
-import 'dart:io' as io;
 
 import 'package:http_parser/http_parser.dart';
 
@@ -17,46 +16,14 @@ class CustomHeaders extends UnmodifiableMapView<String, List<String>> {
 
   /// Creates an instance of [CustomHeaders] with the given [values].
   factory CustomHeaders(Map<String, List<String>> values) {
-    return CustomHeaders._(
+    return CustomHeaders.fromEntries(
       values.entries.map((e) => MapEntry(e.key, e.value)),
     );
   }
 
   CustomHeaders._empty() : super(const {});
 
-  /// Creates an instance of [CustomHeaders] from [io.HttpHeaders].
-  ///
-  /// [excludedHeaders] is a set of headers that should be excluded.
-  factory CustomHeaders._fromHttpHeaders(
-    io.HttpHeaders headers, {
-    Set<String> excludedHeaders = const {},
-  }) {
-    var custom = <MapEntry<String, List<String>>>[];
-
-    headers.forEach((name, values) {
-      // Skip headers that we support natively.
-      if (excludedHeaders.contains(name.toLowerCase())) {
-        return;
-      }
-
-      custom.add(MapEntry(
-        name,
-        values.fold(
-          [],
-          (a, b) => [
-            ...a,
-            ...b.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty)
-          ],
-        ),
-      ));
-    });
-
-    if (custom.isEmpty) return _emptyCustomHeaders;
-
-    return CustomHeaders._(custom);
-  }
-
-  CustomHeaders._(
+  CustomHeaders.fromEntries(
     Iterable<MapEntry<String, List<String>>> entries,
   ) : super(_toCaseInsensitiveMap(entries));
 

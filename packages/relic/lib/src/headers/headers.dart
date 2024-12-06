@@ -4,6 +4,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:relic/src/headers/custom/custom_headers.dart';
 import 'package:relic/src/headers/extension/string_list_extensions.dart';
 import 'package:relic/src/headers/parser/headers_parser.dart';
+import 'package:relic/src/headers/parser/shared_parser.dart';
 import 'package:relic/src/method/method.dart';
 
 import 'typed_headers.dart';
@@ -365,18 +366,35 @@ abstract class Headers {
 
     return _HeadersImpl(
       // Date-related headers
-      date: dartIOHeaders.parseDate(_dateHeader),
-      expires: dartIOHeaders.parseDate(_expiresHeader),
-      ifModifiedSince: dartIOHeaders.parseDate(_ifModifiedSinceHeader),
-      lastModified: dartIOHeaders.parseDate(_lastModifiedHeader),
+      date: dartIOHeaders.parseSingleValue(
+        _dateHeader,
+        onParse: parseDate,
+      ),
+      expires: dartIOHeaders.parseSingleValue(
+        _expiresHeader,
+        onParse: parseDate,
+      ),
+      ifModifiedSince: dartIOHeaders.parseSingleValue(
+        _ifModifiedSinceHeader,
+        onParse: parseDate,
+      ),
+      lastModified: dartIOHeaders.parseSingleValue(
+        _lastModifiedHeader,
+        onParse: parseDate,
+      ),
 
       // General Headers
-      origin: dartIOHeaders.parseUri(_originHeader),
-      server: dartIOHeaders.parseString(
-        _serverHeader,
+      origin: dartIOHeaders.parseSingleValue(
+        _originHeader,
+        onParse: parseUri,
       ),
-      via: dartIOHeaders.parseStringList(
+      server: dartIOHeaders.parseSingleValue(
+        _serverHeader,
+        onParse: parseString,
+      ),
+      via: dartIOHeaders.parseMultipleValue(
         _viaHeader,
+        onParse: parseStringList,
       ),
 
       // Request Headers
@@ -384,7 +402,10 @@ abstract class Headers {
         _fromHeader,
         onParse: FromHeader.parse,
       ),
-      host: dartIOHeaders.parseUri(_hostHeader),
+      host: dartIOHeaders.parseSingleValue(
+        _hostHeader,
+        onParse: parseUri,
+      ),
       acceptEncoding: dartIOHeaders.parseMultipleValue(
         _acceptEncodingHeader,
         onParse: AcceptEncodingHeader.parse,
@@ -393,25 +414,21 @@ abstract class Headers {
         _acceptLanguageHeader,
         onParse: AcceptLanguageHeader.parse,
       ),
-      accessControlRequestHeaders: dartIOHeaders.parseStringList(
+      accessControlRequestHeaders: dartIOHeaders.parseMultipleValue(
         _accessControlRequestHeadersHeader,
+        onParse: parseStringList,
       ),
       accessControlRequestMethod: dartIOHeaders.parseSingleValue(
         _accessControlRequestMethodHeader,
         onParse: Method.parse,
       ),
-      age: dartIOHeaders.parseInt(
+      age: dartIOHeaders.parseSingleValue(
         _ageHeader,
-        allowNegative: false,
+        onParse: parsePositiveInt,
       ),
       allow: dartIOHeaders.parseMultipleValue(
         _allowHeader,
-        onParse: (values) {
-          return values
-              .splitTrimAndFilterUnique(emptyCheck: false)
-              .map(Method.parse)
-              .toList();
-        },
+        onParse: parseMethodList,
       ),
       cookie: dartIOHeaders.parseSingleValue(
         _cookieHeader,
@@ -445,9 +462,9 @@ abstract class Headers {
         _ifRangeHeader,
         onParse: IfRangeHeader.parse,
       ),
-      maxForwards: dartIOHeaders.parseInt(
+      maxForwards: dartIOHeaders.parseSingleValue(
         _maxForwardsHeader,
-        allowNegative: false,
+        onParse: parsePositiveInt,
       ),
       proxyAuthorization: dartIOHeaders.parseSingleValue(
         _proxyAuthorizationHeader,
@@ -457,7 +474,10 @@ abstract class Headers {
         _rangeHeader,
         onParse: RangeHeader.parse,
       ),
-      referer: dartIOHeaders.parseUri(_refererHeader),
+      referer: dartIOHeaders.parseSingleValue(
+        _refererHeader,
+        onParse: parseUri,
+      ),
       te: dartIOHeaders.parseMultipleValue(
         _teHeader,
         onParse: TEHeader.parse,
@@ -466,19 +486,24 @@ abstract class Headers {
         _upgradeHeader,
         onParse: UpgradeHeader.parse,
       ),
-      userAgent: dartIOHeaders.parseString(
+      userAgent: dartIOHeaders.parseSingleValue(
         _userAgentHeader,
+        onParse: parseString,
       ),
 
       // Response Headers
-      location: dartIOHeaders.parseUri(_locationHeader),
-      xPoweredBy: dartIOHeaders.parseString(
+      location: dartIOHeaders.parseSingleValue(
+        _locationHeader,
+        onParse: parseUri,
+      ),
+      xPoweredBy: dartIOHeaders.parseSingleValue(
             _xPoweredByHeader,
+            onParse: parseString,
           ) ??
           xPoweredBy,
-      accessControlAllowCredentials: dartIOHeaders.parseBool(
+      accessControlAllowCredentials: dartIOHeaders.parseSingleValue(
         _accessControlAllowCredentialsHeader,
-        allowFalse: false,
+        onParse: parsePositiveBool,
       ),
       accessControlAllowOrigin: dartIOHeaders.parseSingleValue(
         _accessControlAllowOriginHeader,
@@ -488,7 +513,10 @@ abstract class Headers {
         _accessControlExposeHeadersHeader,
         onParse: AccessControlExposeHeadersHeader.parse,
       ),
-      accessControlMaxAge: dartIOHeaders.parseInt(_accessControlMaxAgeHeader),
+      accessControlMaxAge: dartIOHeaders.parseSingleValue(
+        _accessControlMaxAgeHeader,
+        onParse: parseInt,
+      ),
       cacheControl: dartIOHeaders.parseMultipleValue(
         _cacheControlHeader,
         onParse: CacheControlHeader.parse,
@@ -505,7 +533,10 @@ abstract class Headers {
         _contentLanguageHeader,
         onParse: ContentLanguageHeader.parse,
       ),
-      contentLocation: dartIOHeaders.parseUri(_contentLocationHeader),
+      contentLocation: dartIOHeaders.parseSingleValue(
+        _contentLocationHeader,
+        onParse: parseUri,
+      ),
       contentRange: dartIOHeaders.parseSingleValue(
         _contentRangeHeader,
         onParse: ContentRangeHeader.parse,
@@ -522,8 +553,9 @@ abstract class Headers {
         _retryAfterHeader,
         onParse: RetryAfterHeader.parse,
       ),
-      trailer: dartIOHeaders.parseStringList(
+      trailer: dartIOHeaders.parseMultipleValue(
         _trailerHeader,
+        onParse: parseStringList,
       ),
       transferEncoding: dartIOHeaders.parseMultipleValue(
         _transferEncodingHeader,
@@ -546,10 +578,6 @@ abstract class Headers {
       acceptRanges: dartIOHeaders.parseSingleValue(
         _acceptRangesHeader,
         onParse: AcceptRangesHeader.parse,
-      ),
-      custom: CustomHeaders._fromHttpHeaders(
-        dartIOHeaders.headers,
-        excludedHeaders: _managedHeaders,
       ),
 
       // Security and Modern Headers
@@ -604,6 +632,10 @@ abstract class Headers {
       crossOriginOpenerPolicy: dartIOHeaders.parseSingleValue(
         _crossOriginOpenerPolicyHeader,
         onParse: CrossOriginOpenerPolicyHeader.parse,
+      ),
+      custom: parseCustomHeaders(
+        dartIOHeaders.headers,
+        excludedHeaders: _managedHeaders,
       ),
 
       failedHeadersToParse: failedHeadersToParse,

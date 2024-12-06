@@ -10,7 +10,6 @@ import '../docs/strict_validation_docs.dart';
 /// These tests verify the behavior of the Access-Control-Allow-Credentials header.
 /// According to the CORS specification, this header can only have the value "true".
 /// It indicates whether the response to the request can be exposed when the credentials flag is true.
-/// Any value other than "true" is considered invalid and should result in a bad request.
 /// The tests cover both strict and non-strict modes, ensuring that invalid values are handled appropriately.
 /// Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials#directives
 /// About empty value test, check the [StrictValidationDocs] class for more details.
@@ -61,23 +60,35 @@ void main() {
     );
 
     test(
-      'when an Access-Control-Allow-Credentials header with a value "false" '
-      'is passed then the server responds with a '
-      'bad request including a message that states the value is invalid',
+      'when an invalid Access-Control-Allow-Credentials header is passed then the server responds '
+      'with a bad request including a message that states the header value is invalid',
       () async {
         expect(
           () async => await getServerRequestHeaders(
             server: server,
-            headers: {'access-control-allow-credentials': 'false'},
+            headers: {'access-control-allow-credentials': 'blabla'},
           ),
           throwsA(
             isA<BadRequestException>().having(
               (e) => e.message,
               'message',
-              contains('Must be true or null'),
+              contains('Invalid boolean'),
             ),
           ),
         );
+      },
+    );
+
+    test(
+      'when a Access-Control-Allow-Credentials header with a value "false" '
+      'then it should return null',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'access-control-allow-credentials': 'false'},
+        );
+
+        expect(headers.accessControlAllowCredentials, isNull);
       },
     );
 
@@ -130,14 +141,14 @@ void main() {
 
     tearDown(() => server.close());
 
-    group('when an invalid Access-Control-Allow-Credentials header is passed',
+    group('when an empty Access-Control-Allow-Credentials header is passed',
         () {
       test(
         'then it should return null',
         () async {
           Headers headers = await getServerRequestHeaders(
             server: server,
-            headers: {'access-control-allow-credentials': 'false'},
+            headers: {'access-control-allow-credentials': ''},
           );
 
           expect(headers.accessControlAllowCredentials, isNull);
@@ -149,12 +160,12 @@ void main() {
         () async {
           Headers headers = await getServerRequestHeaders(
             server: server,
-            headers: {'access-control-allow-credentials': 'false'},
+            headers: {'access-control-allow-credentials': ''},
           );
 
           expect(
             headers.failedHeadersToParse['access-control-allow-credentials'],
-            equals(['false']),
+            equals(['']),
           );
         },
       );
