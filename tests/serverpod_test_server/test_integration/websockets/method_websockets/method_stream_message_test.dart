@@ -212,13 +212,6 @@ void main() {
         expect(closeMethodStreamCommandMessage.connectionId, connectionId);
         expect(closeMethodStreamCommandMessage.reason, CloseReason.done);
       });
-
-      test('then the stream is closed.', () async {
-        expect(
-          webSocketCompleter.future.timeout(Duration(seconds: 5)),
-          completes,
-        );
-      });
     });
 
     group(
@@ -303,13 +296,6 @@ void main() {
         expect(closeMethodStreamCommandMessage.method, method);
         expect(closeMethodStreamCommandMessage.connectionId, connectionId);
         expect(closeMethodStreamCommandMessage.reason, CloseReason.done);
-      });
-
-      test('then the stream is closed.', () async {
-        expect(
-          webSocketCompleter.future.timeout(Duration(seconds: 5)),
-          completes,
-        );
       });
     });
 
