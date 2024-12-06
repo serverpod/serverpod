@@ -213,8 +213,10 @@ class MethodStreaming extends Endpoint {
     return controller.stream;
   }
 
+  static Function(Session)? delayedNeverListenedInputStreamCallback;
   Future<void> delayedNeverListenedInputStream(
       Session session, int delay, Stream<int> stream) async {
+    delayedNeverListenedInputStreamCallback?.call(session);
     var uuid = Uuid().v4();
     var completer = Completer<void>();
     _delayedResponses[uuid] = completer;
@@ -226,8 +228,10 @@ class MethodStreaming extends Endpoint {
     await completer.future;
   }
 
+  static Function(Session)? delayedPausedInputStreamCallback;
   Future<void> delayedPausedInputStream(
       Session session, int delay, Stream<int> stream) async {
+    delayedPausedInputStreamCallback?.call(session);
     var uuid = Uuid().v4();
     var completer = Completer<void>();
     _delayedResponses[uuid] = completer;
