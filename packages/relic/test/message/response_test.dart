@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart';
 import 'package:relic/relic.dart' hide Request;
+import 'package:relic/src/headers/custom/custom_headers.dart';
 import 'package:test/test.dart';
 
 import '../util/test_util.dart';

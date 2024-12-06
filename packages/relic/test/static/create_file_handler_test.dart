@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:relic/relic.dart';
-import 'package:relic/src/headers/headers.dart';
+import 'package:relic/src/headers/typed_headers/range_header.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 

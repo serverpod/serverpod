@@ -1,4 +1,7 @@
-part of '../headers.dart';
+import 'dart:collection';
+import 'dart:io' as io;
+
+import 'package:http_parser/http_parser.dart';
 
 final _emptyCustomHeaders = CustomHeaders._empty();
 

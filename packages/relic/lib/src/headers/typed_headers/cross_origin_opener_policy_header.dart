@@ -1,5 +1,3 @@
-part of '../headers.dart';
-
 /// A class representing the HTTP Cross-Origin-Opener-Policy header.
 ///
 /// This header specifies the policy for opening cross-origin resources.

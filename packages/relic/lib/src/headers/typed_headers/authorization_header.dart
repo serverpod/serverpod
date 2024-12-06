@@ -1,4 +1,4 @@
-part of '../headers.dart';
+import 'dart:convert';
 
 /// An abstract base class representing an HTTP Authorization header.
 ///

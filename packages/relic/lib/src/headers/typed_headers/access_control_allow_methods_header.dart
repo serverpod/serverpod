@@ -1,4 +1,5 @@
-part of '../headers.dart';
+import 'package:relic/src/headers/extension/string_list_extensions.dart';
+import 'package:relic/src/method/method.dart';
 
 /// A class representing the HTTP Access-Control-Allow-Methods header.
 ///

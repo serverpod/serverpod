@@ -1,5 +1,3 @@
-part of '../headers.dart';
-
 /// A class representing the HTTP Access-Control-Allow-Origin header.
 ///
 /// This header specifies which origins are allowed to access the resource.

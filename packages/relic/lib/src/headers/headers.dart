@@ -1,54 +1,14 @@
-import 'dart:collection';
-import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:http_parser/http_parser.dart';
+import 'package:relic/src/headers/custom/custom_headers.dart';
 import 'package:relic/src/headers/extension/string_list_extensions.dart';
 import 'package:relic/src/headers/parser/headers_parser.dart';
 import 'package:relic/src/method/method.dart';
 
-import '../body/body.dart';
+import 'typed_headers.dart';
 
-part 'custom/custom_headers.dart';
-part 'typed_headers/authorization_header.dart';
-part 'typed_headers/content_range_header.dart';
-part 'typed_headers/cache_control_header.dart';
-part 'typed_headers/content_disposition_header.dart';
-part 'typed_headers/range_header.dart';
-part 'typed_headers/retry_after_header.dart';
-part 'typed_headers/accept_header.dart';
-part 'typed_headers/connection_header.dart';
-part 'typed_headers/etag_header.dart';
-part 'typed_headers/vary_header.dart';
-part 'typed_headers/authentication_header.dart';
-part 'typed_headers/transfer_encoding_header.dart';
-part 'typed_headers/from_header.dart';
-part 'typed_headers/if_range_header.dart';
-part 'typed_headers/expect_header.dart';
-part 'typed_headers/access_control_allow_origin_header.dart';
-part 'typed_headers/access_control_allow_headers_header.dart';
-part 'typed_headers/access_control_expose_headers_header.dart';
-part 'typed_headers/strict_transport_security_header.dart';
-part 'typed_headers/content_security_policy_header.dart';
-part 'typed_headers/referrer_policy_header.dart';
-part 'typed_headers/permission_policy_header.dart';
-part 'typed_headers/access_control_allow_methods_header.dart';
-part 'typed_headers/clear_site_data_header.dart';
-part 'typed_headers/sec_fetch_dest_header.dart';
-part 'typed_headers/sec_fetch_mode_header.dart';
-part 'typed_headers/sec_fetch_site_header.dart';
-part 'typed_headers/cross_origin_resource_policy_header.dart';
-part 'typed_headers/cross_origin_embedder_policy_header.dart';
-part 'typed_headers/cross_origin_opener_policy_header.dart';
-part 'typed_headers/accept_encoding_header.dart';
-part 'typed_headers/accept_language_header.dart';
-part 'typed_headers/content_encoding_header.dart';
-part 'typed_headers/etag_condition_header.dart';
-part 'typed_headers/te_header.dart';
-part 'typed_headers/content_language_header.dart';
-part 'typed_headers/accept_ranges_header.dart';
-part 'typed_headers/upgrade_header.dart';
-part 'typed_headers/cookie_header.dart';
+import '../body/body.dart';
 
 abstract class Headers {
   /// Request Headers

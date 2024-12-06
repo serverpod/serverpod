@@ -1,5 +1,3 @@
-part of '../headers.dart';
-
 /// A class representing the HTTP Sec-Fetch-Mode header.
 ///
 /// This header indicates the mode of the request.

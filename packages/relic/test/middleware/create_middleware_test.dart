@@ -3,7 +3,7 @@
 import 'dart:async';
 
 import 'package:relic/relic.dart';
-import 'package:relic/src/headers/headers.dart';
+import 'package:relic/src/headers/typed_headers/from_header.dart';
 import 'package:test/test.dart';
 
 import '../util/test_util.dart';

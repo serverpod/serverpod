@@ -1,5 +1,3 @@
-part of '../headers.dart';
-
 /// A class representing the HTTP ETag header.
 ///
 /// This class manages the ETag value, which can be either strong or weak.

@@ -1,5 +1,3 @@
-part of '../headers.dart';
-
 /// A class representing the HTTP Authentication header.
 class AuthenticationHeader {
   /// The authentication scheme (e.g., "Basic", "Bearer", "Digest").

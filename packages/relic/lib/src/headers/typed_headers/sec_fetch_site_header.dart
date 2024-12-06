@@ -1,5 +1,3 @@
-part of '../headers.dart';
-
 /// A class representing the HTTP Sec-Fetch-Site header.
 ///
 /// This header indicates the relationship between the origin of the request

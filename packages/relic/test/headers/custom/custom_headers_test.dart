@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:relic/src/headers/headers.dart';
+import 'package:relic/src/headers/custom/custom_headers.dart';
 import 'package:relic/src/relic_server.dart';
 import 'package:test/test.dart';
 

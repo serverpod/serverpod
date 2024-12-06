@@ -1,5 +1,3 @@
-part of '../headers.dart';
-
 /// A class representing the HTTP Sec-Fetch-Dest header.
 ///
 /// This header indicates the destination of the request.

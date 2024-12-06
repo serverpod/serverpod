@@ -1,5 +1,3 @@
-part of '../headers.dart';
-
 /// A class representing an HTTP Content-Range header for byte ranges.
 ///
 /// This class is used to manage byte ranges in HTTP requests or responses,

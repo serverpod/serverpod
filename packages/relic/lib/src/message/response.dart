@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart';
+import 'package:relic/src/headers/typed_headers/transfer_encoding_header.dart';
 
 import '../body/body.dart';
 import '../headers/headers.dart';

@@ -1,4 +1,4 @@
-part of '../headers.dart';
+import 'package:http_parser/http_parser.dart';
 
 /// A class representing the HTTP Retry-After header.
 ///

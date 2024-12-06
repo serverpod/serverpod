@@ -1,5 +1,3 @@
-part of '../headers.dart';
-
 /// A class representing the HTTP Expect header.
 ///
 /// This class manages the directive for the Expect header, such as `100-continue`.

@@ -1,5 +1,3 @@
-part of '../headers.dart';
-
 /// A class representing the HTTP Referrer-Policy header.
 ///
 /// This class manages the referrer policy, providing functionality to parse

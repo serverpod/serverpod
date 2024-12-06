@@ -1,5 +1,3 @@
-part of '../headers.dart';
-
 /// A class representing the HTTP Accept-Ranges header.
 ///
 /// This class manages the range units that the server supports.

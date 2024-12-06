@@ -1,4 +1,4 @@
-part of '../headers.dart';
+import 'package:relic/src/headers/extension/string_list_extensions.dart';
 
 /// A class representing the HTTP Connection header.
 ///
