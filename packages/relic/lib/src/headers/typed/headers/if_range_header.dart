@@ -1,5 +1,5 @@
 import 'package:http_parser/http_parser.dart';
-import 'package:relic/src/headers/typed_headers/etag_header.dart';
+import 'package:relic/src/headers/typed/headers/etag_header.dart';
 
 /// A class representing the HTTP `If-Range` header.
 ///

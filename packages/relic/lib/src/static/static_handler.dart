@@ -6,7 +6,7 @@ import 'dart:typed_data';
 import 'package:convert/convert.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
-import 'package:relic/src/headers/typed_headers.dart';
+import 'package:relic/src/headers/typed/typed_headers.dart';
 import 'package:relic/src/method/method.dart';
 import 'package:relic/src/static/extension/datetime_extension.dart';
 

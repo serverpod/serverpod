@@ -7,7 +7,7 @@ import 'package:relic/src/headers/parser/headers_parser.dart';
 import 'package:relic/src/headers/parser/shared_parser.dart';
 import 'package:relic/src/method/method.dart';
 
-import 'typed_headers.dart';
+import 'typed/typed_headers.dart';
 
 import '../body/body.dart';
 

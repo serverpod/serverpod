@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:relic/src/headers/typed_headers/authorization_header.dart';
+import 'package:relic/src/headers/typed/headers/authorization_header.dart';
 import 'package:test/test.dart';
 import 'package:relic/src/headers/headers.dart';
 import 'package:relic/src/relic_server.dart';

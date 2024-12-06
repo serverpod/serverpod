@@ -12,7 +12,7 @@ export 'src/handler/pipeline.dart' show Pipeline;
 
 // Headers related exports
 export 'src/headers/headers.dart' show Headers;
-export 'src/headers/typed_headers.dart';
+export 'src/headers/typed/typed_headers.dart';
 export 'src/headers/custom/custom_headers.dart' show CustomHeaders;
 
 /// Hijack related exports
