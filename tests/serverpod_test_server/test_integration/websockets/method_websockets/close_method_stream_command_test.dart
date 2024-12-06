@@ -281,8 +281,19 @@ void main() {
     var endpoint = 'methodStreaming';
     var method = 'delayedNeverListenedInputStream';
     var connectionId = const Uuid().v4obj();
+    late Completer endpointSessionIsClosed;
 
     setUp(() async {
+      var delayedNeverListenedInputStreamCompleter = Completer<Session>();
+      MethodStreaming.delayedNeverListenedInputStreamCompleter =
+          delayedNeverListenedInputStreamCompleter;
+
+      endpointSessionIsClosed = Completer();
+      delayedNeverListenedInputStreamCompleter.future
+          .then((Session session) => session.addWillCloseListener(
+                (_) => endpointSessionIsClosed.complete(),
+              ));
+
       await server.start();
       webSocket = WebSocketChannel.connect(
         Uri.parse(serverMethodWebsocketUrl),
@@ -304,13 +315,10 @@ void main() {
     });
 
     test(
-        'when a CloseMethodStreamCommand is sent then websocket connection is closed',
+        'when a CloseMethodStreamCommand is sent then endpoint session is closed',
         () async {
-      var websocketCompleter = Completer<void>();
       webSocket.stream.listen((event) {
         // Listen to the to keep it open.
-      }, onDone: () {
-        websocketCompleter.complete();
       });
 
       webSocket.sink.add(CloseMethodStreamCommand.buildMessage(
@@ -321,10 +329,11 @@ void main() {
       ));
 
       await expectLater(
-          websocketCompleter.future.timeout(Duration(seconds: 10)).catchError(
-              (error) => fail('Websocket connection was never closed.')),
+          endpointSessionIsClosed.future
+              .timeout(Duration(seconds: 10))
+              .catchError(
+                  (error) => fail('Endpoint session was never closed.')),
           completes);
-      expect(webSocket.closeCode, isNotNull);
     });
   });
 
@@ -336,8 +345,19 @@ void main() {
     var endpoint = 'methodStreaming';
     var method = 'delayedPausedInputStream';
     var connectionId = const Uuid().v4obj();
+    late Completer endpointSessionIsClosed;
 
     setUp(() async {
+      var delayedPausedInputStreamCompleter = Completer<Session>();
+      MethodStreaming.delayedPausedInputStreamCompleter =
+          delayedPausedInputStreamCompleter;
+
+      endpointSessionIsClosed = Completer();
+      delayedPausedInputStreamCompleter.future
+          .then((Session session) => session.addWillCloseListener(
+                (_) => endpointSessionIsClosed.complete(),
+              ));
+
       await server.start();
       webSocket = WebSocketChannel.connect(
         Uri.parse(serverMethodWebsocketUrl),
@@ -359,13 +379,10 @@ void main() {
     });
 
     test(
-        'when a CloseMethodStreamCommand is sent then websocket connection is closed',
+        'when a CloseMethodStreamCommand is sent then endpoint session is closed',
         () async {
-      var websocketCompleter = Completer<void>();
       webSocket.stream.listen((event) {
         // Listen to the to keep it open.
-      }, onDone: () {
-        websocketCompleter.complete();
       });
 
       webSocket.sink.add(CloseMethodStreamCommand.buildMessage(
@@ -376,10 +393,11 @@ void main() {
       ));
 
       await expectLater(
-          websocketCompleter.future.timeout(Duration(seconds: 10)).catchError(
-              (error) => fail('Websocket connection was never closed.')),
+          endpointSessionIsClosed.future
+              .timeout(Duration(seconds: 10))
+              .catchError(
+                  (error) => fail('Endpoint session was never closed.')),
           completes);
-      expect(webSocket.closeCode, isNotNull);
     });
   });
 
