@@ -32,7 +32,7 @@ dependencies:
   retry: ^3.1.1
   synchronized: ^3.1.0
   system_resources: ^1.6.0
-  vm_service: ">=13.0.0 <15.0.0"
+  vm_service: ">=13.0.0 <16.0.0"
   yaml: ^3.1.1
   serverpod_shared: 2.2.0
   serverpod_serialization: 2.2.0
