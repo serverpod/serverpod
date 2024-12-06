@@ -201,18 +201,16 @@ class MethodStreaming extends Endpoint {
     return completer.future;
   }
 
-  Stream<int> delayedStreamResponse(Session session, int delay) async* {
-    var uuid = Uuid().v4();
-    var completer = Completer<void>();
-    _delayedResponses[uuid] = completer;
+  static Function(StreamController)? delayedStreamResponseCallback;
+  Stream<int> delayedStreamResponse(Session session, int delay) {
+    var controller = StreamController<int>();
+    delayedStreamResponseCallback?.call(controller);
 
     Future.delayed(Duration(seconds: delay), () {
-      _delayedResponses.remove(uuid)?.complete();
+      controller.add(42);
     });
 
-    await completer.future;
-
-    yield 42;
+    return controller.stream;
   }
 
   Future<void> delayedNeverListenedInputStream(
