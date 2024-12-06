@@ -1,3 +1,11 @@
+## 2.3.0-beta.1
+- feat: Add support for transaction isolation levels.
+- feat: Adds typed interface for transaction savepoints.
+- feat: Adds support for endpoint definition placement anywhere in server's `src` directory.
+- feat: Adds support for model definitions placement anywhere in server's `src` directory.
+- fix: Improve message transmission guarantee in method streams.
+- chore: Update `vm_service` dependency range.
+
 ## 2.2.2
  - fix: Fixes possible import issue in generated code when the same model name is used in different modules.
 
