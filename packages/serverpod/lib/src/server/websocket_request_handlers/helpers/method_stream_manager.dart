@@ -364,9 +364,13 @@ class MethodStreamManager {
             methodStreamId, value, methodStreamCallContext);
       },
       onError: (e, s) {
+        // All method calls that return futures are unawaited to ensure that
+        // the calls are invoked synchronously. If an 'await' is added
+        // here, processing new messages might be initiated before the
+        // subscription is canceled.
         if (e is _StreamComplete) {
           _updateCloseReason(streamKey, CloseReason.done);
-          subscription.cancel();
+          unawaited(subscription.cancel());
           return;
         }
 
@@ -375,7 +379,7 @@ class MethodStreamManager {
 
         _updateCloseReason(streamKey, CloseReason.error);
 
-        session.close(error: e, stackTrace: s);
+        unawaited(session.close(error: e, stackTrace: s));
 
         /// Required to close stream when error occurs.
         /// This will also close the input streams.
@@ -383,7 +387,7 @@ class MethodStreamManager {
         /// for the listen method because this cancels
         /// the stream before the onError callback has
         /// been called.
-        subscription.cancel();
+        unawaited(subscription.cancel());
       },
     );
 
@@ -585,6 +589,6 @@ class MethodStreamManager {
   }
 }
 
-// Passed as the last message on a stream to indicate that the stream is
-// complete and no more messages will be sent from the endpoint.
+/// Passed as the last message on a stream to indicate that the stream is
+/// complete and no more messages will be sent from the endpoint.
 class _StreamComplete {}
