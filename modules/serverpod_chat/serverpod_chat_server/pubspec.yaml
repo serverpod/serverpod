@@ -21,6 +21,8 @@ dev_dependencies:
   serverpod_lints: 2.2.0
 
 dependency_overrides:
+  relic:
+    path: ../../../packages/relic
   serverpod:
     path: ../../../packages/serverpod
   serverpod_auth_server:
