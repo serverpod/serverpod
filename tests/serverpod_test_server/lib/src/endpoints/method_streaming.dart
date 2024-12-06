@@ -14,15 +14,19 @@ class MethodStreaming extends Endpoint {
     }
   }
 
+  static Completer<StreamController<int>>? neverEndingStreamController;
   Stream<int> neverEndingStreamWithDelay(
     Session session,
     int millisecondsDelay,
-  ) async* {
-    int i = 0;
-    while (true) {
-      await Future.delayed(Duration(milliseconds: millisecondsDelay));
-      yield i++;
-    }
+  ) {
+    var controller = StreamController<int>();
+    neverEndingStreamController?.complete(controller);
+    controller.addStream(Stream.periodic(
+      Duration(milliseconds: millisecondsDelay),
+      (i) => i,
+    ));
+
+    return controller.stream;
   }
 
   Future<void> methodCallEndpoint(Session session) async {}
