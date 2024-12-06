@@ -1,11 +1,12 @@
 import 'package:relic/src/headers/extension/string_list_extensions.dart';
+import 'package:relic/src/headers/typed/base/typed_header.dart';
 import 'package:relic/src/method/method.dart';
 
 /// A class representing the HTTP Access-Control-Allow-Methods header.
 ///
 /// This header specifies which methods are allowed when accessing the resource
 /// in response to a preflight request.
-class AccessControlAllowMethodsHeader {
+class AccessControlAllowMethodsHeader extends TypedHeader {
   /// The list of methods that are allowed.
   final List<Method>? methods;
 
@@ -13,11 +14,11 @@ class AccessControlAllowMethodsHeader {
   final bool isWildcard;
 
   /// Constructs an instance allowing specific methods to be allowed.
-  AccessControlAllowMethodsHeader.methods({required this.methods})
+  const AccessControlAllowMethodsHeader.methods({required this.methods})
       : isWildcard = false;
 
   /// Constructs an instance allowing all methods to be allowed (`*`).
-  AccessControlAllowMethodsHeader.wildcard()
+  const AccessControlAllowMethodsHeader.wildcard()
       : methods = null,
         isWildcard = true;
 
@@ -48,6 +49,7 @@ class AccessControlAllowMethodsHeader {
 
   /// Converts the [AccessControlAllowMethodsHeader] instance into a string
   /// representation suitable for HTTP headers.
+  @override
   String toHeaderString() => isWildcard ? '*' : methods!.join(', ');
 
   @override

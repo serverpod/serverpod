@@ -1,7 +1,9 @@
 import 'package:relic/src/headers/extension/string_list_extensions.dart';
+import 'package:relic/src/headers/typed/base/typed_header.dart';
 
-/// Represents the HTTP Strict-Transport-Security (HSTS) header for managing HSTS settings.
-class StrictTransportSecurityHeader {
+/// Represents the HTTP Strict-Transport-Security (HSTS) header for managing
+/// HSTS settings.
+class StrictTransportSecurityHeader extends TypedHeader {
   /// The max-age directive specifies the time, in seconds, that the browser
   /// should remember that a site is only to be accessed using HTTPS.
   final int maxAge;
@@ -59,7 +61,9 @@ class StrictTransportSecurityHeader {
     );
   }
 
-  /// Converts the [StrictTransportSecurityHeader] into a string representation for HTTP headers.
+  /// Converts the [StrictTransportSecurityHeader] into a string representation
+  /// for HTTP headers.
+  @override
   String toHeaderString() {
     final directives = ['$_maxAgePrefix$maxAge'];
     if (includeSubDomains) directives.add(_includeSubDomains);

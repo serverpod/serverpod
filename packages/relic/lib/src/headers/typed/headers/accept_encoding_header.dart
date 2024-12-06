@@ -1,9 +1,10 @@
 import 'package:relic/src/headers/extension/string_list_extensions.dart';
+import 'package:relic/src/headers/typed/base/typed_header.dart';
 
 /// A class representing the HTTP Accept-Encoding header.
 ///
 /// This header specifies the content encoding that the client can understand.
-class AcceptEncodingHeader {
+class AcceptEncodingHeader extends TypedHeader {
   /// The list of encodings that are accepted.
   final List<EncodingQuality>? encodings;
 
@@ -56,6 +57,7 @@ class AcceptEncodingHeader {
   }
 
   /// Converts the [AcceptEncodingHeader] instance into a string representation suitable for HTTP headers.
+  @override
   String toHeaderString() => isWildcard
       ? '*'
       : encodings?.map((e) => e.toHeaderString()).join(', ') ?? '';

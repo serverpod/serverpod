@@ -1,14 +1,15 @@
 import 'package:relic/src/headers/extension/string_list_extensions.dart';
+import 'package:relic/src/headers/typed/base/typed_header.dart';
 
 /// A class representing the HTTP Accept header.
 ///
 /// This class manages media ranges and their associated quality values.
-class AcceptHeader {
+class AcceptHeader extends TypedHeader {
   /// The list of media ranges accepted by the client.
   final List<MediaRange> mediaRanges;
 
   /// Constructs an [AcceptHeader] instance with the specified media ranges.
-  AcceptHeader({required this.mediaRanges});
+  const AcceptHeader({required this.mediaRanges});
 
   /// Parses the Accept header value and returns an [AcceptHeader] instance.
   ///
@@ -26,6 +27,7 @@ class AcceptHeader {
   }
 
   /// Converts the [AcceptHeader] instance into a string representation suitable for HTTP headers.
+  @override
   String toHeaderString() =>
       mediaRanges.map((mr) => mr.toHeaderString()).join(', ');
 

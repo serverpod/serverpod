@@ -1,3 +1,4 @@
+export 'package:relic/src/headers/typed/base/typed_header.dart';
 export 'package:relic/src/headers/typed/headers/authorization_header.dart';
 export 'package:relic/src/headers/typed/headers/content_range_header.dart';
 export 'package:relic/src/headers/typed/headers/cookie_header.dart';

@@ -1,9 +1,10 @@
 import 'package:relic/src/headers/extension/string_list_extensions.dart';
+import 'package:relic/src/headers/typed/base/typed_header.dart';
 
 /// A class representing the HTTP Accept-Language header.
 ///
 /// This header specifies the natural languages that are preferred in the response.
-class AcceptLanguageHeader {
+class AcceptLanguageHeader extends TypedHeader {
   /// The list of languages that are accepted.
   final List<LanguageQuality>? languages;
 
@@ -11,11 +12,11 @@ class AcceptLanguageHeader {
   final bool isWildcard;
 
   /// Constructs an instance of [AcceptLanguageHeader] with the given languages.
-  AcceptLanguageHeader.languages({required this.languages})
+  const AcceptLanguageHeader.languages({required this.languages})
       : isWildcard = false;
 
   /// Constructs an instance of [AcceptLanguageHeader] with a wildcard language.
-  AcceptLanguageHeader.wildcard()
+  const AcceptLanguageHeader.wildcard()
       : languages = null,
         isWildcard = true;
 
@@ -56,6 +57,7 @@ class AcceptLanguageHeader {
   }
 
   /// Converts the [AcceptLanguageHeader] instance into a string representation suitable for HTTP headers.
+  @override
   String toHeaderString() => isWildcard
       ? '*'
       : languages?.map((e) => e.toHeaderString()).join(', ') ?? '';

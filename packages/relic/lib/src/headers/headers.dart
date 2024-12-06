@@ -13,89 +13,85 @@ import '../body/body.dart';
 
 abstract class Headers {
   /// Request Headers
-  static const _acceptHeader = "accept";
-  static const _acceptEncodingHeader = "accept-encoding";
-  static const _acceptLanguageHeader = "accept-language";
-  static const _authorizationHeader = "authorization";
-  static const _expectHeader = "expect";
-  static const _fromHeader = "from";
-  static const _hostHeader = "host";
-  static const _ifMatchHeader = "if-match";
-  static const _ifModifiedSinceHeader = "if-modified-since";
-  static const _ifNoneMatchHeader = "if-none-match";
-  static const _ifRangeHeader = "if-range";
-  static const _ifUnmodifiedSinceHeader = "if-unmodified-since";
-  static const _maxForwardsHeader = "max-forwards";
-  static const _proxyAuthorizationHeader = "proxy-authorization";
-  static const _rangeHeader = "range";
-  static const _teHeader = "te";
-  static const _upgradeHeader = "upgrade";
-  static const _userAgentHeader = "user-agent";
-  static const _accessControlRequestHeadersHeader =
+  static const acceptHeader = "accept";
+  static const acceptEncodingHeader = "accept-encoding";
+  static const acceptLanguageHeader = "accept-language";
+  static const authorizationHeader = "authorization";
+  static const expectHeader = "expect";
+  static const fromHeader = "from";
+  static const hostHeader = "host";
+  static const ifMatchHeader = "if-match";
+  static const ifModifiedSinceHeader = "if-modified-since";
+  static const ifNoneMatchHeader = "if-none-match";
+  static const ifRangeHeader = "if-range";
+  static const ifUnmodifiedSinceHeader = "if-unmodified-since";
+  static const maxForwardsHeader = "max-forwards";
+  static const proxyAuthorizationHeader = "proxy-authorization";
+  static const rangeHeader = "range";
+  static const teHeader = "te";
+  static const upgradeHeader = "upgrade";
+  static const userAgentHeader = "user-agent";
+  static const accessControlRequestHeadersHeader =
       'access-control-request-headers';
-  static const _accessControlRequestMethodHeader =
+  static const accessControlRequestMethodHeader =
       'access-control-request-method';
 
   /// Response Headers
-  static const _accessControlAllowCredentialsHeader =
+  static const accessControlAllowCredentialsHeader =
       'access-control-allow-credentials';
-  static const _accessControlAllowOriginHeader = 'access-control-allow-origin';
-  static const _accessControlExposeHeadersHeader =
+  static const accessControlAllowOriginHeader = 'access-control-allow-origin';
+  static const accessControlExposeHeadersHeader =
       'access-control-expose-headers';
-  static const _accessControlMaxAgeHeader = 'access-control-max-age';
-  static const _ageHeader = "age";
-  static const _allowHeader = "allow";
-  static const _cacheControlHeader = "cache-control";
-  static const _connectionHeader = "connection";
-  static const _contentDispositionHeader = "content-disposition";
-  static const _contentEncodingHeader = "content-encoding";
-  static const _contentLanguageHeader = "content-language";
-  static const _contentLocationHeader = "content-location";
-  static const _contentRangeHeader = "content-range";
-  static const _etagHeader = "etag";
-  static const _expiresHeader = "expires";
-  static const _lastModifiedHeader = "last-modified";
-  static const _locationHeader = "location";
-  static const _proxyAuthenticationHeader = "proxy-authenticate";
-  static const _retryAfterHeader = "retry-after";
-  static const _trailerHeader = "trailer";
-  static const _transferEncodingHeader = "transfer-encoding";
-  static const _varyHeader = "vary";
-  static const _wwwAuthenticateHeader = "www-authenticate";
-  static const _xPoweredByHeader = 'x-powered-by';
+  static const accessControlMaxAgeHeader = 'access-control-max-age';
+  static const ageHeader = "age";
+  static const allowHeader = "allow";
+  static const cacheControlHeader = "cache-control";
+  static const connectionHeader = "connection";
+  static const contentDispositionHeader = "content-disposition";
+  static const contentEncodingHeader = "content-encoding";
+  static const contentLanguageHeader = "content-language";
+  static const contentLocationHeader = "content-location";
+  static const contentRangeHeader = "content-range";
+  static const etagHeader = "etag";
+  static const expiresHeader = "expires";
+  static const lastModifiedHeader = "last-modified";
+  static const locationHeader = "location";
+  static const proxyAuthenticationHeader = "proxy-authenticate";
+  static const retryAfterHeader = "retry-after";
+  static const trailerHeader = "trailer";
+  static const transferEncodingHeader = "transfer-encoding";
+  static const varyHeader = "vary";
+  static const wwwAuthenticateHeader = "www-authenticate";
+  static const xPoweredByHeader = 'x-powered-by';
 
   /// Common Headers (Used in Both Requests and Responses)
-  static const _acceptRangesHeader = "accept-ranges";
-  static const _contentLengthHeader = "content-length";
-  static const _contentTypeHeader = "content-type";
+  static const acceptRangesHeader = "accept-ranges";
+  static const contentLengthHeader = "content-length";
+  static const contentTypeHeader = "content-type";
 
   /// General Headers
-  static const _dateHeader = "date";
-  static const _originHeader = "origin";
-  static const _refererHeader = "referer";
-  static const _serverHeader = "server";
-  static const _viaHeader = "via";
-  static const _cookieHeader = "cookie";
-  static const _setCookieHeader = "set-cookie";
+  static const dateHeader = "date";
+  static const originHeader = "origin";
+  static const refererHeader = "referer";
+  static const serverHeader = "server";
+  static const viaHeader = "via";
+  static const cookieHeader = "cookie";
+  static const setCookieHeader = "set-cookie";
 
   /// Security and Modern Headers
-  static const _strictTransportSecurityHeader = "strict-transport-security";
-  static const _contentSecurityPolicyHeader = "content-security-policy";
-  static const _referrerPolicyHeader = "referrer-policy";
-  static const _permissionsPolicyHeader = "permissions-policy";
-  static const _accessControlAllowMethodsHeader =
-      "access-control-allow-methods";
-  static const _accessControlAllowHeadersHeader =
-      "access-control-allow-headers";
-  static const _clearSiteDataHeader = "clear-site-data";
-  static const _secFetchDestHeader = "sec-fetch-dest";
-  static const _secFetchModeHeader = "sec-fetch-mode";
-  static const _secFetchSiteHeader = "sec-fetch-site";
-  static const _crossOriginResourcePolicyHeader =
-      "cross-origin-resource-policy";
-  static const _crossOriginEmbedderPolicyHeader =
-      "cross-origin-embedder-policy";
-  static const _crossOriginOpenerPolicyHeader = "cross-origin-opener-policy";
+  static const strictTransportSecurityHeader = "strict-transport-security";
+  static const contentSecurityPolicyHeader = "content-security-policy";
+  static const referrerPolicyHeader = "referrer-policy";
+  static const permissionsPolicyHeader = "permissions-policy";
+  static const accessControlAllowMethodsHeader = "access-control-allow-methods";
+  static const accessControlAllowHeadersHeader = "access-control-allow-headers";
+  static const clearSiteDataHeader = "clear-site-data";
+  static const secFetchDestHeader = "sec-fetch-dest";
+  static const secFetchModeHeader = "sec-fetch-mode";
+  static const secFetchSiteHeader = "sec-fetch-site";
+  static const crossOriginResourcePolicyHeader = "cross-origin-resource-policy";
+  static const crossOriginEmbedderPolicyHeader = "cross-origin-embedder-policy";
+  static const crossOriginOpenerPolicyHeader = "cross-origin-opener-policy";
 
   /// Define header properties
 
@@ -179,86 +175,90 @@ abstract class Headers {
   /// Custom Headers
   final CustomHeaders custom;
 
+  /// Failed headers to parse
+  /// When 'strict' flag is disabled, we save the failed headers to parse
   final Map<String, List<String>> failedHeadersToParse;
 
+  /// Managed headers
+  /// Headers that are managed by the library
   static const _managedHeaders = <String>{
-    _dateHeader,
-    _expiresHeader,
-    _ifModifiedSinceHeader,
-    _ifUnmodifiedSinceHeader,
-    _lastModifiedHeader,
+    dateHeader,
+    expiresHeader,
+    ifModifiedSinceHeader,
+    ifUnmodifiedSinceHeader,
+    lastModifiedHeader,
 
     // General Headers
-    _originHeader,
-    _serverHeader,
-    _viaHeader,
+    originHeader,
+    serverHeader,
+    viaHeader,
 
     // Request Headers
-    _acceptEncodingHeader,
-    _acceptLanguageHeader,
-    _accessControlRequestHeadersHeader,
-    _accessControlRequestMethodHeader,
-    _ageHeader,
-    _allowHeader,
-    _authorizationHeader,
-    _connectionHeader,
-    _expectHeader,
-    _fromHeader,
-    _hostHeader,
-    _ifMatchHeader,
-    _ifNoneMatchHeader,
-    _ifRangeHeader,
-    _maxForwardsHeader,
-    _proxyAuthorizationHeader,
-    _rangeHeader,
-    _refererHeader,
-    _teHeader,
-    _upgradeHeader,
-    _userAgentHeader,
+    acceptEncodingHeader,
+    acceptLanguageHeader,
+    accessControlRequestHeadersHeader,
+    accessControlRequestMethodHeader,
+    ageHeader,
+    allowHeader,
+    authorizationHeader,
+    connectionHeader,
+    expectHeader,
+    fromHeader,
+    hostHeader,
+    ifMatchHeader,
+    ifNoneMatchHeader,
+    ifRangeHeader,
+    maxForwardsHeader,
+    proxyAuthorizationHeader,
+    rangeHeader,
+    refererHeader,
+    teHeader,
+    upgradeHeader,
+    userAgentHeader,
 
     // Response Headers
-    _accessControlAllowCredentialsHeader,
-    _accessControlAllowOriginHeader,
-    _accessControlExposeHeadersHeader,
-    _accessControlMaxAgeHeader,
-    _cacheControlHeader,
-    _contentDispositionHeader,
-    _contentEncodingHeader,
-    _contentLanguageHeader,
-    _contentLocationHeader,
-    _contentRangeHeader,
-    _etagHeader,
-    _locationHeader,
-    _proxyAuthenticationHeader,
-    _retryAfterHeader,
-    _trailerHeader,
-    _transferEncodingHeader,
-    _varyHeader,
-    _wwwAuthenticateHeader,
-    _xPoweredByHeader,
+    accessControlAllowCredentialsHeader,
+    accessControlAllowOriginHeader,
+    accessControlExposeHeadersHeader,
+    accessControlMaxAgeHeader,
+    cacheControlHeader,
+    contentDispositionHeader,
+    contentEncodingHeader,
+    contentLanguageHeader,
+    contentLocationHeader,
+    contentRangeHeader,
+    etagHeader,
+    locationHeader,
+    proxyAuthenticationHeader,
+    retryAfterHeader,
+    trailerHeader,
+    transferEncodingHeader,
+    varyHeader,
+    wwwAuthenticateHeader,
+    xPoweredByHeader,
 
     // Common Headers (Used in Both Requests and Responses)
-    _acceptHeader,
-    _acceptRangesHeader,
-    _contentLengthHeader,
-    _contentTypeHeader,
-    _cookieHeader,
-    _setCookieHeader,
+    acceptHeader,
+    acceptRangesHeader,
+    contentLengthHeader,
+    contentTypeHeader,
+    cookieHeader,
+    setCookieHeader,
 
     // Security and Modern Headers
-    _accessControlAllowHeadersHeader,
-    _accessControlAllowMethodsHeader,
-    _clearSiteDataHeader,
-    _contentSecurityPolicyHeader,
-    _crossOriginEmbedderPolicyHeader,
-    _crossOriginOpenerPolicyHeader,
-    _crossOriginResourcePolicyHeader,
-    _permissionsPolicyHeader,
-    _referrerPolicyHeader,
-    _secFetchDestHeader,
-    _secFetchModeHeader,
-    _secFetchSiteHeader,
-    _strictTransportSecurityHeader,
+    accessControlAllowHeadersHeader,
+    accessControlAllowMethodsHeader,
+    clearSiteDataHeader,
+    contentSecurityPolicyHeader,
+    crossOriginEmbedderPolicyHeader,
+    crossOriginOpenerPolicyHeader,
+    crossOriginResourcePolicyHeader,
+    permissionsPolicyHeader,
+    referrerPolicyHeader,
+    secFetchDestHeader,
+    secFetchModeHeader,
+    secFetchSiteHeader,
+    strictTransportSecurityHeader,
   };
 
   Headers._({
@@ -341,6 +341,7 @@ abstract class Headers {
     required this.failedHeadersToParse,
   }) : custom = custom ?? CustomHeaders.empty();
 
+  /// Create a new request headers instance from a Dart IO request
   factory Headers.fromHttpRequest(
     io.HttpRequest request, {
     bool strict = false,
@@ -367,270 +368,270 @@ abstract class Headers {
     return _HeadersImpl(
       // Date-related headers
       date: dartIOHeaders.parseSingleValue(
-        _dateHeader,
+        dateHeader,
         onParse: parseDate,
       ),
       expires: dartIOHeaders.parseSingleValue(
-        _expiresHeader,
+        expiresHeader,
         onParse: parseDate,
       ),
       ifModifiedSince: dartIOHeaders.parseSingleValue(
-        _ifModifiedSinceHeader,
+        ifModifiedSinceHeader,
         onParse: parseDate,
       ),
       lastModified: dartIOHeaders.parseSingleValue(
-        _lastModifiedHeader,
+        lastModifiedHeader,
         onParse: parseDate,
       ),
 
       // General Headers
       origin: dartIOHeaders.parseSingleValue(
-        _originHeader,
+        originHeader,
         onParse: parseUri,
       ),
       server: dartIOHeaders.parseSingleValue(
-        _serverHeader,
+        serverHeader,
         onParse: parseString,
       ),
       via: dartIOHeaders.parseMultipleValue(
-        _viaHeader,
+        viaHeader,
         onParse: parseStringList,
       ),
 
       // Request Headers
       from: dartIOHeaders.parseMultipleValue(
-        _fromHeader,
+        fromHeader,
         onParse: FromHeader.parse,
       ),
       host: dartIOHeaders.parseSingleValue(
-        _hostHeader,
+        hostHeader,
         onParse: parseUri,
       ),
       acceptEncoding: dartIOHeaders.parseMultipleValue(
-        _acceptEncodingHeader,
+        acceptEncodingHeader,
         onParse: AcceptEncodingHeader.parse,
       ),
       acceptLanguage: dartIOHeaders.parseMultipleValue(
-        _acceptLanguageHeader,
+        acceptLanguageHeader,
         onParse: AcceptLanguageHeader.parse,
       ),
       accessControlRequestHeaders: dartIOHeaders.parseMultipleValue(
-        _accessControlRequestHeadersHeader,
+        accessControlRequestHeadersHeader,
         onParse: parseStringList,
       ),
       accessControlRequestMethod: dartIOHeaders.parseSingleValue(
-        _accessControlRequestMethodHeader,
+        accessControlRequestMethodHeader,
         onParse: Method.parse,
       ),
       age: dartIOHeaders.parseSingleValue(
-        _ageHeader,
+        ageHeader,
         onParse: parsePositiveInt,
       ),
       allow: dartIOHeaders.parseMultipleValue(
-        _allowHeader,
+        allowHeader,
         onParse: parseMethodList,
       ),
       cookie: dartIOHeaders.parseSingleValue(
-        _cookieHeader,
+        cookieHeader,
         onParse: CookieHeader.parse,
       ),
       setCookie: dartIOHeaders.parseSingleValue(
-        _setCookieHeader,
+        setCookieHeader,
         onParse: CookieHeader.parse,
       ),
       authorization: dartIOHeaders.parseSingleValue(
-        _authorizationHeader,
+        authorizationHeader,
         onParse: AuthorizationHeader.parse,
       ),
       connection: dartIOHeaders.parseMultipleValue(
-        _connectionHeader,
+        connectionHeader,
         onParse: ConnectionHeader.parse,
       ),
       expect: dartIOHeaders.parseSingleValue(
-        _expectHeader,
+        expectHeader,
         onParse: ExpectHeader.parse,
       ),
       ifMatch: dartIOHeaders.parseMultipleValue(
-        _ifMatchHeader,
+        ifMatchHeader,
         onParse: IfMatchHeader.parse,
       ),
       ifNoneMatch: dartIOHeaders.parseMultipleValue(
-        _ifNoneMatchHeader,
+        ifNoneMatchHeader,
         onParse: IfNoneMatchHeader.parse,
       ),
       ifRange: dartIOHeaders.parseSingleValue(
-        _ifRangeHeader,
+        ifRangeHeader,
         onParse: IfRangeHeader.parse,
       ),
       maxForwards: dartIOHeaders.parseSingleValue(
-        _maxForwardsHeader,
+        maxForwardsHeader,
         onParse: parsePositiveInt,
       ),
       proxyAuthorization: dartIOHeaders.parseSingleValue(
-        _proxyAuthorizationHeader,
+        proxyAuthorizationHeader,
         onParse: AuthorizationHeader.parse,
       ),
       range: dartIOHeaders.parseSingleValue(
-        _rangeHeader,
+        rangeHeader,
         onParse: RangeHeader.parse,
       ),
       referer: dartIOHeaders.parseSingleValue(
-        _refererHeader,
+        refererHeader,
         onParse: parseUri,
       ),
       te: dartIOHeaders.parseMultipleValue(
-        _teHeader,
+        teHeader,
         onParse: TEHeader.parse,
       ),
       upgrade: dartIOHeaders.parseMultipleValue(
-        _upgradeHeader,
+        upgradeHeader,
         onParse: UpgradeHeader.parse,
       ),
       userAgent: dartIOHeaders.parseSingleValue(
-        _userAgentHeader,
+        userAgentHeader,
         onParse: parseString,
       ),
 
       // Response Headers
       location: dartIOHeaders.parseSingleValue(
-        _locationHeader,
+        locationHeader,
         onParse: parseUri,
       ),
       xPoweredBy: dartIOHeaders.parseSingleValue(
-            _xPoweredByHeader,
+            xPoweredByHeader,
             onParse: parseString,
           ) ??
           xPoweredBy,
       accessControlAllowCredentials: dartIOHeaders.parseSingleValue(
-        _accessControlAllowCredentialsHeader,
+        accessControlAllowCredentialsHeader,
         onParse: parsePositiveBool,
       ),
       accessControlAllowOrigin: dartIOHeaders.parseSingleValue(
-        _accessControlAllowOriginHeader,
+        accessControlAllowOriginHeader,
         onParse: AccessControlAllowOriginHeader.parse,
       ),
       accessControlExposeHeaders: dartIOHeaders.parseMultipleValue(
-        _accessControlExposeHeadersHeader,
+        accessControlExposeHeadersHeader,
         onParse: AccessControlExposeHeadersHeader.parse,
       ),
       accessControlMaxAge: dartIOHeaders.parseSingleValue(
-        _accessControlMaxAgeHeader,
+        accessControlMaxAgeHeader,
         onParse: parseInt,
       ),
       cacheControl: dartIOHeaders.parseMultipleValue(
-        _cacheControlHeader,
+        cacheControlHeader,
         onParse: CacheControlHeader.parse,
       ),
       contentDisposition: dartIOHeaders.parseSingleValue(
-        _contentDispositionHeader,
+        contentDispositionHeader,
         onParse: ContentDispositionHeader.parse,
       ),
       contentEncoding: dartIOHeaders.parseMultipleValue(
-        _contentEncodingHeader,
+        contentEncodingHeader,
         onParse: ContentEncodingHeader.parse,
       ),
       contentLanguage: dartIOHeaders.parseMultipleValue(
-        _contentLanguageHeader,
+        contentLanguageHeader,
         onParse: ContentLanguageHeader.parse,
       ),
       contentLocation: dartIOHeaders.parseSingleValue(
-        _contentLocationHeader,
+        contentLocationHeader,
         onParse: parseUri,
       ),
       contentRange: dartIOHeaders.parseSingleValue(
-        _contentRangeHeader,
+        contentRangeHeader,
         onParse: ContentRangeHeader.parse,
       ),
       etag: dartIOHeaders.parseSingleValue(
-        _etagHeader,
+        etagHeader,
         onParse: ETagHeader.parse,
       ),
       proxyAuthenticate: dartIOHeaders.parseSingleValue(
-        _proxyAuthenticationHeader,
+        proxyAuthenticationHeader,
         onParse: AuthenticationHeader.parse,
       ),
       retryAfter: dartIOHeaders.parseSingleValue(
-        _retryAfterHeader,
+        retryAfterHeader,
         onParse: RetryAfterHeader.parse,
       ),
       trailer: dartIOHeaders.parseMultipleValue(
-        _trailerHeader,
+        trailerHeader,
         onParse: parseStringList,
       ),
       transferEncoding: dartIOHeaders.parseMultipleValue(
-        _transferEncodingHeader,
+        transferEncodingHeader,
         onParse: TransferEncodingHeader.parse,
       ),
       vary: dartIOHeaders.parseMultipleValue(
-        _varyHeader,
+        varyHeader,
         onParse: VaryHeader.parse,
       ),
       wwwAuthenticate: dartIOHeaders.parseSingleValue(
-        _wwwAuthenticateHeader,
+        wwwAuthenticateHeader,
         onParse: AuthenticationHeader.parse,
       ),
 
       // Common Headers (Used in Both Requests and Responses)
       accept: dartIOHeaders.parseMultipleValue(
-        _acceptHeader,
+        acceptHeader,
         onParse: AcceptHeader.parse,
       ),
       acceptRanges: dartIOHeaders.parseSingleValue(
-        _acceptRangesHeader,
+        acceptRangesHeader,
         onParse: AcceptRangesHeader.parse,
       ),
 
       // Security and Modern Headers
       strictTransportSecurity: dartIOHeaders.parseSingleValue(
-        _strictTransportSecurityHeader,
+        strictTransportSecurityHeader,
         onParse: StrictTransportSecurityHeader.parse,
       ),
       contentSecurityPolicy: dartIOHeaders.parseSingleValue(
-        _contentSecurityPolicyHeader,
+        contentSecurityPolicyHeader,
         onParse: ContentSecurityPolicyHeader.parse,
       ),
       referrerPolicy: dartIOHeaders.parseSingleValue(
-        _referrerPolicyHeader,
+        referrerPolicyHeader,
         onParse: ReferrerPolicyHeader.parse,
       ),
       permissionsPolicy: dartIOHeaders.parseSingleValue(
-        _permissionsPolicyHeader,
+        permissionsPolicyHeader,
         onParse: PermissionsPolicyHeader.parse,
       ),
       accessControlAllowMethods: dartIOHeaders.parseMultipleValue(
-        _accessControlAllowMethodsHeader,
+        accessControlAllowMethodsHeader,
         onParse: AccessControlAllowMethodsHeader.parse,
       ),
       accessControlAllowHeaders: dartIOHeaders.parseMultipleValue(
-        _accessControlAllowHeadersHeader,
+        accessControlAllowHeadersHeader,
         onParse: AccessControlAllowHeadersHeader.parse,
       ),
       clearSiteData: dartIOHeaders.parseMultipleValue(
-        _clearSiteDataHeader,
+        clearSiteDataHeader,
         onParse: ClearSiteDataHeader.parse,
       ),
       secFetchDest: dartIOHeaders.parseSingleValue(
-        _secFetchDestHeader,
+        secFetchDestHeader,
         onParse: SecFetchDestHeader.parse,
       ),
       secFetchMode: dartIOHeaders.parseSingleValue(
-        _secFetchModeHeader,
+        secFetchModeHeader,
         onParse: SecFetchModeHeader.parse,
       ),
       secFetchSite: dartIOHeaders.parseSingleValue(
-        _secFetchSiteHeader,
+        secFetchSiteHeader,
         onParse: SecFetchSiteHeader.parse,
       ),
       crossOriginResourcePolicy: dartIOHeaders.parseSingleValue(
-        _crossOriginResourcePolicyHeader,
+        crossOriginResourcePolicyHeader,
         onParse: CrossOriginResourcePolicyHeader.parse,
       ),
       crossOriginEmbedderPolicy: dartIOHeaders.parseSingleValue(
-        _crossOriginEmbedderPolicyHeader,
+        crossOriginEmbedderPolicyHeader,
         onParse: CrossOriginEmbedderPolicyHeader.parse,
       ),
       crossOriginOpenerPolicy: dartIOHeaders.parseSingleValue(
-        _crossOriginOpenerPolicyHeader,
+        crossOriginOpenerPolicyHeader,
         onParse: CrossOriginOpenerPolicyHeader.parse,
       ),
       custom: parseCustomHeaders(
@@ -642,6 +643,7 @@ abstract class Headers {
     );
   }
 
+  /// Create a new request headers instance
   factory Headers.request({
     // Date-related headers
     DateTime? date,
@@ -831,337 +833,6 @@ abstract class Headers {
     );
   }
 
-  void applyHeaders(
-    io.HttpResponse response,
-    Body body,
-  ) {
-    var headers = response.headers;
-    headers.clear();
-
-    // Date-related headers
-    headers.date = date?.toUtc() ?? DateTime.now().toUtc();
-    headers.expires = expires;
-    headers.ifModifiedSince = ifModifiedSince;
-
-    if (xPoweredBy != null) {
-      headers.set(_xPoweredByHeader, xPoweredBy!);
-    }
-
-    if (lastModified != null) {
-      headers.set(_lastModifiedHeader, formatHttpDate(lastModified!));
-    }
-
-    // General Headers
-    if (origin != null) headers.set(_originHeader, origin!.toString());
-    if (server != null) headers.set(_serverHeader, server!);
-    if (via != null) headers.set(_viaHeader, via!);
-
-    // Request Headers
-    if (from != null) {
-      headers.set(
-        _fromHeader,
-        from!.toHeaderString(),
-      );
-    }
-    if (host != null) {
-      headers.host = host!.host;
-      headers.port = host!.port;
-    }
-    if (acceptEncoding != null) {
-      headers.set(
-        _acceptEncodingHeader,
-        acceptEncoding!.toHeaderString(),
-      );
-    }
-    if (acceptLanguage != null) {
-      headers.set(
-        _acceptLanguageHeader,
-        acceptLanguage!.toHeaderString(),
-      );
-    }
-    if (accessControlRequestHeaders != null) {
-      headers.set(
-        _accessControlRequestHeadersHeader,
-        accessControlRequestHeaders!,
-      );
-    }
-    if (accessControlRequestMethod != null) {
-      headers.set(
-        _accessControlRequestMethodHeader,
-        accessControlRequestMethod!.toHeaderString(),
-      );
-    }
-    if (age != null) headers.set(_ageHeader, age!);
-    if (authorization != null) {
-      headers.set(
-        _authorizationHeader,
-        authorization!.toHeaderString(),
-      );
-    }
-    if (connection != null) {
-      headers.set(
-        _connectionHeader,
-        connection!.toHeaderString(),
-      );
-    }
-    if (expect != null) {
-      headers.set(
-        _expectHeader,
-        expect!.toHeaderString(),
-      );
-    }
-    if (ifMatch != null) {
-      headers.set(
-        _ifMatchHeader,
-        ifMatch!.toHeaderString(),
-      );
-    }
-    if (ifNoneMatch != null) {
-      headers.set(
-        _ifNoneMatchHeader,
-        ifNoneMatch!.toHeaderString(),
-      );
-    }
-    if (ifRange != null) {
-      headers.set(
-        _ifRangeHeader,
-        ifRange!.toHeaderString(),
-      );
-    }
-    if (maxForwards != null) {
-      headers.set(_maxForwardsHeader, maxForwards!);
-    }
-    if (proxyAuthorization != null) {
-      headers.set(
-        _proxyAuthorizationHeader,
-        proxyAuthorization!.toHeaderString(),
-      );
-    }
-    if (range != null) {
-      headers.set(_rangeHeader, range!.toHeaderString());
-    }
-    if (referer != null) {
-      headers.set(_refererHeader, referer!.toString());
-    }
-    if (userAgent != null) {
-      headers.set(_userAgentHeader, userAgent!);
-    }
-    if (te != null) {
-      headers.set(_teHeader, te!.toHeaderString());
-    }
-    if (upgrade != null) {
-      headers.set(
-        _upgradeHeader,
-        upgrade!.toHeaderString(),
-      );
-    }
-
-    // Response Headers
-    if (location != null) {
-      headers.set(_locationHeader, location!.toString());
-    }
-
-    if (accessControlAllowCredentials != null) {
-      headers.set(
-        _accessControlAllowCredentialsHeader,
-        accessControlAllowCredentials!,
-      );
-    }
-    if (accessControlAllowOrigin != null) {
-      headers.set(
-        _accessControlAllowOriginHeader,
-        accessControlAllowOrigin!.toHeaderString(),
-      );
-    }
-    if (accessControlExposeHeaders != null) {
-      headers.set(
-        _accessControlExposeHeadersHeader,
-        accessControlExposeHeaders!.toHeaderString(),
-      );
-    }
-    if (accessControlMaxAge != null) {
-      headers.set(
-        _accessControlMaxAgeHeader,
-        accessControlMaxAge!,
-      );
-    }
-    if (allow != null) {
-      headers.set(
-        _allowHeader,
-        allow!.map((m) => m.toHeaderString()).join(','),
-      );
-    }
-    if (cacheControl != null) {
-      headers.set(
-        _cacheControlHeader,
-        cacheControl!.toHeaderString(),
-      );
-    }
-    if (contentEncoding != null) {
-      headers.set(
-        _contentEncodingHeader,
-        contentEncoding!.toHeaderString(),
-      );
-    }
-    if (contentLanguage != null) {
-      headers.set(
-        _contentLanguageHeader,
-        contentLanguage!.toHeaderString(),
-      );
-    }
-    if (contentLocation != null) {
-      headers.set(
-        _contentLocationHeader,
-        contentLocation!.toString(),
-      );
-    }
-    if (contentRange != null) {
-      headers.set(
-        _contentRangeHeader,
-        contentRange!.toHeaderString(),
-      );
-    }
-    if (etag != null) {
-      headers.set(_etagHeader, etag!.toHeaderString());
-    }
-    if (proxyAuthenticate != null) {
-      headers.set(
-        _proxyAuthenticationHeader,
-        proxyAuthenticate!.toHeaderString(),
-      );
-    }
-    if (retryAfter != null) {
-      headers.set(
-        _retryAfterHeader,
-        retryAfter!.toHeaderString(),
-      );
-    }
-    if (trailer != null) {
-      headers.set(_trailerHeader, trailer!);
-    }
-    if (transferEncoding != null) {
-      headers.set(
-        _transferEncodingHeader,
-        transferEncoding!.toHeaderString(),
-      );
-    }
-    if (vary != null) {
-      headers.set(
-        _varyHeader,
-        vary!.toHeaderString(),
-      );
-    }
-    if (wwwAuthenticate != null) {
-      headers.set(
-        _wwwAuthenticateHeader,
-        wwwAuthenticate!.toHeaderString(),
-      );
-    }
-    if (contentDisposition != null) {
-      headers.set(
-        _contentDispositionHeader,
-        contentDisposition!.toHeaderString(),
-      );
-    }
-
-    // Security and Modern Headers
-    if (cookie != null) {
-      headers.set(_cookieHeader, cookie!.toHeaderString());
-    }
-    if (setCookie != null) {
-      headers.set(_setCookieHeader, setCookie!.toHeaderString());
-    }
-    if (strictTransportSecurity != null) {
-      headers.set(
-        _strictTransportSecurityHeader,
-        strictTransportSecurity!.toHeaderString(),
-      );
-    }
-    if (contentSecurityPolicy != null) {
-      headers.set(
-        _contentSecurityPolicyHeader,
-        contentSecurityPolicy!.toHeaderString(),
-      );
-    }
-    if (referrerPolicy != null) {
-      headers.set(
-        _referrerPolicyHeader,
-        referrerPolicy!.toHeaderString(),
-      );
-    }
-    if (permissionsPolicy != null) {
-      headers.set(
-        _permissionsPolicyHeader,
-        permissionsPolicy!.toHeaderString(),
-      );
-    }
-    if (accessControlAllowMethods != null) {
-      headers.set(
-        _accessControlAllowMethodsHeader,
-        accessControlAllowMethods!.toHeaderString(),
-      );
-    }
-    if (accessControlAllowHeaders != null) {
-      headers.set(
-        _accessControlAllowHeadersHeader,
-        accessControlAllowHeaders!.toHeaderString(),
-      );
-    }
-    if (clearSiteData != null) {
-      headers.set(
-        _clearSiteDataHeader,
-        clearSiteData!.toHeaderString(),
-      );
-    }
-    if (secFetchDest != null) {
-      headers.set(
-        _secFetchDestHeader,
-        secFetchDest!.toHeaderString(),
-      );
-    }
-    if (secFetchMode != null) {
-      headers.set(
-        _secFetchModeHeader,
-        secFetchMode!.toHeaderString(),
-      );
-    }
-    if (secFetchSite != null) {
-      headers.set(
-        _secFetchSiteHeader,
-        secFetchSite!.toHeaderString(),
-      );
-    }
-    if (crossOriginResourcePolicy != null) {
-      headers.set(
-        _crossOriginResourcePolicyHeader,
-        crossOriginResourcePolicy!.toHeaderString(),
-      );
-    }
-    if (crossOriginEmbedderPolicy != null) {
-      headers.set(
-        _crossOriginEmbedderPolicyHeader,
-        crossOriginEmbedderPolicy!.toHeaderString(),
-      );
-    }
-    if (crossOriginOpenerPolicy != null) {
-      headers.set(
-        _crossOriginOpenerPolicyHeader,
-        crossOriginOpenerPolicy!.toHeaderString(),
-      );
-    }
-
-    // Set custom headers
-    for (var entry in custom.entries) {
-      headers.set(entry.key, entry.value);
-    }
-
-    // Set the content length from the Body
-    headers.contentLength = body.contentLength ?? 0;
-
-    // Set the content type from the Body
-    headers.contentType = body.getContentType();
-  }
-
   Headers copyWith({
     /// Date-related headers
     DateTime? date,
@@ -1241,124 +912,14 @@ abstract class Headers {
     CrossOriginOpenerPolicyHeader? crossOriginOpenerPolicy,
   });
 
-  Map<String, Object> toMap() {
-    return {
-      /// Date-related headers
-      if (date != null) _dateHeader: '$date',
-      if (expires != null) _expiresHeader: '$expires',
-      if (ifModifiedSince != null) _ifModifiedSinceHeader: '$ifModifiedSince',
-      if (lastModified != null) _lastModifiedHeader: '$lastModified',
+  /// Apply headers to the response
+  void applyHeaders(io.HttpResponse response, Body body);
 
-      /// General Headers
-      if (origin != null) _originHeader: origin!.toString(),
-      if (server != null) _serverHeader: server!,
-      if (via != null) _viaHeader: via!,
-      if (cookie != null) _cookieHeader: cookie!.toHeaderString(),
-      if (setCookie != null) _setCookieHeader: setCookie!.toHeaderString(),
-
-      /// Request Headers
-      if (from != null) _fromHeader: from!.toHeaderString(),
-      if (host != null) _hostHeader: host!,
-      if (acceptEncoding != null)
-        _acceptEncodingHeader: acceptEncoding!.toHeaderString(),
-      if (acceptLanguage != null)
-        _acceptLanguageHeader: acceptLanguage!.toHeaderString(),
-      if (accessControlRequestHeaders != null)
-        _accessControlRequestHeadersHeader: accessControlRequestHeaders!,
-      if (accessControlRequestMethod != null)
-        _accessControlRequestMethodHeader:
-            accessControlRequestMethod!.toHeaderString(),
-      if (age != null) _ageHeader: age!,
-      if (authorization != null)
-        _authorizationHeader: authorization!.toHeaderString(),
-      if (connection != null) _connectionHeader: connection!.toHeaderString(),
-      if (expect != null) _expectHeader: expect!.toHeaderString(),
-      if (ifMatch != null) _ifMatchHeader: ifMatch!.toHeaderString(),
-      if (ifNoneMatch != null)
-        _ifNoneMatchHeader: ifNoneMatch!.toHeaderString(),
-      if (ifRange != null) _ifRangeHeader: ifRange!.toHeaderString(),
-      if (maxForwards != null) _maxForwardsHeader: maxForwards!,
-      if (proxyAuthorization != null)
-        _proxyAuthorizationHeader: proxyAuthorization!.toHeaderString(),
-      if (range != null) _rangeHeader: range!.toHeaderString(),
-      if (referer != null) _refererHeader: referer!.toString(),
-      if (userAgent != null) _userAgentHeader: userAgent!,
-      if (te != null) _teHeader: te!.toHeaderString(),
-      if (upgrade != null) _upgradeHeader: upgrade!.toHeaderString(),
-
-      /// Response Headers
-      if (location != null) _locationHeader: location!.toString(),
-      if (xPoweredBy != null) _xPoweredByHeader: xPoweredBy!,
-      if (accessControlAllowCredentials != null)
-        _accessControlAllowCredentialsHeader: accessControlAllowCredentials!,
-      if (accessControlAllowOrigin != null)
-        _accessControlAllowOriginHeader:
-            accessControlAllowOrigin!.toHeaderString(),
-      if (accessControlExposeHeaders != null)
-        _accessControlExposeHeadersHeader:
-            accessControlExposeHeaders!.toHeaderString(),
-      if (accessControlMaxAge != null)
-        _accessControlMaxAgeHeader: accessControlMaxAge!,
-      if (allow != null) _allowHeader: allow!.map((m) => m.toHeaderString()),
-      if (cacheControl != null) _cacheControlHeader: cacheControl!,
-      if (contentEncoding != null)
-        _contentEncodingHeader: contentEncoding!.toHeaderString(),
-      if (contentLanguage != null)
-        _contentLanguageHeader: contentLanguage!.toHeaderString(),
-      if (contentLocation != null)
-        _contentLocationHeader: contentLocation!.toString(),
-      if (contentRange != null)
-        _contentRangeHeader: contentRange!.toHeaderString(),
-      if (etag != null) _etagHeader: etag!.toHeaderString(),
-      if (proxyAuthenticate != null)
-        _proxyAuthenticationHeader: proxyAuthenticate!.toHeaderString(),
-      if (retryAfter != null) _retryAfterHeader: retryAfter!.toHeaderString(),
-      if (trailer != null) _trailerHeader: trailer!,
-      if (vary != null) _varyHeader: vary!.toHeaderString(),
-      if (wwwAuthenticate != null)
-        _wwwAuthenticateHeader: wwwAuthenticate!.toHeaderString(),
-      if (contentDisposition != null)
-        _contentDispositionHeader: contentDisposition!.toHeaderString(),
-
-      /// Security and Modern Headers
-      if (strictTransportSecurity != null)
-        _strictTransportSecurityHeader:
-            strictTransportSecurity!.toHeaderString(),
-      if (contentSecurityPolicy != null)
-        _contentSecurityPolicyHeader: contentSecurityPolicy!.toHeaderString(),
-      if (referrerPolicy != null) _referrerPolicyHeader: referrerPolicy!,
-      if (permissionsPolicy != null)
-        _permissionsPolicyHeader: permissionsPolicy!.toHeaderString(),
-      if (accessControlAllowMethods != null)
-        _accessControlAllowMethodsHeader:
-            accessControlAllowMethods!.toHeaderString(),
-      if (accessControlAllowHeaders != null)
-        _accessControlAllowHeadersHeader:
-            accessControlAllowHeaders!.toHeaderString(),
-      if (clearSiteData != null)
-        _clearSiteDataHeader: clearSiteData!.toHeaderString(),
-      if (secFetchDest != null)
-        _secFetchDestHeader: secFetchDest!.toHeaderString(),
-      if (secFetchMode != null)
-        _secFetchModeHeader: secFetchMode!.toHeaderString(),
-      if (secFetchSite != null)
-        _secFetchSiteHeader: secFetchSite!.toHeaderString(),
-      if (crossOriginResourcePolicy != null)
-        _crossOriginResourcePolicyHeader:
-            crossOriginResourcePolicy!.toHeaderString(),
-      if (crossOriginEmbedderPolicy != null)
-        _crossOriginEmbedderPolicyHeader:
-            crossOriginEmbedderPolicy!.toHeaderString(),
-      if (crossOriginOpenerPolicy != null)
-        _crossOriginOpenerPolicyHeader:
-            crossOriginOpenerPolicy!.toHeaderString(),
-
-      // Custom headers
-      ...custom,
-    };
-  }
+  /// Convert headers to a map
+  Map<String, Object> toMap();
 }
 
+/// Headers implementation
 class _HeadersImpl extends Headers {
   _HeadersImpl({
     /// Date-related headers
@@ -1676,6 +1237,246 @@ class _HeadersImpl extends Headers {
       failedHeadersToParse: failedHeadersToParse,
     );
   }
+
+  /// Apply headers to the response
+  @override
+  void applyHeaders(
+    io.HttpResponse response,
+    Body body,
+  ) {
+    var headers = response.headers;
+    headers.clear();
+
+    // Date-related headers
+    var dateHeaders = _dateHeadersMap;
+    for (var entry in dateHeaders.entries) {
+      var key = entry.key;
+      var value = entry.value;
+      if (value != null) {
+        headers.set(key, formatHttpDate(value));
+      }
+    }
+
+    // Number-related headers
+    var numberHeaders = _numberHeadersMap;
+    for (var entry in numberHeaders.entries) {
+      var key = entry.key;
+      var value = entry.value;
+      if (value != null) {
+        headers.set(key, value);
+      }
+    }
+
+    // String-related headers
+    var stringHeaders = _stringHeadersMap;
+    for (var entry in stringHeaders.entries) {
+      var key = entry.key;
+      var value = entry.value;
+      if (value != null) {
+        headers.set(key, value);
+      }
+    }
+
+    // List<String>-related headers
+    var listStringHeaders = _listStringHeadersMap;
+    for (var entry in listStringHeaders.entries) {
+      var key = entry.key;
+      var value = entry.value;
+      if (value != null) {
+        headers.set(key, value);
+      }
+    }
+
+    // Uri-related headers
+    var uriHeaders = _uriHeadersMap;
+    for (var entry in uriHeaders.entries) {
+      var key = entry.key;
+      var value = entry.value;
+      if (value != null) {
+        headers.set(key, value.toString());
+      }
+    }
+
+    // TypedHeader-related headers
+    var typedHeaders = _typedHeadersMap;
+    for (var entry in typedHeaders.entries) {
+      var key = entry.key;
+      var value = entry.value;
+      if (value != null) {
+        headers.set(key, value.toHeaderString());
+      }
+    }
+
+    // Set custom headers
+    for (var entry in custom.entries) {
+      headers.set(entry.key, entry.value);
+    }
+
+    // Set the content length from the Body
+    headers.contentLength = body.contentLength ?? 0;
+
+    // Set the content type from the Body
+    headers.contentType = body.getContentType();
+  }
+
+  /// Convert headers to a map
+  @override
+  Map<String, Object> toMap() {
+    var map = <String, Object>{};
+
+    // Date-related headers
+    var dateHeaders = _dateHeadersMap;
+    for (var entry in dateHeaders.entries) {
+      var key = entry.key;
+      var value = entry.value;
+      if (value != null) {
+        map[key] = formatHttpDate(value);
+      }
+    }
+
+    // Number-related headers
+    var numberHeaders = _numberHeadersMap;
+    for (var entry in numberHeaders.entries) {
+      var key = entry.key;
+      var value = entry.value;
+      if (value != null) {
+        map[key] = value;
+      }
+    }
+
+    // String-related headers
+    var stringHeaders = _stringHeadersMap;
+    for (var entry in stringHeaders.entries) {
+      var key = entry.key;
+      var value = entry.value;
+      if (value != null) {
+        map[key] = value;
+      }
+    }
+
+    // List<String>-related headers
+    var listStringHeaders = _listStringHeadersMap;
+    for (var entry in listStringHeaders.entries) {
+      var key = entry.key;
+      var value = entry.value;
+      if (value != null) {
+        map[key] = value;
+      }
+    }
+
+    // Uri-related headers
+    var uriHeaders = _uriHeadersMap;
+    for (var entry in uriHeaders.entries) {
+      var key = entry.key;
+      var value = entry.value;
+      if (value != null) {
+        map[key] = value.toString();
+      }
+    }
+
+    // TypedHeader-related headers
+    var typedHeaders = _typedHeadersMap;
+    for (var entry in typedHeaders.entries) {
+      var key = entry.key;
+      var value = entry.value;
+      if (value != null) {
+        map[key] = value.toHeaderString();
+      }
+    }
+
+    // Custom headers
+    for (var entry in custom.entries) {
+      map[entry.key] = entry.value;
+    }
+
+    return map;
+  }
+
+  /// Date-related headers
+  Map<String, DateTime?> get _dateHeadersMap => {
+        Headers.dateHeader: date ?? DateTime.now().toUtc(),
+        Headers.expiresHeader: expires,
+        Headers.ifModifiedSinceHeader: ifModifiedSince,
+        Headers.lastModifiedHeader: lastModified,
+      };
+
+  /// Number-related headers
+  Map<String, int?> get _numberHeadersMap => <String, int?>{
+        Headers.ageHeader: age,
+        Headers.maxForwardsHeader: maxForwards,
+        Headers.accessControlMaxAgeHeader: accessControlMaxAge,
+      };
+
+  /// String-related headers
+  Map<String, String?> get _stringHeadersMap => <String, String?>{
+        Headers.serverHeader: server,
+        Headers.userAgentHeader: userAgent,
+        Headers.xPoweredByHeader: xPoweredBy,
+      };
+
+  /// List<String>-related headers
+  Map<String, List<String>?> get _listStringHeadersMap =>
+      <String, List<String>?>{
+        Headers.viaHeader: via,
+        Headers.allowHeader: allow?.map((m) => m.toHeaderString()).toList(),
+        Headers.accessControlRequestHeadersHeader: accessControlRequestHeaders,
+        Headers.trailerHeader: trailer,
+      };
+
+  /// Uri-related headers
+  Map<String, Uri?> get _uriHeadersMap => <String, Uri?>{
+        Headers.locationHeader: location,
+        Headers.refererHeader: referer,
+        Headers.contentLocationHeader: contentLocation,
+        Headers.originHeader: origin,
+        Headers.hostHeader: host,
+      };
+
+  /// TypedHeader-related headers
+  Map<String, TypedHeader?> get _typedHeadersMap => <String, TypedHeader?>{
+        Headers.fromHeader: from,
+        Headers.acceptEncodingHeader: acceptEncoding,
+        Headers.acceptLanguageHeader: acceptLanguage,
+        Headers.accessControlRequestMethodHeader: accessControlRequestMethod,
+        Headers.authorizationHeader: authorization,
+        Headers.connectionHeader: connection,
+        Headers.expectHeader: expect,
+        Headers.ifMatchHeader: ifMatch,
+        Headers.ifNoneMatchHeader: ifNoneMatch,
+        Headers.ifRangeHeader: ifRange,
+        Headers.proxyAuthorizationHeader: proxyAuthorization,
+        Headers.rangeHeader: range,
+        Headers.teHeader: te,
+        Headers.upgradeHeader: upgrade,
+        Headers.accessControlAllowOriginHeader: accessControlAllowOrigin,
+        Headers.accessControlExposeHeadersHeader: accessControlExposeHeaders,
+        Headers.cacheControlHeader: cacheControl,
+        Headers.contentEncodingHeader: contentEncoding,
+        Headers.contentLanguageHeader: contentLanguage,
+        Headers.contentRangeHeader: contentRange,
+        Headers.etagHeader: etag,
+        Headers.proxyAuthenticationHeader: proxyAuthenticate,
+        Headers.retryAfterHeader: retryAfter,
+        Headers.transferEncodingHeader: transferEncoding,
+        Headers.varyHeader: vary,
+        Headers.wwwAuthenticateHeader: wwwAuthenticate,
+        Headers.contentDispositionHeader: contentDisposition,
+        Headers.cookieHeader: cookie,
+        Headers.setCookieHeader: setCookie,
+        Headers.strictTransportSecurityHeader: strictTransportSecurity,
+        Headers.contentSecurityPolicyHeader: contentSecurityPolicy,
+        Headers.referrerPolicyHeader: referrerPolicy,
+        Headers.permissionsPolicyHeader: permissionsPolicy,
+        Headers.accessControlAllowMethodsHeader: accessControlAllowMethods,
+        Headers.accessControlAllowHeadersHeader: accessControlAllowHeaders,
+        Headers.clearSiteDataHeader: clearSiteData,
+        Headers.secFetchDestHeader: secFetchDest,
+        Headers.secFetchModeHeader: secFetchMode,
+        Headers.secFetchSiteHeader: secFetchSite,
+        Headers.crossOriginResourcePolicyHeader: crossOriginResourcePolicy,
+        Headers.crossOriginEmbedderPolicyHeader: crossOriginEmbedderPolicy,
+        Headers.crossOriginOpenerPolicyHeader: crossOriginOpenerPolicy,
+      };
 }
 
 class _Undefined {}

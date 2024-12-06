@@ -1,5 +1,7 @@
+import 'package:relic/src/headers/typed/typed_headers.dart';
+
 /// Represents the HTTP methods used in requests as constants.
-class Method {
+class Method extends TypedHeader {
   /// The string representation of the HTTP method.
   final String value;
 
@@ -47,6 +49,7 @@ class Method {
   }
 
   /// Returns the string representation of the HTTP method.
+  @override
   String toHeaderString() => value;
 
   @override

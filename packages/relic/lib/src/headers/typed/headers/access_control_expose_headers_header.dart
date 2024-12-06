@@ -1,10 +1,11 @@
 import 'package:relic/src/headers/extension/string_list_extensions.dart';
+import 'package:relic/src/headers/typed/base/typed_header.dart';
 
 /// A class representing the HTTP Access-Control-Expose-Headers header.
 ///
 /// This header specifies which headers can be exposed as part of the response
 /// by listing them explicitly or using a wildcard (`*`) to expose all headers.
-class AccessControlExposeHeadersHeader {
+class AccessControlExposeHeadersHeader extends TypedHeader {
   /// The list of headers that can be exposed.
   final List<String>? headers;
 
@@ -12,11 +13,11 @@ class AccessControlExposeHeadersHeader {
   final bool isWildcard;
 
   /// Constructs an instance allowing specific headers to be exposed.
-  AccessControlExposeHeadersHeader.headers({required this.headers})
+  const AccessControlExposeHeadersHeader.headers({required this.headers})
       : isWildcard = false;
 
   /// Constructs an instance allowing all headers to be exposed (`*`).
-  AccessControlExposeHeadersHeader.wildcard()
+  const AccessControlExposeHeadersHeader.wildcard()
       : headers = null,
         isWildcard = true;
 
@@ -43,6 +44,7 @@ class AccessControlExposeHeadersHeader {
 
   /// Converts the [AccessControlExposeHeadersHeader] instance into a string
   /// representation suitable for HTTP headers.
+  @override
   String toHeaderString() => isWildcard ? '*' : headers?.join(', ') ?? '';
 
   @override

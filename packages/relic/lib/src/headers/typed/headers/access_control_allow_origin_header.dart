@@ -1,8 +1,10 @@
+import 'package:relic/src/headers/typed/base/typed_header.dart';
+
 /// A class representing the HTTP Access-Control-Allow-Origin header.
 ///
 /// This header specifies which origins are allowed to access the resource.
 /// It can be a specific origin or a wildcard (`*`) to allow any origin.
-class AccessControlAllowOriginHeader {
+class AccessControlAllowOriginHeader extends TypedHeader {
   /// The allowed origin URI, if specified.
   final Uri? origin;
 
@@ -10,11 +12,11 @@ class AccessControlAllowOriginHeader {
   final bool isWildcard;
 
   /// Constructs an instance allowing a specific origin.
-  AccessControlAllowOriginHeader.origin({required this.origin})
+  const AccessControlAllowOriginHeader.origin({required this.origin})
       : isWildcard = false;
 
   /// Constructs an instance allowing any origin (`*`).
-  AccessControlAllowOriginHeader.wildcard()
+  const AccessControlAllowOriginHeader.wildcard()
       : origin = null,
         isWildcard = true;
 
@@ -43,6 +45,7 @@ class AccessControlAllowOriginHeader {
 
   /// Converts the [AccessControlAllowOriginHeader] instance into a string
   /// representation suitable for HTTP headers.
+  @override
   String toHeaderString() => isWildcard ? '*' : origin.toString();
 
   @override

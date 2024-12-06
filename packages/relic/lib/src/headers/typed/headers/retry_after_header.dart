@@ -1,11 +1,12 @@
 import 'package:http_parser/http_parser.dart';
+import 'package:relic/src/headers/typed/base/typed_header.dart';
 
 /// A class representing the HTTP Retry-After header.
 ///
 /// This class manages both date-based and delay-based retry values.
 /// The Retry-After header can contain either an HTTP date or a delay in seconds
 /// indicating when the client should retry the request.
-class RetryAfterHeader {
+class RetryAfterHeader extends TypedHeader {
   /// The retry delay in seconds, if present.
   final int? delay;
 
@@ -50,7 +51,9 @@ class RetryAfterHeader {
     }
   }
 
-  /// Converts the [RetryAfterHeader] instance into a string representation suitable for HTTP headers.
+  /// Converts the [RetryAfterHeader] instance into a string representation
+  /// suitable for HTTP headers.
+  @override
   String toHeaderString() {
     if (delay != null) {
       return delay.toString();

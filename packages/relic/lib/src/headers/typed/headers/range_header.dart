@@ -1,3 +1,5 @@
+import 'package:relic/src/headers/typed/base/typed_header.dart';
+
 /// A class representing the HTTP Range header.
 ///
 /// This class manages byte ranges, such as `bytes=0-499` or multiple
@@ -5,7 +7,7 @@
 /// request specific parts of a resource. It provides functionality to
 /// parse and generate range header values for different range units like
 /// bytes or custom units.
-class RangeHeader {
+class RangeHeader extends TypedHeader {
   /// The unit of the range (e.g., "bytes").
   final String unit;
 
@@ -66,6 +68,7 @@ class RangeHeader {
 
   /// Converts the [RangeHeader] instance into a string representation
   /// suitable for HTTP headers.
+  @override
   String toHeaderString() {
     final rangesStr = ranges.map((range) => range.toHeaderString()).join(', ');
     return '$unit=$rangesStr';

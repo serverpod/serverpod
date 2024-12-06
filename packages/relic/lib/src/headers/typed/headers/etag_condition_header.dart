@@ -1,8 +1,9 @@
 import 'package:relic/src/headers/extension/string_list_extensions.dart';
+import 'package:relic/src/headers/typed/base/typed_header.dart';
 import 'package:relic/src/headers/typed/headers/etag_header.dart';
 
 /// Base class for ETag-based conditional headers (If-Match and If-None-Match).
-abstract class ETagConditionHeader {
+abstract class ETagConditionHeader extends TypedHeader {
   /// The list of ETags to match against.
   final List<ETagHeader> etags;
 
@@ -18,6 +19,7 @@ abstract class ETagConditionHeader {
         isWildcard = true;
 
   /// Converts the header instance to its string representation.
+  @override
   String toHeaderString() {
     if (isWildcard) return '*';
     return etags.map((e) => e.toHeaderString()).join(', ');

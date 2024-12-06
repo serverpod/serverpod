@@ -1,9 +1,11 @@
 import 'package:relic/src/headers/extension/string_list_extensions.dart';
+import 'package:relic/src/headers/typed/base/typed_header.dart';
 
 /// A class representing the HTTP Upgrade header.
 ///
-/// This class manages the protocols that the client supports for upgrading the connection.
-class UpgradeHeader {
+/// This class manages the protocols that the client supports for upgrading the
+/// connection.
+class UpgradeHeader extends TypedHeader {
   /// The list of protocols that the client supports.
   final List<UpgradeProtocol> protocols;
 
@@ -25,9 +27,12 @@ class UpgradeHeader {
     return UpgradeHeader(protocols: protocols);
   }
 
-  /// Converts the [UpgradeHeader] instance into a string representation suitable for HTTP headers.
-  String toHeaderString() =>
-      protocols.map((protocol) => protocol.toHeaderString()).join(', ');
+  /// Converts the [UpgradeHeader] instance into a string representation
+  /// suitable for HTTP headers.
+  @override
+  String toHeaderString() {
+    return protocols.map((protocol) => protocol.toHeaderString()).join(', ');
+  }
 
   @override
   String toString() {

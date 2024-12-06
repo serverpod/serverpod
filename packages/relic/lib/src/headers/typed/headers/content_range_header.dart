@@ -1,8 +1,10 @@
+import 'package:relic/src/headers/typed/base/typed_header.dart';
+
 /// A class representing an HTTP Content-Range header for byte ranges.
 ///
 /// This class is used to manage byte ranges in HTTP requests or responses,
 /// including cases for unsatisfiable range requests.
-class ContentRangeHeader {
+class ContentRangeHeader extends TypedHeader {
   /// The unit of the range, e.g. "bytes".
   final String unit;
 
@@ -16,7 +18,7 @@ class ContentRangeHeader {
   final int? size;
 
   /// Constructs a [ContentRangeHeader] with the specified range and optional total size.
-  ContentRangeHeader({
+  const ContentRangeHeader({
     this.unit = 'bytes',
     this.start,
     this.end,
@@ -63,6 +65,7 @@ class ContentRangeHeader {
   /// Returns the full content range string in the format "bytes start-end/totalSize".
   ///
   /// If the total size is unknown, it uses "*" in place of the total size.
+  @override
   String toHeaderString() {
     final sizeStr = size?.toString() ?? '*';
     if (start == null && end == null) {

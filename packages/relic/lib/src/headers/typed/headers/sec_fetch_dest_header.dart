@@ -1,7 +1,9 @@
+import 'package:relic/src/headers/typed/base/typed_header.dart';
+
 /// A class representing the HTTP Sec-Fetch-Dest header.
 ///
 /// This header indicates the destination of the request.
-class SecFetchDestHeader {
+class SecFetchDestHeader extends TypedHeader {
   /// The destination value of the request.
   final String destination;
 
@@ -117,7 +119,9 @@ class SecFetchDestHeader {
     }
   }
 
-  /// Converts the [SecFetchDestHeader] instance into a string representation suitable for HTTP headers.
+  /// Converts the [SecFetchDestHeader] instance into a string representation
+  /// suitable for HTTP headers.
+  @override
   String toHeaderString() => destination;
 
   @override
