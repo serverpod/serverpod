@@ -25,7 +25,6 @@ void main() {
     setUp(() async {
       var neverEndingStreamControllerCompleter =
           Completer<StreamController<int>>();
-
       MethodStreaming.neverEndingStreamController =
           neverEndingStreamControllerCompleter;
 
