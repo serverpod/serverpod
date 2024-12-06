@@ -48,7 +48,7 @@ import '../endpoints/test_tools.dart' as _i36;
 import '../my_feature/endpoints/my_feature_endpoint.dart' as _i37;
 import 'dart:typed_data' as _i38;
 import 'package:uuid/uuid_value.dart' as _i39;
-import 'package:serverpod_test_server/src/custom_classes.dart' as _i40;
+import 'package:serverpod_test_shared/src/custom_classes.dart' as _i40;
 import 'package:serverpod_test_shared/src/external_custom_class.dart' as _i41;
 import 'package:serverpod_test_shared/src/freezed_custom_class.dart' as _i42;
 import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i43;
@@ -1102,6 +1102,64 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['customTypes'] as _i8.CustomTypesEndpoint)
                   .returnFreezedCustomClassNullable(
+            session,
+            params['data'],
+          ),
+        ),
+        'returnCustomClassWithoutProtocolSerialization': _i1.MethodConnector(
+          name: 'returnCustomClassWithoutProtocolSerialization',
+          params: {
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<_i40.CustomClassWithoutProtocolSerialization>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['customTypes'] as _i8.CustomTypesEndpoint)
+                  .returnCustomClassWithoutProtocolSerialization(
+            session,
+            params['data'],
+          ),
+        ),
+        'returnCustomClassWithProtocolSerialization': _i1.MethodConnector(
+          name: 'returnCustomClassWithProtocolSerialization',
+          params: {
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<_i40.CustomClassWithProtocolSerialization>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['customTypes'] as _i8.CustomTypesEndpoint)
+                  .returnCustomClassWithProtocolSerialization(
+            session,
+            params['data'],
+          ),
+        ),
+        'returnCustomClassWithProtocolSerializationMethod': _i1.MethodConnector(
+          name: 'returnCustomClassWithProtocolSerializationMethod',
+          params: {
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1
+                  .getType<_i40.CustomClassWithProtocolSerializationMethod>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['customTypes'] as _i8.CustomTypesEndpoint)
+                  .returnCustomClassWithProtocolSerializationMethod(
             session,
             params['data'],
           ),

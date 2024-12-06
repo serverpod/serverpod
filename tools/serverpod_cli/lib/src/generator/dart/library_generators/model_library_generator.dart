@@ -12,6 +12,12 @@ import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
+/// The name of the method used to convert a model to JSON.
+const String _toJsonMethodName = 'toJson';
+
+/// The name of the method used to convert a model to JSON for protocol serialization.
+const String _toJsonForProtocolMethodName = 'toJsonForProtocol';
+
 /// Generates the dart libraries for [SerializableModelDefinition]s.
 class SerializableModelLibraryGenerator {
   final bool serverCode;
@@ -413,13 +419,13 @@ class SerializableModelLibraryGenerator {
         }))
         ..methods.add(Method((methodBuilder) {
           methodBuilder
-            ..name = 'toJson'
+            ..name = _toJsonMethodName
             ..annotations.add(refer('override'))
             ..returns = refer('Map<String, dynamic>')
             ..body = Block((blockBuilder) {
               blockBuilder.statements.add(
                 refer('var jsonMap')
-                    .assign(refer('super').property('toJson').call([]))
+                    .assign(refer('super').property(_toJsonMethodName).call([]))
                     .statement,
               );
 
@@ -827,7 +833,7 @@ class SerializableModelLibraryGenerator {
     return Method(
       (m) {
         m.returns = refer('Map<String,dynamic>');
-        m.name = 'toJson';
+        m.name = _toJsonMethodName;
         m.annotations.add(refer('override'));
 
         var filteredFields = fields;
@@ -840,7 +846,10 @@ class SerializableModelLibraryGenerator {
               .where((field) => field.shouldSerializeField(serverCode));
         }
 
-        m.body = _createToJsonBodyFromFields(filteredFields, 'toJson');
+        m.body = _createToJsonBodyFromFields(
+          filteredFields,
+          _toJsonMethodName,
+        );
       },
     );
   }
@@ -851,14 +860,16 @@ class SerializableModelLibraryGenerator {
     return Method(
       (m) {
         m.returns = refer('Map<String,dynamic>');
-        m.name = 'toJsonForProtocol';
+        m.name = _toJsonForProtocolMethodName;
         m.annotations.add(refer('override'));
 
         var filteredFields =
             fields.where((field) => field.shouldSerializeField(serverCode));
 
-        m.body =
-            _createToJsonBodyFromFields(filteredFields, 'toJsonForProtocol');
+        m.body = _createToJsonBodyFromFields(
+          filteredFields,
+          _toJsonForProtocolMethodName,
+        );
       },
     );
   }
@@ -887,15 +898,54 @@ class SerializableModelLibraryGenerator {
   Expression _toJsonCallConversionMethod(
     Reference fieldRef,
     TypeDefinition fieldType,
-    String toJsonMethodName,
+    String methodName,
   ) {
     if (fieldType.isSerializedValue) return fieldRef;
 
     Expression fieldExpression = fieldRef;
 
+    // If the field is a custom class and we are generating 'toJsonForProtocol',
+    // we need to check if it implements the ProtocolSerialization interface. If
+    // it does, we use the 'toJsonForProtocol' method to convert the field to
+    // JSON. Otherwise we use the 'toJson' method.
+    if (fieldType.customClass && methodName == _toJsonForProtocolMethodName) {
+      var protocolSerialization = refer(
+        'ProtocolSerialization',
+        serverpodUrl(serverCode),
+      );
+
+      var toJsonForProtocolExpression = switch (fieldType.nullable) {
+        true => fieldExpression
+            .asA(protocolSerialization)
+            .nullSafeProperty(_toJsonForProtocolMethodName),
+        false => fieldExpression
+            .asA(protocolSerialization)
+            .property(_toJsonForProtocolMethodName),
+      };
+
+      var toJsonExpression = switch (fieldType.nullable) {
+        true => fieldExpression.nullSafeProperty(_toJsonMethodName),
+        false => fieldExpression.property(_toJsonMethodName),
+      };
+
+      fieldExpression = CodeExpression(
+        Block.of(
+          [
+            const Code('\n// ignore: unnecessary_type_check'),
+            fieldExpression.isA(protocolSerialization).code,
+            const Code('?'),
+            toJsonForProtocolExpression.call([]).code,
+            const Code(':'),
+            toJsonExpression.call([]).code,
+          ],
+        ),
+      );
+      return fieldExpression;
+    }
+
     var toJson = fieldType.isSerializedByExtension || fieldType.isEnumType
-        ? 'toJson'
-        : toJsonMethodName;
+        ? _toJsonMethodName
+        : methodName;
 
     if (fieldType.nullable) {
       fieldExpression = fieldExpression.nullSafeProperty(toJson);
@@ -916,7 +966,7 @@ class SerializableModelLibraryGenerator {
             ..body = _toJsonCallConversionMethod(
               refer('v'),
               fieldType.generics.first,
-              toJsonMethodName,
+              methodName,
             ).code,
         ).closure
       };
@@ -933,11 +983,12 @@ class SerializableModelLibraryGenerator {
               ..body = _toJsonCallConversionMethod(
                 refer('k'),
                 fieldType.generics.first,
-                toJsonMethodName,
+                methodName,
               ).code,
           ).closure
         };
       }
+
       if (!fieldType.generics.last.isSerializedValue) {
         namedParams = {
           ...namedParams,
@@ -950,7 +1001,7 @@ class SerializableModelLibraryGenerator {
               ..body = _toJsonCallConversionMethod(
                 refer('v'),
                 fieldType.generics.last,
-                toJsonMethodName,
+                methodName,
               ).code,
           ).closure
         };
@@ -1290,10 +1341,12 @@ class SerializableModelLibraryGenerator {
     return Method(
       (m) => m
         ..annotations.add(refer('override'))
-        ..returns = TypeReference((t) => t
-          ..symbol = 'Table'
-          ..isNullable = true
-          ..url = 'package:serverpod/serverpod.dart')
+        ..returns = TypeReference(
+          (t) => t
+            ..symbol = 'Table'
+            ..isNullable = true
+            ..url = serverpodUrl(true),
+        )
         ..name = 'getRelationTable'
         ..requiredParameters.add(
           Parameter(
@@ -1328,9 +1381,13 @@ class SerializableModelLibraryGenerator {
     return Method(
       (m) => m
         ..annotations.add(refer('override'))
-        ..returns = TypeReference((t) => t
-          ..symbol = 'List'
-          ..types.add(refer('Column', 'package:serverpod/serverpod.dart')))
+        ..returns = TypeReference(
+          (t) => t
+            ..symbol = 'List'
+            ..types.add(
+              refer('Column', serverpodUrl(true)),
+            ),
+        )
         ..name = 'columns'
         ..lambda = true
         ..type = MethodType.getter
@@ -1359,7 +1416,7 @@ class SerializableModelLibraryGenerator {
           ..docs.addAll(field.documentation ?? [])
           ..type = TypeReference((t) => t
             ..symbol = field.type.columnType
-            ..url = 'package:serverpod/serverpod.dart'
+            ..url = serverpodUrl(true)
             ..types.addAll(field.type.isEnumType
                 ? [
                     field.type.reference(
@@ -1478,7 +1535,7 @@ class SerializableModelLibraryGenerator {
               .assign(
                 refer(
                   'createRelationTable',
-                  'package:serverpod/serverpod.dart',
+                  serverpodUrl(true),
                 ).call(
                   [],
                   {
@@ -1542,7 +1599,7 @@ class SerializableModelLibraryGenerator {
               .assign(
                 refer(
                   'createRelationTable',
-                  'package:serverpod/serverpod.dart',
+                  serverpodUrl(true),
                 ).call(
                   [],
                   {
@@ -1660,7 +1717,7 @@ class SerializableModelLibraryGenerator {
     assert(!field.type.isEnumType);
     return TypeReference((t) => t
       ..symbol = field.type.columnType
-      ..url = 'package:serverpod/serverpod.dart'
+      ..url = serverpodUrl(true)
       ..types.addAll([])).call([
       literalString(field.name),
       refer('this'),
@@ -1688,7 +1745,7 @@ class SerializableModelLibraryGenerator {
 
     return TypeReference((t) => t
       ..symbol = field.type.columnType
-      ..url = 'package:serverpod/serverpod.dart'
+      ..url = serverpodUrl(true)
       ..types.addAll([])).call([
       literalString(field.name),
       refer('this'),
@@ -1704,7 +1761,7 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
   ) {
     return Class(((c) {
-      c.extend = refer('IncludeObject', 'package:serverpod/serverpod.dart');
+      c.extend = refer('IncludeObject', serverpodUrl(true));
       c.name = '${className}Include';
       var relationFields = fields
           .where((f) =>
@@ -1735,7 +1792,7 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
   ) {
     return Class(((c) {
-      c.extend = refer('IncludeList', 'package:serverpod/serverpod.dart');
+      c.extend = refer('IncludeList', serverpodUrl(true));
       c.name = '${className}IncludeList';
 
       c.constructors.add(_buildModelIncludeListClassConstructor(className));
@@ -1820,7 +1877,7 @@ class SerializableModelLibraryGenerator {
           ..symbol = 'Map'
           ..types.addAll([
             refer('String'),
-            refer('Include?', 'package:serverpod/serverpod.dart'),
+            refer('Include?', serverpodUrl(true)),
           ]))
         ..name = 'includes'
         ..lambda = true
@@ -1855,7 +1912,7 @@ class SerializableModelLibraryGenerator {
           ..symbol = 'Map'
           ..types.addAll([
             refer('String'),
-            refer('Include?', 'package:serverpod/serverpod.dart'),
+            refer('Include?', serverpodUrl(true)),
           ]))
         ..name = 'includes'
         ..lambda = true
@@ -2000,7 +2057,7 @@ class SerializableModelLibraryGenerator {
         (m) => m
           ..annotations.add(refer('override'))
           ..returns = refer('int')
-          ..name = 'toJson'
+          ..name = _toJsonMethodName
           ..lambda = true
           ..body = refer('index').code,
       ),
@@ -2039,7 +2096,7 @@ class SerializableModelLibraryGenerator {
         (m) => m
           ..annotations.add(refer('override'))
           ..returns = refer('String')
-          ..name = 'toJson'
+          ..name = _toJsonMethodName
           ..lambda = true
           ..body = refer('name').code,
       ),

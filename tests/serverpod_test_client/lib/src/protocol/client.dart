@@ -14,8 +14,8 @@ import 'dart:async' as _i2;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i3;
 import 'dart:typed_data' as _i4;
 import 'package:uuid/uuid_value.dart' as _i5;
-import 'package:serverpod_test_client/src/protocol_custom_classes.dart' as _i6;
-import 'package:serverpod_test_client/src/custom_classes.dart' as _i7;
+import 'package:serverpod_test_shared/src/protocol_custom_classes.dart' as _i6;
+import 'package:serverpod_test_shared/src/custom_classes.dart' as _i7;
 import 'package:serverpod_test_shared/src/external_custom_class.dart' as _i8;
 import 'package:serverpod_test_shared/src/freezed_custom_class.dart' as _i9;
 import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i10;
@@ -413,6 +413,35 @@ class EndpointCustomTypes extends _i1.EndpointRef {
         'returnFreezedCustomClassNullable',
         {'data': data},
       );
+
+  _i2.Future<_i7.CustomClassWithoutProtocolSerialization>
+      returnCustomClassWithoutProtocolSerialization(
+              _i7.CustomClassWithoutProtocolSerialization data) =>
+          caller
+              .callServerEndpoint<_i7.CustomClassWithoutProtocolSerialization>(
+            'customTypes',
+            'returnCustomClassWithoutProtocolSerialization',
+            {'data': data},
+          );
+
+  _i2.Future<_i7.CustomClassWithProtocolSerialization>
+      returnCustomClassWithProtocolSerialization(
+              _i7.CustomClassWithProtocolSerialization data) =>
+          caller.callServerEndpoint<_i7.CustomClassWithProtocolSerialization>(
+            'customTypes',
+            'returnCustomClassWithProtocolSerialization',
+            {'data': data},
+          );
+
+  _i2.Future<_i7.CustomClassWithProtocolSerializationMethod>
+      returnCustomClassWithProtocolSerializationMethod(
+              _i7.CustomClassWithProtocolSerializationMethod data) =>
+          caller.callServerEndpoint<
+              _i7.CustomClassWithProtocolSerializationMethod>(
+            'customTypes',
+            'returnCustomClassWithProtocolSerializationMethod',
+            {'data': data},
+          );
 }
 
 /// {@category Endpoint}
