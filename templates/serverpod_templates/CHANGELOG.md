@@ -1,3 +1,17 @@
+## 2.3.0-beta.1
+- feat: Adds support for transaction isolation levels.
+- feat: Adds typed interface for transaction savepoints.
+- feat: Adds support for endpoint definition placement anywhere in server's `src` directory.
+- feat: Adds support for model definitions placement anywhere in server's `src` directory.
+- fix: Improves message transmission guarantee in method streams.
+- chore: Update `vm_service` dependency range.
+
+## 2.2.2
+ - fix: Fixes possible import issue in generated code when the same model name is used in different modules.
+
+## 2.2.1
+ - fix: Fixes an issue where invalid Dart import paths would be generated on Windows.
+
 ## 2.2.0
  - feat: Improves Serverpod startup and lifecycle events logging.
  - feat: Adds full support for testing framework.
