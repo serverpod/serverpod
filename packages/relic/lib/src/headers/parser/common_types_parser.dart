@@ -63,27 +63,22 @@ int parsePositiveInt(String value) {
   if (value.isEmpty) {
     throw FormatException('Value cannot be empty');
   }
-
+  num parsedValue;
   try {
-    num parsedValue;
-    try {
-      parsedValue = num.parse(value);
-    } catch (e) {
-      throw FormatException('Invalid number');
-    }
-
-    if (parsedValue.isNegative) {
-      throw FormatException('Must be non-negative');
-    }
-
-    if (parsedValue is! int) {
-      throw FormatException('Must be an integer');
-    }
-
-    return parsedValue;
+    parsedValue = num.parse(value);
   } catch (e) {
     throw FormatException('Invalid number');
   }
+
+  if (parsedValue.isNegative) {
+    throw FormatException('Must be non-negative');
+  }
+
+  if (parsedValue is! int) {
+    throw FormatException('Must be an integer');
+  }
+
+  return parsedValue;
 }
 
 /// Parses a boolean from the given [value] and returns it as a `bool`.
@@ -109,13 +104,19 @@ bool? parsePositiveBool(String value) {
   if (value.isEmpty) {
     throw FormatException('Value cannot be empty');
   }
+  bool parsedValue;
+
   try {
-    bool parsedValue = bool.parse(value);
-    if (!parsedValue) return null;
-    return parsedValue;
+    parsedValue = bool.parse(value);
   } catch (e) {
     throw FormatException('Invalid boolean');
   }
+
+  if (!parsedValue) {
+    throw FormatException('Must be true or null');
+  }
+
+  return parsedValue;
 }
 
 /// Parses a string from the given [value] and returns it as a `String`.
