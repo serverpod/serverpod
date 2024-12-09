@@ -4,14 +4,14 @@ import 'package:http_parser/http_parser.dart';
 import 'package:relic/src/headers/custom/custom_headers.dart';
 import 'package:relic/src/headers/extension/string_list_extensions.dart';
 import 'package:relic/src/headers/parser/headers_parser.dart';
-import 'package:relic/src/headers/parser/shared_parser.dart';
+import 'package:relic/src/headers/parser/common_types_parser.dart';
 import 'package:relic/src/method/method.dart';
 
 import 'typed/typed_headers.dart';
 
 import '../body/body.dart';
 
-abstract class Headers {
+sealed class Headers {
   /// Request Headers
   static const acceptHeader = "accept";
   static const acceptEncodingHeader = "accept-encoding";
