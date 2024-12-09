@@ -14,8 +14,13 @@ enum LoggerType {
   info,
 }
 
-/// Logs an error message to the standard error stream.
-void loggMessage(
+/// Logs a message to the standard output or error stream.
+///
+/// If [stackTrace] is passed, it will be used to create a chain of frames
+/// that excludes core Dart frames and frames from the 'relic' package.
+///
+/// If [type] is not passed, it defaults to [LoggerType.info].
+void logMessage(
   String message, {
   StackTrace? stackTrace,
   LoggerType type = LoggerType.info,

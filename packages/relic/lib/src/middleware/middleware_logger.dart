@@ -20,7 +20,7 @@ Middleware logRequests({
   Logger? logger,
 }) =>
     (innerHandler) {
-      final localLogger = logger ?? loggMessage;
+      final localLogger = logger ?? logMessage;
 
       return (request) {
         var startTime = DateTime.now();
