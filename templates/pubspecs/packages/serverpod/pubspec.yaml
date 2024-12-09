@@ -33,7 +33,7 @@ dependencies:
   system_resources: ^1.6.0
   vm_service: ">=13.0.0 <16.0.0"
   yaml: ^3.1.1
-  relic: 0.1.0
+  relic: ^0.1.0
   serverpod_shared: SERVERPOD_VERSION
   serverpod_serialization: SERVERPOD_VERSION
   uuid: ^4.1.0
