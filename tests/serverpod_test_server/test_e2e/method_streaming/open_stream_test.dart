@@ -1,5 +1,3 @@
-@Timeout(Duration(minutes: 5))
-
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';
@@ -11,11 +9,14 @@ void main() {
       'then all streams complete successfully', () async {
     var client = Client(serverUrl);
     var numMessages = 1000;
-    var stream;
+    List<Future> streamCompleteFutures = [];
     for (var i = 0; i < 10; i++) {
-      stream = client.methodStreaming.intStreamFromValue(numMessages);
+      var stream = client.methodStreaming.intStreamFromValue(numMessages);
+      streamCompleteFutures.add(stream.last);
     }
 
-    await expectLater(stream.last, completes);
+    for (var future in streamCompleteFutures) {
+      await expectLater(future, completes);
+    }
   });
 }
