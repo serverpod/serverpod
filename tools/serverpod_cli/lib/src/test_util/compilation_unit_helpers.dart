@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:analyzer/dart/ast/ast.dart';
 
 abstract class CompilationUnitHelpers {
@@ -129,10 +130,17 @@ abstract class CompilationUnitHelpers {
     CompilationUnit unit, {
     required String uri,
   }) {
-    return unit.directives
-        .whereType<PartDirective>()
-        .where((directive) => directive.uri.stringValue == uri)
-        .firstOrNull;
+    return unit.directives.whereType<PartDirective>().where((directive) {
+      String directiveUri = directive.uri.stringValue!;
+
+      // Windows-specific: separator fix
+      if (Platform.isWindows) {
+        directiveUri = directiveUri.replaceAll('/', '');
+        uri = uri.replaceAll('/', '');
+      }
+
+      return directiveUri == uri;
+    }).firstOrNull;
   }
 
   /// Returns `true` if the [unit] contains a part directive with the given
@@ -150,11 +158,17 @@ abstract class CompilationUnitHelpers {
     CompilationUnit unit, {
     required String uri,
   }) {
-    var directives = unit.directives
-        .whereType<PartOfDirective>()
-        .where((directive) => directive.uri?.stringValue == uri);
+    return unit.directives.whereType<PartOfDirective>().where((directive) {
+      String directiveUri = directive.uri!.stringValue!;
 
-    return directives.isNotEmpty ? directives.first : null;
+      // Windows-specific: separator fix
+      if (Platform.isWindows) {
+        directiveUri = directiveUri.replaceAll('/', '');
+        uri = uri.replaceAll('/', '');
+      }
+
+      return directiveUri == uri;
+    }).firstOrNull;
   }
 
   /// Returns `true` if the [unit] contains a part of directive with the given
