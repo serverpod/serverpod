@@ -69,6 +69,66 @@ void main() {
     );
 
     test(
+      'when a Set-Cookie header with an invalid name is passed then the server responds '
+      'with a bad request including a message that states the cookie name is invalid',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'set-cookie': 'invalid name=abc123; userId=42'},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Invalid cookie name'),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when a Set-Cookie header with an invalid value is passed then the server responds '
+      'with a bad request including a message that states the cookie value is invalid',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'set-cookie': 'sessionId=abc123; userId=42\x7F'},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Invalid cookie value'),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when a Set-Cookie header with an empty name is passed then the server responds '
+      'with a bad request including a message that states the cookie name is invalid',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'set-cookie': '=abc123; userId=42'},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Invalid cookie name'),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
       'when a valid Set-Cookie header is passed then it should parse the cookies correctly',
       () async {
         Headers headers = await getServerRequestHeaders(
@@ -83,6 +143,25 @@ void main() {
         expect(
           headers.setCookie?.cookies.map((c) => c.value).toList(),
           equals(['abc123', '42']),
+        );
+      },
+    );
+
+    test(
+      'when a Cookie header with encoded characters in the value is passed then it should parse correctly',
+      () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'set-cookie': 'sessionId=abc%20123; userId=42'},
+        );
+
+        expect(
+          headers.setCookie?.cookies.map((c) => c.name).toList(),
+          equals(['sessionId', 'userId']),
+        );
+        expect(
+          headers.setCookie?.cookies.map((c) => c.value).toList(),
+          equals(['abc 123', '42']),
         );
       },
     );
