@@ -93,13 +93,9 @@ class Cookie {
   static bool isNameValid(String name) {
     if (name.isEmpty) return false;
 
-    // Check for invalid characters
-    var invalidCharacters = RegExp(r'[()<>@,;:"/[\]?={} \t]');
+    // Check for invalid characters, including control characters
+    var invalidCharacters = RegExp(r'[()<>@,;:"/[\]?={} \t\x00-\x1F\x7F]');
     if (name.contains(invalidCharacters)) return false;
-
-    // Check for whitespace
-    var whitespace = RegExp(r'\s');
-    if (name.contains(whitespace)) return false;
 
     return true;
   }
@@ -108,7 +104,7 @@ class Cookie {
   static bool isValueValid(String value) {
     if (value.isEmpty) return false;
 
-    // Check for control characters and whitespace
+    // Check for control characters
     final invalidCharacters = RegExp(r'[\x00-\x1F\x7F]');
     if (value.contains(invalidCharacters)) return false;
 
