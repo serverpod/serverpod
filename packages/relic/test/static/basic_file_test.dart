@@ -208,14 +208,16 @@ void main() {
       final handler = createStaticHandler(d.sandbox);
 
       final response = await makeRequest(handler, '/root.txt');
-      expect(response.mimeType, 'text/plain');
+      expect(response.mimeType?.primaryType, 'text');
+      expect(response.mimeType?.subType, 'plain');
     });
 
     test('when accessing index.html then it should be text/html', () async {
       final handler = createStaticHandler(d.sandbox);
 
       final response = await makeRequest(handler, '/index.html');
-      expect(response.mimeType, 'text/html');
+      expect(response.mimeType?.primaryType, 'text');
+      expect(response.mimeType?.subType, 'html');
     });
 
     test('when accessing random.unknown then it should be null', () async {
@@ -232,7 +234,8 @@ void main() {
 
       final response =
           await makeRequest(handler, '/files/header_bytes_test_image');
-      expect(response.mimeType, 'image/png');
+      expect(response.mimeType?.primaryType, 'image');
+      expect(response.mimeType?.subType, 'png');
     });
 
     test('when accessing header_bytes_test_webp then it should be image/webp',
@@ -254,7 +257,8 @@ void main() {
 
       final response =
           await makeRequest(handler, '/files/header_bytes_test_webp');
-      expect(response.mimeType, 'image/webp');
+      expect(response.mimeType?.primaryType, 'image');
+      expect(response.mimeType?.subType, 'webp');
     });
   });
 }

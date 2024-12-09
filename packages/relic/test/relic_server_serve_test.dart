@@ -219,7 +219,8 @@ void main() {
 
   test('post with request content', () async {
     await _scheduleServer((request) async {
-      expect(request.mimeType, 'text/plain');
+      expect(request.mimeType?.primaryType, 'text');
+      expect(request.mimeType?.subType, 'plain');
       expect(request.encoding, utf8);
       expect(request.method, Method.post);
       expect(request.body.contentLength, 9);

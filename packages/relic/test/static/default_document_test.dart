@@ -76,7 +76,8 @@ void main() {
       expect(response.statusCode, HttpStatus.ok);
       expect(response.body.contentLength, 13);
       expect(response.readAsString(), completion('<html></html>'));
-      expect(response.mimeType, 'text/html');
+      expect(response.mimeType?.primaryType, 'text');
+      expect(response.mimeType?.subType, 'html');
     });
 
     test('when accessing "/" then it returns the default document', () async {
@@ -87,7 +88,8 @@ void main() {
       expect(response.statusCode, HttpStatus.ok);
       expect(response.body.contentLength, 13);
       expect(response.readAsString(), completion('<html></html>'));
-      expect(response.mimeType, 'text/html');
+      expect(response.mimeType?.primaryType, 'text');
+      expect(response.mimeType?.subType, 'html');
     });
 
     test('when accessing "/files" then it redirects to "/files/"', () async {
@@ -112,7 +114,8 @@ void main() {
       expect(response.body.contentLength, 31);
       expect(response.readAsString(),
           completion('<html><body>files</body></html>'));
-      expect(response.mimeType, 'text/html');
+      expect(response.mimeType?.primaryType, 'text');
+      expect(response.mimeType?.subType, 'html');
     });
   });
 }

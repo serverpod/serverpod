@@ -81,14 +81,22 @@ void main() {
 
     test(
       'when a Access-Control-Allow-Credentials header with a value "false" '
-      'then it should return null',
+      'then the server responds with a bad request including a message that states the header value '
+      'must be "true" or "null"',
       () async {
-        Headers headers = await getServerRequestHeaders(
-          server: server,
-          headers: {'access-control-allow-credentials': 'false'},
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'access-control-allow-credentials': 'false'},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Must be true or null'),
+            ),
+          ),
         );
-
-        expect(headers.accessControlAllowCredentials, isNull);
       },
     );
 

@@ -52,7 +52,8 @@ void main() {
       final handler = createFileHandler(p.join(d.sandbox, 'file.txt'));
       final response = await makeRequest(handler, '/file.txt');
       expect(response.statusCode, equals(HttpStatus.ok));
-      expect(response.mimeType, equals('text/plain'));
+      expect(response.mimeType?.primaryType, equals('text'));
+      expect(response.mimeType?.subType, equals('plain'));
     });
 
     test("when it can't be inferred then it is omitted", () async {
@@ -68,7 +69,8 @@ void main() {
           contentType: MimeType.parse('something/weird'));
       final response = await makeRequest(handler, '/file.txt');
       expect(response.statusCode, equals(HttpStatus.ok));
-      expect(response.mimeType, equals('something/weird'));
+      expect(response.mimeType?.primaryType, equals('something'));
+      expect(response.mimeType?.subType, equals('weird'));
     });
   });
 
