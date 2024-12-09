@@ -668,11 +668,13 @@ Future<http.Response> _request(
     rs.headers.forEach((name, values) {
       rsHeaders[name] = joinHeaderValues(values)!;
     });
-    return http.Response.fromStream(http.StreamedResponse(
-      rs,
-      rs.statusCode,
-      headers: rsHeaders,
-    ));
+    return await http.Response.fromStream(
+      http.StreamedResponse(
+        rs,
+        rs.statusCode,
+        headers: rsHeaders,
+      ),
+    );
   } finally {
     client.close(force: true);
   }
