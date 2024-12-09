@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:serverpod_test_server/src/endpoints/method_streaming.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_completer_timeout.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
@@ -16,24 +17,34 @@ void main() {
 
     late Serverpod server;
     late WebSocketChannel webSocket;
-    late Completer webSocketClosed;
+    late Completer neverEndingStreamIsCanceled;
     TestCompleterTimeout testCompleterTimeout = TestCompleterTimeout();
 
     var connectionId = const Uuid().v4obj();
 
     setUp(() async {
+      var neverEndingStreamControllerCompleter =
+          Completer<StreamController<int>>();
+      MethodStreaming.neverEndingStreamController =
+          neverEndingStreamControllerCompleter;
+
+      neverEndingStreamIsCanceled = Completer();
+      neverEndingStreamControllerCompleter.future
+          .then((StreamController controller) {
+        controller.onCancel = () => neverEndingStreamIsCanceled.complete();
+      });
+
       server = IntegrationTestServer.create();
       await server.start();
       webSocket = WebSocketChannel.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
       await webSocket.ready;
-      webSocketClosed = Completer();
       var streamOpened = Completer<void>();
 
       testCompleterTimeout.start({
         'streamOpened': streamOpened,
-        'webSocketClosed': webSocketClosed,
+        'neverEndingStreamIsCanceled': neverEndingStreamIsCanceled,
       });
 
       webSocket.stream.listen((event) {
@@ -45,8 +56,6 @@ void main() {
         if (message is OpenMethodStreamResponse) {
           streamOpened.complete();
         }
-      }, onDone: () {
-        webSocketClosed.complete();
       });
 
       webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
@@ -68,7 +77,7 @@ void main() {
       await webSocket.sink.close();
     });
 
-    test('when method stream is closed then websocket connection is closed.',
+    test('when method stream is closed then never ending stream is canceled.',
         () async {
       webSocket.sink.add(CloseMethodStreamCommand.buildMessage(
         endpoint: endpoint,
@@ -77,11 +86,7 @@ void main() {
         reason: CloseReason.done,
       ));
 
-      webSocketClosed.future.catchError((error) {
-        fail('Failed to close websocket connection.');
-      });
-
-      await expectLater(webSocketClosed.future, completes);
+      await expectLater(neverEndingStreamIsCanceled.future, completes);
     });
   });
 }

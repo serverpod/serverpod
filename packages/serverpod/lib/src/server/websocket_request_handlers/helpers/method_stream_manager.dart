@@ -129,7 +129,6 @@ typedef _OnInputStreamClosed = void Function(
   CloseReason? closeReason,
   MethodStreamCallContext callContext,
 );
-typedef _OnAllStreamsClosed = void Function();
 
 /// Manages the streams for an endpoint method call.
 /// Should only be used by Serverpod packages.
@@ -143,16 +142,13 @@ class MethodStreamManager {
   final _OnOutputStreamError? _onOutputStreamError;
   final _OnOutputStreamClosed? _onOutputStreamClosed;
   final _OnInputStreamClosed? _onInputStreamClosed;
-  final _OnAllStreamsClosed? _onAllStreamsClosed;
 
   MethodStreamManager({
     _OnInputStreamClosed? onInputStreamClosed,
     _OnOutputStreamClosed? onOutputStreamClosed,
     _OnOutputStreamError? onOutputStreamError,
     _OnOutputStreamValue? onOutputStreamValue,
-    _OnAllStreamsClosed? onAllStreamsClosed,
-  })  : _onAllStreamsClosed = onAllStreamsClosed,
-        _onInputStreamClosed = onInputStreamClosed,
+  })  : _onInputStreamClosed = onInputStreamClosed,
         _onOutputStreamClosed = onOutputStreamClosed,
         _onOutputStreamError = onOutputStreamError,
         _onOutputStreamValue = onOutputStreamValue;
@@ -555,10 +551,6 @@ class MethodStreamManager {
     }
 
     await _closeControllers(inputStreamControllers);
-
-    if (_outputStreamContexts.isEmpty && _inputStreamContexts.isEmpty) {
-      _onAllStreamsClosed?.call();
-    }
   }
 
   void _handleMethodWithStreamReturn({
