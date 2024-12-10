@@ -29,6 +29,7 @@ declare -a projectPaths=(
     "packages/serverpod_shared"
     "packages/serverpod_flutter"
     "packages/serverpod_test"
+    "packages/relic"
 
     "examples/chat/chat_server"
     "examples/chat/chat_client"
