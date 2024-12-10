@@ -12,7 +12,6 @@ import 'package:http_parser/http_parser.dart' as parser;
 import 'package:relic/relic.dart';
 import 'package:relic/src/method/method.dart';
 import 'package:relic/src/relic_server_serve.dart' as relic_server;
-import 'package:relic/src/util/util.dart';
 import 'package:test/test.dart';
 
 import 'ssl/ssl_certs.dart';
@@ -641,43 +640,16 @@ Future<void> _scheduleServer(
 Future<http.Response> _get({
   Map<String, String>? headers,
   String path = '',
-}) {
-  return _request(
-    (client, url) => client.getUrl(url),
-    headers: headers,
-    path: path,
-  );
-}
-
-Future<http.Response> _request(
-  Future<HttpClientRequest> Function(HttpClient, Uri) request, {
-  Map<String, Object>? headers,
-  String path = '',
 }) async {
-  final client = HttpClient();
-  try {
-    final rq = await request(
-      client,
-      Uri.http('localhost:$_serverPort', path),
-    );
-    headers?.forEach((key, value) {
-      rq.headers.add(key, value);
-    });
-    final rs = await rq.close();
-    final rsHeaders = <String, String>{};
-    rs.headers.forEach((name, values) {
-      rsHeaders[name] = joinHeaderValues(values)!;
-    });
-    return await http.Response.fromStream(
-      http.StreamedResponse(
-        rs,
-        rs.statusCode,
-        headers: rsHeaders,
-      ),
-    );
-  } finally {
-    client.close(force: true);
-  }
+  var request = http.Request(
+    Method.get.value,
+    Uri.http('localhost:$_serverPort', path),
+  );
+
+  if (headers != null) request.headers.addAll(headers);
+
+  var response = await request.send();
+  return await http.Response.fromStream(response);
 }
 
 Future<http.StreamedResponse> _post({
