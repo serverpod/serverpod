@@ -1,30 +1,30 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Represents a snapshot of a specific health metric. An entry is written every
 /// minute for each server. All health data can be accessed through Serverpod
 /// Insights.
-abstract class ServerHealthMetric extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class ServerHealthMetric
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   ServerHealthMetric._({
-    int? id,
+    this.id,
     required this.name,
     required this.serverId,
     required this.timestamp,
     required this.isHealthy,
     required this.value,
     required this.granularity,
-  }) : super(id);
+  });
 
   factory ServerHealthMetric({
     int? id,
@@ -52,6 +52,9 @@ abstract class ServerHealthMetric extends _i1.TableRow
   static final t = ServerHealthMetricTable();
 
   static const db = ServerHealthMetricRepository._();
+
+  @override
+  int? id;
 
   /// The name of the metric.
   String name;

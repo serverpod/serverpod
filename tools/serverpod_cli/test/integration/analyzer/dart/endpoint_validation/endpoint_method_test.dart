@@ -81,6 +81,132 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
+      'Given a valid endpoint method with a first positional nullable `Session` parameter when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session? session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+    test('then a hint message is reported.', () {
+      expect(collector.errors, hasLength(1));
+      expect(collector.errors.first.message,
+          'The "Session" argument in an endpoint method does not have to be nullable, consider making it non-nullable.');
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then an endpoint method definition is created.', () {
+      var methods = endpointDefinitions.firstOrNull?.methods;
+      expect(methods, hasLength(1));
+    });
+
+    group('then endpoint method definition', () {
+      test('has expected name.', () {
+        var name = endpointDefinitions.firstOrNull?.methods.firstOrNull?.name;
+        expect(name, 'hello');
+      });
+
+      test('has no documentation.', () {
+        var documentation = endpointDefinitions
+            .firstOrNull?.methods.firstOrNull?.documentationComment;
+        expect(documentation, isNull);
+      });
+
+      test('has expected return type.', () {
+        var returnType =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+        expect(returnType?.className, 'Future');
+        expect(returnType?.generics, hasLength(1));
+        expect(returnType?.generics.firstOrNull?.className, 'String');
+      });
+    });
+  });
+
+  group(
+      'Given an endpoint with a method that has a `Session` as second positional parameter when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(String name, Session session) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no endpoint definition methods are created.', () {
+      expect(endpointDefinitions.firstOrNull?.methods, isEmpty);
+    });
+  });
+
+  group(
+      'Given an endpoint with a method that has a `Session` as required named parameter when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello({
+  required Session session,
+}) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no endpoint definition methods are created.', () {
+      expect(endpointDefinitions.firstOrNull?.methods, isEmpty);
+    });
+  });
+
+  group(
       'Given an endpoint with excluded method name (overridden method from Endpoint class)',
       () {
     var collector = CodeGenerationCollector();
@@ -120,13 +246,16 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given an endpoint method without Session param when analyzed', () {
+  group(
+      'Given an endpoint method without a first positional `Session` param and the other parameters are not a `Session` parameter when analyzed',
+      () {
     var collector = CodeGenerationCollector();
     var testDirectory =
         Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
+
     setUpAll(() async {
       var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
       endpointFile.createSync(recursive: true);
@@ -134,7 +263,7 @@ class ExampleEndpoint extends Endpoint {
 import 'package:serverpod/serverpod.dart';
 
 class ExampleEndpoint extends Endpoint {
-  Future<String> hello(String name) async {
+  Future<String> hello(String name, int num) async {
     return 'Hello \$name';
   }
 }
@@ -142,7 +271,6 @@ class ExampleEndpoint extends Endpoint {
       analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
-
     test('then no validation errors are reported.', () {
       expect(collector.errors, isEmpty);
     });
@@ -155,6 +283,116 @@ class ExampleEndpoint extends Endpoint {
       var methods = endpointDefinitions.firstOrNull?.methods;
       expect(methods, isEmpty);
     });
+  });
+
+  group(
+      'Given an endpoint method without a first positional `Session` param and the first parameter instead contains a named `Session` parameter when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello({required Session session, required String name}) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then no endpoint method definition is created.', () {
+      var methods = endpointDefinitions.firstOrNull?.methods;
+      expect(methods, isEmpty);
+    });
+  });
+
+  group(
+      'Given an endpoint method without a first positional `Session` param and the first parameter instead contains an optional `Session` parameter when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello([Session? session, String name = "name"]) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then no endpoint method definition is created.', () {
+      var methods = endpointDefinitions.firstOrNull?.methods;
+      expect(methods, isEmpty);
+    });
+  });
+
+  test(
+      'Given an endpoint method with a Stream<void> return when analyzed then an error is reported',
+      () async {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late EndpointsAnalyzer analyzer;
+
+    var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+    endpointFile.createSync(recursive: true);
+    endpointFile.writeAsStringSync('''
+import 'dart:async';
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Stream<void> hello(Session session) async* {
+    yield 'Hello';
+    yield 'World';
+  }
+}
+''');
+    analyzer = EndpointsAnalyzer(testDirectory);
+    await analyzer.analyze(collector: collector);
+
+    expect(collector.errors, isNotEmpty);
+    expect(
+      collector.errors.first.message,
+      'The type "void" is not supported for streams.',
+    );
   });
 
   group('Given an endpoint method with a stream return type when analyzed', () {
@@ -363,24 +601,28 @@ class ExampleEndpoint extends Endpoint {
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then a validation errors is reported.', () {
-      expect(collector.errors, hasLength(1));
-    });
-
-    test('then validation error informs that return type must be future', () {
-      expect(
-        collector.errors.firstOrNull?.message,
-        'Return generic must have a type defined. E.g. Stream<String>.',
-      );
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
     });
 
     test('then endpoint definition is created.', () {
       expect(endpointDefinitions, hasLength(1));
     });
 
-    test('then no endpoint method definition is created.', () {
-      var methods = endpointDefinitions.firstOrNull?.methods;
-      expect(methods, isEmpty);
+    group('then endpoint method definition', () {
+      test('is a method stream definition.', () {
+        var methodDefinition =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull;
+        expect(methodDefinition, isA<MethodStreamDefinition>());
+      });
+
+      test('has dynamic stream return type.', () {
+        var returnType =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+        expect(returnType?.className, 'Stream');
+        expect(returnType?.generics, hasLength(1));
+        expect(returnType?.generics.firstOrNull?.className, 'dynamic');
+      });
     });
   });
 
@@ -410,26 +652,80 @@ class ExampleEndpoint extends Endpoint {
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then a validation errors is reported.', () {
-      expect(collector.errors, hasLength(1));
-    });
-
-    test(
-        'then validation error informs that nullable return types are not supported.',
-        () {
-      expect(
-        collector.errors.firstOrNull?.message,
-        'Nullable return type for streaming methods are not supported.',
-      );
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
     });
 
     test('then endpoint definition is created.', () {
       expect(endpointDefinitions, hasLength(1));
     });
 
-    test('then no endpoint method definition is created.', () {
-      var methods = endpointDefinitions.firstOrNull?.methods;
-      expect(methods, isEmpty);
+    group('then endpoint method definition', () {
+      test('is a method stream definition.', () {
+        var methodDefinition =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull;
+        expect(methodDefinition, isA<MethodStreamDefinition>());
+      });
+
+      test('has stream return type.', () {
+        var returnType =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+        expect(returnType?.className, 'Stream');
+        expect(returnType?.generics, hasLength(1));
+        expect(returnType?.generics.firstOrNull?.className, 'String');
+        expect(returnType?.generics.firstOrNull?.nullable, isTrue);
+      });
+    });
+  });
+
+  group(
+      'Given an endpoint method that returns a Stream with dynamic type when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Stream<dynamic> hello(Session session, String name) async* {
+    yield 'Hello';
+    yield 'World';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    group('then endpoint method definition', () {
+      test('is a method stream definition.', () {
+        var methodDefinition =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull;
+        expect(methodDefinition, isA<MethodStreamDefinition>());
+      });
+
+      test('has dynamic stream return type.', () {
+        var returnType =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+        expect(returnType?.className, 'Stream');
+        expect(returnType?.generics, hasLength(1));
+        expect(returnType?.generics.firstOrNull?.className, 'dynamic');
+      });
     });
   });
 
@@ -458,26 +754,29 @@ class ExampleEndpoint extends Endpoint {
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then a validation errors is reported.', () {
-      expect(collector.errors, hasLength(1));
-    });
-
-    test(
-        'then validation error informs that nullable return types are not supported.',
-        () {
-      expect(
-        collector.errors.firstOrNull?.message,
-        'Nullable return type for streaming methods are not supported.',
-      );
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
     });
 
     test('then endpoint definition is created.', () {
       expect(endpointDefinitions, hasLength(1));
     });
 
-    test('then no endpoint method definition is created.', () {
-      var methods = endpointDefinitions.firstOrNull?.methods;
-      expect(methods, isEmpty);
+    group('then endpoint method definition', () {
+      test('is a method stream definition.', () {
+        var methodDefinition =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull;
+        expect(methodDefinition, isA<MethodStreamDefinition>());
+      });
+
+      test('has future return type.', () {
+        var returnType =
+            endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+        expect(returnType?.className, 'Future');
+        expect(returnType?.generics, hasLength(1));
+        expect(returnType?.generics.firstOrNull?.className, 'String');
+        expect(returnType?.generics.firstOrNull?.nullable, isTrue);
+      });
     });
   });
 
@@ -687,6 +986,141 @@ class ExampleEndpoint extends Endpoint {
       var documentation = endpointDefinitions
           .firstOrNull?.methods.firstOrNull?.documentationComment;
       expect(documentation, '/// This is a method comment.');
+    });
+  });
+
+  group(
+      'Given a valid endpoint method with "@Deprecated(<string literal>)" annotation',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  @Deprecated('This method is deprecated.')
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then endpoint definition method has expected annotations.', () {
+      var annotations =
+          endpointDefinitions.firstOrNull?.methods.firstOrNull?.annotations;
+      expect(annotations?.length, 1);
+      expect(annotations![0].name, 'Deprecated');
+      expect(annotations[0].arguments, ["'This method is deprecated.'"]);
+      expect(annotations[0].methodCallAnalyzerIgnoreRule,
+          'deprecated_member_use_from_same_package');
+    });
+  });
+
+  group(
+      'Given a valid endpoint method with "@Deprecated(<string const expr>)" annotation',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+const deprecatedMessage = 'is deprecated';
+
+class ExampleEndpoint extends Endpoint {
+  @Deprecated('This method \${deprecatedMessage}.')
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then endpoint definition method has expected annotations.', () {
+      var annotations =
+          endpointDefinitions.firstOrNull?.methods.firstOrNull?.annotations;
+      expect(annotations?.length, 1);
+      expect(annotations![0].name, 'Deprecated');
+      expect(annotations[0].arguments, ["'This method is deprecated.'"]);
+      expect(annotations[0].methodCallAnalyzerIgnoreRule,
+          'deprecated_member_use_from_same_package');
+    });
+  });
+
+  group('Given a valid endpoint method with "@deprecated" annotation', () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  @deprecated
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then endpoint definition method has expected annotations.', () {
+      var annotations =
+          endpointDefinitions.firstOrNull?.methods.firstOrNull?.annotations;
+      expect(annotations?.length, 1);
+      expect(annotations![0].name, 'deprecated');
+      expect(annotations[0].arguments, null);
+      expect(annotations[0].methodCallAnalyzerIgnoreRule,
+          'deprecated_member_use_from_same_package');
     });
   });
 

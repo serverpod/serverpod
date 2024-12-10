@@ -34,6 +34,28 @@ typedef SendPasswordResetEmailCallback = Future<bool> Function(
 typedef SendValidationEmailCallback = Future<bool> Function(
     Session session, String email, String validationCode);
 
+/// Callback for generation of the hash password
+typedef PasswordHashGenerator = Future<String> Function(String password);
+
+/// Callback to validate the hash used by [PasswordHashGenerator]
+typedef PasswordHashValidator = Future<bool> Function(
+  String password,
+  String email,
+  String hash, {
+  void Function({required String passwordHash, required String storedHash})?
+      onValidationFailure,
+  void Function(Object e)? onError,
+});
+
+/// Enum to define the sign-out behavior for the legacy sign out endpoint.
+enum SignOutBehavior {
+  /// Sign out the user from all active devices.
+  allDevices,
+
+  /// Sign out the user from the current device only.
+  currentDevice,
+}
+
 /// Configuration options for the Auth module.
 class AuthConfig {
   static AuthConfig _config = AuthConfig();
@@ -138,6 +160,18 @@ class AuthConfig {
   /// generation.
   final bool allowUnsecureRandom;
 
+  /// Create a custom hash for the password
+  final PasswordHashGenerator passwordHashGenerator;
+
+  /// Create a custom validation for the password in combinaison with [PasswordHashGenerator]
+  final PasswordHashValidator passwordHashValidator;
+
+  /// Defines the legacy sign-out behavior for users.
+  ///
+  /// - [SignOutBehavior.allDevices]: Users will be signed out from all active devices.
+  /// - [SignOutBehavior.currentDevice]: Users will be signed out from the current device only.
+  final SignOutBehavior legacyUserSignOutBehavior;
+
   /// Creates a new Auth configuration. Use the [set] method to replace the
   /// default settings. Defaults to `config/firebase_service_account_key.json`.
   AuthConfig({
@@ -168,6 +202,9 @@ class AuthConfig {
     this.maxPasswordLength = 128,
     this.minPasswordLength = 8,
     this.allowUnsecureRandom = false,
+    this.passwordHashGenerator = defaultGeneratePasswordHash,
+    this.passwordHashValidator = defaultValidatePasswordHash,
+    this.legacyUserSignOutBehavior = SignOutBehavior.allDevices,
   }) {
     if (validationCodeLength < 8) {
       stderr.writeln(

@@ -1,32 +1,33 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'protocol.dart' as _i2;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'log_settings.dart' as _i2;
+import 'log_settings_override.dart' as _i3;
 
 /// Runtime settings of the server.
-abstract class RuntimeSettings extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class RuntimeSettings
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   RuntimeSettings._({
-    int? id,
+    this.id,
     required this.logSettings,
     required this.logSettingsOverrides,
     required this.logServiceCalls,
     required this.logMalformedCalls,
-  }) : super(id);
+  });
 
   factory RuntimeSettings({
     int? id,
     required _i2.LogSettings logSettings,
-    required List<_i2.LogSettingsOverride> logSettingsOverrides,
+    required List<_i3.LogSettingsOverride> logSettingsOverrides,
     required bool logServiceCalls,
     required bool logMalformedCalls,
   }) = _RuntimeSettingsImpl;
@@ -38,7 +39,7 @@ abstract class RuntimeSettings extends _i1.TableRow
           (jsonSerialization['logSettings'] as Map<String, dynamic>)),
       logSettingsOverrides: (jsonSerialization['logSettingsOverrides'] as List)
           .map((e) =>
-              _i2.LogSettingsOverride.fromJson((e as Map<String, dynamic>)))
+              _i3.LogSettingsOverride.fromJson((e as Map<String, dynamic>)))
           .toList(),
       logServiceCalls: jsonSerialization['logServiceCalls'] as bool,
       logMalformedCalls: jsonSerialization['logMalformedCalls'] as bool,
@@ -49,11 +50,14 @@ abstract class RuntimeSettings extends _i1.TableRow
 
   static const db = RuntimeSettingsRepository._();
 
+  @override
+  int? id;
+
   /// Log settings.
   _i2.LogSettings logSettings;
 
   /// List of log setting overrides.
-  List<_i2.LogSettingsOverride> logSettingsOverrides;
+  List<_i3.LogSettingsOverride> logSettingsOverrides;
 
   /// True if service calls to Serverpod Insights should be logged.
   bool logServiceCalls;
@@ -67,7 +71,7 @@ abstract class RuntimeSettings extends _i1.TableRow
   RuntimeSettings copyWith({
     int? id,
     _i2.LogSettings? logSettings,
-    List<_i2.LogSettingsOverride>? logSettingsOverrides,
+    List<_i3.LogSettingsOverride>? logSettingsOverrides,
     bool? logServiceCalls,
     bool? logMalformedCalls,
   });
@@ -131,7 +135,7 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
   _RuntimeSettingsImpl({
     int? id,
     required _i2.LogSettings logSettings,
-    required List<_i2.LogSettingsOverride> logSettingsOverrides,
+    required List<_i3.LogSettingsOverride> logSettingsOverrides,
     required bool logServiceCalls,
     required bool logMalformedCalls,
   }) : super._(
@@ -146,15 +150,15 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
   RuntimeSettings copyWith({
     Object? id = _Undefined,
     _i2.LogSettings? logSettings,
-    List<_i2.LogSettingsOverride>? logSettingsOverrides,
+    List<_i3.LogSettingsOverride>? logSettingsOverrides,
     bool? logServiceCalls,
     bool? logMalformedCalls,
   }) {
     return RuntimeSettings(
       id: id is int? ? id : this.id,
       logSettings: logSettings ?? this.logSettings.copyWith(),
-      logSettingsOverrides:
-          logSettingsOverrides ?? this.logSettingsOverrides.clone(),
+      logSettingsOverrides: logSettingsOverrides ??
+          this.logSettingsOverrides.map((e0) => e0.copyWith()).toList(),
       logServiceCalls: logServiceCalls ?? this.logServiceCalls,
       logMalformedCalls: logMalformedCalls ?? this.logMalformedCalls,
     );

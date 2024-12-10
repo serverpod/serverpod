@@ -1,22 +1,23 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
 
-abstract class Arena extends _i1.TableRow implements _i1.ProtocolSerialization {
+abstract class Arena implements _i1.TableRow, _i1.ProtocolSerialization {
   Arena._({
-    int? id,
+    this.id,
     required this.name,
     this.team,
-  }) : super(id);
+  });
 
   factory Arena({
     int? id,
@@ -38,6 +39,9 @@ abstract class Arena extends _i1.TableRow implements _i1.ProtocolSerialization {
   static final t = ArenaTable();
 
   static const db = ArenaRepository._();
+
+  @override
+  int? id;
 
   String name;
 
@@ -365,8 +369,9 @@ class ArenaAttachRowRepository {
   Future<void> team(
     _i1.Session session,
     Arena arena,
-    _i2.Team team,
-  ) async {
+    _i2.Team team, {
+    _i1.Transaction? transaction,
+  }) async {
     if (team.id == null) {
       throw ArgumentError.notNull('team.id');
     }
@@ -378,6 +383,7 @@ class ArenaAttachRowRepository {
     await session.db.updateRow<_i2.Team>(
       $team,
       columns: [_i2.Team.t.arenaId],
+      transaction: transaction,
     );
   }
 }
@@ -387,8 +393,9 @@ class ArenaDetachRowRepository {
 
   Future<void> team(
     _i1.Session session,
-    Arena arena,
-  ) async {
+    Arena arena, {
+    _i1.Transaction? transaction,
+  }) async {
     var $team = arena.team;
 
     if ($team == null) {
@@ -405,6 +412,7 @@ class ArenaDetachRowRepository {
     await session.db.updateRow<_i2.Team>(
       $$team,
       columns: [_i2.Team.t.arenaId],
+      transaction: transaction,
     );
   }
 }

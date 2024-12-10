@@ -27,14 +27,24 @@ class RouteStaticDirectory extends Route {
   /// The path to the directory to serve static files from.
   final String? basePath;
 
+  /// The path to serve as the root path ('/'), e.g. '/index.html'.
+  final String? serveAsRootPath;
+
   /// Creates a static directory with the [serverDirectory] as its root.
-  RouteStaticDirectory({required this.serverDirectory, this.basePath});
+  RouteStaticDirectory({
+    required this.serverDirectory,
+    this.basePath,
+    this.serveAsRootPath,
+  });
 
   @override
   Future<bool> handleCall(Session session, HttpRequest request) async {
-    session as MethodCallSession;
+    var path = Uri.decodeFull(request.requestedUri.path);
 
-    var path = Uri.decodeFull(session.uri.path);
+    var rootPath = serveAsRootPath;
+    if (rootPath != null && path == '/') {
+      path = rootPath;
+    }
 
     try {
       // Remove version control string
@@ -48,9 +58,10 @@ class RouteStaticDirectory extends Route {
       }
       base = baseParts.join('@');
 
-      if (basePath != null && path.startsWith(basePath!)) {
+      var localBasePath = basePath;
+      if (localBasePath != null && path.startsWith(localBasePath)) {
         var requestDir = p.dirname(path);
-        var middlePath = requestDir.substring(basePath!.length);
+        var middlePath = requestDir.substring(localBasePath.length);
 
         if (middlePath.isNotEmpty) {
           path = p.join(dir, middlePath, base + extension);

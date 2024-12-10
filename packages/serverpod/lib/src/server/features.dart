@@ -38,8 +38,10 @@ class Features {
   static bool get enableScheduledHealthChecks => enableDatabase;
 
   /// Returns true if the web server is enabled.
-  static bool get enablePersistentLogging => enableDatabase;
+  static bool get enablePersistentLogging =>
+      _instance._config.sessionLogs?.persistentEnabled == true;
 
   /// Returns true if the web server is enabled.
-  static bool get enableDefaultAuthenticationHandler => enableDatabase;
+  static bool get enableConsoleLogging =>
+      _instance._config.sessionLogs?.consoleEnabled == true;
 }

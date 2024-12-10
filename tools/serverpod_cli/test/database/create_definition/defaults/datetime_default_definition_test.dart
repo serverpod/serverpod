@@ -5,9 +5,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('Given a class definition with a DateTime field', () {
-    test(
-        'when "defaultPersist" is set, then the table should have the correct default value.',
-        () {
+    group('when "defaultPersist" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('dateTime')
           .withTypeDefinition('DateTime', false)
@@ -25,34 +23,40 @@ void main() {
         [],
       );
 
-      expect(
-        databaseDefinition.tables,
-        hasLength(1),
-      );
+      test('then the table should have one table', () {
+        expect(
+          databaseDefinition.tables,
+          hasLength(1),
+        );
+      });
 
-      var table = databaseDefinition.tables.first;
+      test('then the table should have the correct name', () {
+        var table = databaseDefinition.tables.first;
+        expect(
+          table.name,
+          'example',
+        );
+      });
 
-      expect(
-        table.name,
-        'example',
-      );
+      test('then the table should have two columns', () {
+        var table = databaseDefinition.tables.first;
+        expect(
+          table.columns,
+          hasLength(2),
+        );
+      });
 
-      expect(
-        table.columns,
-        hasLength(2),
-      );
-
-      var column = table.columns.last;
-
-      expect(
-        column.columnDefault,
-        '\'2024-01-01 01:01:01\'::timestamp without time zone',
-      );
+      test('then the last column should have the correct default value', () {
+        var table = databaseDefinition.tables.first;
+        var column = table.columns.last;
+        expect(
+          column.columnDefault,
+          '\'2024-01-01 01:01:01\'::timestamp without time zone',
+        );
+      });
     });
 
-    test(
-        'when no "defaultPersist" is set, then the table should not have a default value.',
-        () {
+    group('when no "defaultPersist" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('dateTime')
           .withTypeDefinition('DateTime', false)
@@ -69,34 +73,40 @@ void main() {
         [],
       );
 
-      expect(
-        databaseDefinition.tables,
-        hasLength(1),
-      );
+      test('then the table should have one table', () {
+        expect(
+          databaseDefinition.tables,
+          hasLength(1),
+        );
+      });
 
-      var table = databaseDefinition.tables.first;
+      test('then the table should have the correct name', () {
+        var table = databaseDefinition.tables.first;
+        expect(
+          table.name,
+          'example',
+        );
+      });
 
-      expect(
-        table.name,
-        'example',
-      );
+      test('then the table should have two columns', () {
+        var table = databaseDefinition.tables.first;
+        expect(
+          table.columns,
+          hasLength(2),
+        );
+      });
 
-      expect(
-        table.columns,
-        hasLength(2),
-      );
-
-      var column = table.columns.last;
-
-      expect(
-        column.columnDefault,
-        isNull,
-      );
+      test('then the last column should not have a default value', () {
+        var table = databaseDefinition.tables.first;
+        var column = table.columns.last;
+        expect(
+          column.columnDefault,
+          isNull,
+        );
+      });
     });
 
-    test(
-        'when the field is nullable and has a "defaultPersist" value, then the table should have the correct default value and be nullable.',
-        () {
+    group('when the field is nullable and has a "defaultPersist" value', () {
       var field = FieldDefinitionBuilder()
           .withName('dateTime')
           .withTypeDefinition('DateTime', true)
@@ -114,39 +124,49 @@ void main() {
         [],
       );
 
-      expect(
-        databaseDefinition.tables,
-        hasLength(1),
-      );
+      test('then the table should have one table', () {
+        expect(
+          databaseDefinition.tables,
+          hasLength(1),
+        );
+      });
 
-      var table = databaseDefinition.tables.first;
+      test('then the table should have the correct name', () {
+        var table = databaseDefinition.tables.first;
+        expect(
+          table.name,
+          'example',
+        );
+      });
 
-      expect(
-        table.name,
-        'example',
-      );
+      test('then the table should have two columns', () {
+        var table = databaseDefinition.tables.first;
+        expect(
+          table.columns,
+          hasLength(2),
+        );
+      });
 
-      expect(
-        table.columns,
-        hasLength(2),
-      );
+      test('then the last column should have the correct default value', () {
+        var table = databaseDefinition.tables.first;
+        var column = table.columns.last;
+        expect(
+          column.columnDefault,
+          '\'2024-01-01 01:01:01\'::timestamp without time zone',
+        );
+      });
 
-      var column = table.columns.last;
-
-      expect(
-        column.columnDefault,
-        '\'2024-01-01 01:01:01\'::timestamp without time zone',
-      );
-
-      expect(
-        column.isNullable,
-        isTrue,
-      );
+      test('then the last column should be nullable', () {
+        var table = databaseDefinition.tables.first;
+        var column = table.columns.last;
+        expect(
+          column.isNullable,
+          isTrue,
+        );
+      });
     });
 
-    test(
-        'when the field is nullable and has no "defaultPersist" value, then the table should be nullable with no default value.',
-        () {
+    group('when the field is nullable and has no "defaultPersist" value', () {
       var field = FieldDefinitionBuilder()
           .withName('dateTime')
           .withTypeDefinition('DateTime', true)
@@ -163,39 +183,49 @@ void main() {
         [],
       );
 
-      expect(
-        databaseDefinition.tables,
-        hasLength(1),
-      );
+      test('then the table should have one table', () {
+        expect(
+          databaseDefinition.tables,
+          hasLength(1),
+        );
+      });
 
-      var table = databaseDefinition.tables.first;
+      test('then the table should have the correct name', () {
+        var table = databaseDefinition.tables.first;
+        expect(
+          table.name,
+          'example',
+        );
+      });
 
-      expect(
-        table.name,
-        'example',
-      );
+      test('then the table should have two columns', () {
+        var table = databaseDefinition.tables.first;
+        expect(
+          table.columns,
+          hasLength(2),
+        );
+      });
 
-      expect(
-        table.columns,
-        hasLength(2),
-      );
+      test('then the last column should not have a default value', () {
+        var table = databaseDefinition.tables.first;
+        var column = table.columns.last;
+        expect(
+          column.columnDefault,
+          isNull,
+        );
+      });
 
-      var column = table.columns.last;
-
-      expect(
-        column.columnDefault,
-        isNull,
-      );
-
-      expect(
-        column.isNullable,
-        isTrue,
-      );
+      test('then the last column should be nullable', () {
+        var table = databaseDefinition.tables.first;
+        var column = table.columns.last;
+        expect(
+          column.isNullable,
+          isTrue,
+        );
+      });
     });
 
-    test(
-        'when "defaultPersist" is set to "now", then the table should have the correct default value.',
-        () {
+    group('when "defaultPersist" is set to "now"', () {
       var field = FieldDefinitionBuilder()
           .withName('dateTime')
           .withTypeDefinition('DateTime', false)
@@ -213,34 +243,40 @@ void main() {
         [],
       );
 
-      expect(
-        databaseDefinition.tables,
-        hasLength(1),
-      );
+      test('then the table should have one table', () {
+        expect(
+          databaseDefinition.tables,
+          hasLength(1),
+        );
+      });
 
-      var table = databaseDefinition.tables.first;
+      test('then the table should have the correct name', () {
+        var table = databaseDefinition.tables.first;
+        expect(
+          table.name,
+          'example',
+        );
+      });
 
-      expect(
-        table.name,
-        'example',
-      );
+      test('then the table should have two columns', () {
+        var table = databaseDefinition.tables.first;
+        expect(
+          table.columns,
+          hasLength(2),
+        );
+      });
 
-      expect(
-        table.columns,
-        hasLength(2),
-      );
-
-      var column = table.columns.last;
-
-      expect(
-        column.columnDefault,
-        'CURRENT_TIMESTAMP',
-      );
+      test('then the last column should have the correct default value', () {
+        var table = databaseDefinition.tables.first;
+        var column = table.columns.last;
+        expect(
+          column.columnDefault,
+          'CURRENT_TIMESTAMP',
+        );
+      });
     });
 
-    test(
-        'when "defaultModelValue" is set, then the table should not have a default value',
-        () {
+    group('when "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('dateTime')
           .withTypeDefinition('DateTime', false)
@@ -258,34 +294,40 @@ void main() {
         [],
       );
 
-      expect(
-        databaseDefinition.tables,
-        hasLength(1),
-      );
+      test('then the table should have one table', () {
+        expect(
+          databaseDefinition.tables,
+          hasLength(1),
+        );
+      });
 
-      var table = databaseDefinition.tables.first;
+      test('then the table should have the correct name', () {
+        var table = databaseDefinition.tables.first;
+        expect(
+          table.name,
+          'example',
+        );
+      });
 
-      expect(
-        table.name,
-        'example',
-      );
+      test('then the table should have two columns', () {
+        var table = databaseDefinition.tables.first;
+        expect(
+          table.columns,
+          hasLength(2),
+        );
+      });
 
-      expect(
-        table.columns,
-        hasLength(2),
-      );
-
-      var column = table.columns.last;
-
-      expect(
-        column.columnDefault,
-        isNull,
-      );
+      test('then the last column should not have a default value', () {
+        var table = databaseDefinition.tables.first;
+        var column = table.columns.last;
+        expect(
+          column.columnDefault,
+          isNull,
+        );
+      });
     });
 
-    test(
-        'when the field is nullable and "defaultModelValue" is set, then the table should be nullable with no default value',
-        () {
+    group('when the field is nullable and "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('dateTime')
           .withTypeDefinition('DateTime', true)
@@ -303,34 +345,46 @@ void main() {
         [],
       );
 
-      expect(
-        databaseDefinition.tables,
-        hasLength(1),
-      );
+      test('then the table should have one table', () {
+        expect(
+          databaseDefinition.tables,
+          hasLength(1),
+        );
+      });
 
-      var table = databaseDefinition.tables.first;
+      test('then the table should have the correct name', () {
+        var table = databaseDefinition.tables.first;
+        expect(
+          table.name,
+          'example',
+        );
+      });
 
-      expect(
-        table.name,
-        'example',
-      );
+      test('then the table should have two columns', () {
+        var table = databaseDefinition.tables.first;
+        expect(
+          table.columns,
+          hasLength(2),
+        );
+      });
 
-      expect(
-        table.columns,
-        hasLength(2),
-      );
+      test('then the last column should not have a default value', () {
+        var table = databaseDefinition.tables.first;
+        var column = table.columns.last;
+        expect(
+          column.columnDefault,
+          isNull,
+        );
+      });
 
-      var column = table.columns.last;
-
-      expect(
-        column.columnDefault,
-        isNull,
-      );
-
-      expect(
-        column.isNullable,
-        isTrue,
-      );
+      test('then the last column should be nullable', () {
+        var table = databaseDefinition.tables.first;
+        var column = table.columns.last;
+        expect(
+          column.isNullable,
+          isTrue,
+        );
+      });
     });
   });
 }

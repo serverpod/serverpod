@@ -14,6 +14,9 @@ class ServerpodConfigMap {
 
   /// The redis configuration.
   static const String redis = 'redis';
+
+  /// The logs configuration.
+  static const String sessionLogs = 'sessionLogs';
 }
 
 /// The configuration sections for the serverpod server configuration file.
@@ -100,7 +103,13 @@ enum ServerpodEnv {
   webPublicScheme,
 
   /// The maximum request size for the server.
-  maxRequestSize;
+  maxRequestSize,
+
+  /// True if session persistent logging is enabled.
+  sessionPersistentLogEnabled,
+
+  /// True if session console logging is enabled.
+  sessionConsoleLogEnabled;
 
   /// The key used in the environment configuration file.
   String get configKey {
@@ -129,6 +138,8 @@ enum ServerpodEnv {
       (ServerpodEnv.webPublicPort) => ServerpodServerConfigMap.publicPort,
       (ServerpodEnv.webPublicScheme) => ServerpodServerConfigMap.publicScheme,
       (ServerpodEnv.maxRequestSize) => 'maxRequestSize',
+      (ServerpodEnv.sessionPersistentLogEnabled) => 'persistentEnabled',
+      (ServerpodEnv.sessionConsoleLogEnabled) => 'consoleEnabled',
     };
   }
 
@@ -162,6 +173,10 @@ enum ServerpodEnv {
       (ServerpodEnv.webPublicPort) => 'SERVERPOD_WEB_SERVER_PUBLIC_PORT',
       (ServerpodEnv.webPublicScheme) => 'SERVERPOD_WEB_SERVER_PUBLIC_SCHEME',
       (ServerpodEnv.maxRequestSize) => 'SERVERPOD_MAX_REQUEST_SIZE',
+      (ServerpodEnv.sessionPersistentLogEnabled) =>
+        'SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED',
+      (ServerpodEnv.sessionConsoleLogEnabled) =>
+        'SERVERPOD_SESSION_CONSOLE_LOG_ENABLED',
     };
   }
 }

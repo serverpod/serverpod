@@ -1,24 +1,23 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../protocol.dart' as _i2;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
+import '../../models_with_relations/one_to_many/order.dart' as _i2;
 
-abstract class Customer extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class Customer implements _i1.TableRow, _i1.ProtocolSerialization {
   Customer._({
-    int? id,
+    this.id,
     required this.name,
     this.orders,
-  }) : super(id);
+  });
 
   factory Customer({
     int? id,
@@ -39,6 +38,9 @@ abstract class Customer extends _i1.TableRow
   static final t = CustomerTable();
 
   static const db = CustomerRepository._();
+
+  @override
+  int? id;
 
   String name;
 
@@ -124,7 +126,9 @@ class _CustomerImpl extends Customer {
     return Customer(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      orders: orders is List<_i2.Order>? ? orders : this.orders?.clone(),
+      orders: orders is List<_i2.Order>?
+          ? orders
+          : this.orders?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -392,8 +396,9 @@ class CustomerAttachRepository {
   Future<void> orders(
     _i1.Session session,
     Customer customer,
-    List<_i2.Order> order,
-  ) async {
+    List<_i2.Order> order, {
+    _i1.Transaction? transaction,
+  }) async {
     if (order.any((e) => e.id == null)) {
       throw ArgumentError.notNull('order.id');
     }
@@ -405,6 +410,7 @@ class CustomerAttachRepository {
     await session.db.update<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
+      transaction: transaction,
     );
   }
 }
@@ -415,8 +421,9 @@ class CustomerAttachRowRepository {
   Future<void> orders(
     _i1.Session session,
     Customer customer,
-    _i2.Order order,
-  ) async {
+    _i2.Order order, {
+    _i1.Transaction? transaction,
+  }) async {
     if (order.id == null) {
       throw ArgumentError.notNull('order.id');
     }
@@ -428,6 +435,7 @@ class CustomerAttachRowRepository {
     await session.db.updateRow<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
+      transaction: transaction,
     );
   }
 }
@@ -437,8 +445,9 @@ class CustomerDetachRepository {
 
   Future<void> orders(
     _i1.Session session,
-    List<_i2.Order> order,
-  ) async {
+    List<_i2.Order> order, {
+    _i1.Transaction? transaction,
+  }) async {
     if (order.any((e) => e.id == null)) {
       throw ArgumentError.notNull('order.id');
     }
@@ -447,6 +456,7 @@ class CustomerDetachRepository {
     await session.db.update<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
+      transaction: transaction,
     );
   }
 }
@@ -456,8 +466,9 @@ class CustomerDetachRowRepository {
 
   Future<void> orders(
     _i1.Session session,
-    _i2.Order order,
-  ) async {
+    _i2.Order order, {
+    _i1.Transaction? transaction,
+  }) async {
     if (order.id == null) {
       throw ArgumentError.notNull('order.id');
     }
@@ -466,6 +477,7 @@ class CustomerDetachRowRepository {
     await session.db.updateRow<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
+      transaction: transaction,
     );
   }
 }

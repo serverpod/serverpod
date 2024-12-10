@@ -1,5 +1,5 @@
 /// Tools for analyzing the protocol files of a Serverpod project.
-library analyzer;
+library;
 
 export 'src/analyzer/protocol_definition.dart' show ProtocolDefinition;
 export 'src/config/config.dart' show GeneratorConfig, PackageType;

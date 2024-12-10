@@ -1,6 +1,7 @@
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/default.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/validate_node.dart';
 
 class ExceptionYamlDefinition {
@@ -26,7 +27,7 @@ class ExceptionYamlDefinition {
       ),
       ValidateNode(
         Keyword.fields,
-        isRequired: true,
+        isRequired: false,
         nested: {
           ValidateNode(
             Keyword.any,
@@ -40,6 +41,22 @@ class ExceptionYamlDefinition {
                 Keyword.type,
                 isRequired: true,
                 valueRestriction: restrictions.validateFieldType,
+              ),
+              ValidateNode(
+                Keyword.defaultKey,
+                keyRestriction: restrictions.validateDefaultKey,
+                valueRestriction: DefaultValueRestriction(
+                  Keyword.defaultKey,
+                  restrictions.documentDefinition,
+                ).validate,
+              ),
+              ValidateNode(
+                Keyword.defaultModelKey,
+                keyRestriction: restrictions.validateDefaultModelKey,
+                valueRestriction: DefaultValueRestriction(
+                  Keyword.defaultModelKey,
+                  restrictions.documentDefinition,
+                ).validate,
               ),
             },
           ),

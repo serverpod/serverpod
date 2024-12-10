@@ -1,24 +1,26 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../../protocol.dart' as _i2;
+import '../../../models_with_relations/self_relation/one_to_one/post.dart'
+    as _i2;
 
-abstract class Post extends _i1.TableRow implements _i1.ProtocolSerialization {
+abstract class Post implements _i1.TableRow, _i1.ProtocolSerialization {
   Post._({
-    int? id,
+    this.id,
     required this.content,
     this.previous,
     this.nextId,
     this.next,
-  }) : super(id);
+  });
 
   factory Post({
     int? id,
@@ -47,6 +49,9 @@ abstract class Post extends _i1.TableRow implements _i1.ProtocolSerialization {
   static final t = PostTable();
 
   static const db = PostRepository._();
+
+  @override
+  int? id;
 
   String content;
 
@@ -432,8 +437,9 @@ class PostAttachRowRepository {
   Future<void> previous(
     _i1.Session session,
     Post post,
-    _i2.Post previous,
-  ) async {
+    _i2.Post previous, {
+    _i1.Transaction? transaction,
+  }) async {
     if (previous.id == null) {
       throw ArgumentError.notNull('previous.id');
     }
@@ -445,14 +451,16 @@ class PostAttachRowRepository {
     await session.db.updateRow<_i2.Post>(
       $previous,
       columns: [_i2.Post.t.nextId],
+      transaction: transaction,
     );
   }
 
   Future<void> next(
     _i1.Session session,
     Post post,
-    _i2.Post next,
-  ) async {
+    _i2.Post next, {
+    _i1.Transaction? transaction,
+  }) async {
     if (post.id == null) {
       throw ArgumentError.notNull('post.id');
     }
@@ -464,6 +472,7 @@ class PostAttachRowRepository {
     await session.db.updateRow<Post>(
       $post,
       columns: [Post.t.nextId],
+      transaction: transaction,
     );
   }
 }
@@ -473,8 +482,9 @@ class PostDetachRowRepository {
 
   Future<void> previous(
     _i1.Session session,
-    Post post,
-  ) async {
+    Post post, {
+    _i1.Transaction? transaction,
+  }) async {
     var $previous = post.previous;
 
     if ($previous == null) {
@@ -491,13 +501,15 @@ class PostDetachRowRepository {
     await session.db.updateRow<_i2.Post>(
       $$previous,
       columns: [_i2.Post.t.nextId],
+      transaction: transaction,
     );
   }
 
   Future<void> next(
     _i1.Session session,
-    Post post,
-  ) async {
+    Post post, {
+    _i1.Transaction? transaction,
+  }) async {
     if (post.id == null) {
       throw ArgumentError.notNull('post.id');
     }
@@ -506,6 +518,7 @@ class PostDetachRowRepository {
     await session.db.updateRow<Post>(
       $post,
       columns: [Post.t.nextId],
+      transaction: transaction,
     );
   }
 }

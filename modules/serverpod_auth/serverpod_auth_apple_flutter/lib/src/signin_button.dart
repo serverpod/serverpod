@@ -76,7 +76,7 @@ class SignInWithAppleButtonState extends State<SignInWithAppleButton> {
             navigator.pop());
       },
       label: Text(widget.label ?? 'Sign in with Apple'),
-      icon: const Icon(MdiIcons.apple),
+      icon: Icon(MdiIcons.apple),
     );
   }
 }

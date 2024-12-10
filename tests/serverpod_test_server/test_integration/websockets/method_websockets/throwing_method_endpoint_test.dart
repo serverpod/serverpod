@@ -28,15 +28,21 @@ void main() {
     group(
         'when a stream is opened to an endpoint with a Future return that throws an exception',
         () {
-      var streamOpened = Completer<void>();
+      late Completer<void> streamOpened;
       late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
+      late Completer<CloseMethodStreamCommand>
+          closeMethodStreamParameterCommand;
 
       var endpoint = 'methodStreaming';
       var method = 'inStreamThrowsException';
+      var parameter = 'stream';
       var connectionId = const Uuid().v4obj();
 
       setUp(() async {
+        streamOpened = Completer<void>();
         closeMethodStreamCommand = Completer<CloseMethodStreamCommand>();
+        closeMethodStreamParameterCommand =
+            Completer<CloseMethodStreamCommand>();
         webSocket.stream.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
@@ -47,6 +53,9 @@ void main() {
           } else if (message is CloseMethodStreamCommand &&
               message.parameter == null) {
             closeMethodStreamCommand.complete(message);
+          } else if (message is CloseMethodStreamCommand &&
+              message.parameter == parameter) {
+            closeMethodStreamParameterCommand.complete(message);
           }
         });
 
@@ -55,6 +64,7 @@ void main() {
           method: method,
           args: {},
           connectionId: connectionId,
+          inputStreams: [parameter],
         ));
 
         await streamOpened.future.timeout(
@@ -79,6 +89,25 @@ void main() {
         var closeMethodStreamCommandMessage = await message;
         expect(closeMethodStreamCommandMessage.endpoint, endpoint);
         expect(closeMethodStreamCommandMessage.method, method);
+        expect(closeMethodStreamCommandMessage.connectionId, connectionId);
+        expect(closeMethodStreamCommandMessage.reason, CloseReason.error);
+      });
+
+      test(
+          'then CloseMethodStreamCommand matching endpoint parameter is received with error reason.',
+          () async {
+        var message = closeMethodStreamParameterCommand.future
+            .timeout(Duration(seconds: 5));
+        expect(
+          message,
+          completes,
+          reason: 'Failed to receive CloseMethodStreamCommand from server.',
+        );
+
+        var closeMethodStreamCommandMessage = await message;
+        expect(closeMethodStreamCommandMessage.endpoint, endpoint);
+        expect(closeMethodStreamCommandMessage.method, method);
+        expect(closeMethodStreamCommandMessage.parameter, parameter);
         expect(closeMethodStreamCommandMessage.connectionId, connectionId);
         expect(closeMethodStreamCommandMessage.reason, CloseReason.error);
       });
@@ -113,6 +142,7 @@ void main() {
           method: method,
           args: {},
           connectionId: connectionId,
+          inputStreams: [],
         ));
 
         await streamOpened.future.timeout(
@@ -147,17 +177,23 @@ void main() {
         () {
       late Completer<MethodStreamSerializableException>
           methodStreamSerializableException;
+      late Completer<void> streamOpened;
       late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
+      late Completer<CloseMethodStreamCommand>
+          closeMethodStreamParameterCommand;
 
       var endpoint = 'methodStreaming';
       var method = 'inStreamThrowsSerializableException';
+      var parameter = 'stream';
       var connectionId = const Uuid().v4obj();
 
       setUp(() async {
-        var streamOpened = Completer<void>();
+        streamOpened = Completer<void>();
         methodStreamSerializableException =
             Completer<MethodStreamSerializableException>();
         closeMethodStreamCommand = Completer<CloseMethodStreamCommand>();
+        closeMethodStreamParameterCommand =
+            Completer<CloseMethodStreamCommand>();
 
         webSocket.stream.listen((event) {
           var message = WebSocketMessage.fromJsonString(
@@ -171,6 +207,9 @@ void main() {
           } else if (message is CloseMethodStreamCommand &&
               message.parameter == null) {
             closeMethodStreamCommand.complete(message);
+          } else if (message is CloseMethodStreamCommand &&
+              message.parameter == parameter) {
+            closeMethodStreamParameterCommand.complete(message);
           }
         });
 
@@ -179,6 +218,7 @@ void main() {
           method: method,
           args: {},
           connectionId: connectionId,
+          inputStreams: ['stream'],
         ));
 
         await streamOpened.future.timeout(
@@ -225,6 +265,25 @@ void main() {
         expect(closeMethodStreamCommandMessage.connectionId, connectionId);
         expect(closeMethodStreamCommandMessage.reason, CloseReason.error);
       });
+
+      test(
+          'then CloseMethodStreamCommand matching endpoint parameter is received with error reason.',
+          () async {
+        var message = closeMethodStreamParameterCommand.future
+            .timeout(Duration(seconds: 5));
+        expect(
+          message,
+          completes,
+          reason: 'Failed to receive CloseMethodStreamCommand from server.',
+        );
+
+        var closeMethodStreamCommandMessage = await message;
+        expect(closeMethodStreamCommandMessage.endpoint, endpoint);
+        expect(closeMethodStreamCommandMessage.method, method);
+        expect(closeMethodStreamCommandMessage.parameter, parameter);
+        expect(closeMethodStreamCommandMessage.connectionId, connectionId);
+        expect(closeMethodStreamCommandMessage.reason, CloseReason.error);
+      });
     });
 
     group(
@@ -263,6 +322,7 @@ void main() {
           method: method,
           args: {},
           connectionId: connectionId,
+          inputStreams: [],
         ));
 
         await streamOpened.future.timeout(

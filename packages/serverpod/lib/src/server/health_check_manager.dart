@@ -6,6 +6,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/health_check.dart';
+import 'package:serverpod/src/server/serverpod.dart';
 import 'package:system_resources/system_resources.dart';
 import 'package:serverpod/src/util/date_time_extension.dart';
 
@@ -50,7 +51,7 @@ class HealthCheckManager {
       stdout.writeln('Performing health checks.');
     }
 
-    var session = await _pod.createSession(enableLogging: false);
+    var session = _pod.internalSession;
     var numHealthChecks = 0;
 
     try {
@@ -68,8 +69,6 @@ class HealthCheckManager {
       // TODO: Sometimes serverpod attempts to write duplicate health checks for
       // the same time. Doesn't cause any harm, but would be nice to fix.
     }
-
-    await session.close();
 
     await _pod.reloadRuntimeSettings();
 
@@ -95,7 +94,7 @@ class HealthCheckManager {
   }
 
   Future<void> _cleanUpClosedSessions() async {
-    var session = await _pod.createSession(enableLogging: false);
+    var session = _pod.internalSession;
 
     try {
       var encoder = DatabasePoolManager.encoder;
@@ -120,11 +119,10 @@ class HealthCheckManager {
       stderr.writeln('Failed to cleanup closed sessions: $e');
       stderr.write('$stackTrace');
     }
-    await session.close();
   }
 
   Future<void> _optimizeHealthCheckData(int numHealthChecks) async {
-    var session = await _pod.createSession(enableLogging: false);
+    var session = _pod.internalSession;
     try {
       // Optimize connection info entries.
       var didOptimizeMinutes = await _optimizeConnectionInfoEntries(
@@ -158,10 +156,9 @@ class HealthCheckManager {
         );
       }
     } catch (e, stackTrace) {
-      await session.close(error: e, stackTrace: stackTrace);
-      return;
+      _pod.logVerbose(e.toString());
+      _pod.logVerbose(stackTrace.toString());
     }
-    await session.close();
   }
 
   Future<bool> _optimizeConnectionInfoEntries(

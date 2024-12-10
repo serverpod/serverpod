@@ -8,55 +8,60 @@ import 'package:test/test.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().build();
-  group('Test invalid top level fields key values', () {
-    test(
-        'Given a class without the fields key, then collect an error that the fields key is required',
-        () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+  group('Given a class without the fields key', () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
           class: Example
           ''',
-        ).build()
-      ];
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      ).build()
+    ];
+    var collector = CodeGenerationCollector();
+    var definitions =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
 
+    test('then no errors are collected.', () {
       expect(
         collector.errors,
-        isNotEmpty,
-        reason: 'Expected an error but none was generated.',
+        isEmpty,
+        reason: 'Expected no errors but some were generated.',
       );
-
-      var error = collector.errors.first;
-      expect(error.message, 'No "fields" property is defined.');
     });
 
-    test(
-        'Given an exception without the fields key, then collect an error that the fields key is required',
-        () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+    test('then a class definition is created.', () {
+      var definition = definitions.firstOrNull as ClassDefinition?;
+      expect(definition?.className, 'Example');
+    });
+  });
+
+  group('Given an exception without the fields key', () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
           exception: Example
           ''',
-        ).build()
-      ];
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      ).build()
+    ];
+    var collector = CodeGenerationCollector();
+    var definitions =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
 
+    test('then no errors are collected.', () {
       expect(
         collector.errors,
-        isNotEmpty,
-        reason: 'Expected an error but none was generated.',
+        isEmpty,
+        reason: 'Expected no errors but some were generated.',
       );
-
-      var error = collector.errors.first;
-      expect(error.message, 'No "fields" property is defined.');
     });
 
+    test('then a class definition is created.', () {
+      var definition = definitions.firstOrNull as ClassDefinition?;
+      expect(definition?.className, 'Example');
+    });
+  });
+  group('Test invalid top level fields key values', () {
     test(
         'Given a class with the fields key defined but without any field, then collect an error that at least one field has to be added.',
         () {

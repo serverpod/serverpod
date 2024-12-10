@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 
@@ -16,6 +17,8 @@ class GeneratorConfigBuilder {
   List<ModuleConfig> _modules;
   List<TypeDefinition> _extraClasses;
   List<ServerpodFeature> _enabledFeatures;
+  List<ExperimentalFeature> _enabledExperimentalFeatures;
+  List<String>? _relativeServerTestToolsPathParts;
 
   GeneratorConfigBuilder()
       : _name = _defaultName,
@@ -42,7 +45,8 @@ class GeneratorConfigBuilder {
           ),
         ],
         _extraClasses = [],
-        _enabledFeatures = [ServerpodFeature.database];
+        _enabledFeatures = [ServerpodFeature.database],
+        _enabledExperimentalFeatures = [];
 
   GeneratorConfigBuilder withName(String name) {
     _name = name;
@@ -103,6 +107,20 @@ class GeneratorConfigBuilder {
     return this;
   }
 
+  GeneratorConfigBuilder withEnabledExperimentalFeatures(
+    List<ExperimentalFeature> features,
+  ) {
+    _enabledExperimentalFeatures = features;
+    return this;
+  }
+
+  GeneratorConfigBuilder withRelativeServerTestToolsPathParts(
+    List<String>? relativeServerTestToolsPathParts,
+  ) {
+    _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts;
+    return this;
+  }
+
   GeneratorConfig build() {
     return GeneratorConfig(
       name: _name,
@@ -115,6 +133,8 @@ class GeneratorConfigBuilder {
       modules: _modules,
       extraClasses: _extraClasses,
       enabledFeatures: _enabledFeatures,
+      experimentalFeatures: _enabledExperimentalFeatures,
+      relativeServerTestToolsPathParts: _relativeServerTestToolsPathParts,
     );
   }
 }

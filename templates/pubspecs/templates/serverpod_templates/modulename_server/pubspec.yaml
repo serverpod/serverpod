@@ -8,7 +8,9 @@ dependencies:
   serverpod: SERVERPOD_VERSION
 
 dev_dependencies:
-  lints: '>=3.0.0 <5.0.0'
+  lints: '>=3.0.0 <6.0.0'
+  test: '^1.24.2'
+  serverpod_test: SERVERPOD_VERSION
 
 dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
   serverpod: #--CONDITIONALLY_REMOVE_LINE--#
@@ -17,3 +19,7 @@ dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
     path: ../../../packages/serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
   serverpod_shared: #--CONDITIONALLY_REMOVE_LINE--#
     path: ../../../packages/serverpod_shared #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_test: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../packages/serverpod_test #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_lints: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../packages/serverpod_lints #--CONDITIONALLY_REMOVE_LINE--#

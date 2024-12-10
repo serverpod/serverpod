@@ -1,5 +1,4 @@
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
@@ -7,6 +6,7 @@ import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_para
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'extension/endpoint_parameters_extension.dart';
 
 const _excludedMethodNameSet = {
   'streamOpened',
@@ -31,8 +31,8 @@ abstract class EndpointMethodAnalyzer {
       return MethodStreamDefinition(
         name: method.name,
         documentationComment: method.documentationComment,
-        // TODO: Move removal of session parameter to Parameter analyzer
-        parameters: parameters.required.sublist(1), // Skip session parameter,
+        annotations: _parseAnnotations(dartElement: method),
+        parameters: parameters.required,
         parametersNamed: parameters.named,
         parametersPositional: parameters.positional,
         returnType: TypeDefinition.fromDartType(method.returnType),
@@ -42,8 +42,8 @@ abstract class EndpointMethodAnalyzer {
     return MethodCallDefinition(
       name: method.name,
       documentationComment: method.documentationComment,
-      // TODO: Move removal of session parameter to Parameter analyzer
-      parameters: parameters.required.sublist(1), // Skip session parameter,
+      annotations: _parseAnnotations(dartElement: method),
+      parameters: parameters.required,
       parametersNamed: parameters.named,
       parametersPositional: parameters.positional,
       returnType: TypeDefinition.fromDartType(method.returnType),
@@ -70,9 +70,7 @@ abstract class EndpointMethodAnalyzer {
 
     if (_excludedMethodNameSet.contains(method.name)) return false;
 
-    if (_missingSessionParameter(method.parameters)) return false;
-
-    return true;
+    return method.parameters.isFirstRequiredParameterSession;
   }
 
   /// Validates the [MethodElement] and returns a list of
@@ -87,11 +85,6 @@ abstract class EndpointMethodAnalyzer {
     ];
 
     return errors.whereType<SourceSpanSeverityException>().toList();
-  }
-
-  static bool _missingSessionParameter(List<ParameterElement> parameters) {
-    if (parameters.isEmpty) return true;
-    return parameters.first.type.element?.displayName != 'Session';
   }
 
   static SourceSpanSeverityException? _validateReturnType({
@@ -125,21 +118,20 @@ abstract class EndpointMethodAnalyzer {
 
     var innerType = typeArguments[0];
 
-    if (innerType is VoidType) {
-      return null;
-    }
-
-    if (innerType is DynamicType) {
+    if (innerType is VoidType && dartType.isDartAsyncStream) {
       return SourceSpanSeverityException(
-        'Return generic must have a type defined. E.g. ${dartType.element.name}<String>.',
+        'The type "void" is not supported for streams.',
         dartElement.span,
       );
     }
 
-    if ((dartType.isDartAsyncStream || hasStreamParameter) &&
-        innerType.nullabilitySuffix != NullabilitySuffix.none) {
+    if (innerType is VoidType && dartType.isDartAsyncFuture) {
+      return null;
+    }
+
+    if (innerType is DynamicType && !dartType.isDartAsyncStream) {
       return SourceSpanSeverityException(
-        'Nullable return type for streaming methods are not supported.',
+        'Return generic must have a type defined. E.g. ${dartType.element.name}<String>.',
         dartElement.span,
       );
     }
@@ -154,6 +146,48 @@ abstract class EndpointMethodAnalyzer {
     }
 
     return null;
+  }
+
+  static List<String>? _parseAnnotationStringArgument(
+    ElementAnnotation annotation,
+    String fieldName,
+  ) {
+    var argument =
+        annotation.computeConstantValue()?.getField(fieldName)?.toStringValue();
+    return argument != null ? ["'$argument'"] : null;
+  }
+
+  static List<AnnotationDefinition> _parseAnnotations({
+    required Element dartElement,
+  }) {
+    return dartElement.metadata.expand<AnnotationDefinition>((annotation) {
+      var annotationElement = annotation.element;
+      var annotationName = annotationElement is ConstructorElement
+          ? annotationElement.enclosingElement.name
+          : annotationElement?.name;
+      if (annotationName == null) return [];
+      return switch (annotationName) {
+        'Deprecated' => [
+            AnnotationDefinition(
+              name: annotationName,
+              arguments: _parseAnnotationStringArgument(annotation, 'message'),
+              methodCallAnalyzerIgnoreRule:
+                  'deprecated_member_use_from_same_package',
+            ),
+          ],
+        'deprecated' =>
+          // @deprecated is a shorthand for @Deprecated(..)
+          // see https://api.flutter.dev/flutter/dart-core/deprecated-constant.html
+          [
+            AnnotationDefinition(
+              name: annotationName,
+              methodCallAnalyzerIgnoreRule:
+                  'deprecated_member_use_from_same_package',
+            ),
+          ],
+        _ => [],
+      };
+    }).toList();
   }
 }
 

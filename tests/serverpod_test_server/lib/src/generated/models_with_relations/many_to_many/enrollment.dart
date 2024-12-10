@@ -1,32 +1,33 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../models_with_relations/many_to_many/student.dart' as _i2;
+import '../../models_with_relations/many_to_many/course.dart' as _i3;
 
-abstract class Enrollment extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class Enrollment implements _i1.TableRow, _i1.ProtocolSerialization {
   Enrollment._({
-    int? id,
+    this.id,
     required this.studentId,
     this.student,
     required this.courseId,
     this.course,
-  }) : super(id);
+  });
 
   factory Enrollment({
     int? id,
     required int studentId,
     _i2.Student? student,
     required int courseId,
-    _i2.Course? course,
+    _i3.Course? course,
   }) = _EnrollmentImpl;
 
   factory Enrollment.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -40,7 +41,7 @@ abstract class Enrollment extends _i1.TableRow
       courseId: jsonSerialization['courseId'] as int,
       course: jsonSerialization['course'] == null
           ? null
-          : _i2.Course.fromJson(
+          : _i3.Course.fromJson(
               (jsonSerialization['course'] as Map<String, dynamic>)),
     );
   }
@@ -49,13 +50,16 @@ abstract class Enrollment extends _i1.TableRow
 
   static const db = EnrollmentRepository._();
 
+  @override
+  int? id;
+
   int studentId;
 
   _i2.Student? student;
 
   int courseId;
 
-  _i2.Course? course;
+  _i3.Course? course;
 
   @override
   _i1.Table get table => t;
@@ -65,7 +69,7 @@ abstract class Enrollment extends _i1.TableRow
     int? studentId,
     _i2.Student? student,
     int? courseId,
-    _i2.Course? course,
+    _i3.Course? course,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -91,7 +95,7 @@ abstract class Enrollment extends _i1.TableRow
 
   static EnrollmentInclude include({
     _i2.StudentInclude? student,
-    _i2.CourseInclude? course,
+    _i3.CourseInclude? course,
   }) {
     return EnrollmentInclude._(
       student: student,
@@ -133,7 +137,7 @@ class _EnrollmentImpl extends Enrollment {
     required int studentId,
     _i2.Student? student,
     required int courseId,
-    _i2.Course? course,
+    _i3.Course? course,
   }) : super._(
           id: id,
           studentId: studentId,
@@ -155,7 +159,7 @@ class _EnrollmentImpl extends Enrollment {
       studentId: studentId ?? this.studentId,
       student: student is _i2.Student? ? student : this.student?.copyWith(),
       courseId: courseId ?? this.courseId,
-      course: course is _i2.Course? ? course : this.course?.copyWith(),
+      course: course is _i3.Course? ? course : this.course?.copyWith(),
     );
   }
 }
@@ -178,7 +182,7 @@ class EnrollmentTable extends _i1.Table {
 
   late final _i1.ColumnInt courseId;
 
-  _i2.CourseTable? _course;
+  _i3.CourseTable? _course;
 
   _i2.StudentTable get student {
     if (_student != null) return _student!;
@@ -193,15 +197,15 @@ class EnrollmentTable extends _i1.Table {
     return _student!;
   }
 
-  _i2.CourseTable get course {
+  _i3.CourseTable get course {
     if (_course != null) return _course!;
     _course = _i1.createRelationTable(
       relationFieldName: 'course',
       field: Enrollment.t.courseId,
-      foreignField: _i2.Course.t.id,
+      foreignField: _i3.Course.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.CourseTable(tableRelation: foreignTableRelation),
+          _i3.CourseTable(tableRelation: foreignTableRelation),
     );
     return _course!;
   }
@@ -228,7 +232,7 @@ class EnrollmentTable extends _i1.Table {
 class EnrollmentInclude extends _i1.IncludeObject {
   EnrollmentInclude._({
     _i2.StudentInclude? student,
-    _i2.CourseInclude? course,
+    _i3.CourseInclude? course,
   }) {
     _student = student;
     _course = course;
@@ -236,7 +240,7 @@ class EnrollmentInclude extends _i1.IncludeObject {
 
   _i2.StudentInclude? _student;
 
-  _i2.CourseInclude? _course;
+  _i3.CourseInclude? _course;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -431,8 +435,9 @@ class EnrollmentAttachRowRepository {
   Future<void> student(
     _i1.Session session,
     Enrollment enrollment,
-    _i2.Student student,
-  ) async {
+    _i2.Student student, {
+    _i1.Transaction? transaction,
+  }) async {
     if (enrollment.id == null) {
       throw ArgumentError.notNull('enrollment.id');
     }
@@ -444,14 +449,16 @@ class EnrollmentAttachRowRepository {
     await session.db.updateRow<Enrollment>(
       $enrollment,
       columns: [Enrollment.t.studentId],
+      transaction: transaction,
     );
   }
 
   Future<void> course(
     _i1.Session session,
     Enrollment enrollment,
-    _i2.Course course,
-  ) async {
+    _i3.Course course, {
+    _i1.Transaction? transaction,
+  }) async {
     if (enrollment.id == null) {
       throw ArgumentError.notNull('enrollment.id');
     }
@@ -463,6 +470,7 @@ class EnrollmentAttachRowRepository {
     await session.db.updateRow<Enrollment>(
       $enrollment,
       columns: [Enrollment.t.courseId],
+      transaction: transaction,
     );
   }
 }

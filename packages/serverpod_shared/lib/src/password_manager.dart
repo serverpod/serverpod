@@ -61,14 +61,49 @@ class PasswordManager {
 
   /// Load all passwords for the current run mode, or null if passwords fail
   /// to load.
-  Map<String, String>? loadPasswords() {
+  Map<String, String> loadPasswords([
+    String passwordsFilePath = 'config/passwords.yaml',
+  ]) {
+    Map<String, Map> data;
     try {
-      var passwordYaml = File('config/passwords.yaml').readAsStringSync();
-      var data = (loadYaml(passwordYaml) as Map).cast<String, Map>();
-
-      return loadPasswordsFromMap(data, environment: Platform.environment);
+      var passwordYaml = File(passwordsFilePath).readAsStringSync();
+      data = (loadYaml(passwordYaml) as Map).cast<String, Map>();
     } catch (e) {
-      return null;
+      data = {};
     }
+
+    return loadPasswordsFromMap(data, environment: Platform.environment);
+  }
+
+  /// Merge custom passwords with the existing password collection.
+  /// Custom passwords are loaded from the environment variables.
+  /// Throws an [ArgumentError] if the custom password configuration contains reserved keywords
+  Map<String, String> mergePasswords(
+    List<({String envName, String alias})> config,
+    Map<String, String> passwords, {
+    Map<String, String> environment = const {},
+  }) {
+    var containsReservedPasswords = ServerpodPassword.values.any(
+      (password) => config.any(
+        (entry) => (entry.envName == password.envVariable ||
+            entry.alias == password.configKey),
+      ),
+    );
+
+    if (containsReservedPasswords) {
+      throw ArgumentError(
+        'Custom password configuration contains Serverpod reserved passwords',
+      );
+    }
+
+    return config.fold(
+      passwords,
+      (collection, entry) {
+        var envPassword = environment[entry.envName];
+        if (envPassword is! String) return collection;
+
+        return {...collection, entry.alias: envPassword};
+      },
+    );
   }
 }

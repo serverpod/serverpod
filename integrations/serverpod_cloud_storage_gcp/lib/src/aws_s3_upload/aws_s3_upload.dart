@@ -1,5 +1,3 @@
-library aws_s3_upload;
-
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -61,10 +59,15 @@ class GCPS3Uploader {
     try {
       final res = await req.send();
 
+      if (res.statusCode >= 400 && res.statusCode < 500) {
+        stderr.writeln(
+            'Failed to upload to GCP, with reason: ${res.reasonPhrase}');
+      }
+
       if (res.statusCode == 204) return '$endpoint/$uploadDst';
     } catch (e) {
-      print('Failed to upload to AWS, with exception:');
-      print(e);
+      stderr.writeln('Failed to upload to GCP, with exception:');
+      stderr.writeln(e);
       return null;
     }
     return null;
@@ -126,10 +129,15 @@ class GCPS3Uploader {
     try {
       final res = await req.send();
 
+      if (res.statusCode >= 400 && res.statusCode < 500) {
+        stderr.writeln(
+            'Failed to upload to GCP, with reason: ${res.reasonPhrase}');
+      }
+
       if (res.statusCode == 204) return '$endpoint/$uploadDst';
     } catch (e) {
-      print('Failed to upload to AWS, with exception:');
-      print(e);
+      stderr.writeln('Failed to upload to GCP, with exception:');
+      stderr.writeln(e);
       return null;
     }
     return null;
@@ -153,13 +161,21 @@ class GCPS3Uploader {
 
     /// The filename to upload as. If null, defaults to the given file's current filename.
     required String uploadDst,
+    Duration expires = const Duration(minutes: 10),
+    int maxFileSize = 10 * 1024 * 1024,
     bool public = true,
   }) async {
     final endpoint = 'https://storage.googleapis.com/$bucket';
 
     final policy = Policy.fromS3PresignedPost(
-        uploadDst, bucket, accessKey, 15, 10 * 1024 * 1024,
-        region: region, public: public);
+      uploadDst,
+      bucket,
+      accessKey,
+      expires.inMinutes,
+      maxFileSize,
+      region: region,
+      public: public,
+    );
     final key =
         SigV4.calculateSigningKey(secretKey, policy.datetime, region, 's3');
     final signature = SigV4.calculateSignature(key, policy.encode());

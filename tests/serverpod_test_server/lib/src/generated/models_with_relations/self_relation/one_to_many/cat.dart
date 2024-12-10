@@ -1,25 +1,26 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../../protocol.dart' as _i2;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
+import '../../../models_with_relations/self_relation/one_to_many/cat.dart'
+    as _i2;
 
-abstract class Cat extends _i1.TableRow implements _i1.ProtocolSerialization {
+abstract class Cat implements _i1.TableRow, _i1.ProtocolSerialization {
   Cat._({
-    int? id,
+    this.id,
     required this.name,
     this.motherId,
     this.mother,
     this.kittens,
-  }) : super(id);
+  });
 
   factory Cat({
     int? id,
@@ -47,6 +48,9 @@ abstract class Cat extends _i1.TableRow implements _i1.ProtocolSerialization {
   static final t = CatTable();
 
   static const db = CatRepository._();
+
+  @override
+  int? id;
 
   String name;
 
@@ -156,7 +160,9 @@ class _CatImpl extends Cat {
       name: name ?? this.name,
       motherId: motherId is int? ? motherId : this.motherId,
       mother: mother is _i2.Cat? ? mother : this.mother?.copyWith(),
-      kittens: kittens is List<_i2.Cat>? ? kittens : this.kittens?.clone(),
+      kittens: kittens is List<_i2.Cat>?
+          ? kittens
+          : this.kittens?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -458,8 +464,9 @@ class CatAttachRepository {
   Future<void> kittens(
     _i1.Session session,
     Cat cat,
-    List<_i2.Cat> nestedCat,
-  ) async {
+    List<_i2.Cat> nestedCat, {
+    _i1.Transaction? transaction,
+  }) async {
     if (nestedCat.any((e) => e.id == null)) {
       throw ArgumentError.notNull('nestedCat.id');
     }
@@ -472,6 +479,7 @@ class CatAttachRepository {
     await session.db.update<_i2.Cat>(
       $nestedCat,
       columns: [_i2.Cat.t.motherId],
+      transaction: transaction,
     );
   }
 }
@@ -482,8 +490,9 @@ class CatAttachRowRepository {
   Future<void> mother(
     _i1.Session session,
     Cat cat,
-    _i2.Cat mother,
-  ) async {
+    _i2.Cat mother, {
+    _i1.Transaction? transaction,
+  }) async {
     if (cat.id == null) {
       throw ArgumentError.notNull('cat.id');
     }
@@ -495,14 +504,16 @@ class CatAttachRowRepository {
     await session.db.updateRow<Cat>(
       $cat,
       columns: [Cat.t.motherId],
+      transaction: transaction,
     );
   }
 
   Future<void> kittens(
     _i1.Session session,
     Cat cat,
-    _i2.Cat nestedCat,
-  ) async {
+    _i2.Cat nestedCat, {
+    _i1.Transaction? transaction,
+  }) async {
     if (nestedCat.id == null) {
       throw ArgumentError.notNull('nestedCat.id');
     }
@@ -514,6 +525,7 @@ class CatAttachRowRepository {
     await session.db.updateRow<_i2.Cat>(
       $nestedCat,
       columns: [_i2.Cat.t.motherId],
+      transaction: transaction,
     );
   }
 }
@@ -523,8 +535,9 @@ class CatDetachRepository {
 
   Future<void> kittens(
     _i1.Session session,
-    List<_i2.Cat> cat,
-  ) async {
+    List<_i2.Cat> cat, {
+    _i1.Transaction? transaction,
+  }) async {
     if (cat.any((e) => e.id == null)) {
       throw ArgumentError.notNull('cat.id');
     }
@@ -533,6 +546,7 @@ class CatDetachRepository {
     await session.db.update<_i2.Cat>(
       $cat,
       columns: [_i2.Cat.t.motherId],
+      transaction: transaction,
     );
   }
 }
@@ -542,8 +556,9 @@ class CatDetachRowRepository {
 
   Future<void> mother(
     _i1.Session session,
-    Cat cat,
-  ) async {
+    Cat cat, {
+    _i1.Transaction? transaction,
+  }) async {
     if (cat.id == null) {
       throw ArgumentError.notNull('cat.id');
     }
@@ -552,13 +567,15 @@ class CatDetachRowRepository {
     await session.db.updateRow<Cat>(
       $cat,
       columns: [Cat.t.motherId],
+      transaction: transaction,
     );
   }
 
   Future<void> kittens(
     _i1.Session session,
-    _i2.Cat cat,
-  ) async {
+    _i2.Cat cat, {
+    _i1.Transaction? transaction,
+  }) async {
     if (cat.id == null) {
       throw ArgumentError.notNull('cat.id');
     }
@@ -567,6 +584,7 @@ class CatDetachRowRepository {
     await session.db.updateRow<_i2.Cat>(
       $cat,
       columns: [_i2.Cat.t.motherId],
+      transaction: transaction,
     );
   }
 }

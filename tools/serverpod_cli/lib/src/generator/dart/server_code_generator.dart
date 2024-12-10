@@ -1,8 +1,13 @@
+import 'package:code_builder/code_builder.dart';
+import 'package:path/path.dart' as p;
+
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
-import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/src/generator/dart/library_generators/model_library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/model_library_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/server_test_tools_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/custom_allocators.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_filter_util.dart';
 
 /// A [CodeGenerator] that generates the server side dart code of a
 /// serverpod project.
@@ -18,15 +23,44 @@ class DartServerCodeGenerator extends CodeGenerator {
       serverCode: true,
       config: config,
     );
+
+    var modelAllocatorContext =
+        <({SerializableModelDefinition model, Allocator? allocator})>[];
+
+    var sealedHierarchies = ModelFilterUtil.getSealedHierarchies(models);
+
+    var modelsWithoutSealedHierarchies =
+        ModelFilterUtil.getClassesWithoutSealedHierarchies(models);
+
+    for (var sealedHierarchy in sealedHierarchies) {
+      var partOfAllocator = PartOfAllocator([]);
+      var partAllocator = PartAllocator(partOfAllocator);
+
+      for (var protocolFile in sealedHierarchy) {
+        modelAllocatorContext.add((
+          model: protocolFile,
+          allocator:
+              protocolFile.isSealedTopNode ? partAllocator : partOfAllocator
+        ));
+      }
+    }
+
+    for (var protocolFile in modelsWithoutSealedHierarchies) {
+      modelAllocatorContext.add((
+        model: protocolFile,
+        allocator: null,
+      ));
+    }
+
     return {
-      for (var protocolFile in models)
+      for (var entry in modelAllocatorContext)
         p.joinAll([
           ...config.generatedServeModelPathParts,
-          ...protocolFile.subDirParts,
-          '${protocolFile.fileName}.dart'
+          ...entry.model.subDirParts,
+          '${entry.model.fileName}.dart'
         ]): serverSideGenerator
-            .generateModelLibrary(protocolFile)
-            .generateCode(),
+            .generateModelLibrary(entry.model)
+            .generateCode(allocator: entry.allocator),
     };
   }
 
@@ -41,11 +75,29 @@ class DartServerCodeGenerator extends CodeGenerator {
       config: config,
     );
 
-    return {
-      p.joinAll([...config.generatedServeModelPathParts, 'protocol.dart']):
+    var codeMap = {
+      p.joinAll([...config.generatedServerProtocolFilePathParts]):
           serverClassGenerator.generateProtocol().generateCode(),
-      p.joinAll([...config.generatedServeModelPathParts, 'endpoints.dart']):
+      p.joinAll([...config.generatedServerEndpointFilePathParts]):
           serverClassGenerator.generateServerEndpointDispatch().generateCode(),
     };
+
+    var generatedServerTestToolsPathParts =
+        config.generatedServerTestToolsPathParts;
+    if (generatedServerTestToolsPathParts != null) {
+      var testToolsGenerator = ServerTestToolsGenerator(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      codeMap.addAll({
+        p.joinAll([
+          ...generatedServerTestToolsPathParts,
+          'serverpod_test_tools.dart'
+        ]): testToolsGenerator.generateTestHelper().generateCode(),
+      });
+    }
+
+    return codeMap;
   }
 }

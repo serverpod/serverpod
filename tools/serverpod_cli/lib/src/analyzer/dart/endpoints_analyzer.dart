@@ -11,6 +11,7 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
+import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 
 import 'definitions.dart';
 
@@ -18,17 +19,42 @@ import 'definitions.dart';
 class EndpointsAnalyzer {
   final AnalysisContextCollection collection;
 
+  final String absoluteIncludedPaths;
+
   /// Create a new [EndpointsAnalyzer], containing a
   /// [AnalysisContextCollection] that analyzes all dart files in the
-  /// provided [endpointDirectory].
-  EndpointsAnalyzer(Directory endpointDirectory)
+  /// provided [directory].
+  EndpointsAnalyzer(Directory directory)
       : collection = AnalysisContextCollection(
-          includedPaths: [endpointDirectory.absolute.path],
+          includedPaths: [directory.absolute.path],
           resourceProvider: PhysicalResourceProvider.INSTANCE,
-        );
+        ),
+        absoluteIncludedPaths = directory.absolute.path;
+
+  Set<EndpointDefinition> _endpointDefinitions = {};
+
+  /// Inform the analyzer that the provided [filePaths] have been updated.
+  ///
+  /// This will trigger a re-analysis of the files and return true if the
+  /// updated files should trigger a code generation.
+  Future<bool> updateFileContexts(Set<String> filePaths) async {
+    await _refreshContextForFiles(filePaths);
+
+    var oldDefinitionsLength = _endpointDefinitions.length;
+    await analyze(collector: CodeGenerationCollector());
+
+    if (_endpointDefinitions.length != oldDefinitionsLength) {
+      return true;
+    }
+
+    return filePaths.any((e) => _isEndpointFile(File(e)));
+  }
 
   /// Analyze all files in the [AnalysisContextCollection].
-  /// Use [changedFiles] to mark files, that need reloading.
+  ///
+  /// [changedFiles] is an optional list of files that should have their context
+  /// refreshed before analysis. This is useful when only a subset of files have
+  /// changed since [updateFileContexts] was last called.
   Future<List<EndpointDefinition>> analyze({
     required CodeAnalysisCollector collector,
     Set<String>? changedFiles,
@@ -37,9 +63,14 @@ class EndpointsAnalyzer {
 
     var endpointDefs = <EndpointDefinition>[];
 
-    List<(ResolvedLibraryResult, String, String)> validLibraries = [];
+    List<(ResolvedLibraryResult, String)> validLibraries = [];
     Map<String, int> endpointClassMap = {};
-    await for (var (library, filePath, rootPath) in _libraries) {
+    await for (var (library, filePath) in _libraries) {
+      var endpointClasses = _getEndpointClasses(library);
+      if (endpointClasses.isEmpty) {
+        continue;
+      }
+
       var maybeDartErrors = await _getErrorsForFile(library.session, filePath);
       if (maybeDartErrors.isNotEmpty) {
         collector.addError(
@@ -55,7 +86,7 @@ class EndpointsAnalyzer {
         continue;
       }
 
-      for (var endpointClass in _getEndpointClasses(library)) {
+      for (var endpointClass in endpointClasses) {
         var className = endpointClass.name;
         endpointClassMap.update(
           className,
@@ -64,7 +95,7 @@ class EndpointsAnalyzer {
         );
       }
 
-      validLibraries.add((library, filePath, rootPath));
+      validLibraries.add((library, filePath));
     }
 
     var duplicateEndpointClasses = endpointClassMap.entries
@@ -72,23 +103,25 @@ class EndpointsAnalyzer {
         .map((entry) => entry.key)
         .toSet();
 
-    for (var (library, filePath, rootPath) in validLibraries) {
-      var validationErrors = _validateLibrary(
+    for (var (library, filePath) in validLibraries) {
+      var severityExceptions = _validateLibrary(
         library,
         filePath,
         duplicateEndpointClasses,
       );
-      collector.addErrors(validationErrors.values.expand((e) => e).toList());
+      collector.addErrors(severityExceptions.values.expand((e) => e).toList());
+
+      var failingExceptions = _filterNoFailExceptions(severityExceptions);
 
       endpointDefs.addAll(_parseLibrary(
         library,
         collector,
         filePath,
-        rootPath,
-        validationErrors,
+        failingExceptions,
       ));
     }
 
+    _endpointDefinitions = endpointDefs.toSet();
     return endpointDefs;
   }
 
@@ -114,7 +147,6 @@ class EndpointsAnalyzer {
     ResolvedLibraryResult library,
     CodeAnalysisCollector collector,
     String filePath,
-    String rootPath,
     Map<String, List<SourceSpanSeverityException>> validationErrors,
   ) {
     var topElements = library.element.topLevelElements;
@@ -148,7 +180,6 @@ class EndpointsAnalyzer {
         classElement,
         methodDefs,
         filePath,
-        rootPath,
       );
 
       endpointDefs.add(endpointDefinition);
@@ -167,6 +198,17 @@ class EndpointsAnalyzer {
       }
       await context.applyPendingFileChanges();
     }
+  }
+
+  bool _isEndpointFile(File file) {
+    if (!file.absolute.path.startsWith(absoluteIncludedPaths)) return false;
+    if (!file.path.endsWith('.dart')) return false;
+    if (!file.existsSync()) return false;
+
+    var contents = file.readAsStringSync();
+    if (!contents.contains('extends Endpoint')) return false;
+
+    return true;
   }
 
   Map<String, List<SourceSpanSeverityException>> _validateLibrary(
@@ -207,7 +249,7 @@ class EndpointsAnalyzer {
     return validationErrors;
   }
 
-  Stream<(ResolvedLibraryResult, String, String)> get _libraries async* {
+  Stream<(ResolvedLibraryResult, String)> get _libraries async* {
     for (var context in collection.contexts) {
       var analyzedFiles = context.contextRoot.analyzedFiles().toList();
       analyzedFiles.sort();
@@ -217,7 +259,7 @@ class EndpointsAnalyzer {
       for (var filePath in analyzedDartFiles) {
         var library = await context.currentSession.getResolvedLibrary(filePath);
         if (library is ResolvedLibraryResult) {
-          yield (library, filePath, context.contextRoot.root.path);
+          yield (library, filePath);
         }
       }
     }
@@ -228,5 +270,23 @@ class EndpointsAnalyzer {
     return topElements
         .whereType<ClassElement>()
         .where(EndpointClassAnalyzer.isEndpointClass);
+  }
+
+  Map<String, List<SourceSpanSeverityException>> _filterNoFailExceptions(
+    Map<String, List<SourceSpanSeverityException>> validationErrors,
+  ) {
+    var noFailSeverities = [SourceSpanSeverity.hint, SourceSpanSeverity.info];
+
+    var failingErrors = validationErrors.map((key, exceptions) {
+      var failingExceptions = exceptions
+          .where((exception) => !noFailSeverities.contains(exception.severity))
+          .toList();
+
+      return MapEntry(key, failingExceptions);
+    });
+
+    failingErrors.removeWhere((key, exceptions) => exceptions.isEmpty);
+
+    return failingErrors;
   }
 }

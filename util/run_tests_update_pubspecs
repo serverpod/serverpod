@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Makes script exit on first non-zero error code
 set -e

@@ -1,4 +1,5 @@
 import 'package:serverpod_test_server/src/generated/protocol.dart';
+import 'package:serverpod/protocol.dart' as serverpod;
 import 'package:test/test.dart';
 
 void main() {
@@ -50,5 +51,16 @@ void main() {
     SimpleData? simpleData = null;
     var typeName = protocol.encodeWithType(simpleData);
     expect(typeName, '{"className":"null","data":null}');
+  });
+
+  test(
+      'Given a Serverpod defined model when encoding with type then output is the type name and value as a JSON string',
+      () {
+    var serverpodDefinedModel =
+        serverpod.ClusterServerInfo(serverId: 'Hello World');
+    var typeName = protocol.encodeWithType(serverpodDefinedModel);
+
+    expect(typeName,
+        '{"className":"serverpod.ClusterServerInfo","data":{"serverId":"Hello World"}}');
   });
 }

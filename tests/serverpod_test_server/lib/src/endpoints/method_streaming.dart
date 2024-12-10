@@ -7,11 +7,26 @@ import 'package:serverpod_test_server/src/generated/protocol.dart';
 class MethodStreaming extends Endpoint {
   Map<String, Completer> _delayedResponses = {};
 
-  /// Check Null and Object in validation.
+  /// Returns a simple stream of integers from 0 to 9.
   Stream<int> simpleStream(Session session) async* {
     for (var i = 0; i < 10; i++) {
       yield i;
     }
+  }
+
+  static Completer<StreamController<int>>? neverEndingStreamController;
+  Stream<int> neverEndingStreamWithDelay(
+    Session session,
+    int millisecondsDelay,
+  ) {
+    var controller = StreamController<int>();
+    neverEndingStreamController?.complete(controller);
+    controller.addStream(Stream.periodic(
+      Duration(milliseconds: millisecondsDelay),
+      (i) => i,
+    ));
+
+    return controller.stream;
   }
 
   Future<void> methodCallEndpoint(Session session) async {}
@@ -23,6 +38,45 @@ class MethodStreaming extends Endpoint {
     return stream.first;
   }
 
+  Future<int?> nullableIntReturnFromStream(
+    Session session,
+    Stream<int?> stream,
+  ) async {
+    return stream.first;
+  }
+
+  static const cancelStreamChannelName = 'cancelStreamChannel';
+  static const sessionClosedChannelName = 'sessionClosedChannel';
+  Stream<int?> getBroadcastStream(Session session) {
+    session.addWillCloseListener((localSession) {
+      localSession.messages
+          .postMessage(sessionClosedChannelName, SimpleData(num: 1));
+    });
+    var stream = StreamController<int?>.broadcast(
+      onCancel: () {
+        session.messages
+            .postMessage(cancelStreamChannelName, SimpleData(num: 1));
+      },
+    );
+    return stream.stream;
+  }
+
+  Future<bool> wasBroadcastStreamCanceled(Session session) async {
+    var streamWasCanceled = Completer<bool>();
+    session.messages.addListener(cancelStreamChannelName, (data) {
+      streamWasCanceled.complete(true);
+    });
+    return streamWasCanceled.future;
+  }
+
+  Future<bool> wasSessionWillCloseListenerCalled(Session session) async {
+    var sessionWillCloseListenerWasCalled = Completer<bool>();
+    session.messages.addListener(sessionClosedChannelName, (data) {
+      sessionWillCloseListenerWasCalled.complete(true);
+    });
+    return sessionWillCloseListenerWasCalled.future;
+  }
+
   Stream<int> intStreamFromValue(Session session, int value) async* {
     for (var i in List.generate(value, (index) => index)) {
       yield i;
@@ -30,6 +84,21 @@ class MethodStreaming extends Endpoint {
   }
 
   Stream<int> intEchoStream(Session session, Stream<int> stream) async* {
+    await for (var value in stream) {
+      yield value;
+    }
+  }
+
+  Stream dynamicEchoStream(Session session, Stream stream) async* {
+    await for (var value in stream) {
+      yield value;
+    }
+  }
+
+  Stream<int?> nullableIntEchoStream(
+    Session session,
+    Stream<int?> stream,
+  ) async* {
     await for (var value in stream) {
       yield value;
     }
@@ -113,10 +182,6 @@ class MethodStreaming extends Endpoint {
 
   Future<void> intParameter(Session session, int value) async {}
 
-  Future<int?> nullableResponse(Session session, int? value) async {
-    return value;
-  }
-
   Future<int> doubleInputValue(Session session, int value) async {
     return value * 2;
   }
@@ -136,22 +201,22 @@ class MethodStreaming extends Endpoint {
     return completer.future;
   }
 
-  Stream<int> delayedStreamResponse(Session session, int delay) async* {
-    var uuid = Uuid().v4();
-    var completer = Completer<void>();
-    _delayedResponses[uuid] = completer;
+  static Completer<StreamController<int>>? delayedStreamResponseController;
+  Stream<int> delayedStreamResponse(Session session, int delay) {
+    var controller = StreamController<int>();
+    delayedStreamResponseController?.complete(controller);
 
     Future.delayed(Duration(seconds: delay), () {
-      _delayedResponses.remove(uuid)?.complete();
+      controller.add(42);
     });
 
-    await completer.future;
-
-    yield 42;
+    return controller.stream;
   }
 
+  static Completer<Session>? delayedNeverListenedInputStreamCompleter;
   Future<void> delayedNeverListenedInputStream(
       Session session, int delay, Stream<int> stream) async {
+    delayedNeverListenedInputStreamCompleter?.complete(session);
     var uuid = Uuid().v4();
     var completer = Completer<void>();
     _delayedResponses[uuid] = completer;
@@ -163,8 +228,10 @@ class MethodStreaming extends Endpoint {
     await completer.future;
   }
 
+  static Completer<Session>? delayedPausedInputStreamCompleter;
   Future<void> delayedPausedInputStream(
       Session session, int delay, Stream<int> stream) async {
+    delayedPausedInputStreamCompleter?.complete(session);
     var uuid = Uuid().v4();
     var completer = Completer<void>();
     _delayedResponses[uuid] = completer;
@@ -228,11 +295,33 @@ class MethodStreaming extends Endpoint {
     );
   }
 
-  Future<void> throwsException(Session session) async {
+  Future<void> throwsExceptionVoid(Session session, Stream<int> stream) async {
     throw Exception('This is an exception');
   }
 
-  Future<void> throwsSerializableException(Session session) async {
+  Future<void> throwsSerializableExceptionVoid(
+    Session session,
+    Stream<int> stream,
+  ) async {
+    throw ExceptionWithData(
+      message: 'Throwing an exception',
+      creationDate: DateTime.now(),
+      errorFields: [
+        'first line error',
+        'second line error',
+      ],
+      someNullableField: 1,
+    );
+  }
+
+  Future<int> throwsException(Session session, Stream<int> stream) async {
+    throw Exception('This is an exception');
+  }
+
+  Future<int> throwsSerializableException(
+    Session session,
+    Stream<int> stream,
+  ) async {
     throw ExceptionWithData(
       message: 'Throwing an exception',
       creationDate: DateTime.now(),
@@ -246,6 +335,16 @@ class MethodStreaming extends Endpoint {
 
   Stream<int> throwsExceptionStream(Session session) async* {
     throw Exception('This is an exception');
+  }
+
+  Stream<int> exceptionThrownBeforeStreamReturn(Session session) {
+    throw Exception('This is an exception');
+  }
+
+  Stream<int> exceptionThrownInStreamReturn(Session session) {
+    var controller = StreamController<int>();
+    controller.addError(Exception('This is an exception'));
+    return controller.stream;
   }
 
   Stream<int> throwsSerializableExceptionStream(Session session) async* {
@@ -303,6 +402,12 @@ class AuthenticatedMethodStreaming extends Endpoint {
   Stream<int> simpleStream(Session session) async* {
     for (var i = 0; i < 10; i++) {
       yield i;
+    }
+  }
+
+  Stream<int> intEchoStream(Session session, Stream<int> stream) async* {
+    await for (var value in stream) {
+      yield value;
     }
   }
 }

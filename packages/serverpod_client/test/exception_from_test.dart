@@ -11,7 +11,7 @@ class TestSerializationImpl extends SerializationManager {
   Object? decodeWithType(String data) {
     var json = jsonDecode(data);
 
-    if (json['className'] == 'TestException') {
+    if (json is Map && json['className'] == 'TestException') {
       return TestException.fromJson(json['data']);
     }
 
@@ -50,7 +50,7 @@ void main() {
     });
 
     test('then the message is parsed from the data', () {
-      expect(exception.message, 'A custom exception');
+      expect((exception as TestException).message, 'A custom exception');
     });
   });
 
@@ -65,11 +65,12 @@ void main() {
 
     test('then a base ServerpodClientException is created', () {
       expect(exception, isA<ServerpodClientException>());
-      expect(exception.statusCode, 499);
+      expect((exception as ServerpodClientException).statusCode, 499);
     });
 
     test('then the message is an unknown error', () {
-      expect(exception.message, 'Unknown error, data: malformed data');
+      expect((exception as ServerpodClientException).message,
+          'Unknown error, data: malformed data');
     });
   });
 
@@ -87,7 +88,8 @@ void main() {
     });
 
     test('then the message is a bad request', () {
-      expect(exception.message, 'Bad request');
+      expect((exception as ServerpodClientException).message,
+          'Bad request: malformed data');
     });
   });
 
@@ -105,7 +107,7 @@ void main() {
     });
 
     test('then the message is a bad request', () {
-      expect(exception.message, 'Bad request');
+      expect((exception as ServerpodClientException).message, 'Bad request');
     });
   });
 
@@ -123,7 +125,7 @@ void main() {
     });
 
     test('then the message is a unauthorized', () {
-      expect(exception.message, 'Unauthorized');
+      expect((exception as ServerpodClientException).message, 'Unauthorized');
     });
   });
 
@@ -141,7 +143,7 @@ void main() {
     });
 
     test('then the message is a forbidden', () {
-      expect(exception.message, 'Forbidden');
+      expect((exception as ServerpodClientException).message, 'Forbidden');
     });
   });
 
@@ -159,7 +161,7 @@ void main() {
     });
 
     test('then the message is a not found', () {
-      expect(exception.message, 'Not found');
+      expect((exception as ServerpodClientException).message, 'Not found');
     });
   });
 
@@ -177,7 +179,8 @@ void main() {
     });
 
     test('then the message is a internal server error', () {
-      expect(exception.message, 'Internal server error');
+      expect((exception as ServerpodClientException).message,
+          'Internal server error');
     });
   });
 }

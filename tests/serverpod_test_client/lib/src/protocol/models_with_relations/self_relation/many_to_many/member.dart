@@ -1,15 +1,17 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../../protocol.dart' as _i2;
+import '../../../models_with_relations/self_relation/many_to_many/blocking.dart'
+    as _i2;
 
 abstract class Member implements _i1.SerializableModel {
   Member._({
@@ -99,11 +101,12 @@ class _MemberImpl extends Member {
     return Member(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      blocking:
-          blocking is List<_i2.Blocking>? ? blocking : this.blocking?.clone(),
+      blocking: blocking is List<_i2.Blocking>?
+          ? blocking
+          : this.blocking?.map((e0) => e0.copyWith()).toList(),
       blockedBy: blockedBy is List<_i2.Blocking>?
           ? blockedBy
-          : this.blockedBy?.clone(),
+          : this.blockedBy?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

@@ -1,18 +1,48 @@
 #!/bin/bash
+set -e  # Exit on any error
+
+# Variables for configuration
+DART_VERSION=3.5.1
+USERNAME=ec2-user
+WORKDIR=/home/$USERNAME
+DART_INSTALL_DIR="/usr/lib/dart$DART_VERSION"
+
+# Uncomment the following lines if migrating from an older serverpod CLI version
+# if [ -f "/etc/profile.d/script.sh" ]; then
+#     sudo rm /etc/profile.d/script.sh
+# fi
+
+# Install the specified Dart version if not already installed
+if [ ! -d "$DART_INSTALL_DIR" ]; then
+  echo "Installing Dart $DART_VERSION..."
+  wget -q https://storage.googleapis.com/dart-archive/channels/stable/release/$DART_VERSION/sdk/dartsdk-linux-x64-release.zip -P /tmp
+  cd /tmp || exit
+  unzip -q dartsdk-linux-x64-release.zip
+  sudo mv dart-sdk/ "$DART_INSTALL_DIR"
+  sudo chmod -R 755 "$DART_INSTALL_DIR"
+  rm -rf dartsdk-linux-x64-release.zip
+fi
+
+# Make symlink for Dart binaries
+sudo ln -sf "$DART_INSTALL_DIR/bin/dart" /usr/local/bin/dart
+
+# Write the systemd unit file
 cat > /lib/systemd/system/serverpod.service << EOF
 [Unit]
 Description=Serverpod server
-After=multi-user.target
+After=network.target
+Wants=network-online.target
 
 [Service]
-User=ec2-user
-WorkingDirectory=/home/ec2-user
-ExecStart=/home/ec2-user/serverpod/active/chat_server/aws/scripts/run_serverpod
+User=$USERNAME
+WorkingDirectory=$WORKDIR
+ExecStart=$WORKDIR/serverpod/active/chat_server/deploy/aws/scripts/run_serverpod
 Restart=always
 
 [Install]
-WantedBy=muti-user.target
-WantedBy=network-online.target
+WantedBy=multi-user.target
 EOF
 
+# Reload systemd configuration
 systemctl daemon-reload
+

@@ -1,0 +1,5 @@
+enum: ByIndexEnum
+serialized: byIndex
+values:
+  - byIndex1
+  - byIndex2

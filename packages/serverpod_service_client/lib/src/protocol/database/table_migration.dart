@@ -1,15 +1,20 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../protocol.dart' as _i2;
+import '../database/column_definition.dart' as _i2;
+import '../database/column_migration.dart' as _i3;
+import '../database/index_definition.dart' as _i4;
+import '../database/foreign_key_definition.dart' as _i5;
+import '../database/database_migration_warning.dart' as _i6;
 
 abstract class TableMigration implements _i1.SerializableModel {
   TableMigration._({
@@ -34,12 +39,12 @@ abstract class TableMigration implements _i1.SerializableModel {
     required String schema,
     required List<_i2.ColumnDefinition> addColumns,
     required List<String> deleteColumns,
-    required List<_i2.ColumnMigration> modifyColumns,
-    required List<_i2.IndexDefinition> addIndexes,
+    required List<_i3.ColumnMigration> modifyColumns,
+    required List<_i4.IndexDefinition> addIndexes,
     required List<String> deleteIndexes,
-    required List<_i2.ForeignKeyDefinition> addForeignKeys,
+    required List<_i5.ForeignKeyDefinition> addForeignKeys,
     required List<String> deleteForeignKeys,
-    required List<_i2.DatabaseMigrationWarning> warnings,
+    required List<_i6.DatabaseMigrationWarning> warnings,
   }) = _TableMigrationImpl;
 
   factory TableMigration.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -56,23 +61,23 @@ abstract class TableMigration implements _i1.SerializableModel {
           .map((e) => e as String)
           .toList(),
       modifyColumns: (jsonSerialization['modifyColumns'] as List)
-          .map((e) => _i2.ColumnMigration.fromJson((e as Map<String, dynamic>)))
+          .map((e) => _i3.ColumnMigration.fromJson((e as Map<String, dynamic>)))
           .toList(),
       addIndexes: (jsonSerialization['addIndexes'] as List)
-          .map((e) => _i2.IndexDefinition.fromJson((e as Map<String, dynamic>)))
+          .map((e) => _i4.IndexDefinition.fromJson((e as Map<String, dynamic>)))
           .toList(),
       deleteIndexes: (jsonSerialization['deleteIndexes'] as List)
           .map((e) => e as String)
           .toList(),
       addForeignKeys: (jsonSerialization['addForeignKeys'] as List)
           .map((e) =>
-              _i2.ForeignKeyDefinition.fromJson((e as Map<String, dynamic>)))
+              _i5.ForeignKeyDefinition.fromJson((e as Map<String, dynamic>)))
           .toList(),
       deleteForeignKeys: (jsonSerialization['deleteForeignKeys'] as List)
           .map((e) => e as String)
           .toList(),
       warnings: (jsonSerialization['warnings'] as List)
-          .map((e) => _i2.DatabaseMigrationWarning.fromJson(
+          .map((e) => _i6.DatabaseMigrationWarning.fromJson(
               (e as Map<String, dynamic>)))
           .toList(),
     );
@@ -90,17 +95,17 @@ abstract class TableMigration implements _i1.SerializableModel {
 
   List<String> deleteColumns;
 
-  List<_i2.ColumnMigration> modifyColumns;
+  List<_i3.ColumnMigration> modifyColumns;
 
-  List<_i2.IndexDefinition> addIndexes;
+  List<_i4.IndexDefinition> addIndexes;
 
   List<String> deleteIndexes;
 
-  List<_i2.ForeignKeyDefinition> addForeignKeys;
+  List<_i5.ForeignKeyDefinition> addForeignKeys;
 
   List<String> deleteForeignKeys;
 
-  List<_i2.DatabaseMigrationWarning> warnings;
+  List<_i6.DatabaseMigrationWarning> warnings;
 
   TableMigration copyWith({
     String? name,
@@ -109,12 +114,12 @@ abstract class TableMigration implements _i1.SerializableModel {
     String? schema,
     List<_i2.ColumnDefinition>? addColumns,
     List<String>? deleteColumns,
-    List<_i2.ColumnMigration>? modifyColumns,
-    List<_i2.IndexDefinition>? addIndexes,
+    List<_i3.ColumnMigration>? modifyColumns,
+    List<_i4.IndexDefinition>? addIndexes,
     List<String>? deleteIndexes,
-    List<_i2.ForeignKeyDefinition>? addForeignKeys,
+    List<_i5.ForeignKeyDefinition>? addForeignKeys,
     List<String>? deleteForeignKeys,
-    List<_i2.DatabaseMigrationWarning>? warnings,
+    List<_i6.DatabaseMigrationWarning>? warnings,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -150,12 +155,12 @@ class _TableMigrationImpl extends TableMigration {
     required String schema,
     required List<_i2.ColumnDefinition> addColumns,
     required List<String> deleteColumns,
-    required List<_i2.ColumnMigration> modifyColumns,
-    required List<_i2.IndexDefinition> addIndexes,
+    required List<_i3.ColumnMigration> modifyColumns,
+    required List<_i4.IndexDefinition> addIndexes,
     required List<String> deleteIndexes,
-    required List<_i2.ForeignKeyDefinition> addForeignKeys,
+    required List<_i5.ForeignKeyDefinition> addForeignKeys,
     required List<String> deleteForeignKeys,
-    required List<_i2.DatabaseMigrationWarning> warnings,
+    required List<_i6.DatabaseMigrationWarning> warnings,
   }) : super._(
           name: name,
           dartName: dartName,
@@ -179,26 +184,33 @@ class _TableMigrationImpl extends TableMigration {
     String? schema,
     List<_i2.ColumnDefinition>? addColumns,
     List<String>? deleteColumns,
-    List<_i2.ColumnMigration>? modifyColumns,
-    List<_i2.IndexDefinition>? addIndexes,
+    List<_i3.ColumnMigration>? modifyColumns,
+    List<_i4.IndexDefinition>? addIndexes,
     List<String>? deleteIndexes,
-    List<_i2.ForeignKeyDefinition>? addForeignKeys,
+    List<_i5.ForeignKeyDefinition>? addForeignKeys,
     List<String>? deleteForeignKeys,
-    List<_i2.DatabaseMigrationWarning>? warnings,
+    List<_i6.DatabaseMigrationWarning>? warnings,
   }) {
     return TableMigration(
       name: name ?? this.name,
       dartName: dartName is String? ? dartName : this.dartName,
       module: module is String? ? module : this.module,
       schema: schema ?? this.schema,
-      addColumns: addColumns ?? this.addColumns.clone(),
-      deleteColumns: deleteColumns ?? this.deleteColumns.clone(),
-      modifyColumns: modifyColumns ?? this.modifyColumns.clone(),
-      addIndexes: addIndexes ?? this.addIndexes.clone(),
-      deleteIndexes: deleteIndexes ?? this.deleteIndexes.clone(),
-      addForeignKeys: addForeignKeys ?? this.addForeignKeys.clone(),
-      deleteForeignKeys: deleteForeignKeys ?? this.deleteForeignKeys.clone(),
-      warnings: warnings ?? this.warnings.clone(),
+      addColumns:
+          addColumns ?? this.addColumns.map((e0) => e0.copyWith()).toList(),
+      deleteColumns:
+          deleteColumns ?? this.deleteColumns.map((e0) => e0).toList(),
+      modifyColumns: modifyColumns ??
+          this.modifyColumns.map((e0) => e0.copyWith()).toList(),
+      addIndexes:
+          addIndexes ?? this.addIndexes.map((e0) => e0.copyWith()).toList(),
+      deleteIndexes:
+          deleteIndexes ?? this.deleteIndexes.map((e0) => e0).toList(),
+      addForeignKeys: addForeignKeys ??
+          this.addForeignKeys.map((e0) => e0.copyWith()).toList(),
+      deleteForeignKeys:
+          deleteForeignKeys ?? this.deleteForeignKeys.map((e0) => e0).toList(),
+      warnings: warnings ?? this.warnings.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

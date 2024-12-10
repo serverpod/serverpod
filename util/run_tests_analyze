@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
@@ -15,6 +15,9 @@ do
     if [ "$arg" == "--allow-infos" ] ; then
         LOG_LEVEL="--fatal-warnings"
         break
+    elif [ "$arg" == "--allow-warnings" ] ; then
+        LOG_LEVEL="--no-fatal-warnings"
+        break
     fi
 done
 
@@ -25,6 +28,7 @@ declare -a projectPaths=(
     "packages/serverpod_service_client"
     "packages/serverpod_shared"
     "packages/serverpod_flutter"
+    "packages/serverpod_test"
 
     "examples/chat/chat_server"
     "examples/chat/chat_client"
@@ -32,6 +36,7 @@ declare -a projectPaths=(
 
     "tests/serverpod_test_server"
     "tests/serverpod_test_client"
+    "tests/serverpod_test_flutter"
     "tests/serverpod_test_module/serverpod_test_module_server"
     "tests/serverpod_test_module/serverpod_test_module_client"
 

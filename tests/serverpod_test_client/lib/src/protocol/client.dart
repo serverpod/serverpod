@@ -1,11 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
@@ -13,8 +14,8 @@ import 'dart:async' as _i2;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i3;
 import 'dart:typed_data' as _i4;
 import 'package:uuid/uuid_value.dart' as _i5;
-import 'package:serverpod_test_client/src/protocol_custom_classes.dart' as _i6;
-import 'package:serverpod_test_client/src/custom_classes.dart' as _i7;
+import 'package:serverpod_test_shared/src/protocol_custom_classes.dart' as _i6;
+import 'package:serverpod_test_shared/src/custom_classes.dart' as _i7;
 import 'package:serverpod_test_shared/src/external_custom_class.dart' as _i8;
 import 'package:serverpod_test_shared/src/freezed_custom_class.dart' as _i9;
 import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i10;
@@ -34,7 +35,11 @@ import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
     as _i18;
 import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field.dart'
     as _i19;
-import 'protocol.dart' as _i20;
+import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field_child.dart'
+    as _i20;
+import 'package:serverpod_test_client/src/protocol/my_feature/models/my_feature_model.dart'
+    as _i21;
+import 'protocol.dart' as _i22;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -115,6 +120,19 @@ class EndpointAuthentication extends _i1.EndpointRef {
         'authentication',
         'signOut',
         {},
+      );
+
+  _i2.Future<void> updateScopes(
+    int userId,
+    List<String> scopes,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'authentication',
+        'updateScopes',
+        {
+          'userId': userId,
+          'scopes': scopes,
+        },
       );
 }
 
@@ -395,6 +413,35 @@ class EndpointCustomTypes extends _i1.EndpointRef {
         'returnFreezedCustomClassNullable',
         {'data': data},
       );
+
+  _i2.Future<_i7.CustomClassWithoutProtocolSerialization>
+      returnCustomClassWithoutProtocolSerialization(
+              _i7.CustomClassWithoutProtocolSerialization data) =>
+          caller
+              .callServerEndpoint<_i7.CustomClassWithoutProtocolSerialization>(
+            'customTypes',
+            'returnCustomClassWithoutProtocolSerialization',
+            {'data': data},
+          );
+
+  _i2.Future<_i7.CustomClassWithProtocolSerialization>
+      returnCustomClassWithProtocolSerialization(
+              _i7.CustomClassWithProtocolSerialization data) =>
+          caller.callServerEndpoint<_i7.CustomClassWithProtocolSerialization>(
+            'customTypes',
+            'returnCustomClassWithProtocolSerialization',
+            {'data': data},
+          );
+
+  _i2.Future<_i7.CustomClassWithProtocolSerializationMethod>
+      returnCustomClassWithProtocolSerializationMethod(
+              _i7.CustomClassWithProtocolSerializationMethod data) =>
+          caller.callServerEndpoint<
+              _i7.CustomClassWithProtocolSerializationMethod>(
+            'customTypes',
+            'returnCustomClassWithProtocolSerializationMethod',
+            {'data': data},
+          );
 }
 
 /// {@category Endpoint}
@@ -618,6 +665,60 @@ class EndpointTransactionsDatabase extends _i1.EndpointRef {
           'numInsert': numInsert,
           'numDelete': numDelete,
         },
+      );
+}
+
+/// A simple endpoint for testing deprecated endpoint methods.
+/// {@category Endpoint}
+class EndpointDeprecation extends _i1.EndpointRef {
+  EndpointDeprecation(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'deprecation';
+
+  /// A method with a simple "@deprecated" annotation.
+  @deprecated
+  _i2.Future<void> setGlobalDouble(double? value) =>
+      caller.callServerEndpoint<void>(
+        'deprecation',
+        'setGlobalDouble',
+        {'value': value},
+      );
+
+  /// A method with a "@Deprecated(..)" annotation.
+  @Deprecated('Marking endpoint method as deprecated')
+  _i2.Future<double> getGlobalDouble() => caller.callServerEndpoint<double>(
+        'deprecation',
+        'getGlobalDouble',
+        {},
+      );
+}
+
+/// This class is meant for echoing / reflecting the received headers,
+/// auth keys, parameters etc in endpoint invocations.
+/// {@category Endpoint}
+class EndpointEchoRequest extends _i1.EndpointRef {
+  EndpointEchoRequest(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'echoRequest';
+
+  /// Echo the authentication key of the session.
+  /// Returns null if the key is not set.
+  _i2.Future<String?> echoAuthenticationKey() =>
+      caller.callServerEndpoint<String?>(
+        'echoRequest',
+        'echoAuthenticationKey',
+        {},
+      );
+
+  /// Echo a specified header of the HTTP request.
+  /// Returns null of the header is not set.
+  _i2.Future<List<String>?> echoHttpHeader(String headerName) =>
+      caller.callServerEndpoint<List<String>?>(
+        'echoRequest',
+        'echoHttpHeader',
+        {'headerName': headerName},
       );
 }
 
@@ -970,6 +1071,12 @@ class EndpointLogging extends _i1.EndpointRef {
         {'seconds': seconds},
       );
 
+  _i2.Future<void> queryMethod(int queries) => caller.callServerEndpoint<void>(
+        'logging',
+        'queryMethod',
+        {'queries': queries},
+      );
+
   _i2.Future<void> failedQueryMethod() => caller.callServerEndpoint<void>(
         'logging',
         'failedQueryMethod',
@@ -1034,6 +1141,54 @@ class EndpointLogging extends _i1.EndpointRef {
         'twoQueries',
         {},
       );
+
+  _i2.Stream<int> streamEmpty(_i2.Stream<int> input) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'logging',
+        'streamEmpty',
+        {},
+        {'input': input},
+      );
+
+  _i2.Stream<int> streamLogging(_i2.Stream<int> input) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'logging',
+        'streamLogging',
+        {},
+        {'input': input},
+      );
+
+  _i2.Stream<int> streamQueryLogging(_i2.Stream<int> input) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'logging',
+        'streamQueryLogging',
+        {},
+        {'input': input},
+      );
+
+  _i2.Stream<int> streamException() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'logging',
+        'streamException',
+        {},
+        {},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointStreamLogging extends _i1.EndpointRef {
+  EndpointStreamLogging(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'streamLogging';
+}
+
+/// {@category Endpoint}
+class EndpointStreamQueryLogging extends _i1.EndpointRef {
+  EndpointStreamQueryLogging(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'streamQueryLogging';
 }
 
 /// {@category Endpoint}
@@ -1247,16 +1402,287 @@ class EndpointMapParameters extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointMethodSignaturePermutations extends _i1.EndpointRef {
+  EndpointMethodSignaturePermutations(_i1.EndpointCaller caller)
+      : super(caller);
+
+  @override
+  String get name => 'methodSignaturePermutations';
+
+  _i2.Future<String> echoPositionalArg(String string) =>
+      caller.callServerEndpoint<String>(
+        'methodSignaturePermutations',
+        'echoPositionalArg',
+        {'string': string},
+      );
+
+  _i2.Future<String> echoNamedArg({required String string}) =>
+      caller.callServerEndpoint<String>(
+        'methodSignaturePermutations',
+        'echoNamedArg',
+        {'string': string},
+      );
+
+  _i2.Future<String?> echoNullableNamedArg({String? string}) =>
+      caller.callServerEndpoint<String?>(
+        'methodSignaturePermutations',
+        'echoNullableNamedArg',
+        {'string': string},
+      );
+
+  _i2.Future<String?> echoOptionalArg([String? string]) =>
+      caller.callServerEndpoint<String?>(
+        'methodSignaturePermutations',
+        'echoOptionalArg',
+        {'string': string},
+      );
+
+  _i2.Future<List<String?>> echoPositionalAndNamedArgs(
+    String string1, {
+    required String string2,
+  }) =>
+      caller.callServerEndpoint<List<String?>>(
+        'methodSignaturePermutations',
+        'echoPositionalAndNamedArgs',
+        {
+          'string1': string1,
+          'string2': string2,
+        },
+      );
+
+  _i2.Future<List<String?>> echoPositionalAndNullableNamedArgs(
+    String string1, {
+    String? string2,
+  }) =>
+      caller.callServerEndpoint<List<String?>>(
+        'methodSignaturePermutations',
+        'echoPositionalAndNullableNamedArgs',
+        {
+          'string1': string1,
+          'string2': string2,
+        },
+      );
+
+  _i2.Future<List<String?>> echoPositionalAndOptionalArgs(
+    String string1, [
+    String? string2,
+  ]) =>
+      caller.callServerEndpoint<List<String?>>(
+        'methodSignaturePermutations',
+        'echoPositionalAndOptionalArgs',
+        {
+          'string1': string1,
+          'string2': string2,
+        },
+      );
+
+  _i2.Stream<String> echoNamedArgStream(
+          {required _i2.Stream<String> strings}) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<String>, String>(
+        'methodSignaturePermutations',
+        'echoNamedArgStream',
+        {},
+        {'strings': strings},
+      );
+
+  _i2.Future<String> echoNamedArgStreamAsFuture(
+          {required _i2.Stream<String> strings}) =>
+      caller.callStreamingServerEndpoint<_i2.Future<String>, String>(
+        'methodSignaturePermutations',
+        'echoNamedArgStreamAsFuture',
+        {},
+        {'strings': strings},
+      );
+
+  _i2.Stream<String> echoPositionalArgStream(_i2.Stream<String> strings) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<String>, String>(
+        'methodSignaturePermutations',
+        'echoPositionalArgStream',
+        {},
+        {'strings': strings},
+      );
+
+  _i2.Future<String> echoPositionalArgStreamAsFuture(
+          _i2.Stream<String> strings) =>
+      caller.callStreamingServerEndpoint<_i2.Future<String>, String>(
+        'methodSignaturePermutations',
+        'echoPositionalArgStreamAsFuture',
+        {},
+        {'strings': strings},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointMethodStreaming extends _i1.EndpointRef {
   EndpointMethodStreaming(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'methodStreaming';
 
+  /// Returns a simple stream of integers from 0 to 9.
+  _i2.Stream<int> simpleStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'simpleStream',
+        {},
+        {},
+      );
+
+  _i2.Stream<int> neverEndingStreamWithDelay(int millisecondsDelay) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'neverEndingStreamWithDelay',
+        {'millisecondsDelay': millisecondsDelay},
+        {},
+      );
+
   _i2.Future<void> methodCallEndpoint() => caller.callServerEndpoint<void>(
         'methodStreaming',
         'methodCallEndpoint',
         {},
+      );
+
+  _i2.Future<int> intReturnFromStream(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<int>, int>(
+        'methodStreaming',
+        'intReturnFromStream',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Future<int?> nullableIntReturnFromStream(_i2.Stream<int?> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<int?>, int?>(
+        'methodStreaming',
+        'nullableIntReturnFromStream',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Stream<int?> getBroadcastStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int?>, int?>(
+        'methodStreaming',
+        'getBroadcastStream',
+        {},
+        {},
+      );
+
+  _i2.Future<bool> wasBroadcastStreamCanceled() =>
+      caller.callServerEndpoint<bool>(
+        'methodStreaming',
+        'wasBroadcastStreamCanceled',
+        {},
+      );
+
+  _i2.Future<bool> wasSessionWillCloseListenerCalled() =>
+      caller.callServerEndpoint<bool>(
+        'methodStreaming',
+        'wasSessionWillCloseListenerCalled',
+        {},
+      );
+
+  _i2.Stream<int> intStreamFromValue(int value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'intStreamFromValue',
+        {'value': value},
+        {},
+      );
+
+  _i2.Stream<int> intEchoStream(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'intEchoStream',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Stream<dynamic> dynamicEchoStream(_i2.Stream<dynamic> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<dynamic>, dynamic>(
+        'methodStreaming',
+        'dynamicEchoStream',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Stream<int?> nullableIntEchoStream(_i2.Stream<int?> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int?>, int?>(
+        'methodStreaming',
+        'nullableIntEchoStream',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Future<void> voidReturnAfterStream(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
+        'methodStreaming',
+        'voidReturnAfterStream',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Stream<int> multipleIntEchoStreams(
+    _i2.Stream<int> stream1,
+    _i2.Stream<int> stream2,
+  ) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'multipleIntEchoStreams',
+        {},
+        {
+          'stream1': stream1,
+          'stream2': stream2,
+        },
+      );
+
+  _i2.Future<void> directVoidReturnWithStreamInput(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
+        'methodStreaming',
+        'directVoidReturnWithStreamInput',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Future<int> directOneIntReturnWithStreamInput(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<int>, int>(
+        'methodStreaming',
+        'directOneIntReturnWithStreamInput',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Future<int> simpleInputReturnStream(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<int>, int>(
+        'methodStreaming',
+        'simpleInputReturnStream',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Stream<int> simpleStreamWithParameter(int value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'simpleStreamWithParameter',
+        {'value': value},
+        {},
+      );
+
+  _i2.Stream<_i10.SimpleData> simpleDataStream(int value) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<_i10.SimpleData>,
+          _i10.SimpleData>(
+        'methodStreaming',
+        'simpleDataStream',
+        {'value': value},
+        {},
+      );
+
+  _i2.Stream<_i10.SimpleData> simpleInOutDataStream(
+          _i2.Stream<_i10.SimpleData> simpleDataStream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<_i10.SimpleData>,
+          _i10.SimpleData>(
+        'methodStreaming',
+        'simpleInOutDataStream',
+        {},
+        {'simpleDataStream': simpleDataStream},
       );
 
   _i2.Future<void> simpleEndpoint() => caller.callServerEndpoint<void>(
@@ -1268,13 +1694,6 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
   _i2.Future<void> intParameter(int value) => caller.callServerEndpoint<void>(
         'methodStreaming',
         'intParameter',
-        {'value': value},
-      );
-
-  _i2.Future<int?> nullableResponse(int? value) =>
-      caller.callServerEndpoint<int?>(
-        'methodStreaming',
-        'nullableResponse',
         {'value': value},
       );
 
@@ -1294,6 +1713,36 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {'delay': delay},
       );
 
+  _i2.Stream<int> delayedStreamResponse(int delay) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'delayedStreamResponse',
+        {'delay': delay},
+        {},
+      );
+
+  _i2.Future<void> delayedNeverListenedInputStream(
+    int delay,
+    _i2.Stream<int> stream,
+  ) =>
+      caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
+        'methodStreaming',
+        'delayedNeverListenedInputStream',
+        {'delay': delay},
+        {'stream': stream},
+      );
+
+  _i2.Future<void> delayedPausedInputStream(
+    int delay,
+    _i2.Stream<int> stream,
+  ) =>
+      caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
+        'methodStreaming',
+        'delayedPausedInputStream',
+        {'delay': delay},
+        {'stream': stream},
+      );
+
   /// Completes all delayed responses.
   /// This makes the delayedResponse return directly.
   _i2.Future<void> completeAllDelayedResponses() =>
@@ -1303,17 +1752,118 @@ class EndpointMethodStreaming extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<void> throwsException() => caller.callServerEndpoint<void>(
+  _i2.Future<void> inStreamThrowsException(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
         'methodStreaming',
-        'throwsException',
+        'inStreamThrowsException',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Future<void> inStreamThrowsSerializableException(
+          _i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
+        'methodStreaming',
+        'inStreamThrowsSerializableException',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Stream<int> outStreamThrowsException() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'outStreamThrowsException',
+        {},
         {},
       );
 
-  _i2.Future<void> throwsSerializableException() =>
-      caller.callServerEndpoint<void>(
+  _i2.Stream<int> outStreamThrowsSerializableException() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'outStreamThrowsSerializableException',
+        {},
+        {},
+      );
+
+  _i2.Future<void> throwsExceptionVoid(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
+        'methodStreaming',
+        'throwsExceptionVoid',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Future<void> throwsSerializableExceptionVoid(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<void>, void>(
+        'methodStreaming',
+        'throwsSerializableExceptionVoid',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Future<int> throwsException(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<int>, int>(
+        'methodStreaming',
+        'throwsException',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Future<int> throwsSerializableException(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<int>, int>(
         'methodStreaming',
         'throwsSerializableException',
         {},
+        {'stream': stream},
+      );
+
+  _i2.Stream<int> throwsExceptionStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'throwsExceptionStream',
+        {},
+        {},
+      );
+
+  _i2.Stream<int> exceptionThrownBeforeStreamReturn() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'exceptionThrownBeforeStreamReturn',
+        {},
+        {},
+      );
+
+  _i2.Stream<int> exceptionThrownInStreamReturn() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'exceptionThrownInStreamReturn',
+        {},
+        {},
+      );
+
+  _i2.Stream<int> throwsSerializableExceptionStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'methodStreaming',
+        'throwsSerializableExceptionStream',
+        {},
+        {},
+      );
+
+  _i2.Future<bool> didInputStreamHaveError(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<bool>, bool>(
+        'methodStreaming',
+        'didInputStreamHaveError',
+        {},
+        {'stream': stream},
+      );
+
+  _i2.Future<bool> didInputStreamHaveSerializableExceptionError(
+          _i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Future<bool>, bool>(
+        'methodStreaming',
+        'didInputStreamHaveSerializableExceptionError',
+        {},
+        {'stream': stream},
       );
 }
 
@@ -1324,6 +1874,22 @@ class EndpointAuthenticatedMethodStreaming extends _i1.EndpointRef {
 
   @override
   String get name => 'authenticatedMethodStreaming';
+
+  _i2.Stream<int> simpleStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'authenticatedMethodStreaming',
+        'simpleStream',
+        {},
+        {},
+      );
+
+  _i2.Stream<int> intEchoStream(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'authenticatedMethodStreaming',
+        'intEchoStream',
+        {},
+        {'stream': stream},
+      );
 }
 
 /// {@category Endpoint}
@@ -1503,6 +2069,22 @@ class EndpointServerOnlyScopedFieldModel extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointServerOnlyScopedFieldChildModel extends _i1.EndpointRef {
+  EndpointServerOnlyScopedFieldChildModel(_i1.EndpointCaller caller)
+      : super(caller);
+
+  @override
+  String get name => 'serverOnlyScopedFieldChildModel';
+
+  _i2.Future<_i20.ScopeServerOnlyFieldChild> getProtocolField() =>
+      caller.callServerEndpoint<_i20.ScopeServerOnlyFieldChild>(
+        'serverOnlyScopedFieldChildModel',
+        'getProtocolField',
+        {},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointSignInRequired extends _i1.EndpointRef {
   EndpointSignInRequired(_i1.EndpointCaller caller) : super(caller);
 
@@ -1618,8 +2200,252 @@ class EndpointSubDirTest extends _i1.EndpointRef {
       );
 }
 
-class _Modules {
-  _Modules(Client client) {
+/// {@category Endpoint}
+class EndpointTestTools extends _i1.EndpointRef {
+  EndpointTestTools(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'testTools';
+
+  _i2.Future<_i5.UuidValue> returnsSessionId() =>
+      caller.callServerEndpoint<_i5.UuidValue>(
+        'testTools',
+        'returnsSessionId',
+        {},
+      );
+
+  _i2.Future<List<String?>> returnsSessionEndpointAndMethod() =>
+      caller.callServerEndpoint<List<String?>>(
+        'testTools',
+        'returnsSessionEndpointAndMethod',
+        {},
+      );
+
+  _i2.Stream<_i5.UuidValue> returnsSessionIdFromStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<_i5.UuidValue>,
+          _i5.UuidValue>(
+        'testTools',
+        'returnsSessionIdFromStream',
+        {},
+        {},
+      );
+
+  _i2.Stream<String?> returnsSessionEndpointAndMethodFromStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<String?>, String?>(
+        'testTools',
+        'returnsSessionEndpointAndMethodFromStream',
+        {},
+        {},
+      );
+
+  _i2.Future<String> returnsString(String string) =>
+      caller.callServerEndpoint<String>(
+        'testTools',
+        'returnsString',
+        {'string': string},
+      );
+
+  _i2.Stream<int> returnsStream(int n) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'testTools',
+        'returnsStream',
+        {'n': n},
+        {},
+      );
+
+  _i2.Future<List<int>> returnsListFromInputStream(_i2.Stream<int> numbers) =>
+      caller.callStreamingServerEndpoint<_i2.Future<List<int>>, List<int>>(
+        'testTools',
+        'returnsListFromInputStream',
+        {},
+        {'numbers': numbers},
+      );
+
+  _i2.Future<List<_i10.SimpleData>> returnsSimpleDataListFromInputStream(
+          _i2.Stream<_i10.SimpleData> simpleDatas) =>
+      caller.callStreamingServerEndpoint<_i2.Future<List<_i10.SimpleData>>,
+          List<_i10.SimpleData>>(
+        'testTools',
+        'returnsSimpleDataListFromInputStream',
+        {},
+        {'simpleDatas': simpleDatas},
+      );
+
+  _i2.Stream<int> returnsStreamFromInputStream(_i2.Stream<int> numbers) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'testTools',
+        'returnsStreamFromInputStream',
+        {},
+        {'numbers': numbers},
+      );
+
+  _i2.Stream<_i10.SimpleData> returnsSimpleDataStreamFromInputStream(
+          _i2.Stream<_i10.SimpleData> simpleDatas) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<_i10.SimpleData>,
+          _i10.SimpleData>(
+        'testTools',
+        'returnsSimpleDataStreamFromInputStream',
+        {},
+        {'simpleDatas': simpleDatas},
+      );
+
+  _i2.Future<void> postNumberToSharedStream(int number) =>
+      caller.callServerEndpoint<void>(
+        'testTools',
+        'postNumberToSharedStream',
+        {'number': number},
+      );
+
+  _i2.Stream<int> postNumberToSharedStreamAndReturnStream(int number) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'testTools',
+        'postNumberToSharedStreamAndReturnStream',
+        {'number': number},
+        {},
+      );
+
+  _i2.Stream<int> listenForNumbersOnSharedStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'testTools',
+        'listenForNumbersOnSharedStream',
+        {},
+        {},
+      );
+
+  _i2.Future<void> createSimpleData(int data) =>
+      caller.callServerEndpoint<void>(
+        'testTools',
+        'createSimpleData',
+        {'data': data},
+      );
+
+  _i2.Future<List<_i10.SimpleData>> getAllSimpleData() =>
+      caller.callServerEndpoint<List<_i10.SimpleData>>(
+        'testTools',
+        'getAllSimpleData',
+        {},
+      );
+
+  _i2.Future<void> createSimpleDatasInsideTransactions(int data) =>
+      caller.callServerEndpoint<void>(
+        'testTools',
+        'createSimpleDatasInsideTransactions',
+        {'data': data},
+      );
+
+  _i2.Future<void> createSimpleDataAndThrowInsideTransaction(int data) =>
+      caller.callServerEndpoint<void>(
+        'testTools',
+        'createSimpleDataAndThrowInsideTransaction',
+        {'data': data},
+      );
+
+  _i2.Future<void> createSimpleDatasInParallelTransactionCalls() =>
+      caller.callServerEndpoint<void>(
+        'testTools',
+        'createSimpleDatasInParallelTransactionCalls',
+        {},
+      );
+
+  _i2.Future<_i10.SimpleData> echoSimpleData(_i10.SimpleData simpleData) =>
+      caller.callServerEndpoint<_i10.SimpleData>(
+        'testTools',
+        'echoSimpleData',
+        {'simpleData': simpleData},
+      );
+
+  _i2.Future<List<_i10.SimpleData>> echoSimpleDatas(
+          List<_i10.SimpleData> simpleDatas) =>
+      caller.callServerEndpoint<List<_i10.SimpleData>>(
+        'testTools',
+        'echoSimpleDatas',
+        {'simpleDatas': simpleDatas},
+      );
+
+  _i2.Future<void> logMessageWithSession() => caller.callServerEndpoint<void>(
+        'testTools',
+        'logMessageWithSession',
+        {},
+      );
+
+  _i2.Future<void> addWillCloseListenerToSessionAndThrow() =>
+      caller.callServerEndpoint<void>(
+        'testTools',
+        'addWillCloseListenerToSessionAndThrow',
+        {},
+      );
+
+  _i2.Stream<int> addWillCloseListenerToSessionIntStreamMethodAndThrow() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'testTools',
+        'addWillCloseListenerToSessionIntStreamMethodAndThrow',
+        {},
+        {},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointAuthenticatedTestTools extends _i1.EndpointRef {
+  EndpointAuthenticatedTestTools(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'authenticatedTestTools';
+
+  _i2.Future<String> returnsString(String string) =>
+      caller.callServerEndpoint<String>(
+        'authenticatedTestTools',
+        'returnsString',
+        {'string': string},
+      );
+
+  _i2.Stream<int> returnsStream(int n) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'authenticatedTestTools',
+        'returnsStream',
+        {'n': n},
+        {},
+      );
+
+  _i2.Future<List<int>> returnsListFromInputStream(_i2.Stream<int> numbers) =>
+      caller.callStreamingServerEndpoint<_i2.Future<List<int>>, List<int>>(
+        'authenticatedTestTools',
+        'returnsListFromInputStream',
+        {},
+        {'numbers': numbers},
+      );
+
+  _i2.Stream<int> intEchoStream(_i2.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'authenticatedTestTools',
+        'intEchoStream',
+        {},
+        {'stream': stream},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointMyFeature extends _i1.EndpointRef {
+  EndpointMyFeature(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'myFeature';
+
+  _i2.Future<String> myFeatureMethod() => caller.callServerEndpoint<String>(
+        'myFeature',
+        'myFeatureMethod',
+        {},
+      );
+
+  _i2.Future<_i21.MyFeatureModel> myFeatureModel() =>
+      caller.callServerEndpoint<_i21.MyFeatureModel>(
+        'myFeature',
+        'myFeatureModel',
+        {},
+      );
+}
+
+class Modules {
+  Modules(Client client) {
     auth = _i3.Caller(client);
     module = _i17.Caller(client);
   }
@@ -1629,7 +2455,7 @@ class _Modules {
   late final _i17.Caller module;
 }
 
-class Client extends _i1.ServerpodClient {
+class Client extends _i1.ServerpodClientShared {
   Client(
     String host, {
     dynamic securityContext,
@@ -1642,15 +2468,18 @@ class Client extends _i1.ServerpodClient {
       StackTrace,
     )? onFailedCall,
     Function(_i1.MethodCallContext)? onSucceededCall,
+    bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i20.Protocol(),
+          _i22.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
           connectionTimeout: connectionTimeout,
           onFailedCall: onFailedCall,
           onSucceededCall: onSucceededCall,
+          disconnectStreamsOnLostInternetConnection:
+              disconnectStreamsOnLostInternetConnection,
         ) {
     asyncTasks = EndpointAsyncTasks(this);
     authentication = EndpointAuthentication(this);
@@ -1661,6 +2490,8 @@ class Client extends _i1.ServerpodClient {
     customTypes = EndpointCustomTypes(this);
     basicDatabase = EndpointBasicDatabase(this);
     transactionsDatabase = EndpointTransactionsDatabase(this);
+    deprecation = EndpointDeprecation(this);
+    echoRequest = EndpointEchoRequest(this);
     emailAuthTestMethods = EndpointEmailAuthTestMethods(this);
     exceptionTest = EndpointExceptionTest(this);
     failedCalls = EndpointFailedCalls(this);
@@ -1668,8 +2499,11 @@ class Client extends _i1.ServerpodClient {
     futureCalls = EndpointFutureCalls(this);
     listParameters = EndpointListParameters(this);
     logging = EndpointLogging(this);
+    streamLogging = EndpointStreamLogging(this);
+    streamQueryLogging = EndpointStreamQueryLogging(this);
     loggingDisabled = EndpointLoggingDisabled(this);
     mapParameters = EndpointMapParameters(this);
+    methodSignaturePermutations = EndpointMethodSignaturePermutations(this);
     methodStreaming = EndpointMethodStreaming(this);
     authenticatedMethodStreaming = EndpointAuthenticatedMethodStreaming(this);
     moduleSerialization = EndpointModuleSerialization(this);
@@ -1677,6 +2511,8 @@ class Client extends _i1.ServerpodClient {
     optionalParameters = EndpointOptionalParameters(this);
     redis = EndpointRedis(this);
     serverOnlyScopedFieldModel = EndpointServerOnlyScopedFieldModel(this);
+    serverOnlyScopedFieldChildModel =
+        EndpointServerOnlyScopedFieldChildModel(this);
     signInRequired = EndpointSignInRequired(this);
     adminScopeRequired = EndpointAdminScopeRequired(this);
     simple = EndpointSimple(this);
@@ -1684,7 +2520,10 @@ class Client extends _i1.ServerpodClient {
     streamingLogging = EndpointStreamingLogging(this);
     subSubDirTest = EndpointSubSubDirTest(this);
     subDirTest = EndpointSubDirTest(this);
-    modules = _Modules(this);
+    testTools = EndpointTestTools(this);
+    authenticatedTestTools = EndpointAuthenticatedTestTools(this);
+    myFeature = EndpointMyFeature(this);
+    modules = Modules(this);
   }
 
   late final EndpointAsyncTasks asyncTasks;
@@ -1705,6 +2544,10 @@ class Client extends _i1.ServerpodClient {
 
   late final EndpointTransactionsDatabase transactionsDatabase;
 
+  late final EndpointDeprecation deprecation;
+
+  late final EndpointEchoRequest echoRequest;
+
   late final EndpointEmailAuthTestMethods emailAuthTestMethods;
 
   late final EndpointExceptionTest exceptionTest;
@@ -1719,9 +2562,15 @@ class Client extends _i1.ServerpodClient {
 
   late final EndpointLogging logging;
 
+  late final EndpointStreamLogging streamLogging;
+
+  late final EndpointStreamQueryLogging streamQueryLogging;
+
   late final EndpointLoggingDisabled loggingDisabled;
 
   late final EndpointMapParameters mapParameters;
+
+  late final EndpointMethodSignaturePermutations methodSignaturePermutations;
 
   late final EndpointMethodStreaming methodStreaming;
 
@@ -1737,6 +2586,9 @@ class Client extends _i1.ServerpodClient {
 
   late final EndpointServerOnlyScopedFieldModel serverOnlyScopedFieldModel;
 
+  late final EndpointServerOnlyScopedFieldChildModel
+      serverOnlyScopedFieldChildModel;
+
   late final EndpointSignInRequired signInRequired;
 
   late final EndpointAdminScopeRequired adminScopeRequired;
@@ -1751,7 +2603,13 @@ class Client extends _i1.ServerpodClient {
 
   late final EndpointSubDirTest subDirTest;
 
-  late final _Modules modules;
+  late final EndpointTestTools testTools;
+
+  late final EndpointAuthenticatedTestTools authenticatedTestTools;
+
+  late final EndpointMyFeature myFeature;
+
+  late final Modules modules;
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
@@ -1764,6 +2622,8 @@ class Client extends _i1.ServerpodClient {
         'customTypes': customTypes,
         'basicDatabase': basicDatabase,
         'transactionsDatabase': transactionsDatabase,
+        'deprecation': deprecation,
+        'echoRequest': echoRequest,
         'emailAuthTestMethods': emailAuthTestMethods,
         'exceptionTest': exceptionTest,
         'failedCalls': failedCalls,
@@ -1771,8 +2631,11 @@ class Client extends _i1.ServerpodClient {
         'futureCalls': futureCalls,
         'listParameters': listParameters,
         'logging': logging,
+        'streamLogging': streamLogging,
+        'streamQueryLogging': streamQueryLogging,
         'loggingDisabled': loggingDisabled,
         'mapParameters': mapParameters,
+        'methodSignaturePermutations': methodSignaturePermutations,
         'methodStreaming': methodStreaming,
         'authenticatedMethodStreaming': authenticatedMethodStreaming,
         'moduleSerialization': moduleSerialization,
@@ -1780,6 +2643,7 @@ class Client extends _i1.ServerpodClient {
         'optionalParameters': optionalParameters,
         'redis': redis,
         'serverOnlyScopedFieldModel': serverOnlyScopedFieldModel,
+        'serverOnlyScopedFieldChildModel': serverOnlyScopedFieldChildModel,
         'signInRequired': signInRequired,
         'adminScopeRequired': adminScopeRequired,
         'simple': simple,
@@ -1787,6 +2651,9 @@ class Client extends _i1.ServerpodClient {
         'streamingLogging': streamingLogging,
         'subSubDirTest': subSubDirTest,
         'subDirTest': subDirTest,
+        'testTools': testTools,
+        'authenticatedTestTools': authenticatedTestTools,
+        'myFeature': myFeature,
       };
 
   @override

@@ -69,16 +69,17 @@ class ImageUploader {
         maxHeight: imageSize,
         maxWidth: imageSize,
         aspectRatio: const CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
-        cropStyle: CropStyle.circle,
         uiSettings: [
           AndroidUiSettings(
               toolbarTitle: 'Cropper',
               toolbarColor: toolbarColor,
               toolbarWidgetColor: toolbarWidgetColor,
               initAspectRatio: CropAspectRatioPreset.original,
+              cropStyle: CropStyle.circle,
               lockAspectRatio: false),
           IOSUiSettings(
             minimumAspectRatio: 1.0,
+            cropStyle: CropStyle.circle,
           ),
         ],
       );

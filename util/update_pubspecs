@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
@@ -31,6 +31,7 @@ cp CHANGELOG.md packages/serverpod_service_client/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_shared/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_flutter/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_lints/CHANGELOG.md
+cp CHANGELOG.md packages/serverpod_test/CHANGELOG.md
 
 cp CHANGELOG.md templates/serverpod_templates/CHANGELOG.md
 cp CHANGELOG.md tools/serverpod_cli/CHANGELOG.md
@@ -38,6 +39,7 @@ cp CHANGELOG.md tests/serverpod_test_client/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_test_server/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_test_module/serverpod_test_module_client/CHANGELOG.md
 cp CHANGELOG.md tests/serverpod_test_module/serverpod_test_module_server/CHANGELOG.md
+cp CHANGELOG.md tests/serverpod_test_flutter/CHANGELOG.md
 
 cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_server/CHANGELOG.md
 cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_client/CHANGELOG.md
@@ -62,6 +64,7 @@ cp README_subpackage.md packages/serverpod_service_client/README.md
 cp README_subpackage.md packages/serverpod_shared/README.md
 cp README_subpackage.md packages/serverpod_flutter/README.md
 cp README_subpackage.md packages/serverpod_lints/README.md
+cp README_subpackage.md packages/serverpod_test/README.md
 
 cp README_subpackage.md templates/serverpod_templates/README.md
 cp README_subpackage.md tools/serverpod_cli/README.md
@@ -69,6 +72,7 @@ cp README_subpackage.md tests/serverpod_test_client/README.md
 cp README_subpackage.md tests/serverpod_test_server/README.md
 cp README_subpackage.md tests/serverpod_test_module/serverpod_test_module_client/README.md
 cp README_subpackage.md tests/serverpod_test_module/serverpod_test_module_server/README.md
+cp README_subpackage.md tests/serverpod_test_flutter/README.md
 
 cp README_subpackage.md modules/serverpod_auth/serverpod_auth_server/README.md
 cp README_subpackage.md modules/serverpod_auth/serverpod_auth_client/README.md

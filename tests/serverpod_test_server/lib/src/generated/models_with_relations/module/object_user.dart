@@ -1,24 +1,24 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i2;
 
-abstract class ObjectUser extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class ObjectUser implements _i1.TableRow, _i1.ProtocolSerialization {
   ObjectUser._({
-    int? id,
+    this.id,
     this.name,
     required this.userInfoId,
     this.userInfo,
-  }) : super(id);
+  });
 
   factory ObjectUser({
     int? id,
@@ -42,6 +42,9 @@ abstract class ObjectUser extends _i1.TableRow
   static final t = ObjectUserTable();
 
   static const db = ObjectUserRepository._();
+
+  @override
+  int? id;
 
   String? name;
 
@@ -384,8 +387,9 @@ class ObjectUserAttachRowRepository {
   Future<void> userInfo(
     _i1.Session session,
     ObjectUser objectUser,
-    _i2.UserInfo userInfo,
-  ) async {
+    _i2.UserInfo userInfo, {
+    _i1.Transaction? transaction,
+  }) async {
     if (objectUser.id == null) {
       throw ArgumentError.notNull('objectUser.id');
     }
@@ -397,6 +401,7 @@ class ObjectUserAttachRowRepository {
     await session.db.updateRow<ObjectUser>(
       $objectUser,
       columns: [ObjectUser.t.userInfoId],
+      transaction: transaction,
     );
   }
 }

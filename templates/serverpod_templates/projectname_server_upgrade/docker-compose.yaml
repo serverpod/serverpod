@@ -1,6 +1,7 @@
 version: '3.7'
 
 services:
+  # Development services
   postgres:
     image: postgres:16.3
     ports:
@@ -11,6 +12,9 @@ services:
       POSTGRES_PASSWORD: "DB_PASSWORD"
     volumes:
       - projectname_data:/var/lib/postgresql/data
+    profiles:
+      - '' # Default profile
+      - dev
   redis:
     image: redis:6.2.6
     ports:
@@ -18,5 +22,35 @@ services:
     command: redis-server --requirepass "REDIS_PASSWORD"
     environment:
       - REDIS_REPLICATION_MODE=master
+    profiles:
+      - '' # Default profile
+      - dev
+
+  # Test services
+  postgres_test:
+    image: postgres:16.3
+    ports:
+      - '9090:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: projectname_test
+      POSTGRES_PASSWORD: "DB_TEST_PASSWORD"
+    volumes:
+      - projectname_test_data:/var/lib/postgresql/data
+    profiles:
+      - '' # Default profile
+      - test
+  redis_test:
+    image: redis:6.2.6
+    ports:
+      - '9091:6379'
+    command: redis-server --requirepass "REDIS_TEST_PASSWORD"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    profiles:
+      - '' # Default profile
+      - test
+
 volumes:
   projectname_data:
+  projectname_test_data:

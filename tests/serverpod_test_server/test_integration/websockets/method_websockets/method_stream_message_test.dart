@@ -97,6 +97,7 @@ void main() {
           method: method,
           args: {},
           connectionId: connectionId,
+          inputStreams: ['stream'],
         ));
 
         await streamOpened.future;
@@ -168,6 +169,7 @@ void main() {
           method: method,
           args: {'value': inputValue},
           connectionId: connectionId,
+          inputStreams: [],
         ));
 
         await streamOpened.future.timeout(
@@ -209,13 +211,6 @@ void main() {
         expect(closeMethodStreamCommandMessage.method, method);
         expect(closeMethodStreamCommandMessage.connectionId, connectionId);
         expect(closeMethodStreamCommandMessage.reason, CloseReason.done);
-      });
-
-      test('then the stream is closed.', () async {
-        expect(
-          webSocketCompleter.future.timeout(Duration(seconds: 5)),
-          completes,
-        );
       });
     });
 
@@ -259,6 +254,7 @@ void main() {
           method: method,
           args: {'value': inputValue},
           connectionId: connectionId,
+          inputStreams: [],
         ));
 
         await streamOpened.future.timeout(
@@ -301,64 +297,7 @@ void main() {
         expect(closeMethodStreamCommandMessage.connectionId, connectionId);
         expect(closeMethodStreamCommandMessage.reason, CloseReason.done);
       });
-
-      test('then the stream is closed.', () async {
-        expect(
-          webSocketCompleter.future.timeout(Duration(seconds: 5)),
-          completes,
-        );
-      });
     });
-
-    group(
-        'when a method stream is opened to an endpoint that has null return value then null MethodStreamMessage is received with null value',
-        () {
-      late Completer<int?> endpointResponse;
-
-      setUp(() async {
-        var connectionId = const Uuid().v4obj();
-        endpointResponse = Completer<int?>();
-        var streamOpened = Completer<void>();
-
-        webSocket.stream.listen((event) {
-          var message = WebSocketMessage.fromJsonString(
-            event,
-            server.serializationManager,
-          );
-          ;
-          if (message is OpenMethodStreamResponse) {
-            streamOpened.complete();
-          } else if (message is MethodStreamMessage) {
-            endpointResponse.complete(message.object as int?);
-          }
-        });
-
-        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
-          endpoint: 'methodStreaming',
-          method: 'nullableResponse',
-          args: {'value': null},
-          connectionId: connectionId,
-        ));
-
-        await streamOpened.future.timeout(
-          Duration(seconds: 5),
-          onTimeout: () => throw AssertionError(
-            'Failed to open method stream with server.',
-          ),
-        );
-      });
-
-      test('then MethodStreamMessage with modified input is received.',
-          () async {
-        await expectLater(
-          endpointResponse.future.timeout(Duration(seconds: 5)),
-          completion(null),
-          reason: 'Return value from endpoint.',
-        );
-      });
-    },
-        skip:
-            'Enable this test once serialize and deserialize by class name supports null types.');
 
     group(
         'when multiple methods streams are open and one of them with Future response is closed',
@@ -403,6 +342,7 @@ void main() {
           method: 'delayedStreamResponse',
           args: {'delay': 10},
           connectionId: delayedResponseConnectionId,
+          inputStreams: [],
         ));
 
         webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
@@ -410,6 +350,7 @@ void main() {
           method: 'directVoidReturnWithStreamInput',
           args: {},
           connectionId: returningStreamConnectionId,
+          inputStreams: ['stream'],
         ));
 
         await Future.wait([
@@ -490,6 +431,7 @@ void main() {
           method: 'delayedStreamResponse',
           args: {'delay': 10},
           connectionId: delayedResponseConnectionId,
+          inputStreams: [],
         ));
 
         webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
@@ -497,6 +439,7 @@ void main() {
           method: 'simpleStream',
           args: {},
           connectionId: returningStreamConnectionId,
+          inputStreams: [],
         ));
 
         await Future.wait([
@@ -596,6 +539,7 @@ void main() {
           method: method,
           args: {},
           connectionId: connectionId,
+          inputStreams: ['stream'],
         ));
 
         await streamOpened.future;

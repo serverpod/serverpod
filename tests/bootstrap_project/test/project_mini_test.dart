@@ -1,11 +1,11 @@
 @Timeout(Duration(minutes: 12))
 
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
-import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
+
+import '../lib/src/util.dart';
 
 const tempDirName = 'temp-mini';
 
@@ -15,24 +15,30 @@ void main() async {
   final tempPath = path.join(rootPath, tempDirName);
 
   setUpAll(() async {
-    await Process.run(
+    await runProcess(
       'dart',
       ['pub', 'global', 'activate', '-s', 'path', '.'],
       workingDirectory: cliPath,
     );
 
-    await Process.run('mkdir', [tempDirName], workingDirectory: rootPath);
+    await Directory(tempPath).create();
+  });
+
+  tearDownAll(() async {
+    try {
+      Directory(tempPath).deleteSync(recursive: true);
+    } catch (e) {}
   });
 
   group('Given a clean state', () {
-    final (projectName, commandRoot) = createRandomProjectName(tempPath);
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
 
     test(
         'when creating a new project with the mini template then the project is created successfully and can be booted in maintenance mode.',
         () async {
-      createProcess = await Process.start(
+      createProcess = await startProcess(
         'serverpod',
         ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
@@ -41,9 +47,6 @@ void main() async {
         },
       );
 
-      createProcess.stdout.transform(Utf8Decoder()).listen(print);
-      createProcess.stderr.transform(Utf8Decoder()).listen(print);
-
       var createProjectExitCode = await createProcess.exitCode;
       expect(
         createProjectExitCode,
@@ -51,29 +54,26 @@ void main() async {
         reason: 'Failed to create the serverpod project.',
       );
 
-      var startProcess = await Process.start(
+      var startProjectProcess = await startProcess(
         'dart',
         ['bin/main.dart', '--role', 'maintenance'],
         workingDirectory: commandRoot,
       );
 
-      startProcess.stdout.transform(Utf8Decoder()).listen(print);
-      startProcess.stderr.transform(Utf8Decoder()).listen(print);
-
-      var startProjectExitCode = await startProcess.exitCode;
+      var startProjectExitCode = await startProjectProcess.exitCode;
       expect(startProjectExitCode, 0);
     });
   });
 
   group('Given a clean state', () {
-    final (projectName, _) = createRandomProjectName(tempPath);
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
     late Process createProcess;
 
     test(
         'when creating a new project with the mini template then the project is created successfully without the full configuration of a full project.',
         () async {
-      createProcess = await Process.start(
+      createProcess = await startProcess(
         'serverpod',
         ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
@@ -82,9 +82,6 @@ void main() async {
         },
       );
 
-      createProcess.stdout.transform(Utf8Decoder()).listen(print);
-      createProcess.stderr.transform(Utf8Decoder()).listen(print);
-
       var createProjectExitCode = await createProcess.exitCode;
       expect(
         createProjectExitCode,
@@ -92,7 +89,7 @@ void main() async {
         reason: 'Failed to create the serverpod project.',
       );
 
-      final (serverDir, _, _) = createProjectFolderPaths(projectName);
+      final serverDir = createServerFolderPath(projectName);
 
       var configDir =
           Directory(path.join(tempPath, serverDir, 'config')).existsSync();
@@ -118,14 +115,6 @@ void main() async {
         reason: 'No web directory should exist but it was found.',
       );
 
-      var dockerFile =
-          File(path.join(tempPath, serverDir, 'Dockerfile')).existsSync();
-      expect(
-        dockerFile,
-        isFalse,
-        reason: 'No Dockerfile should exist but it was found.',
-      );
-
       var dockerComposeFile =
           File(path.join(tempPath, serverDir, 'docker-compose.yaml'))
               .existsSync();
@@ -145,23 +134,13 @@ void main() async {
     });
   });
 
-  group('Given a clean state', () {
-    final (projectName, commandRoot) = createRandomProjectName(tempPath);
-    final (serverDir, _, _) = createProjectFolderPaths(projectName);
+  group('Given a mini project', () {
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+    final serverDir = createServerFolderPath(projectName);
     late Process createProcess;
 
-    tearDown(() async {
-      await Process.run(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-      );
-    });
-
-    test(
-        'when creating a new project with the mini template and upgrading it to a full project then the project is created successfully and can be booted in maintenance mode with the apply-migrations flag.',
-        () async {
-      createProcess = await Process.start(
+    setUpAll(() async {
+      createProcess = await startProcess(
         'serverpod',
         ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
@@ -170,17 +149,27 @@ void main() async {
         },
       );
 
-      createProcess.stdout.transform(Utf8Decoder()).listen(print);
-      createProcess.stderr.transform(Utf8Decoder()).listen(print);
-
       var createProjectExitCode = await createProcess.exitCode;
-      expect(
-        createProjectExitCode,
-        0,
-        reason: 'Failed to create the serverpod project.',
+      assert(
+        createProjectExitCode == 0,
+        'Failed to create the serverpod mini project.',
       );
+    });
 
-      var upgradeProcess = await Process.start(
+    tearDown(() async {
+      await runProcess(
+        'docker',
+        ['compose', 'down', '-v'],
+        workingDirectory: commandRoot,
+        skipBatExtentionOnWindows: true,
+      );
+    });
+
+    test(
+        'when upgrading the project to a full project '
+        'then the project is created successfully and can be booted in maintenance mode with the apply-migrations flag.',
+        () async {
+      var upgradeProcess = await startProcess(
         'serverpod',
         ['create', '--template', 'server', '.', '-v', '--no-analytics'],
         workingDirectory: path.join(tempPath, serverDir),
@@ -189,9 +178,6 @@ void main() async {
         },
       );
 
-      upgradeProcess.stdout.transform(Utf8Decoder()).listen(print);
-      upgradeProcess.stderr.transform(Utf8Decoder()).listen(print);
-
       var upgradeProjectExitCode = await upgradeProcess.exitCode;
       expect(
         upgradeProjectExitCode,
@@ -199,14 +185,12 @@ void main() async {
         reason: 'Failed to create the serverpod project.',
       );
 
-      final docker = await Process.start(
+      final docker = await startProcess(
         'docker',
         ['compose', 'up', '--build', '--detach'],
         workingDirectory: commandRoot,
+        ignorePlatform: true,
       );
-
-      docker.stdout.transform(Utf8Decoder()).listen(print);
-      docker.stderr.transform(Utf8Decoder()).listen(print);
 
       var dockerExitCode = await docker.exitCode;
 
@@ -216,29 +200,26 @@ void main() async {
         reason: 'Docker with postgres failed to start.',
       );
 
-      var startProcess = await Process.start(
+      var startProjectProcess = await startProcess(
         'dart',
         ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
         workingDirectory: commandRoot,
       );
 
-      startProcess.stdout.transform(Utf8Decoder()).listen(print);
-      startProcess.stderr.transform(Utf8Decoder()).listen(print);
-
-      var startProjectExitCode = await startProcess.exitCode;
+      var startProjectExitCode = await startProjectProcess.exitCode;
       expect(startProjectExitCode, 0);
-    });
+    },
+        skip: Platform.isWindows
+            ? 'Windows does not support postgres docker image in github actions'
+            : null);
   });
 
-  group('Given a clean state', () {
-    final (projectName, _) = createRandomProjectName(tempPath);
-    final (serverDir, _, _) = createProjectFolderPaths(projectName);
+  group('Given a mini project', () {
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+    final serverDir = createServerFolderPath(projectName);
     late Process createProcess;
-
-    test(
-        'when creating a new project with the mini template and upgrading it to a full project then the project is created successfully and can be booted in maintenance mode with the apply-migrations flag.',
-        () async {
-      createProcess = await Process.start(
+    setUpAll(() async {
+      createProcess = await startProcess(
         'serverpod',
         ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
@@ -247,8 +228,132 @@ void main() async {
         },
       );
 
-      createProcess.stdout.transform(Utf8Decoder()).listen(print);
-      createProcess.stderr.transform(Utf8Decoder()).listen(print);
+      var createProjectExitCode = await createProcess.exitCode;
+      assert(createProjectExitCode == 0,
+          'Failed to create the serverpod mini project.');
+    });
+
+    tearDown(() async {
+      createProcess.kill();
+    });
+
+    group(
+        'when creating a new project with the mini template and upgrading it to a full project',
+        () {
+      late Process upgradeProcess;
+      setUpAll(() async {
+        upgradeProcess = await startProcess(
+          'serverpod',
+          ['create', '--template', 'server', '.', '-v', '--no-analytics'],
+          workingDirectory: path.join(tempPath, serverDir),
+          environment: {
+            'SERVERPOD_HOME': rootPath,
+          },
+        );
+
+        await upgradeProcess.exitCode;
+      });
+
+      test('then the upgrade command completes successfully', () async {
+        var upgradeProjectExitCode = await upgradeProcess.exitCode;
+        expect(
+          upgradeProjectExitCode,
+          0,
+          reason: 'Failed to create the serverpod project.',
+        );
+      });
+
+      test('then the project contains a config directory', () {
+        var configDir =
+            Directory(path.join(tempPath, serverDir, 'config')).existsSync();
+        expect(
+          configDir,
+          isTrue,
+          reason: 'Config directory should exist but it was not found.',
+        );
+      });
+
+      test('then the project contains a deploy directory', () {
+        var deployDir =
+            Directory(path.join(tempPath, serverDir, 'deploy')).existsSync();
+        expect(
+          deployDir,
+          isTrue,
+          reason: 'Deploy directory should exist but it was not found.',
+        );
+      });
+
+      test('then the project contains a web directory', () {
+        var webDir =
+            Directory(path.join(tempPath, serverDir, 'web')).existsSync();
+        expect(
+          webDir,
+          isTrue,
+          reason: 'Web directory should exist but it was not found.',
+        );
+      });
+
+      test('then the project contains a dockerfile', () {
+        var dockerFile =
+            File(path.join(tempPath, serverDir, 'Dockerfile')).existsSync();
+        expect(
+          dockerFile,
+          isTrue,
+          reason: 'Dockerfile should exist but it was not found.',
+        );
+      });
+
+      test('then the project contains a docker-compose.yaml file', () {
+        var dockerComposeFile =
+            File(path.join(tempPath, serverDir, 'docker-compose.yaml'))
+                .existsSync();
+        expect(
+          dockerComposeFile,
+          isTrue,
+          reason: 'docker-compose.yml should exist but it was not found.',
+        );
+      });
+
+      test('then the project contains a .gcloudignore file', () {
+        var gcloudIgnoreFile =
+            File(path.join(tempPath, serverDir, '.gcloudignore')).existsSync();
+        expect(
+          gcloudIgnoreFile,
+          isTrue,
+          reason: '.gcloudignore should exist but it was not found.',
+        );
+      });
+    });
+  });
+
+  group('Given a clean state', () {
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+    final serverDir = createServerFolderPath(projectName);
+    late Process createProcess;
+    tearDown(() async {
+      createProcess.kill();
+
+      await runProcess(
+        'docker',
+        ['compose', 'down', '-v'],
+        workingDirectory: commandRoot,
+        skipBatExtentionOnWindows: true,
+      );
+
+      while (!await isNetworkPortAvailable(8090));
+    });
+
+    test(
+        'when creating a new project with the mini template and upgrading it to a full project then the tests are passing.',
+        () async {
+      createProcess = await startProcess(
+        'serverpod',
+        ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
+        workingDirectory: tempPath,
+        environment: {
+          'SERVERPOD_HOME': rootPath,
+        },
+      );
 
       var createProjectExitCode = await createProcess.exitCode;
       expect(
@@ -257,7 +362,7 @@ void main() async {
         reason: 'Failed to create the serverpod project.',
       );
 
-      var upgradeProcess = await Process.start(
+      var upgradeProcess = await startProcess(
         'serverpod',
         ['create', '--template', 'server', '.', '-v', '--no-analytics'],
         workingDirectory: path.join(tempPath, serverDir),
@@ -266,99 +371,67 @@ void main() async {
         },
       );
 
-      upgradeProcess.stdout.transform(Utf8Decoder()).listen(print);
-      upgradeProcess.stderr.transform(Utf8Decoder()).listen(print);
-
       var upgradeProjectExitCode = await upgradeProcess.exitCode;
       expect(
         upgradeProjectExitCode,
         0,
-        reason: 'Failed to create the serverpod project.',
+        reason: 'Failed to upgrade the serverpod project.',
       );
 
-      var configDir =
-          Directory(path.join(tempPath, serverDir, 'config')).existsSync();
-      expect(
-        configDir,
-        isTrue,
-        reason: 'Config directory should exist but it was not found.',
+      final docker = await startProcess(
+        'docker',
+        ['compose', 'up', '--build', '--detach'],
+        workingDirectory: commandRoot,
+        ignorePlatform: true,
       );
 
-      var deployDir =
-          Directory(path.join(tempPath, serverDir, 'deploy')).existsSync();
+      var dockerExitCode = await docker.exitCode;
+
       expect(
-        deployDir,
-        isTrue,
-        reason: 'Deploy directory should exist but it was not found.',
+        dockerExitCode,
+        0,
+        reason: 'Docker with postgres failed to start.',
       );
 
-      var webDir =
-          Directory(path.join(tempPath, serverDir, 'web')).existsSync();
-      expect(
-        webDir,
-        isTrue,
-        reason: 'Web directory should exist but it was not found.',
+      var testProcess = await runProcess(
+        'dart',
+        ['test'],
+        workingDirectory:
+            path.join(tempPath, projectName, "${projectName}_server"),
       );
 
-      var dockerFile =
-          File(path.join(tempPath, serverDir, 'Dockerfile')).existsSync();
-      expect(
-        dockerFile,
-        isTrue,
-        reason: 'Dockerfile should exist but it was not found.',
+      expect(testProcess.exitCode, 0, reason: 'Tests are failing.');
+    },
+        skip: Platform.isWindows
+            ? 'Windows does not support postgres docker image in github actions'
+            : null);
+  });
+
+  group('Given a created mini project', () {
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+
+    setUp(() async {
+      var createProcess = await runProcess(
+        'serverpod',
+        ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
+        workingDirectory: tempPath,
+        environment: {
+          'SERVERPOD_HOME': rootPath,
+        },
+      );
+      assert((await createProcess.exitCode) == 0);
+    });
+
+    test('when running tests then example unit and integration tests passes',
+        () async {
+      var testProcess = await runProcess(
+        'dart',
+        ['test'],
+        workingDirectory:
+            path.join(tempPath, projectName, "${projectName}_server"),
       );
 
-      var dockerComposeFile =
-          File(path.join(tempPath, serverDir, 'docker-compose.yaml'))
-              .existsSync();
-      expect(
-        dockerComposeFile,
-        isTrue,
-        reason: 'docker-compose.yml should exist but it was not found.',
-      );
-
-      var gcloudIgnoreFile =
-          File(path.join(tempPath, serverDir, '.gcloudignore')).existsSync();
-      expect(
-        gcloudIgnoreFile,
-        isTrue,
-        reason: '.gcloudignore should exist but it was not found.',
-      );
+      expect(testProcess.exitCode, 0);
     });
   });
-
-  tearDownAll(() async {
-    try {
-      await Process.run(
-        'rm',
-        ['-rf', tempDirName],
-        workingDirectory: rootPath,
-      );
-    } catch (e) {}
-  });
-}
-
-(String, String) createRandomProjectName(String root) {
-  final projectName = 'test_${Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-  final commandRoot = path.join(root, projectName, '${projectName}_server');
-
-  return (projectName, commandRoot);
-}
-
-(String, String, String) createProjectFolderPaths(String projectName) {
-  final serverDir = path.join(projectName, '${projectName}_server');
-  final flutterDir = path.join(projectName, '${projectName}_flutter');
-  final clientDir = path.join(projectName, '${projectName}_client');
-
-  return (serverDir, flutterDir, clientDir);
-}
-
-Future<bool> isNetworkPortAvailable(int port) async {
-  try {
-    var socket = await ServerSocket.bind(InternetAddress.anyIPv4, port);
-    await socket.close();
-    return true;
-  } catch (e) {
-    return false;
-  }
 }

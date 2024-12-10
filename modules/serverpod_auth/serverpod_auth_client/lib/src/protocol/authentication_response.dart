@@ -1,15 +1,17 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'protocol.dart' as _i2;
+import 'user_info.dart' as _i2;
+import 'authentication_fail_reason.dart' as _i3;
 
 /// Provides a response to an authentication attempt.
 abstract class AuthenticationResponse implements _i1.SerializableModel {
@@ -26,7 +28,7 @@ abstract class AuthenticationResponse implements _i1.SerializableModel {
     String? key,
     int? keyId,
     _i2.UserInfo? userInfo,
-    _i2.AuthenticationFailReason? failReason,
+    _i3.AuthenticationFailReason? failReason,
   }) = _AuthenticationResponseImpl;
 
   factory AuthenticationResponse.fromJson(
@@ -41,7 +43,7 @@ abstract class AuthenticationResponse implements _i1.SerializableModel {
               (jsonSerialization['userInfo'] as Map<String, dynamic>)),
       failReason: jsonSerialization['failReason'] == null
           ? null
-          : _i2.AuthenticationFailReason.fromJson(
+          : _i3.AuthenticationFailReason.fromJson(
               (jsonSerialization['failReason'] as int)),
     );
   }
@@ -61,14 +63,14 @@ abstract class AuthenticationResponse implements _i1.SerializableModel {
 
   /// Reason for a failed authentication attempt, only set if the authentication
   /// failed.
-  _i2.AuthenticationFailReason? failReason;
+  _i3.AuthenticationFailReason? failReason;
 
   AuthenticationResponse copyWith({
     bool? success,
     String? key,
     int? keyId,
     _i2.UserInfo? userInfo,
-    _i2.AuthenticationFailReason? failReason,
+    _i3.AuthenticationFailReason? failReason,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -95,7 +97,7 @@ class _AuthenticationResponseImpl extends AuthenticationResponse {
     String? key,
     int? keyId,
     _i2.UserInfo? userInfo,
-    _i2.AuthenticationFailReason? failReason,
+    _i3.AuthenticationFailReason? failReason,
   }) : super._(
           success: success,
           key: key,
@@ -118,7 +120,7 @@ class _AuthenticationResponseImpl extends AuthenticationResponse {
       keyId: keyId is int? ? keyId : this.keyId,
       userInfo:
           userInfo is _i2.UserInfo? ? userInfo : this.userInfo?.copyWith(),
-      failReason: failReason is _i2.AuthenticationFailReason?
+      failReason: failReason is _i3.AuthenticationFailReason?
           ? failReason
           : this.failReason,
     );

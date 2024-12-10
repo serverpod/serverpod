@@ -2,7 +2,7 @@
 
 // ignore_for_file: library_private_types_in_public_api, no_leading_underscores_for_local_identifiers, use_string_in_part_of_directives
 
-part of list_bucket_result;
+part of 'list_bucket_result.dart';
 
 // **************************************************************************
 // BuiltValueGenerator

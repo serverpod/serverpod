@@ -6,6 +6,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/database/migrations/migrations.dart';
 import 'package:serverpod/src/database/migrations/repair_migrations.dart';
+import 'package:serverpod/src/database/migrations/table_comparison_warning.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../extensions.dart';
@@ -64,8 +65,11 @@ class MigrationManager {
         warnings.add('Table "${table.name}" is missing.');
         continue;
       }
-      if (!liveTable.like(table)) {
-        warnings.add('Table "${table.name}" is not like the target database.');
+      var mismatches = liveTable.like(table).asStringList();
+
+      if (mismatches.isNotEmpty) {
+        warnings.add(
+            'Table "${table.name}" is not like the target database:\n - ${mismatches.join('\n - ')}');
         continue;
       }
     }

@@ -52,6 +52,9 @@ class ValidateNode {
   /// will be used as a parent node for all nested nodes, in the context object.
   bool isContextualParentNode;
 
+  /// If true, the node is hidden and will not be added to `validKeys`
+  bool isHidden;
+
   ValidateNode(
     this.key, {
     this.isRequired = false,
@@ -65,6 +68,7 @@ class ValidateNode {
     this.allowEmptyNestedValue = false,
     this.nested = const {},
     this.isContextualParentNode = false,
+    this.isHidden = false,
   }) {
     if (allowStringifiedNestedValue.isAllowed && nested.isEmpty) {
       throw ArgumentError(

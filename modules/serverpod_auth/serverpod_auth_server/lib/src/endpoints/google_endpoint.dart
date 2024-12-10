@@ -149,7 +149,15 @@ class GoogleEndpoint extends Endpoint {
       }
 
       var data = jsonDecode(response.body);
-      if (data['iss'] != 'accounts.google.com') {
+      if (data is! Map<String, dynamic>) {
+        session.log('Token not a JSON map object', level: LogLevel.error);
+        return AuthenticationResponse(
+          success: false,
+          failReason: AuthenticationFailReason.invalidCredentials,
+        );
+      }
+      if (!(data['iss'] == 'accounts.google.com' ||
+          data['iss'] == 'https://accounts.google.com')) {
         session.log('Invalid token received', level: LogLevel.debug);
         return AuthenticationResponse(
           success: false,

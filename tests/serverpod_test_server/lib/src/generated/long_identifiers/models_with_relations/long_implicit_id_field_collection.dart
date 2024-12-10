@@ -1,24 +1,25 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../protocol.dart' as _i2;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
+import '../../long_identifiers/models_with_relations/long_implicit_id_field.dart'
+    as _i2;
 
-abstract class LongImplicitIdFieldCollection extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class LongImplicitIdFieldCollection
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   LongImplicitIdFieldCollection._({
-    int? id,
+    this.id,
     required this.name,
     this.thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
-  }) : super(id);
+  });
 
   factory LongImplicitIdFieldCollection({
     int? id,
@@ -45,6 +46,9 @@ abstract class LongImplicitIdFieldCollection extends _i1.TableRow
   static final t = LongImplicitIdFieldCollectionTable();
 
   static const db = LongImplicitIdFieldCollectionRepository._();
+
+  @override
+  int? id;
 
   String name;
 
@@ -149,7 +153,8 @@ class _LongImplicitIdFieldCollectionImpl extends LongImplicitIdFieldCollection {
               ? thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
               : this
                   .thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
-                  ?.clone(),
+                  ?.map((e0) => e0.copyWith())
+                  .toList(),
     );
   }
 }
@@ -440,8 +445,9 @@ class LongImplicitIdFieldCollectionAttachRepository {
   Future<void> thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
     _i1.Session session,
     LongImplicitIdFieldCollection longImplicitIdFieldCollection,
-    List<_i2.LongImplicitIdField> longImplicitIdField,
-  ) async {
+    List<_i2.LongImplicitIdField> longImplicitIdField, {
+    _i1.Transaction? transaction,
+  }) async {
     if (longImplicitIdField.any((e) => e.id == null)) {
       throw ArgumentError.notNull('longImplicitIdField.id');
     }
@@ -462,6 +468,7 @@ class LongImplicitIdFieldCollectionAttachRepository {
         _i2.LongImplicitIdField.t
             .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id
       ],
+      transaction: transaction,
     );
   }
 }
@@ -472,8 +479,9 @@ class LongImplicitIdFieldCollectionAttachRowRepository {
   Future<void> thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
     _i1.Session session,
     LongImplicitIdFieldCollection longImplicitIdFieldCollection,
-    _i2.LongImplicitIdField longImplicitIdField,
-  ) async {
+    _i2.LongImplicitIdField longImplicitIdField, {
+    _i1.Transaction? transaction,
+  }) async {
     if (longImplicitIdField.id == null) {
       throw ArgumentError.notNull('longImplicitIdField.id');
     }
@@ -492,6 +500,7 @@ class LongImplicitIdFieldCollectionAttachRowRepository {
         _i2.LongImplicitIdField.t
             .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id
       ],
+      transaction: transaction,
     );
   }
 }
@@ -501,8 +510,9 @@ class LongImplicitIdFieldCollectionDetachRepository {
 
   Future<void> thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
     _i1.Session session,
-    List<_i2.LongImplicitIdField> longImplicitIdField,
-  ) async {
+    List<_i2.LongImplicitIdField> longImplicitIdField, {
+    _i1.Transaction? transaction,
+  }) async {
     if (longImplicitIdField.any((e) => e.id == null)) {
       throw ArgumentError.notNull('longImplicitIdField.id');
     }
@@ -520,6 +530,7 @@ class LongImplicitIdFieldCollectionDetachRepository {
         _i2.LongImplicitIdField.t
             .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id
       ],
+      transaction: transaction,
     );
   }
 }
@@ -529,8 +540,9 @@ class LongImplicitIdFieldCollectionDetachRowRepository {
 
   Future<void> thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
     _i1.Session session,
-    _i2.LongImplicitIdField longImplicitIdField,
-  ) async {
+    _i2.LongImplicitIdField longImplicitIdField, {
+    _i1.Transaction? transaction,
+  }) async {
     if (longImplicitIdField.id == null) {
       throw ArgumentError.notNull('longImplicitIdField.id');
     }
@@ -545,6 +557,7 @@ class LongImplicitIdFieldCollectionDetachRowRepository {
         _i2.LongImplicitIdField.t
             .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id
       ],
+      transaction: transaction,
     );
   }
 }

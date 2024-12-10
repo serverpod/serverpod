@@ -1,14 +1,14 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
-library protocol; // ignore_for_file: no_leading_underscores_for_library_prefixes
-
+// ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
 import 'apple_auth_info.dart' as _i3;
@@ -776,52 +776,64 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i16.UserSettingsConfig) {
       return 'UserSettingsConfig';
     }
+    className = _i2.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod.$className';
+    }
     return null;
   }
 
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
-    if (data['className'] == 'AppleAuthInfo') {
+    var dataClassName = data['className'];
+    if (dataClassName is! String) {
+      return super.deserializeByClassName(data);
+    }
+    if (dataClassName == 'AppleAuthInfo') {
       return deserialize<_i3.AppleAuthInfo>(data['data']);
     }
-    if (data['className'] == 'AuthKey') {
+    if (dataClassName == 'AuthKey') {
       return deserialize<_i4.AuthKey>(data['data']);
     }
-    if (data['className'] == 'AuthenticationFailReason') {
+    if (dataClassName == 'AuthenticationFailReason') {
       return deserialize<_i5.AuthenticationFailReason>(data['data']);
     }
-    if (data['className'] == 'AuthenticationResponse') {
+    if (dataClassName == 'AuthenticationResponse') {
       return deserialize<_i6.AuthenticationResponse>(data['data']);
     }
-    if (data['className'] == 'EmailAuth') {
+    if (dataClassName == 'EmailAuth') {
       return deserialize<_i7.EmailAuth>(data['data']);
     }
-    if (data['className'] == 'EmailCreateAccountRequest') {
+    if (dataClassName == 'EmailCreateAccountRequest') {
       return deserialize<_i8.EmailCreateAccountRequest>(data['data']);
     }
-    if (data['className'] == 'EmailFailedSignIn') {
+    if (dataClassName == 'EmailFailedSignIn') {
       return deserialize<_i9.EmailFailedSignIn>(data['data']);
     }
-    if (data['className'] == 'EmailPasswordReset') {
+    if (dataClassName == 'EmailPasswordReset') {
       return deserialize<_i10.EmailPasswordReset>(data['data']);
     }
-    if (data['className'] == 'EmailReset') {
+    if (dataClassName == 'EmailReset') {
       return deserialize<_i11.EmailReset>(data['data']);
     }
-    if (data['className'] == 'GoogleRefreshToken') {
+    if (dataClassName == 'GoogleRefreshToken') {
       return deserialize<_i12.GoogleRefreshToken>(data['data']);
     }
-    if (data['className'] == 'UserImage') {
+    if (dataClassName == 'UserImage') {
       return deserialize<_i13.UserImage>(data['data']);
     }
-    if (data['className'] == 'UserInfo') {
+    if (dataClassName == 'UserInfo') {
       return deserialize<_i14.UserInfo>(data['data']);
     }
-    if (data['className'] == 'UserInfoPublic') {
+    if (dataClassName == 'UserInfoPublic') {
       return deserialize<_i15.UserInfoPublic>(data['data']);
     }
-    if (data['className'] == 'UserSettingsConfig') {
+    if (dataClassName == 'UserSettingsConfig') {
       return deserialize<_i16.UserSettingsConfig>(data['data']);
+    }
+    if (dataClassName.startsWith('serverpod.')) {
+      data['className'] = dataClassName.substring(10);
+      return _i2.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }

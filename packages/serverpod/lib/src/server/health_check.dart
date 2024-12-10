@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:serverpod/src/server/features.dart';
+import 'package:serverpod/src/server/serverpod.dart';
 
 import '../../serverpod.dart';
 import '../generated/protocol.dart';
@@ -51,10 +52,7 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
         number: rnd,
       );
 
-      var session = await pod.createSession(enableLogging: false);
-      entry = await ReadWriteTestEntry.db.insertRow(session, entry);
-
-      await session.close();
+      entry = await ReadWriteTestEntry.db.insertRow(pod.internalSession, entry);
 
       // Verify random number
       dbHealthy = entry.number == rnd;

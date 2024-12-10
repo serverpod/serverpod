@@ -1,25 +1,25 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../../protocol.dart' as _i2;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
+import '../../../models_with_relations/self_relation/many_to_many/blocking.dart'
+    as _i2;
 
-abstract class Member extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class Member implements _i1.TableRow, _i1.ProtocolSerialization {
   Member._({
-    int? id,
+    this.id,
     required this.name,
     this.blocking,
     this.blockedBy,
-  }) : super(id);
+  });
 
   factory Member({
     int? id,
@@ -44,6 +44,9 @@ abstract class Member extends _i1.TableRow
   static final t = MemberTable();
 
   static const db = MemberRepository._();
+
+  @override
+  int? id;
 
   String name;
 
@@ -146,11 +149,12 @@ class _MemberImpl extends Member {
     return Member(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      blocking:
-          blocking is List<_i2.Blocking>? ? blocking : this.blocking?.clone(),
+      blocking: blocking is List<_i2.Blocking>?
+          ? blocking
+          : this.blocking?.map((e0) => e0.copyWith()).toList(),
       blockedBy: blockedBy is List<_i2.Blocking>?
           ? blockedBy
-          : this.blockedBy?.clone(),
+          : this.blockedBy?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -461,8 +465,9 @@ class MemberAttachRepository {
   Future<void> blocking(
     _i1.Session session,
     Member member,
-    List<_i2.Blocking> blocking,
-  ) async {
+    List<_i2.Blocking> blocking, {
+    _i1.Transaction? transaction,
+  }) async {
     if (blocking.any((e) => e.id == null)) {
       throw ArgumentError.notNull('blocking.id');
     }
@@ -475,14 +480,16 @@ class MemberAttachRepository {
     await session.db.update<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedById],
+      transaction: transaction,
     );
   }
 
   Future<void> blockedBy(
     _i1.Session session,
     Member member,
-    List<_i2.Blocking> blocking,
-  ) async {
+    List<_i2.Blocking> blocking, {
+    _i1.Transaction? transaction,
+  }) async {
     if (blocking.any((e) => e.id == null)) {
       throw ArgumentError.notNull('blocking.id');
     }
@@ -495,6 +502,7 @@ class MemberAttachRepository {
     await session.db.update<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedId],
+      transaction: transaction,
     );
   }
 }
@@ -505,8 +513,9 @@ class MemberAttachRowRepository {
   Future<void> blocking(
     _i1.Session session,
     Member member,
-    _i2.Blocking blocking,
-  ) async {
+    _i2.Blocking blocking, {
+    _i1.Transaction? transaction,
+  }) async {
     if (blocking.id == null) {
       throw ArgumentError.notNull('blocking.id');
     }
@@ -518,14 +527,16 @@ class MemberAttachRowRepository {
     await session.db.updateRow<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedById],
+      transaction: transaction,
     );
   }
 
   Future<void> blockedBy(
     _i1.Session session,
     Member member,
-    _i2.Blocking blocking,
-  ) async {
+    _i2.Blocking blocking, {
+    _i1.Transaction? transaction,
+  }) async {
     if (blocking.id == null) {
       throw ArgumentError.notNull('blocking.id');
     }
@@ -537,6 +548,7 @@ class MemberAttachRowRepository {
     await session.db.updateRow<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedId],
+      transaction: transaction,
     );
   }
 }

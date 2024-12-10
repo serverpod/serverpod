@@ -13,6 +13,18 @@ import 'adapters/postgres/database_connection.dart';
 import 'concepts/expressions.dart';
 import 'concepts/table.dart';
 
+/// Extension to only expose the [Database] constructor
+/// internally within the Serverpod package.
+extension DatabaseConstructor on Database {
+  /// Creates a new [Database] object.
+  static Database create({
+    required Session session,
+    required DatabasePoolManager poolManager,
+  }) {
+    return Database._(session: session, poolManager: poolManager);
+  }
+}
+
 /// Provides easy access to the database in relation to the current [Session].
 class Database {
   final Session _session;
@@ -21,8 +33,10 @@ class Database {
 
   /// Creates a new [Database] object. Typically, this is done automatically
   /// when a [Session] is created.
-  Database({required Session session, required DatabasePoolManager poolManager})
-      : _session = session,
+  Database._({
+    required Session session,
+    required DatabasePoolManager poolManager,
+  })  : _session = session,
         _databaseConnection = DatabaseConnection(poolManager);
 
   /// Find a list of [TableRow]s from a table, using the provided [where]
@@ -47,7 +61,8 @@ class Database {
       orderBy: orderBy,
       orderByList: orderByList,
       orderDescending: orderDescending,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
       include: include,
     );
   }
@@ -69,7 +84,8 @@ class Database {
       orderBy: orderBy,
       orderByList: orderByList,
       orderDescending: orderDescending,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
       include: include,
     );
   }
@@ -86,7 +102,8 @@ class Database {
     return _databaseConnection.findById<T>(
       _session,
       id,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
       include: include,
     );
   }
@@ -105,7 +122,8 @@ class Database {
       _session,
       rows,
       columns: columns,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
     );
   }
 
@@ -121,7 +139,8 @@ class Database {
       _session,
       row,
       columns: columns,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
     );
   }
 
@@ -135,7 +154,8 @@ class Database {
     return _databaseConnection.insert<T>(
       _session,
       rows,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
     );
   }
 
@@ -147,7 +167,8 @@ class Database {
     return _databaseConnection.insertRow<T>(
       _session,
       row,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
     );
   }
 
@@ -161,7 +182,8 @@ class Database {
     return _databaseConnection.delete<T>(
       _session,
       rows,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
     );
   }
 
@@ -173,7 +195,8 @@ class Database {
     return await _databaseConnection.deleteRow<T>(
       _session,
       row,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
     );
   }
 
@@ -185,7 +208,8 @@ class Database {
     return _databaseConnection.deleteWhere<T>(
       _session,
       where,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
     );
   }
 
@@ -201,7 +225,8 @@ class Database {
       _session,
       where: where,
       limit: limit,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
     );
   }
 
@@ -220,7 +245,8 @@ class Database {
       _session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
       parameters: parameters,
     );
   }
@@ -240,7 +266,8 @@ class Database {
       _session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
       parameters: parameters,
     );
   }
@@ -262,7 +289,8 @@ class Database {
       _session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
     );
   }
 
@@ -282,14 +310,20 @@ class Database {
       _session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
     );
   }
 
   /// Executes a [Transaction].
-  Future<R> transaction<R>(TransactionFunction<R> transactionFunction) async {
+  Future<R> transaction<R>(
+    TransactionFunction<R> transactionFunction, {
+    TransactionSettings? settings,
+  }) async {
     return await _databaseConnection.transaction(
       transactionFunction,
+      settings: settings ?? const TransactionSettings(),
+      session: _session,
     );
   }
 

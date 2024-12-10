@@ -7,6 +7,7 @@ authentication:
   - createUser:
   - authenticate:
   - signOut:
+  - updateScopes:
 basicTypes:
   - testInt:
   - testDouble:
@@ -44,6 +45,9 @@ customTypes:
   - returnExternalCustomClassNullable:
   - returnFreezedCustomClass:
   - returnFreezedCustomClassNullable:
+  - returnCustomClassWithoutProtocolSerialization:
+  - returnCustomClassWithProtocolSerialization:
+  - returnCustomClassWithProtocolSerializationMethod:
 basicDatabase:
   - deleteAllSimpleTestData:
   - deleteSimpleTestDataLessThan:
@@ -73,6 +77,12 @@ basicDatabase:
 transactionsDatabase:
   - removeRow:
   - updateInsertDelete:
+deprecation:
+  - setGlobalDouble:
+  - getGlobalDouble:
+echoRequest:
+  - echoAuthenticationKey:
+  - echoHttpHeader:
 emailAuthTestMethods:
   - findVerificationCode:
   - findResetCode:
@@ -119,6 +129,7 @@ listParameters:
   - returnDurationListNullableDurations:
 logging:
   - slowQueryMethod:
+  - queryMethod:
   - failedQueryMethod:
   - slowMethod:
   - failingMethod:
@@ -127,6 +138,12 @@ logging:
   - logInfo:
   - logDebugAndInfoAndError:
   - twoQueries:
+  - streamEmpty:
+  - streamLogging:
+  - streamQueryLogging:
+  - streamException:
+streamLogging:
+streamQueryLogging:
 loggingDisabled:
   - logInfo:
 mapParameters:
@@ -154,12 +171,31 @@ mapParameters:
   - returnNullableSimpleDataMapNullableSimpleData:
   - returnDurationMap:
   - returnDurationMapNullableDurations:
+methodSignaturePermutations:
+  - echoPositionalArg:
+  - echoNamedArg:
+  - echoNullableNamedArg:
+  - echoOptionalArg:
+  - echoPositionalAndNamedArgs:
+  - echoPositionalAndNullableNamedArgs:
+  - echoPositionalAndOptionalArgs:
+  - echoNamedArgStream:
+  - echoNamedArgStreamAsFuture:
+  - echoPositionalArgStream:
+  - echoPositionalArgStreamAsFuture:
 methodStreaming:
   - simpleStream:
+  - neverEndingStreamWithDelay:
   - methodCallEndpoint:
   - intReturnFromStream:
+  - nullableIntReturnFromStream:
+  - getBroadcastStream:
+  - wasBroadcastStreamCanceled:
+  - wasSessionWillCloseListenerCalled:
   - intStreamFromValue:
   - intEchoStream:
+  - dynamicEchoStream:
+  - nullableIntEchoStream:
   - voidReturnAfterStream:
   - multipleIntEchoStreams:
   - directVoidReturnWithStreamInput:
@@ -170,7 +206,6 @@ methodStreaming:
   - simpleInOutDataStream:
   - simpleEndpoint:
   - intParameter:
-  - nullableResponse:
   - doubleInputValue:
   - delayedResponse:
   - delayedStreamResponse:
@@ -181,14 +216,19 @@ methodStreaming:
   - inStreamThrowsSerializableException:
   - outStreamThrowsException:
   - outStreamThrowsSerializableException:
+  - throwsExceptionVoid:
+  - throwsSerializableExceptionVoid:
   - throwsException:
   - throwsSerializableException:
   - throwsExceptionStream:
+  - exceptionThrownBeforeStreamReturn:
+  - exceptionThrownInStreamReturn:
   - throwsSerializableExceptionStream:
   - didInputStreamHaveError:
   - didInputStreamHaveSerializableExceptionError:
 authenticatedMethodStreaming:
   - simpleStream:
+  - intEchoStream:
 moduleSerialization:
   - serializeModuleObject:
   - modifyModuleObject:
@@ -209,6 +249,8 @@ redis:
   - countSubscribedChannels:
 serverOnlyScopedFieldModel:
   - getScopeServerOnlyField:
+serverOnlyScopedFieldChildModel:
+  - getProtocolField:
 signInRequired:
   - testMethod:
 adminScopeRequired:
@@ -224,3 +266,35 @@ subSubDirTest:
   - testMethod:
 subDirTest:
   - testMethod:
+testTools:
+  - returnsSessionId:
+  - returnsSessionEndpointAndMethod:
+  - returnsSessionIdFromStream:
+  - returnsSessionEndpointAndMethodFromStream:
+  - returnsString:
+  - returnsStream:
+  - returnsListFromInputStream:
+  - returnsSimpleDataListFromInputStream:
+  - returnsStreamFromInputStream:
+  - returnsSimpleDataStreamFromInputStream:
+  - postNumberToSharedStream:
+  - postNumberToSharedStreamAndReturnStream:
+  - listenForNumbersOnSharedStream:
+  - createSimpleData:
+  - getAllSimpleData:
+  - createSimpleDatasInsideTransactions:
+  - createSimpleDataAndThrowInsideTransaction:
+  - createSimpleDatasInParallelTransactionCalls:
+  - echoSimpleData:
+  - echoSimpleDatas:
+  - logMessageWithSession:
+  - addWillCloseListenerToSessionAndThrow:
+  - addWillCloseListenerToSessionIntStreamMethodAndThrow:
+authenticatedTestTools:
+  - returnsString:
+  - returnsStream:
+  - returnsListFromInputStream:
+  - intEchoStream:
+myFeature:
+  - myFeatureMethod:
+  - myFeatureModel:

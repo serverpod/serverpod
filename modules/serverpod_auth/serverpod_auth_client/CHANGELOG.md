@@ -1,3 +1,105 @@
+## 2.3.0-beta.1
+- feat: Adds support for transaction isolation levels.
+- feat: Adds typed interface for transaction savepoints.
+- feat: Adds support for endpoint definition placement anywhere in server's `src` directory.
+- feat: Adds support for model definitions placement anywhere in server's `src` directory.
+- fix: Improves message transmission guarantee in method streams.
+- chore: Update `vm_service` dependency range.
+
+## 2.2.2
+ - fix: Fixes possible import issue in generated code when the same model name is used in different modules.
+
+## 2.2.1
+ - fix: Fixes an issue where invalid Dart import paths would be generated on Windows.
+
+## 2.2.0
+ - feat: Improves Serverpod startup and lifecycle events logging.
+ - feat: Adds full support for testing framework.
+ - feat: Adds configuration for controlling log output location.
+ - feat: Adds support for signing out a user from a single device.
+ - feat: EXPERIMENTAL. Adds support for inheritance in models.
+ - feat: EXPERIMENTAL. Adds support for sealed classes in models.
+ - fix: Only reports invalid Dart endpoint definition files when using `--watch`.
+ - fix: Uses direct model import when protocol files are analyzed.
+ - fix: Removes redundant file collection from code generation.
+ - fix: Fixes error in `serverpod generate` when a `Session` is set as a named required parameter.
+ - fix: Responds with 400 when throwing serializable exceptions.
+ - fix: Correctly removes account requests after an account is created (auth module).
+ - fix: Passes `String` instead of `Error` object to logger in `session.close`.
+ - fix: Replaces `null` assert with error check in `WebWidget`.
+
+## 2.1.5
+ - feat: EXPERIMENTAL. Adds testing framework. [docs](https://docs.serverpod.dev/next/concepts/testing/get-started)
+ - fix: Correctly handles method and endpoint streams for modules.
+ - fix: Correctly handles errors in method streams.
+
+## 2.1.4
+ - feat: Adds detailed reporting for schema mismatches when checking database consistency.
+ - fix: Takes current transaction into account for include queries.
+ - fix: Loads passwords from env variables even if the `passwords.yaml` file doesn't exist.
+ - fix: Corrects type mismatch in `onTimeout` callback for cancelled subscriptions in `MethodStreamManager.closeAllStreams` method.
+ - fix: Correctly returns HTTP 400 error code if parameters passed to Serverpod are incorrect.
+
+## 2.1.3
+ - fix: Includes Dockerfile for Serverpod Mini projects.
+
+## 2.1.2
+ - fix: Supports updating full user name in auth module.
+ - fix: Adds missing transaction parameter in `deleteWhere` query.
+ - fix: Correctly preserves non-persisted fields during database insert and update operations.
+ - fix: Allows event listeners to remove themselves inside their handler.
+ - fix: Correctly checks settings before letting a user change name or image in auth module.
+
+## 2.1.1
+ - fix: Posts revoked authentication events locally if Redis is disabled.
+ - fix: Uses `dynamic` type for `fromJson` parameter in custom class serialization.
+
+## 2.1.0
+ - feat: Adds DevTools extension.
+ - feat: Adds support for `Stream` as parameters and return type in endpoint methods.
+ - feat: Adds stream subscriptions to message central.
+ - feat: Adds support for `willClose` listener on `Session`.
+ - feat: Adds support for default values in model files (types supported are `String`, `int`, `double`, `bool`, `DateTime`, `UuidValue`, `Duration`, enums)
+ - feat: Adds support for WASM compiled web apps.
+ - feat: Endpoint methods with `@Deprecated` annotation are now also annotated in the client.
+ - feat: Allows custom password hash generator in `AuthConfig`.
+ - feat: Allows rewrite rule in root path in static web directories.
+ - feat: Improves error handling in `SignInWithGoogle` by rethrowing exceptions.
+ - feat: Adds support for nullable types in `encodeWithType` and `decodeWithType`.
+ - feat: Adds `Uuid` identifier to sessions.
+ - feat: Supports configuration through environment variables instead of yaml.
+ - feat: Models can now be created without fields.
+ - feat: Adds ability to register custom environment variables to loaded as passwords.
+ - feat: Adds ability to modify `maxFileSize` and expiration time for GCP and AWS buckets.
+ - feat: Moves the auth key from the body of the request to the HTTP header in endpoint methods.
+ - feat: When sending a HTTP 400 Bad Request error message to the client, an error message may now be included in the client side exception.
+ - fix: Allows Serverpod defined models to be encoded and decoded with type.
+ - fix: Allows AWS deployments to update Dart version.
+ - fix: Fixes top error handling on server's request handler to ensure proper error boundary.
+ - fix: Fixes `copyWith` method for nested `List` and `Map` in models.
+ - fix: Fixes Dart version and other issues in AWS deployment templates.
+ - fix: Improved error message if there are missing tables.
+ - fix: Better error message if an error occurs when parsing the config files in CLI.
+ - fix: Adds validation of custom class names to look for potential collisions.
+ - fix: Only considers positional `Session` parameter when validating endpoint method.
+ - fix: Updates example documentation. 
+ - fix: Before a session is closed, all logging is now awaited.
+ - fix: Adds new `WebCallSession` for Relic.
+ - fix: Correctly verifies `iss` value for all possible domains in Sign in with Google.
+ - fix: Add `methodName` and `endpointName` to base session class.
+ - fix: Handles malformed web server URI parameters more gracefully.
+ - fix: Uses `text` as `KeyboardType` for validation code in `SignInWithEmailDialog`.
+ - fix: Correctly orders logs in Insights.
+ - fix: Correctly strips data in serialization of `List` and `Map`.
+ - fix: Starts database pool manager on Serverpod instance creation.
+ - fix: Adds mechanism for awaiting pending future calls on shutdown.
+ - fix: Improvements to websocket lifecycle.
+ - fix: Registers cloud storage endpoint for any `storageId` with `db` storage.
+ - fix: Adds logging for when when uploads to buckets fail.
+ - fix: Removes redundant and non-prefixed `serverpod_serialization` import.
+ - fix: Sets the default authentication handler even when the database is disabled.
+ - chore: Updates dependencies.
+
 ## 2.0.2
 - fix: Conditionally imports `HttpStatus` to improve compatibility.
 - fix: Improve `encodeForProtocol` method for `List` and `Map` input object types.

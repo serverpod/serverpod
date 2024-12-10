@@ -5,6 +5,7 @@ import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.d
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/default.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/validate_node.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 class ClassYamlDefinition {
@@ -25,9 +26,27 @@ class ClassYamlDefinition {
         valueRestriction: restrictions.validateClassName,
       ),
       ValidateNode(
+        Keyword.isSealed,
+        valueRestriction: BooleanValueRestriction().validate,
+        mutuallyExclusiveKeys: {
+          Keyword.table,
+        },
+        isHidden: !restrictions.config
+            .isExperimentalFeatureEnabled(ExperimentalFeature.inheritance),
+      ),
+      ValidateNode(
+        Keyword.extendsClass,
+        valueRestriction: restrictions.validateExtendingClassName,
+        isHidden: !restrictions.config
+            .isExperimentalFeatureEnabled(ExperimentalFeature.inheritance),
+      ),
+      ValidateNode(
         Keyword.table,
         keyRestriction: restrictions.validateTableNameKey,
         valueRestriction: restrictions.validateTableName,
+        mutuallyExclusiveKeys: {
+          Keyword.isSealed,
+        },
       ),
       ValidateNode(
         Keyword.managedMigration,
@@ -39,7 +58,7 @@ class ClassYamlDefinition {
       ),
       ValidateNode(
         Keyword.fields,
-        isRequired: true,
+        isRequired: false,
         nested: {
           ValidateNode(
             Keyword.any,

@@ -5,8 +5,8 @@ import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/caches.dart';
-import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/database.dart';
+import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
@@ -44,14 +44,17 @@ class Server {
       throw ArgumentError('Database config not set');
     }
 
-    return Database(session: session, poolManager: databasePoolManager);
+    return DatabaseConstructor.create(
+      session: session,
+      poolManager: databasePoolManager,
+    );
   }
 
   /// The [SerializationManager] used by the server.
   final SerializationManager serializationManager;
 
   /// [AuthenticationHandler] responsible for authenticating users.
-  final AuthenticationHandler? authenticationHandler;
+  final AuthenticationHandler authenticationHandler;
 
   /// Caches used by the server.
   final Caches caches;
@@ -70,7 +73,7 @@ class Server {
   /// True if the server is currently running.
   bool get running => _running;
 
-  late final HttpServer _httpServer;
+  late HttpServer _httpServer;
 
   /// The [HttpServer] responsible for handling calls.
   HttpServer get httpServer => _httpServer;
@@ -101,7 +104,7 @@ class Server {
     required DatabasePoolManager? databasePoolManager,
     required this.passwords,
     required this.runMode,
-    this.authenticationHandler,
+    required this.authenticationHandler,
     String? name,
     required this.caches,
     this.securityContext,
@@ -164,15 +167,7 @@ class Server {
           'received request: ${request.method} ${request.uri.path}',
         );
 
-        try {
-          _handleRequest(request);
-        } catch (e, stackTrace) {
-          stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. _handleRequest failed.',
-          );
-          stderr.writeln('$e');
-          stderr.writeln('$stackTrace');
-        }
+        _handleRequestWithErrorBoundary(request);
       }
     } catch (e, stackTrace) {
       stderr.writeln(
@@ -184,8 +179,24 @@ class Server {
     stdout.writeln('$name stopped');
   }
 
+  void _handleRequestWithErrorBoundary(HttpRequest request) async {
+    // [Future.sync] ensures no synchronous error is accidentally thrown from the handler
+    // https://dart.dev/libraries/async/futures-error-handling#solution-using-future-sync-to-wrap-your-code
+    await Future.sync(() {
+      return _handleRequest(request);
+    }).catchError((e, stackTrace) async {
+      stderr.writeln(
+        '${DateTime.now().toUtc()} Internal server error. _handleRequest failed with exception.',
+      );
+      stderr.writeln('$e');
+      stderr.writeln('$stackTrace');
+      request.response.statusCode = HttpStatus.internalServerError;
+      return request.response.close();
+    });
+  }
+
   //TODO: encode analyze
-  void _handleRequest(HttpRequest request) async {
+  Future<void> _handleRequest(HttpRequest request) async {
     serverpod
         .logVerbose('handleRequest: ${request.method} ${request.uri.path}');
 
@@ -243,7 +254,7 @@ class Server {
     } else if (uri.path == '/v1/websocket') {
       await _dispatchWebSocketUpgradeRequest(
         request,
-        MethodWebsocketRequestHandler().handleWebsocket,
+        MethodWebsocketRequestHandler.handleWebsocket,
       );
       return;
     } else if (uri.path == '/serverpod_cloud_storage') {
@@ -265,24 +276,6 @@ class Server {
       return;
     }
 
-    // TODO: Limit check external calls
-//    bool checkLength = true;
-//    if (whitelistedExternalCalls != null && whitelistedExternalCalls.contains(uri.path))
-//      checkLength = false;
-//
-//    if (checkLength) {
-//      // Check size of the request
-//      int contentLength = request.contentLength;
-//      if (contentLength == -1 ||
-//          contentLength > serverpod.config.maxRequestSize) {
-//        if (serverpod.runtimeSettings.logMalformedCalls)
-//          logDebug('Malformed call, invalid content length ($contentLength): $uri');
-//        request.response.statusCode = HttpStatus.badRequest;
-//        request.response.close();
-//        return;
-//      }
-//    }
-
     String? body;
     if (readBody) {
       try {
@@ -302,13 +295,24 @@ class Server {
 
     var result = await _handleUriCall(uri, body!, request);
 
-    if (result is ResultInvalidParams) {
+    if (result is ResultNoSuchEndpoint) {
+      if (serverpod.runtimeSettings.logMalformedCalls) {
+        // TODO: Log to database?
+        stderr.writeln('Malformed call: $result');
+      }
+
+      request.response.statusCode = HttpStatus.notFound;
+      request.response.writeln(result.errorDescription);
+      await request.response.close();
+      return;
+    } else if (result is ResultInvalidParams) {
       if (serverpod.runtimeSettings.logMalformedCalls) {
         // TODO: Log to database?
         stderr.writeln('Malformed call: $result');
       }
 
       request.response.statusCode = HttpStatus.badRequest;
+      request.response.writeln(result.errorDescription);
       await request.response.close();
       return;
     } else if (result is ResultAuthenticationFailed) {
@@ -331,11 +335,14 @@ class Server {
       return;
     } else if (result is ResultStatusCode) {
       request.response.statusCode = result.statusCode;
+      if (result.message != null) {
+        request.response.writeln(result.message);
+      }
       await request.response.close();
       return;
     } else if (result is ExceptionResult) {
       request.response.headers.contentType = ContentType.json;
-      request.response.statusCode = HttpStatus.internalServerError;
+      request.response.statusCode = HttpStatus.badRequest;
 
       var serializedModel =
           serializationManager.encodeWithTypeForProtocol(result.model);
@@ -407,9 +414,132 @@ class Server {
   }
 
   Future<Result> _handleUriCall(
-      Uri uri, String body, HttpRequest request) async {
+    Uri uri,
+    String body,
+    HttpRequest request,
+  ) async {
     var path = uri.pathSegments.join('/');
-    return endpoints.handleUriCall(this, path, uri, body, request);
+    var endpointComponents = path.split('.');
+    if (endpointComponents.isEmpty || endpointComponents.length > 2) {
+      return ResultInvalidParams('Endpoint $path is not a valid endpoint name');
+    }
+
+    // Read query parameters
+    var queryParameters = <String, dynamic>{};
+    var isValidBody = body != 'null' && body.isNotEmpty;
+    if (isValidBody) {
+      try {
+        queryParameters = jsonDecode(body);
+      } catch (_) {
+        return ResultInvalidParams('Invalid JSON in body: $body');
+      }
+    }
+
+    // Add query parameters from uri
+    queryParameters.addAll(uri.queryParameters);
+
+    String endpointName;
+    String methodName;
+
+    if (path.contains('/')) {
+      // Using the new path format (for OpenAPI)
+      var pathComponents = path.split('/');
+      endpointName = pathComponents[0];
+      methodName = pathComponents[1];
+    } else {
+      // Using the standard format with query parameters
+      endpointName = path;
+      var method = queryParameters['method'];
+      if (method is String) {
+        methodName = method;
+      } else {
+        return ResultInvalidParams(
+          'No method name specified in call to $endpointName',
+        );
+      }
+    }
+
+    // Get the the authentication key, if any
+    // If it is provided in the HTTP authorization header we use that,
+    // otherwise we look for it in the query parameters (the old method).
+    var authHeaderValue =
+        request.headers.value(HttpHeaders.authorizationHeader);
+    String? authenticationKey;
+    try {
+      authenticationKey = unwrapAuthHeaderValue(authHeaderValue);
+    } on AuthHeaderEncodingException catch (_) {
+      return ResultStatusCode(
+        400,
+        'Request has invalid "authorization" header: $authHeaderValue',
+      );
+    }
+    authenticationKey ??= queryParameters['auth'];
+
+    MethodCallSession? maybeSession;
+    try {
+      var methodCallContext = await endpoints.getMethodCallContext(
+        createSessionCallback: (connector) {
+          maybeSession = MethodCallSession(
+            server: this,
+            uri: uri,
+            body: body,
+            path: path,
+            httpRequest: request,
+            method: methodName,
+            endpoint: endpointName,
+            queryParameters: queryParameters,
+            authenticationKey: authenticationKey,
+            enableLogging: connector.endpoint.logSessions,
+          );
+          return maybeSession!;
+        },
+        endpointPath: endpointName,
+        methodName: methodName,
+        parameters: queryParameters,
+        serializationManager: serializationManager,
+      );
+
+      MethodCallSession? session = maybeSession;
+      if (session == null) {
+        return ResultInternalServerError(
+            'Session was not created', StackTrace.current, 0);
+      }
+
+      var result = await methodCallContext.method.call(
+        session,
+        methodCallContext.arguments,
+      );
+
+      return ResultSuccess(
+        result,
+        sendByteDataAsRaw: methodCallContext.endpoint.sendByteDataAsRaw,
+      );
+    } on MethodNotFoundException catch (e) {
+      return ResultInvalidParams(e.message);
+    } on InvalidEndpointMethodTypeException catch (e) {
+      return ResultInvalidParams(e.message);
+    } on EndpointNotFoundException catch (e) {
+      return ResultNoSuchEndpoint(e.message);
+    } on NotAuthorizedException catch (e) {
+      return e.authenticationFailedResult;
+    } on InvalidParametersException catch (e) {
+      return ResultInvalidParams(e.message);
+    } on SerializableException catch (exception) {
+      return ExceptionResult(model: exception);
+    } on Exception catch (e, stackTrace) {
+      var sessionLogId =
+          await maybeSession?.close(error: e, stackTrace: stackTrace);
+      return ResultInternalServerError(
+          e.toString(), stackTrace, sessionLogId ?? 0);
+    } catch (e, stackTrace) {
+      // Something did not work out
+      var sessionLogId =
+          await maybeSession?.close(error: e, stackTrace: stackTrace);
+      return ResultInternalServerError(
+          e.toString(), stackTrace, sessionLogId ?? 0);
+    } finally {
+      await maybeSession?.close();
+    }
   }
 
   /// Shuts the server down.

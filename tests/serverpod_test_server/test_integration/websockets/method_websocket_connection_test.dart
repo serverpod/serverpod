@@ -48,6 +48,7 @@ void main() {
         endpoint: endpoint,
         method: 'intEchoStream',
         args: {},
+        inputStreams: ['stream'],
         connectionId: const Uuid().v4obj(),
       ));
     });
@@ -90,6 +91,7 @@ void main() {
         endpoint: endpoint,
         method: 'delayedStreamResponse',
         args: {'delay': 20},
+        inputStreams: [],
         connectionId: const Uuid().v4obj(),
       ));
     });
@@ -132,6 +134,7 @@ void main() {
         endpoint: endpoint,
         method: 'delayedPausedInputStream',
         args: {'delay': 20},
+        inputStreams: ['stream'],
         connectionId: const Uuid().v4obj(),
       ));
     });

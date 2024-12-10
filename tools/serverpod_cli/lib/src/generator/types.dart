@@ -2,7 +2,7 @@ import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
@@ -24,6 +24,10 @@ class TypeDefinition {
 
   final String? url;
 
+  /// Populated if type is a model that is defined in the project. I.e. not a
+  /// module or serverpod model.
+  final SerializableModelDefinition? projectModelDefinition;
+
   /// Whether this type is nullable.
   final bool nullable;
 
@@ -32,7 +36,7 @@ class TypeDefinition {
   /// True if this type references a custom class.
   final bool customClass;
 
-  EnumSerialization? serializeEnum;
+  EnumDefinition? enumDefinition;
 
   TypeDefinition({
     required this.className,
@@ -41,7 +45,8 @@ class TypeDefinition {
     this.url,
     this.dartType,
     this.customClass = false,
-    this.serializeEnum,
+    this.enumDefinition,
+    this.projectModelDefinition,
   });
 
   bool get isSerializedValue => autoSerializedTypes.contains(className);
@@ -64,7 +69,7 @@ class TypeDefinition {
   bool get isModuleType =>
       url == 'serverpod' || (url?.startsWith(_moduleRef) ?? false);
 
-  bool get isEnumType => serializeEnum != null;
+  bool get isEnumType => enumDefinition != null;
 
   String? get moduleAlias {
     if (url == defaultModuleAlias) return url;
@@ -135,7 +140,8 @@ class TypeDefinition {
         customClass: customClass,
         dartType: dartType,
         generics: generics,
-        serializeEnum: serializeEnum,
+        enumDefinition: enumDefinition,
+        projectModelDefinition: projectModelDefinition,
       );
 
   /// Get this [TypeDefinition], but non nullable.
@@ -146,8 +152,19 @@ class TypeDefinition {
         customClass: customClass,
         dartType: dartType,
         generics: generics,
-        serializeEnum: serializeEnum,
+        enumDefinition: enumDefinition,
+        projectModelDefinition: projectModelDefinition,
       );
+
+  static String getRef(SerializableModelDefinition model) {
+    if (model is ClassDefinition) {
+      var sealedTopNode = model.sealedTopNode;
+      if (sealedTopNode != null) {
+        return sealedTopNode.fileRef();
+      }
+    }
+    return model.fileRef();
+  }
 
   /// Generate a [TypeReference] from this definition.
   TypeReference reference(
@@ -188,8 +205,16 @@ class TypeDefinition {
               '/${split[1]}';
         } else if (url == defaultModuleAlias) {
           // protocol: reference
-          t.url = p.posix
-              .joinAll([...subDirParts.map((e) => '..'), 'protocol.dart']);
+          var localProjectModelDefinition = projectModelDefinition;
+          String reference = switch (localProjectModelDefinition) {
+            // Import model directly
+            SerializableModelDefinition modelDefinition =>
+              getRef(modelDefinition),
+            // Import model through generated protocol file
+            null => 'protocol.dart',
+          };
+
+          t.url = p.posix.joinAll([...subDirParts.map((e) => '..'), reference]);
         } else if (!serverCode &&
             (url?.startsWith('package:${config.serverPackage}') ?? false)) {
           // import from the server package
@@ -227,7 +252,7 @@ class TypeDefinition {
   /// Get the pgsql type that represents this [TypeDefinition] in the database.
   String get databaseType {
     // TODO: add all supported types here
-    var enumSerialization = serializeEnum;
+    var enumSerialization = enumDefinition?.serialized;
     if (enumSerialization != null && isEnumType) {
       switch (enumSerialization) {
         case EnumSerialization.byName:
@@ -408,20 +433,25 @@ class TypeDefinition {
   /// protocol: prefix in types. Whenever no url is set and user specified a
   /// class/enum with the same symbol name it defaults to the protocol: prefix.
   TypeDefinition applyProtocolReferences(
-      List<SerializableModelDefinition> classDefinitions) {
+    List<SerializableModelDefinition> classDefinitions,
+  ) {
+    var modelDefinition = classDefinitions
+        .where((c) => c.className == className)
+        .where((c) => c.moduleAlias == defaultModuleAlias)
+        .firstOrNull;
+    bool isProjectModel =
+        url == defaultModuleAlias || (url == null && modelDefinition != null);
     return TypeDefinition(
         className: className,
         nullable: nullable,
         customClass: customClass,
         dartType: dartType,
+        projectModelDefinition: isProjectModel ? modelDefinition : null,
         generics: generics
             .map((e) => e.applyProtocolReferences(classDefinitions))
             .toList(),
-        serializeEnum: serializeEnum,
-        url:
-            url == null && classDefinitions.any((c) => c.className == className)
-                ? defaultModuleAlias
-                : url);
+        enumDefinition: enumDefinition,
+        url: isProjectModel ? defaultModuleAlias : url);
   }
 
   /// converts '[className]' string value to [ValueType]
@@ -446,6 +476,20 @@ class TypeDefinition {
     switch (valueType) {
       case ValueType.dateTime:
         return DefaultValueAllowedType.dateTime;
+      case ValueType.bool:
+        return DefaultValueAllowedType.bool;
+      case ValueType.int:
+        return DefaultValueAllowedType.int;
+      case ValueType.double:
+        return DefaultValueAllowedType.double;
+      case ValueType.string:
+        return DefaultValueAllowedType.string;
+      case ValueType.uuidValue:
+        return DefaultValueAllowedType.uuidValue;
+      case ValueType.duration:
+        return DefaultValueAllowedType.duration;
+      case ValueType.isEnum:
+        return DefaultValueAllowedType.isEnum;
       default:
         return null;
     }
@@ -476,7 +520,7 @@ TypeDefinition parseType(
   if (start != -1 && end != -1) {
     var internalTypes = trimmedInput.substring(start + 1, end);
 
-    var genericsInputs = splitIgnoringBrackets(internalTypes);
+    var genericsInputs = splitIgnoringBracketsAndQuotes(internalTypes);
 
     generics = genericsInputs
         .map((generic) => parseType(generic, extraClasses: extraClasses))
@@ -540,4 +584,11 @@ enum ValueType {
 
 enum DefaultValueAllowedType {
   dateTime,
+  bool,
+  int,
+  double,
+  string,
+  uuidValue,
+  duration,
+  isEnum,
 }

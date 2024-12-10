@@ -1,21 +1,22 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class EmptyModelRelationItem extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class EmptyModelRelationItem
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   EmptyModelRelationItem._({
-    int? id,
+    this.id,
     required this.name,
-  }) : super(id);
+  });
 
   factory EmptyModelRelationItem({
     int? id,
@@ -34,9 +35,12 @@ abstract class EmptyModelRelationItem extends _i1.TableRow
 
   static const db = EmptyModelRelationItemRepository._();
 
+  @override
+  int? id;
+
   String name;
 
-  int? _emptyModelItemsEmptyModelId;
+  int? _relationEmptyModelItemsRelationEmptyModelId;
 
   @override
   _i1.Table get table => t;
@@ -50,8 +54,9 @@ abstract class EmptyModelRelationItem extends _i1.TableRow
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (_emptyModelItemsEmptyModelId != null)
-        '_emptyModelItemsEmptyModelId': _emptyModelItemsEmptyModelId,
+      if (_relationEmptyModelItemsRelationEmptyModelId != null)
+        '_relationEmptyModelItemsRelationEmptyModelId':
+            _relationEmptyModelItemsRelationEmptyModelId,
     };
   }
 
@@ -120,7 +125,7 @@ class EmptyModelRelationItemImplicit extends _EmptyModelRelationItemImpl {
   EmptyModelRelationItemImplicit._({
     int? id,
     required String name,
-    this.$_emptyModelItemsEmptyModelId,
+    this.$_relationEmptyModelItemsRelationEmptyModelId,
   }) : super(
           id: id,
           name: name,
@@ -128,22 +133,25 @@ class EmptyModelRelationItemImplicit extends _EmptyModelRelationItemImpl {
 
   factory EmptyModelRelationItemImplicit(
     EmptyModelRelationItem emptyModelRelationItem, {
-    int? $_emptyModelItemsEmptyModelId,
+    int? $_relationEmptyModelItemsRelationEmptyModelId,
   }) {
     return EmptyModelRelationItemImplicit._(
       id: emptyModelRelationItem.id,
       name: emptyModelRelationItem.name,
-      $_emptyModelItemsEmptyModelId: $_emptyModelItemsEmptyModelId,
+      $_relationEmptyModelItemsRelationEmptyModelId:
+          $_relationEmptyModelItemsRelationEmptyModelId,
     );
   }
 
-  int? $_emptyModelItemsEmptyModelId;
+  int? $_relationEmptyModelItemsRelationEmptyModelId;
 
   @override
   Map<String, dynamic> toJson() {
     var jsonMap = super.toJson();
-    jsonMap.addAll(
-        {'_emptyModelItemsEmptyModelId': $_emptyModelItemsEmptyModelId});
+    jsonMap.addAll({
+      '_relationEmptyModelItemsRelationEmptyModelId':
+          $_relationEmptyModelItemsRelationEmptyModelId
+    });
     return jsonMap;
   }
 }
@@ -155,21 +163,21 @@ class EmptyModelRelationItemTable extends _i1.Table {
       'name',
       this,
     );
-    $_emptyModelItemsEmptyModelId = _i1.ColumnInt(
-      '_emptyModelItemsEmptyModelId',
+    $_relationEmptyModelItemsRelationEmptyModelId = _i1.ColumnInt(
+      '_relationEmptyModelItemsRelationEmptyModelId',
       this,
     );
   }
 
   late final _i1.ColumnString name;
 
-  late final _i1.ColumnInt $_emptyModelItemsEmptyModelId;
+  late final _i1.ColumnInt $_relationEmptyModelItemsRelationEmptyModelId;
 
   @override
   List<_i1.Column> get columns => [
         id,
         name,
-        $_emptyModelItemsEmptyModelId,
+        $_relationEmptyModelItemsRelationEmptyModelId,
       ];
 }
 

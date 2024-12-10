@@ -1,9 +1,8 @@
-import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:serverpod/src/authentication/authentication_info.dart';
 import 'package:serverpod/src/authentication/scope.dart';
+import 'package:serverpod/src/server/endpoint_parameter_helper.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'endpoint.dart';
@@ -52,99 +51,144 @@ abstract class EndpointDispatch {
     return connector;
   }
 
+  /// Tries to get a [MethodStreamCallContext] for a given endpoint and method name.
+  /// If the method is not found, a [MethodNotFoundException] is thrown.
+  /// If the endpoint is not found, an [EndpointNotFoundException] is thrown.
+  /// If the user is not authorized to access the endpoint, a [NotAuthorizedException] is thrown.
+  /// If the input parameters are invalid, an [InvalidParametersException] is thrown.
+  /// If the found method is not a [MethodStreamConnector], an [InvalidEndpointMethodTypeException] is thrown.
+  Future<MethodStreamCallContext> getMethodStreamCallContext({
+    required Session Function(EndpointConnector connector)
+        createSessionCallback,
+    required String endpointPath,
+    required String methodName,
+    required Map<String, dynamic> arguments,
+    required SerializationManager serializationManager,
+    required List<String> requestedInputStreams,
+  }) async {
+    var (methodConnector, endpoint, parsedArguments) =
+        await _getEndpointMethodConnector(
+      createSessionCallback: createSessionCallback,
+      endpointPath: endpointPath,
+      methodName: methodName,
+      arguments: arguments,
+      serializationManager: serializationManager,
+    );
+
+    if (methodConnector is! MethodStreamConnector) {
+      throw InvalidEndpointMethodTypeException(methodName, endpointPath);
+    }
+
+    List<StreamParameterDescription> inputStreams = parseRequestedInputStreams(
+      descriptions: methodConnector.streamParams,
+      requestedInputStreams: requestedInputStreams,
+    );
+
+    return MethodStreamCallContext(
+      method: methodConnector,
+      arguments: parsedArguments,
+      inputStreams: inputStreams,
+      endpoint: endpoint,
+      fullEndpointPath: endpointPath,
+    );
+  }
+
+  /// Tries to get an [EndpointConnector] for a given endpoint and method name.
+  /// If the endpoint is not found, an [EndpointNotFoundException] is thrown.
+  /// If the user is not authorized to access the endpoint, a [NotAuthorizedException] is thrown.
+  Future<EndpointConnector> getEndpointConnector({
+    required Session session,
+    required String endpointPath,
+  }) async {
+    return _getEndpointConnector(endpointPath, (_) => session);
+  }
+
+  /// Tries to get a [MethodCallContext] for a given endpoint and method name.
+  /// If the method is not found, a [MethodNotFoundException] is thrown.
+  /// If the endpoint is not found, an [EndpointNotFoundException] is thrown.
+  /// If the user is not authorized to access the endpoint, a [NotAuthorizedException] is thrown.
+  /// If the input parameters are invalid, an [InvalidParametersException] is thrown.
+  /// If the found method is not a [MethodConnector], an [InvalidEndpointMethodTypeException] is thrown.
+  Future<MethodCallContext> getMethodCallContext({
+    required Session Function(EndpointConnector connector)
+        createSessionCallback,
+    required String endpointPath,
+    required String methodName,
+    required Map<String, dynamic> parameters,
+    required SerializationManager serializationManager,
+  }) async {
+    var (methodConnector, endpoint, parsedArguments) =
+        await _getEndpointMethodConnector(
+      createSessionCallback: createSessionCallback,
+      endpointPath: endpointPath,
+      methodName: methodName,
+      arguments: parameters,
+      serializationManager: serializationManager,
+    );
+
+    if (methodConnector is! MethodConnector) {
+      throw InvalidEndpointMethodTypeException(methodName, endpointPath);
+    }
+
+    return MethodCallContext(
+      method: methodConnector,
+      arguments: parsedArguments,
+      endpoint: endpoint,
+    );
+  }
+
+  Future<(EndpointMethodConnector, Endpoint, Map<String, dynamic>)>
+      _getEndpointMethodConnector({
+    required Session Function(EndpointConnector connector)
+        createSessionCallback,
+    required String endpointPath,
+    required String methodName,
+    required Map<String, dynamic> arguments,
+    required SerializationManager serializationManager,
+  }) async {
+    var endpointConnector =
+        await _getEndpointConnector(endpointPath, createSessionCallback);
+
+    var methodConnector = endpointConnector.methodConnectors[methodName];
+    if (methodConnector == null) {
+      throw MethodNotFoundException(
+          'Method "$methodName" not found in endpoint: $endpointPath');
+    }
+
+    var parsedArguments = parseParameters(
+      arguments,
+      methodConnector.params,
+      serializationManager,
+    );
+
+    return (methodConnector, endpointConnector.endpoint, parsedArguments);
+  }
+
+  Future<EndpointConnector> _getEndpointConnector(
+      String endpointPath,
+      Session Function(EndpointConnector connector)
+          createSessionCallback) async {
+    var connector = getConnectorByName(endpointPath);
+    if (connector == null) {
+      throw EndpointNotFoundException('Endpoint $endpointPath not found');
+    }
+
+    var session = createSessionCallback(connector);
+
+    var authenticationFailedResult = await canUserAccessEndpoint(
+      () => session.authenticated,
+      connector.endpoint.requireLogin,
+      connector.endpoint.requiredScopes,
+    );
+    if (authenticationFailedResult != null) {
+      throw NotAuthorizedException(authenticationFailedResult);
+    }
+    return connector;
+  }
+
   String _endpointFromName(String name) {
     var components = name.split('/');
     return components[0];
-  }
-
-  /// Dispatches a call to the [Server] to the correct [Endpoint] method. If
-  /// successful, it returns the object from the method. If unsuccessful it will
-  /// return a [Result] object.
-  Future<Result> handleUriCall(
-    Server server,
-    String path,
-    Uri uri,
-    String body,
-    HttpRequest request,
-  ) async {
-    var endpointComponents = path.split('.');
-    if (endpointComponents.isEmpty || endpointComponents.length > 2) {
-      return ResultInvalidParams('Endpoint $path is not a valid endpoint name');
-    }
-
-    // Find correct connector
-    var connector = getConnectorByName(path);
-    if (connector == null) {
-      return ResultInvalidParams('Endpoint $path does not exist');
-    }
-
-    MethodCallSession session;
-
-    try {
-      session = MethodCallSession(
-        server: server,
-        uri: uri,
-        body: body,
-        path: path,
-        httpRequest: request,
-        enableLogging: connector.endpoint.logSessions,
-      );
-    } catch (e) {
-      return ResultInvalidParams('Malformed call: $uri');
-    }
-
-    var methodName = session.methodName;
-    var inputParams = session.queryParameters;
-
-    try {
-      var endpoint = connector.endpoint;
-      var authFailed = await canUserAccessEndpoint(
-        () => session.authenticated,
-        endpoint.requireLogin,
-        endpoint.requiredScopes,
-      );
-      if (authFailed != null) {
-        return authFailed;
-      }
-
-      var method = connector.methodConnectors[methodName];
-      if (method is! MethodConnector) {
-        await session.close();
-        return ResultInvalidParams(
-            'Method $methodName not found in call: $uri');
-      }
-
-      // TODO: Check parameters and check null safety
-
-      var paramMap = <String, dynamic>{};
-      for (var paramName in inputParams.keys) {
-        var type = method.params[paramName]?.type;
-        if (type == null) continue;
-        var formatted = _formatArg(
-            inputParams[paramName], type, server.serializationManager);
-        paramMap[paramName] = formatted;
-      }
-
-      var result = await method.call(session, paramMap);
-
-      return ResultSuccess(
-        result,
-        sendByteDataAsRaw: connector.endpoint.sendByteDataAsRaw,
-      );
-    } on SerializableException catch (exception) {
-      return ExceptionResult(model: exception);
-    } on Exception catch (e, stackTrace) {
-      var sessionLogId = await session.close(error: e, stackTrace: stackTrace);
-      return ResultInternalServerError(
-          e.toString(), stackTrace, sessionLogId ?? 0);
-    } catch (e, stackTrace) {
-      // Something did not work out
-      var sessionLogId = await session.close(error: e, stackTrace: stackTrace);
-      return ResultInternalServerError(
-          e.toString(), stackTrace, sessionLogId ?? 0);
-    } finally {
-      await session.close();
-    }
   }
 
   /// Checks if a user can access an [Endpoint]. If access is granted null is
@@ -179,45 +223,25 @@ abstract class EndpointDispatch {
     return null;
   }
 
-  dynamic _formatArg(
-      dynamic input, Type type, SerializationManager serializationManager) {
-    return serializationManager.deserialize(input, type);
-  }
-
-  /// Parses query parameters from a string into a map of parameters formatted
-  /// according to the provided [ParameterDescription]s.
+  /// Parses a list of requested input stream parameter descriptions and returns
+  /// a list of stream parameter descriptions.
   ///
-  /// Throws an exception if required parameters are missing or if the
-  /// paramString can't be jsonDecoded.
-  static Map<String, dynamic> parseParameters(
-    String? paramString,
-    Map<String, ParameterDescription> descriptions,
-    SerializationManager serializationManager, {
-    Map<String, dynamic> additionalParameters = const {},
+  /// Throws an exception if a required input stream parameter is missing.
+  static List<StreamParameterDescription> parseRequestedInputStreams({
+    required Map<String, StreamParameterDescription> descriptions,
+    required List<String> requestedInputStreams,
   }) {
-    if (descriptions.isEmpty) return {};
-
-    var decodedParams = paramString == null
-        ? {}
-        : jsonDecode(paramString) as Map<String, dynamic>;
-    decodedParams.addAll(additionalParameters);
-
-    var deserializedParams = <String, dynamic>{};
+    var streamDescriptions = <StreamParameterDescription>[];
     for (var description in descriptions.values) {
-      var name = description.name;
-      var serializedParam = decodedParams[name];
-
-      if (serializedParam != null) {
-        deserializedParams[name] = serializationManager.deserialize(
-          serializedParam,
-          description.type,
-        );
+      if (requestedInputStreams.contains(description.name)) {
+        streamDescriptions.add(description);
       } else if (!description.nullable) {
-        throw Exception('Missing required query parameter: $name');
+        throw InvalidParametersException(
+            'Missing required stream parameter: ${description.name}');
       }
     }
 
-    return deserializedParams;
+    return streamDescriptions;
   }
 }
 
@@ -255,7 +279,10 @@ abstract class EndpointMethodConnector {
   final Map<String, ParameterDescription> params;
 
   /// Creates a new [EndpointMethodConnector].
-  EndpointMethodConnector({required this.name, required this.params});
+  EndpointMethodConnector({
+    required this.name,
+    required this.params,
+  });
 }
 
 /// The [MethodConnector] hooks up a method with its name and the actual call
@@ -274,6 +301,52 @@ class MethodConnector extends EndpointMethodConnector {
     required super.params,
     required this.call,
     this.returnsVoid,
+  });
+}
+
+/// Context for a [MethodConnector] call
+class MethodCallContext {
+  /// The method to call.
+  final MethodConnector method;
+
+  /// The arguments to pass to the method.
+  final Map<String, dynamic> arguments;
+
+  /// The endpoint the method is called on.
+  final Endpoint endpoint;
+
+  /// Creates a new [MethodCallContext].
+  MethodCallContext({
+    required this.method,
+    required this.arguments,
+    required this.endpoint,
+  });
+}
+
+/// Context for a [MethodStreamConnector] call
+class MethodStreamCallContext {
+  /// The method to call.
+  final MethodStreamConnector method;
+
+  /// The arguments to pass to the method.
+  final Map<String, dynamic> arguments;
+
+  /// The endpoint the method is called on.
+  final Endpoint endpoint;
+
+  /// The full path to the endpoint, including module.
+  final String fullEndpointPath;
+
+  /// The input streams to pass to the method.
+  final List<StreamParameterDescription> inputStreams;
+
+  /// Creates a new [MethodStreamCallContext].
+  MethodStreamCallContext({
+    required this.method,
+    required this.arguments,
+    required this.inputStreams,
+    required this.endpoint,
+    required this.fullEndpointPath,
   });
 }
 
@@ -381,6 +454,87 @@ class ResultInvalidParams extends Result {
   }
 }
 
+/// The result of a failed [Endpoint] method call where the
+/// endpoint was not found.
+class ResultNoSuchEndpoint extends Result {
+  /// Description of the error.
+  final String errorDescription;
+
+  /// Creates a new [ResultNoSuchEndpoint] object.
+  ResultNoSuchEndpoint(this.errorDescription);
+
+  @override
+  String toString() {
+    return errorDescription;
+  }
+}
+
+/// The result of a failed [EndpointDispatch.getMethodStreamCallContext],
+/// [EndpointDispatch.getMethodCallContext] or [EndpointDispatch.getEndpointConnector] call.
+abstract class EndpointDispatchException implements Exception {
+  /// Description of the error.
+  String get message;
+
+  @override
+  String toString() {
+    return 'Endpoint dispatch error: $message';
+  }
+}
+
+/// The user is not authorized to access the endpoint.
+class NotAuthorizedException extends EndpointDispatchException {
+  @override
+  String message;
+
+  /// The result of the failed authentication.
+  ResultAuthenticationFailed authenticationFailedResult;
+
+  /// Creates a new [NotAuthorizedException].
+  NotAuthorizedException(this.authenticationFailedResult,
+      {this.message = 'Not authorized'});
+}
+
+/// The endpoint was not found.
+class EndpointNotFoundException extends EndpointDispatchException {
+  @override
+  String message = 'Endpoint not found';
+
+  /// Creates a new [EndpointNotFoundException].
+  EndpointNotFoundException(this.message);
+}
+
+/// The endpoint method was not found.
+class MethodNotFoundException extends EndpointDispatchException {
+  @override
+  String message = 'Method not found';
+
+  /// Creates a new [MethodNotFoundException].
+  MethodNotFoundException(this.message);
+}
+
+/// The found endpoint method was not of the expected type.
+class InvalidEndpointMethodTypeException extends EndpointDispatchException {
+  @override
+  String get message =>
+      'Endpoint method $_methodName in $_endpointPath is not of the expected type.';
+
+  final String _methodName;
+  final String _endpointPath;
+
+  /// Creates a new [InvalidEndpointMethodTypeException].
+
+  InvalidEndpointMethodTypeException(this._methodName, this._endpointPath);
+}
+
+/// The input parameters were invalid.
+class InvalidParametersException extends EndpointDispatchException {
+  @override
+  String message = 'Invalid parameters';
+
+  /// Creates a new [InvalidParametersException].
+  InvalidParametersException(this.message);
+}
+
 /// The type of failures that can occur during authentication.
 enum AuthenticationFailureReason {
   /// No valid authentication key was provided.
@@ -444,17 +598,21 @@ class ResultInternalServerError extends Result {
   }
 }
 
-/// The result of a failed [Endpoint] method call, with a custom status code.
+/// The result of a failed [Endpoint] method call, with a custom status code,
+/// and an optional message.
 class ResultStatusCode extends Result {
   /// The status code to be returned to the client.
   final int statusCode;
 
+  /// Message / description of the error.
+  final String? message;
+
   /// Creates a new [ResultStatusCode].
-  ResultStatusCode(this.statusCode);
+  ResultStatusCode(this.statusCode, [this.message]);
 
   @override
   String toString() {
-    return 'Status Code: $statusCode';
+    return 'Status Code: $statusCode${message != null ? ': $message' : ''}';
   }
 }
 

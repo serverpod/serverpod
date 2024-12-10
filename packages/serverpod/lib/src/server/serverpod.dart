@@ -34,6 +34,8 @@ typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
 class Serverpod {
   static Serverpod? _instance;
 
+  late Session _internalSession;
+
   DateTime? _startedTime;
 
   /// The time the [Serverpod] was started.
@@ -63,7 +65,10 @@ class Serverpod {
 
   /// The server configuration, as read from the config/ directory.
   late ServerpodConfig config;
+
   Map<String, String> _passwords = <String, String>{};
+
+  late PasswordManager _passwordManager;
 
   /// Custom [AuthenticationHandler] used to authenticate users.
   final AuthenticationHandler? authenticationHandler;
@@ -215,37 +220,33 @@ class Serverpod {
       );
     }
 
-    var session = await createSession(enableLogging: false);
     try {
-      var settings = await internal.RuntimeSettings.db.findFirstRow(session);
+      var settings =
+          await internal.RuntimeSettings.db.findFirstRow(internalSession);
       if (settings != null) {
         _updateLogSettings(settings);
       }
-      await session.close();
-    } catch (e, stackTrace) {
-      await session.close(error: e, stackTrace: stackTrace);
+    } catch (_) {
       return;
     }
   }
 
   Future<void> _storeRuntimeSettings(internal.RuntimeSettings settings) async {
-    var session = await createSession(enableLogging: false);
     try {
       var oldRuntimeSettings =
-          await internal.RuntimeSettings.db.findFirstRow(session);
+          await internal.RuntimeSettings.db.findFirstRow(internalSession);
       if (oldRuntimeSettings == null) {
         settings.id = null;
-        settings =
-            await internal.RuntimeSettings.db.insertRow(session, settings);
+        settings = await internal.RuntimeSettings.db
+            .insertRow(internalSession, settings);
       } else {
         settings.id = oldRuntimeSettings.id;
-        await internal.RuntimeSettings.db.updateRow(session, settings);
+        await internal.RuntimeSettings.db.updateRow(internalSession, settings);
       }
-    } catch (e, stackTrace) {
-      await session.close(error: e, stackTrace: stackTrace);
-      return;
+    } catch (error, stackTrace) {
+      logVerbose(error.toString());
+      logVerbose(stackTrace.toString());
     }
-    await session.close();
   }
 
   /// Currently not used.
@@ -290,16 +291,23 @@ class Serverpod {
     this.httpResponseHeaders = _defaultHttpResponseHeaders,
     this.httpOptionsResponseHeaders = _defaultHttpOptionsResponseHeaders,
   }) {
+    stdout.writeln(
+      'SERVERPOD version: $serverpodVersion, dart: ${Platform.version}, time: ${DateTime.now().toUtc()}',
+    );
+
     _instance = this;
     _internalSerializationManager = internal.Protocol();
 
     // Read command line arguments.
     commandLineArgs = CommandLineArgs(args);
+    stdout.writeln(commandLineArgs.toString());
+
     _runMode = commandLineArgs.runMode;
     serverId = commandLineArgs.serverId;
 
     // Load passwords
-    _passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
+    _passwordManager = PasswordManager(runMode: runMode);
+    _passwords = _passwordManager.loadPasswords();
 
     // Load config
     this.config = config ??
@@ -308,6 +316,8 @@ class Serverpod {
           serverId,
           _passwords,
         );
+    logVerbose(this.config.toString());
+
     Features(this.config);
 
     // Create a temporary log manager with default settings, until we have
@@ -355,11 +365,7 @@ class Serverpod {
       redisController,
     );
 
-    var authHandler = authenticationHandler;
-
-    if (Features.enableDefaultAuthenticationHandler) {
-      authHandler ??= defaultAuthenticationHandler;
-    }
+    var authHandler = authenticationHandler ?? defaultAuthenticationHandler;
 
     server = Server(
       serverpod: this,
@@ -377,6 +383,8 @@ class Serverpod {
       httpOptionsResponseHeaders: httpOptionsResponseHeaders,
     );
     endpoints.initializeEndpoints(server);
+
+    _internalSession = InternalSession(server: server, enableLogging: false);
 
     if (Features.enableFutureCalls) {
       _futureCallManager = FutureCallManager(
@@ -397,169 +405,184 @@ class Serverpod {
       _webServer = WebServer(serverpod: this);
     }
 
-    // Print version and runtime arguments.
-    stdout.writeln(
-      'SERVERPOD version: $serverpodVersion, dart: ${Platform.version}, time: ${DateTime.now().toUtc()}',
-    );
-    stdout.writeln(commandLineArgs.toString());
-    logVerbose(this.config.toString());
+    stdout.writeln('SERVERPOD initialized, time: ${DateTime.now().toUtc()}');
   }
 
   int _exitCode = 0;
 
   /// Starts the Serverpod and all [Server]s that it manages.
-  Future<void> start() async {
+  ///
+  /// If [runInGuardedZone] is set to true, the start function will be executed inside `runZonedGuarded`.
+  /// Any errors during the start up sequence will cause the process to exit.
+  /// Any runtime errors will be in their own error zone and will not crash the server.
+  /// If [runInGuardedZone] is set to false, the start function will be executed in the same error zone as the caller.
+  /// An [ExitException] will be thrown if the start up sequence fails.
+  Future<void> start({bool runInGuardedZone = true}) async {
     _startedTime = DateTime.now().toUtc();
 
-    await runZonedGuarded(() async {
-      // Register cloud store endpoint if we're using the database cloud store
-      if (storage['public'] is DatabaseCloudStorage ||
-          storage['private'] is DatabaseCloudStorage) {
-        CloudStoragePublicEndpoint().register(this);
+    void onZoneError(Object error, StackTrace stackTrace) {
+      if (error is ExitException) {
+        exit(error.exitCode);
       }
 
-      // It is important that we start the database pool manager before
-      // attempting to connect to the database.
-      _databasePoolManager?.start();
-
-      if (_databasePoolManager == null) {
-        _runtimeSettings = _defaultRuntimeSettings;
-      }
-
-      if (Features.enableMigrations) {
-        await _applyMigrations();
-      } else if (commandLineArgs.applyMigrations ||
-          commandLineArgs.applyRepairMigration) {
-        stderr.writeln(
-          'Migrations are disabled in this project, skipping applying migration(s).',
-        );
-        _exitCode = 1;
-      }
-
-      _updateLogSettings(_runtimeSettings ?? _defaultRuntimeSettings);
-
-      // Connect to Redis
-      if (Features.enableRedis) {
-        logVerbose('Connecting to Redis.');
-        await redisController?.start();
-      } else {
-        logVerbose('Redis is disabled, skipping.');
-      }
-
-      // Start servers.
-      if (commandLineArgs.role == ServerpodRole.monolith ||
-          commandLineArgs.role == ServerpodRole.serverless) {
-        var serversStarted = true;
-
-        // Serverpod Insights.
-        if (Features.enableInsights) {
-          if (_isValidSecret(config.serviceSecret)) {
-            serversStarted &= await _startInsightsServer();
-          } else {
-            stderr.write(
-              'Invalid serviceSecret in password file, Insights server disabled.',
-            );
-          }
-        }
-
-        // Main API server.
-        serversStarted &= await server.start();
-
-        /// Web server.
-        if (Features.enableWebServer(_webServer)) {
-          logVerbose('Starting web server.');
-          serversStarted &= await webServer.start();
-        } else {
-          logVerbose('Web server not configured, skipping.');
-        }
-
-        if (!serversStarted) {
-          _exitCode = 1;
-          stderr.writeln('Failed to start servers.');
-          exit(_exitCode);
-        }
-
-        logVerbose('All servers started.');
-      }
-
-      // Start maintenance tasks. If we are running in maintenance mode, we
-      // will only run the maintenance tasks once. If we are applying migrations
-      // no other maintenance tasks will be run.
-      var appliedMigrations = (commandLineArgs.applyMigrations |
-          commandLineArgs.applyRepairMigration);
-      if (commandLineArgs.role == ServerpodRole.monolith ||
-          (commandLineArgs.role == ServerpodRole.maintenance &&
-              !appliedMigrations)) {
-        logVerbose('Starting maintenance tasks.');
-
-        // Start future calls
-        _completedFutureCalls = _futureCallManager == null;
-        _futureCallManager?.start();
-
-        // Start health check manager
-        _completedHealthChecks = _healthCheckManager == null;
-        await _healthCheckManager?.start();
-      }
-
-      logVerbose('Serverpod start complete.');
-
-      if (commandLineArgs.role == ServerpodRole.maintenance &&
-          appliedMigrations) {
-        logVerbose('Finished applying database migrations.');
-        exit(_exitCode);
-      }
-    }, (e, stackTrace) {
       _exitCode = 1;
-      // Last resort error handling
-      // TODO: Log to database?
       stderr.writeln(
         '${DateTime.now().toUtc()} Internal server error. Zoned exception.',
       );
-      stderr.writeln('$e');
+      stderr.writeln('$error');
       stderr.writeln('$stackTrace');
-    });
+    }
+
+    if (runInGuardedZone) {
+      await runZonedGuarded(() async {
+        await _unguardedStart();
+      }, onZoneError);
+    } else {
+      await _unguardedStart();
+      if (_exitCode != 0) {
+        throw ExitException(_exitCode);
+      }
+    }
+  }
+
+  Future<void> _unguardedStart() async {
+    // Register cloud store endpoint if we're using the database cloud store
+    var hasDatabaseStorage = storage.entries.any(
+      (storage) => storage.value is DatabaseCloudStorage,
+    );
+
+    if (hasDatabaseStorage) {
+      CloudStoragePublicEndpoint().register(this);
+    }
+
+    // It is important that we start the database pool manager before
+    // attempting to connect to the database.
+    _databasePoolManager?.start();
+
+    if (_databasePoolManager == null) {
+      _runtimeSettings = _defaultRuntimeSettings;
+    }
+
+    if (Features.enableMigrations) {
+      await _applyMigrations();
+    } else if (commandLineArgs.applyMigrations ||
+        commandLineArgs.applyRepairMigration) {
+      stderr.writeln(
+        'Migrations are disabled in this project, skipping applying migration(s).',
+      );
+      _exitCode = 1;
+    }
+
+    _updateLogSettings(_runtimeSettings ?? _defaultRuntimeSettings);
+
+    // Connect to Redis
+    if (Features.enableRedis) {
+      logVerbose('Connecting to Redis.');
+      await redisController?.start();
+    } else {
+      logVerbose('Redis is disabled, skipping.');
+    }
+
+    // Start servers.
+    if (commandLineArgs.role == ServerpodRole.monolith ||
+        commandLineArgs.role == ServerpodRole.serverless) {
+      var serversStarted = true;
+
+      // Serverpod Insights.
+      if (Features.enableInsights) {
+        if (_isValidSecret(config.serviceSecret)) {
+          serversStarted &= await _startInsightsServer();
+        } else {
+          stderr.write(
+            'Invalid serviceSecret in password file, Insights server disabled.',
+          );
+        }
+      }
+
+      // Main API server.
+      serversStarted &= await server.start();
+
+      /// Web server.
+      if (Features.enableWebServer(_webServer)) {
+        logVerbose('Starting web server.');
+        serversStarted &= await webServer.start();
+      } else {
+        logVerbose('Web server not configured, skipping.');
+      }
+
+      if (!serversStarted) {
+        throw ExitException(
+          1,
+          'Failed to start the Serverpod servers, see logs for details.',
+        );
+      }
+
+      logVerbose('All servers started.');
+    }
+
+    // Start maintenance tasks. If we are running in maintenance mode, we
+    // will only run the maintenance tasks once. If we are applying migrations
+    // no other maintenance tasks will be run.
+    var appliedMigrations = (commandLineArgs.applyMigrations |
+        commandLineArgs.applyRepairMigration);
+    if (commandLineArgs.role == ServerpodRole.monolith ||
+        (commandLineArgs.role == ServerpodRole.maintenance &&
+            !appliedMigrations)) {
+      logVerbose('Starting maintenance tasks.');
+
+      // Start future calls
+      _completedFutureCalls = _futureCallManager == null;
+      _futureCallManager?.start();
+
+      // Start health check manager
+      _completedHealthChecks = _healthCheckManager == null;
+      await _healthCheckManager?.start();
+    }
+
+    logVerbose('Serverpod start complete.');
+
+    if (commandLineArgs.role == ServerpodRole.maintenance &&
+        appliedMigrations) {
+      logVerbose('Finished applying database migrations.');
+      throw ExitException(_exitCode);
+    }
   }
 
   Future<void> _applyMigrations() async {
     int? maxAttempts =
         commandLineArgs.role == ServerpodRole.maintenance ? 6 : null;
 
-    Session session;
-
     try {
-      session = await _connectToDatabase(
-        enableLogging: false,
+      await _connectToDatabase(
+        session: internalSession,
         maxAttempts: maxAttempts,
       );
     } catch (e) {
-      _exitCode = 1;
-      stderr.writeln(
-        'Failed to connect to the database. $e',
-      );
-      exit(_exitCode);
+      throw ExitException(1, 'Failed to connect to the database: $e');
     }
 
     try {
       logVerbose('Initializing migration manager.');
       _migrationManager = MigrationManager();
-      await migrationManager.initialize(session);
+      await migrationManager.initialize(internalSession);
 
       if (commandLineArgs.applyRepairMigration) {
         logVerbose('Applying database repair migration');
         var appliedRepairMigration =
-            await migrationManager.applyRepairMigration(session);
+            await migrationManager.applyRepairMigration(internalSession);
         if (appliedRepairMigration == null) {
           stderr.writeln('Failed to apply database repair migration.');
         } else {
           stdout.writeln(
               'Database repair migration "$appliedRepairMigration" applied.');
         }
-        await migrationManager.initialize(session);
+        await migrationManager.initialize(internalSession);
       }
 
       if (commandLineArgs.applyMigrations) {
         logVerbose('Applying database migrations.');
-        var migrationsApplied = await migrationManager.migrateToLatest(session);
+        var migrationsApplied =
+            await migrationManager.migrateToLatest(internalSession);
 
         if (migrationsApplied == null) {
           stdout.writeln('Latest database migration already applied.');
@@ -571,11 +594,11 @@ class Serverpod {
           }
         }
 
-        await migrationManager.initialize(session);
+        await migrationManager.initialize(internalSession);
       }
 
       logVerbose('Verifying database integrity.');
-      await migrationManager.verifyDatabaseIntegrity(session);
+      await migrationManager.verifyDatabaseIntegrity(internalSession);
     } catch (e) {
       _exitCode = 1;
       stderr.writeln(
@@ -586,7 +609,7 @@ class Serverpod {
     logVerbose('Loading runtime settings.');
     try {
       _runtimeSettings =
-          await internal.RuntimeSettings.db.findFirstRow(session);
+          await internal.RuntimeSettings.db.findFirstRow(internalSession);
     } catch (e) {
       _exitCode = 1;
       stderr.writeln(
@@ -598,7 +621,7 @@ class Serverpod {
       logVerbose('Runtime settings not found, creating default settings.');
       try {
         _runtimeSettings = await RuntimeSettings.db
-            .insertRow(session, _defaultRuntimeSettings);
+            .insertRow(internalSession, _defaultRuntimeSettings);
       } catch (e) {
         _exitCode = 1;
         stderr.writeln(
@@ -608,8 +631,6 @@ class Serverpod {
     } else {
       logVerbose('Runtime settings loaded.');
     }
-
-    await session.close();
   }
 
   bool _completedHealthChecks = false;
@@ -630,7 +651,8 @@ class Serverpod {
   void _checkMaintenanceTasksCompletion() {
     if (_completedFutureCalls && _completedHealthChecks) {
       stdout.writeln('All maintenance tasks completed. Exiting.');
-      exit(_exitCode);
+      // This will exit the process in maintenance mode (and only that mode) after future calls and health checks are done.
+      throw ExitException(_exitCode);
     }
   }
 
@@ -732,6 +754,24 @@ class Serverpod {
     return _passwords[key];
   }
 
+  /// Registers passwords to be loaded from the env variables.
+  /// The password can be accessed with the [getPassword] method.
+  /// The envName is the name of the environment variable that
+  /// contains the password. The alias is the key used to access the
+  /// the password with the [getPassword] method.
+  /// The alias also maps to the name in the config/passwords.yaml file.
+  /// This method may throw a [ArgumentError] if any Serverpod reserved passwords
+  /// are used as aliases or environment variables.
+  void loadCustomPasswords(
+    List<({String envName, String alias})> envPasswords,
+  ) {
+    _passwords = _passwordManager.mergePasswords(
+      envPasswords,
+      _passwords,
+      environment: Platform.environment,
+    );
+  }
+
   /// Creates a new [InternalSession]. Used to access the database and do
   /// logging outside of sessions triggered by external events. If you are
   /// creating a [Session] you are responsible of calling the [close] method
@@ -746,6 +786,7 @@ class Serverpod {
 
   /// Shuts down the Serverpod and all associated servers.
   Future<void> shutdown({bool exitProcess = true}) async {
+    await _internalSession.close();
     await redisController?.stop();
     await server.shutdown();
     await _webServer?.stop();
@@ -772,14 +813,13 @@ class Serverpod {
   /// Establishes a connection to the database. This method will retry
   /// connecting to the database until it succeeds.
   Future<Session> _connectToDatabase({
-    required bool enableLogging,
+    required Session session,
     int? maxAttempts,
   }) async {
     bool printedDatabaseConnectionError = false;
     int attempts = 0;
     while (true) {
       attempts++;
-      var session = await createSession(enableLogging: enableLogging);
       try {
         await session.db.testConnection();
         return session;
@@ -793,8 +833,6 @@ class Serverpod {
           stderr.writeln(config.database.toString());
           printedDatabaseConnectionError = true;
         }
-
-        await session.close();
 
         if (maxAttempts != null && attempts >= maxAttempts) {
           throw TimeoutException(
@@ -812,9 +850,25 @@ class Serverpod {
   }
 }
 
+/// Exception used to signal a
+class ExitException implements Exception {
+  /// Creates an instance of [ExitException].
+  ExitException(this.exitCode, [this.message = '']);
+
+  /// The error message
+  final String message;
+
+  /// The exit code
+  final int exitCode;
+}
+
 /// Internal methods used by the Serverpod. These methods are not intended to
 /// be exposed to end users.
 extension ServerpodInternalMethods on Serverpod {
   /// Retrieve the log settings manager
   LogSettingsManager get logSettingsManager => _logSettingsManager!;
+
+  /// Retrieve the global internal session used by the Serverpod.
+  /// Logging is turned off.
+  Session get internalSession => _internalSession;
 }

@@ -11,6 +11,7 @@ import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/exceptions.dart';
 import 'package:serverpod/src/database/sql_query_builder.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../generated/protocol.dart';
 import '../../../server/session.dart';
@@ -27,13 +28,12 @@ class DatabaseConnection {
   final DatabasePoolManager _poolManager;
 
   /// Access to the raw Postgresql connection pool.
-  final pg.Pool _postgresConnection;
+  pg.Pool get _postgresConnection => _poolManager.pool;
 
   /// Creates a new database connection from the configuration. For most cases
   /// this shouldn't be called directly, use the db object in the [Session] to
   /// access the database.
-  DatabaseConnection(this._poolManager)
-      : _postgresConnection = _poolManager.pool;
+  DatabaseConnection(this._poolManager);
 
   /// Tests the database connection.
   /// Throws an exception if the connection is not working.
@@ -139,11 +139,9 @@ class DatabaseConnection {
       rows: rows,
     ).build();
 
-    var result =
-        await _mappedResultsQuery(session, query, transaction: transaction);
-
-    return result
-        .map((row) => _poolManager.serializationManager.deserialize<T>(row))
+    return (await _mappedResultsQuery(session, query, transaction: transaction)
+            .then((_mergeResultsWithNonPersistedFields(rows))))
+        .map(_poolManager.serializationManager.deserialize<T>)
         .toList();
   }
 
@@ -153,7 +151,11 @@ class DatabaseConnection {
     T row, {
     Transaction? transaction,
   }) async {
-    var result = await insert<T>(session, [row], transaction: transaction);
+    var result = await insert<T>(
+      session,
+      [row],
+      transaction: transaction,
+    );
 
     if (result.length != 1) {
       throw DatabaseInsertRowException(
@@ -200,11 +202,9 @@ class DatabaseConnection {
     var query =
         'UPDATE "${table.tableName}" AS t SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = t.id RETURNING *';
 
-    var result =
-        await _mappedResultsQuery(session, query, transaction: transaction);
-
-    return result
-        .map((row) => _poolManager.serializationManager.deserialize<T>(row))
+    return (await _mappedResultsQuery(session, query, transaction: transaction)
+            .then((_mergeResultsWithNonPersistedFields(rows))))
+        .map(_poolManager.serializationManager.deserialize<T>)
         .toList();
   }
 
@@ -285,7 +285,12 @@ class DatabaseConnection {
         .withWhere(where)
         .build();
 
-    return await _deserializedMappedQuery(session, query, table: table);
+    return await _deserializedMappedQuery(
+      session,
+      query,
+      table: table,
+      transaction: transaction,
+    );
   }
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -303,7 +308,11 @@ class DatabaseConnection {
         .withLimit(limit)
         .build();
 
-    var result = await _query(session, query, transaction: transaction);
+    var result = await _query(
+      session,
+      query,
+      context: _resolveQueryContext(transaction),
+    );
 
     if (result.length != 1) return 0;
 
@@ -324,8 +333,8 @@ class DatabaseConnection {
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
       simpleQueryMode: true,
+      context: _resolveQueryContext(transaction),
     );
 
     return PostgresDatabaseResult(result);
@@ -343,21 +352,21 @@ class DatabaseConnection {
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
       parameters: parameters,
+      context: _resolveQueryContext(transaction),
     );
 
     return PostgresDatabaseResult(result);
   }
 
-  Future<pg.Result> _query(
+  static Future<pg.Result> _query(
     Session session,
     String query, {
     int? timeoutInSeconds,
-    Transaction? transaction,
     bool ignoreRows = false,
     bool simpleQueryMode = false,
     QueryParameters? parameters,
+    required pg.Session context,
   }) async {
     assert(
       simpleQueryMode == false ||
@@ -365,15 +374,11 @@ class DatabaseConnection {
       'simpleQueryMode does not support parameters',
     );
 
-    var postgresTransaction = _castToPostgresTransaction(transaction);
     var timeout =
         timeoutInSeconds != null ? Duration(seconds: timeoutInSeconds) : null;
 
     var startTime = DateTime.now();
     try {
-      var context =
-          postgresTransaction?.executionContext ?? _postgresConnection;
-
       var result = await context.execute(
         parameters is QueryParametersNamed ? pg.Sql.named(query) : query,
         timeout: timeout,
@@ -390,6 +395,25 @@ class DatabaseConnection {
       );
       return result;
     } catch (exception, trace) {
+      if (exception is pg.ServerException) {
+        var message = switch (exception.code) {
+          ('42P01') =>
+            'Table not found, have you applied the database migration? (${exception.message})',
+          (_) => exception.message,
+        };
+
+        var serverpodException = DatabaseException(message);
+
+        _logQuery(
+          session,
+          query,
+          startTime,
+          exception: serverpodException,
+          trace: trace,
+        );
+        throw serverpodException;
+      }
+
       if (exception is pg.PgException) {
         var serverpodException = exception is pg.ServerException
             ? DatabaseException.fromServerException(exception)
@@ -421,9 +445,9 @@ class DatabaseConnection {
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
       ignoreRows: true,
       parameters: parameters,
+      context: _resolveQueryContext(transaction),
     );
 
     return result.affectedRows;
@@ -440,9 +464,9 @@ class DatabaseConnection {
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
       ignoreRows: true,
       simpleQueryMode: true,
+      context: _resolveQueryContext(transaction),
     );
 
     return result.affectedRows;
@@ -453,16 +477,21 @@ class DatabaseConnection {
     Session session,
     String query, {
     int? timeoutInSeconds,
-    Transaction? transaction,
+    required Transaction? transaction,
   }) async {
     var result = await _query(
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
+      context: _resolveQueryContext(transaction),
     );
 
     return result.map((row) => row.toColumnMap());
+  }
+
+  pg.Session _resolveQueryContext(Transaction? transaction) {
+    var postgresTransaction = _castToPostgresTransaction(transaction);
+    return postgresTransaction?.executionContext ?? _postgresConnection;
   }
 
   Future<List<T>> _deserializedMappedQuery<T extends TableRow>(
@@ -470,7 +499,7 @@ class DatabaseConnection {
     String query, {
     required Table table,
     int? timeoutInSeconds,
-    Transaction? transaction,
+    required Transaction? transaction,
     Include? include,
   }) async {
     var result = await _mappedResultsQuery(
@@ -485,6 +514,7 @@ class DatabaseConnection {
       table,
       include,
       result,
+      transaction,
     );
 
     return result
@@ -498,7 +528,7 @@ class DatabaseConnection {
         .toList();
   }
 
-  void _logQuery(
+  static void _logQuery(
     Session session,
     String query,
     DateTime startTime, {
@@ -512,7 +542,6 @@ class DatabaseConnection {
     trace ??= StackTrace.current;
 
     session.logManager?.logQuery(
-      session,
       query: query,
       duration: duration,
       numRowsAffected: numRowsAffected,
@@ -522,12 +551,30 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<R> transaction<R>(TransactionFunction<R> transactionFunction) {
+  Future<R> transaction<R>(
+    TransactionFunction<R> transactionFunction, {
+    required TransactionSettings settings,
+    required Session session,
+  }) {
+    var pgTransactionSettings = pg.TransactionSettings(
+      isolationLevel: switch (settings.isolationLevel) {
+        IsolationLevel.readCommitted => pg.IsolationLevel.readCommitted,
+        IsolationLevel.readUncommitted => pg.IsolationLevel.readUncommitted,
+        IsolationLevel.repeatableRead => pg.IsolationLevel.repeatableRead,
+        IsolationLevel.serializable => pg.IsolationLevel.serializable,
+        null => null,
+      },
+    );
+
     return _postgresConnection.runTx<R>(
       (ctx) {
-        var transaction = _PostgresTransaction(ctx);
+        var transaction = _PostgresTransaction(
+          ctx,
+          session,
+        );
         return transactionFunction(transaction);
       },
+      settings: pgTransactionSettings,
     );
   }
 
@@ -536,6 +583,7 @@ class DatabaseConnection {
     Table table,
     Include? include,
     Iterable<Map<String, dynamic>> previousResultSet,
+    Transaction? transaction,
   ) async {
     if (include == null) return {};
 
@@ -578,13 +626,18 @@ class DatabaseConnection {
             .withInclude(nestedInclude.include)
             .build();
 
-        var includeListResult = await _mappedResultsQuery(session, query);
+        var includeListResult = await _mappedResultsQuery(
+          session,
+          query,
+          transaction: transaction,
+        );
 
         var resolvedLists = await _queryIncludedLists(
           session,
           nestedInclude.table,
           nestedInclude,
           includeListResult,
+          transaction,
         );
 
         var resolvedList = includeListResult
@@ -608,6 +661,7 @@ class DatabaseConnection {
           relativeRelationTable,
           nestedInclude,
           previousResultSet,
+          transaction,
         );
 
         resolvedListRelations.addAll(resolvedNestedListRelations);
@@ -678,6 +732,23 @@ class DatabaseConnection {
 
     return 'json';
   }
+
+  /// Merges the database result with the original non-persisted fields.
+  /// Database fields take precedence for common fields, while non-persisted fields are retained.
+  List<Map<String, dynamic>> Function(Iterable<Map<String, dynamic>>)
+      _mergeResultsWithNonPersistedFields<T extends TableRow>(
+    List<T> rows,
+  ) {
+    return (Iterable<Map<String, dynamic>> dbResults) =>
+        List<Map<String, dynamic>>.generate(dbResults.length, (i) {
+          return {
+            // Add non-persisted fields from the original object
+            ...rows[i].toJson(),
+            // Override with database fields (common fields)
+            ...dbResults.elementAt(i),
+          };
+        });
+  }
 }
 
 Table _getTableOrAssert<T>(Session session, {required String operation}) {
@@ -706,15 +777,55 @@ _PostgresTransaction? _castToPostgresTransaction(
   return transaction;
 }
 
+class _PostgresSavepoint implements Savepoint {
+  @override
+  final String id;
+  final _PostgresTransaction _transaction;
+
+  _PostgresSavepoint(this.id, this._transaction);
+
+  @override
+  Future<void> release() async {
+    await _transaction._query('RELEASE SAVEPOINT $id;');
+  }
+
+  @override
+  Future<void> rollback() async {
+    await _transaction._query('ROLLBACK TO SAVEPOINT $id;');
+  }
+}
+
 /// Postgres specific implementation of transactions.
 class _PostgresTransaction implements Transaction {
   final pg.TxSession executionContext;
+  final Session _session;
 
-  _PostgresTransaction(this.executionContext);
+  _PostgresTransaction(
+    this.executionContext,
+    this._session,
+  );
 
   @override
   Future<void> cancel() async {
     await executionContext.rollback();
+  }
+
+  Future<void> _query(String query, {QueryParameters? parameters}) async {
+    await DatabaseConnection._query(
+      _session,
+      query,
+      parameters: parameters,
+      context: executionContext,
+    );
+  }
+
+  @override
+  Future<Savepoint> createSavepoint() async {
+    var postgresCompatibleRandomString =
+        const Uuid().v4().replaceAll(RegExp(r'-'), '_');
+    var savepointId = 'savepoint_$postgresCompatibleRandomString';
+    await _query('SAVEPOINT $savepointId;');
+    return _PostgresSavepoint(savepointId, this);
   }
 }
 

@@ -5,6 +5,9 @@ class Keyword {
 
   static const String serialized = 'serialized';
 
+  static const String isSealed = 'sealed';
+  static const String extendsClass = 'extends';
+
   static const String serverOnly = 'serverOnly';
   static const String table = 'table';
   static const String managedMigration = 'managedMigration';

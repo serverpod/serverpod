@@ -1,15 +1,18 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../protocol.dart' as _i2;
+import '../database/column_definition.dart' as _i2;
+import '../database/foreign_key_definition.dart' as _i3;
+import '../database/index_definition.dart' as _i4;
 
 /// The definition of a (desired) table in the database.
 abstract class TableDefinition implements _i1.SerializableModel {
@@ -32,8 +35,8 @@ abstract class TableDefinition implements _i1.SerializableModel {
     required String schema,
     String? tableSpace,
     required List<_i2.ColumnDefinition> columns,
-    required List<_i2.ForeignKeyDefinition> foreignKeys,
-    required List<_i2.IndexDefinition> indexes,
+    required List<_i3.ForeignKeyDefinition> foreignKeys,
+    required List<_i4.IndexDefinition> indexes,
     bool? managed,
   }) = _TableDefinitionImpl;
 
@@ -50,10 +53,10 @@ abstract class TableDefinition implements _i1.SerializableModel {
           .toList(),
       foreignKeys: (jsonSerialization['foreignKeys'] as List)
           .map((e) =>
-              _i2.ForeignKeyDefinition.fromJson((e as Map<String, dynamic>)))
+              _i3.ForeignKeyDefinition.fromJson((e as Map<String, dynamic>)))
           .toList(),
       indexes: (jsonSerialization['indexes'] as List)
-          .map((e) => _i2.IndexDefinition.fromJson((e as Map<String, dynamic>)))
+          .map((e) => _i4.IndexDefinition.fromJson((e as Map<String, dynamic>)))
           .toList(),
       managed: jsonSerialization['managed'] as bool?,
     );
@@ -79,10 +82,10 @@ abstract class TableDefinition implements _i1.SerializableModel {
   List<_i2.ColumnDefinition> columns;
 
   /// All the foreign keys.
-  List<_i2.ForeignKeyDefinition> foreignKeys;
+  List<_i3.ForeignKeyDefinition> foreignKeys;
 
   /// All the indexes of this table.
-  List<_i2.IndexDefinition> indexes;
+  List<_i4.IndexDefinition> indexes;
 
   /// Indicates if the table should be managed by Serverpod.
   /// Null, if this is unknown.
@@ -95,8 +98,8 @@ abstract class TableDefinition implements _i1.SerializableModel {
     String? schema,
     String? tableSpace,
     List<_i2.ColumnDefinition>? columns,
-    List<_i2.ForeignKeyDefinition>? foreignKeys,
-    List<_i2.IndexDefinition>? indexes,
+    List<_i3.ForeignKeyDefinition>? foreignKeys,
+    List<_i4.IndexDefinition>? indexes,
     bool? managed,
   });
   @override
@@ -130,8 +133,8 @@ class _TableDefinitionImpl extends TableDefinition {
     required String schema,
     String? tableSpace,
     required List<_i2.ColumnDefinition> columns,
-    required List<_i2.ForeignKeyDefinition> foreignKeys,
-    required List<_i2.IndexDefinition> indexes,
+    required List<_i3.ForeignKeyDefinition> foreignKeys,
+    required List<_i4.IndexDefinition> indexes,
     bool? managed,
   }) : super._(
           name: name,
@@ -153,8 +156,8 @@ class _TableDefinitionImpl extends TableDefinition {
     String? schema,
     Object? tableSpace = _Undefined,
     List<_i2.ColumnDefinition>? columns,
-    List<_i2.ForeignKeyDefinition>? foreignKeys,
-    List<_i2.IndexDefinition>? indexes,
+    List<_i3.ForeignKeyDefinition>? foreignKeys,
+    List<_i4.IndexDefinition>? indexes,
     Object? managed = _Undefined,
   }) {
     return TableDefinition(
@@ -163,9 +166,10 @@ class _TableDefinitionImpl extends TableDefinition {
       module: module is String? ? module : this.module,
       schema: schema ?? this.schema,
       tableSpace: tableSpace is String? ? tableSpace : this.tableSpace,
-      columns: columns ?? this.columns.clone(),
-      foreignKeys: foreignKeys ?? this.foreignKeys.clone(),
-      indexes: indexes ?? this.indexes.clone(),
+      columns: columns ?? this.columns.map((e0) => e0.copyWith()).toList(),
+      foreignKeys:
+          foreignKeys ?? this.foreignKeys.map((e0) => e0.copyWith()).toList(),
+      indexes: indexes ?? this.indexes.map((e0) => e0.copyWith()).toList(),
       managed: managed is bool? ? managed : this.managed,
     );
   }

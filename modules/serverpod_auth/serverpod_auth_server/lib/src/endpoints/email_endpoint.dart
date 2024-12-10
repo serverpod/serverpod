@@ -62,21 +62,10 @@ class EmailEndpoint extends Endpoint {
     String email,
     String verificationCode,
   ) async {
-    var request = await Emails.findAccountRequest(session, email);
-    if (request == null) {
-      return null;
-    }
-    if (request.verificationCode != verificationCode) {
-      return null;
-    }
-
-    // Email is verified, create a new user
-    return await Emails.createUser(
+    return await Emails.tryCreateAccount(
       session,
-      request.userName,
-      email,
-      null,
-      request.hash,
+      email: email,
+      verificationCode: verificationCode,
     );
   }
 }

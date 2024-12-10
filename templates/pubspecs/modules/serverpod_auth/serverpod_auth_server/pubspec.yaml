@@ -13,10 +13,10 @@ dependencies:
   serverpod_serialization: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION
   crypto: ^3.0.2
-  email_validator: ^2.1.17
+  email_validator: '>=2.1.17 <4.0.0'
   openid_client: ^0.4.8
   meta: ^1.8.0
-  googleapis: ^11.0.0
+  googleapis: '>=11.0.0 <14.0.0'
   googleapis_auth: ^1.6.0
   http: '>=1.0.0 <2.0.0'
   image: ^4.0.15
@@ -26,6 +26,7 @@ dependencies:
 dev_dependencies:
   serverpod_lints: SERVERPOD_VERSION
   test: ^1.24.2
+  serverpod_test: SERVERPOD_VERSION
 
 dependency_overrides:
   serverpod:
@@ -36,3 +37,8 @@ dependency_overrides:
     path: ../../../packages/serverpod_lints
   serverpod_shared:
     path: ../../../packages/serverpod_shared
+  serverpod_test:
+    path: ../../../packages/serverpod_test
+
+false_secrets:
+  - test/firebase/firebase_auth_mock.dart

@@ -1,24 +1,25 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../protocol.dart' as _i2;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
+import '../../long_identifiers/models_with_relations/user_note_with_a_long_name.dart'
+    as _i2;
 
-abstract class UserNoteCollectionWithALongName extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class UserNoteCollectionWithALongName
+    implements _i1.TableRow, _i1.ProtocolSerialization {
   UserNoteCollectionWithALongName._({
-    int? id,
+    this.id,
     required this.name,
     this.notes,
-  }) : super(id);
+  });
 
   factory UserNoteCollectionWithALongName({
     int? id,
@@ -41,6 +42,9 @@ abstract class UserNoteCollectionWithALongName extends _i1.TableRow
   static final t = UserNoteCollectionWithALongNameTable();
 
   static const db = UserNoteCollectionWithALongNameRepository._();
+
+  @override
+  int? id;
 
   String name;
 
@@ -129,7 +133,7 @@ class _UserNoteCollectionWithALongNameImpl
       name: name ?? this.name,
       notes: notes is List<_i2.UserNoteWithALongName>?
           ? notes
-          : this.notes?.clone(),
+          : this.notes?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -404,8 +408,9 @@ class UserNoteCollectionWithALongNameAttachRepository {
   Future<void> notes(
     _i1.Session session,
     UserNoteCollectionWithALongName userNoteCollectionWithALongName,
-    List<_i2.UserNoteWithALongName> userNoteWithALongName,
-  ) async {
+    List<_i2.UserNoteWithALongName> userNoteWithALongName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (userNoteWithALongName.any((e) => e.id == null)) {
       throw ArgumentError.notNull('userNoteWithALongName.id');
     }
@@ -426,6 +431,7 @@ class UserNoteCollectionWithALongNameAttachRepository {
         _i2.UserNoteWithALongName.t
             .$_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId
       ],
+      transaction: transaction,
     );
   }
 }
@@ -436,8 +442,9 @@ class UserNoteCollectionWithALongNameAttachRowRepository {
   Future<void> notes(
     _i1.Session session,
     UserNoteCollectionWithALongName userNoteCollectionWithALongName,
-    _i2.UserNoteWithALongName userNoteWithALongName,
-  ) async {
+    _i2.UserNoteWithALongName userNoteWithALongName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (userNoteWithALongName.id == null) {
       throw ArgumentError.notNull('userNoteWithALongName.id');
     }
@@ -456,6 +463,7 @@ class UserNoteCollectionWithALongNameAttachRowRepository {
         _i2.UserNoteWithALongName.t
             .$_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId
       ],
+      transaction: transaction,
     );
   }
 }
@@ -465,8 +473,9 @@ class UserNoteCollectionWithALongNameDetachRepository {
 
   Future<void> notes(
     _i1.Session session,
-    List<_i2.UserNoteWithALongName> userNoteWithALongName,
-  ) async {
+    List<_i2.UserNoteWithALongName> userNoteWithALongName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (userNoteWithALongName.any((e) => e.id == null)) {
       throw ArgumentError.notNull('userNoteWithALongName.id');
     }
@@ -484,6 +493,7 @@ class UserNoteCollectionWithALongNameDetachRepository {
         _i2.UserNoteWithALongName.t
             .$_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId
       ],
+      transaction: transaction,
     );
   }
 }
@@ -493,8 +503,9 @@ class UserNoteCollectionWithALongNameDetachRowRepository {
 
   Future<void> notes(
     _i1.Session session,
-    _i2.UserNoteWithALongName userNoteWithALongName,
-  ) async {
+    _i2.UserNoteWithALongName userNoteWithALongName, {
+    _i1.Transaction? transaction,
+  }) async {
     if (userNoteWithALongName.id == null) {
       throw ArgumentError.notNull('userNoteWithALongName.id');
     }
@@ -509,6 +520,7 @@ class UserNoteCollectionWithALongNameDetachRowRepository {
         _i2.UserNoteWithALongName.t
             .$_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId
       ],
+      transaction: transaction,
     );
   }
 }

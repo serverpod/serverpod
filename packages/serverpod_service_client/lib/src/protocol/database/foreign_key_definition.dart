@@ -1,15 +1,17 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../protocol.dart' as _i2;
+import '../database/foreign_key_action.dart' as _i2;
+import '../database/foreign_key_match_type.dart' as _i3;
 
 /// Represents a foreign key.
 abstract class ForeignKeyDefinition implements _i1.SerializableModel {
@@ -32,7 +34,7 @@ abstract class ForeignKeyDefinition implements _i1.SerializableModel {
     required List<String> referenceColumns,
     _i2.ForeignKeyAction? onUpdate,
     _i2.ForeignKeyAction? onDelete,
-    _i2.ForeignKeyMatchType? matchType,
+    _i3.ForeignKeyMatchType? matchType,
   }) = _ForeignKeyDefinitionImpl;
 
   factory ForeignKeyDefinition.fromJson(
@@ -57,7 +59,7 @@ abstract class ForeignKeyDefinition implements _i1.SerializableModel {
               (jsonSerialization['onDelete'] as int)),
       matchType: jsonSerialization['matchType'] == null
           ? null
-          : _i2.ForeignKeyMatchType.fromJson(
+          : _i3.ForeignKeyMatchType.fromJson(
               (jsonSerialization['matchType'] as int)),
     );
   }
@@ -84,7 +86,7 @@ abstract class ForeignKeyDefinition implements _i1.SerializableModel {
   _i2.ForeignKeyAction? onDelete;
 
   /// The match type of the foreign key
-  _i2.ForeignKeyMatchType? matchType;
+  _i3.ForeignKeyMatchType? matchType;
 
   ForeignKeyDefinition copyWith({
     String? constraintName,
@@ -94,7 +96,7 @@ abstract class ForeignKeyDefinition implements _i1.SerializableModel {
     List<String>? referenceColumns,
     _i2.ForeignKeyAction? onUpdate,
     _i2.ForeignKeyAction? onDelete,
-    _i2.ForeignKeyMatchType? matchType,
+    _i3.ForeignKeyMatchType? matchType,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -127,7 +129,7 @@ class _ForeignKeyDefinitionImpl extends ForeignKeyDefinition {
     required List<String> referenceColumns,
     _i2.ForeignKeyAction? onUpdate,
     _i2.ForeignKeyAction? onDelete,
-    _i2.ForeignKeyMatchType? matchType,
+    _i3.ForeignKeyMatchType? matchType,
   }) : super._(
           constraintName: constraintName,
           columns: columns,
@@ -152,14 +154,15 @@ class _ForeignKeyDefinitionImpl extends ForeignKeyDefinition {
   }) {
     return ForeignKeyDefinition(
       constraintName: constraintName ?? this.constraintName,
-      columns: columns ?? this.columns.clone(),
+      columns: columns ?? this.columns.map((e0) => e0).toList(),
       referenceTable: referenceTable ?? this.referenceTable,
       referenceTableSchema: referenceTableSchema ?? this.referenceTableSchema,
-      referenceColumns: referenceColumns ?? this.referenceColumns.clone(),
+      referenceColumns:
+          referenceColumns ?? this.referenceColumns.map((e0) => e0).toList(),
       onUpdate: onUpdate is _i2.ForeignKeyAction? ? onUpdate : this.onUpdate,
       onDelete: onDelete is _i2.ForeignKeyAction? ? onDelete : this.onDelete,
       matchType:
-          matchType is _i2.ForeignKeyMatchType? ? matchType : this.matchType,
+          matchType is _i3.ForeignKeyMatchType? ? matchType : this.matchType,
     );
   }
 }

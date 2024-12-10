@@ -1,15 +1,19 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../../long_identifiers/deep_includes/person_with_long_table_name.dart'
+    as _i2;
+import '../../long_identifiers/deep_includes/organization_with_long_table_name.dart'
+    as _i3;
 
 abstract class CityWithLongTableName implements _i1.SerializableModel {
   CityWithLongTableName._({
@@ -23,7 +27,7 @@ abstract class CityWithLongTableName implements _i1.SerializableModel {
     int? id,
     required String name,
     List<_i2.PersonWithLongTableName>? citizens,
-    List<_i2.OrganizationWithLongTableName>? organizations,
+    List<_i3.OrganizationWithLongTableName>? organizations,
   }) = _CityWithLongTableNameImpl;
 
   factory CityWithLongTableName.fromJson(
@@ -36,7 +40,7 @@ abstract class CityWithLongTableName implements _i1.SerializableModel {
               _i2.PersonWithLongTableName.fromJson((e as Map<String, dynamic>)))
           .toList(),
       organizations: (jsonSerialization['organizations'] as List?)
-          ?.map((e) => _i2.OrganizationWithLongTableName.fromJson(
+          ?.map((e) => _i3.OrganizationWithLongTableName.fromJson(
               (e as Map<String, dynamic>)))
           .toList(),
     );
@@ -51,13 +55,13 @@ abstract class CityWithLongTableName implements _i1.SerializableModel {
 
   List<_i2.PersonWithLongTableName>? citizens;
 
-  List<_i2.OrganizationWithLongTableName>? organizations;
+  List<_i3.OrganizationWithLongTableName>? organizations;
 
   CityWithLongTableName copyWith({
     int? id,
     String? name,
     List<_i2.PersonWithLongTableName>? citizens,
-    List<_i2.OrganizationWithLongTableName>? organizations,
+    List<_i3.OrganizationWithLongTableName>? organizations,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -84,7 +88,7 @@ class _CityWithLongTableNameImpl extends CityWithLongTableName {
     int? id,
     required String name,
     List<_i2.PersonWithLongTableName>? citizens,
-    List<_i2.OrganizationWithLongTableName>? organizations,
+    List<_i3.OrganizationWithLongTableName>? organizations,
   }) : super._(
           id: id,
           name: name,
@@ -104,10 +108,10 @@ class _CityWithLongTableNameImpl extends CityWithLongTableName {
       name: name ?? this.name,
       citizens: citizens is List<_i2.PersonWithLongTableName>?
           ? citizens
-          : this.citizens?.clone(),
-      organizations: organizations is List<_i2.OrganizationWithLongTableName>?
+          : this.citizens?.map((e0) => e0.copyWith()).toList(),
+      organizations: organizations is List<_i3.OrganizationWithLongTableName>?
           ? organizations
-          : this.organizations?.clone(),
+          : this.organizations?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

@@ -9,13 +9,13 @@ description: Tests for Serverpod modules
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=3.2.0 <4.0.0'
+  sdk: '>=3.3.0 <4.0.0'
 
 dependencies:
-  serverpod_client: 2.0.2
+  serverpod_client: 2.3.0-beta.1
 
 dev_dependencies:
-  lints: '>=3.0.0 <5.0.0'
+  lints: '>=3.0.0 <6.0.0'
 
 dependency_overrides:
   serverpod_client:

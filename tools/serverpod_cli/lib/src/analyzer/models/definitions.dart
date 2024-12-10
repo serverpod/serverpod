@@ -11,6 +11,7 @@ sealed class SerializableModelDefinition {
   final String className;
   final List<String> subDirParts;
   final bool serverOnly;
+  final TypeDefinition type;
 
   SerializableModelDefinition({
     required this.moduleAlias,
@@ -18,6 +19,7 @@ sealed class SerializableModelDefinition {
     required this.sourceFileName,
     required this.className,
     required this.serverOnly,
+    required this.type,
     this.subDirParts = const [],
   });
 
@@ -56,6 +58,17 @@ class ClassDefinition extends SerializableModelDefinition {
   /// `true` if this is an exception and not a class.
   final bool isException;
 
+  /// If set to true the class is sealed.
+  final bool isSealed;
+
+  /// If set to a List of [InheritanceDefinitions] the class is a parent class and stores the child classes.
+  List<InheritanceDefinition> childClasses;
+
+  /// If set to [InheritanceDefinitions] the class extends another class and stores the [ClassDefinition] of it's parent.
+  InheritanceDefinition? extendsClass;
+
+  List<ClassDefinition>? _descendantClasses;
+
   /// Create a new [ClassDefinition].
   ClassDefinition({
     required super.moduleAlias,
@@ -66,16 +79,98 @@ class ClassDefinition extends SerializableModelDefinition {
     required super.serverOnly,
     required this.manageMigration,
     required this.isException,
+    required super.type,
+    required this.isSealed,
+    List<InheritanceDefinition>? childClasses,
+    this.extendsClass,
     this.tableName,
     this.indexes = const [],
     super.subDirParts,
     this.documentation,
-  });
+  }) : childClasses = childClasses ?? <InheritanceDefinition>[];
 
   SerializableModelFieldDefinition? findField(String name) {
-    return fields
-        .cast()
-        .firstWhere((element) => element.name == name, orElse: () => null);
+    return fields.where((element) => element.name == name).firstOrNull;
+  }
+
+  /// Returns the `ClassDefinition` of the parent class.
+  /// If there is no parent class, `null` is returned.
+  ClassDefinition? get parentClass {
+    var extendsClass = this.extendsClass;
+    if (extendsClass is! ResolvedInheritanceDefinition) return null;
+
+    return extendsClass.classDefinition;
+  }
+
+  /// Returns a list of all fields in the parent class.
+  /// If there is no parent class, an empty list is returned.
+  List<SerializableModelFieldDefinition> get inheritedFields =>
+      parentClass?.fieldsIncludingInherited ?? [];
+
+  /// Returns a list of all fields in this class, including inherited fields.
+  /// It ensures that the 'id' field, if present, is always included at the beginning of the list.
+  List<SerializableModelFieldDefinition> get fieldsIncludingInherited {
+    bool hasIdField = fields.any((element) => element.name == 'id');
+
+    return [
+      if (hasIdField) fields.firstWhere((element) => element.name == 'id'),
+      ...inheritedFields,
+      ...fields.where((element) => element.name != 'id'),
+    ];
+  }
+
+  /// Returns `true` if this class is a parent class or sealed.
+  bool get isParentClass => childClasses.isNotEmpty || isSealed;
+
+  /// Returns the top node of the sealed hierarchy. If the class is the top node it returns itself.
+  /// If the class is not part of a sealed hierarchy, `null` is returned.
+  ClassDefinition? get sealedTopNode {
+    var parent = parentClass;
+    if (parent != null) {
+      var parentsSealedTopNode = parent.sealedTopNode;
+      if (parentsSealedTopNode != null) return parentsSealedTopNode;
+    }
+
+    if (isSealed) return this;
+
+    return null;
+  }
+
+  /// Returns `true` if this class is the top node of a sealed hierarchy.
+  bool get isSealedTopNode => sealedTopNode == this;
+
+  /// Returns `true` if all parent classes are sealed.
+  /// Returns `true` if the class does not have a parent class.
+  bool get everyParentIsSealed {
+    var parent = parentClass;
+    if (parent == null) return true;
+
+    if (!parent.isSealed) {
+      return false;
+    }
+
+    return parent.everyParentIsSealed;
+  }
+
+  /// Returns a list of all descendant classes.
+  /// This includes all child classes and their descendants.
+  /// If the class has no child classes, an empty list is returned.
+  List<ClassDefinition> get descendantClasses {
+    return _descendantClasses ??= _computeDescendantClasses();
+  }
+
+  List<ClassDefinition> _computeDescendantClasses() {
+    List<ClassDefinition> descendants = [];
+
+    var resolvedChildClasses =
+        childClasses.whereType<ResolvedInheritanceDefinition>();
+
+    for (var child in resolvedChildClasses) {
+      descendants.add(child.classDefinition);
+      descendants.addAll(child.classDefinition.descendantClasses);
+    }
+
+    return descendants;
   }
 }
 
@@ -103,12 +198,12 @@ class SerializableModelFieldDefinition {
   // default valdatabase
   final dynamic defaultPersistValue;
 
-  /// returns true if one of the defauls its not null
-  bool get hasDefauls =>
+  /// returns true if one of the defaults its not null
+  bool get hasDefaults =>
       defaultModelValue != null || defaultPersistValue != null;
 
   /// returns true if only has database default
-  bool get hasOnlyDatabaseDefauls =>
+  bool get hasOnlyDatabaseDefaults =>
       defaultModelValue == null && defaultPersistValue != null;
 
   /// If set the field is a relation to another table. The type of the relation
@@ -236,6 +331,7 @@ class EnumDefinition extends SerializableModelDefinition {
     required this.serialized,
     required this.values,
     required super.serverOnly,
+    required super.type,
     super.subDirParts,
     this.documentation,
   });
@@ -251,6 +347,20 @@ class ProtocolEnumValueDefinition {
 
   /// Create a new [ProtocolEnumValueDefinition].
   ProtocolEnumValueDefinition(this.name, [this.documentation]);
+}
+
+abstract class InheritanceDefinition {}
+
+class UnresolvedInheritanceDefinition extends InheritanceDefinition {
+  final String className;
+
+  UnresolvedInheritanceDefinition(this.className);
+}
+
+class ResolvedInheritanceDefinition extends InheritanceDefinition {
+  final ClassDefinition classDefinition;
+
+  ResolvedInheritanceDefinition(this.classDefinition);
 }
 
 abstract class RelationDefinition {
@@ -441,4 +551,12 @@ const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;
 
 const String defaultPrimaryKeyName = 'id';
 
+/// DateTime
 const String defaultDateTimeValueNow = 'now';
+
+/// bool
+const String defaultBooleanTrue = 'true';
+const String defaultBooleanFalse = 'false';
+
+/// UuidValue
+const String defaultUuidValueRandom = 'random';

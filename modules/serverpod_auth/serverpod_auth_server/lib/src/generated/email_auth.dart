@@ -1,24 +1,24 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for a sign in with email.
-abstract class EmailAuth extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class EmailAuth implements _i1.TableRow, _i1.ProtocolSerialization {
   EmailAuth._({
-    int? id,
+    this.id,
     required this.userId,
     required this.email,
     required this.hash,
-  }) : super(id);
+  });
 
   factory EmailAuth({
     int? id,
@@ -39,6 +39,9 @@ abstract class EmailAuth extends _i1.TableRow
   static final t = EmailAuthTable();
 
   static const db = EmailAuthRepository._();
+
+  @override
+  int? id;
 
   /// The id of the user, corresponds to the id field in [UserInfo].
   int userId;

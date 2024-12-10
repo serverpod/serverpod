@@ -40,7 +40,7 @@ class AuthenticationEndpoint extends Endpoint {
           email: email,
           userName: 'Test',
           created: DateTime.now(),
-          scopeNames: [],
+          scopeNames: scopes ?? [],
           blocked: false,
         );
         userInfo = await Users.createUser(session, userInfo);
@@ -67,5 +67,14 @@ class AuthenticationEndpoint extends Endpoint {
 
   Future<void> signOut(Session session) async {
     await UserAuthentication.signOutUser(session);
+  }
+
+  Future<void> updateScopes(
+    Session session,
+    int userId,
+    List<String> scopes,
+  ) async {
+    var newScopes = scopes.map((e) => Scope(e)).toSet();
+    await Users.updateUserScopes(session, userId, newScopes);
   }
 }

@@ -208,6 +208,24 @@ void main() {
   );
 
   group(
+      "Given a Serverpod server when fetching an custom class object that extends another custom class object and inherits a server only field",
+      () {
+    late http.Response response;
+
+    setUpAll(() async {
+      response = await http.post(
+        Uri.parse("${serverUrl}serverOnlyScopedFieldChildModel"),
+        body: jsonEncode({"method": "getProtocolField"}),
+      );
+    });
+
+    test('then the response body should not contain server-only field', () {
+      Map jsonMap = jsonDecode(response.body);
+      expect(jsonMap, isNot(contains('serverOnlyScope')));
+    });
+  });
+
+  group(
       "Given a Serverpod server when calling an endpoint which throws a normal exception, ",
       () {
     late http.Response response;
@@ -237,8 +255,8 @@ void main() {
       );
     });
 
-    test('then it should return status code 500', () {
-      expect(response.statusCode, 500);
+    test('then it should return status code 400', () {
+      expect(response.statusCode, 400);
     });
 
     test('then the serialized response body should contain the "className" key',

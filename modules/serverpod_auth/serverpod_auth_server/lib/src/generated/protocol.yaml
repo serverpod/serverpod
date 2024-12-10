@@ -19,9 +19,12 @@ google:
 status:
   - isSignedIn:
   - signOut:
+  - signOutDevice:
+  - signOutAllDevices:
   - getUserInfo:
   - getUserSettingsConfig:
 user:
   - removeUserImage:
   - setUserImage:
   - changeUserName:
+  - changeFullName:

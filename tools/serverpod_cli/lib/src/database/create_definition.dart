@@ -1,7 +1,10 @@
 import 'package:intl/intl.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/utils/duration_utils.dart';
+import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -21,7 +24,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
           dartName: classDefinition.className,
           schema: 'public',
           columns: [
-            for (var column in classDefinition.fields)
+            for (var column in classDefinition.fieldsIncludingInherited)
               if (column.shouldSerializeFieldForDatabase(true))
                 ColumnDefinition(
                   name: column.name,
@@ -123,14 +126,14 @@ String? _getColumnDefault(
     return "nextval('${classDefinition.tableName!}_id_seq'::regclass)";
   }
 
-  var defaultValue = column.type.defaultValueType;
+  var defaultValueType = column.type.defaultValueType;
+  if (defaultValueType == null) return null;
+
+  var defaultValue = column.defaultPersistValue;
   if (defaultValue == null) return null;
 
-  switch (defaultValue) {
+  switch (defaultValueType) {
     case DefaultValueAllowedType.dateTime:
-      var defaultValue = column.defaultPersistValue;
-      if (defaultValue == null) return null;
-
       if (defaultValue is! String) {
         throw StateError('Invalid DateTime default value: $defaultValue');
       }
@@ -141,5 +144,62 @@ String? _getColumnDefault(
 
       DateTime? dateTime = DateTime.parse(defaultValue);
       return '\'${DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime)}\'::timestamp without time zone';
+    case DefaultValueAllowedType.bool:
+      return defaultValue;
+    case DefaultValueAllowedType.int:
+      return '$defaultValue';
+    case DefaultValueAllowedType.double:
+      return '$defaultValue';
+    case DefaultValueAllowedType.string:
+      return '${_escapeSqlString(defaultValue)}::text';
+    case DefaultValueAllowedType.uuidValue:
+      if (defaultUuidValueRandom == defaultValue) {
+        return 'gen_random_uuid()';
+      }
+      return '${_escapeSqlString(defaultValue)}::uuid';
+    case DefaultValueAllowedType.duration:
+      Duration parsedDuration = parseDuration(defaultValue);
+      return '${parsedDuration.toJson()}';
+    case DefaultValueAllowedType.isEnum:
+      var enumDefinition = column.type.enumDefinition;
+      if (enumDefinition == null) return null;
+      var values = enumDefinition.values;
+      return switch (enumDefinition.serialized) {
+        EnumSerialization.byIndex =>
+          '${values.indexWhere((e) => e.name == defaultValue)}',
+        EnumSerialization.byName => '\'$defaultValue\'::text',
+      };
   }
+}
+
+/// Converts a Dart string into a SQL-safe string by escaping necessary characters.
+///
+/// This method handles:
+/// - Escaping single quotes (`'`) to prevent SQL injection and syntax errors.
+/// - Handling escaped double quotes (`"`), ensuring they are correctly represented in SQL by doubling them.
+///
+/// The method performs validation to ensure the string contains valid quoting.
+///
+/// ### Examples:
+/// ```dart
+/// _escapeSqlString("This is a \'default persist value")  // Returns "This is a ''default persist value"
+/// _escapeSqlString("This is a \"default\" persist value") // Returns "This is a ""default"" persist value"
+/// ```
+///
+/// Throws:
+/// - `FormatException` if the string contains invalid quoting.
+String _escapeSqlString(String value) {
+  if (isValidSingleQuote(value)) {
+    return value.replaceAll("\\'", "''").replaceAll('\\"', '"');
+  }
+
+  if (isValidDoubleQuote(value)) {
+    return value.replaceAll("\\'", "'").replaceAll('\\"', '""');
+  }
+
+  /// This exception is unlikely to be thrown due to prior validation checks,
+  /// but it's included as a safeguard to handle any unexpected input.
+  throw FormatException(
+    'The string contains invalid quoting or escape sequences: $value',
+  );
 }

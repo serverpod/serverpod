@@ -1,33 +1,33 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../protocol.dart' as _i2;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
+import '../models_with_list_relations/person.dart' as _i2;
+import '../models_with_list_relations/city.dart' as _i3;
 
-abstract class Organization extends _i1.TableRow
-    implements _i1.ProtocolSerialization {
+abstract class Organization implements _i1.TableRow, _i1.ProtocolSerialization {
   Organization._({
-    int? id,
+    this.id,
     required this.name,
     this.people,
     this.cityId,
     this.city,
-  }) : super(id);
+  });
 
   factory Organization({
     int? id,
     required String name,
     List<_i2.Person>? people,
     int? cityId,
-    _i2.City? city,
+    _i3.City? city,
   }) = _OrganizationImpl;
 
   factory Organization.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -40,7 +40,7 @@ abstract class Organization extends _i1.TableRow
       cityId: jsonSerialization['cityId'] as int?,
       city: jsonSerialization['city'] == null
           ? null
-          : _i2.City.fromJson(
+          : _i3.City.fromJson(
               (jsonSerialization['city'] as Map<String, dynamic>)),
     );
   }
@@ -49,13 +49,16 @@ abstract class Organization extends _i1.TableRow
 
   static const db = OrganizationRepository._();
 
+  @override
+  int? id;
+
   String name;
 
   List<_i2.Person>? people;
 
   int? cityId;
 
-  _i2.City? city;
+  _i3.City? city;
 
   @override
   _i1.Table get table => t;
@@ -65,7 +68,7 @@ abstract class Organization extends _i1.TableRow
     String? name,
     List<_i2.Person>? people,
     int? cityId,
-    _i2.City? city,
+    _i3.City? city,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -93,7 +96,7 @@ abstract class Organization extends _i1.TableRow
 
   static OrganizationInclude include({
     _i2.PersonIncludeList? people,
-    _i2.CityInclude? city,
+    _i3.CityInclude? city,
   }) {
     return OrganizationInclude._(
       people: people,
@@ -135,7 +138,7 @@ class _OrganizationImpl extends Organization {
     required String name,
     List<_i2.Person>? people,
     int? cityId,
-    _i2.City? city,
+    _i3.City? city,
   }) : super._(
           id: id,
           name: name,
@@ -155,9 +158,11 @@ class _OrganizationImpl extends Organization {
     return Organization(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      people: people is List<_i2.Person>? ? people : this.people?.clone(),
+      people: people is List<_i2.Person>?
+          ? people
+          : this.people?.map((e0) => e0.copyWith()).toList(),
       cityId: cityId is int? ? cityId : this.cityId,
-      city: city is _i2.City? ? city : this.city?.copyWith(),
+      city: city is _i3.City? ? city : this.city?.copyWith(),
     );
   }
 }
@@ -182,7 +187,7 @@ class OrganizationTable extends _i1.Table {
 
   late final _i1.ColumnInt cityId;
 
-  _i2.CityTable? _city;
+  _i3.CityTable? _city;
 
   _i2.PersonTable get __people {
     if (___people != null) return ___people!;
@@ -197,15 +202,15 @@ class OrganizationTable extends _i1.Table {
     return ___people!;
   }
 
-  _i2.CityTable get city {
+  _i3.CityTable get city {
     if (_city != null) return _city!;
     _city = _i1.createRelationTable(
       relationFieldName: 'city',
       field: Organization.t.cityId,
-      foreignField: _i2.City.t.id,
+      foreignField: _i3.City.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.CityTable(tableRelation: foreignTableRelation),
+          _i3.CityTable(tableRelation: foreignTableRelation),
     );
     return _city!;
   }
@@ -250,7 +255,7 @@ class OrganizationTable extends _i1.Table {
 class OrganizationInclude extends _i1.IncludeObject {
   OrganizationInclude._({
     _i2.PersonIncludeList? people,
-    _i2.CityInclude? city,
+    _i3.CityInclude? city,
   }) {
     _people = people;
     _city = city;
@@ -258,7 +263,7 @@ class OrganizationInclude extends _i1.IncludeObject {
 
   _i2.PersonIncludeList? _people;
 
-  _i2.CityInclude? _city;
+  _i3.CityInclude? _city;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -459,8 +464,9 @@ class OrganizationAttachRepository {
   Future<void> people(
     _i1.Session session,
     Organization organization,
-    List<_i2.Person> person,
-  ) async {
+    List<_i2.Person> person, {
+    _i1.Transaction? transaction,
+  }) async {
     if (person.any((e) => e.id == null)) {
       throw ArgumentError.notNull('person.id');
     }
@@ -473,6 +479,7 @@ class OrganizationAttachRepository {
     await session.db.update<_i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],
+      transaction: transaction,
     );
   }
 }
@@ -483,8 +490,9 @@ class OrganizationAttachRowRepository {
   Future<void> city(
     _i1.Session session,
     Organization organization,
-    _i2.City city,
-  ) async {
+    _i3.City city, {
+    _i1.Transaction? transaction,
+  }) async {
     if (organization.id == null) {
       throw ArgumentError.notNull('organization.id');
     }
@@ -496,14 +504,16 @@ class OrganizationAttachRowRepository {
     await session.db.updateRow<Organization>(
       $organization,
       columns: [Organization.t.cityId],
+      transaction: transaction,
     );
   }
 
   Future<void> people(
     _i1.Session session,
     Organization organization,
-    _i2.Person person,
-  ) async {
+    _i2.Person person, {
+    _i1.Transaction? transaction,
+  }) async {
     if (person.id == null) {
       throw ArgumentError.notNull('person.id');
     }
@@ -515,6 +525,7 @@ class OrganizationAttachRowRepository {
     await session.db.updateRow<_i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],
+      transaction: transaction,
     );
   }
 }
@@ -524,8 +535,9 @@ class OrganizationDetachRepository {
 
   Future<void> people(
     _i1.Session session,
-    List<_i2.Person> person,
-  ) async {
+    List<_i2.Person> person, {
+    _i1.Transaction? transaction,
+  }) async {
     if (person.any((e) => e.id == null)) {
       throw ArgumentError.notNull('person.id');
     }
@@ -534,6 +546,7 @@ class OrganizationDetachRepository {
     await session.db.update<_i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],
+      transaction: transaction,
     );
   }
 }
@@ -543,8 +556,9 @@ class OrganizationDetachRowRepository {
 
   Future<void> city(
     _i1.Session session,
-    Organization organization,
-  ) async {
+    Organization organization, {
+    _i1.Transaction? transaction,
+  }) async {
     if (organization.id == null) {
       throw ArgumentError.notNull('organization.id');
     }
@@ -553,13 +567,15 @@ class OrganizationDetachRowRepository {
     await session.db.updateRow<Organization>(
       $organization,
       columns: [Organization.t.cityId],
+      transaction: transaction,
     );
   }
 
   Future<void> people(
     _i1.Session session,
-    _i2.Person person,
-  ) async {
+    _i2.Person person, {
+    _i1.Transaction? transaction,
+  }) async {
     if (person.id == null) {
       throw ArgumentError.notNull('person.id');
     }
@@ -568,6 +584,7 @@ class OrganizationDetachRowRepository {
     await session.db.updateRow<_i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],
+      transaction: transaction,
     );
   }
 }

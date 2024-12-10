@@ -171,13 +171,13 @@ void main() {
         expect(peopleMethod, isNotNull, reason: 'Missing people method.');
       });
 
-      test('people method has the input params of session, example and person',
+      test(
+          'people method has the input params of session, example, person and named param transaction',
           () {
         expect(
           peopleMethod?.parameters?.toSource(),
           matches(
-            r'(_i\d.Session session, Example example, Person person)',
-          ),
+              r'\(_i\d\.Session session, Example example, Person person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: peopleMethod == null);
     });
@@ -222,13 +222,13 @@ void main() {
         expect(peopleMethod, isNotNull, reason: 'Missing people method.');
       });
 
-      test('people method has the input params of session, example and person',
+      test(
+          'people method has the input params of session, example, person and named param transaction',
           () {
         expect(
           peopleMethod?.parameters?.toSource(),
           matches(
-            r'(_i\d.Session session, Example example, List<Person> person)',
-          ),
+              r'\(_i\d\.Session session, Example example, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: peopleMethod == null);
     }, skip: repositoryAttachClass == null);
@@ -261,10 +261,13 @@ void main() {
         expect(peopleMethod, isNotNull, reason: 'Missing people method.');
       });
 
-      test('people method has the input params of session, person', () {
+      test(
+          'people method has the input params of session, person and named param transaction',
+          () {
         expect(
           peopleMethod?.parameters?.toSource(),
-          '(_i1.Session session, Person person)',
+          matches(
+              r'\(_i\d\.Session session, Person person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: peopleMethod == null);
     }, skip: repositoryClass == null);
@@ -309,13 +312,13 @@ void main() {
         expect(peopleMethod, isNotNull, reason: 'Missing people method.');
       });
 
-      test('people method has the input params of session, example and person',
+      test(
+          'people method has the input params of session, example, person and named param transaction',
           () {
         expect(
           peopleMethod?.parameters?.toSource(),
           matches(
-            r'(_i\d.Session session, List<Person> person)',
-          ),
+              r'\(_i\d\.Session session, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: peopleMethod == null);
     }, skip: repositoryAttachClass == null);
@@ -368,13 +371,12 @@ void main() {
       });
 
       test(
-          'citizens method has the input params of session, example and person',
+          'citizens method has the input params of session, example, person and named param transaction',
           () {
         expect(
           citizensMethod?.parameters?.toSource(),
           matches(
-            r'(_i\d.Session session, Example example, List<Person> person)',
-          ),
+              r'\(_i\d\.Session session, Example example, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: citizensMethod == null);
     }, skip: repositoryAttachClass == null);
@@ -396,13 +398,12 @@ void main() {
       });
 
       test(
-          'citizens method has the input params of session, example and person',
+          'citizens method has the input params of session, example, person and named param transaction',
           () {
         expect(
           citizenMethod?.parameters?.toSource(),
           matches(
-            r'(_i\d.Session session, Example example, Person person)',
-          ),
+              r'\(_i\d\.Session session, Example example, Person person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: citizenMethod == null);
     });
@@ -435,13 +436,12 @@ void main() {
       });
 
       test(
-          'citizens method has the input params of session, example and person',
+          'citizens method has the input params of session, example, person and named param transaction',
           () {
         expect(
           citizensMethod?.parameters?.toSource(),
           matches(
-            r'(_i\d.Session session, List<Person> person)',
-          ),
+              r'\(_i\d\.Session session, List<Person> person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: citizensMethod == null);
     }, skip: repositoryAttachClass == null);
@@ -462,10 +462,13 @@ void main() {
         expect(citizenMethod, isNotNull, reason: 'Missing citizens method.');
       });
 
-      test('citizens method has the input params of session, person', () {
+      test(
+          'citizens method has the input params of session, person and named param transaction',
+          () {
         expect(
           citizenMethod?.parameters?.toSource(),
-          '(_i1.Session session, Person person)',
+          matches(
+              r'\(_i\d\.Session session, Person person, \{_i\d\.Transaction\? transaction\}\)'),
         );
       }, skip: citizenMethod == null);
     });
