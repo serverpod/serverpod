@@ -9,7 +9,7 @@ environment:
   sdk: DART_VERSION
 
 dependencies:
-  archive: ^3.3.7
+  archive: '>=3.3.7 <5.0.0'
   args: ^2.4.0
   ci: ^0.1.0
   code_builder: ^4.5.0
