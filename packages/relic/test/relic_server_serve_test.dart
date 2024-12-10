@@ -19,9 +19,15 @@ import 'util/test_util.dart';
 
 void main() {
   tearDown(() async {
-    if (_server != null) {
-      await _server!.close(force: true);
-      _server = null;
+    var server = _server;
+    if (server != null) {
+      try {
+        await server.close().timeout(Duration(seconds: 5));
+      } catch (e) {
+        await server.close(force: true);
+      } finally {
+        _server = null;
+      }
     }
   });
 
@@ -94,26 +100,31 @@ void main() {
   });
 
   test('chunked requests are un-chunked', () async {
-    await _scheduleServer(expectAsync1((request) {
-      expect(request.body.contentLength, isNull);
-      expect(request.method, Method.post);
-      expect(
-          request.headers, isNot(contains(HttpHeaders.transferEncodingHeader)));
-      expect(
-        request.read().toList(),
-        completion(equals([
-          [1, 2, 3, 4]
-        ])),
-      );
-      return Response.ok();
-    }));
+    await _scheduleServer(
+      expectAsync1((request) async {
+        expect(request.body.contentLength, isNull);
+        expect(request.method, Method.post);
+        expect(
+          request.headers,
+          isNot(contains(HttpHeaders.transferEncodingHeader)),
+        );
+
+        var stream = request.read();
+        var body = await stream.toList();
+        expect(
+          body.first,
+          equals(Uint8List.fromList([1, 2, 3, 4])),
+        );
+
+        return Response.ok();
+      }),
+    );
 
     var request = http.StreamedRequest(
       Method.post.value,
-      Uri.http('localhost:$_serverPort', ''),
+      Uri.http('localhost:$_serverPort', '/'),
     );
     request.sink.add([1, 2, 3, 4]);
-    // ignore: unawaited_futures
     request.sink.close();
 
     var response = await request.send();
@@ -614,8 +625,10 @@ void main() {
       var req = await scheduleSecureGet();
       var response = await req.close();
       expect(response.statusCode, HttpStatus.ok);
-      expect(await response.cast<List<int>>().transform(utf8.decoder).single,
-          'Hello from /');
+      expect(
+        await response.cast<List<int>>().transform(utf8.decoder).single,
+        'Hello from /',
+      );
     });
   });
 }
