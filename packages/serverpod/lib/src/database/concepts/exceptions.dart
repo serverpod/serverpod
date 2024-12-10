@@ -1,0 +1,44 @@
+/// Exception thrown when an error occurs in the database.
+abstract interface class DatabaseException implements Exception {
+  /// Returns the message of the exception.
+  String get message;
+
+  @override
+  String toString() => 'DatabaseException: $message';
+}
+
+/// Exception thrown when an exception occurs during a database query.
+abstract interface class DatabaseQueryException implements DatabaseException {
+  /// Returns the error code of the exception.
+  String? get code;
+
+  /// Additional details if provided by the database.
+  String? get detail;
+
+  /// A hint on how to remedy an error, if provided by the database.
+  String? get hint;
+
+  /// Returns the name of the table where the error occurred.
+  String? get tableName;
+
+  /// Returns the name of the column where the error occurred.
+  String? get columnName;
+
+  /// Returns the name of the constraint that was violated.
+  String? get constraintName;
+
+  /// Returns the position in the query where the error occurred.
+  int? get position;
+}
+
+/// Exception thrown when an insert row operation fails.
+abstract interface class DatabaseInsertRowException
+    implements DatabaseException {}
+
+/// Exception thrown when an update row operation fails.
+abstract interface class DatabaseUpdateRowException
+    implements DatabaseException {}
+
+/// Exception thrown when a delete row operation fails.
+abstract interface class DatabaseDeleteRowException
+    implements DatabaseException {}
