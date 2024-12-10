@@ -114,6 +114,10 @@ class ResourceManager {
     // var outFile = File(p.join(versionedDir.path, 'serverpod_templates.tar.gz'));
     // outFile.writeAsBytesSync(data);
 
+    // Const constructor was introduced in version 4.0.0 of archive package.
+    // At the time this was written, that version was 2 days old and we don't
+    // want to force a constraint on the package for this.
+    // ignore: prefer_const_constructors
     var unzipped = GZipDecoder().decodeBytes(data);
     var archive = TarDecoder().decodeBytes(unzipped);
 
