@@ -1,6 +1,5 @@
 import 'package:http_parser/http_parser.dart';
-import 'package:relic/src/headers/typed/base/typed_header.dart';
-import 'package:relic/src/headers/typed/headers/etag_header.dart';
+import 'package:relic/src/headers/typed/typed_headers.dart';
 
 /// A class representing the HTTP `If-Range` header.
 ///
@@ -15,11 +14,14 @@ class IfRangeHeader extends TypedHeader {
   /// Constructs an [IfRangeHeader] instance with either a date or an ETag.
   ///
   /// Either [lastModified] or [etag] must be non-null.
-  const IfRangeHeader({this.lastModified, this.etag})
-      : assert(
-          lastModified != null || etag != null,
-          'Either date or etag must be provided',
-        );
+  IfRangeHeader({
+    this.lastModified,
+    this.etag,
+  }) {
+    if (lastModified == null && etag == null) {
+      throw FormatException('Either date or etag must be provided');
+    }
+  }
 
   /// Parses the `If-Range` header value and returns an [IfRangeHeader] instance.
   ///

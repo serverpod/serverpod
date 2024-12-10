@@ -1,4 +1,4 @@
-import 'package:relic/src/headers/typed/base/typed_header.dart';
+import 'package:relic/src/headers/typed/typed_headers.dart';
 
 /// A class representing an HTTP Content-Range header for byte ranges.
 ///
@@ -18,16 +18,16 @@ class ContentRangeHeader extends TypedHeader {
   final int? size;
 
   /// Constructs a [ContentRangeHeader] with the specified range and optional total size.
-  const ContentRangeHeader({
+  ContentRangeHeader({
     this.unit = 'bytes',
     this.start,
     this.end,
     this.size,
-  }) : assert(
-          start == null && end == null ||
-              (start != null && end != null && start <= end),
-          'If specifying a range, both start and end must be provided, and start must be <= end',
-        );
+  }) {
+    if (start != null && end != null && start! > end!) {
+      throw FormatException('Invalid range');
+    }
+  }
 
   /// Factory constructor to create a [ContentRangeHeader] from the header string.
   factory ContentRangeHeader.parse(String value) {

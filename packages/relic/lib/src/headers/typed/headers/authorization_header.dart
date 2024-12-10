@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:relic/src/headers/typed/base/typed_header.dart';
+import 'package:relic/src/headers/typed/typed_headers.dart';
 
 /// An abstract base class representing an HTTP Authorization header.
 ///
@@ -59,7 +59,11 @@ class BearerAuthorizationHeader extends AuthorizationHeader {
   /// The token must not be empty.
   BearerAuthorizationHeader({
     required this.token,
-  }) : assert(token.isNotEmpty, 'Authorization token cannot be empty');
+  }) {
+    if (token.isEmpty) {
+      throw FormatException('Bearer token cannot be empty.');
+    }
+  }
 
   /// Factory constructor to create a [BearerAuthorizationHeader] from a token string.
   ///
@@ -112,8 +116,14 @@ class BasicAuthorizationHeader extends AuthorizationHeader {
   BasicAuthorizationHeader({
     required this.username,
     required this.password,
-  })  : assert(username.isNotEmpty, 'Username cannot be empty'),
-        assert(password.isNotEmpty, 'Password cannot be empty');
+  }) {
+    if (username.isEmpty) {
+      throw FormatException('Username cannot be empty');
+    }
+    if (password.isEmpty) {
+      throw FormatException('Password cannot be empty');
+    }
+  }
 
   /// Factory constructor to create a [BasicAuthorizationHeader] from a token string.
   ///
@@ -216,11 +226,23 @@ class DigestAuthorizationHeader extends AuthorizationHeader {
     this.nc,
     this.cnonce,
     this.opaque,
-  })  : assert(username.isNotEmpty, 'Username cannot be empty'),
-        assert(realm.isNotEmpty, 'Realm cannot be empty'),
-        assert(nonce.isNotEmpty, 'Nonce cannot be empty'),
-        assert(uri.isNotEmpty, 'URI cannot be empty'),
-        assert(response.isNotEmpty, 'Response cannot be empty');
+  }) {
+    if (username.isEmpty) {
+      throw FormatException('Username cannot be empty');
+    }
+    if (realm.isEmpty) {
+      throw FormatException('Realm cannot be empty');
+    }
+    if (nonce.isEmpty) {
+      throw FormatException('Nonce cannot be empty');
+    }
+    if (uri.isEmpty) {
+      throw FormatException('URI cannot be empty');
+    }
+    if (response.isEmpty) {
+      throw FormatException('Response cannot be empty');
+    }
+  }
 
   /// Parses a Digest authorization header value and returns a [DigestAuthorizationHeader] instance.
   ///

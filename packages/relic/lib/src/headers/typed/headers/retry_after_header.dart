@@ -1,5 +1,5 @@
 import 'package:http_parser/http_parser.dart';
-import 'package:relic/src/headers/typed/base/typed_header.dart';
+import 'package:relic/src/headers/typed/typed_headers.dart';
 
 /// A class representing the HTTP Retry-After header.
 ///
@@ -14,17 +14,21 @@ class RetryAfterHeader extends TypedHeader {
   final DateTime? date;
 
   /// Constructs a [RetryAfterHeader] instance with either a delay in seconds or a date.
-  const RetryAfterHeader({
+  RetryAfterHeader({
     this.delay,
     this.date,
-  })  : assert(
-          delay != null || date != null,
-          'Either delay or date must be specified',
-        ),
-        assert(
-          !(delay != null && date != null),
-          'Both delay and date cannot be specified at the same time',
-        );
+  }) {
+    if (delay == null && date == null) {
+      throw FormatException(
+        'Either delay or date must be specified',
+      );
+    }
+    if (delay != null && date != null) {
+      throw FormatException(
+        'Both delay and date cannot be specified at the same time',
+      );
+    }
+  }
 
   /// Parses the Retry-After header value and returns a [RetryAfterHeader] instance.
   ///

@@ -97,13 +97,12 @@ bool parseBool(String value) {
 
 /// Parses a positive boolean from the given [value] and returns it as a `bool`.
 ///
-/// - Returns `null` if the parsed boolean is `false`.
-///
-/// - Throws a [FormatException] if the [value] is empty or contains an invalid boolean.
-bool? parsePositiveBool(String value) {
+/// - Throws a [FormatException] if the [value] is 'empty', 'false' or contains an invalid boolean.
+bool parsePositiveBool(String value) {
   if (value.isEmpty) {
     throw FormatException('Value cannot be empty');
   }
+
   bool parsedValue;
 
   try {

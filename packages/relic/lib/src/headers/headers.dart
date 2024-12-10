@@ -11,7 +11,7 @@ import 'typed/typed_headers.dart';
 
 import '../body/body.dart';
 
-sealed class Headers {
+abstract base class Headers {
   /// Request Headers
   static const acceptHeader = "accept";
   static const acceptEncodingHeader = "accept-encoding";
@@ -920,7 +920,7 @@ sealed class Headers {
 }
 
 /// Headers implementation
-class _HeadersImpl extends Headers {
+final class _HeadersImpl extends Headers {
   _HeadersImpl({
     /// Date-related headers
     super.date,

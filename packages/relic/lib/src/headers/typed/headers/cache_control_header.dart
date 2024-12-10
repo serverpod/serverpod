@@ -1,5 +1,5 @@
 import 'package:relic/src/headers/extension/string_list_extensions.dart';
-import 'package:relic/src/headers/typed/base/typed_header.dart';
+import 'package:relic/src/headers/typed/typed_headers.dart';
 
 /// A class representing the HTTP Cache-Control header.
 ///
@@ -93,7 +93,7 @@ class CacheControlHeader extends TypedHeader {
   final bool mustUnderstand;
 
   /// Constructs a [CacheControlHeader] instance with the specified directives.
-  const CacheControlHeader({
+  CacheControlHeader({
     this.noCache = false,
     this.noStore = false,
     this.maxAge,
@@ -110,14 +110,16 @@ class CacheControlHeader extends TypedHeader {
     this.minFresh,
     this.immutable = false,
     this.mustUnderstand = false,
-  })  : assert(
-          !(publicCache == true && privateCache == true),
-          'Must be either public or private',
-        ),
-        assert(
-          maxAge == null || staleWhileRevalidate == null,
-          'Cannot have both max-age and stale-while-revalidate directives',
-        );
+  }) {
+    if (publicCache == true && privateCache == true) {
+      throw FormatException('Must be either public or private');
+    }
+    if (maxAge != null && staleWhileRevalidate != null) {
+      throw FormatException(
+        'Cannot have both max-age and stale-while-revalidate directives',
+      );
+    }
+  }
 
   /// Parses the Cache-Control header value and returns a [CacheControlHeader] instance.
   ///

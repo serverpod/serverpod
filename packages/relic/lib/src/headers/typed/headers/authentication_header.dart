@@ -1,4 +1,4 @@
-import 'package:relic/src/headers/typed/base/typed_header.dart';
+import 'package:relic/src/headers/typed/typed_headers.dart';
 
 /// A class representing the HTTP Authentication header.
 class AuthenticationHeader extends TypedHeader {

@@ -1,4 +1,4 @@
-import 'package:relic/src/headers/typed/base/typed_header.dart';
+import 'package:relic/src/headers/typed/typed_headers.dart';
 
 /// A class representing the HTTP Range header.
 ///
@@ -90,13 +90,14 @@ class Range {
 
   /// Constructs a [Range] instance with the specified start and end of
   /// the range.
-  const Range({
+  Range({
     this.start,
     this.end,
-  }) : assert(
-          start != null || end != null,
-          'At least one of start or end must be specified',
-        );
+  }) {
+    if (start == null && end == null) {
+      throw FormatException('At least one of start or end must be specified');
+    }
+  }
 
   /// Converts the [Range] instance into a string representation suitable
   /// for HTTP headers.

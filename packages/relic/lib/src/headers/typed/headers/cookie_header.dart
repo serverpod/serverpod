@@ -1,5 +1,5 @@
 import 'package:relic/src/headers/extension/string_list_extensions.dart';
-import 'package:relic/src/headers/typed/base/typed_header.dart';
+import 'package:relic/src/headers/typed/typed_headers.dart';
 import 'package:collection/collection.dart';
 
 /// A class representing the HTTP Cookie header.
@@ -56,8 +56,14 @@ class Cookie {
   Cookie({
     required this.name,
     required this.value,
-  })  : assert(isNameValid(name), 'Invalid cookie name'),
-        assert(isValueValid(value), 'Invalid cookie value');
+  }) {
+    if (!isNameValid(name)) {
+      throw FormatException('Invalid cookie name');
+    }
+    if (!isValueValid(value)) {
+      throw FormatException('Invalid cookie value');
+    }
+  }
 
   factory Cookie.parse(String value) {
     final parts = value.split('=');

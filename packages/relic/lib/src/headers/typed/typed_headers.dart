@@ -1,4 +1,3 @@
-export 'package:relic/src/headers/typed/base/typed_header.dart';
 export 'package:relic/src/headers/typed/headers/authorization_header.dart';
 export 'package:relic/src/headers/typed/headers/content_range_header.dart';
 export 'package:relic/src/headers/typed/headers/cookie_header.dart';
@@ -38,3 +37,11 @@ export 'package:relic/src/headers/typed/headers/access_control_allow_origin_head
 export 'package:relic/src/headers/typed/headers/access_control_allow_headers_header.dart';
 export 'package:relic/src/headers/typed/headers/access_control_expose_headers_header.dart';
 export 'package:relic/src/headers/typed/headers/accept_header.dart';
+
+/// A typed header that can be converted to a header string.
+abstract class TypedHeader {
+  const TypedHeader();
+
+  /// Converts the header to a header string.
+  String toHeaderString();
+}
