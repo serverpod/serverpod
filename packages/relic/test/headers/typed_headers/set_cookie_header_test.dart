@@ -49,6 +49,67 @@ void main() {
     );
 
     test(
+      'when a Set-Cookie header with duplicate attributes is passed then server '
+      'responds with a bad request including a message that states the Max-Age is '
+      'supplied multiple times',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {
+              'set-cookie': 'sessionId=abc123; Max-Age=3600; Max-Age=7200'
+            },
+          ),
+          throwsA(isA<BadRequestException>().having(
+            (e) => e.message,
+            'message',
+            contains('Supplied multiple Max-Age attributes'),
+          )),
+        );
+      },
+    );
+
+    test(
+      'when a Set-Cookie header with an invalid SameSite attribute is passed then '
+      'server responds with a bad request including a message that states the '
+      'SameSite is supplied multiple times',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'set-cookie': 'sessionId=abc123; SameSite=Invalid'},
+          ),
+          throwsA(isA<BadRequestException>().having(
+            (e) => e.message,
+            'message',
+            contains('Invalid SameSite attribute'),
+          )),
+        );
+      },
+    );
+
+    test(
+      'when a Set-Cookie header with missing name and value is passed then server '
+      'responds with a bad request including a message that states the Name and Value '
+      'are supplied multiple times',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'set-cookie': 'sessionId=test; userId=42'},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Supplied multiple Name and Value attributes'),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
       'when a Set-Cookie header with invalid format is passed then the server responds '
       'with a bad request including a message that states the cookie format is invalid',
       () async {
@@ -75,7 +136,7 @@ void main() {
         expect(
           () async => await getServerRequestHeaders(
             server: server,
-            headers: {'set-cookie': 'invalid name=abc123; userId=42'},
+            headers: {'set-cookie': 'invalid name=abc123'},
           ),
           throwsA(
             isA<BadRequestException>().having(
@@ -95,7 +156,7 @@ void main() {
         expect(
           () async => await getServerRequestHeaders(
             server: server,
-            headers: {'set-cookie': 'sessionId=abc123; userId=42\x7F'},
+            headers: {'set-cookie': 'userId=42\x7F'},
           ),
           throwsA(
             isA<BadRequestException>().having(
@@ -109,101 +170,52 @@ void main() {
     );
 
     test(
-      'when a Set-Cookie header with an empty name is passed then the server responds '
-      'with a bad request including a message that states the cookie name is invalid',
-      () async {
-        expect(
-          () async => await getServerRequestHeaders(
-            server: server,
-            headers: {'set-cookie': '=abc123; userId=42'},
-          ),
-          throwsA(
-            isA<BadRequestException>().having(
-              (e) => e.message,
-              'message',
-              contains('Invalid cookie name'),
-            ),
-          ),
-        );
-      },
-    );
-
-    test(
-      'when a valid Set-Cookie header is passed then it should parse the cookies correctly',
+      'when a Set-Cookie header with an empty name is passed then it should parse the cookie correctly',
       () async {
         Headers headers = await getServerRequestHeaders(
           server: server,
-          headers: {'set-cookie': 'sessionId=abc123; userId=42'},
+          headers: {'set-cookie': '=abc123'},
         );
 
-        expect(
-          headers.setCookie?.cookies.map((c) => c.name).toList(),
-          equals(['sessionId', 'userId']),
-        );
-        expect(
-          headers.setCookie?.cookies.map((c) => c.value).toList(),
-          equals(['abc123', '42']),
-        );
+        expect(headers.setCookie?.name, isEmpty);
+        expect(headers.setCookie?.value, equals('abc123'));
       },
     );
 
     test(
-      'when a Cookie header with encoded characters in the value is passed then it should parse correctly',
-      () async {
-        Headers headers = await getServerRequestHeaders(
-          server: server,
-          headers: {'set-cookie': 'sessionId=abc%20123; userId=42'},
-        );
-
-        expect(
-          headers.setCookie?.cookies.map((c) => c.name).toList(),
-          equals(['sessionId', 'userId']),
-        );
-        expect(
-          headers.setCookie?.cookies.map((c) => c.value).toList(),
-          equals(['abc 123', '42']),
-        );
-      },
-    );
-
-    test(
-      'when a valid Set-Cookie header with duplicate cookies is passed then it should '
-      'parse the cookies correctly and remove the duplicates',
+      'when a Set-Cookie header with all attributes is passed then it should parse correctly',
       () async {
         Headers headers = await getServerRequestHeaders(
           server: server,
           headers: {
-            'set-cookie': 'sessionId=abc123; userId=42; sessionId=abc123'
+            'set-cookie':
+                'sessionId=abc123; Expires=Wed, 21 Oct 2025 07:28:00 GMT; Max-Age=3600; Domain=example.com; Path=/; Secure; HttpOnly; SameSite=Strict'
           },
         );
 
-        expect(
-          headers.setCookie?.cookies.map((c) => c.name).toList(),
-          equals(['sessionId', 'userId']),
-        );
-        expect(
-          headers.setCookie?.cookies.map((c) => c.value).toList(),
-          equals(['abc123', '42']),
-        );
+        expect(headers.setCookie?.name, equals('sessionId'));
+        expect(headers.setCookie?.value, equals('abc123'));
+        expect(headers.setCookie?.expires, isNotNull);
+        expect(headers.setCookie?.maxAge, equals(3600));
+        expect(headers.setCookie?.domain.toString(), equals('example.com'));
+        expect(headers.setCookie?.path.toString(), equals('/'));
+        expect(headers.setCookie?.secure, isTrue);
+        expect(headers.setCookie?.httpOnly, isTrue);
+        expect(headers.setCookie?.sameSite?.name, equals(SameSite.strict.name));
       },
     );
 
     test(
-      'when a Set-Cookie header is passed with extra whitespace then it should parse the cookies correctly',
+      'when a Set-Cookie header with extra whitespace is passed then it should parse the cookies correctly',
       () async {
         Headers headers = await getServerRequestHeaders(
           server: server,
-          headers: {'set-cookie': ' sessionId=abc123 ; userId=42 '},
+          headers: {'set-cookie': ' sessionId=abc123 ; Secure '},
         );
 
-        expect(
-          headers.setCookie?.cookies.map((c) => c.name).toList(),
-          equals(['sessionId', 'userId']),
-        );
-        expect(
-          headers.setCookie?.cookies.map((c) => c.value).toList(),
-          equals(['abc123', '42']),
-        );
+        expect(headers.setCookie?.name, equals('sessionId'));
+        expect(headers.setCookie?.value, equals('abc123'));
+        expect(headers.setCookie?.secure, isTrue);
       },
     );
   });

@@ -155,7 +155,7 @@ abstract base class Headers {
   final AcceptRangesHeader? acceptRanges;
   final TransferEncodingHeader? transferEncoding;
   final CookieHeader? cookie;
-  final CookieHeader? setCookie;
+  final SetCookieHeader? setCookie;
 
   /// Security and Modern Headers
   final StrictTransportSecurityHeader? strictTransportSecurity;
@@ -437,7 +437,7 @@ abstract base class Headers {
       ),
       setCookie: dartIOHeaders.parseSingleValue(
         setCookieHeader,
-        onParse: CookieHeader.parse,
+        onParse: SetCookieHeader.parse,
       ),
       authorization: dartIOHeaders.parseSingleValue(
         authorizationHeader,
@@ -670,7 +670,6 @@ abstract base class Headers {
     Uri? referer,
     String? userAgent,
     CookieHeader? cookie,
-    CookieHeader? setCookie,
     TEHeader? te,
     UpgradeHeader? upgrade,
 
@@ -711,7 +710,6 @@ abstract base class Headers {
       referer: referer,
       userAgent: userAgent,
       cookie: cookie,
-      setCookie: setCookie,
       te: te,
       upgrade: upgrade,
       secFetchDest: secFetchDest,
@@ -767,8 +765,7 @@ abstract base class Headers {
     CustomHeaders? custom,
 
     // Security and Modern Headers
-    CookieHeader? cookie,
-    CookieHeader? setCookie,
+    SetCookieHeader? setCookie,
     StrictTransportSecurityHeader? strictTransportSecurity,
     ContentSecurityPolicyHeader? contentSecurityPolicy,
     ReferrerPolicyHeader? referrerPolicy,
@@ -814,7 +811,6 @@ abstract base class Headers {
       acceptRanges: acceptRanges,
       transferEncoding: transferEncoding,
       custom: custom ?? CustomHeaders.empty(),
-      cookie: cookie,
       setCookie: setCookie,
       strictTransportSecurity: strictTransportSecurity,
       contentSecurityPolicy: contentSecurityPolicy,
@@ -1184,7 +1180,7 @@ final class _HeadersImpl extends Headers {
           ? transferEncoding
           : this.transferEncoding,
       cookie: cookie is CookieHeader? ? cookie : this.cookie,
-      setCookie: setCookie is CookieHeader? ? setCookie : this.setCookie,
+      setCookie: setCookie is SetCookieHeader? ? setCookie : this.setCookie,
       custom: custom ?? this.custom,
 
       /// Security and Modern Headers

@@ -109,21 +109,20 @@ void main() {
     );
 
     test(
-      'when a Cookie header with an empty name is passed then the server responds '
-      'with a bad request including a message that states the cookie name is invalid',
+      'when a valid Cookie header is passed with an empty name then it should parse the cookies correctly',
       () async {
+        Headers headers = await getServerRequestHeaders(
+          server: server,
+          headers: {'cookie': '=abc123; userId=42'},
+        );
+
         expect(
-          () async => await getServerRequestHeaders(
-            server: server,
-            headers: {'cookie': '=abc123; userId=42'},
-          ),
-          throwsA(
-            isA<BadRequestException>().having(
-              (e) => e.message,
-              'message',
-              contains('Invalid cookie name'),
-            ),
-          ),
+          headers.cookie?.cookies.map((c) => c.name).toList(),
+          equals(['', 'userId']),
+        );
+        expect(
+          headers.cookie?.cookies.map((c) => c.value).toList(),
+          equals(['abc123', '42']),
         );
       },
     );
