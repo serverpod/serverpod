@@ -29,16 +29,40 @@ abstract interface class DatabaseQueryException implements DatabaseException {
 
   /// Returns the position in the query where the error occurred.
   int? get position;
+
+  @override
+  String toString() {
+    var details = [
+      'message: $message',
+      if (code != null) 'code: $code',
+      if (detail != null) 'detail: $detail',
+      if (hint != null) 'hint: $hint',
+      if (tableName != null) 'table: $tableName',
+      if (columnName != null) 'column: $columnName',
+      if (constraintName != null) 'constraint: $constraintName',
+      if (position != null) 'position: $position',
+    ].join(', ');
+    return 'DatabaseQueryException: { $details }';
+  }
 }
 
 /// Exception thrown when an insert row operation fails.
 abstract interface class DatabaseInsertRowException
-    implements DatabaseException {}
+    implements DatabaseException {
+  @override
+  String toString() => 'DatabaseInsertRowException: $message';
+}
 
 /// Exception thrown when an update row operation fails.
 abstract interface class DatabaseUpdateRowException
-    implements DatabaseException {}
+    implements DatabaseException {
+  @override
+  String toString() => 'DatabaseUpdateRowException: $message';
+}
 
 /// Exception thrown when a delete row operation fails.
 abstract interface class DatabaseDeleteRowException
-    implements DatabaseException {}
+    implements DatabaseException {
+  @override
+  String toString() => 'DatabaseDeleteRowException: $message';
+}
