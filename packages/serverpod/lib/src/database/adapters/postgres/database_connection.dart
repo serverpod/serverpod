@@ -396,43 +396,37 @@ class DatabaseConnection {
         numRowsAffected: result.affectedRows,
       );
       return result;
+    } on pg.ServerException catch (exception, trace) {
+      var message = switch (exception.code) {
+        ('42P01') =>
+          'Table not found, have you applied the database migration? (${exception.message})',
+        (_) => exception.message,
+      };
+
+      var serverpodException = _PgDatabaseQueryException.fromServerException(
+        exception,
+        messageOverride: message,
+      );
+
+      _logQuery(
+        session,
+        query,
+        startTime,
+        exception: serverpodException,
+        trace: trace,
+      );
+      throw serverpodException;
+    } on pg.PgException catch (exception, trace) {
+      var serverpodException = _PgDatabaseQueryException(exception.message);
+      _logQuery(
+        session,
+        query,
+        startTime,
+        exception: serverpodException,
+        trace: trace,
+      );
+      throw serverpodException;
     } catch (exception, trace) {
-      if (exception is pg.ServerException) {
-        var message = switch (exception.code) {
-          ('42P01') =>
-            'Table not found, have you applied the database migration? (${exception.message})',
-          (_) => exception.message,
-        };
-
-        var serverpodException = _PgDatabaseQueryException.fromServerException(
-          exception,
-          messageOverride: message,
-        );
-
-        _logQuery(
-          session,
-          query,
-          startTime,
-          exception: serverpodException,
-          trace: trace,
-        );
-        throw serverpodException;
-      }
-
-      if (exception is pg.PgException) {
-        var serverpodException = exception is pg.ServerException
-            ? _PgDatabaseQueryException.fromServerException(exception)
-            : _PgDatabaseQueryException(exception.message);
-        _logQuery(
-          session,
-          query,
-          startTime,
-          exception: serverpodException,
-          trace: trace,
-        );
-        throw serverpodException;
-      }
-
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }
