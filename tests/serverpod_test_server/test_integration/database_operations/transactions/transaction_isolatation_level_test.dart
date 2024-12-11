@@ -312,7 +312,10 @@ void main() async {
           settings: settings,
         );
 
-        expectLater(transaction1, throwsA(isA<DatabaseException>()));
+        expectLater(
+            transaction1,
+            throwsA(isA<DatabaseQueryException>().having(
+                (e) => e.code, 'code', '40001' /* Serialization failure */)));
         await transaction2;
         var data1AfterTransaction = await SimpleData.db.findById(
           session,

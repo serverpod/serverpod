@@ -122,7 +122,11 @@ void main() async {
     });
 
     test('then database exception is thrown', () async {
-      await expectLater(transactionFuture, throwsA(isA<DatabaseException>()));
+      await expectLater(
+        transactionFuture,
+        throwsA(isA<DatabaseQueryException>()
+            .having((e) => e.code, 'code', '3B001' /* Savepoint Exception */)),
+      );
     });
 
     test('then no data is persisted in the database', () async {
@@ -155,7 +159,11 @@ void main() async {
     });
 
     test('then database exception is thrown', () async {
-      await expectLater(transactionFuture, throwsA(isA<DatabaseException>()));
+      await expectLater(
+        transactionFuture,
+        throwsA(isA<DatabaseQueryException>()
+            .having((e) => e.code, 'code', '3B001' /* Savepoint Exception */)),
+      );
     });
 
     test('then no data is persisted in the database', () async {

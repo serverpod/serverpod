@@ -43,7 +43,8 @@ void main() async {
 
       expect(
         UniqueData.db.insert(session, data),
-        throwsA(isA<DatabaseException>()),
+        throwsA(isA<DatabaseQueryException>()
+            .having((e) => e.code, 'code', '23505' /* Unique violation */)),
       );
 
       var first = await UniqueData.db.findFirstRow(session,

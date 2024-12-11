@@ -13,8 +13,9 @@ void main() async {
       session.db.unsafeQuery('SELECT * FROM $randomName'),
       throwsA(
         allOf(
-          isA<DatabaseException>(),
-          predicate<DatabaseException>(
+          isA<DatabaseQueryException>()
+              .having((e) => e.code, 'code', '42P01' /* Undefined table */),
+          predicate<DatabaseQueryException>(
             (e) => e.message.contains(
                 'Table not found, have you applied the database migration? ('),
           ),
