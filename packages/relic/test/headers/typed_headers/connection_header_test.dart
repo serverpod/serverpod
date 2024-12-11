@@ -52,6 +52,27 @@ void main() {
     );
 
     test(
+      'when an invalid Connection header is passed then the server responds '
+      'with a bad request including a message that states the value '
+      'is invalid',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'connection': 'custom-directive'},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Invalid value'),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
       'when a Connection header with directives are passed then they should be parsed correctly',
       () async {
         Headers headers = await getServerRequestHeaders(
@@ -78,21 +99,6 @@ void main() {
         expect(
           headers.connection?.directives.map((d) => d.value),
           containsAll(['keep-alive', 'upgrade']),
-        );
-      },
-    );
-
-    test(
-      'when a custom connection directive is passed then it should be handled correctly',
-      () async {
-        Headers headers = await getServerRequestHeaders(
-          server: server,
-          headers: {'connection': 'custom-directive'},
-        );
-
-        expect(
-          headers.connection?.directives.map((d) => d.value),
-          contains('custom-directive'),
         );
       },
     );

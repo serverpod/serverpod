@@ -212,7 +212,7 @@ void main() {
         body: Body.fromString('1\r\na0\r\n\r\n'),
         headers: Headers.request(
           transferEncoding: TransferEncodingHeader(
-            encodings: [TransferEncoding('identity')],
+            encodings: [TransferEncoding.identity],
           ),
         ),
       );

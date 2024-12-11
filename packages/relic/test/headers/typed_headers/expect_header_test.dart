@@ -52,6 +52,24 @@ void main() {
     );
 
     test(
+      'when an invalid Expect header is passed then the server should respond with a bad request '
+      'including a message that states the value is invalid',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'expect': 'custom-directive'},
+          ),
+          throwsA(isA<BadRequestException>().having(
+            (e) => e.message,
+            'message',
+            contains('Invalid value'),
+          )),
+        );
+      },
+    );
+
+    test(
       'when a valid Expect header is passed then it should parse the directives correctly',
       () async {
         Headers headers = await getServerRequestHeaders(
@@ -62,21 +80,6 @@ void main() {
         expect(
           headers.expect?.value,
           contains('100-continue'),
-        );
-      },
-    );
-
-    test(
-      'when a custom Expect directive is passed then it should be handled correctly',
-      () async {
-        Headers headers = await getServerRequestHeaders(
-          server: server,
-          headers: {'expect': 'custom-directive'},
-        );
-
-        expect(
-          headers.expect?.value,
-          contains('custom-directive'),
         );
       },
     );

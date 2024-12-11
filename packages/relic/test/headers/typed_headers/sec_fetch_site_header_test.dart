@@ -49,6 +49,24 @@ void main() {
     );
 
     test(
+      'when an invalid Sec-Fetch-Site header is passed then the server should respond with a bad request '
+      'including a message that states the value is invalid',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'sec-fetch-site': 'custom-site'},
+          ),
+          throwsA(isA<BadRequestException>().having(
+            (e) => e.message,
+            'message',
+            contains('Invalid value'),
+          )),
+        );
+      },
+    );
+
+    test(
       'when a valid Sec-Fetch-Site header is passed then it should parse the site correctly',
       () async {
         Headers headers = await getServerRequestHeaders(
@@ -57,18 +75,6 @@ void main() {
         );
 
         expect(headers.secFetchSite?.site, equals('same-origin'));
-      },
-    );
-
-    test(
-      'when a Sec-Fetch-Site header with a custom site is passed then it should parse correctly',
-      () async {
-        Headers headers = await getServerRequestHeaders(
-          server: server,
-          headers: {'sec-fetch-site': 'custom-site'},
-        );
-
-        expect(headers.secFetchSite?.site, equals('custom-site'));
       },
     );
 

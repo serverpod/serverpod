@@ -49,6 +49,24 @@ void main() {
     );
 
     test(
+      'when an invalid Sec-Fetch-Dest header is passed then the server should respond with a bad request '
+      'including a message that states the value is invalid',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'sec-fetch-dest': 'custom-destination'},
+          ),
+          throwsA(isA<BadRequestException>().having(
+            (e) => e.message,
+            'message',
+            contains('Invalid value'),
+          )),
+        );
+      },
+    );
+
+    test(
       'when a valid Sec-Fetch-Dest header is passed then it should parse the destination correctly',
       () async {
         Headers headers = await getServerRequestHeaders(
@@ -57,18 +75,6 @@ void main() {
         );
 
         expect(headers.secFetchDest?.destination, equals('document'));
-      },
-    );
-
-    test(
-      'when a Sec-Fetch-Dest header with a custom destination is passed then it should parse correctly',
-      () async {
-        Headers headers = await getServerRequestHeaders(
-          server: server,
-          headers: {'sec-fetch-dest': 'custom-destination'},
-        );
-
-        expect(headers.secFetchDest?.destination, equals('custom-destination'));
       },
     );
 

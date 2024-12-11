@@ -62,7 +62,7 @@ class ConnectionHeaderType {
   final String value;
 
   /// Constructs a [ConnectionHeaderType] instance with the specified value.
-  const ConnectionHeaderType(this.value);
+  const ConnectionHeaderType._(this.value);
 
   /// Predefined connection directives.
   static const _keepAlive = 'keep-alive';
@@ -70,10 +70,10 @@ class ConnectionHeaderType {
   static const _upgrade = 'upgrade';
   static const _downgrade = 'downgrade';
 
-  static const keepAlive = ConnectionHeaderType(_keepAlive);
-  static const close = ConnectionHeaderType(_close);
-  static const upgrade = ConnectionHeaderType(_upgrade);
-  static const downgrade = ConnectionHeaderType(_downgrade);
+  static const keepAlive = ConnectionHeaderType._(_keepAlive);
+  static const close = ConnectionHeaderType._(_close);
+  static const upgrade = ConnectionHeaderType._(_upgrade);
+  static const downgrade = ConnectionHeaderType._(_downgrade);
 
   /// Parses a [value] and returns the corresponding [ConnectionHeaderType] instance.
   /// If the value does not match any predefined types, it returns a custom instance.
@@ -82,7 +82,7 @@ class ConnectionHeaderType {
     if (trimmed.isEmpty) {
       throw FormatException('Value cannot be empty');
     }
-    switch (trimmed.toLowerCase()) {
+    switch (trimmed) {
       case _keepAlive:
         return keepAlive;
       case _close:
@@ -92,7 +92,7 @@ class ConnectionHeaderType {
       case _downgrade:
         return downgrade;
       default:
-        return ConnectionHeaderType(trimmed);
+        throw FormatException('Invalid value');
     }
   }
 

@@ -49,6 +49,24 @@ void main() {
     );
 
     test(
+      'when an invalid Sec-Fetch-Mode header is passed then the server should respond with a bad request '
+      'including a message that states the value is invalid',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'sec-fetch-mode': 'custom-mode'},
+          ),
+          throwsA(isA<BadRequestException>().having(
+            (e) => e.message,
+            'message',
+            contains('Invalid value'),
+          )),
+        );
+      },
+    );
+
+    test(
       'when a valid Sec-Fetch-Mode header is passed then it should parse the mode correctly',
       () async {
         Headers headers = await getServerRequestHeaders(
@@ -57,18 +75,6 @@ void main() {
         );
 
         expect(headers.secFetchMode?.mode, equals('cors'));
-      },
-    );
-
-    test(
-      'when a Sec-Fetch-Mode header with a custom mode is passed then it should parse correctly',
-      () async {
-        Headers headers = await getServerRequestHeaders(
-          server: server,
-          headers: {'sec-fetch-mode': 'custom-mode'},
-        );
-
-        expect(headers.secFetchMode?.mode, equals('custom-mode'));
       },
     );
 

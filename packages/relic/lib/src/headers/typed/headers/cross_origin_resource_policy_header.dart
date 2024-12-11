@@ -8,16 +8,16 @@ class CrossOriginResourcePolicyHeader extends TypedHeader {
   final String policy;
 
   /// Constructs a [CrossOriginResourcePolicyHeader] instance with the specified value.
-  const CrossOriginResourcePolicyHeader(this.policy);
+  const CrossOriginResourcePolicyHeader._(this.policy);
 
   /// Predefined policy values.
   static const _sameOrigin = 'same-origin';
   static const _sameSite = 'same-site';
   static const _crossOrigin = 'cross-origin';
 
-  static const sameOrigin = CrossOriginResourcePolicyHeader(_sameOrigin);
-  static const sameSite = CrossOriginResourcePolicyHeader(_sameSite);
-  static const crossOrigin = CrossOriginResourcePolicyHeader(_crossOrigin);
+  static const sameOrigin = CrossOriginResourcePolicyHeader._(_sameOrigin);
+  static const sameSite = CrossOriginResourcePolicyHeader._(_sameSite);
+  static const crossOrigin = CrossOriginResourcePolicyHeader._(_crossOrigin);
 
   /// Parses a [value] and returns the corresponding [CrossOriginResourcePolicyHeader] instance.
   /// If the value does not match any predefined types, it returns a custom instance.
@@ -26,7 +26,7 @@ class CrossOriginResourcePolicyHeader extends TypedHeader {
     if (trimmed.isEmpty) {
       throw FormatException('Value cannot be empty');
     }
-    switch (trimmed.toLowerCase()) {
+    switch (trimmed) {
       case _sameOrigin:
         return sameOrigin;
       case _sameSite:
@@ -34,7 +34,7 @@ class CrossOriginResourcePolicyHeader extends TypedHeader {
       case _crossOrigin:
         return crossOrigin;
       default:
-        return CrossOriginResourcePolicyHeader(trimmed);
+        throw FormatException('Invalid value');
     }
   }
 

@@ -8,17 +8,17 @@ class CrossOriginOpenerPolicyHeader extends TypedHeader {
   final String policy;
 
   /// Constructs a [CrossOriginOpenerPolicyHeader] instance with the specified value.
-  const CrossOriginOpenerPolicyHeader(this.policy);
+  const CrossOriginOpenerPolicyHeader._(this.policy);
 
   /// Predefined policy values.
   static const _sameOrigin = 'same-origin';
   static const _sameOriginAllowPopups = 'same-origin-allow-popups';
   static const _unsafeNone = 'unsafe-none';
 
-  static const sameOrigin = CrossOriginOpenerPolicyHeader(_sameOrigin);
+  static const sameOrigin = CrossOriginOpenerPolicyHeader._(_sameOrigin);
   static const sameOriginAllowPopups =
-      CrossOriginOpenerPolicyHeader(_sameOriginAllowPopups);
-  static const unsafeNone = CrossOriginOpenerPolicyHeader(_unsafeNone);
+      CrossOriginOpenerPolicyHeader._(_sameOriginAllowPopups);
+  static const unsafeNone = CrossOriginOpenerPolicyHeader._(_unsafeNone);
 
   /// Parses a [value] and returns the corresponding [CrossOriginOpenerPolicyHeader] instance.
   /// If the value does not match any predefined types, it returns a custom instance.
@@ -28,7 +28,7 @@ class CrossOriginOpenerPolicyHeader extends TypedHeader {
       throw FormatException('Value cannot be empty');
     }
 
-    switch (trimmed.toLowerCase()) {
+    switch (trimmed) {
       case _sameOrigin:
         return sameOrigin;
       case _sameOriginAllowPopups:
@@ -36,7 +36,7 @@ class CrossOriginOpenerPolicyHeader extends TypedHeader {
       case _unsafeNone:
         return unsafeNone;
       default:
-        return CrossOriginOpenerPolicyHeader(trimmed);
+        throw FormatException('Invalid value');
     }
   }
 

@@ -8,17 +8,17 @@ class CrossOriginEmbedderPolicyHeader extends TypedHeader {
   final String policy;
 
   /// Constructs a [CrossOriginEmbedderPolicyHeader] instance with the specified value.
-  const CrossOriginEmbedderPolicyHeader(this.policy);
+  const CrossOriginEmbedderPolicyHeader._(this.policy);
 
   /// Predefined policy values.
   static const _unsafeNone = 'unsafe-none';
   static const _requireCorp = 'require-corp';
   static const _credentialless = 'credentialless';
 
-  static const unsafeNone = CrossOriginEmbedderPolicyHeader(_unsafeNone);
-  static const requireCorp = CrossOriginEmbedderPolicyHeader(_requireCorp);
+  static const unsafeNone = CrossOriginEmbedderPolicyHeader._(_unsafeNone);
+  static const requireCorp = CrossOriginEmbedderPolicyHeader._(_requireCorp);
   static const credentialless =
-      CrossOriginEmbedderPolicyHeader(_credentialless);
+      CrossOriginEmbedderPolicyHeader._(_credentialless);
 
   /// Parses a [value] and returns the corresponding [CrossOriginEmbedderPolicyHeader] instance.
   /// If the value does not match any predefined types, it returns a custom instance.
@@ -28,7 +28,7 @@ class CrossOriginEmbedderPolicyHeader extends TypedHeader {
       throw FormatException('Value cannot be empty');
     }
 
-    switch (trimmed.toLowerCase()) {
+    switch (trimmed) {
       case _unsafeNone:
         return unsafeNone;
       case _requireCorp:
@@ -36,7 +36,7 @@ class CrossOriginEmbedderPolicyHeader extends TypedHeader {
       case _credentialless:
         return credentialless;
       default:
-        return CrossOriginEmbedderPolicyHeader(trimmed);
+        throw FormatException('Invalid value');
     }
   }
 

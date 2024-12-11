@@ -8,7 +8,7 @@ class SecFetchDestHeader extends TypedHeader {
   final String destination;
 
   /// Private constructor for [SecFetchDestHeader].
-  const SecFetchDestHeader(this.destination);
+  const SecFetchDestHeader._(this.destination);
 
   /// Predefined destination values.
   static const _audio = 'audio';
@@ -35,29 +35,29 @@ class SecFetchDestHeader extends TypedHeader {
   static const _worker = 'worker';
   static const _xslt = 'xslt';
 
-  static const audio = SecFetchDestHeader(_audio);
-  static const audioworklet = SecFetchDestHeader(_audioworklet);
-  static const document = SecFetchDestHeader(_document);
-  static const embed = SecFetchDestHeader(_embed);
-  static const empty = SecFetchDestHeader(_empty);
-  static const fencedframe = SecFetchDestHeader(_fencedframe);
-  static const font = SecFetchDestHeader(_font);
-  static const frame = SecFetchDestHeader(_frame);
-  static const iframe = SecFetchDestHeader(_iframe);
-  static const image = SecFetchDestHeader(_image);
-  static const manifest = SecFetchDestHeader(_manifest);
-  static const object = SecFetchDestHeader(_object);
-  static const paintworklet = SecFetchDestHeader(_paintworklet);
-  static const report = SecFetchDestHeader(_report);
-  static const script = SecFetchDestHeader(_script);
-  static const serviceworker = SecFetchDestHeader(_serviceworker);
-  static const sharedworker = SecFetchDestHeader(_sharedworker);
-  static const style = SecFetchDestHeader(_style);
-  static const track = SecFetchDestHeader(_track);
-  static const video = SecFetchDestHeader(_video);
-  static const webidentity = SecFetchDestHeader(_webidentity);
-  static const worker = SecFetchDestHeader(_worker);
-  static const xslt = SecFetchDestHeader(_xslt);
+  static const audio = SecFetchDestHeader._(_audio);
+  static const audioworklet = SecFetchDestHeader._(_audioworklet);
+  static const document = SecFetchDestHeader._(_document);
+  static const embed = SecFetchDestHeader._(_embed);
+  static const empty = SecFetchDestHeader._(_empty);
+  static const fencedframe = SecFetchDestHeader._(_fencedframe);
+  static const font = SecFetchDestHeader._(_font);
+  static const frame = SecFetchDestHeader._(_frame);
+  static const iframe = SecFetchDestHeader._(_iframe);
+  static const image = SecFetchDestHeader._(_image);
+  static const manifest = SecFetchDestHeader._(_manifest);
+  static const object = SecFetchDestHeader._(_object);
+  static const paintworklet = SecFetchDestHeader._(_paintworklet);
+  static const report = SecFetchDestHeader._(_report);
+  static const script = SecFetchDestHeader._(_script);
+  static const serviceworker = SecFetchDestHeader._(_serviceworker);
+  static const sharedworker = SecFetchDestHeader._(_sharedworker);
+  static const style = SecFetchDestHeader._(_style);
+  static const track = SecFetchDestHeader._(_track);
+  static const video = SecFetchDestHeader._(_video);
+  static const webidentity = SecFetchDestHeader._(_webidentity);
+  static const worker = SecFetchDestHeader._(_worker);
+  static const xslt = SecFetchDestHeader._(_xslt);
 
   /// Parses a [value] and returns the corresponding [SecFetchDestHeader] instance.
   /// If the value does not match any predefined types, it returns a custom instance.
@@ -115,7 +115,7 @@ class SecFetchDestHeader extends TypedHeader {
       case _xslt:
         return xslt;
       default:
-        return SecFetchDestHeader(trimmed);
+        throw FormatException('Invalid value');
     }
   }
 

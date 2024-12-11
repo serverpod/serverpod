@@ -68,8 +68,8 @@ class ClearSiteDataType {
   /// The string representation of the Clear-Site-Data type.
   final String value;
 
-  /// Private constructor for [ClearSiteDataType].
-  const ClearSiteDataType(this.value);
+  /// Private constructor for [ClearSiteDataType].P
+  const ClearSiteDataType._(this.value);
 
   /// Predefined Clear-Site-Data types.
   static const _cache = 'cache';
@@ -77,10 +77,10 @@ class ClearSiteDataType {
   static const _storage = 'storage';
   static const _executionContexts = 'executionContexts';
 
-  static const cache = ClearSiteDataType(_cache);
-  static const cookies = ClearSiteDataType(_cookies);
-  static const storage = ClearSiteDataType(_storage);
-  static const executionContexts = ClearSiteDataType(_executionContexts);
+  static const cache = ClearSiteDataType._(_cache);
+  static const cookies = ClearSiteDataType._(_cookies);
+  static const storage = ClearSiteDataType._(_storage);
+  static const executionContexts = ClearSiteDataType._(_executionContexts);
 
   /// Parses a [value] and returns the corresponding [ClearSiteDataType] instance.
   /// If the value does not match any predefined types, it returns a custom instance.
@@ -99,7 +99,7 @@ class ClearSiteDataType {
       case _executionContexts:
         return executionContexts;
       default:
-        return ClearSiteDataType(trimmed);
+        throw FormatException('Invalid value');
     }
   }
 

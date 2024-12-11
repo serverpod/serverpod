@@ -9,12 +9,12 @@ class ExpectHeader extends TypedHeader {
   final String value;
 
   /// Constructs an [ExpectHeader] instance with the specified value.
-  const ExpectHeader(this.value);
+  const ExpectHeader._(this.value);
 
   /// Predefined expectation directives.
   static const _continue100 = '100-continue';
 
-  static const continue100 = ExpectHeader(_continue100);
+  static const continue100 = ExpectHeader._(_continue100);
 
   /// Parses a [value] and returns the corresponding [ExpectHeader] instance.
   /// If the value does not match any predefined types, it returns a custom instance.
@@ -27,7 +27,7 @@ class ExpectHeader extends TypedHeader {
       case _continue100:
         return continue100;
       default:
-        return ExpectHeader(trimmed);
+        throw FormatException('Invalid value');
     }
   }
 

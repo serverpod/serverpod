@@ -49,6 +49,24 @@ void main() {
     );
 
     test(
+      'when an invalid Referrer-Policy header is passed then the server should respond with a bad request '
+      'including a message that states the value is invalid',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'referrer-policy': 'invalid-value'},
+          ),
+          throwsA(isA<BadRequestException>().having(
+            (e) => e.message,
+            'message',
+            contains('Invalid value'),
+          )),
+        );
+      },
+    );
+
+    test(
       'when a valid Referrer-Policy header is passed then it should parse the policy correctly',
       () async {
         Headers headers = await getServerRequestHeaders(
@@ -57,18 +75,6 @@ void main() {
         );
 
         expect(headers.referrerPolicy?.directive, equals('no-referrer'));
-      },
-    );
-
-    test(
-      'when a Referrer-Policy header with a custom directive is passed then it should parse correctly',
-      () async {
-        Headers headers = await getServerRequestHeaders(
-          server: server,
-          headers: {'referrer-policy': 'custom-directive'},
-        );
-
-        expect(headers.referrerPolicy?.directive, equals('custom-directive'));
       },
     );
 

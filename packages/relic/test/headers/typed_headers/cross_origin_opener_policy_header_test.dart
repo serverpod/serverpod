@@ -50,6 +50,24 @@ void main() {
     );
 
     test(
+      'when an invalid Cross-Origin-Opener-Policy header is passed then the server should respond with a bad request '
+      'including a message that states the value is invalid',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'cross-origin-opener-policy': 'custom-policy'},
+          ),
+          throwsA(isA<BadRequestException>().having(
+            (e) => e.message,
+            'message',
+            contains('Invalid value'),
+          )),
+        );
+      },
+    );
+
+    test(
       'when a valid Cross-Origin-Opener-Policy header is passed then it should parse the policy correctly',
       () async {
         Headers headers = await getServerRequestHeaders(
@@ -58,21 +76,6 @@ void main() {
         );
 
         expect(headers.crossOriginOpenerPolicy?.policy, equals('same-origin'));
-      },
-    );
-
-    test(
-      'when a Cross-Origin-Opener-Policy header with a custom policy is passed then it should parse correctly',
-      () async {
-        Headers headers = await getServerRequestHeaders(
-          server: server,
-          headers: {'cross-origin-opener-policy': 'custom-policy'},
-        );
-
-        expect(
-          headers.crossOriginOpenerPolicy?.policy,
-          equals('custom-policy'),
-        );
       },
     );
 

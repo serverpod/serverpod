@@ -9,7 +9,7 @@ class ReferrerPolicyHeader extends TypedHeader {
   final String directive;
 
   /// Private constructor for [ReferrerPolicyHeader].
-  const ReferrerPolicyHeader(this.directive);
+  const ReferrerPolicyHeader._(this.directive);
 
   /// Predefined referrer policy directives.
   static const _noReferrer = 'no-referrer';
@@ -21,17 +21,17 @@ class ReferrerPolicyHeader extends TypedHeader {
   static const _strictOriginWhenCrossOrigin = 'strict-origin-when-cross-origin';
   static const _unsafeUrl = 'unsafe-url';
 
-  static const noReferrer = ReferrerPolicyHeader(_noReferrer);
+  static const noReferrer = ReferrerPolicyHeader._(_noReferrer);
   static const noReferrerWhenDowngrade =
-      ReferrerPolicyHeader(_noReferrerWhenDowngrade);
-  static const origin = ReferrerPolicyHeader(_origin);
+      ReferrerPolicyHeader._(_noReferrerWhenDowngrade);
+  static const origin = ReferrerPolicyHeader._(_origin);
   static const originWhenCrossOrigin =
-      ReferrerPolicyHeader(_originWhenCrossOrigin);
-  static const sameOrigin = ReferrerPolicyHeader(_sameOrigin);
-  static const strictOrigin = ReferrerPolicyHeader(_strictOrigin);
+      ReferrerPolicyHeader._(_originWhenCrossOrigin);
+  static const sameOrigin = ReferrerPolicyHeader._(_sameOrigin);
+  static const strictOrigin = ReferrerPolicyHeader._(_strictOrigin);
   static const strictOriginWhenCrossOrigin =
-      ReferrerPolicyHeader(_strictOriginWhenCrossOrigin);
-  static const unsafeUrl = ReferrerPolicyHeader(_unsafeUrl);
+      ReferrerPolicyHeader._(_strictOriginWhenCrossOrigin);
+  static const unsafeUrl = ReferrerPolicyHeader._(_unsafeUrl);
 
   /// Parses a [directive] and returns the corresponding [ReferrerPolicyHeader] instance.
   /// If the directive does not match any predefined types, it returns a custom instance.
@@ -59,7 +59,7 @@ class ReferrerPolicyHeader extends TypedHeader {
       case _unsafeUrl:
         return unsafeUrl;
       default:
-        return ReferrerPolicyHeader(value);
+        throw FormatException('Invalid value');
     }
   }
 

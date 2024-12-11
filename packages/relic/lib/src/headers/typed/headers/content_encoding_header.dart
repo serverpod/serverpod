@@ -54,7 +54,7 @@ class ContentEncoding {
   final String name;
 
   /// Constructs a [ContentEncoding] instance with the specified name.
-  const ContentEncoding(this.name);
+  const ContentEncoding._(this.name);
 
   /// Predefined content encodings.
   static const _gzip = 'gzip';
@@ -64,12 +64,12 @@ class ContentEncoding {
   static const _identity = 'identity';
   static const _zstd = 'zstd';
 
-  static const gzip = ContentEncoding(_gzip);
-  static const compress = ContentEncoding(_compress);
-  static const deflate = ContentEncoding(_deflate);
-  static const br = ContentEncoding(_br);
-  static const identity = ContentEncoding(_identity);
-  static const zstd = ContentEncoding(_zstd);
+  static const gzip = ContentEncoding._(_gzip);
+  static const compress = ContentEncoding._(_compress);
+  static const deflate = ContentEncoding._(_deflate);
+  static const br = ContentEncoding._(_br);
+  static const identity = ContentEncoding._(_identity);
+  static const zstd = ContentEncoding._(_zstd);
 
   /// Parses a [name] and returns the corresponding [ContentEncoding] instance.
   /// If the name does not match any predefined encodings, it returns a custom
@@ -79,7 +79,7 @@ class ContentEncoding {
     if (trimmed.isEmpty) {
       throw FormatException('Name cannot be empty');
     }
-    switch (trimmed.toLowerCase()) {
+    switch (trimmed) {
       case _gzip:
         return gzip;
       case _compress:
@@ -93,7 +93,7 @@ class ContentEncoding {
       case _zstd:
         return zstd;
       default:
-        return ContentEncoding(trimmed);
+        throw FormatException('Invalid value');
     }
   }
 

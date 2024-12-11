@@ -50,26 +50,20 @@ class TransferEncoding {
   final String name;
 
   /// Constructs a [TransferEncoding] instance with the specified name.
-  const TransferEncoding(this.name);
+  const TransferEncoding._(this.name);
 
   /// Predefined transfer encodings.
+  static const _identity = 'identity';
   static const _chunked = 'chunked';
   static const _compress = 'compress';
   static const _deflate = 'deflate';
   static const _gzip = 'gzip';
 
-  static const chunked = TransferEncoding(_chunked);
-  static const compress = TransferEncoding(_compress);
-  static const deflate = TransferEncoding(_deflate);
-  static const gzip = TransferEncoding(_gzip);
-
-  /// A list of all predefined transfer encodings.
-  static const List<TransferEncoding> values = [
-    chunked,
-    compress,
-    deflate,
-    gzip,
-  ];
+  static const identity = TransferEncoding._(_identity);
+  static const chunked = TransferEncoding._(_chunked);
+  static const compress = TransferEncoding._(_compress);
+  static const deflate = TransferEncoding._(_deflate);
+  static const gzip = TransferEncoding._(_gzip);
 
   /// Parses a [name] and returns the corresponding [TransferEncoding] instance.
   /// If the name does not match any predefined encodings, it returns a custom instance.
@@ -79,6 +73,8 @@ class TransferEncoding {
       throw FormatException('Name cannot be empty');
     }
     switch (trimmed) {
+      case _identity:
+        return identity;
       case _chunked:
         return chunked;
       case _compress:
@@ -88,7 +84,7 @@ class TransferEncoding {
       case _gzip:
         return gzip;
       default:
-        return TransferEncoding(trimmed);
+        throw FormatException('Invalid value');
     }
   }
 

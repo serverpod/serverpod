@@ -52,6 +52,27 @@ void main() {
     );
 
     test(
+      'when an invalid Content-Encoding header is passed then the server responds '
+      'with a bad request including a message that states the header value '
+      'is invalid',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'content-encoding': 'custom-encoding'},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Invalid value'),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
       'when a single valid encoding is passed then it should parse correctly',
       () async {
         Headers headers = await getServerRequestHeaders(
@@ -62,21 +83,6 @@ void main() {
         expect(
           headers.contentEncoding?.encodings.map((e) => e.name).toList(),
           equals(['gzip']),
-        );
-      },
-    );
-
-    test(
-      'when an invalid encoding is passed then it should parse as a custom encoding',
-      () async {
-        Headers headers = await getServerRequestHeaders(
-          server: server,
-          headers: {'content-encoding': 'custom-encoding'},
-        );
-
-        expect(
-          headers.contentEncoding?.encodings.map((e) => e.name).toList(),
-          equals(['custom-encoding']),
         );
       },
     );

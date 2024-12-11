@@ -49,6 +49,24 @@ void main() {
     );
 
     test(
+      'when an invalid Transfer-Encoding header is passed then the server should respond with a bad request '
+      'including a message that states the value is invalid',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'transfer-encoding': 'custom-encoding'},
+          ),
+          throwsA(isA<BadRequestException>().having(
+            (e) => e.message,
+            'message',
+            contains('Invalid value'),
+          )),
+        );
+      },
+    );
+
+    test(
       'when a valid Transfer-Encoding header is passed then it should parse the encodings correctly',
       () async {
         Headers headers = await getServerRequestHeaders(
@@ -75,21 +93,6 @@ void main() {
         expect(
           headers.transferEncoding?.encodings.map((e) => e.name),
           equals(['chunked', 'gzip']),
-        );
-      },
-    );
-
-    test(
-      'when a Transfer-Encoding header with custom encoding is passed then it should parse correctly',
-      () async {
-        Headers headers = await getServerRequestHeaders(
-          server: server,
-          headers: {'transfer-encoding': 'custom-encoding'},
-        );
-
-        expect(
-          headers.transferEncoding?.encodings.map((e) => e.name),
-          equals(['custom-encoding']),
         );
       },
     );

@@ -31,8 +31,9 @@ void main() {
     tearDown(() => server.close());
 
     test(
-      'when an empty Clear-Site-Data header is passed then the server should respond with a bad request '
-      'including a message that states the value cannot be empty',
+      'when an empty Clear-Site-Data header is passed then the server should '
+      'respond with a bad request including a message that states the value '
+      'cannot be empty',
       () async {
         expect(
           () async => await getServerRequestHeaders(
@@ -43,6 +44,25 @@ void main() {
             (e) => e.message,
             'message',
             contains('Value cannot be empty'),
+          )),
+        );
+      },
+    );
+
+    test(
+      'when an invalid Clear-Site-Data header is passed then the server should '
+      'respond with a bad request including a message that states the value '
+      'is invalid',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'clear-site-data': 'invalidValue'},
+          ),
+          throwsA(isA<BadRequestException>().having(
+            (e) => e.message,
+            'message',
+            contains('Invalid value'),
           )),
         );
       },

@@ -462,7 +462,7 @@ void main() {
             ),
             headers: Headers.response(
               transferEncoding: TransferEncodingHeader(
-                encodings: [TransferEncoding('identity')],
+                encodings: [TransferEncoding.identity],
               ),
             ),
           );

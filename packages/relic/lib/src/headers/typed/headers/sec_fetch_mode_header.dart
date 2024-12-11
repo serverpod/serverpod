@@ -8,7 +8,7 @@ class SecFetchModeHeader extends TypedHeader {
   final String mode;
 
   /// Private constructor for [SecFetchModeHeader].
-  const SecFetchModeHeader(this.mode);
+  const SecFetchModeHeader._(this.mode);
 
   /// Predefined mode values.
   static const _cors = 'cors';
@@ -18,12 +18,12 @@ class SecFetchModeHeader extends TypedHeader {
   static const _nestedNavigate = 'nested-navigate';
   static const _webSocket = 'websocket';
 
-  static const cors = SecFetchModeHeader(_cors);
-  static const noCors = SecFetchModeHeader(_noCors);
-  static const sameOrigin = SecFetchModeHeader(_sameOrigin);
-  static const navigate = SecFetchModeHeader(_navigate);
-  static const nestedNavigate = SecFetchModeHeader(_nestedNavigate);
-  static const webSocket = SecFetchModeHeader(_webSocket);
+  static const cors = SecFetchModeHeader._(_cors);
+  static const noCors = SecFetchModeHeader._(_noCors);
+  static const sameOrigin = SecFetchModeHeader._(_sameOrigin);
+  static const navigate = SecFetchModeHeader._(_navigate);
+  static const nestedNavigate = SecFetchModeHeader._(_nestedNavigate);
+  static const webSocket = SecFetchModeHeader._(_webSocket);
 
   /// Parses a [value] and returns the corresponding [SecFetchModeHeader] instance.
   /// If the value does not match any predefined types, it returns a custom instance.
@@ -47,7 +47,7 @@ class SecFetchModeHeader extends TypedHeader {
       case _webSocket:
         return webSocket;
       default:
-        return SecFetchModeHeader(trimmed);
+        throw FormatException('Invalid value');
     }
   }
 

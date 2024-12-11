@@ -9,7 +9,7 @@ class SecFetchSiteHeader extends TypedHeader {
   final String site;
 
   /// Private constructor for [SecFetchSiteHeader].
-  const SecFetchSiteHeader(this.site);
+  const SecFetchSiteHeader._(this.site);
 
   /// Predefined site values.
   static const _sameOrigin = 'same-origin';
@@ -17,10 +17,10 @@ class SecFetchSiteHeader extends TypedHeader {
   static const _crossSite = 'cross-site';
   static const _none = 'none';
 
-  static const sameOrigin = SecFetchSiteHeader(_sameOrigin);
-  static const sameSite = SecFetchSiteHeader(_sameSite);
-  static const crossSite = SecFetchSiteHeader(_crossSite);
-  static const none = SecFetchSiteHeader(_none);
+  static const sameOrigin = SecFetchSiteHeader._(_sameOrigin);
+  static const sameSite = SecFetchSiteHeader._(_sameSite);
+  static const crossSite = SecFetchSiteHeader._(_crossSite);
+  static const none = SecFetchSiteHeader._(_none);
 
   /// Parses a [value] and returns the corresponding [SecFetchSiteHeader] instance.
   /// If the value does not match any predefined types, it returns a custom instance.
@@ -40,7 +40,7 @@ class SecFetchSiteHeader extends TypedHeader {
       case _none:
         return none;
       default:
-        return SecFetchSiteHeader(trimmed);
+        throw FormatException('Invalid value');
     }
   }
 
