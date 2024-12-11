@@ -5,7 +5,7 @@ import 'package:relic/src/headers/custom/custom_headers.dart';
 import 'package:relic/src/headers/extension/string_list_extensions.dart';
 import 'package:relic/src/headers/parser/headers_parser.dart';
 import 'package:relic/src/headers/parser/common_types_parser.dart';
-import 'package:relic/src/method/method.dart';
+import 'package:relic/src/method/request_method.dart';
 
 import 'typed/typed_headers.dart';
 
@@ -112,9 +112,9 @@ abstract base class Headers {
   final AcceptEncodingHeader? acceptEncoding;
   final AcceptLanguageHeader? acceptLanguage;
   final List<String>? accessControlRequestHeaders;
-  final Method? accessControlRequestMethod;
+  final RequestMethod? accessControlRequestMethod;
   final int? age;
-  final List<Method>? allow;
+  final List<RequestMethod>? allow;
   final AuthorizationHeader? authorization;
   final AuthorizationHeader? proxyAuthorization;
   final ConnectionHeader? connection;
@@ -421,7 +421,7 @@ abstract base class Headers {
       ),
       accessControlRequestMethod: dartIOHeaders.parseSingleValue(
         accessControlRequestMethodHeader,
-        onParse: Method.parse,
+        onParse: RequestMethod.parse,
       ),
       age: dartIOHeaders.parseSingleValue(
         ageHeader,
@@ -656,7 +656,7 @@ abstract base class Headers {
     AcceptEncodingHeader? acceptEncoding,
     AcceptLanguageHeader? acceptLanguage,
     List<String>? accessControlRequestHeaders,
-    Method? accessControlRequestMethod,
+    RequestMethod? accessControlRequestMethod,
     int? age,
     AuthorizationHeader? authorization,
     ConnectionHeader? connection,
@@ -744,7 +744,7 @@ abstract base class Headers {
     AccessControlAllowOriginHeader? accessControlAllowOrigin,
     AccessControlExposeHeadersHeader? accessControlExposeHeaders,
     int? accessControlMaxAge,
-    List<Method>? allow,
+    List<RequestMethod>? allow,
     CacheControlHeader? cacheControl,
     ContentEncodingHeader? contentEncoding,
     ContentLanguageHeader? contentLanguage,
@@ -847,7 +847,7 @@ abstract base class Headers {
     AcceptEncodingHeader? acceptEncoding,
     AcceptLanguageHeader? acceptLanguage,
     List<String>? accessControlRequestHeaders,
-    Method? accessControlRequestMethod,
+    RequestMethod? accessControlRequestMethod,
     int? age,
     AuthorizationHeader? authorization,
     ConnectionHeader? connection,
@@ -870,7 +870,7 @@ abstract base class Headers {
     AccessControlAllowOriginHeader? accessControlAllowOrigin,
     AccessControlExposeHeadersHeader? accessControlExposeHeaders,
     int? accessControlMaxAge,
-    List<Method>? allow,
+    List<RequestMethod>? allow,
     CacheControlHeader? cacheControl,
     ContentEncodingHeader? contentEncoding,
     ContentLanguageHeader? contentLanguage,
@@ -1100,7 +1100,7 @@ final class _HeadersImpl extends Headers {
       accessControlRequestHeaders: accessControlRequestHeaders is List<String>?
           ? accessControlRequestHeaders
           : this.accessControlRequestHeaders,
-      accessControlRequestMethod: accessControlRequestMethod is Method?
+      accessControlRequestMethod: accessControlRequestMethod is RequestMethod?
           ? accessControlRequestMethod
           : this.accessControlRequestMethod,
       age: age is int? ? age : this.age,
@@ -1141,7 +1141,7 @@ final class _HeadersImpl extends Headers {
       accessControlMaxAge: accessControlMaxAge is int?
           ? accessControlMaxAge
           : this.accessControlMaxAge,
-      allow: allow is List<Method>? ? allow : this.allow,
+      allow: allow is List<RequestMethod>? ? allow : this.allow,
       cacheControl: cacheControl is CacheControlHeader?
           ? cacheControl
           : this.cacheControl,
@@ -1408,13 +1408,15 @@ final class _HeadersImpl extends Headers {
         Headers.serverHeader: server,
         Headers.userAgentHeader: userAgent,
         Headers.xPoweredByHeader: xPoweredBy,
+        Headers.accessControlRequestMethodHeader:
+            accessControlRequestMethod?.value,
       };
 
   /// List<String>-related headers
   Map<String, List<String>?> get _listStringHeadersMap =>
       <String, List<String>?>{
         Headers.viaHeader: via,
-        Headers.allowHeader: allow?.map((m) => m.toHeaderString()).toList(),
+        Headers.allowHeader: allow?.map((m) => m.value).toList(),
         Headers.accessControlRequestHeadersHeader: accessControlRequestHeaders,
         Headers.trailerHeader: trailer,
       };
@@ -1433,7 +1435,6 @@ final class _HeadersImpl extends Headers {
         Headers.fromHeader: from,
         Headers.acceptEncodingHeader: acceptEncoding,
         Headers.acceptLanguageHeader: acceptLanguage,
-        Headers.accessControlRequestMethodHeader: accessControlRequestMethod,
         Headers.authorizationHeader: authorization,
         Headers.connectionHeader: connection,
         Headers.expectHeader: expect,

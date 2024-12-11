@@ -7,7 +7,7 @@ import 'package:convert/convert.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:relic/src/headers/typed/typed_headers.dart';
-import 'package:relic/src/method/method.dart';
+import 'package:relic/src/method/request_method.dart';
 import 'package:relic/src/static/extension/datetime_extension.dart';
 
 import '../body/body.dart';
@@ -234,7 +234,7 @@ Future<Response> _handleFile(
 
   Body? body;
 
-  if (request.method != Method.head) {
+  if (request.method != RequestMethod.head) {
     body = Body.fromDataStream(
       file.openRead().cast<Uint8List>(),
       mimeType: await getContentType(),
@@ -304,7 +304,7 @@ Response? _fileRangeResponse(
   }
 
   Body? body;
-  if (request.method != Method.head) {
+  if (request.method != RequestMethod.head) {
     body = Body.fromDataStream(
       file.openRead(start, end + 1).cast<Uint8List>(),
       encoding: null,

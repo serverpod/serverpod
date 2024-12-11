@@ -51,6 +51,27 @@ void main() {
     );
 
     test(
+      'when an invalid method is passed then the server responds '
+      'with a bad request including a message that states the header value '
+      'is invalid',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'allow': 'CUSTOM'},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Invalid value'),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
       'when a valid Allow header is passed then it should parse the methods correctly',
       () async {
         Headers headers = await getServerRequestHeaders(
@@ -66,33 +87,17 @@ void main() {
     );
 
     test(
-      'when a custom method is included in the Allow header then it should '
-      'parse the methods correctly',
-      () async {
-        Headers headers = await getServerRequestHeaders(
-          server: server,
-          headers: {'allow': 'GET, CUSTOM'},
-        );
-
-        expect(
-          headers.allow?.map((method) => method.value).toList(),
-          equals(['GET', 'CUSTOM']),
-        );
-      },
-    );
-
-    test(
       'when an Allow header with duplicate methods is passed then it should '
       'parse the methods correctly and remove duplicates',
       () async {
         Headers headers = await getServerRequestHeaders(
           server: server,
-          headers: {'allow': 'GET, CUSTOM, GET'},
+          headers: {'allow': 'GET, POST, GET'},
         );
 
         expect(
           headers.allow?.map((method) => method.value).toList(),
-          equals(['GET', 'CUSTOM']),
+          equals(['GET', 'POST']),
         );
       },
     );

@@ -1,5 +1,5 @@
 import 'package:relic/relic.dart';
-import 'package:relic/src/method/method.dart';
+import 'package:relic/src/method/request_method.dart';
 import 'package:test/test.dart';
 
 import '../util/test_util.dart';
@@ -42,7 +42,7 @@ void main() {
         () async {
       final response = await handler(
         Request(
-          Method.get,
+          RequestMethod.get,
           localhostUri,
           headers: Headers.response(
             custom: CustomHeaders({
@@ -60,7 +60,7 @@ void main() {
         () async {
       final response = await handler(
         Request(
-          Method.get,
+          RequestMethod.get,
           localhostUri,
           headers: Headers.response(
             custom: CustomHeaders({
@@ -80,7 +80,7 @@ void main() {
         () async {
       final response = await handler(
         Request(
-          Method.get,
+          RequestMethod.get,
           localhostUri,
           headers: Headers.response(
             custom: CustomHeaders(

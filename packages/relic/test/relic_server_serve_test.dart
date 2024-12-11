@@ -10,7 +10,7 @@ import 'package:async/async.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' as parser;
 import 'package:relic/relic.dart';
-import 'package:relic/src/method/method.dart';
+import 'package:relic/src/method/request_method.dart';
 import 'package:relic/src/relic_server_serve.dart' as relic_server;
 import 'package:test/test.dart';
 
@@ -71,7 +71,7 @@ void main() {
     late Uri uri;
 
     await _scheduleServer((request) {
-      expect(request.method, Method.get);
+      expect(request.method, RequestMethod.get);
 
       expect(request.requestedUri, uri);
 
@@ -103,7 +103,7 @@ void main() {
     await _scheduleServer(
       expectAsync1((request) async {
         expect(request.body.contentLength, isNull);
-        expect(request.method, Method.post);
+        expect(request.method, RequestMethod.post);
         expect(
           request.headers,
           isNot(contains(HttpHeaders.transferEncodingHeader)),
@@ -121,7 +121,7 @@ void main() {
     );
 
     var request = http.StreamedRequest(
-      Method.post.value,
+      RequestMethod.post.value,
       Uri.http('localhost:$_serverPort', '/'),
     );
     request.sink.add([1, 2, 3, 4]);
@@ -214,7 +214,7 @@ void main() {
     await _scheduleServer((request) async {
       expect(request.mimeType, isNull);
       expect(request.encoding, isNull);
-      expect(request.method, Method.post);
+      expect(request.method, RequestMethod.post);
       expect(request.body.contentLength, isNull);
 
       var body = await request.readAsString();
@@ -232,7 +232,7 @@ void main() {
       expect(request.mimeType?.primaryType, 'text');
       expect(request.mimeType?.subType, 'plain');
       expect(request.encoding, utf8);
-      expect(request.method, Method.post);
+      expect(request.method, RequestMethod.post);
       expect(request.body.contentLength, 9);
 
       var body = await request.readAsString();
@@ -247,7 +247,7 @@ void main() {
 
   test('supports request hijacking', () async {
     await _scheduleServer((request) {
-      expect(request.method, Method.post);
+      expect(request.method, RequestMethod.post);
 
       request.hijack(expectAsync1((channel) {
         expect(channel.stream.first, completion(equals('Hello'.codeUnits)));
@@ -566,8 +566,8 @@ void main() {
       );
     });
 
-    var request =
-        http.Request(Method.get.value, Uri.http('localhost:$_serverPort', ''));
+    var request = http.Request(
+        RequestMethod.get.value, Uri.http('localhost:$_serverPort', ''));
 
     var response = await request.send();
     var stream = StreamQueue(utf8.decoder.bind(response.stream));
@@ -655,7 +655,7 @@ Future<http.Response> _get({
   String path = '',
 }) async {
   var request = http.Request(
-    Method.get.value,
+    RequestMethod.get.value,
     Uri.http('localhost:$_serverPort', path),
   );
 
@@ -670,7 +670,7 @@ Future<http.StreamedResponse> _post({
   String? body,
 }) {
   var request = http.Request(
-    Method.post.value,
+    RequestMethod.post.value,
     Uri.http('localhost:$_serverPort', ''),
   );
 

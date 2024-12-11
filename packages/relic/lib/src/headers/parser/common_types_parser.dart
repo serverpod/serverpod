@@ -3,7 +3,7 @@ import 'dart:io' as io;
 import 'package:http_parser/http_parser.dart';
 import 'package:relic/src/headers/custom/custom_headers.dart';
 import 'package:relic/src/headers/extension/string_list_extensions.dart';
-import 'package:relic/src/method/method.dart';
+import 'package:relic/src/method/request_method.dart';
 
 /// Parses a URI from the given [value] and returns it as a `Uri`.
 ///
@@ -142,12 +142,12 @@ List<String> parseStringList(List<String> values) {
 /// Parses a list of methods from the given [values] and returns it as a `List<Method>`.
 ///
 /// - Throws a [FormatException] if the resulting list is empty.
-List<Method> parseMethodList(List<String> values) {
+List<RequestMethod> parseMethodList(List<String> values) {
   var tempValues = values.splitTrimAndFilterUnique(emptyCheck: false);
   if (tempValues.isEmpty) {
     throw FormatException('Value cannot be empty');
   }
-  return tempValues.map(Method.parse).toList();
+  return tempValues.map(RequestMethod.parse).toList();
 }
 
 /// Parses custom headers from the [headers] and returns them as a [CustomHeaders] instance.

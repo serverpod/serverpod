@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:relic/relic.dart';
-import 'package:relic/src/method/method.dart';
+import 'package:relic/src/method/request_method.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:test/test.dart';
 
@@ -14,7 +14,7 @@ void main() {
   test(
     'Given a non-hijackable request when hijack is called then it throws a StateError',
     () {
-      var request = Request(Method.get, localhostUri);
+      var request = Request(RequestMethod.get, localhostUri);
       expect(() => request.hijack((_) {}), throwsStateError);
     },
   );
@@ -22,8 +22,8 @@ void main() {
   test(
     'Given a hijackable request when hijack is called then it throws a HijackException and calls onHijack',
     () {
-      var request =
-          Request(Method.get, localhostUri, onHijack: expectAsync1((callback) {
+      var request = Request(RequestMethod.get, localhostUri,
+          onHijack: expectAsync1((callback) {
         var streamController = StreamController<List<int>>();
         streamController.add(requestData);
         streamController.close();
@@ -48,7 +48,7 @@ void main() {
   test(
     'Given a hijackable request when hijack is called twice then it throws a StateError',
     () {
-      var request = Request(Method.get, localhostUri,
+      var request = Request(RequestMethod.get, localhostUri,
           onHijack: expectAsync1((_) {}, count: 1));
       expect(() => request.hijack((_) {}), throwsHijackException);
       expect(() => request.hijack((_) {}), throwsStateError);
@@ -59,7 +59,7 @@ void main() {
     'Given a hijackable request when hijack is not called then onHijack is not triggered',
     () {
       Request(
-        Method.get,
+        RequestMethod.get,
         localhostUri,
         onHijack: expectAsync1((_) {}, count: 0),
       );
@@ -69,8 +69,8 @@ void main() {
   test(
     'Given a hijackable request when hijack is called with empty data then it handles gracefully',
     () {
-      var request =
-          Request(Method.get, localhostUri, onHijack: expectAsync1((callback) {
+      var request = Request(RequestMethod.get, localhostUri,
+          onHijack: expectAsync1((callback) {
         var streamController = StreamController<List<int>>();
         streamController.close();
 

@@ -1,6 +1,6 @@
 import 'package:relic/relic.dart';
 import 'package:relic/src/logger/logger.dart';
-import 'package:relic/src/method/method.dart';
+import 'package:relic/src/method/request_method.dart';
 import 'package:test/test.dart';
 
 import '../util/test_util.dart';
@@ -20,7 +20,7 @@ void main() {
     expect(gotLog, isFalse);
     gotLog = true;
     expect(type, LoggerType.info);
-    expect(msg, contains(Method.get.value));
+    expect(msg, contains(RequestMethod.get.value));
     expect(msg, contains('[200]'));
   }
 

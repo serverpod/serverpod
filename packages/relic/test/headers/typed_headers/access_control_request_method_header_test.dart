@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:relic/src/method/method.dart';
+import 'package:relic/src/method/request_method.dart';
 import 'package:test/test.dart';
 import 'package:relic/src/headers/headers.dart';
 import 'package:relic/src/relic_server.dart';
@@ -55,6 +55,27 @@ void main() {
     );
 
     test(
+      'when an invalid method is passed then the server responds '
+      'with a bad request including a message that states the header value '
+      'is invalid',
+      () async {
+        expect(
+          () async => await getServerRequestHeaders(
+            server: server,
+            headers: {'access-control-request-method': 'CUSTOM'},
+          ),
+          throwsA(
+            isA<BadRequestException>().having(
+              (e) => e.message,
+              'message',
+              contains('Invalid value'),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
       'when a valid Access-Control-Request-Method header is passed then it '
       'should parse the method correctly',
       () async {
@@ -65,7 +86,7 @@ void main() {
 
         expect(
           headers.accessControlRequestMethod,
-          equals(Method.post),
+          equals(RequestMethod.post),
         );
       },
     );
@@ -79,20 +100,7 @@ void main() {
           headers: {'access-control-request-method': ' POST '},
         );
 
-        expect(headers.accessControlRequestMethod, equals(Method.post));
-      },
-    );
-
-    test(
-      'when a custom Access-Control-Request-Method header is passed then it '
-      'should parse the method correctly',
-      () async {
-        Headers headers = await getServerRequestHeaders(
-          server: server,
-          headers: {'access-control-request-method': 'CUSTOM'},
-        );
-
-        expect(headers.accessControlRequestMethod?.value, equals('CUSTOM'));
+        expect(headers.accessControlRequestMethod, equals(RequestMethod.post));
       },
     );
 

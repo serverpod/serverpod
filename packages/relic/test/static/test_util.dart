@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:path/path.dart' as p;
 import 'package:relic/relic.dart';
-import 'package:relic/src/method/method.dart';
+import 'package:relic/src/method/request_method.dart';
 import 'package:relic/src/static/extension/datetime_extension.dart';
 import 'package:test/test.dart';
 
@@ -14,7 +14,7 @@ Future<Response> makeRequest(
   String path, {
   String? handlerPath,
   Headers? headers,
-  Method method = Method.get,
+  RequestMethod method = RequestMethod.get,
 }) async {
   final rootedHandler = _rootHandler(handlerPath, handler);
   return rootedHandler(_fromPath(path, headers, method: method));
@@ -23,7 +23,7 @@ Future<Response> makeRequest(
 Request _fromPath(
   String path,
   Headers? headers, {
-  required Method method,
+  required RequestMethod method,
 }) =>
     Request(
       method,

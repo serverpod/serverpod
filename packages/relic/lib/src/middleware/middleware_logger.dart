@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:relic/src/logger/logger.dart';
-import 'package:relic/src/method/method.dart';
+import 'package:relic/src/method/request_method.dart';
 
 import '../hijack/exception/hijack_exception.dart';
 import 'middleware.dart';
@@ -86,7 +86,7 @@ String _message(
 String _errorMessage(
   DateTime requestTime,
   Uri requestedUri,
-  Method method,
+  RequestMethod method,
   Duration elapsedTime,
   Object error,
 ) {

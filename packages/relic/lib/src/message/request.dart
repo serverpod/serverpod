@@ -1,6 +1,6 @@
 import 'dart:io' as io;
 
-import 'package:relic/src/method/method.dart';
+import 'package:relic/src/method/request_method.dart';
 
 import '../body/body.dart';
 import 'package:stream_channel/stream_channel.dart';
@@ -31,7 +31,7 @@ class Request extends Message {
   final Uri url;
 
   /// The HTTP request method, such as "GET" or "POST".
-  final Method method;
+  final RequestMethod method;
 
   /// The URL path to the current handler.
   ///
@@ -112,7 +112,7 @@ class Request extends Message {
   ///
   /// See also [hijack].
   Request(
-    Method method,
+    RequestMethod method,
     Uri requestedUri, {
     io.HttpConnectionInfo? connectionInfo,
     String? protocolVersion,
@@ -145,7 +145,7 @@ class Request extends Message {
     String? poweredByHeader,
   }) {
     return Request(
-      Method.parse(request.method),
+      RequestMethod.parse(request.method),
       request.requestedUri,
       connectionInfo: request.connectionInfo,
       protocolVersion: request.protocolVersion,
