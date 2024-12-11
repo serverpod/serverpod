@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' as pg;
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/adapters/postgres/postgres_database_result.dart';
 import 'package:serverpod/src/database/adapters/postgres/postgres_result_parser.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
@@ -398,7 +399,7 @@ class DatabaseConnection {
       return result;
     } on pg.ServerException catch (exception, trace) {
       var message = switch (exception.code) {
-        ('42P01') =>
+        (PgErrorCode.undefinedTable) =>
           'Table not found, have you applied the database migration? (${exception.message})',
         (_) => exception.message,
       };

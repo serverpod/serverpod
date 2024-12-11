@@ -176,7 +176,7 @@ void main() {
         await expectLater(
           future,
           throwsA(isA<DatabaseQueryException>()
-              .having((e) => e.code, 'code', '23505' /* Unique violation */)),
+              .having((e) => e.code, 'code', PgErrorCode.uniqueViolation)),
         );
       });
 

@@ -124,8 +124,8 @@ void main() async {
     test('then database exception is thrown', () async {
       await expectLater(
         transactionFuture,
-        throwsA(isA<DatabaseQueryException>()
-            .having((e) => e.code, 'code', '3B001' /* Savepoint Exception */)),
+        throwsA(isA<DatabaseQueryException>().having(
+            (e) => e.code, 'code', PgErrorCode.invalidSavepointSpecification)),
       );
     });
 
@@ -161,8 +161,8 @@ void main() async {
     test('then database exception is thrown', () async {
       await expectLater(
         transactionFuture,
-        throwsA(isA<DatabaseQueryException>()
-            .having((e) => e.code, 'code', '3B001' /* Savepoint Exception */)),
+        throwsA(isA<DatabaseQueryException>().having(
+            (e) => e.code, 'code', PgErrorCode.invalidSavepointSpecification)),
       );
     });
 

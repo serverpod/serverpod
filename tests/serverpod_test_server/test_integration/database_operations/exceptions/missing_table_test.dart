@@ -14,7 +14,7 @@ void main() async {
       throwsA(
         allOf(
           isA<DatabaseQueryException>()
-              .having((e) => e.code, 'code', '42P01' /* Undefined table */),
+              .having((e) => e.code, 'code', PgErrorCode.undefinedTable),
           predicate<DatabaseQueryException>(
             (e) => e.message.contains(
                 'Table not found, have you applied the database migration? ('),

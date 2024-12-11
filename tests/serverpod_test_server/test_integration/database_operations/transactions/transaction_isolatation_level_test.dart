@@ -315,7 +315,7 @@ void main() async {
         expectLater(
             transaction1,
             throwsA(isA<DatabaseQueryException>().having(
-                (e) => e.code, 'code', '40001' /* Serialization failure */)));
+                (e) => e.code, 'code', PgErrorCode.serializationFailure)));
         await transaction2;
         var data1AfterTransaction = await SimpleData.db.findById(
           session,

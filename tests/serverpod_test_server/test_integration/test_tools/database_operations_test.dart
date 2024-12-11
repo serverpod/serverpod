@@ -447,8 +447,8 @@ void main() {
             failingInsert,
             throwsA(
               allOf(
-                isA<DatabaseQueryException>().having(
-                    (e) => e.code, 'code', '23505' /* Unique violation */),
+                isA<DatabaseQueryException>()
+                    .having((e) => e.code, 'code', PgErrorCode.uniqueViolation),
               ),
             ),
           );
