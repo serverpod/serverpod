@@ -1,3 +1,7 @@
+## 2.3.0-beta.2
+- fix: Adds additional diagnostic information to database query exceptions.
+- fix: Resolved an issue that caused premature closure of method stream websocket connections.
+
 ## 2.3.0-beta.1
 - feat: Adds support for transaction isolation levels.
 - feat: Adds typed interface for transaction savepoints.
