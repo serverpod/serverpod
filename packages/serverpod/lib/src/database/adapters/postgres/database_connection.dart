@@ -5,11 +5,12 @@ import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod/src/database/adapters/postgres/postgres_database_result.dart';
 import 'package:serverpod/src/database/adapters/postgres/postgres_result_parser.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
+import 'package:serverpod/src/database/concepts/exceptions.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
-import 'package:serverpod/src/database/exceptions.dart';
+import 'package:serverpod/src/database/postgres_error_codes.dart';
 import 'package:serverpod/src/database/sql_query_builder.dart';
 import 'package:uuid/uuid.dart';
 
@@ -19,6 +20,8 @@ import '../../concepts/expressions.dart';
 import '../../concepts/table.dart';
 import '../../database_pool_manager.dart';
 import '../../query_parameters.dart';
+
+part 'postgres_exceptions.dart';
 
 /// A connection to the database. In most cases the [Database] db object in
 /// the [Session] object should be used when connecting with the database.
@@ -158,7 +161,7 @@ class DatabaseConnection {
     );
 
     if (result.length != 1) {
-      throw DatabaseInsertRowException(
+      throw _PgDatabaseInsertRowException(
         'Failed to insert row, updated number of rows is ${result.length} != 1',
       );
     }
@@ -223,7 +226,7 @@ class DatabaseConnection {
     );
 
     if (updated.isEmpty) {
-      throw DatabaseUpdateRowException(
+      throw _PgDatabaseUpdateRowException(
         'Failed to update row, no rows updated',
       );
     }
@@ -264,7 +267,7 @@ class DatabaseConnection {
     );
 
     if (result.isEmpty) {
-      throw DatabaseDeleteRowException(
+      throw _PgDatabaseDeleteRowException(
         'Failed to delete row, no rows deleted.',
       );
     }
@@ -394,37 +397,37 @@ class DatabaseConnection {
         numRowsAffected: result.affectedRows,
       );
       return result;
+    } on pg.ServerException catch (exception, trace) {
+      var message = switch (exception.code) {
+        (PgErrorCode.undefinedTable) =>
+          'Table not found, have you applied the database migration? (${exception.message})',
+        (_) => exception.message,
+      };
+
+      var serverpodException = _PgDatabaseQueryException.fromServerException(
+        exception,
+        messageOverride: message,
+      );
+
+      _logQuery(
+        session,
+        query,
+        startTime,
+        exception: serverpodException,
+        trace: trace,
+      );
+      throw serverpodException;
+    } on pg.PgException catch (exception, trace) {
+      var serverpodException = _PgDatabaseQueryException(exception.message);
+      _logQuery(
+        session,
+        query,
+        startTime,
+        exception: serverpodException,
+        trace: trace,
+      );
+      throw serverpodException;
     } catch (exception, trace) {
-      if (exception is pg.ServerException) {
-        var message = switch (exception.code) {
-          ('42P01') =>
-            'Table not found, have you applied the database migration? (${exception.message})',
-          (_) => exception.message,
-        };
-
-        var serverpodException = DatabaseException(message);
-        _logQuery(
-          session,
-          query,
-          startTime,
-          exception: serverpodException,
-          trace: trace,
-        );
-        throw serverpodException;
-      }
-
-      if (exception is pg.PgException) {
-        var serverpodException = DatabaseException(exception.message);
-        _logQuery(
-          session,
-          query,
-          startTime,
-          exception: serverpodException,
-          trace: trace,
-        );
-        throw serverpodException;
-      }
-
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }

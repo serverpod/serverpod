@@ -14,15 +14,19 @@ class MethodStreaming extends Endpoint {
     }
   }
 
+  static Completer<StreamController<int>>? neverEndingStreamController;
   Stream<int> neverEndingStreamWithDelay(
     Session session,
     int millisecondsDelay,
-  ) async* {
-    int i = 0;
-    while (true) {
-      await Future.delayed(Duration(milliseconds: millisecondsDelay));
-      yield i++;
-    }
+  ) {
+    var controller = StreamController<int>();
+    neverEndingStreamController?.complete(controller);
+    controller.addStream(Stream.periodic(
+      Duration(milliseconds: millisecondsDelay),
+      (i) => i,
+    ));
+
+    return controller.stream;
   }
 
   Future<void> methodCallEndpoint(Session session) async {}
@@ -197,22 +201,22 @@ class MethodStreaming extends Endpoint {
     return completer.future;
   }
 
-  Stream<int> delayedStreamResponse(Session session, int delay) async* {
-    var uuid = Uuid().v4();
-    var completer = Completer<void>();
-    _delayedResponses[uuid] = completer;
+  static Completer<StreamController<int>>? delayedStreamResponseController;
+  Stream<int> delayedStreamResponse(Session session, int delay) {
+    var controller = StreamController<int>();
+    delayedStreamResponseController?.complete(controller);
 
     Future.delayed(Duration(seconds: delay), () {
-      _delayedResponses.remove(uuid)?.complete();
+      controller.add(42);
     });
 
-    await completer.future;
-
-    yield 42;
+    return controller.stream;
   }
 
+  static Completer<Session>? delayedNeverListenedInputStreamCompleter;
   Future<void> delayedNeverListenedInputStream(
       Session session, int delay, Stream<int> stream) async {
+    delayedNeverListenedInputStreamCompleter?.complete(session);
     var uuid = Uuid().v4();
     var completer = Completer<void>();
     _delayedResponses[uuid] = completer;
@@ -224,8 +228,10 @@ class MethodStreaming extends Endpoint {
     await completer.future;
   }
 
+  static Completer<Session>? delayedPausedInputStreamCompleter;
   Future<void> delayedPausedInputStream(
       Session session, int delay, Stream<int> stream) async {
+    delayedPausedInputStreamCompleter?.complete(session);
     var uuid = Uuid().v4();
     var completer = Completer<void>();
     _delayedResponses[uuid] = completer;
