@@ -3,7 +3,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 
 /// Represents the HTTP Strict-Transport-Security (HSTS) header for managing
 /// HSTS settings.
-class StrictTransportSecurityHeader extends TypedHeader {
+class StrictTransportSecurityHeader implements TypedHeader {
   /// The max-age directive specifies the time, in seconds, that the browser
   /// should remember that a site is only to be accessed using HTTPS.
   final int maxAge;

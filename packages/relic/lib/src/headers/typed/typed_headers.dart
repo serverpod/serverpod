@@ -39,7 +39,7 @@ export 'package:relic/src/headers/typed/headers/access_control_expose_headers_he
 export 'package:relic/src/headers/typed/headers/accept_header.dart';
 
 /// A typed header that can be converted to a header string.
-abstract class TypedHeader {
+abstract interface class TypedHeader {
   const TypedHeader();
 
   /// Converts the header to a header string.

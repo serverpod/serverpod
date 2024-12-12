@@ -5,7 +5,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 ///
 /// This class manages Permissions-Policy directives, providing functionality to parse,
 /// add, remove, and generate Permissions-Policy header values.
-class PermissionsPolicyHeader extends TypedHeader {
+class PermissionsPolicyHeader implements TypedHeader {
   /// A list of Permissions-Policy directives.
   final List<PermissionsPolicyDirective> directives;
 

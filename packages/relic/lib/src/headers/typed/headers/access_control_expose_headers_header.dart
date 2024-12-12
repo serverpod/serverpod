@@ -5,7 +5,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 ///
 /// This header specifies which headers can be exposed as part of the response
 /// by listing them explicitly or using a wildcard (`*`) to expose all headers.
-class AccessControlExposeHeadersHeader extends TypedHeader {
+class AccessControlExposeHeadersHeader implements TypedHeader {
   /// The list of headers that can be exposed.
   final List<String>? headers;
 

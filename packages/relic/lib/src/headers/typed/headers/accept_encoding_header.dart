@@ -4,7 +4,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 /// A class representing the HTTP Accept-Encoding header.
 ///
 /// This header specifies the content encoding that the client can understand.
-class AcceptEncodingHeader extends TypedHeader {
+class AcceptEncodingHeader implements TypedHeader {
   /// The list of encodings that are accepted.
   final List<EncodingQuality>? encodings;
 

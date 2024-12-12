@@ -4,7 +4,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 ///
 /// This header indicates the relationship between the origin of the request
 /// initiator and the origin of the requested resource.
-class SecFetchSiteHeader extends TypedHeader {
+class SecFetchSiteHeader implements TypedHeader {
   /// The site value of the request.
   final String site;
 

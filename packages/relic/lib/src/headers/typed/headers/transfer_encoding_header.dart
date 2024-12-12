@@ -5,7 +5,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 ///
 /// This class manages transfer encodings such as `chunked`, `compress`, `deflate`, and `gzip`.
 /// It provides functionality to parse and generate transfer encoding header values.
-class TransferEncodingHeader extends TypedHeader {
+class TransferEncodingHeader implements TypedHeader {
   /// A list of transfer encodings.
   final List<TransferEncoding> encodings;
 

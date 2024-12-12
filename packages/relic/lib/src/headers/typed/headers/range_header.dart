@@ -7,7 +7,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 /// request specific parts of a resource. It provides functionality to
 /// parse and generate range header values for different range units like
 /// bytes or custom units.
-class RangeHeader extends TypedHeader {
+class RangeHeader implements TypedHeader {
   /// The unit of the range (e.g., "bytes").
   final String unit;
 

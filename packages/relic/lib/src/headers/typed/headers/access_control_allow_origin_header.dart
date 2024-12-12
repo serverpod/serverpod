@@ -4,7 +4,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 ///
 /// This header specifies which origins are allowed to access the resource.
 /// It can be a specific origin or a wildcard (`*`) to allow any origin.
-class AccessControlAllowOriginHeader extends TypedHeader {
+class AccessControlAllowOriginHeader implements TypedHeader {
   /// The allowed origin URI, if specified.
   final Uri? origin;
 

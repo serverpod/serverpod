@@ -4,7 +4,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 /// A class representing the HTTP Clear-Site-Data header.
 ///
 /// This header specifies which types of browsing data should be cleared.
-class ClearSiteDataHeader extends TypedHeader {
+class ClearSiteDataHeader implements TypedHeader {
   /// The list of data types to be cleared.
   final List<ClearSiteDataType>? dataTypes;
 

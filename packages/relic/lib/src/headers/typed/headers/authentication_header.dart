@@ -1,7 +1,7 @@
 import 'package:relic/src/headers/typed/typed_headers.dart';
 
 /// A class representing the HTTP Authentication header.
-class AuthenticationHeader extends TypedHeader {
+class AuthenticationHeader implements TypedHeader {
   /// The authentication scheme (e.g., "Basic", "Bearer", "Digest").
   final String scheme;
 

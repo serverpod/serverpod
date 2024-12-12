@@ -6,7 +6,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 /// This class manages the list of headers that the response may vary on,
 /// and can also handle the wildcard value "*", which indicates that the
 /// response varies on all request headers.
-class VaryHeader extends TypedHeader {
+class VaryHeader implements TypedHeader {
   /// A list of headers that the response varies on.
   /// If the list contains only "*", it means all headers are varied on.
   final List<String>? fields;

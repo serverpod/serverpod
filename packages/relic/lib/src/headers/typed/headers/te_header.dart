@@ -5,7 +5,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 ///
 /// The TE header indicates the transfer encodings the client is willing to accept,
 /// optionally with quality values.
-class TEHeader extends TypedHeader {
+class TEHeader implements TypedHeader {
   /// The list of encodings with their quality values.
   final List<TeQuality> encodings;
 

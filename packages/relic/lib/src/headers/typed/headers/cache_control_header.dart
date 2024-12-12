@@ -6,7 +6,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 /// This class manages cache directives like `no-cache`, `no-store`, `max-age`,
 /// `must-revalidate`, etc. It supports parsing header values and generating
 /// the appropriate header string.
-class CacheControlHeader extends TypedHeader {
+class CacheControlHeader implements TypedHeader {
   // Cache-Control directive constants
   static const String _noCacheDirective = 'no-cache';
   static const String _noStoreDirective = 'no-store';

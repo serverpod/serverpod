@@ -3,7 +3,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 /// A class representing the HTTP Accept-Ranges header.
 ///
 /// This class manages the range units that the server supports.
-class AcceptRangesHeader extends TypedHeader {
+class AcceptRangesHeader implements TypedHeader {
   /// The range unit supported by the server, or `null` if no specific unit is supported.
   final String? rangeUnit;
 

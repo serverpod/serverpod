@@ -5,7 +5,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 ///
 /// This header specifies which HTTP headers can be used during the actual request
 /// by listing them explicitly or using a wildcard (`*`) to allow all headers.
-class AccessControlAllowHeadersHeader extends TypedHeader {
+class AccessControlAllowHeadersHeader implements TypedHeader {
   /// The list of headers that are allowed.
   final List<String>? headers;
 

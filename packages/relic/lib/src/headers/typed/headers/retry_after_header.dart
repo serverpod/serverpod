@@ -6,7 +6,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 /// This class manages both date-based and delay-based retry values.
 /// The Retry-After header can contain either an HTTP date or a delay in seconds
 /// indicating when the client should retry the request.
-class RetryAfterHeader extends TypedHeader {
+class RetryAfterHeader implements TypedHeader {
   /// The retry delay in seconds, if present.
   final int? delay;
 

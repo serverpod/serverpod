@@ -4,7 +4,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 ///
 /// This class manages the referrer policy, providing functionality to parse
 /// and generate referrer policy header values.
-class ReferrerPolicyHeader extends TypedHeader {
+class ReferrerPolicyHeader implements TypedHeader {
   /// The string representation of the referrer policy directive.
   final String directive;
 

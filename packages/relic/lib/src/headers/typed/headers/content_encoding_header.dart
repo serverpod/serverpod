@@ -6,7 +6,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 /// This class manages content encodings such as `gzip`, `compress`, `deflate`,
 /// `br`, and `identity`. It provides functionality to parse and generate
 /// content encoding header values.
-class ContentEncodingHeader extends TypedHeader {
+class ContentEncodingHeader implements TypedHeader {
   /// A list of content encodings.
   final List<ContentEncoding> encodings;
 

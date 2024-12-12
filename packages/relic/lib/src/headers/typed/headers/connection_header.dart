@@ -6,7 +6,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 /// This class manages connection directives, such as `keep-alive`, `close`, or multiple
 /// directives (e.g., `upgrade, keep-alive`). It provides functionality to parse and generate
 /// connection header values.
-class ConnectionHeader extends TypedHeader {
+class ConnectionHeader implements TypedHeader {
   /// A list of connection directives (e.g., `keep-alive`, `close`, `upgrade`).
   final List<ConnectionHeaderType> directives;
 

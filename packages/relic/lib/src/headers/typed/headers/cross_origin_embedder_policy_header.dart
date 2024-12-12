@@ -3,7 +3,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 /// A class representing the HTTP Cross-Origin-Embedder-Policy header.
 ///
 /// This header specifies the policy for embedding cross-origin resources.
-class CrossOriginEmbedderPolicyHeader extends TypedHeader {
+class CrossOriginEmbedderPolicyHeader implements TypedHeader {
   /// The policy value of the header.
   final String policy;
 

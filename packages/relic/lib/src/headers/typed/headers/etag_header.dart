@@ -5,7 +5,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 /// This class manages the ETag value, which can be either strong or weak.
 /// It provides functionality to parse the header value and construct the
 /// appropriate header string.
-class ETagHeader extends TypedHeader {
+class ETagHeader implements TypedHeader {
   /// The ETag value without quotes.
   final String value;
 

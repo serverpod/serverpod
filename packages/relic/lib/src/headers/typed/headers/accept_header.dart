@@ -4,7 +4,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 /// A class representing the HTTP Accept header.
 ///
 /// This class manages media ranges and their associated quality values.
-class AcceptHeader extends TypedHeader {
+class AcceptHeader implements TypedHeader {
   /// The list of media ranges accepted by the client.
   final List<MediaRange> mediaRanges;
 

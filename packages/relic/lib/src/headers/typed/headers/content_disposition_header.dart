@@ -7,7 +7,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 /// or `form-data`, and optional attributes like `filename`, `name`, and
 /// `filename*`. It provides functionality to parse the header value and
 /// construct the appropriate header string.
-class ContentDispositionHeader extends TypedHeader {
+class ContentDispositionHeader implements TypedHeader {
   /// The disposition type, usually "inline", "attachment", or "form-data".
   final String type;
 

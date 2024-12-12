@@ -4,7 +4,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 ///
 /// This class is used to manage byte ranges in HTTP requests or responses,
 /// including cases for unsatisfiable range requests.
-class ContentRangeHeader extends TypedHeader {
+class ContentRangeHeader implements TypedHeader {
   /// The unit of the range, e.g. "bytes".
   final String unit;
 

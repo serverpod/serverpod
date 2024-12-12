@@ -7,7 +7,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 /// This class serves as a blueprint for different types of authorization headers,
 /// such as Bearer and Basic, by defining a method to return the header value.
 /// The concrete subclasses handle specific header formats.
-abstract class AuthorizationHeader extends TypedHeader {
+abstract class AuthorizationHeader implements TypedHeader {
   /// Returns the value of the Authorization header as a string.
   String get headerValue;
 

@@ -7,7 +7,7 @@ import 'package:collection/collection.dart';
 /// A class representing the HTTP Cookie header.
 ///
 /// This class manages the parsing and representation of cookies.
-class CookieHeader extends TypedHeader {
+class CookieHeader implements TypedHeader {
   /// The list of cookies.
   final List<Cookie> cookies;
 
@@ -90,7 +90,7 @@ class Cookie {
 /// A class representing the HTTP Set-Cookie header.
 ///
 /// This class manages the parsing and representation of set cookie.
-class SetCookieHeader extends TypedHeader {
+class SetCookieHeader implements TypedHeader {
   /// The keys used for the Set-Cookie header.
   static const String _expires = 'Expires=';
   static const String _maxAge = 'Max-Age=';

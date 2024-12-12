@@ -5,7 +5,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 ///
 /// This class manages the protocols that the client supports for upgrading the
 /// connection.
-class UpgradeHeader extends TypedHeader {
+class UpgradeHeader implements TypedHeader {
   /// The list of protocols that the client supports.
   final List<UpgradeProtocol> protocols;
 

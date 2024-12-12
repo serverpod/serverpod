@@ -6,7 +6,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 /// The `From` header is used to indicate the email address of the user making the request.
 /// It usually contains a single email address, but in edge cases, it could contain multiple
 /// email addresses separated by commas.
-class FromHeader extends TypedHeader {
+class FromHeader implements TypedHeader {
   /// A list of email addresses provided in the `From` header.
   final List<String> emails;
 

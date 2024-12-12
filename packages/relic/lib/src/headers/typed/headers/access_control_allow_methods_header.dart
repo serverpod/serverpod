@@ -6,7 +6,7 @@ import 'package:relic/src/method/request_method.dart';
 ///
 /// This header specifies which methods are allowed when accessing the resource
 /// in response to a preflight request.
-class AccessControlAllowMethodsHeader extends TypedHeader {
+class AccessControlAllowMethodsHeader implements TypedHeader {
   /// The list of methods that are allowed.
   final List<RequestMethod>? methods;
 

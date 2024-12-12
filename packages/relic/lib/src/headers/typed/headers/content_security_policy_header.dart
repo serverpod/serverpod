@@ -5,7 +5,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 ///
 /// This class manages CSP directives, providing functionality to parse, add,
 /// remove, and generate CSP header values.
-class ContentSecurityPolicyHeader extends TypedHeader {
+class ContentSecurityPolicyHeader implements TypedHeader {
   /// A list of CSP directives.
   final List<ContentSecurityPolicyDirective> directives;
 

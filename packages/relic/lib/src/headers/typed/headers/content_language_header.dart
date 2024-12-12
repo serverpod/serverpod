@@ -4,7 +4,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 /// A class representing the HTTP Content-Language header.
 ///
 /// This class manages the language codes specified in the Content-Language header.
-class ContentLanguageHeader extends TypedHeader {
+class ContentLanguageHeader implements TypedHeader {
   /// The list of language codes specified in the header.
   final List<String> languages;
 

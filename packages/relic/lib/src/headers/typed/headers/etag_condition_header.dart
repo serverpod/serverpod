@@ -2,7 +2,7 @@ import 'package:relic/src/headers/extension/string_list_extensions.dart';
 import 'package:relic/src/headers/typed/typed_headers.dart';
 
 /// Base class for ETag-based conditional headers (If-Match and If-None-Match).
-abstract class ETagConditionHeader extends TypedHeader {
+abstract class ETagConditionHeader implements TypedHeader {
   /// The list of ETags to match against.
   final List<ETagHeader> etags;
 

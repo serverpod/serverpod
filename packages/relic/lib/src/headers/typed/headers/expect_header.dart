@@ -4,7 +4,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 ///
 /// This class manages the directive for the Expect header, such as `100-continue`.
 /// It provides functionality to parse and generate Expect header values.
-class ExpectHeader extends TypedHeader {
+class ExpectHeader implements TypedHeader {
   /// The string representation of the expectation directive.
   final String value;
 

@@ -4,7 +4,7 @@ import 'package:relic/src/headers/typed/typed_headers.dart';
 /// A class representing the HTTP Accept-Language header.
 ///
 /// This header specifies the natural languages that are preferred in the response.
-class AcceptLanguageHeader extends TypedHeader {
+class AcceptLanguageHeader implements TypedHeader {
   /// The list of languages that are accepted.
   final List<LanguageQuality>? languages;
 
