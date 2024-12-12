@@ -8,7 +8,6 @@
 - feat: Adds support for endpoint definition placement anywhere in server's `src` directory.
 - feat: Adds support for model definitions placement anywhere in server's `src` directory.
 - fix: Improves message transmission guarantee in method streams.
-- chore: Update `vm_service` dependency range.
 
 ## 2.2.2
  - fix: Fixes possible import issue in generated code when the same model name is used in different modules.
