@@ -1,5 +1,5 @@
 import 'package:http_parser/http_parser.dart';
-import 'package:relic/src/headers/typed/typed_headers.dart';
+import 'package:relic/src/headers/typed/typed_header_interface.dart';
 
 /// A class representing the HTTP Retry-After header.
 ///

@@ -1,5 +1,5 @@
 import 'package:relic/src/headers/extension/string_list_extensions.dart';
-import 'package:relic/src/headers/typed/typed_headers.dart';
+import 'package:relic/src/headers/typed/typed_header_interface.dart';
 
 /// A class representing the HTTP Access-Control-Allow-Headers header.
 ///

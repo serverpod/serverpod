@@ -1,6 +1,6 @@
 import 'package:relic/src/headers/extension/string_list_extensions.dart';
 import 'package:relic/src/headers/typed/headers/util/cookie_util.dart';
-import 'package:relic/src/headers/typed/typed_headers.dart';
+import 'package:relic/src/headers/typed/typed_header_interface.dart';
 import 'package:collection/collection.dart';
 
 /// A class representing the HTTP Cookie header.

@@ -5,6 +5,7 @@ import 'package:relic/src/headers/custom/custom_headers.dart';
 import 'package:relic/src/headers/extension/string_list_extensions.dart';
 import 'package:relic/src/headers/parser/headers_parser.dart';
 import 'package:relic/src/headers/parser/common_types_parser.dart';
+import 'package:relic/src/headers/typed/typed_header_interface.dart';
 import 'package:relic/src/method/request_method.dart';
 
 import 'typed/typed_headers.dart';

@@ -2,7 +2,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:relic/src/headers/extension/string_list_extensions.dart';
 import 'package:relic/src/headers/parser/common_types_parser.dart';
 import 'package:relic/src/headers/typed/headers/util/cookie_util.dart';
-import 'package:relic/src/headers/typed/typed_headers.dart';
+import 'package:relic/src/headers/typed/typed_header_interface.dart';
 
 /// A class representing the HTTP Set-Cookie header.
 ///

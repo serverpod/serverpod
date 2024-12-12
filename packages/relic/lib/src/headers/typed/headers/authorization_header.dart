@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:relic/src/headers/typed/typed_headers.dart';
+import 'package:relic/src/headers/typed/typed_header_interface.dart';
 
 /// An abstract base class representing an HTTP Authorization header.
 ///
