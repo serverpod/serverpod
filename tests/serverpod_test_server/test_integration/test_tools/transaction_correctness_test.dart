@@ -173,7 +173,11 @@ void main() {
         // If the top level transaction error is not caught this test will fail.
         // Therefore, this test validates that the exception is caught on the top level
         // and does not fail the dart test runner.
-        await expectLater(future, throwsA(isA<DatabaseException>()));
+        await expectLater(
+          future,
+          throwsA(isA<DatabaseQueryException>()
+              .having((e) => e.code, 'code', PgErrorCode.uniqueViolation)),
+        );
       });
 
       test(
