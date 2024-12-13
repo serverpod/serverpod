@@ -112,3 +112,18 @@ abstract class SealedHierarchiesProcessor {
     );
   }
 }
+
+/// An extension on `SerializableModelDefinition` to compute the file path
+/// where the model will be located.
+extension SerializableModelPath on SerializableModelDefinition {
+  /// Returns a String with the server or client path parts followed by
+  /// `.fileRef()`.
+  String getFullFilePath(GeneratorConfig config, bool serverCode) {
+    return p.joinAll([
+      ...serverCode
+          ? config.generatedServeModelPathParts
+          : config.generatedDartClientModelPathParts,
+      fileRef(),
+    ]);
+  }
+}
