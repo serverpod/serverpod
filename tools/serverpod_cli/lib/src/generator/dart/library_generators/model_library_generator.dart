@@ -60,14 +60,8 @@ class SerializableModelLibraryGenerator {
         if (classDefinition.isSealedTopNode) {
           for (var child in classDefinition.descendantClasses) {
             var childPath = p.relative(
-              p.joinAll([
-                ...child.subDirParts,
-                '${child.fileName}.dart',
-              ]),
-              from: p.dirname(p.joinAll([
-                ...classDefinition.subDirParts,
-                '${classDefinition.fileName}.dart'
-              ])),
+              child.fileRef(),
+              from: p.dirname(classDefinition.fileRef()),
             );
             libraryBuilder.directives.add(Directive.part(childPath));
           }
@@ -75,14 +69,8 @@ class SerializableModelLibraryGenerator {
 
         if (!classDefinition.isSealedTopNode && sealedTopNode != null) {
           var topNodePath = p.relative(
-            p.joinAll([
-              ...sealedTopNode.subDirParts,
-              '${sealedTopNode.fileName}.dart',
-            ]),
-            from: p.dirname(p.joinAll([
-              ...classDefinition.subDirParts,
-              '${classDefinition.fileName}.dart'
-            ])),
+            sealedTopNode.fileRef(),
+            from: p.dirname(classDefinition.fileRef()),
           );
           libraryBuilder.directives.add(Directive.partOf(topNodePath));
         }
