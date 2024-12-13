@@ -124,6 +124,18 @@ abstract class CompilationUnitHelpers {
     return tryFindExportDirective(unit, uri: uri) != null;
   }
 
+  /// This is a temporary workaround for this bug: https://github.com/dart-lang/sdk/issues/59629
+  /// In which `directive.uri.stringValue` returns the path on windows without separators.
+  /// Meaning on:
+  /// linux: `sub_dir/filename.dart` and `../filename.dart`
+  /// windows: `subdirfilename.dart` and `..filename.dart`
+  static void applyWindowsBugfix(String directiveUri, String uri) {
+    if (Platform.isWindows) {
+      directiveUri = directiveUri.replaceAll('/', '');
+      uri = uri.replaceAll('/', '');
+    }
+  }
+
   /// Returns [List<PartDirective>] if the [unit] contains a part directive with the
   /// given [uri], otherwise returns `null`.
   static PartDirective? tryFindPartDirective(
@@ -133,11 +145,7 @@ abstract class CompilationUnitHelpers {
     return unit.directives.whereType<PartDirective>().where((directive) {
       String directiveUri = directive.uri.stringValue!;
 
-      // Windows-specific: separator fix
-      if (Platform.isWindows) {
-        directiveUri = directiveUri.replaceAll('/', '');
-        uri = uri.replaceAll('/', '');
-      }
+      applyWindowsBugfix(directiveUri, uri);
 
       return directiveUri == uri;
     }).firstOrNull;
@@ -161,11 +169,7 @@ abstract class CompilationUnitHelpers {
     return unit.directives.whereType<PartOfDirective>().where((directive) {
       String directiveUri = directive.uri!.stringValue!;
 
-      // Windows-specific: separator fix
-      if (Platform.isWindows) {
-        directiveUri = directiveUri.replaceAll('/', '');
-        uri = uri.replaceAll('/', '');
-      }
+      applyWindowsBugfix(directiveUri, uri);
 
       return directiveUri == uri;
     }).firstOrNull;
