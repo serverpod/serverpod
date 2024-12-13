@@ -1,13 +1,10 @@
-import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
 
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/model_library_generator.dart';
-import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
-import 'package:serverpod_cli/src/generator/dart/library_generators/util/custom_allocators.dart';
-import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_filter_util.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
 
 /// A [CodeGenerator] that generates the client side dart code of a
 /// serverpod project.
@@ -24,51 +21,29 @@ class DartClientCodeGenerator extends CodeGenerator {
       config: config,
     );
 
-    var modelAllocatorContext =
-        <({SerializableModelDefinition model, Allocator? allocator})>[];
+    var modelAllocatorContext = ModelAllocatorContext();
 
     var clientClasses = models.where((element) => !element.serverOnly).toList();
 
-    var sealedHierarchies = ModelFilterUtil.getSealedHierarchies(clientClasses);
+    SealedHierarchiesProcessor.process(
+      modelAllocatorContext,
+      clientClasses,
+      config,
+    );
 
     var modelsWithoutSealedHierarchies =
-        ModelFilterUtil.getClassesWithoutSealedHierarchies(clientClasses);
-
-    for (var sealedHierarchy in sealedHierarchies) {
-      var topNode =
-          sealedHierarchy.firstWhere((element) => element.isSealedTopNode);
-
-      var importCollector = ImportCollector(
-        getGeneratedModelPath(topNode, config, false),
-      );
-
-      for (var model in sealedHierarchy) {
-        var currentPath = getGeneratedModelPath(model, config, false);
-
-        var partOfAllocator = PartOfAllocator(
-          currentPath: currentPath,
-          importCollector: importCollector,
-        );
-
-        modelAllocatorContext.add((
-          model: model,
-          allocator: model.isSealedTopNode
-              ? PartAllocator(partOfAllocator: partOfAllocator)
-              : partOfAllocator,
-        ));
-      }
-    }
+        SealedHierarchiesProcessor.getNonSealedClasses(clientClasses);
 
     for (var model in modelsWithoutSealedHierarchies) {
-      modelAllocatorContext.add((
-        model: model,
-        allocator: null,
-      ));
+      modelAllocatorContext.add(
+        model,
+        null,
+      );
     }
 
     return {
-      for (var entry in modelAllocatorContext)
-        getGeneratedModelPath(entry.model, config, false): clientSideGenerator
+      for (var entry in modelAllocatorContext.entries)
+        entry.model.getFullFilePath(config, false): clientSideGenerator
             .generateModelLibrary(entry.model)
             .generateCode(allocator: entry.allocator),
     };
