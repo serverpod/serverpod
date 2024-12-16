@@ -63,43 +63,21 @@ extension TableComparisons on TableDefinition {
     List<ComparisonWarning> mismatches = [];
 
     if (other.name != name) {
-      mismatches.add(
-        TableComparisonWarning(
-          name: 'name',
-          expected: name,
-          found: other.name,
-        ),
-      );
+      mismatches.add(TableComparisonWarning.nameMismatch(this, other));
     }
 
     if (other.tableSpace != tableSpace) {
-      mismatches.add(
-        TableComparisonWarning(
-          name: 'tablespace',
-          expected: tableSpace,
-          found: other.tableSpace,
-        ),
-      );
+      mismatches.add(TableComparisonWarning.tableSpaceMismatch(this, other));
     }
 
     if (other.schema != schema) {
-      mismatches.add(
-        TableComparisonWarning(
-          name: 'schema',
-          expected: schema,
-          found: other.schema,
-        ),
-      );
+      mismatches.add(TableComparisonWarning.schemaMismatch(this, other));
     }
 
-    if (managed != null && other.managed != null && managed != other.managed) {
-      mismatches.add(
-        TableComparisonWarning(
-          name: 'managed property',
-          expected: '$managed',
-          found: '${other.managed}',
-        ),
-      );
+    var managedMismatch =
+        managed != null && other.managed != null && managed != other.managed;
+    if (managedMismatch) {
+      mismatches.add(TableComparisonWarning.managedMismatch(this, other));
     }
 
     for (var column in columns) {
@@ -115,9 +93,11 @@ extension TableComparisons on TableDefinition {
       } else {
         var columnMismatches = column.like(otherColumn);
         if (columnMismatches.isNotEmpty) {
-          mismatches.add(ColumnComparisonWarning(
-            name: column.name,
-          ).addSubs(columnMismatches));
+          mismatches.add(
+            ColumnComparisonWarning(
+              name: column.name,
+            ).addSubs(columnMismatches),
+          );
         }
       }
     }
@@ -125,19 +105,15 @@ extension TableComparisons on TableDefinition {
     for (var index in indexes) {
       var otherIndex = other.findIndexNamed(index.indexName, ignoreCase: true);
       if (otherIndex == null) {
-        mismatches.add(
-          IndexComparisonWarning(
-            name: index.indexName,
-            expected: index.indexName,
-            found: null,
-          ),
-        );
+        mismatches.add(IndexComparisonWarning.missingIndex(index));
       } else {
         var indexMismatches = index.like(otherIndex, ignoreCase: true);
         if (indexMismatches.isNotEmpty) {
-          mismatches.add(IndexComparisonWarning(
-            name: index.indexName,
-          ).addSubs(indexMismatches));
+          mismatches.add(
+            IndexComparisonWarning(
+              name: index.indexName,
+            ).addSubs(indexMismatches),
+          );
         }
       }
     }
@@ -149,11 +125,7 @@ extension TableComparisons on TableDefinition {
       );
       if (otherForeignKey == null) {
         mismatches.add(
-          ForeignKeyComparisonWarning(
-            name: foreignKey.constraintName,
-            expected: foreignKey.constraintName,
-            found: null,
-          ),
+          ForeignKeyComparisonWarning.missingForeignKey(foreignKey),
         );
       } else {
         var foreignKeyMismatches =

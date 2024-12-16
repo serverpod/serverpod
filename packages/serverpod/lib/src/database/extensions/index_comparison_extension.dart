@@ -10,82 +10,46 @@ extension IndexComparisons on IndexDefinition {
   }) {
     List<IndexComparisonWarning> mismatches = [];
 
-    if (ignoreCase &&
-            indexName.toLowerCase() != other.indexName.toLowerCase() ||
-        !ignoreCase && indexName != other.indexName) {
-      mismatches.add(
-        IndexComparisonWarning(
-          name: 'name',
-          expected: indexName,
-          found: other.indexName,
-        ),
-      );
+    // Check if the name mismatch.
+    var ignoreCaseMismatch =
+        ignoreCase && indexName.toLowerCase() != other.indexName.toLowerCase();
+    var caseSensitiveMismatch = !ignoreCase && indexName != other.indexName;
+
+    if (ignoreCaseMismatch || caseSensitiveMismatch) {
+      mismatches.add(IndexComparisonWarning.nameMismatch(this, other));
     }
 
+    // Check if the type mismatch.
     if (type != other.type) {
-      mismatches.add(
-        IndexComparisonWarning(
-          name: 'type',
-          expected: type,
-          found: other.type,
-        ),
-      );
+      mismatches.add(IndexComparisonWarning.typeMismatch(this, other));
     }
 
+    // Check if the isUnique mismatch.
     if (isUnique != other.isUnique) {
-      mismatches.add(
-        IndexComparisonWarning(
-          name: 'isUnique',
-          expected: '$isUnique',
-          found: '${other.isUnique}',
-        ),
-      );
+      mismatches.add(IndexComparisonWarning.isUniqueMismatch(this, other));
     }
 
+    // Check if the isPrimary mismatch.
     if (isPrimary != other.isPrimary) {
-      mismatches.add(
-        IndexComparisonWarning(
-          name: 'isPrimary',
-          expected: '$isPrimary',
-          found: '${other.isPrimary}',
-        ),
-      );
+      mismatches.add(IndexComparisonWarning.isPrimaryMismatch(this, other));
     }
 
+    // Check if the predicate mismatch.
     if (predicate != other.predicate) {
-      mismatches.add(
-        IndexComparisonWarning(
-          name: 'predicate',
-          expected: predicate,
-          found: other.predicate,
-        ),
-      );
+      mismatches.add(IndexComparisonWarning.predicateMismatch(this, other));
     }
 
+    // Check if the tableSpace mismatch.
     if (tableSpace != other.tableSpace) {
-      mismatches.add(
-        IndexComparisonWarning(
-          name: 'tableSpace',
-          expected: tableSpace,
-          found: other.tableSpace,
-        ),
-      );
+      mismatches.add(IndexComparisonWarning.tableSpaceMismatch(this, other));
     }
 
+    // Check if the elements mismatch.
     if (elements.length != other.elements.length) {
-      mismatches.add(
-        IndexComparisonWarning(
-          name: 'elements',
-          expected: '${elements.length}',
-          found: '${other.elements.length}',
-        ),
-      );
+      mismatches.add(IndexComparisonWarning.elementsMismatch(this, other));
     } else {
       for (int i = 0; i < elements.length; i++) {
-        var elementMismatches = elements[i].like(other.elements[i]);
-        if (elementMismatches.isNotEmpty) {
-          mismatches.addAll(elementMismatches);
-        }
+        mismatches.addAll(elements[i].like(other.elements[i]));
       }
     }
 
@@ -100,23 +64,12 @@ extension IndexElementDefinitionComparison on IndexElementDefinition {
     List<IndexComparisonWarning> mismatches = [];
 
     if (type != other.type) {
-      mismatches.add(
-        IndexComparisonWarning(
-          name: 'element type',
-          expected: '$type',
-          found: '${other.type}',
-        ),
-      );
+      mismatches.add(IndexComparisonWarning.elementTypeMismatch(this, other));
     }
 
     if (definition != other.definition) {
-      mismatches.add(
-        IndexComparisonWarning(
-          name: 'element definition',
-          expected: definition,
-          found: other.definition,
-        ),
-      );
+      mismatches
+          .add(IndexComparisonWarning.elementDefinitionMismatch(this, other));
     }
 
     return mismatches;

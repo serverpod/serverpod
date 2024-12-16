@@ -7,44 +7,24 @@ extension ColumnComparisons on ColumnDefinition {
   List<ColumnComparisonWarning> like(ColumnDefinition other) {
     List<ColumnComparisonWarning> mismatches = [];
 
+    // Check if the name mismatch.
     if (name != other.name) {
-      mismatches.add(
-        ColumnComparisonWarning(
-          name: name,
-          expected: name,
-          found: other.name,
-        ),
-      );
+      mismatches.add(ColumnComparisonWarning.nameMismatch(this, other));
     }
 
+    // Check if the type mismatch.
     if (!columnType.like(other.columnType)) {
-      mismatches.add(
-        ColumnComparisonWarning(
-          name: 'type',
-          expected: '$columnType',
-          found: '${other.columnType}',
-        ),
-      );
+      mismatches.add(ColumnComparisonWarning.typeMismatch(this, other));
     }
 
+    // Check if the isNullable mismatch.
     if (isNullable != other.isNullable) {
-      mismatches.add(
-        ColumnComparisonWarning(
-          name: 'isNullable',
-          expected: '$isNullable',
-          found: '${other.isNullable}',
-        ),
-      );
+      mismatches.add(ColumnComparisonWarning.isNullableMismatch(this, other));
     }
 
+    // Check if the default value mismatch.
     if (columnDefault != other.columnDefault) {
-      mismatches.add(
-        ColumnComparisonWarning(
-          name: 'default value',
-          expected: '$columnDefault',
-          found: '${other.columnDefault}',
-        ),
-      );
+      mismatches.add(ColumnComparisonWarning.defaultValueMismatch(this, other));
     }
 
     return mismatches;

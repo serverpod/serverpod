@@ -1,3 +1,5 @@
+import 'package:serverpod/protocol.dart';
+
 /// A generic class representing a comparison warning or mismatch when comparing
 /// database entities (e.g., tables, columns, indexes, or foreign keys).
 ///
@@ -126,6 +128,54 @@ class TableComparisonWarning extends ComparisonWarning<TableComparisonWarning> {
     super.found,
   }) : super(type: 'Table');
 
+  /// Creates a new [TableComparisonWarning] instance for name mismatch.
+  factory TableComparisonWarning.nameMismatch(
+    TableDefinition expected,
+    TableDefinition found,
+  ) {
+    return TableComparisonWarning(
+      name: 'name',
+      expected: expected.name,
+      found: found.name,
+    );
+  }
+
+  /// Creates a new [TableComparisonWarning] instance for tableSpace mismatch.
+  factory TableComparisonWarning.tableSpaceMismatch(
+    TableDefinition expected,
+    TableDefinition found,
+  ) {
+    return TableComparisonWarning(
+      name: 'tablespace',
+      expected: expected.tableSpace,
+      found: found.tableSpace,
+    );
+  }
+
+  /// Creates a new [TableComparisonWarning] instance for schema mismatch.
+  factory TableComparisonWarning.schemaMismatch(
+    TableDefinition expected,
+    TableDefinition found,
+  ) {
+    return TableComparisonWarning(
+      name: 'schema',
+      expected: expected.schema,
+      found: found.schema,
+    );
+  }
+
+  /// Creates a new [TableComparisonWarning] instance for managed mismatch.
+  factory TableComparisonWarning.managedMismatch(
+    TableDefinition expected,
+    TableDefinition found,
+  ) {
+    return TableComparisonWarning(
+      name: 'managed',
+      expected: '${expected.managed}',
+      found: '${found.managed}',
+    );
+  }
+
   @override
   TableComparisonWarning withParent(TableComparisonWarning parent) {
     return TableComparisonWarning(
@@ -151,6 +201,54 @@ class ColumnComparisonWarning
     super.found,
   }) : super(type: 'Column');
 
+  /// Creates a new [ColumnComparisonWarning] instance for name mismatch.
+  factory ColumnComparisonWarning.nameMismatch(
+    ColumnDefinition expected,
+    ColumnDefinition found,
+  ) {
+    return ColumnComparisonWarning(
+      name: 'name',
+      expected: expected.name,
+      found: found.name,
+    );
+  }
+
+  /// Creates a new [ColumnComparisonWarning] instance for type mismatch.
+  factory ColumnComparisonWarning.typeMismatch(
+    ColumnDefinition expected,
+    ColumnDefinition found,
+  ) {
+    return ColumnComparisonWarning(
+      name: 'type',
+      expected: '${expected.columnType}',
+      found: '${found.columnType}',
+    );
+  }
+
+  /// Creates a new [ColumnComparisonWarning] instance for isNullable mismatch.
+  factory ColumnComparisonWarning.isNullableMismatch(
+    ColumnDefinition expected,
+    ColumnDefinition found,
+  ) {
+    return ColumnComparisonWarning(
+      name: 'isNullable',
+      expected: '${expected.isNullable}',
+      found: '${found.isNullable}',
+    );
+  }
+
+  /// Creates a new [ColumnComparisonWarning] instance for default value mismatch.
+  factory ColumnComparisonWarning.defaultValueMismatch(
+    ColumnDefinition expected,
+    ColumnDefinition found,
+  ) {
+    return ColumnComparisonWarning(
+      name: 'default value',
+      expected: '${expected.columnDefault}',
+      found: '${found.columnDefault}',
+    );
+  }
+
   @override
   ColumnComparisonWarning withParent(ColumnComparisonWarning parent) {
     return ColumnComparisonWarning(
@@ -174,6 +272,125 @@ class IndexComparisonWarning extends ComparisonWarning<IndexComparisonWarning> {
     super.expected,
     super.found,
   }) : super(type: 'Index');
+
+  /// Creates a new [IndexComparisonWarning] instance for missing index.
+  factory IndexComparisonWarning.missingIndex(
+    IndexDefinition index,
+  ) {
+    return IndexComparisonWarning(
+      name: index.indexName,
+      expected: index.indexName,
+      found: null,
+    );
+  }
+
+  /// Creates a new [IndexComparisonWarning] instance for name mismatch.
+  factory IndexComparisonWarning.nameMismatch(
+    IndexDefinition expected,
+    IndexDefinition found,
+  ) {
+    return IndexComparisonWarning(
+      name: 'name',
+      expected: expected.indexName,
+      found: found.indexName,
+    );
+  }
+
+  /// Creates a new [IndexComparisonWarning] instance for type mismatch.
+  factory IndexComparisonWarning.typeMismatch(
+    IndexDefinition expected,
+    IndexDefinition found,
+  ) {
+    return IndexComparisonWarning(
+      name: 'type',
+      expected: expected.type,
+      found: found.type,
+    );
+  }
+
+  /// Creates a new [IndexComparisonWarning] instance for isUnique mismatch.
+  factory IndexComparisonWarning.isUniqueMismatch(
+    IndexDefinition expected,
+    IndexDefinition found,
+  ) {
+    return IndexComparisonWarning(
+      name: 'isUnique',
+      expected: '${expected.isUnique}',
+      found: '${found.isUnique}',
+    );
+  }
+
+  /// Creates a new [IndexComparisonWarning] instance for isPrimary mismatch.
+  factory IndexComparisonWarning.isPrimaryMismatch(
+    IndexDefinition expected,
+    IndexDefinition found,
+  ) {
+    return IndexComparisonWarning(
+      name: 'isPrimary',
+      expected: '${expected.isPrimary}',
+      found: '${found.isPrimary}',
+    );
+  }
+
+  /// Creates a new [IndexComparisonWarning] instance for predicate mismatch.
+  factory IndexComparisonWarning.predicateMismatch(
+    IndexDefinition expected,
+    IndexDefinition found,
+  ) {
+    return IndexComparisonWarning(
+      name: 'predicate',
+      expected: expected.predicate,
+      found: found.predicate,
+    );
+  }
+
+  /// Creates a new [IndexComparisonWarning] instance for tableSpace mismatch.
+  factory IndexComparisonWarning.tableSpaceMismatch(
+    IndexDefinition expected,
+    IndexDefinition found,
+  ) {
+    return IndexComparisonWarning(
+      name: 'tableSpace',
+      expected: expected.tableSpace,
+      found: found.tableSpace,
+    );
+  }
+
+  /// Creates a new [IndexComparisonWarning] instance for elements mismatch.
+  factory IndexComparisonWarning.elementsMismatch(
+    IndexDefinition expected,
+    IndexDefinition found,
+  ) {
+    return IndexComparisonWarning(
+      name: 'elements',
+      expected: '${expected.elements.length}',
+      found: '${found.elements.length}',
+    );
+  }
+
+  /// Creates a new [IndexComparisonWarning] instance for element type mismatch.
+  factory IndexComparisonWarning.elementTypeMismatch(
+    IndexElementDefinition expected,
+    IndexElementDefinition found,
+  ) {
+    return IndexComparisonWarning(
+      name: 'element type',
+      expected: '${expected.type}',
+      found: '${found.type}',
+    );
+  }
+
+  /// Creates a new [IndexComparisonWarning] instance for element definition mismatch.
+  factory IndexComparisonWarning.elementDefinitionMismatch(
+    IndexElementDefinition expected,
+    IndexElementDefinition found,
+  ) {
+    return IndexComparisonWarning(
+      name: 'element definition',
+      expected: expected.definition,
+      found: found.definition,
+    );
+  }
 
   @override
   IndexComparisonWarning withParent(IndexComparisonWarning parent) {
@@ -199,6 +416,113 @@ class ForeignKeyComparisonWarning
     super.expected,
     super.found,
   }) : super(type: 'Foreign key');
+
+  /// Creates a new [ForeignKeyComparisonWarning] instance for missing foreign key.
+  factory ForeignKeyComparisonWarning.missingForeignKey(
+    ForeignKeyDefinition foreignKey,
+  ) {
+    return ForeignKeyComparisonWarning(
+      name: foreignKey.constraintName,
+      expected: foreignKey.constraintName,
+      found: null,
+    );
+  }
+
+  /// Creates a new [ForeignKeyComparisonWarning] instance for name mismatch.
+  factory ForeignKeyComparisonWarning.nameMismatch(
+    ForeignKeyDefinition expected,
+    ForeignKeyDefinition found,
+  ) {
+    return ForeignKeyComparisonWarning(
+      name: 'name',
+      expected: expected.constraintName,
+      found: found.constraintName,
+    );
+  }
+
+  /// Creates a new [ForeignKeyComparisonWarning] instance for columns mismatch.
+  factory ForeignKeyComparisonWarning.columnsMismatch(
+    ForeignKeyDefinition expected,
+    ForeignKeyDefinition found,
+  ) {
+    return ForeignKeyComparisonWarning(
+      name: 'columns',
+      expected: '${expected.columns}',
+      found: '${found.columns}',
+    );
+  }
+
+  /// Creates a new [ForeignKeyComparisonWarning] instance for reference table mismatch.
+  factory ForeignKeyComparisonWarning.referenceTableMismatch(
+    ForeignKeyDefinition expected,
+    ForeignKeyDefinition found,
+  ) {
+    return ForeignKeyComparisonWarning(
+      name: 'reference table',
+      expected: expected.referenceTable,
+      found: found.referenceTable,
+    );
+  }
+
+  /// Creates a new [ForeignKeyComparisonWarning] instance for reference table schema mismatch.
+  factory ForeignKeyComparisonWarning.referenceTableSchemaMismatch(
+    ForeignKeyDefinition expected,
+    ForeignKeyDefinition found,
+  ) {
+    return ForeignKeyComparisonWarning(
+      name: 'reference table schema',
+      expected: expected.referenceTableSchema,
+      found: found.referenceTableSchema,
+    );
+  }
+
+  /// Creates a new [ForeignKeyComparisonWarning] instance for reference columns mismatch.
+  factory ForeignKeyComparisonWarning.referenceColumnsMismatch(
+    ForeignKeyDefinition expected,
+    ForeignKeyDefinition found,
+  ) {
+    return ForeignKeyComparisonWarning(
+      name: 'reference columns',
+      expected: '${expected.referenceColumns}',
+      found: '${found.referenceColumns}',
+    );
+  }
+
+  /// Creates a new [ForeignKeyComparisonWarning] instance for onUpdate mismatch.
+  factory ForeignKeyComparisonWarning.onUpdateMismatch(
+    ForeignKeyDefinition expected,
+    ForeignKeyDefinition found,
+  ) {
+    return ForeignKeyComparisonWarning(
+      name: 'onUpdate',
+      expected: '${expected.onUpdate}',
+      found: '${found.onUpdate}',
+    );
+  }
+
+  /// Creates a new [ForeignKeyComparisonWarning] instance for onDelete mismatch.
+  factory ForeignKeyComparisonWarning.onDeleteMismatch(
+    ForeignKeyDefinition expected,
+    ForeignKeyDefinition found,
+  ) {
+    return ForeignKeyComparisonWarning(
+      name: 'onDelete',
+      expected: '${expected.onDelete}',
+      found: '${found.onDelete}',
+    );
+  }
+
+  /// Creates a new [ForeignKeyComparisonWarning] instance for match type mismatch.
+  factory ForeignKeyComparisonWarning.matchTypeMismatch(
+    ForeignKeyDefinition expected,
+    ForeignKeyDefinition found,
+  ) {
+    return ForeignKeyComparisonWarning(
+      name: 'match type',
+      expected: '${expected.matchType}',
+      found: '${found.matchType}',
+    );
+  }
 
   @override
   ForeignKeyComparisonWarning withParent(ForeignKeyComparisonWarning parent) {

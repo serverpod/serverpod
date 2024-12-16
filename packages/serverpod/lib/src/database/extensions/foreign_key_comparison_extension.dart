@@ -11,90 +11,64 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
   }) {
     List<ForeignKeyComparisonWarning> mismatches = [];
 
-    if (ignoreCase &&
-            constraintName.toLowerCase() !=
-                other.constraintName.toLowerCase() ||
-        !ignoreCase && constraintName != other.constraintName) {
-      mismatches.add(
-        ForeignKeyComparisonWarning(
-          name: 'name',
-          expected: constraintName,
-          found: other.constraintName,
-        ),
-      );
+    // Check if the name mismatch.
+    var ignoreCaseMismatch = ignoreCase &&
+        constraintName.toLowerCase() != other.constraintName.toLowerCase();
+
+    var caseSensitiveMismatch =
+        !ignoreCase && constraintName != other.constraintName;
+
+    if (ignoreCaseMismatch || caseSensitiveMismatch) {
+      mismatches.add(ForeignKeyComparisonWarning.nameMismatch(this, other));
     }
 
-    if (!const ListEquality().equals(columns, other.columns)) {
-      mismatches.add(
-        ForeignKeyComparisonWarning(
-          name: 'columns',
-          expected: '$columns',
-          found: '${other.columns}',
-        ),
-      );
+    // Check if the columns mismatch.
+    var columnsMatch = const ListEquality().equals(columns, other.columns);
+    if (!columnsMatch) {
+      mismatches.add(ForeignKeyComparisonWarning.columnsMismatch(this, other));
     }
 
+    // Check if the reference table mismatch.
     if (referenceTable != other.referenceTable) {
-      mismatches.add(
-        ForeignKeyComparisonWarning(
-          name: 'reference table',
-          expected: referenceTable,
-          found: other.referenceTable,
-        ),
-      );
+      mismatches
+          .add(ForeignKeyComparisonWarning.referenceTableMismatch(this, other));
     }
 
+    // Check if the reference table schema mismatch.
     if (referenceTableSchema != other.referenceTableSchema) {
       mismatches.add(
-        ForeignKeyComparisonWarning(
-          name: 'reference schema',
-          expected: referenceTableSchema,
-          found: other.referenceTableSchema,
-        ),
+        ForeignKeyComparisonWarning.referenceTableSchemaMismatch(this, other),
       );
     }
 
-    if (!const ListEquality()
-        .equals(referenceColumns, other.referenceColumns)) {
+    // Check if the reference columns mismatch.
+    var referenceColumnsMatch =
+        const ListEquality().equals(referenceColumns, other.referenceColumns);
+
+    if (!referenceColumnsMatch) {
       mismatches.add(
-        ForeignKeyComparisonWarning(
-          name: 'reference columns',
-          expected: '$referenceColumns',
-          found: '${other.referenceColumns}',
-        ),
+        ForeignKeyComparisonWarning.referenceColumnsMismatch(this, other),
       );
     }
 
+    // Check if the onUpdate mismatch.
     if (onUpdate != other.onUpdate) {
-      mismatches.add(
-        ForeignKeyComparisonWarning(
-          name: 'onUpdate action',
-          expected: '$onUpdate',
-          found: '${other.onUpdate}',
-        ),
-      );
+      mismatches.add(ForeignKeyComparisonWarning.onUpdateMismatch(this, other));
     }
 
+    // Check if the onDelete mismatch.
     if (onDelete != other.onDelete) {
-      mismatches.add(
-        ForeignKeyComparisonWarning(
-          name: 'onDelete action',
-          expected: '$onDelete',
-          found: '${other.onDelete}',
-        ),
-      );
+      mismatches.add(ForeignKeyComparisonWarning.onDeleteMismatch(this, other));
     }
 
-    if (matchType != null &&
+    // Check if the matchType mismatch.
+    var matchTypeMismatch = matchType != null &&
         other.matchType != null &&
-        matchType != other.matchType) {
-      mismatches.add(
-        ForeignKeyComparisonWarning(
-          name: 'match type',
-          expected: '$matchType',
-          found: '${other.matchType}',
-        ),
-      );
+        matchType != other.matchType;
+
+    if (matchTypeMismatch) {
+      mismatches
+          .add(ForeignKeyComparisonWarning.matchTypeMismatch(this, other));
     }
 
     return mismatches;
