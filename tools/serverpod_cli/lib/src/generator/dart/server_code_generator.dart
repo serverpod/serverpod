@@ -22,23 +22,7 @@ class DartServerCodeGenerator extends CodeGenerator {
       config: config,
     );
 
-    var modelAllocatorContext = ModelAllocatorContext();
-
-    SealedHierarchiesProcessor.process(
-      modelAllocatorContext,
-      models,
-      config,
-    );
-
-    var modelsWithoutSealedHierarchies =
-        SealedHierarchiesProcessor.getNonSealedClasses(models);
-
-    for (var protocolFile in modelsWithoutSealedHierarchies) {
-      modelAllocatorContext.add(
-        protocolFile,
-        null,
-      );
-    }
+    var modelAllocatorContext = ModelAllocatorContext.build(models, config);
 
     return {
       for (var entry in modelAllocatorContext.entries)

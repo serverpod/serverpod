@@ -5,22 +5,10 @@ import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/custom_allocators.dart';
 
-/// A context to store models and their associated allocators.
-/// Used during code generation to manage model-to-allocator relationships.
-class ModelAllocatorContext {
-  final List<ModelAllocatorEntry> _entries = [];
-
-  /// Adds a [model] and its [allocator] to the context.
-  void add(SerializableModelDefinition model, Allocator? allocator) {
-    _entries.add(ModelAllocatorEntry(model: model, allocator: allocator));
-  }
-
-  /// Returns an immutable list of all entries in the context.
-  List<ModelAllocatorEntry> get entries => List.unmodifiable(_entries);
-}
-
 /// Represents a single entry in the [ModelAllocatorContext],
 /// containing a model and its corresponding allocator.
+/// On classes that are not part of a sealed hierarchy
+/// the allocator should be null.
 class ModelAllocatorEntry {
   final SerializableModelDefinition model;
   final Allocator? allocator;
@@ -31,23 +19,24 @@ class ModelAllocatorEntry {
   });
 }
 
-/// Provides utilities to process sealed hierarchies in models.
-/// It filters, sorts, and associates models with allocators
-/// within a [ModelAllocatorContext].
-/// Or returns all models that are not part of a sealed hierarchy.
-abstract class SealedHierarchiesProcessor {
-  /// Processes sealed hierarchies in the provided [models].
-  ///
-  /// - Filters out sealed classes and their descendants from [models].
-  /// - Sorts the hierarchy, instantiates and determines the appropriate [Allocator].
-  /// - Adds the models and allocators to the provided [modelAllocatorContext].
-  ///
-  /// [config] is used to determine file paths and import structures.
-  static void process(
-    ModelAllocatorContext modelAllocatorContext,
+/// Manages the relationship between models and their allocators.
+/// Includes a factory constructor for creating a context from
+/// a list of `SerializableModelDefinition` and `GeneratorConfig`.
+class ModelAllocatorContext {
+  ModelAllocatorContext(this._entries);
+
+  final List<ModelAllocatorEntry> _entries;
+
+  List<ModelAllocatorEntry> get entries => List.unmodifiable(_entries);
+
+  /// Factory constructor to build a [ModelAllocatorContext]
+  /// from a list of models and a configuration.
+  factory ModelAllocatorContext.build(
     List<SerializableModelDefinition> models,
     GeneratorConfig config,
   ) {
+    var entries = <ModelAllocatorEntry>[];
+
     var sealedHierarchies = _getSealedHierarchies(models);
 
     for (var sealedHierarchy in sealedHierarchies) {
@@ -66,26 +55,35 @@ abstract class SealedHierarchiesProcessor {
             importCollector: importCollector,
           );
 
-          modelAllocatorContext.add(
-            model,
-            model.isSealedTopNode
-                ? PartAllocator(partOfAllocator: partOfAllocator)
-                : partOfAllocator,
+          entries.add(
+            ModelAllocatorEntry(
+              model: model,
+              allocator: model.isSealedTopNode
+                  ? PartAllocator(partOfAllocator: partOfAllocator)
+                  : partOfAllocator,
+            ),
           );
         }
       }
     }
+
+    var modelsWithoutSealedHierarchies = _getNonSealedClasses(models);
+
+    for (var model in modelsWithoutSealedHierarchies) {
+      entries.add(
+        ModelAllocatorEntry(model: model, allocator: null),
+      );
+    }
+
+    return ModelAllocatorContext(entries);
   }
 
   /// Returns all classes from `models` are not part of a sealed hierarchy.
-  static Iterable<SerializableModelDefinition> getNonSealedClasses(
+  static Iterable<SerializableModelDefinition> _getNonSealedClasses(
     List<SerializableModelDefinition> models,
   ) {
-    var sealedHierarchyClasses =
-        _getSealedHierarchies(models).expand((e) => e).toSet();
-
     return models.where(
-      (e) => e is! ClassDefinition || !sealedHierarchyClasses.contains(e),
+      (e) => e is! ClassDefinition || e.sealedTopNode == null,
     );
   }
 
@@ -123,8 +121,8 @@ extension SerializableModelPath on SerializableModelDefinition {
         '$fileName.dart',
       ]);
 
-  /// Returns a String with the server or client path parts followed by
-  /// `filePath`.
+  /// Returns a String with the full server or client path followed by
+  /// `filename.dart`.
   String getFullFilePath(GeneratorConfig config, bool serverCode) {
     return p.joinAll([
       ...serverCode

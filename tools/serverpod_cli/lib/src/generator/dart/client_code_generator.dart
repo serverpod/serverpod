@@ -21,25 +21,10 @@ class DartClientCodeGenerator extends CodeGenerator {
       config: config,
     );
 
-    var modelAllocatorContext = ModelAllocatorContext();
-
     var clientClasses = models.where((element) => !element.serverOnly).toList();
 
-    SealedHierarchiesProcessor.process(
-      modelAllocatorContext,
-      clientClasses,
-      config,
-    );
-
-    var modelsWithoutSealedHierarchies =
-        SealedHierarchiesProcessor.getNonSealedClasses(clientClasses);
-
-    for (var model in modelsWithoutSealedHierarchies) {
-      modelAllocatorContext.add(
-        model,
-        null,
-      );
-    }
+    var modelAllocatorContext =
+        ModelAllocatorContext.build(clientClasses, config);
 
     return {
       for (var entry in modelAllocatorContext.entries)
