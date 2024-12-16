@@ -124,7 +124,7 @@ extension SerializableModelPath on SerializableModelDefinition {
       ]);
 
   /// Returns a String with the server or client path parts followed by
-  /// `.fileRef()`.
+  /// `filePath`.
   String getFullFilePath(GeneratorConfig config, bool serverCode) {
     return p.joinAll([
       ...serverCode

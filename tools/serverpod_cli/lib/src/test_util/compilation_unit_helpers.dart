@@ -129,11 +129,11 @@ abstract class CompilationUnitHelpers {
   /// Meaning on:
   /// linux: `sub_dir/filename.dart` and `../filename.dart`
   /// windows: `subdirfilename.dart` and `..filename.dart`
-  static void applyWindowsBugfix(String directiveUri, String uri) {
+  static String applyWindowsBugfix(String input) {
     if (Platform.isWindows) {
-      directiveUri = directiveUri.replaceAll('/', '');
-      uri = uri.replaceAll('/', '');
+      return input.replaceAll('/', '');
     }
+    return input;
   }
 
   /// Returns [List<PartDirective>] if the [unit] contains a part directive with the
@@ -145,11 +145,7 @@ abstract class CompilationUnitHelpers {
     return unit.directives.whereType<PartDirective>().where((directive) {
       String directiveUri = directive.uri.stringValue!;
 
-      print('directiveUri: $directiveUri');
-      print('uri: $uri');
-      applyWindowsBugfix(directiveUri, uri);
-      print('directiveUri after: $directiveUri');
-      print('uri after: $uri');
+      uri = applyWindowsBugfix(uri);
 
       return directiveUri == uri;
     }).firstOrNull;
@@ -173,11 +169,7 @@ abstract class CompilationUnitHelpers {
     return unit.directives.whereType<PartOfDirective>().where((directive) {
       String directiveUri = directive.uri!.stringValue!;
 
-      print('part of directiveUri: $directiveUri');
-      print('part of uri: $uri');
-      applyWindowsBugfix(directiveUri, uri);
-      print('part of directiveUri after: $directiveUri');
-      print('part of uri after: $uri');
+      uri = applyWindowsBugfix(uri);
 
       return directiveUri == uri;
     }).firstOrNull;
