@@ -1,26 +1,10 @@
 import 'package:code_builder/code_builder.dart';
-import 'package:path/path.dart' as p;
 
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
-
-/// Returns the path to the generated model file.
-String getGeneratedModelPath(
-  SerializableModelDefinition model,
-  GeneratorConfig config,
-  bool serverCode,
-) {
-  return p.joinAll([
-    ...serverCode
-        ? config.generatedServeModelPathParts
-        : config.generatedDartClientModelPathParts,
-    ...model.subDirParts,
-    '${model.fileName}.dart',
-  ]);
-}
 
 String createFieldName(
   bool serverCode,
