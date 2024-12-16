@@ -145,7 +145,11 @@ abstract class CompilationUnitHelpers {
     return unit.directives.whereType<PartDirective>().where((directive) {
       String directiveUri = directive.uri.stringValue!;
 
+      print('directiveUri: $directiveUri');
+      print('uri: $uri');
       applyWindowsBugfix(directiveUri, uri);
+      print('directiveUri after: $directiveUri');
+      print('uri after: $uri');
 
       return directiveUri == uri;
     }).firstOrNull;
@@ -169,7 +173,11 @@ abstract class CompilationUnitHelpers {
     return unit.directives.whereType<PartOfDirective>().where((directive) {
       String directiveUri = directive.uri!.stringValue!;
 
+      print('part of directiveUri: $directiveUri');
+      print('part of uri: $uri');
       applyWindowsBugfix(directiveUri, uri);
+      print('part of directiveUri after: $directiveUri');
+      print('part of uri after: $uri');
 
       return directiveUri == uri;
     }).firstOrNull;
