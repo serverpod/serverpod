@@ -408,9 +408,7 @@ class Server {
       len += segment.length;
       if (len > serverpod.config.maxRequestSize) {
         throw ResultInvalidParams(
-            'File size exceeds the maximum allowed size of ${serverpod.config
-                .maxRequestSize} bytes.'
-        );
+            'File size exceeds the maximum allowed size of ${serverpod.config.maxRequestSize} bytes.');
       }
       builder.add(segment);
     }
