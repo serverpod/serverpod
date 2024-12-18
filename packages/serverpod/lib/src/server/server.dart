@@ -402,15 +402,19 @@ class Server {
   }
 
   Future<String?> _readBody(HttpRequest request) async {
-    // TODO: Find more efficient solution?
+    var builder = BytesBuilder();
     var len = 0;
-    var data = <int>[];
     await for (var segment in request) {
       len += segment.length;
-      if (len > serverpod.config.maxRequestSize) return null;
-      data += segment;
+      if (len > serverpod.config.maxRequestSize) {
+        throw ResultInvalidParams(
+            'File size exceeds the maximum allowed size of ${serverpod.config
+                .maxRequestSize} bytes.'
+        );
+      }
+      builder.add(segment);
     }
-    return const Utf8Decoder().convert(data);
+    return const Utf8Decoder().convert(builder.toBytes());
   }
 
   Future<Result> _handleUriCall(
