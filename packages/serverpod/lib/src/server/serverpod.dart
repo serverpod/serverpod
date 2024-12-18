@@ -294,6 +294,10 @@ class Serverpod {
     stdout.writeln(
       'SERVERPOD version: $serverpodVersion, dart: ${Platform.version}, time: ${DateTime.now().toUtc()}',
     );
+    var deployTags = Platform.environment['SERVERPOD_DEPLOY_TAGS'];
+    if (deployTags != null) {
+      stdout.writeln('SERVERPOD deploy tags: $deployTags');
+    }
 
     _instance = this;
     _internalSerializationManager = internal.Protocol();
