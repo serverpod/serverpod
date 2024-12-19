@@ -965,10 +965,7 @@ void main() {
     var parentCompilationUnit = parseString(content: codeMap[parentPath]!).unit;
     var childCompilationUnit = parseString(content: codeMap[childPath]!).unit;
 
-    print(grandparentCompilationUnit);
-
     group('then ${grandparent.className}', () {
-      print(grandparentCompilationUnit);
       test('has a part directive with ${parent.className} uri', () {
         var partDirective = CompilationUnitHelpers.tryFindPartDirective(
           grandparentCompilationUnit,
@@ -1022,13 +1019,20 @@ void main() {
   test(
       'CompilationUnit.directives[i].uri.stringValue returns relative path without separators on Windows.',
       () {
-    var content = "part 'sub_dir\\example_child.dart';";
+    var content = Platform.isWindows
+        ? "part 'sub_dir\\example_child.dart';"
+        : "part 'sub_dir/example_child.dart';";
 
     var unit = parseString(content: content).unit;
 
     var directive = unit.directives.whereType<PartDirective>().first;
 
     var directiveStringValue = directive.uri.stringValue;
-    print('directive.uri.stringValue: $directiveStringValue');
+
+    var expectedPath = Platform.isWindows
+        ? 'sub_direxample_child.dart'
+        : 'sub_dir/example_child.dart';
+
+    expect(directiveStringValue == expectedPath, isTrue);
   });
 }
