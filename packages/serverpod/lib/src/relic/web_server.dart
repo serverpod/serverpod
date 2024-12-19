@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
@@ -265,17 +266,16 @@ abstract class Route {
   }
 
   static Future<String?> _readBody(HttpRequest request) async {
-    // TODO: Find more efficient solution?
+    var builder = BytesBuilder();
     var len = 0;
-    var data = <int>[];
     await for (var segment in request) {
       len += segment.length;
       if (len > 10240) {
         return null;
       }
-      data += segment;
+      builder.add(segment);
     }
-    return const Utf8Decoder().convert(data);
+    return const Utf8Decoder().convert(builder.toBytes());
   }
 }
 

@@ -629,3 +629,47 @@ class ExceptionResult<T extends SerializableException> extends Result {
   @override
   String toString() => 'ExceptionResult(entity: $model)';
 }
+
+/// The result of a failed [Endpoint] method call where the request size
+/// exceeds the maximum allowed limit.
+///
+/// This error is typically thrown when the client sends a request with a payload
+/// that is too large for the server to process. The server imposes a limit on the
+/// maximum request size to ensure performance and stability.
+///
+/// Example:
+/// ```dart
+/// var maxSize = serverpod.config.maxRequestSize;
+/// if (requestSize > maxSize) {
+///   throw ResultRequestTooLarge(maxSize, requestSize);
+/// }
+/// ```
+///
+/// This error provides details about the maximum allowed size and the actual
+/// size of the request, allowing the client to adjust their request accordingly.
+class ResultRequestTooLarge extends Result {
+  /// Maximum allowed request size in bytes.
+  final int maxSize;
+
+  /// Actual size of the request in bytes.
+  final int actualSize;
+
+  /// Description of the error.
+  ///
+  /// Contains a human-readable explanation of the error, including the maximum
+  /// allowed size and the actual size of the request.
+  final String errorDescription;
+
+  /// Creates a new [ResultRequestTooLarge] object.
+  ///
+  /// - [maxSize]: The maximum allowed size for the request in bytes.
+  /// - [actualSize]: The actual size of the received request in bytes.
+  ResultRequestTooLarge(this.maxSize, this.actualSize)
+      : errorDescription =
+            'Request size exceeds the maximum allowed size of $maxSize bytes. Actual size: $actualSize bytes.';
+
+  @override
+  String toString() {
+    return errorDescription;
+  }
+}
