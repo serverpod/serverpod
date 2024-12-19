@@ -1,0 +1,6 @@
+name: serverpod
+
+environment:
+  sdk: ">=3.5.1 <3.6.0"
+dev_dependencies:
+  melos: ^6.1.0

@@ -13,6 +13,8 @@ doc/api/
 *.ipr
 *.iws
 
+**/pubspec_overrides.yaml
+
 
 .DS_Store
 .atom/

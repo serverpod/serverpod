@@ -28,6 +28,23 @@ jobs:
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed .
 
+  dart_analyze_melos:
+    name: dart analyze
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        flutter-version: ['3.19.0']
+        os: [windows-latest]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+      - name: Initialize Melos repository 
+        uses: ./.github/actions/initialize-melos-repository 
+      - name: Run lint
+        run: melos lint
+
   dart_analyze:
     name: dart analyze
     runs-on: ubuntu-latest
