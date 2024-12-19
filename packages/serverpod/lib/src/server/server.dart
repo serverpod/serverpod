@@ -276,10 +276,19 @@ class Server {
       return;
     }
 
-    String? body;
+    String body;
     if (readBody) {
       try {
         body = await _readBody(request);
+      } on ResultRequestTooLarge catch (e) {
+        if (serverpod.runtimeSettings.logMalformedCalls) {
+          // TODO: Log to database?
+          stderr.writeln('${DateTime.now().toUtc()} ${e.errorDescription}');
+        }
+        request.response.statusCode = HttpStatus.requestEntityTooLarge;
+        request.response.write(e.errorDescription);
+        await request.response.close();
+        return;
       } catch (e, stackTrace) {
         stderr.writeln(
             '${DateTime.now().toUtc()} Internal server error. Failed to read body of request.');
@@ -293,7 +302,7 @@ class Server {
       body = '';
     }
 
-    var result = await _handleUriCall(uri, body!, request);
+    var result = await _handleUriCall(uri, body, request);
 
     if (result is ResultNoSuchEndpoint) {
       if (serverpod.runtimeSettings.logMalformedCalls) {
@@ -401,15 +410,13 @@ class Server {
     );
   }
 
-  Future<String?> _readBody(HttpRequest request) async {
+  Future<String> _readBody(HttpRequest request) async {
     var builder = BytesBuilder();
-    var len = 0;
+    var len = request.headers.contentLength;
+    if (len > serverpod.config.maxRequestSize) {
+      throw ResultRequestTooLarge(serverpod.config.maxRequestSize, len);
+    }
     await for (var segment in request) {
-      len += segment.length;
-      if (len > serverpod.config.maxRequestSize) {
-        throw ResultInvalidParams(
-            'File size exceeds the maximum allowed size of ${serverpod.config.maxRequestSize} bytes.');
-      }
       builder.add(segment);
     }
     return const Utf8Decoder().convert(builder.toBytes());
