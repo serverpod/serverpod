@@ -1,4 +1,5 @@
 import 'package:code_builder/code_builder.dart';
+import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 
 import 'package:serverpod_cli/analyzer.dart';
@@ -6,6 +7,7 @@ import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/duration_utils.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/class_generators/repository_classes.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
 import 'package:serverpod_cli/src/generator/keywords.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
@@ -58,15 +60,20 @@ class SerializableModelLibraryGenerator {
       (libraryBuilder) {
         if (classDefinition.isSealedTopNode) {
           for (var child in classDefinition.descendantClasses) {
-            libraryBuilder.directives
-                .add(Directive.part('${child.fileName}.dart'));
+            var childPath = p.relative(
+              child.filePath,
+              from: p.dirname(classDefinition.filePath),
+            );
+            libraryBuilder.directives.add(Directive.part(childPath));
           }
         }
 
         if (!classDefinition.isSealedTopNode && sealedTopNode != null) {
-          libraryBuilder.directives.add(
-            Directive.partOf('${sealedTopNode.fileName}.dart'),
+          var topNodePath = p.relative(
+            sealedTopNode.filePath,
+            from: p.dirname(classDefinition.filePath),
           );
+          libraryBuilder.directives.add(Directive.partOf(topNodePath));
         }
 
         libraryBuilder.body.addAll([
