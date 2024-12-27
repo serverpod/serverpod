@@ -1,14 +1,21 @@
 # Serverpod Deployment to a VPS using Docker
 
-<!-- TODO(Paul): Re-do the intro and explanation, this setup is sufficient for any startup and small builds as it can scale vertically with the virtual instances until very big loads and could even be extended to scale horizontally using Hetzner's load balancers -->
+> Deploying your Serverpod to a Virtual Private Server (VPS) using Docker is a cost-effective and scalable solution for startups and small- to medium-scale builds.
 
-This is a workflow to deploy your Serverpod to a single machine using
-docker-compose. This is useful for testing and small deployments. For larger
-deployments, you should use the deployment-aws.ml or deployment-gcp.yml
-workflows. To reduce the workload on the machine we do not use redis in this
-deployment. If you want to use redis, you need to add it to the docker-compose
-file and the serverpod configuration. You need to setup the correct hostnames in
-the docker-compose-production file AND the serverpod configuration file.
+This guide walks you through deploying a server built using the Serverpod
+framework to a Virtual Private Server (VPS) using Docker. Serverpod, designed
+for Flutter and Dart, is a backend framework that simplifies server
+development while offering powerful features like database integration and
+seamless client-server communication. Deploying your Serverpod application to a
+VPS is a cost-effective solution for startups and small-scale projects. This
+setup supports vertical scaling by upgrading your virtual machine instance to
+handle increased loads and can be extended to horizontal scaling with tools like
+Hetzner’s load balancers. By following this guide, you’ll create a reliable,
+production-ready deployment environment using Docker Compose, tailored for
+testing and small to medium-sized workloads.
+
+To reduce the workload on the machine we do not use redis in this deployment.
+Redis becomes necessary when you want to scale your application horizontally.
 
 - [Preparing the server](#preparing-the-server)
   - [Registering at Hetzner Cloud](#registering-at-hetzner-cloud)
