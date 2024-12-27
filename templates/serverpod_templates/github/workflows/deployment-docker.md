@@ -25,8 +25,8 @@ the docker-compose-production file AND the serverpod configuration file.
   - [Getting a GitHub Personal Access Token](#getting-a-github-personal-access-token)
   - [Adding the secrets to the repository](#adding-the-secrets-to-the-repository)
 - [Configuring SSL-certificates](#configuring-ssl-certificates)
-- [Configuring the action](#configuring-the-action)
-- [Running the action](#running-the-action)
+- [Configuring the GitHub-Action](#configuring-the-github-action)
+- [Running the GitHub-Action](#running-the-github-action)
 - [Using the Serverpod Insights app](#using-the-serverpod-insights-app)
 - [Connecting your Flutter client](#connecting-your-flutter-client)
 - [Connecting to the Database using DBeaver](#connecting-to-the-database-using-dbeaver)
@@ -39,7 +39,7 @@ If you want to use another architecture or hoster, check the docker-compose file
 ### Registering at Hetzner Cloud
 
 Register an account at Hetzner Cloud and create a new project.
-Using this referral link you get 20€ for free: [Hetzner Cloud](https://hetzner.cloud/?ref=BFdFFipLgfDs)
+Use this referral link you get 20€ for free: [Hetzner Cloud](https://hetzner.cloud/?ref=BFdFFipLgfDs)
 
 Next, go to the ["Cloud Console"](https://console.hetzner.cloud/) and create a project.
 
@@ -53,9 +53,9 @@ If you are not sure whether you already have one, you can check by running:
 cat ~/.ssh/id_rsa.pub
 ```
 
-To create a new keypair, run:
+To create a new keypair, run the following command.
 
-Leave any options at their default values by pressing enter.
+Leave all options at their default values by pressing enter.
 
 ```bash
 ssh-keygen -t rsa -b 4096
@@ -181,7 +181,7 @@ cat ~/.ssh/id_rsa
 
 ### Firewall configuration
 
-Enter your server configuration and click on "Firewalls", then click on "Create Firewall".
+In the Hetzner Web Interface, enter your server configuration and click on "Firewalls", then click on "Create Firewall".
 
 By default there will be two inbound rules, one for SSH (Which has Port 22) and one for ICMP (which has protocol set to ICMP).
 
@@ -200,7 +200,9 @@ You can buy a domain from any domain provider, e.g., [Namecheap](https://www.nam
 Once you have a domain, you need to set up the DNS records to point to your server.
 
 Create the following DNS records, replacing `Your server IP` with the IP address of your server.
+
 The setup is configured to use a reverse proxy to route the traffic to the correct service.
+This means, that using the domain the server is accessed with, the request will be routed to the correct service.
 
 | Type | Name     | Value          |
 | ---- | -------- | -------------- |
@@ -214,23 +216,26 @@ The full domain will be `api.your-domain.com`, `web.your-domain.com`, and `insig
 
 ### Getting a GitHub Personal Access Token
 
-Create a new Personal-Access-Token (PAT) on GitHub.
-Click on your profile picture in the top right corner, go to settings, (very
-bottom) developer settings, personal access tokens, Tokens (classic), and click
-on "Generate new token".
-In the "Note" field at the top, set a name for the token, e.g., "Serverpod Deployment".
-Set the expiration time to "No expiration" and check these scopes:
+1. Create a new Personal-Access-Token (PAT) on GitHub:
+   - Click on your profile picture in the top-right corner.
+   - Navigate to **Settings** > **Developer settings** > **Personal access tokens** > **Tokens (classic)**.
+   - Click on **Generate new token**.
 
-- **repo** (required to read repositories, especially private ones, i.e. accessing
-  packages in a different repository)
-- **write:packages** (required to push docker images to the GitHub package registry)
+2. Fill in the required fields:
+   - In the **Note** field at the top, set a name for the token, e.g., "Serverpod Deployment".
+   - Set the expiration time to **No expiration**.
 
-At the bottom, click on "Generate token", copy the token and save it somewhere safe.
+3. Select the necessary scopes:
+   - **repo**: Required to read repositories, especially private ones (e.g., accessing packages in a different repository).
+   - **write:packages**: Required to push Docker images to the GitHub package registry.
+
+4. Generate and save the token:
+   - Scroll to the bottom and click on **Generate token**.
+   - Copy the token and save it somewhere safe.
 
 ### Adding the secrets to the repository
 
-Go to your serverpod project repository, "Settings" -> "Secrets and variables"
--> "Actions" and create the following secrets:
+Go to your serverpod project repository, **Settings** > **Secrets and variables** > **Actions** and create the following secrets:
 
 | Secret Name     | Value                                                               |
 | --------------- | ------------------------------------------------------------------- |
@@ -240,7 +245,7 @@ Go to your serverpod project repository, "Settings" -> "Secrets and variables"
 | SSH_USER        | The username you created on the server here, e.g., "github-actions" |
 | SSH_PRIVATE_KEY | The private key you generated on the server here                    |
 
-The following will configure serverpod and the database:
+The following secrets configure serverpod and the database:
 
 | Secret Name                           | Value                                                                                                                                        |
 | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -263,7 +268,7 @@ Open `docker-compose.production.yaml` and edit the email address in the
 parameter holding `certificatesresolvers.myresolver.acme.email`. There is also a
 `TODO` above this line for your convenience.
 
-## Configuring the action
+## Configuring the GitHub-Action
 
 From the root of your repository, open the `.github/workflows/deployment-docker.yml` file and adjust the following settings:
 
@@ -273,7 +278,7 @@ From the root of your repository, open the `.github/workflows/deployment-docker.
   deployment. By default, it is set to `deployment-docker-production`. You can
   always trigger the action manually to run it on a different branch.
 
-## Running the action
+## Running the GitHub-Action
 
 Push your changes to the repository.
 
@@ -283,11 +288,11 @@ you want to deploy.
 
 ## Using the Serverpod Insights app
 
-To enable the [Serverpod Insights
-app](https://docs.serverpod.dev/tools/insights), you need to adjust the insights
-server host in production.yaml to the domain you set up in the DNS records. The
-service secret you specify in the repository secrets must match the one you set
-in the local passwords.yaml file for production.
+To enable the [Serverpod Insightsapp](https://docs.serverpod.dev/tools/insights),
+you need to adjust the insights server host in production.yaml to the domain you set up in the DNS records.
+The service secret you [specify in the repository secrets](#adding-the-secrets-to-the-repository)
+must match the one you set in
+the local passwords.yaml file for production.
 
 ## Connecting your Flutter client
 
@@ -296,6 +301,27 @@ Make sure to use https without any ports, i.e. `https://api.my-domain.com`.
 
 ## Connecting to the Database using DBeaver
 
-Setup connection via ssh then use postgres for host and password for password.
+In order to manage your database, you can use a tool like [DBeaver](https://dbeaver.io/).
+To connect to the database, you need to set up an SSH tunnel to the server.
 
-TODO TODO TODO
+This example will show you how to set up the connection using DBeaver.
+
+1. Open DBeaver and "New Database Connection" button (usually top left corner).
+2. Select "PostgreSQL" and click "Next".
+3. Click the "SSH" tab.
+4. Check "Use SSH tunnel".
+5. Set the following values:
+   - Host/IP: Your server IP
+   - Port: 22
+   - Username: root
+   - Authentication method: Public key
+   - Private key: The private key on your machine you [generated earlier](#setting-up-an-ssh-key-to-connect-to-the-server)
+6. Click "Test tunnel" to verify the connection.
+7. Back to the "Main" tab.
+8. Set the following values:
+   - Host: localhost
+   - Port: 5432
+   - Database: The database name you set in the [repository secrets](#adding-the-secrets-to-the-repository)
+   - User name: The database user you set in the [repository secrets](#adding-the-secrets-to-the-repository)
+   - Password: The database password you set in the [repository secrets](#adding-the-secrets-to-the-repository)
+9. Test the connection and save it.
