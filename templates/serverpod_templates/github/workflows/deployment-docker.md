@@ -17,6 +17,16 @@ testing and small to medium-sized workloads.
 To reduce the workload on the machine we do not use redis in this deployment.
 Redis becomes necessary when you want to scale your application horizontally.
 
+## Prerequisites
+
+- This guide assumes you have basic knowledge of Serverpod.
+- The `docker-compose.production.yaml` file is configured to run on ARM machines.
+- Configure the branches that trigger the deployment in the `.github/workflows/deployment-docker.yml` file.
+
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Table of Contents](#table-of-contents)
 - [Preparing the server](#preparing-the-server)
   - [Registering at Hetzner Cloud](#registering-at-hetzner-cloud)
   - [Setting up an SSH key to connect to the server](#setting-up-an-ssh-key-to-connect-to-the-server)
